@@ -63,8 +63,11 @@ define(['jquery', 'core/config'], function($, config) {
                 var _instance = currentInput.data('instance');
                 var _course = $('body').attr('class').toString().replace(/^.*course-(\d+)\s.*$/, '$1');
 
-                $.post(config.wwwroot + '/mod/aruphonestybox/taps.php', {id:_instance, course: _course})
-                .done(function (datastr) {
+
+                $.post(config.wwwroot + '/mod/aruphonestybox/taps.php', {
+                    id:_instance,
+                    course: _course,
+                }).done(function (datastr) {
                     var data = $.parseJSON(datastr);
                     setModalButtons(_button, false);
                     var $mod = currentInput.parents('.aruphonestybox');

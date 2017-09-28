@@ -49,7 +49,6 @@ if ($return->success == true) {
             'userid' => $USER->id
     ));
     $debug[] = 'deleted ahbu record, status: ' . $status;
-
     $ahbu = new stdClass;
     $ahbu->aruphonestyboxid = $id;
     $ahbu->userid = $USER->id;

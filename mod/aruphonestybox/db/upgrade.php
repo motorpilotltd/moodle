@@ -104,5 +104,73 @@ function xmldb_aruphonestybox_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111602, 'mod', 'aruphonestybox');
     }
 
+    if ($oldversion < 2015111604) {
+        $table = new xmldb_table('aruphonestybox');
+        // Update fields to match local_taps_enrolment table.
+        $fields = array(
+            new xmldb_field('showcompletiondate', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0'),
+            new xmldb_field('showcertificateupload', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0'),
+        );
+
+        // Conditionally launch add field
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111604, 'mod', 'aruphonestybox');
+    }
+
+    if ($oldversion < 2015111609) {
+        $table = new xmldb_table('aruphonestybox');
+        $field = new xmldb_field('approvalrequired', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111609, 'mod', 'aruphonestybox');
+    }
+
+    if ($oldversion < 2015111611) {
+        $table = new xmldb_table('aruphonestybox_users');
+        $field = new xmldb_field('approved', XMLDB_TYPE_INTEGER, '1', null, null, null, '0');
+        $fields = array(
+            new xmldb_field('approved', XMLDB_TYPE_INTEGER, '10', null, null, null, '0'),
+            new xmldb_field('approverid', XMLDB_TYPE_INTEGER, '1', null, null, null),
+            new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null),
+            new xmldb_field('completiondate', XMLDB_TYPE_INTEGER, '10', null, null, null),
+        );
+        // Conditionally launch add field
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111611, 'mod', 'aruphonestybox');
+    }
+
+    if ($oldversion < 2015111613) {
+        $table = new xmldb_table('aruphonestybox');
+        // Update fields to match local_taps_enrolment table.
+        $fields = array(
+            new xmldb_field('firstname', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'approvalrequired'),
+            new xmldb_field('lastname', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'firstname'),
+            new xmldb_field('email', XMLDB_TYPE_CHAR, '64', null, null, null, null, 'lastname')
+        );
+
+        // Conditionally launch add field
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111613, 'mod', 'aruphonestybox');
+    }
+
     return true;
 }

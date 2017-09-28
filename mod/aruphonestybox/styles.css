@@ -39,3 +39,18 @@
 .aruphonestybox .no-overflow {
     overflow: visible;
 }
+
+.aruphonesty-table {
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+}
+
+.aruphonesty-table td, .aruphonesty-table tr {
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.aruphonesty-table td.c0 {
+    text-align: right;
+}

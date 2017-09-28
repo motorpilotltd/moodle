@@ -54,10 +54,26 @@ class eventobservers {
         }
         $cm = array_shift($cms);// Take first match, should only be one.
 
+
+
+
         // Check: we only want to do this for auto complete.
         $ahb = $DB->get_record('aruphonestybox', array('id' => $cm->instance));
-        if (false === $ahb || !empty($ahb->manualindicate)) {
-            // If we don't match an aruphonestybox instance, or we do, but it is manual, then do nothing here.
+        if (false === $ahb) {
+            // If we don't match an aruphonestybox instance, then do nothing here.
+            return;
+        }
+        // if manual, update completion date based on user's input
+        if(!empty($ahb->manualindicate)) {
+            $params = array('aruphonestyboxid' => $cm->instance, 'userid' => $user->id);
+            $ahbuser = $DB->get_record('aruphonestybox_users', $params, '*', IGNORE_MULTIPLE);
+            // Update Moodle course completion date base on users input in AHB view page.
+            // Record should exist as we're observing course completion.
+            if ($ahbuser->completiondate) {
+                $ccompletion = new \completion_completion(array('course' => $event->courseid, 'userid' => $user->id));
+                $ccompletion->timecompleted = $ahbuser->completiondate;
+                $ccompletion->update();
+            }
             return;
         }
 
@@ -87,13 +103,6 @@ class eventobservers {
 
             $completion = new \completion_info(get_course($event->courseid));
             $completion->update_state($cm, COMPLETION_COMPLETE, $user->id);
-
-            // Update Moodle course completion date.
-            // Record should exist as we're observing course completion.
-            // @TODO : More work to do before this bit can be implemented.
-            //$ccompletion = new \completion_completion(array('course' => $event->courseid, 'userid' => $user->id));
-            //$ccompletion->timecompleted = $completiontime;
-            //$ccompletion->update();
         }
     }
 }

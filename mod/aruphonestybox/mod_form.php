@@ -54,6 +54,29 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
         $mform->addElement('advcheckbox', 'manualindicate', 'User must manually indicate completion');
         $mform->setDefault('manualindicate', true);
 
+        $mform->addElement('checkbox', 'showcompletiondate', get_string('showcompletiondate', 'mod_aruphonestybox'));
+        $mform->setDefault('showcompletiondate', 0);
+        $mform->disabledIf('showcompletiondate', 'manualindicate', 'notchecked');
+
+        $mform->addElement('checkbox', 'showcertificateupload', get_string('showcertificateupload', 'mod_aruphonestybox'));
+        $mform->setDefault('showcertificateupload', 0);
+        $mform->disabledIf('showcertificateupload', 'manualindicate', 'notchecked');
+
+        $mform->addElement('checkbox', 'approvalrequired', get_string('approvalrequired', 'mod_aruphonestybox'));
+        $mform->setDefault('approvalrequired', 0);
+        $mform->disabledIf('approvalrequired', 'manualindicate', 'notchecked');
+
+        $mform->addElement('text', 'firstname', get_string('firstname'), array('size' => '64'));
+        $mform->setType('firstname', PARAM_TEXT);
+
+
+        $mform->addElement('text', 'lastname', get_string('lastname'), array('size' => '64'));
+        $mform->setType('lastname', PARAM_TEXT);
+
+
+        $mform->addElement('text', 'email', get_string('email'));
+        $mform->setType('email', PARAM_EMAIL);
+
         // FAKE field for completion settings.
         $mform->addElement('static', 'completionfake', '', '');
 
@@ -121,6 +144,45 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
 
     public function add_completion_rules() {
         return array('completionfake');
+    }
+
+    public function get_data() {
+        $data = parent::get_data();
+        if (!$data) {
+            return false;
+        }
+
+        if(empty($data->showcompletiondate)) {
+            $data->showcompletiondate = 0;
+        }
+
+        if(empty($data->showcertificateupload)) {
+            $data->showcertificateupload = 0;
+        }
+
+        if(empty($data->approvalrequired)) {
+            $data->approvalrequired = 0;
+        }
+
+        return $data;
+    }
+
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+        if(!empty($data['approvalrequired'])) {
+            if (empty($data['email'])) {
+                // Email will be validated by PARAM_EMAIL usage in form (which will return empty string if not valid.
+                $errors['email'] = get_string('invalidemail');
+            }
+            if(empty($data['firstname'])) {
+                $errors['firstname'] = get_string('error:required', 'mod_aruphonestybox');
+            }
+
+            if(empty($data['lastname'])) {
+                $errors['lastname'] = get_string('error:required', 'mod_aruphonestybox');
+            }
+        }
+        return $errors;
     }
 
     public function completion_rule_enabled($data) {

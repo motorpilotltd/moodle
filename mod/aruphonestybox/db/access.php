@@ -33,4 +33,14 @@ $capabilities = array(
             ),
             'clonepermissionsfrom' => 'moodle/course:manageactivities'
         ),
+        'mod/aruphonestybox:approvecompletion' => array(
+            'riskbitmask' => RISK_XSS,
+            'captype' => 'write',
+            'contextlevel' => CONTEXT_COURSE,
+            'archetypes' => array(
+                'editingteacher' => CAP_ALLOW,
+                'manager' => CAP_ALLOW,
+                'teacher' => CAP_ALLOW
+            ),
+        )
 );

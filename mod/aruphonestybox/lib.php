@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once($CFG->dirroot.'/mod/aruphonestybox/forms/completion_form.php');
+
 defined('MOODLE_INTERNAL') || die();
 
 define('ARUPHONESTYBOX_COMPLETE', 1);
@@ -125,7 +127,7 @@ function aruphonestybox_cm_info_dynamic(cm_info $cm) {
 }
 
 function aruphonestybox_cm_info_view(cm_info $cm) {
-    global $DB, $PAGE, $USER;
+    global $DB, $PAGE, $USER, $CFG;
 
     $ahb = $DB->get_record('aruphonestybox',  array('id' => $cm->instance));
 
@@ -133,6 +135,9 @@ function aruphonestybox_cm_info_view(cm_info $cm) {
     $ahbuser = $DB->get_record('aruphonestybox_users', $params, '*', IGNORE_MULTIPLE);
 
     $iscomplete = (!empty($ahbuser) && $ahbuser->taps == '1');
+
+    $context = context_module::instance($cm->id);
+
 
     if (empty($ahb->manualindicate)) {
         aruphonestybox_cm_info_view_auto($cm, $iscomplete);
@@ -144,8 +149,9 @@ function aruphonestybox_cm_info_view(cm_info $cm) {
     $attributes = array('data-instance' => $cm->instance, 'class' => 'tapscomplete');
     $hbform  = $modal = $msg = '';
 
-    if (false === $iscomplete) {
-        $msg = html_writer::div(get_string('msgincomplete', 'mod_aruphonestybox'), "alert alert-warning", array('role' => "alert"));
+
+    if (false === $iscomplete && (!$ahb->showcompletiondate && !$ahb->showcertificateupload)) {
+        $msg .= html_writer::div(get_string('msgincomplete', 'mod_aruphonestybox'), "alert alert-warning", array('role' => "alert"));
 
         $checkbox2 = html_writer::checkbox('tapscomplete', true, false, get_string('ihavecompleted', 'aruphonestybox'), $attributes);
         $hbform .= html_writer::div($checkbox2, empty($attributes['disabled']) ? '' : 'disabledrow');
@@ -164,10 +170,23 @@ function aruphonestybox_cm_info_view(cm_info $cm) {
           </div>');
         $modal .= html_writer::end_div();
         $modal .= html_writer::end_div();
+    } else if (empty($ahbuser) && false === $iscomplete && ($ahb->showcompletiondate || $ahb->showcertificateupload)){
+        $viewlink = new moodle_url('/mod/aruphonestybox/view.php', array('id' => $cm->id));
+        $msg .= html_writer::div(get_string('msgincomplete:viewlink', 'mod_aruphonestybox', $viewlink->out()), "alert alert-warning", array('role' => "alert"));
+    }
+
+    if (has_capability('mod/aruphonestybox:approvecompletion', $context) && $ahb->approvalrequired) {
+        $approvelink = new moodle_url('/mod/aruphonestybox/approve.php', array('id' => $cm->id));
+        $msg .= html_writer::div(get_string('approvallink', 'mod_aruphonestybox', $approvelink->out()), "alert alert-warning", array('role' => "alert"));
     }
 
     $msg .= html_writer::div(get_string('msgsuccess', 'mod_aruphonestybox'), "alert alert-success" . ($iscomplete ? '' : ' hide'), array('role' => "alert"));
     $msg .= html_writer::div(get_string('msgerror', 'mod_aruphonestybox'), "alert alert-danger hide", array('role' => "alert"));
+
+    if(!empty($ahbuser) && $ahb->approvalrequired && !$iscomplete) {
+        $editurl = new moodle_url('/mod/aruphonestybox/view.php', array('id' => $cm->id, 'action' => 'edit', 'ahbuserid' => $ahbuser->id));
+        $msg .= html_writer::div(get_string('msgpending:editlink', 'mod_aruphonestybox', $editurl->out()), "alert alert-warning", array('role' => "alert"));
+    }
 
     $cm->set_content($msg . $hbform . $modal);
 }
@@ -179,6 +198,49 @@ function aruphonestybox_cm_info_view_auto(cm_info $cm, $iscomplete) {
         $msg = html_writer::div(get_string('msgautocomplete', 'mod_aruphonestybox'), "alert alert-success", array('role' => "alert"));
     }
     $cm->set_content($msg);
+}
+
+
+/**
+ * Serves the aruphonestybox files.
+ *
+ * @package mod_arupadvert
+ * @category files
+ * @param stdClass $course course object
+ * @param stdClass $cm course module
+ * @param stdClass $context context object
+ * @param string $filearea file area
+ * @param array $args extra arguments
+ * @param bool $forcedownload whether or not force download
+ * @param array $options additional options affecting the file serving
+ * @return bool false if file not found, does not return if found - just send the file
+ */
+function aruphonestybox_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+    global $USER;
+    require_login();
+    if($context->contextlevel != CONTEXT_MODULE) {
+        return false;
+    }
+
+    if($filearea !== 'certificate') {
+        return false;
+    }
+
+    $itemid = array_shift($args);
+    $filename = array_pop($args);
+    $fs = get_file_storage();
+
+    if($USER->id !== $itemid && !has_capability('mod/aruphonestybox:approvecompletion', $context)) {
+        send_file_not_found();
+    }
+
+    $filepath = $args ? '/'.implode('/', $args).'/' : '/';
+    if (!$file = $fs->get_file($context->id, 'mod_aruphonestybox', 'certificate', $itemid, $filepath, $filename) or $file->is_directory()) {
+        return false;
+    }
+
+    // Finally send the file.
+    send_stored_file($file, null, 0, false, $options);
 }
 
 function aruphonestybox_sendtotaps($id, $user, &$debug=array()) {
@@ -238,4 +300,39 @@ function aruphonestybox_process_result($result, $debug=array()) {
         $return->debug = $debug;
     }
     return $return;
+}
+
+/**
+ * Send email notification
+ *
+ * @param $to
+ * @param $from
+ * @param $subject
+ * @param $messagehtml
+ * @param $cc
+ * @return bool
+ */
+function aruphonestybox_send_email($to, $from, $subject, $messagehtml, $cc = array()) {
+    // Force HTML...
+    $to->mailformat = 1;
+    // Force maildisplay...
+    $from->maildisplay = true;
+    $messagetext = html_to_text($messagehtml);
+
+    return email_to_user($to, $from, $subject, $messagetext, $messagehtml, '', '', true, '', '', 79, $cc);
+
+}
+
+class aruphonestybox_user extends \core_user {
+    public static function get_dummy_aruphonestybox_user($email = '', $firstname = '', $lastname = '') {
+        $user = self::get_dummy_user_record();
+        $user->maildisplay = true;
+        $user->mailformat = 1;
+        $user->email = $email;
+        $user->firstname = $firstname;
+        $user->lastname = $lastname;
+        $user->username = 'aruphonestyboxuser';
+        $user->timezone = date_default_timezone_get();
+        return $user;
+    }
 }
