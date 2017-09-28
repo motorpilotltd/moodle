@@ -373,6 +373,10 @@ $string['error:togglef2f:complete'] = 'Could not mark F2F as held.';
 $string['error:togglef2f:notcomplete'] = 'Could not mark F2F as not held.';
 
 $string['error:noaccess'] = 'You do not have permission to view the requested resource.';
+$string['error:noappraisal'] = 'Error - You do not have an appraisal in the system. Please contact an Appraisal Administrator listed below for assistance if you require an appraisal to be set up:{$a}';
+$string['error:noappraisal:ba'] = '<br>{$a}';
+$string['error:noappraisal:ba:details'] = '{$a->fullname} ({$a->email})';
+$string['error:noappraisal:ba:separator'] = '<br>';
 $string['error:noaction'] = 'Please choose an action.';
 $string['error:nochanges'] = 'You have not made any changes.';
 $string['error:noselection'] = 'Please make a selection.';
