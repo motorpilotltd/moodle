@@ -22,24 +22,28 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function local_reports_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload,
-array $options=array()) {
-    global $DB, $CFG, $USER;
+define('CLI_SCRIPT', true);
 
-    if ($context->contextlevel != CONTEXT_USER) {
-        return false;
-    }
+require_once '../../../config.php';
 
-    $validfileareas = array('learninghistory', 'elearningstatus');
+$start = 1;
+$limit = 20;
+$params = array();
 
-    if (in_array($filearea, $validfileareas)) {
-        $itemid = $args[0];
-        $fullpath = "/$context->id/local_reports/$filearea/$itemid/".$args[1];
-        $fs = get_file_storage();
-        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-            send_file_not_found();
-        }
-        $lifetime = isset($CFG->filelifetime) ? $CFG->filelifetime : 86400;
-        send_stored_file($file, $lifetime, 0, $forcedownload, $options);
-    }
+$sql = "SELECT  lte.*, staff.*
+                  FROM SQLHUB.ARUP_ALL_STAFF_V as staff
+             LEFT JOIN {local_taps_enrolment} as lte
+             ON staff.EMPLOYEE_NUMBER = lte.staffid
+                WHERE EMPLOYEE_NUMBER = 32417";
+
+
+// $sql = "SELECT * from {local_taps_enrolment} where staffid = 32417";
+
+$all = $DB->get_records_sql($sql, $params, $start * $limit, $limit);
+
+
+foreach ($all as $a) {
+    echo "RUN LINE";
+    print_r($a);
+    echo "\n";
 }

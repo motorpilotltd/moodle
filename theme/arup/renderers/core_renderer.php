@@ -165,6 +165,12 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
         return $this->render_from_template('theme_arup/usertimemodal', $template);
     }
 
+    // Copied from old version of theme_bootstrap as needed for override.
+    public function user_menu($user = null, $withlinks = null) {
+        $usermenu = new custom_menu('', current_language());
+        return $this->render_user_menu($usermenu, $user);
+    }
+
     /**
      * Generates the user dropdown menu
      */

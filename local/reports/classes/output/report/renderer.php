@@ -35,4 +35,11 @@ class renderer extends \local_reports\output\renderer {
         return $this->render_from_template('local_reports/learninghistory', $templatevars);
     }
 
+    public function render_elearningstatus(\local_reports\output\report\elearningstatus $elearningstatus) {
+        // Call the export_for_template function from class elearningstatus.
+        $templatevars = $elearningstatus->export_for_template($this);
+
+        return $this->render_from_template('local_reports/elearningstatus', $templatevars);
+    }
+
 }

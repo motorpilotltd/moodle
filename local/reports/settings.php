@@ -46,12 +46,24 @@ if ($hassiteconfig) {
 
 if (isset($ADMIN)) {
     $ADMIN->add('root', new admin_category('local_reports', get_string('pluginname', 'local_reports')));
+
+    $url = new moodle_url('/local/reports/index.php');
     $ADMIN->add(
         'local_reports',
         new admin_externalpage(
             'local_reports_index',
             get_string('learninghistory', 'local_reports'),
-            $CFG->wwwroot . '/local/reports/index.php',
+            $url,
+            'local/reports:view'
+            )
+        );
+    $url = new moodle_url('/local/reports/index.php', array('page' => 'elearningstatus'));
+    $ADMIN->add(
+        'local_reports',
+        new admin_externalpage(
+            'local_reports_elearningstatus',
+            get_string('elearningstatus', 'local_reports'),
+            $url,
             'local/reports:view'
             )
         );
