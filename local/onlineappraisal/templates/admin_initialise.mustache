@@ -18,9 +18,14 @@
             <div class="help-block  pull-right m-l-5 m-b-0 hidden">{{#str}}error:duedate, local_onlineappraisal{{/str}}</div>
         </div>
     </div>
-
     <table class="generaltable oa-initialise-table">
         <thead>
+            <tr>
+                <td colspan="{{#groupleaderactive}}6{{/groupleaderactive}}{{^groupleaderactive}}5{{/groupleaderactive}}" class="oa-expand-table text-right">
+                    <span class="oa-expand-link">{{#str}}admin:initialise:wideview, local_onlineappraisal{{/str}}<i class="fa fa-expand m-l-5"></i></span>
+                    <span class="oa-compress-link hidden">{{#str}}admin:initialise:standardview, local_onlineappraisal{{/str}}<i class="fa fa-compress m-l-5"></i></span>
+                </td>
+            </tr>
             <tr>
                 <th>{{#str}}admin:name, local_onlineappraisal{{/str}}</th>
                 <th class="w-1">{{#str}}admin:staffid, local_onlineappraisal{{/str}}</th>
