@@ -1,0 +1,48 @@
+<h2>{{heading}}</h2>
+<div class="m-b-15">
+    {{toptext}}
+</div>
+
+<h3>{{#str}}appraisals:current, local_onlineappraisal{{/str}}</h3>
+{{#current}}
+    {{^isappraisee}}
+    <form id="oa-filter" class="hidden form-inline pull-right">
+        <div class="form-group">
+            <label class="sr-only" for="oa-filter-select">{{#str}}form:filter, local_onlineappraisal{{/str}}</label>
+            <select class="form-control m-b-0" id="oa-filter-select" autocomplete="off">
+                <option value="0">{{#str}}form:all, local_onlineappraisal{{/str}}</option>
+                {{^ishrleader}}
+                <option value="action">{{#str}}index:awaiting, local_onlineappraisal{{/str}}</option>
+                {{/ishrleader}}
+                <optgroup label="Statuses">
+                    <option value="1">{{#str}}status:1, local_onlineappraisal{{/str}}</option>
+                    <option value="2">{{#str}}status:2, local_onlineappraisal{{/str}}</option>
+                    <option value="3">{{#str}}status:3, local_onlineappraisal{{/str}}</option>
+                    <option value="4">{{#str}}status:4, local_onlineappraisal{{/str}}</option>
+                    <option value="5">{{#str}}status:5, local_onlineappraisal{{/str}}</option>
+                    <option value="6">{{#str}}status:6, local_onlineappraisal{{/str}}</option>
+                    <option value="7">{{#str}}status:7, local_onlineappraisal{{/str}}</option>
+                </optgroup>
+            </select>
+        </div>
+    </form>
+    {{/isappraisee}}
+    {{>local_onlineappraisal/index_table}}
+{{/current}}
+{{^current}}
+<div class="alert alert-warning" role="alert">
+    <i class="fa fa-exclamation-triangle"></i>
+    {{#str}}appraisals:nocurrent, local_onlineappraisal{{/str}}
+</div>
+{{/current}}
+
+<h3>{{#str}}appraisals:archived, local_onlineappraisal{{/str}}</h3>
+{{#archived}}
+    {{>local_onlineappraisal/index_table}}
+{{/archived}}
+{{^archived}}
+<div class="alert alert-warning" role="alert">
+    <i class="fa fa-exclamation-triangle"></i>
+    {{#str}}appraisals:noarchived, local_onlineappraisal{{/str}}
+</div>
+{{/archived}}

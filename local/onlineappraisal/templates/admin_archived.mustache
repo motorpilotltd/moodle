@@ -1,0 +1,56 @@
+<h2>{{#str}}archived, local_onlineappraisal{{/str}}</h2>
+<div class="m-b-15">
+    {{#str}}admin:toptext:archived, local_onlineappraisal{{/str}}
+</div>
+
+{{#usercount}}
+    <table id="oa-archived-table" class="generaltable">
+        <thead>
+            <tr>
+                <th class="text-center w-1">{{#str}}appraisal:id, local_onlineappraisal{{/str}}</th>
+                <th>{{#str}}appraisee, local_onlineappraisal{{/str}}</th>
+                <th>{{#str}}appraiser, local_onlineappraisal{{/str}}</th>
+                <th>{{#str}}signoff, local_onlineappraisal{{/str}}</th>
+                <th>{{#str}}progress, local_onlineappraisal{{/str}}</th>
+                <th class="w-1">{{#str}}date:due, local_onlineappraisal{{/str}}</th>
+                <th class="w-1">{{#str}}date:complete, local_onlineappraisal{{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{#users}}
+            <tr data-appraisalid="{{id}}"
+                {{#suspended}} class="oa-user-suspended" data-toggle="tooltip" data-container="body" title="{{#str}}admin:leaver, local_onlineappraisal{{/str}}"{{/suspended}}>
+                <td class="text-center w-1">{{id}}</td>
+                <td class="appraisee" data-email="{{appraiseeemail}}">
+                    {{appraisee}}
+                </td>
+                <td>
+                    {{appraiser}}
+                </td>
+                <td>
+                    {{signoff}}
+                </td>
+                <td>
+                    <div class="progress" data-toggle="tooltip" data-container="body" title="{{progress.text}}">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="{{progress.percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress.percentage}}%;">
+                          <span class="sr-only">{{progress.count}}/6</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="w-1">
+                    {{due_date}}
+                </td>
+                <td class="w-1">
+                    {{completed_date}}
+                </td>
+            </tr>
+        {{/users}}
+        </tbody>
+    </table>
+{{/usercount}}
+{{^usercount}}
+<div class="alert alert-warning" role="alert">
+    <i class="fa fa-exclamation-triangle"></i>
+    {{#str}}admin:nousers, local_onlineappraisal{{/str}}
+</div>
+{{/usercount}}

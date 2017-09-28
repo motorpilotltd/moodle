@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/dynamic_cohorts/db" VERSION="20170127" COMMENT="XMLDB file for Moodle dynamic cohort plugin"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+    <TABLES>
+        <TABLE NAME="wa_cohort" COMMENT="Table for general cohort rule">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="cohortid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Cohort ID"/>
+                <FIELD NAME="memberadd" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Automatically add user when meet criteria"/>
+                <FIELD NAME="memberremove" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Automatically remove user when not longer meet criteria"/>
+                <FIELD NAME="operator" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1=AND,2=OR Operator between rulesets in cohort"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="cohortid" UNIQUE="false" FIELDS="cohortid" COMMENT="Index for cohortid"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="wa_cohort_rulesets" COMMENT="Cohort rulesets">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="cohortid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Cohort ID"/>
+                <FIELD NAME="operator" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1=AND,2=OR Operator between rules in ruleset"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time created"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time modified"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="cohortid" UNIQUE="false" FIELDS="cohortid" COMMENT="Index for cohortid"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="wa_cohort_ruleset_rules" COMMENT="Table for ruleset rules in cohort">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="cohortid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Cohort ID"/>
+                <FIELD NAME="rulesetid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Ruleset ID"/>
+                <FIELD NAME="fieldtype" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0=core,1=custom"/>
+                <FIELD NAME="field" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="User field name / User custom profile field shortname"/>
+                <FIELD NAME="criteriatype" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="Ruleset rule criteria type (see constants)"/>
+                <FIELD NAME="value" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="Ruleset rule criteria value "/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time created"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time modified"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="cohortid" UNIQUE="false" FIELDS="cohortid" COMMENT="Index for cohortid"/>
+                <INDEX NAME="rulesetid" UNIQUE="false" FIELDS="rulesetid" COMMENT="Index for rulesetid"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="wa_cohort_roles" COMMENT="Cohort roles, will be assigned to members by crone">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="cohortid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Cohort ID"/>
+                <FIELD NAME="roleid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Role ID"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time created"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="cohortid" UNIQUE="false" FIELDS="cohortid" COMMENT="Index for cohortid"/>
+                <INDEX NAME="roleid" UNIQUE="false" FIELDS="roleid" COMMENT="Index for roleid"/>
+            </INDEXES>
+        </TABLE>
+    </TABLES>
+</XMLDB>

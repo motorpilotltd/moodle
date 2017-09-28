@@ -1,0 +1,241 @@
+.mform {
+    .input-group {
+        max-width: 300px;
+    }
+    .fitem {
+        .fitemtitle,
+        .felement {
+            float: none;
+            width: 100%;
+            text-align: left;
+            margin-left: 0;
+            select {
+                max-width: 100%;
+                width: auto;
+            }
+        }
+        .fitemtitle {
+            padding-bottom: 0.8em;
+            label {
+                display: block;
+            }
+        }
+        .felement input[type="text"],
+        textarea {
+            max-width: 635px;
+        }
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        textarea#id_twenty {
+            min-height: 60px;
+        }
+        textarea#id_ten {
+            min-height: 30px;
+        }
+        .locked {
+            border-width: 1px;
+            border-style: solid;
+            height: 200px;
+            overflow-y: scroll;
+            background-color: #eee;
+            border-radius: 3px;
+            padding: 5px;
+        }
+        .felement .appraisee textarea,
+        .felement .appraisee .locked {
+            border-color: @appraisee;
+            .form-control-focus(@appraisee);
+        }
+        .felement .appraiser textarea,
+        .felement .appraiser .locked {
+            border-color: @appraiser;
+            .form-control-focus(@appraiser);
+        }
+        .felement .signoff textarea,
+        .felement .signoff .locked {
+            border-color: @signoff;
+            .form-control-focus(@signoff);
+        }
+        .felement .groupleader textarea,
+        .felement .groupleader .locked {
+            border-color: @groupleader;
+            .form-control-focus(@groupleader);
+        }
+        .felement .dateselect {
+            input {
+                margin-bottom:0;
+                border-bottom-right-radius: 0;
+                border-top-right-radius: 0;
+            }
+            input + .input-group-addon {
+                cursor: pointer;
+            }
+            input[disabled] {
+                cursor: not-allowed !important;
+                background-color: #eee !important;
+                opacity: 1;
+            }
+            input[disabled] + .input-group-addon {
+                cursor: not-allowed !important;
+            }
+        }
+        .felement.fstatic .groupleader {
+            background-color: #eee;
+            color: #555;
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 4px 12px;
+            min-height: 70px;
+        }
+        .fcheckbox > span > label {
+            display: inline;
+        }
+    }
+    .fitem.fitem_fcheckbox .fitemtitle {
+        display: none;
+    }
+    &.admin_group {
+        position: relative;
+        .fitem {
+            margin-bottom: 5px;
+            .fitemtitle,
+            .felement {
+                float: left;
+            }
+            .fitemtitle {
+                width: 15%;
+            }
+            .felement {
+                width: 85%;
+            }
+        }
+        .fitem_actionbuttons {
+            bottom: 0;
+            margin: 0;
+            position: absolute;
+            right: 0;
+        }
+    }
+    &.itadmin_group {
+        fieldset {
+            float: left;
+        }
+        .fitem {
+            .fitemtitle,
+            .felement {
+                float: left;
+                width: auto;
+            }
+        }
+        .fitem_actionbuttons {
+            margin: 0;
+        }
+    }
+    .well.emailmsg {
+        .placeholder {
+            visibility: hidden;
+            &.visible {
+                visibility: visible;
+            }
+        }
+        max-width: 635px;
+    }
+    //Used in feedback listing
+    .input-group.inline-edit {
+        width: 240px;
+    }
+    #id_submitcontinue {
+        .button-variant(@btn-success-color; @btn-success-bg; @btn-success-border);
+    }
+    @media (min-width: 768px) {
+        .dl-horizontal {
+            dt {
+                width: 150px;
+            }
+            dd {
+                margin-left: 155px;
+            }
+        }
+    }
+    #id_resetbutton {
+        .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
+    }
+    .form-field-caption {
+        font-size: 0.85em;
+        margin-bottom: 15px;
+        margin-top: -13px;
+    }
+}
+
+.form-control-focus(@color: @input-border-focus) {
+    @color-rgba: rgba(red(@color), green(@color), blue(@color), .6);
+    &:focus {
+        border-color: @color;
+        outline: 0;
+        .box-shadow(~"inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px @{color-rgba}");
+    }
+}
+
+.box-shadow(@shadow) {
+    -webkit-box-shadow: @shadow; // iOS <4.3 & Android <4.1
+                    box-shadow: @shadow;
+}
+
+.button-variant(@color; @background; @border) {
+    color: @color;
+    background-color: @background;
+    border-color: @border;
+
+    &:focus,
+    &.focus {
+        color: @color;
+        background-color: darken(@background, 10%);
+        border-color: darken(@border, 25%);
+    }
+    &:hover {
+        color: @color;
+        background-color: darken(@background, 10%);
+        border-color: darken(@border, 12%);
+    }
+    &:active,
+    &.active,
+    .open > .dropdown-toggle& {
+        color: @color;
+        background-color: darken(@background, 10%);
+        border-color: darken(@border, 12%);
+
+        &:hover,
+        &:focus,
+        &.focus {
+            color: @color;
+            background-color: darken(@background, 17%);
+            border-color: darken(@border, 25%);
+        }
+    }
+    &:active,
+    &.active,
+    .open > .dropdown-toggle& {
+        background-image: none;
+    }
+    &.disabled,
+    &[disabled],
+    fieldset[disabled] & {
+        &,
+        &:hover,
+        &:focus,
+        &.focus,
+        &:active,
+        &.active {
+            background-color: @background;
+            border-color: @border;
+        }
+    }
+
+    .badge {
+        color: @background;
+        background-color: @color;
+    }
+}

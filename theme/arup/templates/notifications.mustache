@@ -1,0 +1,12 @@
+{{#alerts}}
+<div class="container-fluid">
+    <div id="sitenotice" class="alert alert-{{color}} m-t-20">
+        {{{text}}}
+        {{#id}}
+        <button id="closealert" data-alertid="{{id}}" type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        {{/id}}
+    </div>
+</div>
+{{/alerts}}

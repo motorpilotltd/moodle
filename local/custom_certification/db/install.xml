@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/custom_certification/db" VERSION="20160929" COMMENT="XMLDB file for Moodle custom certification plugin"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="certif_user_assignments" COMMENT="Table for user assignments to custom certification">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="assignmentid" TYPE="int" LENGTH="9" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Assignment ID"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="User ID"/>
+        <FIELD NAME="certifid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="ID of custom certification"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="20" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time of create user assign"/>
+        <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Assignment due date calculated from certif_assignment data"/>
+        <FIELD NAME="optional" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Index for userid"/>
+        <INDEX NAME="certifid" UNIQUE="false" FIELDS="certifid" COMMENT="Index for certifid"/>
+        <INDEX NAME="assignmentid" UNIQUE="false" FIELDS="assignmentid" COMMENT="Index for assignmentid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="certif_assignments" COMMENT="Type of assignments for custom certif plugin">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="certifid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Certification ID"/>
+        <FIELD NAME="assignmenttype" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Type of assignment"/>
+        <FIELD NAME="assignmenttypeid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Assigned record ID (user, cohort)"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time created"/>
+        <FIELD NAME="duedatetype" TYPE="int" LENGTH="1" DEFAULT="0" NOTNULL="false" SEQUENCE="false" COMMENT="1=Fixed,2=from first login, 3=from enrolmentdate"/>
+        <FIELD NAME="duedateperiod" TYPE="int" LENGTH="5" DEFAULT="0" NOTNULL="false" SEQUENCE="false" COMMENT="Due date period time for assignment"/>
+        <FIELD NAME="duedateunit" TYPE="int" LENGTH="1" DEFAULT="0" NOTNULL="false" SEQUENCE="false" COMMENT="1=day 2=month 3=year"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="certifid" UNIQUE="false" FIELDS="certifid" COMMENT="Index for certifid"/>
+        <INDEX NAME="assignmenttypeid" UNIQUE="false" FIELDS="assignmenttypeid" COMMENT="Index for assignmenttypeid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="certif_assignments_users" COMMENT="pivot table to keep data about assignments for single user">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="certifid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="ID of custom certification"/>
+        <FIELD NAME="assignmentid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Assignment ID"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="User ID"/>
+         </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Index for userid"/>
+        <INDEX NAME="certifid" UNIQUE="false" FIELDS="certifid" COMMENT="Index for certifid"/>
+        <INDEX NAME="assignmentid" UNIQUE="false" FIELDS="assignmentid" COMMENT="Index for assignmentid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="certif" COMMENT="Table for details of custom certif">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="fullname" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false" COMMENT="Fullname"/>
+        <FIELD NAME="shortname" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="Shortname"/>
+        <FIELD NAME="idnumber" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="ID number"/>
+        <FIELD NAME="summary" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Summary description of the certification"/>
+        <FIELD NAME="endnote" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Note to be displayed at the end of the certification"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time of creation certif"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time of creation certif"/>
+        <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="ID of user modified"/>
+        <FIELD NAME="activeperiodtime" TYPE="int" LENGTH="5" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Active period time for custom certif"/>
+        <FIELD NAME="activeperiodtimeunit" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Unit for active period time"/>
+        <FIELD NAME="windowperiod" TYPE="int" LENGTH="5" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Window period time for custom script"/>
+        <FIELD NAME="windowperiodunit" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Unit for window period time for custom script"/>
+        <FIELD NAME="deleted" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0=active 1=deleted"/>
+        <FIELD NAME="category" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Category id"/>
+        <FIELD NAME="visible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Visibility of certification"/>
+        <FIELD NAME="uservisible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Visibility of certification to users"/>
+        <FIELD NAME="reportvisible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Visibility of certification on reports"/>
+        <FIELD NAME="recertificationdatetype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0=Use cert expiry date 1=Use cert completion date"/>
+        <FIELD NAME="linkedtapscourseid" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS course IDs"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="certif_coursesets" COMMENT="Table for course set for custom certif">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="label" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="Label for course set"/>
+        <FIELD NAME="certifid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="ID of custom certif"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="certifpath" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 - certification, 1 - recertification"/>
+        <FIELD NAME="completiontype" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Complete All, Any, or Some of courses"/>
+        <FIELD NAME="mincourses" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Amount of courses required to complete"/>
+        <FIELD NAME="nextoperator" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="How to join next courseset to this one"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="certifid" UNIQUE="false" FIELDS="certifid" COMMENT="Index for certifid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="certif_courseset_courses" COMMENT="Table for course set for custom certif">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="coursesetid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="certifid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="certifid" UNIQUE="false" FIELDS="certifid" COMMENT="Index for certifid"/>
+        <INDEX NAME="coursesetid" UNIQUE="false" FIELDS="coursesetid" COMMENT="Index for coursesetid"/>
+        <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid" COMMENT="Index for courseid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="certif_course_compl_archive" COMMENT="Archived course completions records">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="User ID for completion"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Course ID"/>
+        <FIELD NAME="timeenrolled" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="timestarted" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="timearchived" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Index for userid"/>
+        <INDEX NAME="course" UNIQUE="false" FIELDS="course" COMMENT="Index for course"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="certif_completions" COMMENT="Records of certif completion">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="User ID for completion"/>
+        <FIELD NAME="certifid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Id of custom certif"/>
+        <FIELD NAME="certifpath" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Status of completion"/>
+        <FIELD NAME="timeassigned" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Time of completion"/>
+        <FIELD NAME="timeexpires" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="timewindowsopens" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Due date"/>
+        <FIELD NAME="progress" TYPE="int" LENGTH="3" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Progress in %"/>
+        <FIELD NAME="cronchecked" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Batch cron task"/>
+        <FIELD NAME="tapsenrolmentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS enrolment ID"/>
+        <FIELD NAME="tapscpdid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS CPD ID"/>
+
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Index for userid"/>
+        <INDEX NAME="certifid" UNIQUE="false" FIELDS="certifid" COMMENT="Index for certifid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="certif_completions_archive" COMMENT="Records of certif completion">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="User ID for completion"/>
+        <FIELD NAME="certifid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Id of custom certif"/>
+        <FIELD NAME="certifpath" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Status of completion"/>
+        <FIELD NAME="timeassigned" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="timeexpires" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="timewindowsopens" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Due date"/>
+        <FIELD NAME="timearchived" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="tapsenrolmentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS enrolment ID"/>
+        <FIELD NAME="tapscpdid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS CPD ID"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Index for userid"/>
+        <INDEX NAME="certifid" UNIQUE="false" FIELDS="certifid" COMMENT="Index for certifid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="certif_courseset_completions" COMMENT="Table for completion of course set">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="User ID for completion"/>
+        <FIELD NAME="coursesetid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Custom course set id"/>
+        <FIELD NAME="certifid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Id of custom certif"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="timecompleted" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Index for userid"/>
+        <INDEX NAME="coursesetid" UNIQUE="false" FIELDS="coursesetid" COMMENT="Index for coursesetid"/>
+        <INDEX NAME="certifid" UNIQUE="false" FIELDS="certifid" COMMENT="Index for certifid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="certif_messages" COMMENT="Table for completion of course set">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="certifid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Custom course set id"/>
+        <FIELD NAME="messagetype" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="subject" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="body" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="triggertime" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="recipient" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="recipientemail" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT=""/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="certifid" UNIQUE="false" FIELDS="certifid" COMMENT="Index for certifid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="certif_messages_log" COMMENT="Table for completion of course set">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="messageid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Message id"/>
+        <FIELD NAME="messagetype" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Message type"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Userid"/>
+        <FIELD NAME="subject" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Subject of message"/>
+        <FIELD NAME="body" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Message"/>
+        <FIELD NAME="email" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="email where should be sent"/>
+        <FIELD NAME="timesent" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time when message was sent"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Index for userid"/>
+        <INDEX NAME="messageid" UNIQUE="false" FIELDS="messageid" COMMENT="Index for messageid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

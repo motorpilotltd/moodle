@@ -1,0 +1,12 @@
+{{^nextstep}}
+<p>There is an issue that means it is not possible to continue with this step, please see messages above for details.
+    Once these issues have been resolved please return to the previous step to begin processing again.</p>
+<a href="{{prevstepurl}}" class="btn btn-primary pull-left oa-bulkupload-generic-submit">Return to previous step</a>
+{{/nextstep}}
+{{#nextstep}}
+<p>If you are happy with the above results please continue to the next step.<br />
+    In this step appraisals initialisation can be triggered to run and initialise 100 appraisals at a time with the due date set as {{duedate}} (To change this, please return to the previous step).<br />
+    Subsequent steps can be triggered by returning to that page (once processing is underway you will automatically be sent to the processing page on viewing the bulk upload tool).</p>
+<a href="{{prevstepurl}}" class="btn btn-primary pull-left oa-bulkupload-generic-submit">Return to previous step</a>
+<a href="{{nextstepurl}}" class="btn btn-primary pull-right oa-bulkupload-generic-submit">Proceed to next step</a>
+{{/nextstep}}

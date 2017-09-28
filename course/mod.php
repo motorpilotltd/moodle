@@ -99,7 +99,16 @@ if (!empty($add)) {
     require_capability('moodle/course:manageactivities', $modcontext);
 
     $return = course_get_url($course, $cm->sectionnum, array('sr' => $sectionreturn));
-
+/* BEGIN CORE MOD */
+// Block deletion if part of course completion criteria.
+    $completion = new completion_info($course);
+    $activities = $completion->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY);
+    foreach ($activities as $activity) {
+        if ($activity->moduleinstance == $cm->id) {
+            redirect($return, get_string('activitydeletehelp', 'local_admin', core_text::strtolower(get_string('course'))));
+        }
+    }
+/* END CORE MOD */
     if (!$confirm or !confirm_sesskey()) {
         $fullmodulename = get_string('modulename', $cm->modname);
 

@@ -1,0 +1,204 @@
+.summary-details .inputs {
+	display: block;
+	text-align: center;
+	width: 100%;
+}
+
+.criterium {
+	display: inline-block;
+	vertical-align: middle;
+	padding: 7px 14px;
+	border: 1px solid #555;
+	margin: 0 10px;
+}
+
+.critera-wrapper {
+	display: inline-block;
+	margin: 0 10px 10px 10px;
+}
+
+.critera-wrapper:before {
+	display: inline-block;
+	vertical-align: middle;
+	content: '(';
+	font-size: 24px;
+}
+.critera-wrapper:after {
+	display: inline-block;
+	vertical-align: middle;
+	content: ')';
+	font-size: 24px;
+
+}
+
+.operator {
+	padding: 0 5px;
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.criterium {
+	display: inline-block;
+	vertical-align: middle;
+	padding: 7px 14px;
+	border: 1px solid #555;
+	margin: 0 10px;
+}
+
+.critera-wrapper {
+	display: inline-block;
+	margin: 0 10px 10px 10px;
+}
+
+.critera-wrapper:before {
+	display: inline-block;
+	vertical-align: middle;
+	content: '(';
+	font-size: 24px;
+}
+.critera-wrapper:after {
+	display: inline-block;
+	vertical-align: middle;
+	content: ')';
+	font-size: 24px;
+
+}
+
+.operator {
+	padding: 0 5px;
+	display: inline-block;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.certification-overview {
+	margin-top: -24px;
+}
+
+.certification-overview h2 {
+	padding-bottom: 10px;
+	border-bottom: 1px solid #cccccc;
+}
+.certification-overview h3 {
+	padding: 10px;
+}
+
+.certification-overview h3 span {
+	color:	#8d8d8d;
+	font-size: 16px;
+	margin-left: 20px;
+}
+
+.certification-overview .overview-coursesetbox.coursesetbox {
+    border: none;
+    border-radius: 0;
+	border-bottom: 1px solid #cccccc;
+	border-top: 1px solid #cccccc;
+	padding: 0;
+	margin-bottom: 20px;
+}
+
+.overviewcourseset th {
+	color: white;
+	background-color: #7895a2;
+}
+
+.overviewcourseset th:first-of-type,.overviewcourseset td:first-of-type {
+	padding-left: 20px;
+}
+
+.certification-overview h3 {
+	margin: 0;
+}
+
+.certification-overview .overview-coursesetbox.coursesetbox {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.certification-overview .overview-coursesetbox-table {
+	padding: 0 30px;
+}
+
+.overviewcourseset.collapsed .generaltable {
+	display: none;
+}
+
+.overviewcourseset.collapsed {
+	position: relative;
+}
+
+.overviewcourseset h3 {
+	cursor: pointer;
+}
+
+.overviewcourseset.collapsed h3:before {
+	content: "\f067";
+}
+
+.overviewcourseset h3:before {
+	content: "\f068";
+	font: normal normal normal 14px/1 FontAwesome;
+    margin-right: 10px;
+    position: relative;
+    top: -1px;
+}
+
+.circle-status > span {
+	padding-right: 10px;
+	line-height: 20px;
+	margin-left: 15px;
+}
+
+.custom-circle {
+	height: 20px;
+	width: 20px;
+	border-radius: 0;
+}
+.overview-coursesetbox-table td .custom-circle {
+    margin-right: 5px;
+}
+
+.progress-box {
+	padding-right: 0px;
+	padding-top: 0px;
+	width: 280px;
+}
+
+.custom-progressbar {
+	border: none;
+	height: 20px;
+	width: 70%;
+	background-color: #ddd;
+}
+
+.custom-progress {
+	background-color: #7995a1;
+}
+
+.edit-cert-btn {
+	position: absolute;
+	right: 0;
+	top: -42px;
+}
+
+.align-right {
+	text-align: right;
+}
+
+.no-left-padding{
+	padding-left: 0;
+}
+
+.assignment-info{
+	margin-bottom: 20px;
+}
+
+.certif-value {
+	padding: 0;
+}
+
+.certification-overview-actions {
+    width: 1%;
+}

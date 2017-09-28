@@ -150,11 +150,15 @@ class feedback_item_info extends feedback_item_base {
         $data = $analysed_item->data;
         if (is_array($data)) {
             echo '<tr><th colspan="2" align="left">';
-            echo $itemnr.'&nbsp;('.$item->label.') '.$item->name;
+/* BEGIN CORE MOD */
+            echo $itemnr.'&nbsp;'.$item->label.' '.$item->name;
+/* END CORE MOD */
             echo '</th></tr>';
             $sizeofdata = count($data);
             for ($i = 0; $i < $sizeofdata; $i++) {
-                echo '<tr><td colspan="2" valign="top" align="left">-&nbsp;&nbsp;';
+/* BEGIN CORE MOD */
+                echo '<tr><td colspan="2" valign="top" align="left">';
+/* END CORE MOD */
                 echo str_replace("\n", '<br />', $data[$i]->show);
                 echo '</td></tr>';
             }
@@ -241,7 +245,9 @@ class feedback_item_info extends feedback_item_base {
 
         //print the question and label
         echo '<div class="feedback_item_label_'.$align.'">';
-        echo '('.$item->label.') ';
+/* BEGIN CORE MOD */
+        echo $item->label.' ';
+/* END CORE MOD */
         echo format_text($item->name.$requiredmark, true, false, false);
         if ($item->dependitem) {
             if ($dependitem = $DB->get_record('feedback_item', array('id'=>$item->dependitem))) {
@@ -363,7 +369,9 @@ class feedback_item_info extends feedback_item_base {
 
         //print the question and label
         echo '<div class="feedback_item_label_'.$align.'">';
-            echo '('.$item->label.') ';
+/* BEGIN CORE MOD */
+        echo $item->label.' ';
+/* END CORE MOD */
             echo format_text($item->name . $requiredmark, true, false, false);
         echo '</div>';
 

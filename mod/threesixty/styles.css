@@ -1,0 +1,123 @@
+.completionlegend * {
+    display:inline;
+}
+
+.completionlegend {
+    padding:10px;
+}
+
+.competencydescription {
+    padding:10px;
+}
+
+.mform span.threesixty-selftype-separator,
+.mform span.threesixty-respondenttype-separator {
+    display: inline-block;
+    padding: 0 5px;
+}
+
+.mform fieldset.fgroup {
+    margin-top: 5px;
+}
+
+#page-mod-threesixty-respondents .mform .fitem_ftext input[type="text"] {
+    width: 50%;
+}
+
+#page-mod-threesixty-respondents .mform .fitem_fselect,
+#page-mod-threesixty-profiles .mform .fitem_fselect,
+#page-mod-threesixty-report .mform .fitem_fselect {
+    overflow: visible;
+}
+
+#page-mod-threesixty-score .mform fieldset legend {
+    display: none;
+}
+
+.mform .threesixty-score-table {
+    margin-top: 20px;
+}
+.mform .threesixty-score-table td.threesixty-score-cell {
+    text-align: center;
+    vertical-align: middle;
+}
+.mform .threesixty-score-table fieldset.hidden {
+    display: block;
+}
+.mform .threesixty-score-table fieldset.hidden div {
+    margin: 0;
+}
+.mform .threesixty-score-table th {
+    text-align: center;
+}
+.mform .threesixty-score-table .fitem {
+    margin: 0;
+}
+.mform .threesixty-score-table .fitemtitle {
+    display: none;
+}
+.mform .threesixty-score-table .fitem .felement,
+.ie .mform .threesixty-score-table .fitem .felement {
+    margin: 0;
+    width: 100%;
+}
+
+.path-mod-threesixty .threesixty-report-tables {
+    text-align: center;
+}
+
+.path-mod-threesixty .threesixty-report-tables table {
+    margin: 20px auto;
+}
+.path-mod-threesixty div.threesixty-spiderweb-wrapper {
+    margin-top: 20px;
+    display: none;
+}
+.path-mod-threesixty #threesixty-spiderweb-wrapper-1 {
+    display: block;
+}
+.path-mod-threesixty img.threesixty-spiderweb {
+    display: block;
+    max-width: 100%;
+}
+
+/* Text Rotation */
+.path-mod-threesixty .threesixty-report-table th.header {
+    vertical-align: bottom;
+}
+.path-mod-threesixty .threesixty-report-table .rotated-text {
+    display: inline-block;
+    line-height: 22px;
+    overflow: hidden;
+    width: 22px;
+}
+.ie8.path-mod-threesixty .threesixty-report-table .rotated-text {
+    display: inherit;
+    line-height: inherit;
+    overflow: auto;
+    width: auto;
+}
+.path-mod-threesixty .threesixty-report-table .rotated-text__inner {
+    display: inline-block;
+    white-space: nowrap;
+    -webkit-transform: translate(0,100%) rotate(-90deg);
+       -moz-transform: translate(0,100%) rotate(-90deg);
+        -ms-transform: translate(0,100%) rotate(-90deg);
+         -o-transform: translate(0,100%) rotate(-90deg);
+            transform: translate(0,100%) rotate(-90deg);
+    -webkit-transform-origin: 0 0;
+       -moz-transform-origin: 0 0;
+        -ms-transform-origin: 0 0;
+         -o-transform-origin: 0 0;
+            transform-origin: 0 0;
+}
+.path-mod-threesixty .threesixty-report-table .rotated-text__inner:before {
+    content: "";
+    float: left;
+    margin-top: 100%;
+}
+.ie8.path-mod-threesixty .threesixty-report-table .rotated-text__inner:before {
+    content: "";
+    float: none;
+    margin-top: 0;
+}

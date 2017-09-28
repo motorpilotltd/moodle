@@ -1,0 +1,104 @@
+{{#isarchived}}
+    <div class="alert alert-warning" role="alert">{{#str}}overview:alert:archived, local_onlineappraisal{{/str}}</div>
+{{/isarchived}}
+{{#islegacy}}
+    <div class="alert alert-warning" role="alert">{{#str}}overview:alert:legacy, local_onlineappraisal{{/str}}</div>
+{{/islegacy}}
+<div class="oa-progress-panel p-15 p-b-10">
+    <div class="oa-tagline">{{tagline}}</div>
+    <h2>{{#str}}appraisal:progress, local_onlineappraisal{{/str}}</h2>
+    <p class="oa-last-saved">{{#str}}overview:lastsaved, local_onlineappraisal, {{lastsaved}}{{/str}}</p>
+    {{#progress}}
+        {{>local_onlineappraisal/progress}}
+    {{/progress}}
+</div>
+
+<div>
+    <div class="oa-overview col-md-6 p-l-0">
+        <h2>{{currentstatus}}</h2>
+        {{#overview}}
+            <div class="m-b-20">
+                {{{content}}}
+            </div>
+            {{#overviewmessage}}
+                <div class="alert alert-{{result}}" role="alert">
+                    {{#text}}{{{message}}}{{^last}}<br />{{/last}}{{/text}}
+                </div>
+            {{/overviewmessage}}
+            {{#hasbuttons}}
+                <form id="oa-overview-form" class="row m-b-10 hidden" method="POST">
+                    <input type="hidden" name="sesskey" value="{{{sesskey}}}" />
+                    <input type="hidden" name="page" value="overview" />
+                    <input type="hidden" name="appraisalid" value="{{{appraisalid}}}" />
+                    <input type="hidden" name="view" value="{{{view}}}" />
+                    <input type="hidden" name="overviewaction" value="update_stage" />
+                    <div class="form-group col-xs-12">
+                        <label for="oa-overview-comment" class="control-label">{{#str}}comment, local_onlineappraisal{{/str}}</label>
+                        <textarea id="oa-overview-comment" name="comment" class="form-control" placeholder="{{#str}}comment:adddots, local_onlineappraisal{{/str}}" rows="1">{{overviewcomment}}</textarea>
+                        <span class="help-block hidden">{{#str}}error:comment:validation, local_onlineappraisal{{/str}}</span>
+                    </div>
+                    <div class="col-xs-12">
+                        <button id="oa-overview-cancel" name="button" value="reset" type="reset" class="btn btn-default pull-right">{{#str}}form:cancel, local_onlineappraisal{{/str}}</button>
+                        <button id="oa-overview-submit" name="button" value="submit" type="submit" class="btn btn-primary pull-right">{{#str}}overview:button:submitit, local_onlineappraisal{{/str}}</button>
+                        <button id="oa-overview-return" name="button" value="return" type="submit" class="btn btn-primary pull-right">{{#str}}overview:button:returnit, local_onlineappraisal{{/str}}</button>
+                    </div>
+                </form>
+
+                <div class="oa-overview-buttons">
+                {{#buttons}}
+                    {{#islink}}
+                    <a href="{{href}}" class="m-0 m-b-10 btn{{#class}} {{.}}{{/class}}">{{text}}</a>
+                    {{/islink}}
+                    {{^islink}}
+                    <button type="{{type}}"
+                            class="m-0 m-b-10 btn{{#class}} {{.}}{{/class}}{{#disabled}} disabled{{/disabled}}"
+                            {{#hastitle}}
+                                title="{{#title}}{{{message}}}{{^last}}<br /><br />{{/last}}{{/title}}"
+                                data-html="true"
+                            {{/hastitle}}
+                            {{#data}}
+                                data-{{name}}="{{value}}"
+                            {{/data}}
+                            >{{text}}</button>
+                    {{/islink}}
+                {{/buttons}}
+                </div>
+            {{/hasbuttons}}
+        {{/overview}}
+    </div>
+    <div class="col-md-6 p-r-0">
+        <h2 class="pull-left">Activity Log</h2>
+        <div class="oa-user-panel pull-right m-t-10">
+            {{#users}}
+                <div class="oa-user-panel-{{type}}">
+                    <img src="{{imageurl}}" data-toggle="tooltip" data-placement="left" title="{{fullname}} | {{role}}" />
+                </div>
+            {{/users}}
+        </div>
+        <div class="clear oa-comments-panel">
+            {{#comments}}
+                {{>local_onlineappraisal/comments}}
+            {{/comments}}
+        </div>
+    </div>
+</div>
+
+{{>local_onlineappraisal/modal_print_confirm}}
+
+{{#js}}
+require(['jquery', 'theme_bootstrap/bootstrap'], function($) {
+    $('a.oa-print-confirm').click(function(e){
+        e.preventDefault();
+        var self = $(this);
+        $('#oa-print-confirm-modal-continue').attr('href', self.attr('href'));
+        $('#oa-print-confirm-modal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+
+    $('#oa-print-confirm-modal-continue').click(function(){
+        $('#oa-print-confirm-modal').modal('hide');
+    });
+});
+{{/js}}

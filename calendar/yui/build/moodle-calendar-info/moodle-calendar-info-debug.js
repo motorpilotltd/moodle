@@ -148,6 +148,10 @@ Y.extend(Info, Y.Base, {
      * @param {Node} dayCell The location that the Overlay should be displayed.
      */
     _show: function(dayCell) {
+/* BEGIN CORE MOD */
+// Stop overlay showing.
+        return;
+/* END CORE MOD */
         var bb = this._panel.get(BOUNDINGBOX),
             widgetPositionAlign = Y.WidgetPositionAlign,
             calendarParent = dayCell.ancestor(DOT + CALENDARTABLE);

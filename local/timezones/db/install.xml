@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/timezones/db" VERSION="2012032700" COMMENT="XMLDB file for local_timezones tables"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+     <TABLE NAME="local_timezones" COMMENT="Map timezones to custom names">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="display"/>
+        <FIELD NAME="display" TYPE="char" LENGTH="255" NOTNULL="true" PREVIOUS="id" NEXT="timezone"/>
+        <FIELD NAME="timezone" TYPE="char" LENGTH="50" NOTNULL="true" PREVIOUS="display" />
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

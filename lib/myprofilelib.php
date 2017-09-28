@@ -162,6 +162,15 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
         $tree->add_node($node);
     }
 
+/* BEGIN CORE MOD */
+    require_once($CFG->dirroot.'/local/regions/lib.php');
+    $userregion = local_regions_user_profile($user);
+    if ($userregion) {
+        $node = new core_user\output\myprofile\node('contact', 'region', $userregion->left, null, null, $userregion->right);
+        $tree->add_node($node);
+    }
+/* END CORE MOD */
+
     if (!isset($hiddenfields['country']) && $user->country) {
         $node = new core_user\output\myprofile\node('contact', 'country', get_string('country'), null, null,
                 get_string($user->country, 'countries'));
@@ -206,6 +215,9 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
         $tree->add_node($node);
     }
 
+/* BEGIN CORE MOD */
+// Hiding some fields.
+/*
     if ($user->url && !isset($hiddenfields['webpage'])) {
         $url = $user->url;
         if (strpos($user->url, '://') === false) {
@@ -224,6 +236,8 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
             $tree->add_node($node);
         }
     }
+*/
+/* END CORE MOD */
 
     if (!isset($hiddenfields['mycourses'])) {
         $showallcourses = optional_param('showallcourses', 0, PARAM_INT);
@@ -322,16 +336,17 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
         }
     }
 
+/* BEGIN CORE MOD */
     if ($user->icq && !isset($hiddenfields['icqnumber'])) {
-        $imurl = new moodle_url('http://web.icq.com/wwp', array('uin' => $user->icq) );
-        $iconurl = new moodle_url('http://web.icq.com/whitepages/online', array('icq' => $user->icq, 'img' => '5'));
-        $statusicon = html_writer::tag('img', '',
-                array('src' => $iconurl, 'class' => 'icon icon-post', 'alt' => get_string('status')));
         $node = new core_user\output\myprofile\node('contact', 'icqnumber', get_string('icqnumber'), null, null,
-            html_writer::link($imurl, s($user->icq) . $statusicon));
+            s($user->icq));
         $tree->add_node($node);
     }
+/* END CORE MOD */
 
+/* BEGIN CORE MOD */
+// Hiding some fields.
+/*
     if ($user->skype && !isset($hiddenfields['skypeid'])) {
         $imurl = 'skype:'.urlencode($user->skype).'?call';
         $iconurl = new moodle_url('http://mystatus.skype.com/smallicon/'.urlencode($user->skype));
@@ -368,6 +383,8 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
             s($user->msn));
         $tree->add_node($node);
     }
+*/
+/* END CORE MOD */
 
     if ($categories = $DB->get_records('user_info_category', null, 'sortorder ASC')) {
         foreach ($categories as $category) {

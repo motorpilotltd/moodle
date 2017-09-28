@@ -1,0 +1,27 @@
+<div>
+    {{{moving}}}
+    <div class="mod-indent-outer">
+        <div class="{{indentclasses}}"></div>
+        <div>
+            {{#cmname}}
+            <div class="activityinstance">
+                {{{cmname}}}
+                {{#specialformat}}
+                    {{{availability}}}
+                {{/specialformat}}
+                {{{rename}}}
+                {{{afterlink}}}
+            </div>
+            {{/cmname}}
+            {{#actions}}
+                <span class="actions">
+                    {{{actions}}}
+                </span>
+            {{/actions}}
+            {{{contentpart}}}
+            {{^specialformat}}
+                {{{availability}}}
+            {{/specialformat}}
+        </div>
+    </div>
+</div>

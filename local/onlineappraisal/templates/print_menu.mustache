@@ -1,0 +1,17 @@
+{{^dropdown}}
+    {{#options}}
+        <a class="btn btn-default m-l-10 pull-right" href="{{url}}">{{{text}}}</a>
+    {{/options}}
+{{/dropdown}}
+{{#dropdown}}
+    <div id="oa-print-menu" class="dropdown m-l-10 pull-right">
+      <button class="btn btn-default dropdown-toggle" type="button" id="oa-print-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        Download <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="oa-print-menu-button">
+        {{#options}}
+            <li><a class="oa-print-confirm" href="{{url}}">{{{text}}}</a></li>
+        {{/options}}
+      </ul>
+    </div>
+{{/dropdown}}

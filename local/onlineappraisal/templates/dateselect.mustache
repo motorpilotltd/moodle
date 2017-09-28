@@ -1,0 +1,26 @@
+{{!
+    This file is part of the Online Appraisal Plugin for Arup.
+}}
+{{!
+    @template local_onlineappraisal/dateselect
+
+    Bootstrap JS date selector to use in Moodle forms.
+}}
+
+{{#_hiddenLabel}}
+    <label class="accesshide" for="{{id}}" >{{label}}</label>
+{{/_hiddenLabel}}
+
+<div class="form-group">
+    <div class="input-group dateselect">
+        {{{text}}}
+        <div class="input-group-addon">
+            <i class="fa fa-lg fa-calendar"></i>
+        </div>
+    </div>
+</div>
+{{#js}}
+    require(['local_onlineappraisal/dateselect'], function(dateselect) {
+        dateselect.init('{{dateselectfield}}', '{{hiddenfield}}', '{{dateformat}}');
+    });
+{{/js}}

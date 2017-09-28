@@ -1,0 +1,41 @@
+
+.path-local-reports .form-small .mform .fitem .fitemtitle {
+    float: none;
+    width: auto;
+    text-align: left;
+}
+.path-local-reports .form-small .mform .fitem .felement {
+    float: none;
+    width: auto;      
+}
+.path-local-reports .form-small .mform .fitem {
+    margin-bottom: 0;     
+}
+
+.path-local-reports .form-small .mform .fitem_actionbuttons>div.felement {
+    margin-left: 0;
+}
+
+.path-local-reports .form-small input[type="submit"] {
+    margin-left: 0;
+}
+.path-local-reports .form-small input#id_submitbutton {
+    margin-bottom: 0;
+}
+
+.path-local-reports .showmore {
+    display: none;
+}
+.path-local-reports .showmore.collapsed {
+    display: inline-block;
+}
+
+.path-local-reports .form-small .element-inline {
+    display: inline-block;
+}
+.path-local-reports .form-small.formerror #extrafields.collapse {
+    display: block;
+}
+.path-local-reports .form-small.formerror .showmore.collapsed {
+    display: none;
+}

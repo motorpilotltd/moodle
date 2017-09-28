@@ -1,0 +1,64 @@
+<h2>{{#str}}initialise, local_onlineappraisal{{/str}}</h2>
+<div class="m-b-15">
+    {{#str}}admin:toptext:initialise, local_onlineappraisal{{/str}}
+</div>
+
+{{#usercount}}
+    <div class="form-inline m-b-15">
+        <div class="form-group">
+            <label class="media-middle m-b-0" for="oa-init-duedate">{{#str}}admin:duedate, local_onlineappraisal{{/str}}</label>
+            <div class="input-group date">
+                <input type="hidden" name="duedate" {{#groupcohort.duedate}}value="{{.}}"{{/groupcohort.duedate}}>
+                <input id="oa-init-duedate" type="text" class="form-control datepicker" autocomplete="off"
+                {{#duedate}}data-y="{{y}}" data-m="{{m}}" data-d="{{d}}"{{/duedate}}/>
+                <div class="input-group-addon">
+                    <i class="fa fa-lg fa-calendar"></i>
+                </div>
+            </div>
+            <div class="help-block  pull-right m-l-5 m-b-0 hidden">{{#str}}error:duedate, local_onlineappraisal{{/str}}</div>
+        </div>
+    </div>
+
+    <table class="generaltable oa-initialise-table">
+        <thead>
+            <tr>
+                <th>{{#str}}admin:name, local_onlineappraisal{{/str}}</th>
+                <th class="w-1">{{#str}}admin:staffid, local_onlineappraisal{{/str}}</th>
+                <th>{{#str}}form:select, local_onlineappraisal{{/str}} {{#str}}appraiser, local_onlineappraisal{{/str}}</th>
+                <th>{{#str}}form:select, local_onlineappraisal{{/str}} {{#str}}signoff, local_onlineappraisal{{/str}}</th>
+                {{#groupleaderactive}}<th>{{#str}}form:select, local_onlineappraisal{{/str}} {{#str}}groupleader, local_onlineappraisal{{/str}}</th>{{/groupleaderactive}}
+                <th class="w-1">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{#users}}
+            <tr>
+                <td>{{firstname}} {{lastname}}</td>
+                <td class="w-1">{{idnumber}}</td>
+                <td>{{#appraisers}}{{>local_onlineappraisal/select}}{{/appraisers}}</td>
+                <td>{{#signoffs}}{{>local_onlineappraisal/select}}{{/signoffs}}</td>
+                {{#groupleaderactive}}<td>{{#groupleaders}}{{>local_onlineappraisal/select}}{{/groupleaders}}</td>{{/groupleaderactive}}
+                <td class="w-1"><button type="button"
+                            class="btn btn-primary oa-init-appraisal"
+                            data-id="{{id}}"
+                            autocomplete="off"
+                            >{{#str}}admin:initialise, local_onlineappraisal{{/str}}</button></td>
+            </tr>
+        {{/users}}
+        </tbody>
+    </table>
+{{/usercount}}
+{{^usercount}}
+    {{#groupcohort.closed}}
+        <div class="alert alert-warning" role="alert">
+            <i class="fa fa-exclamation-triangle"></i>
+            {{#str}}admin:appraisalcycle:closed, local_onlineappraisal{{/str}}
+        </div>
+    {{/groupcohort.closed}}
+    {{^groupcohort.closed}}
+        <div class="alert alert-warning" role="alert">
+            <i class="fa fa-exclamation-triangle"></i>
+            {{#str}}admin:nousers, local_onlineappraisal{{/str}}
+        </div>
+    {{/groupcohort.closed}}
+{{/usercount}}

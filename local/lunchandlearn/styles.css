@@ -1,0 +1,403 @@
+.sessionlist
+{
+    width: 100%;
+}
+.sessionlist .actions li
+{
+    display: inline;
+    margin-right: 6px;
+}
+
+.global_actions {
+    margin-bottom: 1em;
+}
+.global_actions .singleselect {
+    display: inline-block;
+}
+.global_actions .btn.create {
+    padding: 4px 10px;
+}
+
+.sessionsummary .settings {
+    list-style: none;
+    margin: 0;
+    float: right;
+}
+
+.maincalendar .header .buttons form {
+    float: left;
+    margin-left: 6px;
+}
+.calendar_event_lunchandlearn .bottom-bar {
+    text-align: right;
+    position: relative;
+    right: 0;
+}
+.calendar_event_lunchandlearn .bottom-bar span {
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.calendar_event_lunchandlearn .bottom-bar span label {
+    font-weight: bold;
+    padding-right: 2px;
+}
+
+.path-calendar .maincalendar .eventlist .event.calendar_event_lunchandlearn .description .commands {
+    margin: 0 10px;
+    position: absolute;
+    left: 0;
+    top: 28px;
+    width: 18px;
+}
+
+.calendar_event_lunchandlearn .description .tabs {
+    list-style: none;
+    margin: 0px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #555;
+}
+.calendar_event_lunchandlearn .description .tabs li {
+    border-top: 1px solid rgba(0,0,0,0);
+    display: inline-block;
+    margin-right: 4px;
+    padding: 3px 6px 0px 6px;
+}
+.calendar_event_lunchandlearn .description .tabs li.selected,
+.calendar_event_lunchandlearn .description .tabs li:hover {
+    background-color: rgba(255,255,255,0.5);
+    border-top: 1px solid rgba(0,0,0,0.5);
+}
+
+.calendar_event_lunchandlearn .description .tabs li a {
+    text-decoration: none;
+}
+.calendar_event_lunchandlearn .description .tab {
+    display: none;
+    margin-bottom: 12px;
+}
+.calendar_event_lunchandlearn .description .tab-active {
+    display: block;
+}
+
+.calendar_event_lunchandlearn .alert {
+    text-align: center;
+    width: 44%;
+    margin: 0 auto;
+    clear: both;
+}
+
+.print-button-container,
+form.addattendee,
+table.sessionsummary,
+form.attendeelist {
+    width: 100%;
+}
+
+.print-button-container {
+    text-align: right;
+    height: 0;
+    overflow: visible;
+}
+
+.print-button-container .btn {
+    margin-top: -72px;
+}
+
+.path-admin-local-lunchandlearn .span16 h2,
+.path-admin-local-lunchandlearn .span20 h2 {
+    clear: both;
+}
+
+form.addattendee {
+    padding-top: 12px;
+    clear:both;
+}
+
+form.addattendee table.generaltable,
+table.attendeelist {
+    width: 100%;
+}
+form.addattendee table.generaltable td {
+    vertical-align: middle;
+}
+form.addattendee table.generaltable td textarea {
+    margin: 0;
+    width: 94%;
+}
+form.addattendee table.generaltable .lastcol {
+    padding-right: 0;
+    width: 100px;
+}
+.select2-results {
+    font-size: 12px;
+}
+
+table.attendeelist .lal-usercell,
+table.canxlist .lal-usercell {
+    position: relative;
+}
+table.attendeelist .lal-usercell-userinfo,
+table.canxlist .lal-usercell-userinfo {
+    position: relative;
+    left: 0;
+    margin-left: 45px;
+    top: 0;
+    white-space: nowrap;
+}
+table.attendeelist img.userpicture,
+table.canxlist img.userpicture{
+    display: block;
+    height: 35px;
+    left: 0;
+    position: absolute;
+    overflow: hidden;
+    top: 0;
+    width: 35px;
+}
+table.attendeelist .lal-usercell-useractions a,
+table.canxlist .lal-usercell-useractions a {
+    float: right;
+    margin-left: 4px;
+}
+table.attendeelist .c1,
+table.canxlist .c1 {
+    white-space: nowrap;
+}
+table.attendeelist .c6 {
+    display: none;
+}
+
+form.attendeelist .submit {
+    float: right;
+}
+
+.attendee_form label {
+    font-weight: bold;
+}
+
+.attendee_form form .collapsible-actions,
+.attendee_form fieldset legend {
+    display: none;
+}
+.attendee_form fieldset#id_general div.fcontainer {
+    background-color: #eee;
+    padding: 12px 0;
+}
+.attendee_form fieldset#id_notice .fitemtitle {
+    display: none;
+}
+.attendee_form fieldset#id_notice .felement {
+    margin-left: 0;
+    width: 100%;
+}
+
+#fitem_id_to {
+    overflow: visible;
+}
+
+.tofield, .subjectfield, .bodyfield {
+    margin: 6px 0;
+    padding: 2px 6px;
+    border: 1px inset;
+}
+.tofield .email {
+    background-color: #ececec;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 6px;
+}
+
+.btn-group button span.caret {
+    margin-left: 7px;
+}
+
+.btn-group .dropdown-menu {
+    min-width: 0;
+}
+
+#page-lunchandlearn-delete .event_summary
+{
+    margin: 12px 0;
+    background: #eee;
+    border-radius: 3px;
+    padding: 14px 8px;
+}
+#page-lunchandlearn-delete .event_summary label {
+    font-weight: bold;
+    width: 110px;
+}
+
+.alert.alert-taps {
+    width: 70%;
+    margin-bottom: 48px;
+}
+
+table.sessionsummary img.smallicon {
+    width: 14px;
+    margin-right: 4px;
+    vertical-align: baseline;
+}
+
+/* fix print button overlap */
+.settings .edit .action-icon {
+    z-index: 1;
+    position: relative;
+}
+
+/* sortable table styles */
+.tablesorter-header-inner {
+    width: 100%;
+    position: relative;
+    padding-right: 8px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.sorter-false .tablesorter-header-inner{
+    text-decoration: none;
+    cursor: default;
+}
+.sorter-false .tablesorter-header-inner span {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.tablesorter-header-inner:after {
+    position: absolute;
+    font-family: sans-serif;
+    right: 4px;
+    color: #39F;
+    top: -8px;
+}
+th.tablesorter-headerAsc .tablesorter-header-inner:after {
+    content: "\2193";
+    text-align: right;
+}
+th.tablesorter-headerDesc .tablesorter-header-inner:after {
+    content: "\2191";
+    text-align: right;
+}
+table.tablesorter tbody tr.normal-row td {
+    background: #F0F0F0;
+}
+table.tablesorter tbody tr.alt-row td {
+    background: #FFFFFF;
+}
+table.tablesorter th.tablesorter-headerAsc,
+table.tablesorter th.tablesorter-headerDesc {
+    color: #39F;
+}
+
+.attending-row label,
+.attending-row div {
+    float: left;
+}
+.attending-row div {
+    margin: 0 0 0 8px;
+}
+.attending-row div img,
+.bottom-bar img {
+    display: inline-block;
+    margin-right: 4px;
+    margin-left: 8px;
+}
+
+.bottom-bar .btn-fullup {
+    margin-left: 6px;
+    box-sizing: border-box;
+    margin-right: 0;
+}
+
+.fitem_fgroup .fgroup label {
+    margin-right: 16px;
+}
+
+table.event .bottom-bar span.attendance {
+    margin-right: 15px;
+}
+
+.bottom-bar .attendance i {
+    margin-left: 8px;
+    margin-right: 2px;
+}
+
+.print-version {
+    display: none;
+}
+
+.screen-version {
+    display: block;
+}
+
+@media print
+{
+    .print-version {
+        display: block;
+    }
+
+    .path-admin-local-lunchandlearn #page-header,
+    .path-admin-local-lunchandlearn .custommenuwrap,
+    .path-admin-local-lunchandlearn .navbar,
+    .path-admin-local-lunchandlearn #page-footer,
+    .path-admin-local-lunchandlearn .footer,
+    .path-admin-local-lunchandlearn .row-fluid .span4,
+    .path-admin-local-lunchandlearn div.block {
+        display: none;
+    }
+
+    .path-admin-local-lunchandlearn .row-fluid .span16,
+    .path-admin-local-lunchandlearn .row-fluid .span20 {
+        margin: 0;
+        width: 100%;
+    }
+
+    .screen-version,
+    .print-button-container,
+    table.canxlist,
+    form.addattendee,
+    form.attendeelist .submit,
+    table.attendeelist .c4 {
+        display: none;
+    }
+
+    table.attendeelist .c6 {
+        display: table-cell;
+        width: 30%;
+    }
+
+    body {
+        width: 100%;
+    }
+
+    form.attendeelist,
+    table.sessionsummary {
+        width: 100%;
+    }
+
+    form.attendeelist .c0 a[href]:after {
+        content : "";
+    }
+
+    table.sessionsummary .r0 .c1 a[href]:after {
+        content : "";
+    }
+}
+
+.counterwrap {
+    position: relative;
+}
+.counterwrap .textcount {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    border: 1px solid #eee;
+    font-size: 0.8em;
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: #888;
+}
+.counterwrap.warning .textcount {
+    color: rgba(170,0,0,0.8);
+    border-color: rgba(170,0,0,0.8);
+    background: rgba(170,0,0,0.1);
+    box-shadow: 0 0 3px 0 rgba(170,0,0,0.8);
+}

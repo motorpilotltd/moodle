@@ -1,0 +1,74 @@
+div.statementquestion_number_left, div.statementquestion_left,
+	div.declaration_left, div.declaration_left {
+	float:left;
+}
+div.statementquestion_number_right, div.statementquestion_right,
+	div.declaration_number_right, div.declaration_right {
+	float:right;
+}
+
+div.statementquestion_commands_left,
+	div.declaration_commands_left {
+	float:right;
+	text-align:right;
+}
+
+div.statementquestion_commands_right,
+	div.declaration_commands_right {
+	float:left;
+	text-align:left;
+}
+.progress {
+    background-color: #F7F7F7;
+    background-image: linear-gradient(to bottom, #F5F5F5, #F9F9F9);
+    background-repeat: repeat-x;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
+    height: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+.progress-bar-success {
+	background-color: #5FBB5F;
+}
+.progressinfo {
+	padding: 10px;
+	text-align: center;
+}
+
+.path-mod-arupapplication div.hint {
+    margin: 10px;
+}
+
+.path-mod-arupapplication .mform textarea {
+    box-sizing: border-box;
+        -moz-box-sizing: border-box;
+    width: 100%;
+}
+
+.path-mod-arupapplication .mform input[type="text"] {
+    width: 50%;
+}
+
+.path-mod-arupapplication .mform div.footermessage div.fstatic {
+    background-color: #E6E6E6;
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    box-sizing: border-box;
+        -moz-box-sizing: border-box;
+    color: #555555;
+    opacity: 0.65;
+    padding: 4px 6px;
+    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+}
+
+.arupapplication .progress,
+.path-mod-arupapplication .progress{
+    margin: 10px 0;
+}
+
+.arupapplication .alert,
+.path-mod-arupapplication .alert {
+    margin-bottom: 10px;
+}

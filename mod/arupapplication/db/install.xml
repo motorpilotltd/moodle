@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/arupapplication/db" VERSION="20140312" COMMENT="XMLDB file for Moodle mod/arupapplication"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="arupapplication" COMMENT="Default comment for arupapplication" NEXT="arupstatementquestions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="course"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course arupapplication activity belongs to" PREVIOUS="id" NEXT="name"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances" PREVIOUS="course" NEXT="intro"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General introduction of the arupapplication activity" PREVIOUS="name" NEXT="introformat"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)" PREVIOUS="intro" NEXT="technicalreferencereq"/>
+        <FIELD NAME="technicalreferencereq" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="True if technical reference is required / False if not required" PREVIOUS="introformat" NEXT="sponsorstatementreq"/>
+        <FIELD NAME="sponsorstatementreq" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="True if sponsor statement is required / False if not required" PREVIOUS="technicalreferencereq" NEXT="sponsordeclarationlabel"/>
+        <FIELD NAME="sponsordeclarationlabel" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Sponsor declaration label" PREVIOUS="sponsorstatementreq" NEXT="refereemessage_hint"/>
+        <FIELD NAME="refereemessage_hint" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Sponsor declaration label" PREVIOUS="sponsordeclarationlabel" NEXT="email_referee_footer"/>
+        <FIELD NAME="email_referee_footer" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Sponsor declaration label" PREVIOUS="refereemessage_hint" NEXT="sponsormessage_hint"/>
+        <FIELD NAME="sponsormessage_hint" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Sponsor declaration label" PREVIOUS="email_referee_footer" NEXT="email_sponsor_footer"/>
+        <FIELD NAME="email_sponsor_footer" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Sponsor declaration label" PREVIOUS="sponsormessage_hint" NEXT="submission_hint"/>
+        <FIELD NAME="submission_hint" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Sponsor declaration label" PREVIOUS="email_sponsor_footer" NEXT="reference_hint"/>
+        <FIELD NAME="reference_hint" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Sponsor declaration label" PREVIOUS="submission_hint" NEXT="sponsorstatement_hint"/>
+        <FIELD NAME="sponsorstatement_hint" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Sponsor declaration label" PREVIOUS="reference_hint" NEXT="footer"/>
+        <FIELD NAME="footer" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Sponsor declaration label" PREVIOUS="sponsorstatement_hint" NEXT="email_startnotification"/>
+        <FIELD NAME="email_startnotification" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Sponsor declaration label" PREVIOUS="footer" NEXT="email_submissionnotification"/>
+        <FIELD NAME="email_submissionnotification" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Sponsor declaration label" PREVIOUS="email_startnotification" NEXT="email_completenotification"/>
+        <FIELD NAME="email_completenotification" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Sponsor declaration label" PREVIOUS="email_submissionnotification" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="email_completenotification" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated" NEXT="completionsubmit"/>
+        <FIELD NAME="completionsubmit" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="If this field is set to 1, then the activity will be automatically marked as 'complete' once the applicant submits their application." PREVIOUS="timemodified"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="arupstatementquestions" COMMENT="This table keeps information about statement questions for the arup application activity." PREVIOUS="arupapplication" NEXT="arupdeclarations">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="question"/>
+        <FIELD NAME="question" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="ismandatory"/>
+        <FIELD NAME="ismandatory" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="question" NEXT="sortorder"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="ismandatory" NEXT="applicationid"/>
+        <FIELD NAME="applicationid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="sortorder" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The time of the first student submission to this assignment." PREVIOUS="applicationid" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The last time this assignment submission was modified by a student." PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for this statement answer." NEXT="applicationid"/>
+        <KEY NAME="applicationid" TYPE="foreign" FIELDS="applicationid" REFTABLE="arupapplication" REFFIELDS="id" COMMENT="The instance of mod_arupapplication this statement question belongs to." PREVIOUS="primary"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="applicationid" UNIQUE="false" FIELDS="applicationid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="arupdeclarations" COMMENT="This table keeps information about declaration statements for the arup application activity." PREVIOUS="arupstatementquestions" NEXT="arupsubmissions">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="declaration"/>
+        <FIELD NAME="declaration" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="sortorder"/>
+        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="declaration" NEXT="applicationid"/>
+        <FIELD NAME="applicationid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="sortorder" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The time of the first student submission to this assignment." PREVIOUS="applicationid" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The last time this assignment submission was modified by a student." PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for this declaration statement." NEXT="applicationid"/>
+        <KEY NAME="applicationid" TYPE="foreign" FIELDS="applicationid" REFTABLE="arupapplication" REFFIELDS="id" COMMENT="The instance of mod_arupapplication this declaration statement belongs to." PREVIOUS="primary"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="applicationid" UNIQUE="false" FIELDS="applicationid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="arupsubmissions" COMMENT="This table keeps information about the submissions data for each arup application instance" PREVIOUS="arupdeclarations" NEXT="arupstatementanswers">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="applicationid"/>
+        <FIELD NAME="applicationid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Arup application activity belongs to" PREVIOUS="id" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The userid for the application relating to." PREVIOUS="applicationid" NEXT="title"/>
+        <FIELD NAME="title" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Title of the user" PREVIOUS="userid" NEXT="passportname"/>
+        <FIELD NAME="passportname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Passport number of this applicant" PREVIOUS="title" NEXT="knownas"/>
+        <FIELD NAME="knownas" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant is also known as" PREVIOUS="passportname" NEXT="dateofbirth"/>
+        <FIELD NAME="dateofbirth" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Date of birth of this applicant" PREVIOUS="knownas" NEXT="countryofresidence"/>
+        <FIELD NAME="countryofresidence" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Country of residence of this application" PREVIOUS="dateofbirth" NEXT="requirevisa"/>
+        <FIELD NAME="requirevisa" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" COMMENT="True if visa is required. False if not required" PREVIOUS="countryofresidence" NEXT="grade"/>
+        <FIELD NAME="grade" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Grade" PREVIOUS="requirevisa" NEXT="jobtitle"/>
+        <FIELD NAME="jobtitle" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Application's job title" PREVIOUS="grade" NEXT="discipline"/>
+        <FIELD NAME="discipline" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Application's discipline" PREVIOUS="jobtitle" NEXT="joiningdate"/>
+        <FIELD NAME="joiningdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Application's date of joining" PREVIOUS="discipline" NEXT="arupgroup"/>
+        <FIELD NAME="arupgroup" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Application's Arup group name" PREVIOUS="joiningdate" NEXT="businessarea"/>
+        <FIELD NAME="businessarea" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Application's business area" PREVIOUS="arupgroup" NEXT="officelocation"/>
+        <FIELD NAME="officelocation" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Application's office location" PREVIOUS="businessarea" NEXT="otherofficelocation"/>
+        <FIELD NAME="otherofficelocation" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Application's other office location" PREVIOUS="officelocation" NEXT="degree"/>
+        <FIELD NAME="degree" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Application's degree" PREVIOUS="otherofficelocation" NEXT="cv"/>
+        <FIELD NAME="cv" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false" COMMENT="CV - pdf file location" PREVIOUS="degree" NEXT="referee_email"/>
+        <FIELD NAME="referee_email" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's referee's email address" PREVIOUS="cv" NEXT="referee_message"/>
+        <FIELD NAME="referee_message" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's message to referee" PREVIOUS="referee_email" NEXT="referee_audit"/>
+        <FIELD NAME="referee_audit" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's referee's audit history" PREVIOUS="referee_message" NEXT="reference_phone"/>
+        <FIELD NAME="reference_phone" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's referee's phone number" PREVIOUS="referee_audit" NEXT="referenceposition"/>
+        <FIELD NAME="referenceposition" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's referee's reference position" PREVIOUS="reference_phone" NEXT="referenceknown"/>
+        <FIELD NAME="referenceknown" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's reference known" PREVIOUS="referenceposition" NEXT="referenceperformance"/>
+        <FIELD NAME="referenceperformance" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's reference performance" PREVIOUS="referenceknown" NEXT="referencetalent"/>
+        <FIELD NAME="referencetalent" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's reference talent" PREVIOUS="referenceperformance" NEXT="referencemotivation"/>
+        <FIELD NAME="referencemotivation" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's reference motivation" PREVIOUS="referencetalent" NEXT="referenceknowledge"/>
+        <FIELD NAME="referenceknowledge" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's reference knowledge" PREVIOUS="referencemotivation" NEXT="referencecomments"/>
+        <FIELD NAME="referencecomments" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's referee's comments" PREVIOUS="referenceknowledge" NEXT="referencesubmitted"/>
+        <FIELD NAME="referencesubmitted" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="True is referee has submitted their reference for the application, else False" PREVIOUS="referencecomments" NEXT="sponsor_email"/>
+        <FIELD NAME="sponsor_email" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's sponsor's email address" PREVIOUS="referencesubmitted" NEXT="sponsor_message"/>
+        <FIELD NAME="sponsor_message" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's message to sponsor" PREVIOUS="sponsor_email" NEXT="sponsor_audit"/>
+        <FIELD NAME="sponsor_audit" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's sponsor's audit history" PREVIOUS="sponsor_message" NEXT="sponsorstatement"/>
+        <FIELD NAME="sponsorstatement" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's sponsor's statement" PREVIOUS="sponsor_audit" NEXT="sponsordeclaration"/>
+        <FIELD NAME="sponsordeclaration" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" COMMENT="Applicant's sponsor's declaration - True if declaration accepted" PREVIOUS="sponsorstatement" NEXT="sponsorsubmitted"/>
+        <FIELD NAME="sponsorsubmitted" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="True is sponsor has submitted their form for the application, else False" PREVIOUS="sponsordeclaration" NEXT="status"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Application status - 0 for techinical referee page / 1 for details page / 2 for questions page / 3 for declarations page / 4 sponsors page" PREVIOUS="sponsorsubmitted" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="status" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="applicationid"/>
+        <KEY NAME="applicationid" TYPE="foreign" FIELDS="applicationid" REFTABLE="arupapplication" REFFIELDS="id" COMMENT="The instance of mod_arupapplication this declaration statement belongs to." PREVIOUS="primary"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="applicationid" UNIQUE="false" FIELDS="applicationid" COMMENT="The applicationid for this applicant." NEXT="userid"/>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="The userid for the applicant relating to this application." PREVIOUS="applicationid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="arupstatementanswers" COMMENT="This table keeps information about statements answers for the submissions." PREVIOUS="arupsubmissions" NEXT="arupdeclarationanswers">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="questionid"/>
+        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="answer"/>
+        <FIELD NAME="answer" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="questionid" NEXT="applicationid"/>
+        <FIELD NAME="applicationid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="answer" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="User id who has answered this question" PREVIOUS="applicationid" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The time of the first statement answer submitted by the applicant." PREVIOUS="userid" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The last time this statement answer was modified by a applicant." PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for this statement answer." NEXT="questionid"/>
+        <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="arupstatementquestions" REFFIELDS="id" COMMENT="The statement question that this answer belongs to." PREVIOUS="primary" NEXT="applicationid"/>
+        <KEY NAME="applicationid" TYPE="foreign" FIELDS="applicationid" REFTABLE="arupapplication" REFFIELDS="id" COMMENT="The instance of mod_arupapplication this declaration statement belongs to." PREVIOUS="questionid"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="applicationid" UNIQUE="false" FIELDS="applicationid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="arupdeclarationanswers" COMMENT="This table keeps information about declaration answers for the submissions." PREVIOUS="arupstatementanswers" NEXT="arupapplication_tracking">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="declarationid"/>
+        <FIELD NAME="declarationid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="answer"/>
+        <FIELD NAME="answer" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="declarationid" NEXT="applicationid"/>
+        <FIELD NAME="applicationid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="answer" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="User id who has confirmed this declaration" PREVIOUS="applicationid" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The time of the first declaration submitted by the applicant." PREVIOUS="userid" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The last time this declaration was modified by a applicant." PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for this statement answer." NEXT="declarationid"/>
+        <KEY NAME="declarationid" TYPE="foreign" FIELDS="declarationid" REFTABLE="arupdeclarations" REFFIELDS="id" COMMENT="The declaration that this answer belongs to." PREVIOUS="primary" NEXT="applicationid"/>
+        <KEY NAME="applicationid" TYPE="foreign" FIELDS="applicationid" REFTABLE="arupapplication" REFFIELDS="id" COMMENT="The instance of mod_arupapplication this declaration statement belongs to." PREVIOUS="declarationid"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="applicationid" UNIQUE="false" FIELDS="applicationid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="arupapplication_tracking" COMMENT="application trackingdata" PREVIOUS="arupdeclarationanswers">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="applicationid"/>
+        <FIELD NAME="applicationid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="userid" NEXT="completed"/>
+        <FIELD NAME="completed" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 - if started, 1 - completed" PREVIOUS="applicationid" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The last time this application was modified." PREVIOUS="completed"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="Primary key for feedback_tracking" NEXT="applicationid"/>
+        <KEY NAME="applicationid" TYPE="foreign" FIELDS="applicationid" REFTABLE="arupapplication" REFFIELDS="id" PREVIOUS="primary"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

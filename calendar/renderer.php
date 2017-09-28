@@ -292,7 +292,9 @@ class core_calendar_renderer extends plugin_renderer_base {
             $commands .= html_writer::end_tag('div');
             $output .= $commands;
         }
-        return html_writer::tag('div', $output , array('class' => 'event', 'id' => 'event_' . $event->id));
+/* BEGIN CORE MOD */
+        return html_writer::tag('div', $output , array('class' => "event {$event->cssclass}", 'id' => 'event_' . $event->id));
+/* END CORE MOD */
     }
 
     /**

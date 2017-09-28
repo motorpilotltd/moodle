@@ -127,6 +127,15 @@ class PHPMailer
      */
     public $Ical = '';
 
+/* BEGIN CORE MOD */
+    /**
+     * The method to be used when sending the iCal event.
+     *
+     * @type string
+     */
+    public $IcalMethod = 'REQUEST';
+/* END CORE MOD */
+
     /**
      * The complete compiled MIME message body.
      * @access protected
@@ -2023,8 +2032,10 @@ class PHPMailer
                 $body .= $this->encodeString($this->Body, $bodyEncoding);
                 $body .= $this->LE . $this->LE;
                 if (!empty($this->Ical)) {
-                    $body .= $this->getBoundary($this->boundary[1], '', 'text/calendar; method=REQUEST', '');
-                    $body .= $this->encodeString($this->Ical, $this->Encoding);
+/* BEGIN CORE MOD */
+                    $body .= $this->getBoundary($this->boundary[1], '', 'text/calendar; method='.$this->IcalMethod, 'base64');
+                    $body .= $this->encodeString($this->Ical, 'base64');
+/* END CORE MOD */
                     $body .= $this->LE . $this->LE;
                 }
                 $body .= $this->endBoundary($this->boundary[1]);

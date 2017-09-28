@@ -1,0 +1,28 @@
+/*
+ * block_wa_learning_path_nav Frontend Styles
+ *
+ * @package     block_wa_learning_path_nav
+ * @author      Łukasz Juchnik <lukasz.juchnik@webanywhere.co.uk>
+ * @copyright   2016 Webanywhere (http://www.webanywhere.co.uk)
+ */
+
+.wa_learning_path_nav_content {
+    width: 100%;
+    float: left;
+}
+
+.wa_learning_path_nav_content .learning_plan_name{
+    font-weight: bold;
+}
+
+.wa_learning_path_nav_content .sub_level{
+    margin-left: 20px;
+}
+
+.wa_learning_path_nav_content .sub_level .selected{
+	background-color: #EEE;
+}
+
+.wa_learning_path_nav_content .levels{
+	width: 100%;
+}

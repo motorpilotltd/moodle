@@ -822,23 +822,51 @@ function get_courses_search($searchterms, $sort, $page, $recordsperpage, &$total
           ORDER BY $sort";
 
     $rs = $DB->get_recordset_sql($sql, $params);
+/* BEGIN CORE MOD */
+    require_once($CFG->libdir . '/coursecatlib.php');
+    // Hidden categories won't be included dependent on capabilities
+    $categories = coursecat::get(0)->get_children();
+    // But want to show courses user is enrolled on
+    $enrolledcourses = enrol_get_my_courses();
     foreach($rs as $course) {
-        if (!$course->visible) {
-            // preload contexts only for hidden courses or courses we need to return
+        $visible = true;
+        $skip = array_key_exists($course->id, $enrolledcourses);
+
+        if (!$skip) {
+            // Preload contexts only for hidden courses or courses we need to return.
             context_helper::preload_from_record($course);
             $coursecontext = context_course::instance($course->id);
-            if (!has_capability('moodle/course:viewhiddencourses', $coursecontext)) {
-                continue;
+            if (!$course->visible) {
+                // No need to check all categories.
+                $visible = false;
+            } elseif ($course->category != 0) {
+                // Check for any hidden category in the tree for this course.
+                // If catgeory not in array then it is hidden.
+                if (!isset($categories[$course->category])) {
+                    $visible = false;
+                } else {
+                    $parentcategories = explode('/', $categories[$course->category]->path);
+                    unset($parentcategories[0]);
+                    foreach ($parentcategories as $parentcategory) {
+                        if (!isset($categories[$parentcategory]) || !$categories[$parentcategory]->visible) {
+                            $visible = false;
+                            break;
+                        }
+                    }
+                }
             }
         }
-        // Don't exit this loop till the end
-        // we need to count all the visible courses
-        // to update $totalcount
-        if ($c >= $limitfrom && $c < $limitto) {
-            $courses[$course->id] = $course;
+
+        if ($visible || has_capability('moodle/course:viewhiddencourses', $coursecontext)) {
+            // Don't exit this loop until the end.
+            // We need to count all the visible courses to update $totalcount.
+            if ($c >= $limitfrom && $c < $limitto) {
+                $courses[$course->id] = $course;
+            }
         }
         $c++;
     }
+/* END CORE MOD */
     $rs->close();
 
     // our caller expects 2 bits of data - our return

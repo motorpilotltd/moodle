@@ -64,6 +64,21 @@ if (confirm_sesskey() && (!empty($scoid))) {
                 $result = scorm_insert_track($USER->id, $scorm->id, $scoid, $attempt, $element, $value, $scorm->forcecompleted,
                                              $trackdata) && $result;
             }
+/* BEGIN CORE MOD */
+            // The element cmi.core.total_time is only sent on termination.
+            if ($element == 'cmi.core.total_time') {
+                // Trigger a sco exited event.
+                $event = \block_arup_scormmonitor\event\sco_exited::create(array(
+                    'objectid' => $scoid,
+                    'context' => context_module::instance($cm->id),
+                    'other' => array('instanceid' => $scorm->id)
+                ));
+                $event->add_record_snapshot('course_modules', $cm);
+                $event->add_record_snapshot('scorm', $scorm);
+                $event->add_record_snapshot('scorm_scoes', $DB->get_record('scorm_scoes', array('id' => $scoid)));
+                $event->trigger();
+            }
+/* END CORE MOD */
             if (substr($element, 0, 15) == 'adl.nav.request') {
                 // SCORM 2004 Sequencing Request.
                 require_once($CFG->dirroot.'/mod/scorm/datamodels/scorm_13lib.php');

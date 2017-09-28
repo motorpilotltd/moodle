@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/taps/db" VERSION="20170511" COMMENT="XMLDB file for Moodle local/taps"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="local_taps_course" COMMENT="Cache for TAPS courses">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="coursecode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="coursename" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="startdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="enddate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="courseregion" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="coursedescription" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="courseobjectives" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="courseaudience" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="globallearningstandards" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="onelinedescription" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="businessneed" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="accreditationgivendate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="tapsurllink" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="keywords" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="duration" TYPE="float" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="durationunits" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="durationunitscode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="sponsorname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="courseadminempno" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="courseadminempname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="maximumattendees" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="minimumattendees" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="futurereviewdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="jobnumber" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="activecourse" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="usedtimezone" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="UTC" SEQUENCE="false"/>
+        <FIELD NAME="archived" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="unique" FIELDS="courseid"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_taps_course_category" COMMENT="Cache for TAPS course categories">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="categoryhierarchy" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="primaryflag" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_taps_class" COMMENT="Cache for TAPS classes">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="classid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="classname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="coursename" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classtype" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classstatus" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classdurationunits" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classdurationunitscode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classduration" TYPE="float" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classstartdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classenddate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="enrolmentstartdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="enrolmentenddate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="trainingcenter" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="location" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classstarttime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classendtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="minimumattendees" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="maximumattendees" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="maximuminternalattendees" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="seatsremaining" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="restrictedflag" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="secureflag" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="pricebasis" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="currencycode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="price" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
+        <FIELD NAME="jobnumber" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classownerempno" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classownerfullname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classsponsor" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classuserstatus" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classsuppliername" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="offeringstartdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="offeringenddate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="learningpathonlyflag" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timezone" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="usedtimezone" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="UTC" SEQUENCE="false"/>
+        <FIELD NAME="classcost" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
+        <FIELD NAME="classcostcurrency" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="archived" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classhidden" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="classid" TYPE="unique" FIELDS="classid"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_taps_enrolment" COMMENT="Cache for TAPS enrolments">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="staffid" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="enrolmentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="cpdid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="coursename" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="location" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classtype" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classcategory" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classstartdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classenddate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="duration" TYPE="float" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="durationunits" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="durationunitscode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="courseobjectives" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="provider" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="certificateno" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="expirydate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="bookingstatus" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="personid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classstarttime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classendtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classcompletiondate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classcompletiontime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="healthandsafetycategory" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classcost" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
+        <FIELD NAME="classcostcurrency" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="learningdesc" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="learningdesccont1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="learningdesccont2" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timezone" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="usedtimezone" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="UTC" SEQUENCE="false"/>
+        <FIELD NAME="pricebasis" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="currencycode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="price" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
+        <FIELD NAME="trainingcenter" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classcontext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="bookingplaceddate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="lastupdatedate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="active" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="archived" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="enrolmentid_cpdid" TYPE="unique" FIELDS="enrolmentid, cpdid"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="staffid" UNIQUE="false" FIELDS="staffid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

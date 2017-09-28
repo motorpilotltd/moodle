@@ -1,0 +1,10 @@
+<h3>Explanation</h3>
+<p>This page allows the bulk upload of information for the initialisation of appraisals.</p>
+<p>It looks in the Moodle data directory for a file called local_onlineappraisal/bulk_upload.csv.
+    This file should contain four, quoted, comma-separated, columns with the first row containing column headings.
+    The column headings should be appraisee, appraiser, signoff and groupleader.
+    The subsequent rows should contain the Arup Staff IDs for these users, one row per appraisal to be initialised.
+    The Arup Staff ID for the groupleader column is optional and can be blank.</p>
+<p>On initialisation it will look in the Moodle data directory in a folder called local_onlineappraisal for a PDF
+    file that starts with the (full 6 digit) Arup Staff ID of the appraisee and upload this file as the previous appraisal.</p>
+<h3>{{steptitle}}</h3>

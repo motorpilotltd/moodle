@@ -1,0 +1,39 @@
+.block_local_onlineappraisal {
+    ul.nav-stacked {
+        margin: 0;
+        & > li {
+            float: none;
+        }
+    }
+    li {
+        & > a {
+            display: relative;
+            .check {
+                position: absolute;
+                right: 0;
+                cursor: pointer;
+            }
+            .name {
+                display: inline-block;
+            }
+            span.appraisal-menu-status {
+                margin-top: -3px;
+                padding: 2px 7px;
+                &.appraisal-menu-status-dimmed {
+                    background-color: @arupgrey4;
+                }
+            }
+        }
+        &.active {
+            & > a {
+                span.appraisal-menu-status {
+                    background-color: white;
+                    color: @arupredhover;
+                    &.appraisal-menu-status-dimmed {
+                        color: @arupgrey4;
+                    }
+                }
+            }
+        }
+    }
+}

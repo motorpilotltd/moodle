@@ -1,0 +1,126 @@
+{{#appraisals}}
+<h2>{{#str}}itadmin:appraisalsummary, local_onlineappraisal{{/str}}</h2>
+<table class="table table-striped">
+    <tbody>
+        <tr>
+            <td>
+                {{#str}}appraisee, local_onlineappraisal{{/str}}
+            </td>
+            <td>
+                {{{appraisee}}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {{#str}}appraiser, local_onlineappraisal{{/str}}
+            </td>
+            <td>
+                {{{appraiser}}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {{#str}}leadersignoff, local_onlineappraisal{{/str}}
+            </td>
+            <td>
+                {{{groupleader}}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {{#str}}signoff, local_onlineappraisal{{/str}}
+            </td>
+            <td>
+                {{{signoff}}}
+            </td>
+        </tr>
+    </tbody>
+</table>
+<div class="itadmin message">
+    {{#str}}itadmin:changeroles, local_onlineappraisal, {{costcentre}}{{/str}}
+</div>
+
+<table class="table table-striped">
+    <tbody>
+        {{#admins}}
+        <tr>
+            <td>
+                {{#str}}itadmin:appraisaladministrator, local_onlineappraisal{{/str}}
+            </td>
+            <td>
+                {{fullname}}
+            </td>
+        </tr>
+        {{/admins}}
+    </tbody>
+</table>
+<h2>{{#str}}itadmin:appraisalstatus, local_onlineappraisal{{/str}}</h2>
+{{#progress}}
+    {{>local_onlineappraisal/progress}}
+{{/progress}}
+
+<div class="changeinfo">
+{{#str}}itadmin:statuschangetext, local_onlineappraisal{{/str}}
+</div>
+<a id="changestatus"></a>
+{{{selectform}}}
+{{#statusconfirmform}}
+    <div class="alert alert-warning">
+    {{{statusconfirmform}}}
+    </div>
+{{/statusconfirmform}}
+
+<h2>{{#str}}itadmin:feedback, local_onlineappraisal{{/str}}</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                {{#str}}feedback_contributor, local_onlineappraisal{{/str}}
+            </th>
+            <th>
+                {{#str}}feedback_email_address, local_onlineappraisal{{/str}}
+            </th>
+            <th>
+                {{#str}}feedback_sent_date, local_onlineappraisal{{/str}}
+            </th>
+            <th>
+                {{#str}}feedback_status, local_onlineappraisal{{/str}}
+            </th>
+            <th>
+                {{#str}}actions, local_onlineappraisal{{/str}}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#feedback}}
+        <tr>
+            <td>
+                {{firstname}} {{lastname}}
+            </td>
+            <td>
+                {{email}}
+            </td>
+            <td>
+                {{datesend}}
+            </td>
+            <td class="text-center w-1">{{#received}}<i class="fa fa-check {{^confidential}}text-success{{/confidential}}" title="{{#confidential}}{{#str}}feedbackrequests:received:confidential, local_onlineappraisal{{/str}}{{/confidential}}{{^confidential}}{{#str}}feedbackrequests:received:nonconfidential, local_onlineappraisal{{/str}}{{/confidential}}"></i>{{/received}}
+            </td>
+            <td>
+                {{#received}}<a href="{{{removeurl}}}" class="btn btn-warning">{{#str}}itadmin:remove, local_onlineappraisal{{/str}}</a>
+                {{/received}}
+            </td>
+        </tr>
+        {{/feedback}}
+    </tbody>
+</table>
+<a id="deletefeedback"></a>
+{{#deletefeedbackform}}
+    <div class="alert alert-warning">
+    {{{deletefeedbackform}}}
+    </div>
+{{/deletefeedbackform}}
+        
+{{/appraisals}}
+
+<h2>{{#str}}itadmin:faqs, local_onlineappraisal{{/str}}</h2>
+<p>{{#str}}itadmin:faqcontent, local_onlineappraisal{{/str}}</p>

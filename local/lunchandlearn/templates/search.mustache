@@ -1,0 +1,44 @@
+<div class="lunchandlearn-result-container">
+    <form class="region-filter-form form-inline">
+        <div class="regionfilter" class="input-group">
+            <label for="course-region-select">{{#str}}regionslabel, local_search{{/str}}</label>
+            <select id="course-region-select" class="form-control">
+                {{# regions }}
+                    <option value="{{ value }}"{{# selected }} selected="selected"{{/ selected }}>{{ name }}</option>
+                {{/ regions }}
+            </select>
+        </div>
+    </form>
+    <div class="lunchandlearn-search-results search-results" data-result-count="{{ sessioncount }}">
+    {{#sessions}}
+        <article class="search-result">
+        <header>
+            <h1><a title="View details of {{ name }}" href="{{{ url }}}">{{{ name }}}</a></h1>
+            <p>{{ sessionDateTimeRange }}</p>
+        </header>
+        <div>
+            {{{ summary }}}
+        </div>
+        <div class="bottom-bar">
+            <span class="attendance">{{{ attendance }}}</span>
+            {{#button}}
+                {{#title}}<div class="btn-group"><button class="{{ buttonclass }}" {{#toggle}}data-toggle="{{ toggle }}"{{/toggle}}>{{title}}{{#toggle}}<span class="caret"></span></button>
+                    <ul class="dropdown-menu"><li>{{/toggle}}{{/title}}
+                {{#actionurl}}
+                    <a class="{{ actionclass }}" href="{{ actionurl }}">{{ actiontitle }}</a>
+                {{/actionurl}}
+                {{#title}}{{#toggle}}</li></ul>{{/toggle}}</div>{{/title}}
+            {{/button}}
+        </div>
+        </article>
+    {{/sessions}}
+    {{^sessions}}
+        {{# str }} noresults, local_lunchandlearn {{/str}}
+    {{/sessions}}
+        <div class="loading-bar">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <p class="append">{{# str }} loadmore, local_lunchandlearn {{/ str }}</p>
+            <p class="replace">{{# str }} loadfiltered, local_lunchandlearn {{/ str }}</p>
+        </div>
+    </div>
+</div>

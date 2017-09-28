@@ -167,5 +167,16 @@ function feedback_get_xml_data($feedbackid) {
 function feedback_send_xml_data($data, $filename) {
     @header('Content-Type: application/xml; charset=UTF-8');
     @header('Content-Disposition: attachment; filename="'.$filename.'"');
+/* BEGIN CORE MOD */
+if (is_https()) { // HTTPS sites - watch out for IE! KB812935 and KB316431.
+    @header('Cache-Control: private, max-age=10, no-transform');
+    @header('Expires: '. gmdate('D, d M Y H:i:s', 0) .' GMT');
+    @header('Pragma: ');
+} else { //normal http - prevent caching at all cost
+    @header('Cache-Control: private, must-revalidate, pre-check=0, post-check=0, max-age=0, no-transform');
+    @header('Expires: '. gmdate('D, d M Y H:i:s', 0) .' GMT');
+    @header('Pragma: no-cache');
+}
+/* END CORE MOD */
     print($data);
 }

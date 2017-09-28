@@ -222,6 +222,15 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
             // If there were previously selected users who do not match the search, show them too.
             if (this.get_option('preserveselected') && selectedusers) {
                 this.output_group(this.insert_search_into_str(M.util.get_string('previouslyselectedusers', 'moodle'), this.lastsearch), selectedusers, true, false);
+/* BEGIN CORE MOD */
+                this.listbox.all('optgroup').each(function(optgroup){
+                    optgroup.all('option').each(function(option){
+                        if (selectedusers[option.get('value')]) {
+                            option.set('selected', true);
+                        }
+                    }, this);
+                }, this);
+/* END CORE MOD */
             }
             this.handle_selection_change();
         },

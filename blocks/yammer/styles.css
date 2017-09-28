@@ -1,0 +1,7 @@
+div.block_yammer #embedded-feed {
+    height: 500px;
+}
+
+div.block_yammer #embedded-feed .videoWrapper {
+    height: 100%;
+}

@@ -1,0 +1,37 @@
+.generaltable {
+    thead, tbody, tfoot {
+        & > tr {
+            & th, td {
+                vertical-align: middle;
+                &.w-1 {
+                    white-space: nowrap;
+                    width: 1%;
+                }
+            }
+        }
+    }
+    
+    .tr-alert,
+    .tr-alert:hover,
+    .tr-alert:focus {
+        background-color: transparent;
+    }
+    .table-button {
+        margin-bottom: -5px;
+        margin-top: -6px;
+    }
+
+    &.oa-editable-table,
+    &.oa-initialise-table {
+        .form-control {
+            font-size: 0.85em;
+            height: auto;
+            padding: 2px 4px;
+        }
+    }
+    .oa-editable-table {
+        .btn {
+            padding: 2px 4px;
+        }
+    }
+}

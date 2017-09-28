@@ -930,7 +930,9 @@ abstract class restore_dbops {
                 $params[] = $olditemid;
             }
         }
-
+/* BEGIN CORE MOD */
+        $tempdbupdates = array();
+/* END CORE MOD */
         $fs = get_file_storage();         // Get moodle file storage
         $basepath = $basepath . '/files/';// Get backup file pool base
         // Report progress before query.
@@ -1031,12 +1033,14 @@ abstract class restore_dbops {
                     }
                 }
 
-                // store the the new contextid and the new itemid in case we need to remap
-                // references to this file later
-                $DB->update_record('backup_files_temp', array(
-                    'id' => $rec->bftid,
-                    'newcontextid' => $newcontextid,
-                    'newitemid' => $rec->newitemid), true);
+/* BEGIN CORE MOD */
+                // These are collated for updating outside of the active recordset.
+                $updatedetails = new stdClass();
+                $updatedetails->id = $rec->bftid;
+                $updatedetails->newcontextid = $newcontextid;
+                $updatedetails->newitemid = $rec->newitemid;
+                $tempdbupdates[] = clone($updatedetails);
+/* END CORE MOD */
 
             } else {
                 // this is an alias - we can't create it yet so we stash it in a temp
@@ -1053,6 +1057,16 @@ abstract class restore_dbops {
             }
         }
         $rs->close();
+/* BEGIN CORE MOD */
+        foreach ($tempdbupdates as $tempdbupdate) {
+            // Store the the new contextid and the new itemid in case we need to remap references to this file later.
+            $DB->update_record('backup_files_temp', array(
+                'id' => $tempdbupdate->id,
+                'newcontextid' => $tempdbupdate->newcontextid,
+                'newitemid' => $tempdbupdate->newitemid)
+            );
+        }
+/* END CORE MOD */
         return $results;
     }
 

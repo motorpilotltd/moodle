@@ -1,0 +1,337 @@
+.path-local-learningpath .mform input[type="text"] {
+    box-sizing: border-box;
+        -moz-box-sizing: border-box;
+    height: 28px;
+    width: 75%;
+}
+
+.path-local-learningpath .mform textarea {
+    box-sizing: border-box;
+        -moz-box-sizing: border-box;
+    height: 200px;
+    width: 75%;
+}
+
+.path-local-learningpath .learningpath-header {
+    margin-bottom: 5px;
+}
+
+.path-local-learningpath .learningpath-header,
+.path-local-learningpath .learningpath-footer {
+    margin-top: 10px;
+}
+
+.path-local-learningpath div.lp-edit-table-wrapper {
+    overflow: auto;
+}
+
+.path-local-learningpath table.lp-table {
+    margin-top: 20px;
+}
+.path-local-learningpath table.lp-table,
+.path-local-learningpath table.lp-table tr,
+.path-local-learningpath table.lp-table tr.lastrow {
+    border: none;
+}
+.path-local-learningpath table.lp-table .cell {
+    vertical-align: middle;
+}
+.path-local-learningpath table.lp-edit-table th {
+    white-space: nowrap;
+}
+.path-local-learningpath table.lp-table tr th.lastcol,
+.path-local-learningpath table.lp-table tr td.lastcol {
+    border-right: 1px solid #676767;
+}
+.path-local-learningpath table.lp-edit-table tr td[rowspan].lastcol,
+.path-local-learningpath table.lp-edit-table tr th.lastcol,
+.path-local-learningpath table.lp-edit-table tr.lastrow td.lastcol,
+.path-local-learningpath table.lp-edit-table tbody tr.lastrow th,
+.path-local-learningpath table.lp-edit-table tbody tr.lastrow td,
+.ie8.path-local-learningpath table.lp-edit-table tbody tr.lastrow td.lastcol {
+    background-color: #FFFFFF;
+    border: none;
+}
+.ie8.path-local-learningpath table.lp-edit-table tr td[rowspan].lastcol,
+.ie8.path-local-learningpath table.lp-edit-table tbody tr.lastrow td {
+    border: 1px solid #676767;
+}
+.path-local-learningpath table.lp-edit-table tr.lastrow td[colspan],
+.path-local-learningpath table.lp-edit-table tr td[rowspan].lastcol {
+    text-align: center;
+    vertical-align: middle;
+}
+.path-local-learningpath table.lp-table tbody tr.r1 {
+    background-color: #FFFFFF;
+}
+.path-local-learningpath table.lp-table thead .c0 {
+    background-color: #FFFFFF;
+    border-top: none;
+}
+.ie8.path-local-learningpath table.lp-table thead .c0 {
+    background-color: #FFFFFF;
+    border-top: 1px solid #676767;
+}
+.path-local-learningpath table.lp-table tbody tr .c0 {
+    background-color: #F7F7F7;
+    border-left: 1px solid #676767;
+}
+.path-local-learningpath table.lp-edit-table th a.editable {
+    display: inline-block;
+    margin: 0 2px;
+}
+.path-local-learningpath table.lp-edit-table th a.lp-action-icon {
+    color: #999999;
+    display: inline-block;
+    font-size: 14px;
+    line-height: 14px;
+    padding: 0 2px;
+    text-decoration: none;
+}
+.path-local-learningpath table.lp-edit-table th a.lp-action-icon:hover {
+    color: #3399ff;
+}
+.path-local-learningpath table.lp-table td.lp-edit-courses {
+    font-size: 17px;
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+}
+.path-local-learningpath table.lp-table td.lp-edit-courses a {
+    color: #999999;
+    display: inline-block;
+    line-height: 17px;
+    text-decoration: none;
+}
+.path-local-learningpath table.lp-table td.lp-edit-courses a:hover {
+    color: #3399ff;
+}
+.path-local-learningpath table.lp-table td.lp-edit-courses.lp-has-description a,
+.path-local-learningpath table.lp-table td.lp-edit-courses.lp-has-courses a {
+    color: #3399ff;
+}
+.path-local-learningpath table.lp-table td.lp-edit-courses.lp-has-description a:hover,
+.path-local-learningpath table.lp-table td.lp-edit-courses.lp-has-courses a:hover {
+    color: #999999;
+}
+.path-local-learningpath table.lp-view-table td {
+    margin: 0;
+    padding: 0;
+}
+.path-local-learningpath table.lp-view-table td.lp-has-courses a {
+    background-color: #595959;
+    display: block;
+    height: 30px;
+    margin: 2px;
+    width: auto;
+}
+.path-local-learningpath table.lp-view-table th.header {
+    vertical-align: bottom;
+}
+.path-local-learningpath .learningpath-return {
+    padding-top: 10px;
+}
+
+/* Text Rotation */
+.path-local-learningpath .rotated-text {
+    display: inline-block;
+    line-height: 22px;
+    overflow: hidden;
+    width: 22px;
+}
+.path-local-learningpath table.lp-edit-table .rotated-text {
+    line-height: 24px;
+    width: 24px;
+}
+.ie8.path-local-learningpath .rotated-text {
+    display: inherit;
+    line-height: inherit;
+    overflow: auto;
+    width: auto;
+}
+.path-local-learningpath .rotated-text__inner {
+    display: inline-block;
+    white-space: nowrap;
+    -webkit-transform: translate(0,100%) rotate(-90deg);
+       -moz-transform: translate(0,100%) rotate(-90deg);
+        -ms-transform: translate(0,100%) rotate(-90deg);
+         -o-transform: translate(0,100%) rotate(-90deg);
+            transform: translate(0,100%) rotate(-90deg);
+    -webkit-transform-origin: 0 0;
+       -moz-transform-origin: 0 0;
+        -ms-transform-origin: 0 0;
+         -o-transform-origin: 0 0;
+            transform-origin: 0 0;
+}
+.path-local-learningpath .rotated-text__inner:before {
+    content: "";
+    float: left;
+    margin-top: 100%;
+}
+.ie8.path-local-learningpath .rotated-text__inner:before {
+    content: "";
+    float: none;
+    margin-top: 0;
+}
+/* Course layout */
+.path-local-learningpath ul.arup_course {
+    margin: 0 0 15px 0;
+    padding: 0;
+    position: relative;
+}
+.path-local-learningpath ul.arup_course.arup_course_hidden {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+.path-local-learningpath ul.arup_course div.arup_course_hidden_label {
+    background-color: #000000;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+    padding: 2px 4px;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.path-local-learningpath ul.arup_course li {
+    background-color: #F7F7F7;
+    border: none;
+    list-style: none;
+    line-height: 1.2;
+    margin: 0;
+    padding: 10px 10px 0 10px;
+}
+.path-local-learningpath ul.arup_course li.arup_course_essential {
+    background-color: #FEF5E8;
+}
+.path-local-learningpath ul.arup_course li.arup_course_recommended {
+    background-color: #FDEDE9;
+}
+.path-local-learningpath ul.arup_course li.arup_course_elective {
+    background-color: #FAEAF2;
+}
+.path-local-learningpath ul.arup_course li span {
+    display: inline-block;
+    height: auto;
+    margin : 0;
+    padding: 3px 0;
+    width: 100%;
+}
+.path-local-learningpath ul.arup_course li span a {
+    display: inline-block;
+    float: left;
+    margin : 0;
+    padding: 2px 5px;
+}
+.path-local-learningpath ul.arup_course li span a:focus {
+    outline: none;
+}
+.path-local-learningpath ul.arup_course li.arup_course_name span a {
+    display: inline-block;
+    font-family: "Times New Roman", serif;
+    font-size: 18px;
+    height: auto;
+    line-height: 1;
+    margin : 0;
+    padding: 0;
+    text-decoration: underline;
+    width: auto;
+}
+.path-local-learningpath ul.arup_course li.arup_course_name span.arup_course_summary a {
+    display: inline;
+    float: none;
+    font-family: inherit;
+    font-size: inherit;
+    height: auto;
+    line-height: inherit;
+    text-decoration: underline;
+}
+.path-local-learningpath ul.arup_course li.arup_course_name span.arup_course_summary a:hover {
+    text-decoration: none;
+}
+.path-local-learningpath ul.arup_course li.arup_course_name span {
+    padding: 0 0 5px 0;
+}
+.path-local-learningpath ul.arup_course li.arup_course_name span.arup_course_summary {
+    font-size: 14px;
+    padding: 0;
+}
+.path-local-learningpath ul.arup_course li.arup_course_name span.arup_course_metadata {
+    font-size: 12px;
+    padding: 0 0 10px 0;
+    text-align: right;
+}
+.path-local-learningpath ul.arup_course li.arup_course_name span.arup_course_metadata span {
+    font-weight: bold;
+    margin: 0 5px 0 10px;
+    padding: 0;
+    width: auto;
+}
+
+.path-local-learningpath div.lp-cell-description {
+    background-color: #F7F7F7;
+    padding: 10px;
+}
+
+/* Filter Block */
+.path-local-learningpath #arup_filter_block .content .current_info {
+    padding: 4px 0;
+}
+.path-local-learningpath #arup_filter_block .content .current_info p {
+    margin: 0 10px;
+}
+.path-local-learningpath #arup_filter_block .content {
+    padding: 0;
+}
+.path-local-learningpath #arup_filter_block .content .filter_filters {
+    padding-bottom: 10px;
+}
+.path-local-learningpath #arup_filter_block .content #showukmea .filter_filters {
+    padding-bottom: 0;
+}
+.path-local-learningpath #arup_filter_block .mform fieldset div {
+    margin: 0;
+}
+.path-local-learningpath #arup_filter_block span.filter_title {
+    background: #E5E5E5 url([[pix:local_learningpath|icon_blueminus]]) no-repeat 10px center;
+    color: #262626;
+    cursor: pointer;
+    display: block;
+    padding: 4px 10px 4px 25px;
+    width: auto;
+}
+.path-local-learningpath #arup_filter_block span.filter_title.closed {
+    background-image: url([[pix:local_learningpath|icon_blueplus]]);
+}
+.path-local-learningpath #arup_filter_block .mform .fitem {
+    background: #F7F7F7;
+    color: #262626;
+    display: block;
+    margin: 0;
+    padding: 4px 10px 4px 25px;
+    width: auto;
+}
+.path-local-learningpath #arup_filter_block .mform .fitem .fitemtitle {
+    float: left;
+    text-align: left;
+    width: auto;
+}
+.path-local-learningpath #arup_filter_block .mform .fitem .fitemtitle label {
+    margin: 0;
+}
+.path-local-learningpath #arup_filter_block .mform .fitem .felement {
+    float: right;
+    margin-left: 10px;
+    padding-top: 0;
+    width: auto;
+}
+.path-local-learningpath #arup_filter_block .mform .fitem .felement select {
+    width: auto;
+}
+.path-local-learningpath #arup_filter_block .mform .fitem .fsubmit {
+    float: right;
+    margin: 0;
+    padding: 0;
+    text-align: right;
+}

@@ -1,0 +1,31 @@
+{{#canadd}}
+<form id="oa-comment-form" class="form-inline row p-t-5 p-b-10">
+    <input type="hidden" name="sesskey" value="{{{sesskey}}}" />
+    <input type="hidden" name="c" value="comments" />
+    <input type="hidden" name="a" value="submit_comment" />
+    <input type="hidden" name="appraisalid" value="{{{appraisalid}}}" />
+    <input type="hidden" name="view" value="{{{view}}}" />
+    <div class="form-group col-xs-10 p-r-5">
+        <label for="oa-comment-input" class="control-label sr-only">{{#str}}comment, local_onlineappraisal{{/str}}</label>
+        <textarea id="oa-comment-input" name="comment" class="form-control" placeholder="{{#str}}comment:addnewdots, local_onlineappraisal{{/str}}" rows="1"></textarea>
+        <span class="help-block hidden">{{#str}}error:comment:validation, local_onlineappraisal{{/str}}</span>
+    </div>
+    <div class="col-xs-2 p-l-0">
+        <button id="oa-comment-submit" type="submit" class="btn btn-default btn-block m-l-0" title="{{#str}}form:add, local_onlineappraisal{{/str}}">
+            <i class="fa fa-plus fa-lg"></i><span class="sr-only">{{#str}}form:add, local_onlineappraisal{{/str}}</span>
+        </button>
+    </div>
+</form>
+{{/canadd}}
+<div class="alert alert-dismissible oa-comments-alert hidden" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <div class="alert-message"></div>
+</div>
+<div class="oa-comments">
+    <ul class="list-unstyled">
+    {{#comments}}
+        {{>local_onlineappraisal/comment}}
+    {{/comments}}
+    </ul>
+    <p class="hidden text-center"><button class="btn btn-default oa-comments-more">{{#str}}comment:showmore, local_onlineappraisal{{/str}}</button></p>
+</div>

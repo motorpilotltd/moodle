@@ -1,0 +1,9 @@
+{
+  "moodle-theme_arup-arup": {
+    "requires": [
+        "node",
+        "io-form",
+        "json-parse"
+    ]
+  }
+}

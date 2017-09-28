@@ -1,0 +1,21 @@
+{{#_hiddenLabel}}
+    <label class="accesshide" for="{{id}}" >{{label}}</label>
+{{/_hiddenLabel}}
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="{{_usertype}}">
+        {{^locked}}
+        {{{textarea}}}
+        {{/locked}}
+        {{#locked}}
+            <div class="locked rows{{rows}}">
+                {{{_value}}}
+            </div>
+        {{/locked}}
+        </div>
+    </div>
+    <div class="col-md-5">
+    {{{_helptext}}}
+    </div>
+</div>

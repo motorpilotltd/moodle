@@ -1,0 +1,41 @@
+.disabledrow label {
+    color: #BBB;
+}
+
+.aruphonestybox input.selfcomplete,
+.aruphonestybox input.tapscomplete
+{
+    display: none;
+}
+.aruphonestybox input.selfcomplete + label,
+.aruphonestybox input.tapscomplete + label {
+    margin-left: -26px;
+    padding-left: 26px;
+    background-position: left;
+    background-repeat: no-repeat;
+    background-image: url([[pix:core|i/completion-manual-n]]]);
+}
+.aruphonestybox input.selfcomplete:checked + label,
+.aruphonestybox input.tapscomplete:checked + label {
+    background-image: url([[pix:core|i/completion-manual-y]]]);
+}
+
+.aruphonestybox .autocompletion,
+.aruphonestybox .togglecompletion {
+    visibility: hidden;
+}
+
+.aruphonestybox .lock-icon {
+        visibility: hidden;
+}
+
+.aruphonestybox .lock-icon {
+        visibility: hidden;
+}
+.aruphonestybox .lockedrow .lock-icon {
+        visibility: visible;
+}
+
+.aruphonestybox .no-overflow {
+    overflow: visible;
+}

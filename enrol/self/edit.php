@@ -99,6 +99,13 @@ if ($mform->is_cancelled()) {
         $instance->customint4     = $data->customint4;
         $instance->customint5     = $data->customint5;
         $instance->customint6     = $data->customint6;
+/* BEGIN CORE MOD */
+        $instance->customchar1 = $data->customchar1;
+        if ($instance->customchar1 == 'y') {
+            $instance->password = null;
+            $instance->customint1 = 0;
+        }
+/* END CORE MOD */
         $instance->customtext1    = $data->customtext1;
         $instance->roleid         = $data->roleid;
         $instance->enrolperiod    = $data->enrolperiod;
@@ -126,6 +133,9 @@ if ($mform->is_cancelled()) {
             'customint4'      => $data->customint4,
             'customint5'      => $data->customint5,
             'customint6'      => $data->customint6,
+/* BEGIN CORE MOD */
+            'customchar1'     => $data->customchar1,
+/* END CORE MOD */
             'customtext1'     => $data->customtext1,
             'roleid'          => $data->roleid,
             'enrolperiod'     => $data->enrolperiod,

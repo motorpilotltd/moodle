@@ -90,15 +90,21 @@ $string['dropdown_values'] = 'Answers';
 $string['drop_feedback'] = 'Remove from this course';
 $string['edit_item'] = 'Edit question';
 $string['edit_items'] = 'Edit questions';
+/* BEGIN CORE MOD */
+$string['email_addresses'] = 'Send e-mail to';
+$string['email_addresses_help'] = 'Comma separated list of email addresses to send notifications to.';
+/* END CORE MOD */
 $string['email_notification'] = 'Enable notification of submissions';
-$string['email_notification_help'] = 'If enabled, teachers will receive notification of feedback submissions.';
+/* BEGIN CORE MOD */
+$string['email_notification_help'] = 'If enabled, specified addresses will receive email notification of feedback submissions.';
 $string['emailteachermail'] = '{$a->username} has completed feedback activity : \'{$a->feedback}\'
 
-You can view it here:
+You can view details here:
 
 {$a->url}';
 $string['emailteachermailhtml'] = '<p>{$a->username} has completed feedback activity : <i>\'{$a->feedback}\'</i>.</p>
-<p>It is <a href="{$a->url}">available on the site</a>.</p>';
+<p>You can view details <a href="{$a->url}">here</a>.</p>';
+/* END CORE MOD */
 $string['entries_saved'] = 'Your answers have been saved. Thank you.';
 $string['export_questions'] = 'Export questions';
 $string['export_to_excel'] = 'Export to Excel';

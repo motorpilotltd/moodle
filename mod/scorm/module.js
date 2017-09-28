@@ -298,7 +298,34 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
             }
 
             // Calculate the rough new height from the viewport height.
-            newheight = Y.one('body').get('winHeight') - 5;
+/* BEGIN CORE MOD */
+            var scormheader = Y.one('nav#header');
+            if (scormheader !== null) {
+                // Fixed header margin has no effect on this page.
+                var scormheaderheight = scormheader.get('offsetHeight');
+                var activitytitleheight = 0;
+                var scormtopheight = 0;
+
+                var activitytitle = Y.one('div[role="main"] h2:first-of-type');
+                if (activitytitle !== null) {
+                    activitytitleheight = activitytitle.get('offsetHeight') +
+                        parseFloat(activitytitle.getComputedStyle('marginTop')) +
+                        parseFloat(activitytitle.getComputedStyle('marginBottom'));
+                }
+
+                var scormtop = Y.one('#scormtop');
+                if (scormtop !== null) {
+                    scormtopheight = scormtop.get('offsetHeight') +
+                        parseFloat(scormtop.getComputedStyle('marginTop')) +
+                        parseFloat(scormtop.getComputedStyle('marginBottom'));
+                }
+
+                var newheight = Y.one('body').get('winHeight') - scormheaderheight - activitytitleheight - scormtopheight - 5;
+            } else {
+                // Original Code
+                var newheight = Y.one('body').get('winHeight') - 5;
+            }
+/* END CORE MOD */
             if (newheight < 600) {
                 newheight = 600;
             }

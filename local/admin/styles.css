@@ -1,0 +1,10 @@
+#page-admin-local-admin-test_emails .mform input[type="text"] {
+    width: 50%;
+}
+
+#page-admin-local-admin-test_emails .mform textarea {
+    box-sizing: border-box;
+        -moz-box-sizing: border-box;
+    height: 400px;
+    width: 100%;
+}

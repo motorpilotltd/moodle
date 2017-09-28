@@ -72,6 +72,11 @@ switch($var) {
     case 'showuser':
         calendar_set_event_type_display(CALENDAR_EVENT_USER);
         break;
+/* BEGIN CORE MOD */
+    case 'showlunchandlearn':
+        calendar_set_event_type_display(CALENDAR_EVENT_LUNCHANDLEARN);
+        break;
+/* END CORE MOD */
 }
 
 redirect($return);

@@ -1,0 +1,12 @@
+<li class="{{user_type}} row m-0 m-b-10">
+    <div class="col-xs-2 p-0 text-center">
+        <img class="oa-comment-image" src="{{owner.imageurl}}" title="{{owner.fullname}}" />
+        {{#role}}
+        <span class="oa-comment-role">{{role}}</span>
+        {{/role}}
+    </div>
+    <div class="col-xs-10 p-r-0">
+        <h4>{{owner.fullname}}<span class="oa-comment-created pull-right" title="{{createdtitle}}" data-toggle="tooltip" data-placement="left">{{createdtext}}</span></h4>
+        <p>{{{comment}}}</p>
+    </div>
+</li>

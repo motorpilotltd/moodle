@@ -714,7 +714,9 @@ function forum_cron() {
                         continue;
                     }
 
-                    if (!groups_is_member($discussion->groupid) and !has_capability('moodle/site:accessallgroups', $modcontext)) {
+/* BEGIN CORE MOD */
+                    if (!groups_is_member($discussion->groupid)/* and !has_capability('moodle/site:accessallgroups', $modcontext)*/) {
+/* END CORE MOD */
                         // Do not send posts from other groups when in SEPARATEGROUPS or VISIBLEGROUPS.
                         continue;
                     }

@@ -1,0 +1,24 @@
+{{!
+    This file is part of the Online Appraisal Plugin for Arup.
+}}
+{{!
+    @template local_onlineappraisal/printer_partial_summaries
+
+    PDF Content : Appraisal : Summaries
+}}
+
+<div style="text-align:right; border-bottom: 1px solid black; background-color: #FFFFFF; color:black; font-size:1.25em;">{{#str}}pdf:heading:summaries, local_onlineappraisal{{/str}}</div>
+<div style="display: inline-block; text-align: left; width: auto; margin-right: auto;">
+    {{#summaries}}
+        <table style="background-color: #FFFFFF; width: 100%; padding:3px;" nobr="true">
+            <tr><td colspan="2">{{title}}</td></tr>
+            <tr><td colspan="2" style="background-color: #E7E6E6;">{{^isarray}}{{{data}}}{{/isarray}}{{#isarray}}{{#data}}{{{.}}}<br />{{/data}}{{/isarray}}</td></tr>
+            {{#extrarow}}
+            <tr><td style="text-align:left;">{{extrarowleft}}</td><td style="text-align:right;">{{extrarowright}}</td></tr>
+            {{/extrarow}}
+            {{^last}}
+            <tr><td colspan="2"></td></tr>
+            {{/last}}
+        </table>
+    {{/summaries}}
+</div>

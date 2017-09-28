@@ -1,0 +1,333 @@
+div.progress-svg {
+    margin: 0 auto;
+    max-width: 900px;
+    width: 100%;
+}
+@media (max-width:767px) {
+    div.progress-svg-f2f #progress-svg .texts,
+    div.progress-svg-f2f #progress-svg .f2f-text {
+        display: none !important;
+    }
+}
+#progress-svg {
+    // Defaults.
+    .line,
+    .circle,
+    .arrow {
+        fill: @arupgrey3;
+        stroke: @arupgrey3;
+        stroke-miterlimit: 10;
+        stroke-width: 3;
+    }
+    .arrow {
+        display: none;
+        stroke-width: 0;
+    }
+    .arrow-1-2,
+    .arrow-3-4 {
+        fill: @appraisee;
+        stroke: @appraisee;
+    }
+    .arrow-2-3,
+    .arrow-4-5 {
+        fill: @appraiser;
+        stroke: @appraiser;
+    }
+    .arrow-5-6 {
+        fill: @signoff;
+        stroke: @signoff;
+    }
+    .tick {
+        display: none;
+        fill: white;
+    }
+    .number {
+        fill: white;
+    }
+    .text {
+        fill: @arupgrey3;
+    }
+    .f2f-icon,
+    .f2f-text {
+        fill: white;
+    }
+    .f2f-text-held {
+        display: none;
+    }
+}
+div.progress-svg-f2f {
+    #progress-svg {
+        .f2f-text-held {
+            display: block;
+        }
+    }
+    &.progress-svg-1 {
+        #progress-svg {
+            .f2f-icon,
+            .f2f-text {
+                fill: @arupgrey5;
+            }
+        }
+    }
+}
+div.progress-svg-1 {
+    #progress-svg {
+        .arrow-1-2 {
+            display: block;
+        }
+        .circle-1 {
+            fill: white;
+            stroke: @appraisee;
+        }
+        .number-1 {
+            fill: @arupgrey5;
+        }
+        .text-1 {
+            fill: @appraisee;
+        }
+    }
+}
+div.progress-svg-2 {
+    #progress-svg {
+        .arrow-2-1 {
+            display: block;
+        }
+        .arrow-2-3 {
+            display: block;
+        }
+        .circle-1 {
+            fill: @arupgrey5;
+            stroke: @arupgrey5;
+        }
+        .circle-2 {
+            fill: white;
+            stroke: @appraiser;
+        }
+        .tick-1 {
+            display: block;
+        }
+        .number-1 {
+            display: none;
+        }
+        .number-2 {
+            fill: @arupgrey5;
+        }
+        .text-1 {
+            fill: @arupgrey5;
+        }
+        .text-2 {
+            fill: @appraiser;
+        }
+        .f2f-icon-appraisee {
+            fill: @appraisee;
+        }
+        .f2f-icon-appraiser {
+            fill: @appraiser;
+        }
+        .f2f-text {
+            fill: @arupgrey5;
+        }
+    }
+}
+div.progress-svg-3 {
+    #progress-svg {
+        .arrow-3-2,
+        .arrow-3-4 {
+            display: block;
+        }
+        .circle-1,
+        .circle-2 {
+            fill: @arupgrey5;
+            stroke: @arupgrey5;
+        }
+        .circle-3 {
+            fill: white;
+            stroke: @appraisee;
+        }
+        .tick-1,
+        .tick-2 {
+            display: block;
+        }
+        .number-1,
+        .number-2 {
+            display: none;
+        }
+        .number-3 {
+            fill: @arupgrey5;
+        }
+        .text-1,
+        .text-2 {
+            fill: @arupgrey5;
+        }
+        .text-3 {
+            fill: @appraisee;
+        }
+    }
+}
+div.progress-svg-4 {
+    #progress-svg {
+        .arrow-4-3,
+        .arrow-4-5 {
+            display: block;
+        }
+        .circle-1,
+        .circle-2,
+        .circle-3 {
+            fill: @arupgrey5;
+            stroke: @arupgrey5;
+        }
+        .circle-4 {
+            fill: white;
+            stroke: @appraiser;
+        }
+        .tick-1,
+        .tick-2,
+        .tick-3 {
+            display: block;
+        }
+        .number-1,
+        .number-2,
+        .number-3 {
+            display: none;
+        }
+        .number-4 {
+            fill: @arupgrey5;
+        }
+        .text-1,
+        .text-2,
+        .text-3 {
+            fill: @arupgrey5;
+        }
+        .text-4 {
+            fill: @appraiser;
+        }
+    }
+}
+div.progress-svg-5 {
+    #progress-svg {
+        .arrow-5-6 {
+            display: block;
+        }
+        .circle-1,
+        .circle-2,
+        .circle-3,
+        .circle-4 {
+            fill: @arupgrey5;
+            stroke: @arupgrey5;
+        }
+        .circle-5 {
+            fill: white;
+            stroke: @signoff;
+        }
+        .tick-1,
+        .tick-2,
+        .tick-3,
+        .tick-4 {
+            display: block;
+        }
+        .number-1,
+        .number-2,
+        .number-3,
+        .number-4 {
+            display: none;
+        }
+        .number-5 {
+            fill: @arupgrey5;
+        }
+        .text-1,
+        .text-2,
+        .text-3,
+        .text-4 {
+            fill: @arupgrey5;
+        }
+        .text-5 {
+            fill: @signoff;
+        }
+    }
+}
+div.progress-svg-8, // For appraisals with groupleader comments active
+div.progress-svg-7, // For legacy where there was a six month status.
+div.progress-svg-6 {
+    #progress-svg {
+        .circle-1,
+        .circle-2,
+        .circle-3,
+        .circle-4,
+        .circle-5,
+        .circle-6 {
+            fill: @arupgrey5;
+            stroke: @arupgrey5;
+        }
+        .tick-1,
+        .tick-2,
+        .tick-3,
+        .tick-4,
+        .tick-5,
+        .tick-6 {
+            display: block;
+        }
+        .number-1,
+        .number-2,
+        .number-3,
+        .number-4,
+        .number-5,
+        .number-6 {
+            display: none;
+        }
+        .text-1,
+        .text-2,
+        .text-3,
+        .text-4,
+        .text-5,
+        .text-6 {
+            fill: @arupgrey5;
+        }
+    }
+}
+div.progress-svg-gla {
+    &.progress-svg-5 {
+        // Various overrides if groupleader comments active.
+        #progress-svg {
+            .circle-5b {
+                fill: @arupgrey3;
+                stroke: @arupgrey3;
+            }
+            .text-5b {
+                fill: @arupgrey3;
+            }
+            .number-5b {
+                fill: white;
+            }
+            .arrow-5b-6 {
+                display: none;
+            }
+            .arrow-5a-5b {
+                display: block;
+                fill: @arupgreenhover;
+            }
+        }
+    }
+    &.progress-svg-6 {
+        // Various overrides if groupleader comments active.
+        #progress-svg {
+            .circle-5b {
+                fill: white;
+                stroke: @groupleader;
+            }
+            .tick-5b {
+                display: none;
+            }
+            .number-5b {
+                display: block;
+                fill: @arupgrey5;
+            }
+            .text-5b {
+                fill: @groupleader;
+            }
+            .arrow-5b-6 {
+                display: block;
+                fill: @aruppurplehover;
+            }
+        }
+    }
+}

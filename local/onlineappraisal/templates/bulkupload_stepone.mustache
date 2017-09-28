@@ -1,0 +1,8 @@
+{{^nextstep}}
+<p>There is an issue that means it is not possible to continue to the next step, please see messages above for details.</p>
+{{/nextstep}}
+{{#nextstep}}
+<p>If you are happy with the above results please continue to the next step.
+    This is where the staff ids in the CSV will be checked against the Moodle DB and the updating and creation of new accounts attempted if necessary.</p>
+<a href="{{nextstepurl}}" class="btn btn-primary pull-right oa-bulkupload-generic-submit">Proceed to next step</a>
+{{/nextstep}}

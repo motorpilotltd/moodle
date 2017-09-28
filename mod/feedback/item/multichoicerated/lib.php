@@ -206,7 +206,9 @@ class feedback_item_multichoicerated extends feedback_item_base {
         $analysed_item = $this->get_analysed($item, $groupid, $courseid);
         if ($analysed_item) {
             echo '<tr><th colspan="2" align="left">';
-            echo $itemnr.'&nbsp;('.$item->label.') '.$analysed_item[1];
+/* BEGIN CORE MOD */
+            echo $itemnr.'&nbsp;'.$item->label.' '.$analysed_item[1];
+/* END CORE MOD */
             echo '</th></tr>';
             $analysed_vals = $analysed_item[2];
             $pixnr = 0;
@@ -221,9 +223,13 @@ class feedback_item_multichoicerated extends feedback_item_base {
                 $quotient = number_format(($val->quotient * 100), 2, $sep_dec, $sep_thous);
                 echo '<tr>';
                 echo '<td align="left" valign="top">';
-                echo '-&nbsp;&nbsp;'.trim($val->answertext).' ('.$val->value.'):</td>';
+/* BEGIN CORE MOD */
+                echo trim($val->answertext).' ('.$val->value.'):</td>';
+/* END CORE MOD */
                 echo '<td align="left" style="width: '.FEEDBACK_MAX_PIX_LENGTH.'">';
-                echo '<img class="feedback_bar_image" alt="'.$intvalue.'" src="'.$pix.'" height="5" width="'.$pixwidth.'" />';
+/* BEGIN CORE MOD */
+                echo '<img class="feedback_bar_image" alt="'.$intvalue.'" src="'.$pix.'" style="height: 5px; width: '.$pixwidth.'px;" />';
+/* END CORE MOD */
                 echo $val->answercount;
                 if ($val->quotient > 0) {
                     echo '&nbsp;('.$quotient.'&nbsp;%)';
@@ -305,7 +311,9 @@ class feedback_item_multichoicerated extends feedback_item_base {
         if ($info->subtype == 'd') {
             echo '<label for="'. $item->typ . '_' . $item->id .'">';
         }
-        echo '('.$item->label.') ';
+/* BEGIN CORE MOD */
+        echo $item->label.' ';
+/* END CORE MOD */
         echo format_text($item->name . $requiredmark, FORMAT_HTML, array('noclean' => true, 'para' => false));
         if ($item->dependitem) {
             if ($dependitem = $DB->get_record('feedback_item', array('id'=>$item->dependitem))) {
@@ -403,7 +411,9 @@ class feedback_item_multichoicerated extends feedback_item_base {
 
         //print the question and label
         echo '<div class="feedback_item_label_'.$align.'">';
-            echo '('.$item->label.') ';
+/* BEGIN CORE MOD */
+        echo $item->label.' ';
+/* END CORE MOD */
             echo format_text($item->name . $requiredmark, FORMAT_HTML, array('noclean' => true, 'para' => false));
         echo '</div>';
 

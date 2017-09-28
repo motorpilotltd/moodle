@@ -348,10 +348,15 @@ class navigation_node implements renderable {
                 ($type === self::TYPE_SITE_ADMIN)) {
             $node->nodetype = self::NODETYPE_BRANCH;
         }
+/* BEGIN CORE MOD */
+// Removed as causing confusion for admin users (as visible children are used for direct access without menu entries).
+/*
         // If this node is hidden mark it's children as hidden also
         if ($this->hidden) {
             $node->hidden = true;
         }
+*/
+/* END CORE MOD */
         // Return added node (reference returned by $this->children->add()
         return $node;
     }
@@ -3114,7 +3119,11 @@ class navbar extends navigation_node {
             // We will need to initialise the navigation structure to check if there are active items.
             $this->page->navigation->initialise($this->page);
             $outcome = ($this->page->navigation->contains_active_node() || $this->page->settingsnav->contains_active_node());
+/* BEGIN CORE MOD */
+        } else {
+            $outcome = false;
         }
+/* END CORE MOD */
         $this->hasitems = $outcome;
         return $outcome;
     }

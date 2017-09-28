@@ -1,0 +1,104 @@
+.path-local-coursemanager {
+    .action-icon.disabled {
+        img {
+            opacity: 0.5;
+        }
+    }
+    .navbar {
+        .addcoursebtn {
+            position: absolute;
+            right: 10px;
+            top: 14.5px;
+        }
+
+        input#id_submitbutton {
+            color: #333;
+            background-color: #fff;
+            border-color: #ccc;
+        }
+        .mform {
+            margin-top: 14.5px;
+            fieldset {
+                float: left;
+            }
+            .fitem {
+                margin: 0;
+                .fitemtitle {
+                    display: none;
+                }
+                .felement {
+                    width: auto;
+                    &.fsubmit {
+                        margin-left: 0;
+                    }
+                }
+            }
+        }
+    }
+    .cmanchor::before {
+        content:"";
+        display:block;
+        height:150px; /* fixed header height*/
+        margin:-150px 0 0; /* negative fixed header height */
+    }
+    .addclassbtn,
+    .addcoursebtn {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        .innerbuttons {
+            display: table;
+            .singlebutton {
+                display: table-cell;
+                div {
+                    margin: 0;
+                    input[type="submit"] {
+                        margin-bottom: 0;
+                        margin-right: 10px;
+                    }
+                }
+            }
+            a.btn {
+                display: table-cell;
+            }
+        }
+    }
+    .navbar-form {
+        float: left;
+    }
+    @media (min-width: 992px) {
+        .cmselect {
+            margin-left: -10px;
+            margin-right: -10px;
+            margin-bottom: 15px;
+            div.singleselect {
+                float: left;
+                position: relative;
+                padding-left: 10px;
+            }
+            .cmselecttitle {
+                text-align: right;
+                float: left;
+                width: 33%;
+                padding-right: 10px;
+                padding-left: 10px;
+            }
+            &:before,
+            &:after {
+                content: " ";
+                display: table;
+                clear: both;
+            }
+        }
+    }
+    @media (min-width: 1200px) {
+        .cmselect {
+            .cmselecttitle {
+                float: left;
+                width: 25%;
+            }
+        }
+    }
+
+}

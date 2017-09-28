@@ -1,0 +1,73 @@
+{{!
+    This file is part of the Online Appraisal Plugin for Arup.
+}}
+{{!
+    @template local_onlineappraisal/printer_feedback
+
+    PDF Content : Feedback
+}}
+<div style="width:90%; margin: auto; color:black; font-size:0.8em;">
+    <div style="text-align:right; border-bottom:1px solid black; background-color:#FFFFFF; font-size:1.25em;">
+        {{#str}}pdf:feedback:title, local_onlineappraisal{{/str}}
+    </div>
+
+    <div style="background-color:#FFFFFF;">
+        <table style="padding: 3px">
+            <tr>
+                <td style="width: 30%">{{#str}}pdf:feedback:requested, local_onlineappraisal{{/str}}</td>
+                <td style="background-color: #E1EDFF; width: 70%;">{{! ***Avoid whitespace***
+                }}{{#hasrequests}}{{#requests}}{{firstname}} {{lastname}}{{#appraiserrequest}}*{{/appraiserrequest}}{{^last}} / {{/last}}{{/requests}}{{/hasrequests}}{{! ***Avoid whitespace***
+                }}{{^hasrequests}}{{#str}}pdf:feedback:requested:none, local_onlineappraisal{{/str}}{{/hasrequests}}</td>
+            </tr>
+            {{#hasrequests}}
+            <tr>
+                <td style="width: 30%"></td>
+                <td style="background-color: #FFFFFF; width: 70%;">{{#str}}pdf:feedback:appraiserrequest, local_onlineappraisal{{/str}}</td>
+            </tr>
+            {{/hasrequests}}
+        </table>
+    </div>
+
+    {{#hasresponses}}
+    <div style="background-color:#FFFFFF;">
+        <table style="padding: 3px">
+            {{#responses}}
+            <tr>
+                <td style="width: 30%">{{#str}}
+                        pdf:feedback:requestedfrom,
+                        local_onlineappraisal,
+                        { "firstname":  {{# quote }}{{ firstname }}{{/ quote }}, "lastname": {{# quote }}{{ lastname }}{{/ quote }},
+                          "appraiserflag": {{# quote }}{{ appraiserrequest }}{{/ quote }}, "confidentialflag": {{# quote }}{{ confidential }}{{/ quote }} }
+                    {{/str}}</td>
+                <td style="background-color: {{#confidential}}#FFD9D9{{/confidential}}{{^confidential}}#E1EDFF{{/confidential}}; width: 70%;">{{{feedback}}}</td>
+            </tr>
+            {{^last}}
+            <tr>
+                <td colspan="2"></td>
+            </tr>
+            {{/last}}
+            {{/responses}}
+        </table>
+    </div>
+    <div style="background-color:#FFFFFF;">
+        {{#viewconfidential}}
+            {{#str}}pdf:feedback:confidentialhelp, local_onlineappraisal{{/str}}
+        {{/viewconfidential}}
+        {{^viewconfidential}}
+            {{#str}}pdf:feedback:confidentialhelp:appraisee, local_onlineappraisal{{/str}}
+        {{/viewconfidential}}
+        <br>
+        {{#viewownonly}}
+            {{#str}}pdf:feedback:requestedhelp, local_onlineappraisal{{/str}}
+        {{/viewownonly}}
+    </div>
+    {{/hasresponses}}
+
+    {{#hasrequests}}
+        {{^hasresponses}}
+            <div style="background-color:#FFFFFF;">
+                {{#str}}pdf:feedback:nofeedback, local_onlineappraisal{{/str}}
+            </div>
+        {{/hasresponses}}
+    {{/hasrequests}}
+</div>

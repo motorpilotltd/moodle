@@ -1,0 +1,63 @@
+<ul class="flexcard flexcard-fixed-height">
+<li class="flexcard_item">
+<div class="media block-link bg-white shadow-1">
+    {{{categorie}}}
+</div>
+</li>
+
+{{#boxes}}
+{{#hasvideo}}
+<li class="flexcard_item">
+<div class="media block-link bg-white shadow-1">
+    {{{video}}}
+</div>
+</li>
+{{/hasvideo}}
+
+<li class="flexcard_item">
+    <div class="media block-link bg-white shadow-1">
+        <div class="media_image">
+            <div class="responsive-image" style="background-image : url('{{courseimage}}')";>
+
+            <div class="overlay">
+                <i class="md md-arrow-forward"></i>
+            </div>
+            </div>
+        </div>
+
+        <div class="media_content p-l-10 p-r-10 m-t-10 m-b-40">
+            <h4 class="media_title m-b-5">
+                {{fullname}}
+            </h4>
+            <div class="media_institution m-b-5">
+                {{insfullname}}
+            </div>
+
+            <p class="media_summary p-b-10">
+                {{{summary}}}
+            </p>
+
+            <div class="progressbox">
+
+                {{#enablecompletion}}
+                <div class="progress m-l-10 m-r-10 m-r-10 m-t-15">
+                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress}}%">
+                    </div>
+                </div>
+                <span class="percentage">{{progress}}% </span>
+                {{/enablecompletion}}
+            </div>
+            
+            <div class="media_tag p-l-10 p-r-10 p-b-10">
+                {{coursedate}}
+            </div>
+
+        </div>
+        <a class="block-link_overlay-link" href="{{courselink}}" tabindex="-1">
+            {{fullname}}
+        </a>
+    </div>
+</li>
+{{/boxes}}
+
+</ul>

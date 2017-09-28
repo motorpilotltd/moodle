@@ -173,12 +173,16 @@ class feedback_item_numeric extends feedback_item_base {
 
         if (isset($values->data) AND is_array($values->data)) {
             echo '<tr><th colspan="2" align="left">';
-            echo $itemnr.'&nbsp;('.$item->label.') '.$item->name;
+/* BEGIN CORE MOD */
+            echo $itemnr.'&nbsp;'.$item->label.' '.$item->name;
+/* END CORE MOD */
             echo '</th></tr>';
 
             foreach ($values->data as $value) {
                 echo '<tr><td colspan="2" valign="top" align="left">';
-                echo '-&nbsp;&nbsp;'.number_format($value, 2, $this->sep_dec, $this->sep_thous);
+/* BEGIN CORE MOD */
+                echo number_format($value, 2, $this->sep_dec, $this->sep_thous);
+/* END CORE MOD */
                 echo '</td></tr>';
             }
 
@@ -256,7 +260,9 @@ class feedback_item_numeric extends feedback_item_base {
         $inputname = $item->typ . '_' . $item->id;
         echo '<div class="feedback_item_label_'.$align.'">';
         echo '<label for="'. $inputname .'">';
-        echo '('.$item->label.') ';
+/* BEGIN CORE MOD */
+        echo $item->label.' ';
+/* END CORE MOD */
         echo format_text($item->name . $requiredmark, true, false, false);
         if ($item->dependitem) {
             $params = array('id'=>$item->dependitem);
@@ -411,7 +417,9 @@ class feedback_item_numeric extends feedback_item_base {
 
         //print the question and label
         echo '<div class="feedback_item_label_'.$align.'">';
-        echo '('.$item->label.') ';
+/* BEGIN CORE MOD */
+        echo $item->label.' ';
+/* END CORE MOD */
         echo format_text($item->name . $requiredmark, true, false, false);
         switch(true) {
             case ($range_from === '-' AND is_numeric($range_to)):

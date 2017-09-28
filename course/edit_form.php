@@ -5,6 +5,12 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->libdir.'/completionlib.php');
 require_once($CFG->libdir. '/coursecatlib.php');
+/* BEGIN CORE MOD - /local/regions */
+require_once($CFG->dirroot.'/local/regions/lib.php');
+/* END CORE MOD - /local/regions */
+/* BEGIN CORE MOD - /local/coursemetadata */
+require_once($CFG->dirroot.'/local/coursemetadata/lib.php');
+/* END CORE MOD - /local/coursemetadata */
 
 /**
  * The form for handling editing a course.
@@ -258,35 +264,77 @@ class course_edit_form extends moodleform {
         // Completion tracking.
         if (completion_info::is_enabled_for_site()) {
             $mform->addElement('header', 'completionhdr', get_string('completion', 'completion'));
-            $mform->addElement('selectyesno', 'enablecompletion', get_string('enablecompletion', 'completion'));
-            $mform->setDefault('enablecompletion', $courseconfig->enablecompletion);
-            $mform->addHelpButton('enablecompletion', 'enablecompletion', 'completion');
+/* BEGIN CORE MOD */
+            if (!empty($course->id) && !has_capability('local/admin:accesscoursecompletionsettings', $coursecontext)) {
+                $mform->addElement('static', 'completionhdrstatichelp', '', get_string('completionhdrstatichelp', 'local_admin'));
+                $enablecompletionvalue = $course->enablecompletion ? get_string('yes') : get_string('no');
+                $mform->addElement('static', 'enablecompletionstatic', get_string('enablecompletion', 'completion'), $enablecompletionvalue);
+            } else {
+                $mform->addElement('selectyesno', 'enablecompletion', get_string('enablecompletion', 'completion'));
+                $mform->setDefault('enablecompletion', $courseconfig->enablecompletion);
+                $mform->addHelpButton('enablecompletion', 'enablecompletion', 'completion');
+            }
+/* END CORE MOD */
         } else {
             $mform->addElement('hidden', 'enablecompletion');
             $mform->setType('enablecompletion', PARAM_INT);
             $mform->setDefault('enablecompletion', 0);
         }
+/* BEGIN CORE MOD - /local/regions */
+        local_regions_definition_course($mform);
+/* END CORE MOD - /local/regions */
+/* BEGIN CORE MOD - /local/coursemetadata */
+        coursemetadata_definition($mform);
+/* END CORE MOD - /local/coursemetadata */
 
         enrol_course_edit_form($mform, $course, $context);
 
         $mform->addElement('header','groups', get_string('groupsettingsheader', 'group'));
 
-        $choices = array();
-        $choices[NOGROUPS] = get_string('groupsnone', 'group');
-        $choices[SEPARATEGROUPS] = get_string('groupsseparate', 'group');
-        $choices[VISIBLEGROUPS] = get_string('groupsvisible', 'group');
-        $mform->addElement('select', 'groupmode', get_string('groupmode', 'group'), $choices);
-        $mform->addHelpButton('groupmode', 'groupmode', 'group');
-        $mform->setDefault('groupmode', $courseconfig->groupmode);
+/* BEGIN CORE MOD */
+            if (!empty($course->id) && !has_capability('local/admin:accesscoursegroupsettings', $coursecontext)) {
+                $mform->addElement('static', 'groupsstatichelp', '', get_string('groupsstatichelp', 'local_admin'));
 
-        $mform->addElement('selectyesno', 'groupmodeforce', get_string('groupmodeforce', 'group'));
-        $mform->addHelpButton('groupmodeforce', 'groupmodeforce', 'group');
-        $mform->setDefault('groupmodeforce', $courseconfig->groupmodeforce);
+                switch ($course->groupmode) {
+                    case VISIBLEGROUPS :
+                        $groupmode = get_string('groupsvisible', 'group');
+                        break;
+                    case SEPARATEGROUPS :
+                        $groupmode = get_string('groupsseparate', 'group');
+                        break;
+                    case NOGROUPS :
+                    default :
+                        $groupmode = get_string('groupsnone', 'group');
+                        break;
+                }
+                $mform->addElement('static', 'groupmodestatic', get_string('groupmode', 'group'), $groupmode);
 
-        //default groupings selector
-        $options = array();
-        $options[0] = get_string('none');
-        $mform->addElement('select', 'defaultgroupingid', get_string('defaultgrouping', 'group'), $options);
+                $groupmodeforce = $course->groupmodeforce ? get_string('yes') : get_string('no');
+                $mform->addElement('static', 'groupmodeforecestatic', get_string('groupmodeforce', 'group'), $groupmodeforce);
+
+                global $DB;
+                $grouping = $DB->get_record('groupings', array('id' => $course->defaultgroupingid));
+                $defaultgrouping = $grouping ? format_string($grouping->name) : get_string('none');
+                $mform->addElement('static', 'defaultgroupingidstatic', get_string('defaultgrouping', 'group'), $defaultgrouping);
+            } else {
+                $choices = array();
+                $choices[NOGROUPS] = get_string('groupsnone', 'group');
+                $choices[SEPARATEGROUPS] = get_string('groupsseparate', 'group');
+                $choices[VISIBLEGROUPS] = get_string('groupsvisible', 'group');
+                $mform->addElement('select', 'groupmode', get_string('groupmode', 'group'), $choices);
+                $mform->addHelpButton('groupmode', 'groupmode', 'group');
+                $mform->setDefault('groupmode', $courseconfig->groupmode);
+
+                $mform->addElement('selectyesno', 'groupmodeforce', get_string('groupmodeforce', 'group'));
+                $mform->addHelpButton('groupmodeforce', 'groupmodeforce', 'group');
+                $mform->setDefault('groupmodeforce', $courseconfig->groupmodeforce);
+
+                //default groupings selector
+                $options = array();
+                $options[0] = get_string('none');
+                $mform->addElement('select', 'defaultgroupingid', get_string('defaultgrouping', 'group'), $options);
+            }
+/* END CORE MOD */
 
         // Customizable role names in this course.
         $mform->addElement('header','rolerenaming', get_string('rolerenaming'));
@@ -358,6 +406,12 @@ class course_edit_form extends moodleform {
                         'addcourseformatoptionshere');
             }
         }
+/* BEGIN CORE MOD - /local/regions */
+        local_regions_definition_after_data_course($mform);
+/* END CORE MOD - /local/regions */
+/* BEGIN CORE MOD - /local/coursemetadata */
+        coursemetadata_definition_after_data($mform, $courseid);
+/* END CORE MOD - /local/coursemetadata */
     }
 
     /**
@@ -395,6 +449,12 @@ class course_edit_form extends moodleform {
         if (!empty($formaterrors) && is_array($formaterrors)) {
             $errors = array_merge($errors, $formaterrors);
         }
+/* BEGIN CORE MOD - /local/regions */
+        $errors = array_merge($errors, local_regions_validation_course($data, $files));
+/* END CORE MOD - /local/regions */
+/* BEGIN CORE MOD - /local/coursemetadata */
+        $errors = array_merge($errors, coursemetadata_validation((object)$data, $files));
+/* END CORE MOD - /local/coursemetadata */
 
         return $errors;
     }

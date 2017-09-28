@@ -315,6 +315,17 @@ header("Content-Type: application/download\n");
 
 $downloadfilename = clean_filename(strip_tags($courseshortname.' '.format_string($survey->name,true)));
 header("Content-Disposition: attachment; filename=\"$downloadfilename.txt\"");
+/* BEGIN CORE MOD */
+if (is_https()) { // HTTPS sites - watch out for IE! KB812935 and KB316431.
+    header('Cache-Control: private, max-age=10, no-transform');
+    header('Expires: '. gmdate('D, d M Y H:i:s', 0) .' GMT');
+    header('Pragma: ');
+} else { //normal http - prevent caching at all cost
+    header('Cache-Control: private, must-revalidate, pre-check=0, post-check=0, max-age=0, no-transform');
+    header('Expires: '. gmdate('D, d M Y H:i:s', 0) .' GMT');
+    header('Pragma: no-cache');
+}
+/* END CORE MOD */
 
 // Print names of all the fields
 

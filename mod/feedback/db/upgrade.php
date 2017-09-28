@@ -69,7 +69,20 @@ function xmldb_feedback_upgrade($oldversion) {
 
     // Moodle v3.0.0 release upgrade line.
     // Put any upgrade step following this.
+/* BEGIN CORE MOD */
+	if ($oldversion < 2015111600.01) {
+        $table = new xmldb_table('feedback');
+        $field = new xmldb_field('email_addresses', XMLDB_TYPE_CHAR, '255',
+                                 null, null, null, null, 'email_notification');
 
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Feedback savepoint reached.
+        upgrade_mod_savepoint(true, 2015111600.01, 'feedback');
+    }
+/* END CORE MOD */
     return true;
 }
 

@@ -211,6 +211,16 @@ switch($requestmethod) {
         switch ($class) {
             case 'resource':
                 require_capability('moodle/course:manageactivities', $modcontext);
+/* BEGIN CORE MOD */
+// Block deletion if part of course completion criteria.
+                $completion = new completion_info($course);
+                $activities = $completion->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY);
+                foreach ($activities as $activity) {
+                    if ($activity->moduleinstance == $cm->id) {
+                        break;
+                    }
+                }
+/* END CORE MOD */
                 course_delete_module($cm->id);
                 break;
         }

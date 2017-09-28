@@ -1,0 +1,6 @@
+[data-visible-regions] {
+    display: none;
+}
+.feditor [data-visible-regions] {
+    display: block;
+}

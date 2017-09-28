@@ -1,0 +1,390 @@
+#local_accordion_wrapper .categorybox {
+    display: block;
+}
+
+#local_accordion_wrapper span.accordion-toggle {
+    cursor: auto;
+    margin-top: 5px;
+}
+
+ul.arup_category_master {
+    margin: 10px 0;
+}
+ul.arup_category,
+ul.arup_course,
+ul.arup_lp {
+    margin: 0 0 0 39px;
+    padding: 0;
+}
+ul.arup_category_master > ul.arup_course,
+ul.arup_category_master > ul.arup_lp {
+    margin-left: 0;
+    margin-bottom: 15px;
+}
+ul.arup_course,
+ul.arup_lp {
+    margin-top: 15px;
+}
+ul.arup_course_first,
+ul.arup_lp_first {
+    margin-top: 10px;
+}
+ul.arup_course_last,
+ul.arup_lp_last {
+    margin-bottom: 15px;
+}
+
+ul.arup_category_top {
+    margin: 0;
+}
+
+ul.arup_category li,
+ul.arup_course li,
+ul.arup_lp li {
+    list-style: none;
+    line-height: 1.2;
+    margin: 0;
+    padding: 0;
+}
+
+ul.arup_category > li {
+    margin-top: -5px;
+}
+
+ul.arup_course li,
+ul.arup_lp li {
+    background-color: #F7F7F7;
+    border: none;
+    list-style: none;
+    margin :0;
+    padding: 10px 10px 0 10px;
+}
+
+ul.arup_lp li {
+    background-color: #E8F2F7;
+}
+
+ul.arup_category li span,
+ul.arup_course li span,
+ul.arup_lp li span {
+    display: inline-block;
+    height: auto;
+    margin : 0;
+    padding: 3px 0;
+    width: 100%;
+}
+ul.arup_category li > span {
+    /* Gradient background */
+    background: #f2f2f2;
+    background: -moz-linear-gradient(top, #f2f2f2 0%, #d9d9d9 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f2f2f2), color-stop(100%, #d9d9d9));
+    background: -webkit-linear-gradient(top, #f2f2f2 0%, #d9d9d9 100%);
+    background: -o-linear-gradient(top, #f2f2f2 0%, #d9d9d9 100%);
+    background: -ms-linear-gradient(top, #f2f2f2 0%, #d9d9d9 100%);
+    background: linear-gradient(to bottom, #f2f2f2 0%, #d9d9d9 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f2f2f2', endColorstr='#d9d9d9', GradientType=0 );
+}
+ul.arup_category li span.accordion-open {
+    background: #595959;
+    filter: none;
+    color: #FFFFFF;
+}
+ul.arup_course li span,
+ul.arup_lp li span {
+    background: none;
+    filter: none;
+}
+
+ul.arup_category li span a,
+ul.arup_course li span a,
+ul.arup_lp li span a {
+    display: inline-block;
+    float: left;
+    margin : 0;
+    padding: 2px 5px;
+}
+
+ul.arup_category li span a:focus,
+ul.arup_course li span a:focus,
+ul.arup_lp li span a:focus {
+    outline: none;
+}
+
+ul.arup_lp li span span.arup_lp_indicator {
+    float: right;
+    font-size: 12px;
+    font-weight: bold;
+    width: auto;
+}
+
+ul.arup_category li span.accordion-closed a.accordion-link,
+ul.arup_category li span.accordion-closed a.accordion-link:active,
+ul.arup_category li span.accordion-open a.accordion-link,
+ul.arup_category li span.accordion-open a.accordion-link:active {
+    color: #262626;
+    text-decoration: none;
+}
+ul.arup_category li span.accordion-open a.accordion-link,
+ul.arup_category li span.accordion-open a.accordion-link:active {
+    color: #FFFFFF;
+}
+ul.arup_category li span.accordion-closed a.accordion-link:hover,
+ul.arup_category li span.accordion-closed a.accordion-link:hover span.accordion-plusminus,
+ul.arup_category li span.accordion-open a.accordion-link:hover,
+ul.arup_category li span.accordion-open a.accordion-link:hover span.accordion-plusminus {
+    color: #3399FF;
+}
+
+.touch ul.arup_category li span.accordion-closed a.accordion-link:hover {
+    color: #262626;
+}
+.touch ul.arup_category li span.accordion-open a.accordion-link:hover,
+.touch ul.arup_category li span.accordion-open a.accordion-link:hover span.accordion-plusminus {
+    color: #FFFFFF;
+}
+
+ul.arup_category li span span.accordion-plusminus {
+    color: #3399FF;
+    cursor: pointer;
+    display: inline-block;
+    float: left;
+    font-weight: bold;
+    height: 24px;
+    line-height: 24px;
+    margin: 0 10px 0 0;
+    padding: 0;
+    text-align: center;
+    width: 24px;
+}
+ul.arup_category li span.accordion-closed span.accordion-plusminus {
+    color: #3399FF;
+    margin-top: 1px;
+}
+ul.arup_category li span.accordion-open span.accordion-plusminus {
+    color: #FFFFFF;
+    margin-top: -1px;
+}
+
+ul.arup_category li span span.accordion-category-link {
+    display: inline-block;
+    float: right;
+    margin: 0;
+    padding: 0;
+    width: auto;
+}
+
+ul.arup_category li span span.accordion-category-link a {
+    display: inline-block;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    height: 29px;
+    line-height: 29px;
+    margin-right: 10px;
+    padding: 0;
+}
+ul.arup_category li span.accordion-open span.accordion-category-link a {
+    color: #FFFFFF;
+}
+ul.arup_category li span.accordion-open span.accordion-category-link a:hover {
+    color: #3399FF;
+}
+
+ul.arup_category_top li span a {
+    font-family: "Times New Roman", serif;
+    font-size: 18px;
+    line-height: 24px;
+}
+
+ul.arup_category_top li span span.accordion-plusminus {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+}
+
+ul.arup_category_sub ul.arup_category,
+ul.arup_category_sub ul.arup_course {
+    margin-left: 36px;
+}
+
+ul.arup_category_sub > li > span {
+    background: #FFFFFF;
+    border-bottom: 1px solid #7F7F7F;
+    filter: none;
+}
+ul.arup_category_sub_first > li > span {
+    border-top: 1px solid #7F7F7F;
+}
+ul.arup_category_sub > li > span.accordion-open {
+    border-bottom: none;
+}
+
+ul.arup_category_sub li span a {
+    font-family: "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 21px;
+}
+
+ul.arup_category_sub li span span.accordion-plusminus {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    height: 21px;
+    line-height: 21px;
+    width: 21px;
+}
+ul.arup_category_sub li span.accordion-closed span.accordion-plusminus {
+    color: #3399FF;
+    margin-top: 0;
+}
+ul.arup_category_sub li span.accordion-open span.accordion-plusminus {
+    color: #FFFFFF;
+}
+
+ul.arup_category_sub li span span.accordion-category-link {
+    height: 25px;
+    line-height: 25px;
+    width: auto;
+}
+
+ul.arup_category_sub li span span.accordion-category-link a {
+    color: #3399FF;
+    display: inline-block;
+    height: 25px;
+    line-height: 25px;
+    padding: 0;
+}
+ul.arup_category_sub li span span.accordion-category-link a:hover {
+    color: #262626;
+}
+
+ul.arup_course li.arup_course_name span a,
+ul.arup_lp li.arup_lp_name span a {
+    display: inline-block;
+    font-family: "Times New Roman", serif;
+    font-size: 18px;
+    height: auto;
+    line-height: 1;
+    margin : 0;
+    padding: 0;
+    text-decoration: underline;
+    width: auto;
+}
+
+ul.arup_course li.arup_course_name span.arup_course_summary a {
+    display: inline;
+    float: none;
+    font-family: inherit;
+    font-size: inherit;
+    height: auto;
+    line-height: inherit;
+    text-decoration: underline;
+}
+ul.arup_course li.arup_course_name span.arup_course_summary a:hover {
+    text-decoration: none;
+}
+
+ul.arup_course li.arup_course_name span,
+ul.arup_lp li.arup_lp_name span {
+    padding: 0 0 5px 0;
+}
+
+ul.arup_course li.arup_course_name span.arup_course_summary {
+    font-size: 14px;
+    padding: 0;
+}
+
+ul.arup_course li.arup_course_name span.arup_course_metadata,
+ul.arup_lp li.arup_lp_name span.arup_lp_metadata {
+    font-size: 12px;
+    padding: 0 0 10px 0;
+    text-align: right;
+}
+
+ul.arup_course li.arup_course_name span.arup_course_metadata span,
+ul.arup_lp li.arup_lp_name span.arup_lp_metadata span {
+    font-weight: bold;
+    margin: 0 5px 0 10px;
+    padding: 0;
+    width: auto;
+}
+
+/* Filter Block */
+.path-course #arup_filter_block .content .current_info {
+    padding: 4px 0;
+}
+
+.path-course #arup_filter_block .content .current_info p {
+    margin: 0 10px;
+}
+
+.path-course #arup_filter_block .content {
+    padding: 0;
+}
+
+.path-course #arup_filter_block .content .filter_filters {
+    padding-bottom: 10px;
+}
+
+.path-course #arup_filter_block .content #showukmea .filter_filters {
+    padding-bottom: 0;
+}
+
+.path-course #arup_filter_block .mform fieldset div {
+    margin: 0;
+}
+
+.path-course #arup_filter_block span.filter_title {
+    background: #E5E5E5 url([[pix:local_accordion|icon_blueminus]]) no-repeat 10px center;
+    color: #262626;
+    cursor: pointer;
+    display: block;
+    padding: 4px 10px 4px 25px;
+    width: auto;
+}
+
+.path-course #arup_filter_block span.filter_title.closed {
+    background-image: url([[pix:local_accordion|icon_blueplus]]);
+}
+
+.path-course #arup_filter_block .mform .fitem {
+    background: #F7F7F7;
+    color: #262626;
+    display: block;
+    margin: 0;
+    padding: 4px 10px 4px 25px;
+    width: auto;
+}
+
+.path-course #arup_filter_block .mform .fitem .fitemtitle {
+    float: left;
+    text-align: left;
+    width: auto;
+}
+
+.path-course #arup_filter_block .mform .fitem .fitemtitle label {
+    margin: 0;
+}
+
+.path-course #arup_filter_block .mform .fitem .felement {
+    float: right;
+    margin-left: 10px;
+    padding-top: 0;
+    width: auto;
+}
+
+.path-course #arup_filter_block .mform .fitem .felement select {
+    width: auto;
+}
+
+.path-course #arup_filter_block .mform .fitem .fsubmit {
+    padding: 0;
+    text-align: right;
+}
+
+.path-course #arup_learningpath_block .content {
+    padding: 0;
+    text-align: center;
+}
+
+.path-course #arup_learningpath_block .content img {
+    width: 100%;
+}

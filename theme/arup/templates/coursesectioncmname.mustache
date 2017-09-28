@@ -1,0 +1,22 @@
+
+{{#uservisible}}
+    <a class="{{linkclasses}}" href="{{{url}}}" onclick="{{{onclick}}}">
+        <span class="instancename">{{{instancename}}}
+            <span class="accesshide">{{altname}}</span>
+        </span>
+        <img alt=" " class="iconlarge activityicon" role="presentation" src=
+    "{{{iconurl}}}">
+    </a>
+{{/uservisible}}
+{{#userhidden}}
+    <div class="{{textclasses}}">
+
+        <span class="instancename">{{{instancename}}}
+            <span class="accesshide">{{altname}}</span>
+        </span>
+        <img alt=" " class="iconlarge activityicon" role="presentation" src=
+    "{{{iconurl}}}">
+    </div>
+{{/userhidden}}
+
+{{{groupinglabel}}}

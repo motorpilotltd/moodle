@@ -1,0 +1,45 @@
+<div id="carousel-example-generic" class="carousel slide {{layout}}" data-ride="carousel">
+    <!-- Indicators -->
+    {{#multislides}}
+    <ol class="carousel-indicators">
+        {{#slides}}
+        <li data-target="#carousel-example-generic" data-slide-to="{{slidenum}}" class="{{active}}">
+        </li>
+        {{/slides}}
+    </ol>
+    {{/multislides}}
+
+    <!-- Wrapper for slides -->
+    <div class="carousel-inner" role="listbox">
+        {{#slides}}
+        <div class="item {{active}}" >
+            <div class="imageslide overlay {{opacity}}" style="background-image: url('{{{thisslide}}}');">
+            </div>
+            <div class="carousel-caption">
+                {{{caption}}}
+                {{#buttontext}}
+                <div class="clearfix"></div>
+                <a href="{{link}}" class="btn btn-carousel">{{buttontext}}</a>
+                {{/buttontext}}
+            </div>
+        </div>
+        {{/slides}}
+    </div>
+
+    <!-- Controls -->
+    {{#multislides}}
+    <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
+{{/multislides}}
+{{#manage}}
+<div class="m-5">
+    <a href="{{{manage}}}" class="btn btn-admin m-b-5">{{#str}} manage, block_carousel {{/str}}</a>
+</div>
+{{/manage}}

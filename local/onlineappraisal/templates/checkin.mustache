@@ -1,0 +1,26 @@
+{{#visible}}
+<li class="{{user_type}} checkinitem row m-0 m-b-10">
+    <div class="col-xs-2 p-0 text-center">
+        <img class="oa-checkin-image" src="{{owner.imageurl}}" title="{{owner.fullname}}" />
+        {{#role}}
+        <span class="oa-checkin-role">{{role}}</span>
+        {{/role}}
+    </div>
+    <div class="col-xs-10 p-r-0">
+        <h4>{{owner.fullname}}
+            <span class="oa-checkin-created pull-right" title="{{createdtitle}}" data-toggle="tooltip" data-placement="left">
+                {{createdtext}}
+            </span>
+        </h4>
+        <div class="well checkintext m-b-5">
+            {{{checkin}}}
+        </div>
+        <span class="pull-right">
+            {{#canadd}}{{#isowner}}
+            <a href="{{{editurl}}}" class="editcheckin" data-id="{{id}}">edit</a> / 
+            <a href="{{{delurl}}}" class="deletecheckin" data-id="{{id}}">delete</a>
+            {{/isowner}}{{/canadd}}
+        </span>
+    </div>
+</li>
+{{/visible}}

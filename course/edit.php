@@ -89,6 +89,12 @@ if ($id) {
     $category = $DB->get_record('course_categories', array('id'=>$course->category), '*', MUST_EXIST);
     $coursecontext = context_course::instance($course->id);
     require_capability('moodle/course:update', $coursecontext);
+/* BEGIN CORE MOD - /local/regions */
+    local_regions_load_data_course($course);
+/* END CORE MOD - /local/regions */
+/* BEGIN CORE MOD - /local/coursemetadata */
+    coursemetadata_load_data($course);
+/* END CORE MOD - /local/coursemetadata */
 
 } else if ($categoryid) {
     // Creating new course in this category.
@@ -155,6 +161,16 @@ if ($editform->is_cancelled()) {
     if (empty($course->id)) {
         // In creating the course.
         $course = create_course($data, $editoroptions);
+/* BEGIN CORE MOD - /local/regions */
+        $regionsdata = $data;
+        $regionsdata->id = $course->id;
+        local_regions_save_data_course($regionsdata);
+/* END CORE MOD - /local/regions */
+/* BEGIN CORE MOD - /local/coursemetadata */
+        $coursemetadatadata = $data;
+        $coursemetadatadata->id = $course->id;
+        coursemetadata_save_data($coursemetadatadata);
+/* END CORE MOD - /local/coursemetadata */
 
         // Get the context of the newly created course.
         $context = context_course::instance($course->id, MUST_EXIST);
@@ -184,6 +200,12 @@ if ($editform->is_cancelled()) {
     } else {
         // Save any changes to the files used in the editor.
         update_course($data, $editoroptions);
+/* BEGIN CORE MOD - /local/regions */
+        local_regions_save_data_course($data);
+/* END CORE MOD - /local/regions */
+/* BEGIN CORE MOD - /local/coursemetadata */
+        coursemetadata_save_data($data);
+/* END CORE MOD - /local/coursemetadata */
         // Set the URL to take them too if they choose save and display.
         $courseurl = new moodle_url('/course/view.php', array('id' => $course->id));
     }

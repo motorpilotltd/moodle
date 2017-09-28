@@ -42,7 +42,9 @@ class feedback_textarea_form extends feedback_item_form {
         $mform->addElement('select',
                             'itemwidth',
                             get_string('textarea_width', 'feedback').'&nbsp;',
-                            array_slice(range(0, 80), 5, 80, true));
+/* BEGIN CORE MOD */
+                            array_slice(range(0, 150), 5, 150, true));
+/* END CORE MOD */ 
 
         $mform->addElement('select',
                             'itemheight',

@@ -1,0 +1,24 @@
+.path-mod-tapscompletion h2, .path-mod-tapscompletion h3, .path-mod-tapscompletion h4,
+.tapscompletion h2, .tapscompletion h3, .tapscompletion h4 {
+    color: #7030A0;
+}
+.path-mod-tapscompletion table,
+.tapscompletion table {
+    font-size: 11px;
+    margin-bottom: 10px !important;
+}
+.path-mod-tapscompletion table th, .path-mod-tapscompletion table td
+.tapscompletion table th, .tapscompletion table td {
+    border-color: #000000 !important;
+}
+.path-mod-tapscompletion table th.header,
+.tapscompletion table th.header {
+    background-color: #7030A0;
+    color: #FFFFFF;
+    font-weight: normal;
+    text-align: left;
+}
+.path-mod-tapscompletion .completion-progresscell,
+.tapscompletion .completion-progresscell{
+    text-align: center;
+}

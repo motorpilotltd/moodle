@@ -1,0 +1,106 @@
+
+<h2>{{#str}}feedbackrequests:heading, local_onlineappraisal{{/str}}</h2>
+<p>{{#str}}feedbackrequests:description, local_onlineappraisal{{/str}}</p>
+<h3>{{#str}}feedbackrequests:outstanding, local_onlineappraisal{{/str}}</h3>
+
+<table class="generaltable">
+    <thead>
+        <tr>
+            <th>{{#str}}feedbackrequests:th:requestfor, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}feedbackrequests:th:requestby, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}feedbackrequests:th:requestdate, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}feedbackrequests:th:facetofacedate, local_onlineappraisal{{/str}}</th>
+            <th class="text-center">{{#str}}feedbackrequests:th:facetofaceheld, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}feedbackrequests:th:completeddate, local_onlineappraisal{{/str}}</th>
+            <th class="text-center w-1">{{#str}}feedbackrequests:th:actions, local_onlineappraisal{{/str}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#outstanding}}
+            <tr>
+                <td>{{ufirstname}} {{ulastname}}</td>
+                <td>{{requested}}</td>
+                <td>{{feedbackcreated}}</td>
+                <td>{{facetofacedate}}</td>
+                <td class="text-center">
+                {{#face_to_face_held}}
+                    <i class="fa fa-check text-success"></i>
+                {{/face_to_face_held}}
+                </td>
+                <td>{{completeddate}}</td>
+                <td class="text-center w-1">
+                    <a href="{{{feedbacklink}}}" class="btn btn-small btn-success email-copy">
+                        {{#str}}feedbackrequests:submitfeedback, local_onlineappraisal{{/str}}
+                    </a>
+                </td>
+            </tr>
+        {{/outstanding}}
+        {{^outstanding}}
+            <tr>
+                <td colspan="7">
+                    <div class="alert alert-warning m-0" role="alert">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        {{#str}}feedbackrequests:norequests, local_onlineappraisal{{/str}}
+                    </div>
+                </td>
+            </tr>
+        {{/outstanding}}
+    </tbody>
+</table>
+
+<h3>{{#str}}feedbackrequests:completed, local_onlineappraisal{{/str}}</h3>
+
+
+<table class="generaltable">
+    <thead>
+        <tr>
+            <th>{{#str}}feedbackrequests:th:requestfor, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}feedbackrequests:th:requestby, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}feedbackrequests:th:requestdate, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}feedbackrequests:th:facetofacedate, local_onlineappraisal{{/str}}</th>
+            <th class="text-center">{{#str}}feedbackrequests:th:facetofaceheld, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}feedbackrequests:th:completeddate, local_onlineappraisal{{/str}}</th>
+            <th class="text-center">{{#str}}feedbackrequests:th:confidential, local_onlineappraisal{{/str}}</th>
+            <th class="text-center w-1">{{#str}}feedbackrequests:th:actions, local_onlineappraisal{{/str}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#completed}}
+            <tr>
+                <td>{{ufirstname}} {{ulastname}}</td>
+                <td>{{requested}}</td>
+                <td>{{feedbackcreated}}</td>
+                <td>{{facetofacedate}}</td>
+                <td class="text-center">
+                {{#face_to_face_held}}
+                    <i class="fa fa-check text-success"></i>
+                {{/face_to_face_held}}
+                </td>
+                <td>{{completeddate}}</td>
+                <td class="text-center">
+                {{#confidential}}
+                    <i class="fa fa-check text-success"></i>
+                {{/confidential}}
+                {{^confidential}}
+                    <i class="fa fa-times text-error"></i>
+                {{/confidential}}
+                </td>
+                <td class="text-center w-1">
+                    <a href="{{{feedbacklink}}}" class="btn btn-small btn-primary email-copy">
+                        {{#str}}feedbackrequests:emailcopy, local_onlineappraisal{{/str}}
+                    </a>
+                </td>
+            </tr>
+        {{/completed}}
+        {{^completed}}
+            <tr>
+                <td colspan="8">
+                    <div class="alert alert-warning m-0" role="alert">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        {{#str}}feedbackrequests:nocompleted, local_onlineappraisal{{/str}}
+                    </div>
+                </td>
+            </tr>
+        {{/completed}}
+    </tbody>
+</table>

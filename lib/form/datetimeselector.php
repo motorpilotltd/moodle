@@ -80,9 +80,11 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group {
     public function __construct($elementName = null, $elementLabel = null, $options = array(), $attributes = null) {
         // Get the calendar type used - see MDL-18375.
         $calendartype = \core_calendar\type_factory::get_calendar_instance();
+/* BEGIN CORE MOD */
         $this->_options = array('startyear' => $calendartype->get_min_year(), 'stopyear' => $calendartype->get_max_year(),
-            'defaulttime' => 0, 'timezone' => 99, 'step' => 5, 'optional' => false);
-
+            'defaulttime' => 0, 'timezone' => 99, 'step' => 5, 'optional' => false,
+            'showtz' => false, 'timezones'=>array());
+/* END CORE MOD */
         // TODO MDL-52313 Replace with the call to parent::__construct().
         HTML_QuickForm_element::__construct($elementName, $elementLabel, $attributes);
         $this->_persistantFreeze = true;
@@ -145,6 +147,18 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group {
             $this->_elements[] = @MoodleQuickForm::createElement('select', 'hour', get_string('hour', 'form'), $hours, $this->getAttributes(), true);
             $this->_elements[] = @MoodleQuickForm::createElement('select', 'minute', get_string('minute', 'form'), $minutes, $this->getAttributes(), true);
         }
+/* BEGIN CORE MOD */
+        if (empty($this->_options['showtz']) === false) {
+            if (empty($this->_options['timezones'])) {
+                $this->_options['timezones'] = array();
+                $tzs = DateTimeZone::listIdentifiers();
+                foreach ($tzs as $tz) {
+                    $this->_options['timezones'][$tz] = $tz;
+                }
+            }
+            $this->_elements[] = @MoodleQuickForm::createElement('select', 'timezone', get_string('timezone', 'local_lunchandlearn'), $this->_options['timezones'], $this->getAttributes(), true);
+        }
+/* END CORE MOD */
         // The YUI2 calendar only supports the gregorian calendar type so only display the calendar image if this is being used.
         if ($calendartype->get_name() === 'gregorian') {
             $image = $OUTPUT->pix_icon('i/calendar', get_string('calendar', 'calendar'), 'moodle');
@@ -194,6 +208,12 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group {
                         $value = time();
                     }
                 }
+/* BEGIN CORE MOD */
+                if (is_array($value) && count($value)==2) {
+                    $thetimezone = $value['timezone'];
+                    $value =  $value['timestart'];
+                }
+/* END CORE MOD */
                 if (!is_array($value)) {
                     $calendartype = \core_calendar\type_factory::get_calendar_instance();
                     $currentdate = $calendartype->timestamp_to_date_array($value, $this->_options['timezone']);
@@ -209,6 +229,11 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group {
                     if ($this->_options['optional']) {
                         $value['enabled'] = $requestvalue != 0;
                     }
+/* BEGIN CORE MOD */
+                    if (!empty($thetimezone)) {
+                        $value['timezone'] = $thetimezone;
+                    }
+/* END CORE MOD */
                 } else {
                     $value['enabled'] = isset($value['enabled']);
                 }
@@ -305,14 +330,21 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group {
                                                                  $valuearray['day'],
                                                                  $valuearray['hour'],
                                                                  $valuearray['minute']);
+/* BEGIN CORE MOD */
+            if (isset($valuearray['timezone'])) {
+                $value[$this->getName().'_timezone'] = $valuearray['timezone'];
+            } else {
+                $value[$this->getName().'_timezone'] = $this->_options['timezone'];
+            }
             $value[$this->getName()] = make_timestamp($gregoriandate['year'],
                                                       $gregoriandate['month'],
                                                       $gregoriandate['day'],
                                                       $gregoriandate['hour'],
                                                       $gregoriandate['minute'],
                                                       0,
-                                                      $this->_options['timezone'],
+                                                      isset($valuearray['timezone'])  ? $valuearray['timezone'] : $this->_options['timezone'],
                                                       true);
+/* END CORE MOD */
 
             return $value;
         } else {

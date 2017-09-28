@@ -31,6 +31,9 @@ $returnurl = optional_param('returnurl', null, PARAM_LOCALURL);
 
 // If we have got here as a confirmed aciton, do it.
 if ($confirm && isloggedin() && confirm_sesskey()) {
+/* BEGIN CORE MOD */
+    $PAGE->set_url('/admin/purgecaches.php');
+/* END CORE MOD */
     require_capability('moodle/site:config', context_system::instance());
 
     // Valid request. Purge, and redirect the user back to where they came from.

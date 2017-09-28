@@ -97,7 +97,17 @@ if (has_capability('mod/data:managetemplates', $context)) {
 //header('Content-type: text/plain'); // This is handy for debug purposes to look at the KML in the browser
 header('Content-type: application/vnd.google-earth.kml+xml kml');
 header('Content-Disposition: attachment; filename="moodleearth-'.$d.'-'.$rid.'-'.$fieldid.'.kml"');
-
+/* BEGIN CORE MOD */
+if (is_https()) { // HTTPS sites - watch out for IE! KB812935 and KB316431.
+    header('Cache-Control: private, max-age=10, no-transform');
+    header('Expires: '. gmdate('D, d M Y H:i:s', 0) .' GMT');
+    header('Pragma: ');
+} else { //normal http - prevent caching at all cost
+    header('Cache-Control: private, must-revalidate, pre-check=0, post-check=0, max-age=0, no-transform');
+    header('Expires: '. gmdate('D, d M Y H:i:s', 0) .' GMT');
+    header('Pragma: no-cache');
+}
+/* END CORE MOD */
 
 echo data_latlong_kml_top();
 

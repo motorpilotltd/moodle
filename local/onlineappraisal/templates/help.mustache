@@ -1,0 +1,17 @@
+{{!
+    This file is part of the Online Appraisal Plugin for Arup.
+}}
+{{!
+    @template local_onlineappraisal/help
+
+    Display the help page
+}}
+
+<hr class="tophr">
+<h2>{{#str}}helppage:title, local_onlineappraisal{{/str}}</h2>
+<div class="m-b-10">
+{{#str}}helppage:intro, local_onlineappraisal{{/str}}
+</div>
+{{#hasurl}}
+{{{action}}}
+{{/hasurl}}

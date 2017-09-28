@@ -277,7 +277,9 @@ function book_get_toc($chapters, $chapter, $book, $cm, $edit) {
             }
 
             if ($ch->id == $chapter->id) {
-                $toc .= html_writer::tag('strong', $titleout);
+/* BEGIN CORE MOD */
+                $toc .= html_writer::tag('span', $titleout, array('class' => 'current-chapter'));
+/* END CORE MOD */
             } else {
                 $toc .= html_writer::link(new moodle_url('view.php', array('id' => $cm->id, 'chapterid' => $ch->id)), $titleout,
                     array('title' => $title));
@@ -361,7 +363,9 @@ function book_get_toc($chapters, $chapter, $book, $cm, $edit) {
                     }
                 }
                 if ($ch->id == $chapter->id) {
-                    $toc .= html_writer::tag('strong', $title);
+/* BEGIN CORE MOD */
+                    $toc .= html_writer::tag('span', $title, array('class' => 'current-chapter'));
+/* END CORE MOD */
                 } else {
                     $toc .= html_writer::link(new moodle_url('view.php', array('id' => $cm->id, 'chapterid' => $ch->id)), $title, array('title' => s($title)));
                 }

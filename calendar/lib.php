@@ -89,6 +89,10 @@ define('CALENDAR_EVENT_GROUP', 4);
  */
 define('CALENDAR_EVENT_USER', 8);
 
+/* BEGIN CORE MOD */
+/* CALENDAR_EVENT_LUNCHANDLEARN - lunch and learn calendar event types */
+define('CALENDAR_EVENT_LUNCHANDLEARN', 32);
+/* END CORE MOD */
 
 /**
  * CALENDAR_IMPORT_FROM_FILE - import the calendar from a file
@@ -353,6 +357,11 @@ function calendar_get_mini($courses, $groups, $users, $calmonth = false, $calyea
                 $event = new calendar_event($events[$eventid]);
                 $popupalt  = '';
                 $component = 'moodle';
+/* BEGIN CORE MOD */
+                if(isset($typesbyday[$day]['startlunchandlearn'])) {
+                    $popupicon = ' i/lunchandlearnevent';
+                } else
+/* END CORE MOD */
                 if (!empty($event->modulename)) {
                     $popupicon = 'icon';
                     $popupalt  = $event->modulename;
@@ -367,7 +376,9 @@ function calendar_get_mini($courses, $groups, $users, $calmonth = false, $calyea
                     $popupicon = 'i/userevent';
                 }
 
-                $dayhref->set_anchor('event_'.$event->id);
+/* BEGIN CORE MOD */
+                // $dayhref->set_anchor('event_'.$event->id);
+/* END CORE MOD */
 
                 $popupcontent .= html_writer::start_tag('div');
                 $popupcontent .= $OUTPUT->pix_icon($popupicon, $popupalt, $component);
@@ -391,6 +402,11 @@ function calendar_get_mini($courses, $groups, $users, $calmonth = false, $calyea
             $cellattributes = array_merge($cellattributes, $popupdata);
 
             // Class and cell content
+/* BEGIN CORE MOD */
+            if(isset($typesbyday[$day]['startlunchandlearn'])) {
+                $class .= ' calendar_event_lunchandlearn';
+            } else
+/* END CORE MOD */
             if(isset($typesbyday[$day]['startglobal'])) {
                 $class .= ' calendar_event_global';
             } else if(isset($typesbyday[$day]['startcourse'])) {
@@ -493,8 +509,19 @@ function calendar_get_popup($today = false, $timestart, $popupcontent = '') {
         $popupcontent = get_string('eventnone', 'calendar');
 
     } else {
-        $popupcaption .= get_string('eventsfor', 'calendar', userdate($timestart, get_string('strftimedayshort')));
+/* BEGIN CORE MOD */
+        $popupcaption .= userdate($timestart, get_string('strftimedayshort'));
+/* END CORE MOD */
     }
+/* BEGIN CORE MOD */
+    $thedayhref = new moodle_url(CALENDAR_URL . '/view.php', array(
+        'view'=>'day',
+        'cal_y' => date('Y', $timestart),
+        'cal_m' => date('m', $timestart),
+        'cal_d' => date('d', $timestart)
+    ));
+    $popupcaption = html_writer::link($thedayhref, $popupcaption);
+/* END CORE MOD */
 
     return array(
         'data-core_calendar-title' => $popupcaption,
@@ -627,7 +654,21 @@ function calendar_add_event_metadata($event) {
     //Support multilang in event->name
     $event->name = format_string($event->name,true);
 
-    if(!empty($event->modulename)) {                                // Activity event
+/* BEGIN CORE MOD */
+    // Set default so that this property always exists.
+    $event->cssclass = '';
+
+    if ($event->eventtype === 'lunchandlearn') {
+        global $USER;
+        require_once($CFG->dirroot . '/local/lunchandlearn/lib.php');
+        $lal = lunchandlearn::get_instance_by_event($event);
+        $event->icon = '<img src="'.$OUTPUT->pix_url('lunchandlearnevent', 'local_lunchandlearn') . '" alt="'.get_string('lunchandlearnevent', 'local_lunchandlearn').'" class="icon" />';
+        $event->cssclass = 'calendar_event_lunchandlearn';
+        if (!empty($lal) && $lal->is_user_signedup($USER->id)) {
+            $event->cssclass .= ' signedup';
+        }
+    } else if(!empty($event->modulename)) {                                // Activity event
+/* END CORE MOD */
         // The module name is set. I will assume that it has to be displayed, and
         // also that it is an automatically-generated event. And of course that the
         // fields for get_coursemodule_from_instance are set correctly.
@@ -650,7 +691,15 @@ function calendar_add_event_metadata($event) {
         $event->referer = '<a href="'.$CFG->wwwroot.'/mod/'.$event->modulename.'/view.php?id='.$module->id.'">'.$event->name.'</a>';
         $event->courselink = calendar_get_courselink($module->course);
         $event->cmid = $module->id;
-
+/* BEGIN CORE MOD */
+        if ($event->courseid == SITEID) {
+            $event->cssclass = 'calendar_event_global';
+        } elseif ($event->courseid != 0) {
+            $event->cssclass = 'calendar_event_course';
+        } else {
+            $event->cssclass = 'calendar_event_user';
+        }
+/* END CORE MOD */
     } else if($event->courseid == SITEID) {                              // Site event
         $event->icon = '<img src="'.$OUTPUT->pix_url('i/siteevent') . '" alt="'.get_string('globalevent', 'calendar').'" class="icon" />';
         $event->cssclass = 'calendar_event_global';
@@ -698,16 +747,38 @@ function calendar_get_events($tstart, $tend, $users, $groups, $courses, $withdur
         return array();
     }
 
+/* BEGIN CORE MOD */
+    if (calendar_show_event_type(CALENDAR_EVENT_LUNCHANDLEARN)) {
+        global $CFG;
+        require_once ($CFG->dirroot . '/local/lunchandlearn/lib.php');
+        $regionid = lunchandlearn_get_region();
+        $whereclause = "eventtype = 'lunchandlearn'";
+        if ($regionid>-1) {
+            $whereclause .= " AND id IN ("
+                . "SELECT eventid "
+                . "FROM {local_lunchandlearn} l "
+                . "WHERE regionid = 0 OR "
+                . "regionid = $regionid)";
+        }
+    } else {
+        $whereclause = "eventtype <> 'lunchandlearn'";
+    }
+/* END CORE MOD */
+
     if ((is_array($users) && !empty($users)) or is_numeric($users)) {
         // Events from a number of users
         if(!empty($whereclause)) $whereclause .= ' OR';
         list($insqlusers, $inparamsusers) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED);
-        $whereclause .= " (userid $insqlusers AND courseid = 0 AND groupid = 0)";
+/* BEGIN CORE MOD */
+        $whereclause .= " (eventtype <> 'lunchandlearn' AND userid $insqlusers AND courseid = 0 AND groupid = 0)";
+/* END CORE MOD */
         $params = array_merge($params, $inparamsusers);
     } else if($users === true) {
         // Events from ALL users
         if(!empty($whereclause)) $whereclause .= ' OR';
-        $whereclause .= ' (userid != 0 AND courseid = 0 AND groupid = 0)';
+/* BEGIN CORE MOD */
+        $whereclause .= " (eventtype <> 'lunchandlearn' AND userid != 0 AND courseid = 0 AND groupid = 0)";
+/* END CORE MOD */
     } else if($users === false) {
         // No user at all, do nothing
     }
@@ -716,24 +787,32 @@ function calendar_get_events($tstart, $tend, $users, $groups, $courses, $withdur
         // Events from a number of groups
         if(!empty($whereclause)) $whereclause .= ' OR';
         list($insqlgroups, $inparamsgroups) = $DB->get_in_or_equal($groups, SQL_PARAMS_NAMED);
-        $whereclause .= " groupid $insqlgroups ";
+/* BEGIN CORE MOD */
+        $whereclause .= " (eventtype <> 'lunchandlearn' AND groupid $insqlgroups) ";
+/* END CORE MOD */
         $params = array_merge($params, $inparamsgroups);
     } else if($groups === true) {
         // Events from ALL groups
         if(!empty($whereclause)) $whereclause .= ' OR ';
-        $whereclause .= ' groupid != 0';
+/* BEGIN CORE MOD */
+        $whereclause .= " (eventtype <> 'lunchandlearn' AND groupid != 0)";
+/* END CORE MOD */
     }
     // boolean false (no groups at all): we don't need to do anything
 
     if ((is_array($courses) && !empty($courses)) or is_numeric($courses)) {
         if(!empty($whereclause)) $whereclause .= ' OR';
         list($insqlcourses, $inparamscourses) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
-        $whereclause .= " (groupid = 0 AND courseid $insqlcourses)";
+/* BEGIN CORE MOD */
+        $whereclause .= " (eventtype <> 'lunchandlearn' AND groupid = 0 AND courseid $insqlcourses)";
+/* END CORE MOD */
         $params = array_merge($params, $inparamscourses);
     } else if ($courses === true) {
         // Events from ALL courses
         if(!empty($whereclause)) $whereclause .= ' OR';
-        $whereclause .= ' (groupid = 0 AND courseid != 0)';
+/* BEGIN CORE MOD */
+        $whereclause .= " (eventtype <> 'lunchandlearn' AND groupid = 0 AND courseid != 0)";
+/* END CORE MOD */
     }
 
     // Security check: if, by now, we have NOTHING in $whereclause, then it means
@@ -991,6 +1070,12 @@ function calendar_filter_controls_element(moodle_url $url, $type) {
             $typeforhumans = 'user';
             $class = 'calendar_event_user';
             break;
+/* BEGIN CORE MOD */
+        case CALENDAR_EVENT_LUNCHANDLEARN:
+            $typeforhumans = 'lunchandlearn';
+            $class = 'calendar_event_lunchandlearn';
+            break;
+/* END CORE MOD */
     }
     if (calendar_show_event_type($type)) {
         $icon = $OUTPUT->pix_icon('t/hide', get_string('hide'));
@@ -1040,6 +1125,10 @@ function calendar_filter_controls(moodle_url $returnurl) {
         }
         $seturl->param('var', 'showuser');
         $content .= calendar_filter_controls_element($seturl, CALENDAR_EVENT_USER);
+/* BEGIN CORE MOD */
+        $seturl->param('var', 'showlunchandlearn');
+        $content .= calendar_filter_controls_element($seturl, CALENDAR_EVENT_LUNCHANDLEARN);
+/* END CORE MOD */
     }
     $content .= html_writer::end_tag('ul');
 
@@ -1113,8 +1202,14 @@ function calendar_time_representation($time) {
     if(empty($timeformat)){
         $timeformat = get_config(NULL,'calendar_site_timeformat');
     }
+/* BEGIN CORE MOD */
+    global $USER;
+    $userdatetime = new DateTime(null, lunchandlearn_get_moodle_user_timezone($USER));
+    $userdatetime->setTimestamp($time);
+    $timezone = $userdatetime->format(' T');
     // The ? is needed because the preference might be present, but empty
-    return userdate($time, empty($timeformat) ? $langtimeformat : $timeformat);
+    return userdate($time, empty($timeformat) ? $langtimeformat : $timeformat).$timezone;
+/* END CORE MOD */
 }
 
 /**
@@ -1321,6 +1416,12 @@ function calendar_events_by_day($events, $month, $year, &$eventsbyday, &$duratio
         } else {
             $enddate = $startdate;
         }
+/* BEGIN CORE MOD */
+        $dst = dst_offset_on($event->timestart, get_user_timezone());
+        if ($dst != 0) {
+            $startdate['hours'] -= ($dst / HOURSECS);
+        }
+/* END CORE MOD */
 
         // Simple arithmetic: $year * 13 + $month is a distinct integer for each distinct ($year, $month) pair
         if(!($startdate['year'] * 13 + $startdate['mon'] <= $year * 13 + $month) && ($enddate['year'] * 13 + $enddate['mon'] >= $year * 13 + $month)) {
@@ -1335,6 +1436,19 @@ function calendar_events_by_day($events, $month, $year, &$eventsbyday, &$duratio
             $eventsbyday[$eventdaystart][] = $event->id;
 
             // Mark the day as having such an event
+/* BEGIN CORE MOD */
+            if($event->eventtype == 'lunchandlearn') {
+                global $CFG, $USER;
+                require_once($CFG->dirroot.'/local/lunchandlearn/lib.php');
+                $typesbyday[$eventdaystart]['startlunchandlearn'] = true;
+                $lal = lunchandlearn::get_instance_by_event($event);
+                // Set event class for global event.
+                $events[$event->id]->class = 'calendar_event_lunchandlearn';
+                if (!empty($lal) && $lal->is_user_signedup($USER->id)) {
+                    $events[$event->id]->class .= ' signedup';
+                }
+            } else
+/* END CORE MOD */
             if($event->courseid == SITEID && $event->groupid == 0) {
                 $typesbyday[$eventdaystart]['startglobal'] = true;
                 // Set event class for global event
@@ -1362,6 +1476,13 @@ function calendar_events_by_day($events, $month, $year, &$eventsbyday, &$duratio
             continue;
         }
 
+/* BEGIN CORE MOD */
+        // If the event only falls in this month due to timezone considerations, ignore range.
+        if ($startdate['mon'] == $enddate['mon'] && $startdate['mon'] != $month) {
+            continue;
+        }
+/* END CORE MOD */
+
         // The event starts on $month $year or before. So...
         $lowerbound = $startdate['mon'] == $month && $startdate['year'] == $year ? intval($startdate['mday']) : 0;
 
@@ -1369,7 +1490,10 @@ function calendar_events_by_day($events, $month, $year, &$eventsbyday, &$duratio
         $upperbound = $enddate['mon'] == $month && $enddate['year'] == $year ? intval($enddate['mday']) : calendar_days_in_month($month, $year);
 
         // Mark all days between $lowerbound and $upperbound (inclusive) as duration
-        for($i = $lowerbound + 1; $i <= $upperbound; ++$i) {
+/* BEGIN CORE MOD */
+        // Prevent sessions spanning days unless more than 4 hours.
+        for($i = $lowerbound + 1; ($event->timeduration / HOURSECS) > 4 && $i <= $upperbound; ++$i) {
+/* END CORE MOD */
             $durationbyday[$i][] = $event->id;
             if($event->courseid == SITEID && $event->groupid == 0) {
                 $typesbyday[$i]['durationglobal'] = true;
@@ -1751,6 +1875,9 @@ function calendar_print_month_selector($name, $selected) {
  */
 function calendar_show_event_type($type, $user = null) {
     $default = CALENDAR_EVENT_GLOBAL + CALENDAR_EVENT_COURSE + CALENDAR_EVENT_GROUP + CALENDAR_EVENT_USER;
+/* BEGIN CORE MOD */
+    $default += CALENDAR_EVENT_LUNCHANDLEARN;
+/* END CORE MOD */
     if (get_user_preferences('calendar_persistflt', 0, $user) === 0) {
         global $SESSION;
         if (!isset($SESSION->calendarshoweventtype)) {
@@ -1776,6 +1903,9 @@ function calendar_show_event_type($type, $user = null) {
 function calendar_set_event_type_display($type, $display = null, $user = null) {
     $persist = get_user_preferences('calendar_persistflt', 0, $user);
     $default = CALENDAR_EVENT_GLOBAL + CALENDAR_EVENT_COURSE + CALENDAR_EVENT_GROUP + CALENDAR_EVENT_USER;
+/* BEGIN CORE MOD */
+    $default += CALENDAR_EVENT_LUNCHANDLEARN;
+/* END CORE MOD */
     if ($persist === 0) {
         global $SESSION;
         if (!isset($SESSION->calendarshoweventtype)) {
@@ -2816,6 +2946,11 @@ class calendar_information {
         $block->content = $renderer->fake_block_threemonths($this);
         $block->footer = '';
         $block->title = get_string('monthlyview', 'calendar');
+/* BEGIN CORE MOD */
+        if (empty($block->content)) {
+            return;
+        }
+/* END CORE MOD */
         $renderer->add_pretend_calendar_block($block, BLOCK_POS_RIGHT);
     }
 }

@@ -3866,8 +3866,10 @@ function truncate_userinfo(array $info) {
         'lastname'    => 100,
         'email'       => 100,
         'icq'         =>  15,
-        'phone1'      =>  20,
-        'phone2'      =>  20,
+/* BEGIN CORE MOD */
+        'phone1'      => 255,
+        'phone2'      => 255,
+/* END CORE MOD */
         'institution' => 255,
         'department'  => 255,
         'address'     => 255,
@@ -4113,6 +4115,46 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
         $auth = empty($user->auth) ? 'manual' : $user->auth;
         if (!empty($user->suspended)) {
             $failurereason = AUTH_LOGIN_SUSPENDED;
+/* BEGIN CORE MOD */
+            $logexists = false;
+            $logmanager = get_log_manager();
+            $readers = $logmanager->get_readers('core\log\sql_reader');
+            $select = "userid = :userid AND eventname = :eventname AND timecreated > :since";
+            $params = array('userid' => $user->id, 'since' => time() - (24 * 60 * 60), 'eventname' => '\core\event\user_login_failed');
+            foreach ($readers as $reader) {
+                if ($reader instanceof \logstore_legacy\log\store) {
+                    // Don't want to check against legacy store as SQL will fail.
+                    continue;
+                }
+                $rawdata = $reader->get_events_select_iterator($select, $params, 'timecreated DESC', 0, 0);
+                foreach ($rawdata as $event) {
+                   if ($event->other['reason'] === $failurereason) {
+                       $logexists = true;
+                       break;
+                   }
+               }
+               $rawdata->close();
+               if ($logexists === true) {
+                   break;
+               }
+            }
+            if (!$logexists) {
+                // Email admin if not already spotted in the last 24 hours.
+                $message = <<<EOM
+A login attempt by a suspended user has been blocked.
+
+Username: {$username}
+Fullname: {$user->firstname} {$user->lastname}
+Email: {$user->email}
+Staff ID: {$user->idnumber}
+
+You will not be notified of any subsequent attempts to login by this user until
+a period of 24 hours has passed without any failed login attempts.
+EOM;
+                $admin = get_admin();
+                email_to_user($admin, $admin, 'Suspended login attempt', $message);
+            }
+/* END CORE MOD */
 
             // Trigger login failed event.
             $event = \core\event\user_login_failed::create(array('userid' => $user->id,
@@ -4152,7 +4194,12 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
         $user = new stdClass();
         $user->id = 0;
     }
-
+/* BEGIN CORE MOD */
+    $loginstopped = get_config('local_sitemessaging', 'login_stopped');
+    if ($loginstopped && (!$user->id || !has_capability('moodle/site:config', context_system::instance(), $user))) {
+        redirect(new moodle_url('/local/sitemessaging/nologin.php'));
+    }
+/* END CORE MOD */
     if ($ignorelockout) {
         // Some other mechanism protects against brute force password guessing, for example login form might include reCAPTCHA
         // or this function is called from a SSO script.
@@ -4180,7 +4227,12 @@ function authenticate_user_login($username, $password, $ignorelockout=false, &$f
         if (!$authplugin->user_login($username, $password)) {
             continue;
         }
-
+/* BEGIN CORE MOD */
+        // Call auth plugin check function to carry out special checks on user's details haven't changed (inc. mapping if username has changed).
+        if (method_exists($authplugin, 'user_check')) {
+            $authplugin->user_check($user, $username);
+        }
+/* END CORE MOD */
         // Successful authentication.
         if ($user->id) {
             // User already exists in database.
@@ -5452,8 +5504,10 @@ function get_mailer($action='get') {
  * @param int $wordwrapwidth custom word wrap width, default 79
  * @return bool Returns true if mail was sent OK and false if there was an error.
  */
+/* BEGIN CORE MOD */
 function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', $attachment = '', $attachname = '',
-                       $usetrueaddress = true, $replyto = '', $replytoname = '', $wordwrapwidth = 79) {
+                       $usetrueaddress = true, $replyto = '', $replytoname = '', $wordwrapwidth = 79, array $cc = array()) {
+/* END CORE MOD */
 
     global $CFG;
 
@@ -5561,6 +5615,11 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
     } else if ($usetrueaddress and $from->maildisplay) {
         $mail->From     = $from->email;
         $mail->FromName = fullname($from);
+/* BEGIN CORE MOD */
+        if (empty($CFG->handlebounces)) {
+            $mail->Sender = $from->email;
+        }
+/* END CORE MOD */
     } else {
         $mail->From     = $CFG->noreplyaddress;
         $mail->FromName = fullname($from);
@@ -5668,7 +5727,24 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
     foreach ($tempreplyto as $values) {
         $mail->addReplyTo($values[0], $values[1]);
     }
-
+/* BEGIN CORE MOD */
+    foreach ($cc as $ccuser) {
+        if (!empty($CFG->divertccemailsto)) {
+            $ccuser->email = $CFG->divertccemailsto;
+        } elseif (!empty($CFG->divertallemailsto)) {
+            $ccuser->email = $CFG->divertallemailsto;
+        }
+        if (!isset($ccuser->email)) {
+            continue;
+        }
+        if (!validate_email($ccuser->email)) {
+            // We can not send emails to invalid addresses - it might create security issue or confuse the mailer.
+            debugging("email_to_user: CC $ccuser->email (".fullname($ccuser).") email is invalid! Not sending.");
+            continue;
+        }
+        $mail->AddCC($ccuser->email, fullname($ccuser));
+    }
+/* END CORE MOD */
     if ($mail->send()) {
         set_send_count($user);
         if (!empty($mail->SMTPDebug)) {
@@ -9443,6 +9519,58 @@ function get_course_display_name_for_list($course) {
     } else {
         return $course->fullname;
     }
+}
+
+/**
+ * Safe analogue of unserialize() that can only parse arrays
+ *
+ * Arrays may contain only integers or strings as both keys and values. Nested arrays are allowed.
+ * Note: If any string (key or value) has semicolon (;) as part of the string parsing will fail.
+ * This is a simple method to substitute unnecessary unserialize() in code and not intended to cover all possible cases.
+ *
+ * @param string $expression
+ * @return array|bool either parsed array or false if parsing was impossible.
+ */
+function unserialize_array($expression) {
+    $subs = [];
+    // Find nested arrays, parse them and store in $subs , substitute with special string.
+    while (preg_match('/([\^;\}])(a:\d+:\{[^\{\}]*\})/', $expression, $matches) && strlen($matches[2]) < strlen($expression)) {
+        $key = '--SUB' . count($subs) . '--';
+        $subs[$key] = unserialize_array($matches[2]);
+        if ($subs[$key] === false) {
+            return false;
+        }
+        $expression = str_replace($matches[2], $key . ';', $expression);
+    }
+
+    // Check the expression is an array.
+    if (!preg_match('/^a:(\d+):\{([^\}]*)\}$/', $expression, $matches1)) {
+        return false;
+    }
+    // Get the size and elements of an array (key;value;key;value;....).
+    $parts = explode(';', $matches1[2]);
+    $size = intval($matches1[1]);
+    if (count($parts) < $size * 2 + 1) {
+        return false;
+    }
+    // Analyze each part and make sure it is an integer or string or a substitute.
+    $value = [];
+    for ($i = 0; $i < $size * 2; $i++) {
+        if (preg_match('/^i:(\d+)$/', $parts[$i], $matches2)) {
+            $parts[$i] = (int)$matches2[1];
+        } else if (preg_match('/^s:(\d+):"(.*)"$/', $parts[$i], $matches3) && strlen($matches3[2]) == (int)$matches3[1]) {
+            $parts[$i] = $matches3[2];
+        } else if (preg_match('/^--SUB\d+--$/', $parts[$i])) {
+            $parts[$i] = $subs[$parts[$i]];
+        } else {
+            return false;
+        }
+    }
+    // Combine keys and values.
+    for ($i = 0; $i < $size * 2; $i += 2) {
+        $value[$parts[$i]] = $parts[$i+1];
+    }
+    return $value;
 }
 
 /**

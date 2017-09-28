@@ -101,7 +101,12 @@ class mod_feedback_mod_form extends moodleform_mod {
 
         $mform->addElement('selectyesno', 'email_notification', get_string('email_notification', 'feedback'));
         $mform->addHelpButton('email_notification', 'email_notification', 'feedback');
-
+/* BEGIN CORE MOD */
+		$mform->addElement('text', 'email_addresses', get_string('email_addresses', 'feedback'), array('size'=>'75'));
+        $mform->setType('email_addresses', PARAM_TEXT);
+        $mform->addHelpButton('email_addresses', 'email_addresses', 'feedback');
+		$mform->disabledIf('email_addresses', 'email_notification', 'eq', '0');
+/* END CORE MOD */
         $mform->addElement('selectyesno', 'autonumbering', get_string('autonumbering', 'feedback'));
         $mform->addHelpButton('autonumbering', 'autonumbering', 'feedback');
 
@@ -174,6 +179,11 @@ class mod_feedback_mod_form extends moodleform_mod {
                     $data->completionsubmit=0;
                 }
             }
+/* BEGIN CORE MOD */
+			if (!$data->email_notification) {
+				$data->email_addresses = null;
+			}
+/* END CORE MOD */
         }
 
         return $data;

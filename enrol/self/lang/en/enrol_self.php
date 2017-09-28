@@ -21,10 +21,16 @@
  * @copyright  2010 Petr Skoda  {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+/* BEGIN CORE MOD */
+$string['auto'] = 'Automatic enrolment';
+$string['auto_help'] = 'User will be automatically enrolled on the course (i.e. the enrolment screen will be bypassed).';
+/* END CORE MOD */
 $string['canntenrol'] = 'Enrolment is disabled or inactive';
 $string['canntenrolearly'] = 'You cannot enrol yet; enrolment starts on {$a}.';
 $string['canntenrollate'] = 'You cannot enrol any more, since enrolment ended on {$a}.';
+/* BEGIN CORE MOD */
+$string['canntenrolsaml'] = 'Enrolment is disabled for your authentication type.';
+/* END CORE MOD */
 $string['cohortnonmemberinfo'] = 'Only members of cohort \'{$a}\' can self-enrol.';
 $string['cohortonly'] = 'Only cohort members';
 $string['cohortonly_help'] = 'Self enrolment may be restricted to members of a specified cohort only. Note that changing this setting has no effect on existing enrolments.';

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/wa_agency/db" VERSION="2016012101" COMMENT="XMLDB file for Moodle local/wa_agency"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+    <TABLES>
+
+        <TABLE NAME="wa_learning_path" COMMENT="WA Learning paths">
+            <FIELDS>
+                <FIELD NAME="id"            TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="true"  NEXT="name" />
+                <FIELD NAME="category"      TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" PREVIOUS="id"		NEXT="region" />
+                <FIELD NAME="title"			TYPE="char" LENGTH="255"    NOTNULL="true"                  SEQUENCE="false" PREVIOUS="id"		NEXT="region" />
+                <FIELD NAME="summary"		TYPE="text" LENGTH="medium" NOTNULL="false"                 SEQUENCE="false" PREVIOUS="name"	NEXT="status" />
+                <FIELD NAME="introduction"  TYPE="text" LENGTH="medium" NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" PREVIOUS="region"	NEXT='timecreated' />
+                <FIELD NAME="matrix"		TYPE="text" LENGTH="medium" NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" PREVIOUS="region"	NEXT='timecreated' />
+                <FIELD NAME="format"        TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" />
+                <FIELD NAME="itemid"        TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" />
+                <FIELD NAME="keywords"		TYPE="text" LENGTH="medium" NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" PREVIOUS="region"	NEXT='timecreated' />
+                <FIELD NAME="status"        TYPE="int"  LENGTH="10"		NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" PREVIOUS="id"		NEXT="region" />
+                <FIELD NAME="preview"        TYPE="int"  LENGTH="10"		NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" PREVIOUS="id"		NEXT="region" />
+                <FIELD NAME="timecreated"   TYPE="int"	LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" PREVIOUS="region" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"  NEXT="unique_au" />
+            </KEYS>
+        </TABLE>
+
+        <TABLE NAME="wa_learning_path_region" COMMENT="WA Learning paths regions">
+            <FIELDS>
+                <FIELD NAME="id"            TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="true"  NEXT="name" />
+                <FIELD NAME="learningpathid"      TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" PREVIOUS="id"		NEXT="region" />
+                <FIELD NAME="regionid"			TYPE="int" LENGTH="10"    NOTNULL="true"                  SEQUENCE="false" PREVIOUS="id"		NEXT="region" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"  NEXT="unique_au" />
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="wa_lp_inde_learningpathid"	UNIQUE="false"	FIELDS="learningpathid"	COMMENT="The learning path regions"/>
+                <INDEX NAME="wa_lp_inde_regionid"	UNIQUE="false"	FIELDS="regionid"	COMMENT="The learning path regions"/>
+            </INDEXES>
+        </TABLE>
+
+		<TABLE NAME="wa_learning_path_subscribe" COMMENT="WA Learning path subscription">
+            <FIELDS>
+                <FIELD NAME="id"				TYPE="int"  LENGTH="10" NOTNULL="true"  UNSIGNED="true" SEQUENCE="true" />
+                <FIELD NAME="learningpathid"	TYPE="int"  LENGTH="10" NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" />
+                <FIELD NAME="userid"			TYPE="int"  LENGTH="10" NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" />
+                <FIELD NAME="status"			TYPE="int"  LENGTH="3"	NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" DEFAULT="1" />
+                <FIELD NAME="timecreated"		TYPE="int"	LENGTH="10"	NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" DEFAULT="0" />
+                <FIELD NAME="timeupdated"		TYPE="int"	LENGTH="10"	NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" DEFAULT="0" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"  NEXT="unique_au" />
+            </KEYS>
+			<INDEXES>
+			  <INDEX NAME="wa_lp_index_learningpathid"	UNIQUE="false"	FIELDS="learningpathid"	COMMENT="The learning path this subscription instance belongs to."/>
+			  <INDEX NAME="wa_lp_index_userid"			UNIQUE="false"	FIELDS="userid"			COMMENT="The user this subscription instance belongs to."/>
+			  <INDEX NAME="wa_lp_index_status"			UNIQUE="false"	FIELDS="status"			COMMENT="The status of this instance."/>
+			</INDEXES>
+        </TABLE>
+		
+		<TABLE NAME="wa_learning_path_activity" COMMENT="WA Activity">
+            <FIELDS>
+                <FIELD NAME="id"            TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="true"  />
+                <FIELD NAME="title"			TYPE="char" LENGTH="255"    NOTNULL="true"                  SEQUENCE="false" />
+                <FIELD NAME="type"			TYPE="char" LENGTH="50"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="false"	DEFAULT="video" />
+                <FIELD NAME="description"	TYPE="text" LENGTH="text"	NOTNULL="false" />
+                <FIELD NAME="enablecdp"		TYPE="int"	LENGTH="3"		NOTNULL="false"                 SEQUENCE="false"	DEFAULT="0" />
+                <FIELD NAME="learningmethod" TYPE="char"	LENGTH="255"	NOTNULL="false"             SEQUENCE="false"	DEFAULT="SELF-LED" />
+                <FIELD NAME="provider"		TYPE="char"	LENGTH="255"	NOTNULL="false"                 SEQUENCE="false"	DEFAULT="" />
+                <FIELD NAME="duration"		TYPE="int"	LENGTH="10"		NOTNULL="false"                 SEQUENCE="false"	DEFAULT="0" />
+                <FIELD NAME="unit"			TYPE="char"	LENGTH="20"		NOTNULL="false"                 SEQUENCE="false"	DEFAULT="MIN" />
+                <FIELD NAME="subject"		TYPE="char"	LENGTH="255"	NOTNULL="false"                 SEQUENCE="false"	DEFAULT="PD" />
+                <FIELD NAME="learningdescription"  TYPE="text" LENGTH="medium" NOTNULL="false" />
+                <FIELD NAME="completiondate" TYPE="int"	LENGTH="10"		NOTNULL="true"  UNSIGNED="true" SEQUENCE="false"	DEFAULT="0" />
+                <FIELD NAME="idlearningpath" TYPE="int"	LENGTH="10"		NOTNULL="true"  UNSIGNED="true" SEQUENCE="false"	DEFAULT="0"  />
+                <FIELD NAME="timecreated"	TYPE="int"	LENGTH="10"		NOTNULL="true"  UNSIGNED="true" SEQUENCE="false"	DEFAULT="0" />
+                <FIELD NAME="timeupdated"	TYPE="int"	LENGTH="10"		NOTNULL="true"  UNSIGNED="true" SEQUENCE="false"	DEFAULT="0" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"  NEXT="unique_au" />
+            </KEYS>
+			<INDEXES>
+				<INDEX NAME="wa_lpa_index_type"	UNIQUE="false"	FIELDS="type"	COMMENT=""/>
+                <INDEX NAME="wa_lp_index_lp"	UNIQUE="false"	FIELDS="idlearningpath"			COMMENT="Learning path"/>
+			</INDEXES>
+        </TABLE>
+		
+		<TABLE NAME="wa_learning_path_act_region" COMMENT="WA Activities regions">
+            <FIELDS>
+                <FIELD NAME="id"            TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="true"  />
+                <FIELD NAME="activityid"	TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" />
+                <FIELD NAME="regionid"		TYPE="int"	LENGTH="10"		NOTNULL="true"                  SEQUENCE="false" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="wa_lpar_inde_activityid"	UNIQUE="false"	FIELDS="activityid"	COMMENT="The Activity "/>
+                <INDEX NAME="wa_lpar_inde_regionid"		UNIQUE="false"	FIELDS="regionid"	COMMENT="The region"/>
+            </INDEXES>
+        </TABLE>
+		
+		<TABLE NAME="wa_learning_path_a_com" COMMENT="WA activity completions">
+            <FIELDS>
+                <FIELD NAME="id"				TYPE="int"  LENGTH="10" NOTNULL="true"  UNSIGNED="true" SEQUENCE="true" />
+                <FIELD NAME="activityid"		TYPE="int"  LENGTH="10" NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" />
+                <FIELD NAME="userid"			TYPE="int"  LENGTH="10" NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" />
+                <FIELD NAME="timecreated"		TYPE="int"	LENGTH="10"	NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" DEFAULT="0" />
+                <FIELD NAME="timeupdated"		TYPE="int"	LENGTH="10"	NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" DEFAULT="0" />
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"  NEXT="unique_au" />
+            </KEYS>
+			<INDEXES>
+			  <INDEX NAME="wa_lpac_index_activityid"	UNIQUE="false"	FIELDS="activityid"	COMMENT="The activity this completion instance belongs to."/>
+			  <INDEX NAME="wa_lpac_index_userid"		UNIQUE="false"	FIELDS="userid"			COMMENT="The user this completion instance belongs to."/>
+			</INDEXES>
+        </TABLE>
+    </TABLES>
+</XMLDB>

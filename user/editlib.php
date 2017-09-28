@@ -403,21 +403,31 @@ function useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions
         }
     }
 
+/* BEGIN CORE MOD */
+// Hide personal tags field.
+/*
     if (!empty($CFG->usetags) and empty($USER->newadminuser)) {
         $mform->addElement('header', 'moodle_interests', get_string('interests'));
         $mform->addElement('tags', 'interests', get_string('interestslist'), array('display' => 'noofficial'));
         $mform->addHelpButton('interests', 'interestslist');
     }
+*/
+/* END CORE MOD */
 
     // Moodle optional fields.
     $mform->addElement('header', 'moodle_optional', get_string('optional', 'form'));
 
+/* BEGIN CORE MOD */
+// Hide some optional fields.
+/*
     $mform->addElement('text', 'url', get_string('webpage'), 'maxlength="255" size="50"');
     $mform->setType('url', PARAM_URL);
+*/
 
     $mform->addElement('text', 'icq', get_string('icqnumber'), 'maxlength="15" size="25"');
     $mform->setType('icq', PARAM_NOTAGS);
 
+/*
     $mform->addElement('text', 'skype', get_string('skypeid'), 'maxlength="50" size="25"');
     $mform->setType('skype', PARAM_NOTAGS);
 
@@ -429,12 +439,16 @@ function useredit_shared_definition(&$mform, $editoroptions, $filemanageroptions
 
     $mform->addElement('text', 'msn', get_string('msnid'), 'maxlength="50" size="25"');
     $mform->setType('msn', PARAM_NOTAGS);
+*/
 
     $mform->addElement('text', 'idnumber', get_string('idnumber'), 'maxlength="255" size="25"');
     $mform->setType('idnumber', PARAM_NOTAGS);
 
+/*
     $mform->addElement('text', 'institution', get_string('institution'), 'maxlength="255" size="25"');
     $mform->setType('institution', PARAM_TEXT);
+*/
+/* END CORE MOD */
 
     $mform->addElement('text', 'department', get_string('department'), 'maxlength="255" size="25"');
     $mform->setType('department', PARAM_TEXT);

@@ -64,6 +64,9 @@ class user_editadvanced_form extends moodleform {
         $mform->addElement('hidden', 'course', $COURSE->id);
         $mform->setType('course', PARAM_INT);
 
+/* BEGIN CORE MOD - /local/regions */
+        local_regions_definition_user($mform, $userid);
+/* END CORE MOD - /local/regions */
         // Print the required moodle fields first.
         $mform->addElement('header', 'moodle', $strgeneral);
 
@@ -207,7 +210,71 @@ class user_editadvanced_form extends moodleform {
                 $mform->removeElement('deletepicture');
             }
         }
-
+/* BEGIN CORE MOD */
+        // Freeze/remove certain fields if authenticated via SAML (i.e. data is from AD).
+        if ($user && $user->auth == 'saml') {
+            if ($mform->elementExists('regions_field_region_mapping')) {
+                $mform->insertElementBefore(
+                    $mform->createElement('static', 'adaccountinfo', '', get_string('adaccountinfo', 'local_admin')),
+                    'regions_field_region_mapping'
+                );
+            } else {
+                $mform->insertElementBefore(
+                    $mform->createElement('static', 'adaccountinfo', '', get_string('adaccountinfo', 'local_admin')),
+                    'moodle'
+                );
+            }
+            $mform->insertElementBefore(
+                $mform->createElement('header', 'adaccount', get_string('adaccount', 'local_admin')),
+                'adaccountinfo'
+            );
+            $mform->insertElementBefore(
+                $mform->createElement('static', 'adaccountimage', '', get_string('adaccountimage', 'local_admin')),
+                'currentpicture'
+            );
+            $adfreeze = array(
+                'username',
+                'firstname',
+                'lastname',
+                'email',
+                'city',
+                'icq',
+                'idnumber',
+                'department',
+                'phone1',
+                'phone2',
+                'address',
+            );
+            $adremove = array(
+                'passwordpolicyinfo',
+                'newpassword',
+                'preference_auth_forcepasswordchange',
+                'deletepicture',
+                'imagefile',
+                'imagealt',
+            );
+            if ($mform->getElementValue('country')[0] == '') {
+                array_push($adremove, 'country');
+            } else {
+                array_push($adfreeze, 'country');
+            }
+            foreach ($adfreeze as $freeze) {
+                if ($mform->elementExists($freeze)) {
+                    $mform->hardFreeze($freeze);
+                }
+            }
+            foreach ($adremove as $remove) {
+                if ($mform->elementExists($remove)) {
+                    $mform->removeElement($remove);
+                }
+            }
+        }
+/* END CORE MOD */
+/* BEGIN CORE MOD - /local/regions */
+        if ($user) {
+            local_regions_definition_after_data_user($this, $mform, $user);
+        }
+/* END CORE MOD - /local/regions */
         // Next the customisable profile fields.
         profile_definition_after_data($mform, $userid);
     }
@@ -274,6 +341,9 @@ class user_editadvanced_form extends moodleform {
             }
         }
 
+/* BEGIN CORE MOD - /local/regions */
+        $err += local_regions_validation_user($usernew, $files);
+/* END CORE MOD - /local/regions */
         // Next the customisable profile fields.
         $err += profile_validation($usernew, $files);
 

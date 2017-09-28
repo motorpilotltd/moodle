@@ -1,0 +1,159 @@
+.block_carousel {
+    margin-bottom: 0;
+    &.block .content {
+        padding: 0;
+    }
+
+    .slidepreviewimg {
+        width: 150px;
+        height: auto;
+    }
+
+    .overlay {
+        position: relative;
+        height: 400px;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .overlay:before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        opacity: 0.5;
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVQIW2NkYGD4z8DAwMjIAAUADikBA/ggJToAAAAASUVORK5CYII=');
+        background-repeat: repeat;
+    }
+    .overlay-00:before {
+        opacity: 0;
+    }
+    .overlay-01:before {
+        opacity: 0.1;
+    }
+    .overlay-02:before {
+        opacity: 0.2;
+    }
+    .overlay-03:before {
+        opacity: 0.3;
+    }
+    .overlay-04:before {
+        opacity: 0.4;
+    }
+    .overlay-05:before {
+        opacity: 0.5;
+    }
+    .overlay-06:before {
+        opacity: 0.6;
+    }
+    .overlay-07:before {
+        opacity: 0.7;
+    }
+    .overlay-08:before {
+        opacity: 0.8;
+    }
+    .overlay-09:before {
+        opacity: 0.9;
+    }
+    .overlay-10:before {
+        opacity: 1;
+    }
+    @media (min-width: @screen-md) {
+        .btn-carousel {
+            .btn-default;
+            background-color: transparent;
+            color: #FFF;
+            font-size: @font-size-h3;
+            border: 1px solid #FFF;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            &:hover {
+                background-color: #FFF;
+            }
+        }
+        .carousel-caption {
+            font-family: @font-family-serif;
+            color: #FFF;
+            text-shadow: @carousel-text-shadow;
+            font-size: @font-size-h2;
+            line-height: 35px;
+        }
+        .leftaligned {
+            .carousel-caption {
+                position: absolute;
+                left: 7%;
+                right: auto;
+                bottom: auto;
+                text-align: left;
+                top: 20px;
+                z-index: 10;
+                padding-top: 20px;
+                padding-bottom: 20px;
+                line-height: 35px;
+                & .btn {
+                    text-shadow: none; // No shadow for button elements in carousel-caption
+                }
+
+                @media (min-width: @screen-sm) {
+                    max-width: 50%;
+                }
+                @media (min-width: @screen-md) {
+                    max-width: 30%;
+                }
+            }
+
+        }
+    }
+    @media (max-width: @screen-md) {
+        .overlay,
+        .carousel-control {
+            height: 300px;
+        }
+        .carousel-indicators {
+            bottom: auto;
+            top: 270px;
+        }
+        .carousel-caption {
+            position: relative;
+            left: 0;
+            right: 0;
+            max-width: 100%;
+            top: 1px;
+        }
+        .leftaligned {
+             .carousel-caption {
+                text-align: left;
+                padding: 20px;
+            }
+        }
+        .btn-carousel {
+            .btn-default;
+            font-size: @font-size-h5;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+    }
+    @media (max-width: @screen-sm) {
+        .overlay,
+        .carousel-control {
+            height: 200px;
+        }
+        .carousel-indicators {
+            bottom: auto;
+            top: 170px;
+        }
+    }
+    @media (max-width: @screen-xs) {
+        .overlay,
+        .carousel-control {
+            height: 150px;
+        }
+        .carousel-indicators {
+            bottom: auto;
+            top: 120px;
+        }
+    }
+}
+

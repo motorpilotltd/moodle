@@ -1,0 +1,13 @@
+.showcarouselitem {
+    display: none;
+}
+
+.mceEditor td.mceIframeContainer iframe {
+    height: 100px !important;
+    min-height: 100px !important;
+    width: 100% !important;
+}
+.mceEditor > table {
+    height: auto !important;
+    width: 100% !important;
+}

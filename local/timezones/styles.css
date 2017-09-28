@@ -1,0 +1,68 @@
+#timezoneselect {
+    position: absolute;
+    right: 0px;
+    top: -18px;
+}
+#timezoneselect span.clock {
+    color: #777;
+    font-size: 13px;
+    padding-right: 4px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+#timezoneselect:hover span.clock {
+    color: #39f;
+}
+
+#timezoneselect a.clock {
+    display: inline-block;
+    text-indent: -99px;
+    width: 16px;
+    height: 16px;
+    overflow: hidden;
+    vertical-align: middle;
+    background-image: url([[pix:core|i/scheduled]]);
+}
+
+#timezoneselect a.clock.notset {
+    background-image: url([[pix:local_timezones|scheduled-red]]);
+}
+
+#timezoneselect:hover a.clock {
+    background-image: url([[pix:local_timezones|scheduled-blue]]);
+}
+
+#timezonelist {
+    display: none;
+    position: absolute;
+    right: 0;
+    list-style: none;
+    border-radius: 5px;
+    padding: 4px 0px;
+    border: 1px solid #444;
+    color: #444;
+    background: white;
+    z-index: 10;
+    margin-top: 6px;
+    max-height: 140px;
+    overflow: scroll;
+}
+
+#timezonelist li {
+    line-height: 23px;
+    padding: 0 16px 0 6px;
+}
+#timezonelist li a {
+    padding-left: 18px;
+    background-repeat: no-repeat;
+    background-position: left;
+    white-space: nowrap;
+}
+#timezonelist li a.current {
+    background-image: url([[pix:core|i/valid]]);
+}
+
+#timezonelist li:hover {
+    background-color: #eee;
+}

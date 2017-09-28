@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="blocks/carousel/db" VERSION="20160317" COMMENT="XMLDB file for Moodle blocks/carousel"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="block_carousel" COMMENT="Stores each carousel. To-do: link this table to a region field to support display of region specific carousels.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="regionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="name" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="layout" TYPE="char" LENGTH="254" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="block_carousel_item" COMMENT="Stores each carousel item, which consists of an image, a caption and the order in which the item sits in the carousel.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="carousel_id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="image" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="caption" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="captioncolour" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="captionbackground" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="buttontext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="link" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="display" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="opacity" TYPE="char" LENGTH="254" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

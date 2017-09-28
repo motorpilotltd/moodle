@@ -151,12 +151,16 @@ class feedback_item_textarea extends feedback_item_base {
         $values = feedback_get_group_values($item, $groupid, $courseid);
         if ($values) {
             echo '<tr><th colspan="2" align="left">';
-            echo $itemnr.'&nbsp;('.$item->label.') '.$item->name;
+/* BEGIN CORE MOD */
+            echo $itemnr.'&nbsp;'.$item->label.' '.$item->name;
+/* END CORE MOD */
             echo '</th></tr>';
             foreach ($values as $value) {
                 echo '<tr>';
                 echo '<td valign="top" align="left">';
-                echo '-&nbsp;&nbsp;';
+/* BEGIN CORE MOD */
+                // echo '-&nbsp;&nbsp;';
+/* END CORE MOD */
                 echo '</td>';
                 echo '<td align="left" valign="top">';
                 echo str_replace("\n", '<br />', $value->value);
@@ -210,7 +214,9 @@ class feedback_item_textarea extends feedback_item_base {
         $inputname = $item->typ . '_' . $item->id;
         echo '<div class="feedback_item_label_'.$align.'">';
         echo '<label for="'. $inputname .'">';
-        echo '('.$item->label.') ';
+/* BEGIN CORE MOD */
+        echo $item->label.' ';
+/* END CORE MOD */
         echo format_text($item->name.$requiredmark, true, false, false);
         if ($item->dependitem) {
             if ($dependitem = $DB->get_record('feedback_item', array('id'=>$item->dependitem))) {
@@ -296,7 +302,9 @@ class feedback_item_textarea extends feedback_item_base {
 
         //print the question and label
         echo '<div class="feedback_item_label_'.$align.'">';
-            echo '('.$item->label.') ';
+/* BEGIN CORE MOD */
+        echo $item->label.' ';
+/* END CORE MOD */
             echo format_text($item->name . $requiredmark, true, false, false);
         echo '</div>';
 

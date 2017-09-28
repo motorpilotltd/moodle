@@ -78,10 +78,16 @@ if ($form->is_cancelled()){
 
     // Process criteria unlocking if requested.
     if (!empty($data->settingsunlock)) {
-        $completion->delete_course_completion_data();
+/* BEGIN CORE MOD */
+        if (has_capability('local/admin:accesscoursecompletionsettings', context_course::instance($course->id))) {
+            $completion->delete_course_completion_data();
 
-        // Return to form (now unlocked).
-        redirect($PAGE->url);
+            // Return to form (now unlocked).
+            redirect($PAGE->url);
+        } else {
+            redirect($PAGE->url, get_string('completionunlockhelp', 'local_admin'));
+        }
+/* END CORE MOD */
     }
 
     // Delete old criteria.

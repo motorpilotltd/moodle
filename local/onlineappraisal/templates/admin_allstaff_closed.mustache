@@ -1,0 +1,40 @@
+<h2>{{#str}}allstaff, local_onlineappraisal{{/str}}</h2>
+
+<div>
+    {{#str}}admin:toptext:allstaff:closed, local_onlineappraisal, {{cohort}}{{/str}}
+</div>
+
+<h3>{{#str}}admin:allstaff:assigned, local_onlineappraisal{{/str}} {{#str}}admin:usercount:assigned, local_onlineappraisal, {{assignedusercount}}{{/str}}</h3>
+<table class="generaltable" id="oa-appraisal-assigned">
+    <thead>
+        <tr>
+            <th>{{#str}}admin:name, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}admin:staffid, local_onlineappraisal{{/str}}</th>
+            {{#ishrleader}}<th>{{#str}}admin:grade, local_onlineappraisal{{/str}}</th>{{/ishrleader}}
+            <th>{{#str}}admin:employmentcategory, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}admin:startdate, local_onlineappraisal{{/str}}</th>
+            <th class="text-center w-1">{{#str}}admin:appraisalvip, local_onlineappraisal{{/str}}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{#assignedusers}}
+        <tr{{#suspended}} class="oa-user-suspended" data-toggle="tooltip" data-container="body" title="{{#str}}admin:leaver, local_onlineappraisal{{/str}}"{{/suspended}}>
+            <td>{{firstname}} {{lastname}}</td>
+            <td>{{idnumber}}</td>
+            {{#ishrleader}}<td>{{grade}}</td>{{/ishrleader}}
+            <td>{{employmentcategory}}</td>
+            <td>{{startdate}}</td>
+            <td class="text-center w-1">
+                <span data-userid="{{id}}" class="oa-vip-status{{#ishrleader}} oa-toggle-vip{{/ishrleader}}{{#isvip}} oa-vip-yes{{/isvip}}">{{#str}}vip, local_onlineappraisal{{/str}}</span>
+            </td>
+        </tr>
+    {{/assignedusers}}
+    {{^assignedusers}}
+        <tr>
+            <td colspan="3">
+                <div class="alert alert-info m-b-0"><i class="fa fa-exclamation-triangle"></i> {{#str}}admin:allstaff:assigned:none, local_onlineappraisal{{/str}}</div>
+            </td>
+        </tr>
+    {{/assignedusers}}
+    </tbody>
+</table>

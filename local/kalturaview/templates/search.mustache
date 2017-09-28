@@ -1,0 +1,49 @@
+<div class="kaltura-search-results-container">
+    <form class="orderby-form form-inline">
+    <div class="orderby" class="input-group">
+        <label for="kaltura-orderby">Order by </label>
+        <select id="kaltura-orderby" class="form-control">
+            {{# sortoptions }}
+                <option value="{{ value }}"{{# selected }} selected="selected"{{/selected}}>{{ name }}</option>
+            {{/sortoptions}}
+        </select>
+    </div>
+    </form>
+    <div class="kaltura-search-results search-results" data-result-count="{{ resultcount }}">
+        {{# results }}
+        <article class="clearfix search-result">
+            <a class="image-holder" href="{{{ uri }}}" style="background-image: url('{{{ thumburi }}}');">
+                <i class="fa fa-play-circle"></i>
+            </a>
+
+            <div class="info">
+                <header>
+                    <h1><a href="{{{ uri }}}">{{{ title }}}</a></h1>
+                </header>
+                <div class="description summary">
+                    {{{ description }}}
+                </div>
+                {{# hastags }}
+                <ul class="tags">
+                    {{# tags }}
+                        <li><i class="glyphicon glyphicon-tag"></i>{{ . }}</li>
+                    {{/ tags }}
+                </ul>
+                {{/ hastags }}
+                <div class="bottom-bar">
+                    <span><i title="liked" class="glyphicon glyphicon-heart"></i>{{ votes }}</span>
+                    &nbsp;&nbsp;<span><i title="played" class="glyphicon glyphicon-eye-open"></i>{{ plays }}</span>
+                </div>
+            </div>
+        </article>
+        {{/ results }}
+        {{^ results }}
+            {{# str }} noresults, local_kalturaview {{/str}}
+        {{/results}}
+        <div class="loading-bar">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <p class="append">{{# str }} loadmore, local_kalturaview {{/ str }}</p>
+            <p class="replace">{{# str }} loadfiltered, local_kalturaview {{/ str }}</p>
+        </div>
+    </div>
+</div>

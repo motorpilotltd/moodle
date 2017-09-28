@@ -33,7 +33,9 @@ class mod_feedback_use_templ_form extends moodleform {
         $mform =& $this->_form;
 
         //headline
-        $mform->addElement('header', 'general', get_string('general', 'form'));
+/* BEGIN CORE MOD */
+        // $mform->addElement('header', 'general', '');
+/* END CORE MOD */
 
         // visible elements
         $mform->addElement('radio', 'deleteolditems', '1)', get_string('delete_old_items', 'feedback'), 1);

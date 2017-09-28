@@ -1,0 +1,28 @@
+<h2 class="m-t-0">{{#str}}appraisee_heading, local_onlineappraisal{{/str}}</h2>
+<div class="row">
+    <div class="col-md-6 m-b-20">
+        <div>{{#str}}appraisee_welcome, local_onlineappraisal{{/str}}</div>
+    </div>
+    <div class="col-md-6">
+        <div class="fluid-width-video-wrapper">
+            {{#str}}introduction:video, local_onlineappraisal{{/str}}
+        </div>
+    </div>
+</div>
+<div class="row m-t-20">
+    <div class="col-md-9">
+        <div>
+            {{#str}}appraisee_welcome_info, local_onlineappraisal, {{duedate}}{{/str}}
+        </div>
+    </div>
+    <div class="col-md-3 text-right">
+        <a class="btn btn-success" href="{{{url}}}">
+        {{#iscontinuing}}
+            {{#str}}continueappraisal, local_onlineappraisal{{/str}}
+        {{/iscontinuing}}
+        {{^iscontinuing}}
+            {{#str}}startappraisal, local_onlineappraisal{{/str}}
+        {{/iscontinuing}}
+        </a>
+    </div>
+</div>

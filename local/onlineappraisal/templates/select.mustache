@@ -1,0 +1,12 @@
+<div class="form-group m-0{{#hidden}} hidden{{/hidden}}">
+    {{!
+        Variable id is pulled from parent, if set, to allow multiple instances of
+        same base select on a page (e.g. AJAX on table rows).
+    }}
+    <label class="{{label.class}}" for="{{selectid}}{{#id}}-{{id}}{{/id}}">{{label.label}}</label>
+    <select class="form-control" id="{{selectid}}{{#id}}-{{id}}{{/id}}" autocomplete="off">
+    {{#options}}
+        <option value="{{value}}" {{#selected}}selected="selected"{{/selected}}>{{name}}</option>
+    {{/options}}
+    </select>
+</div>

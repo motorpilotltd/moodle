@@ -1,0 +1,43 @@
+// Custom Feedback CSS
+.path-mod-feedback {
+    .feedback_items {
+        label {
+            font-weight: normal;
+        }
+    }
+    .feedback_item_box_left {
+        .boxalign_left .no-overflow {
+            padding: 0;
+        }
+    }
+
+    div.feedback_item_label_left {
+        .make-md-column(4);
+        .make-lg-column(4);
+        text-align: right;
+    }
+    div.feedback_item_presentation_left {
+        .make-md-column(8);
+        .make-lg-column(8);
+        ul {
+            padding: 0;
+        }
+    }
+    .feedback_complete_cancel button[type="submit"] {
+        .btn-default;
+    }
+    .feedback_form input[type="submit"],
+    .feedback_complete_cancel button[type="submit"] {
+        float: left;
+        margin-top: 10px;
+    }
+    .feedback_form {
+        input[type="submit"] {
+            .btn-primary;
+        }
+    }
+    #id_save_item,
+    #id_update_item {
+        .btn-primary;
+    }
+}

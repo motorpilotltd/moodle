@@ -1,0 +1,12 @@
+<header id="page-header" class="clearfix m-t-10 m-b-10">
+	<nav class="breadcrumb-nav">{{{breadcrumb}}}</nav>
+    {{#hasctbtns}}
+        <div class="pull-right accordionbuttons">
+        {{#ctbtns}}
+            <a href="{{{url}}}" class="cataloguebtn {{active}}">{{{icon}}}</a>
+        {{/ctbtns}}
+        </div>
+    {{/hasctbtns}}
+	<div class="breadcrumb-button">{{{breadcrumbbtn}}}</div>
+</header>
+<div id="course-header">{{{courseheader}}}</div>

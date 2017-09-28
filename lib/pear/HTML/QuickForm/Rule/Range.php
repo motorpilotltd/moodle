@@ -36,6 +36,11 @@ class HTML_QuickForm_Rule_Range extends HTML_QuickForm_Rule
      */
     function validate($value, $options = null)
     {
+/* BEGIN CORE MOD */
+        if (is_array($value)) {
+            $value = $value['text'];
+        }
+/* END CORE MOD */
         $length = core_text::strlen($value);
         switch ($this->name) {
             case 'minlength': return ($length >= $options);

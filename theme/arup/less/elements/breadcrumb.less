@@ -1,0 +1,35 @@
+.breadcrumb-button {
+    margin: 0;
+    .singlebutton {
+        display: inline-block;
+        div {
+            margin: 0 0 0 5px;
+        }
+        input[type="submit"] {
+            margin: 0;
+            .btn-admin;
+        }
+    }
+}
+.breadcrumb-nav {
+    margin: 0 0 0 10px;
+    .breadcrumb {
+        min-height: 30px;
+        padding: 5px 0 0 0;
+        background-color: transparent;
+        a {
+            color: @gray-light;
+            &.dimmed_text {
+                color: lighten(@aruporange, 10%);
+            }
+        }
+    }
+}
+.breadcrumb>li+li:before {
+    content: ">\00a0";
+    padding: 0 5px;
+    color: @arupprimarydark;
+}
+.accordionbuttons {
+    margin-top: 2px;
+}

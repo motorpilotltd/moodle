@@ -1,0 +1,93 @@
+<div class="tab-container">
+    <ul class="nav nav-tabs"><li class="active"><a href="#" data-tab="#tab-content-courses">Courses <span class="count badge">{{ coursecount }}</span></a></li>{{#learningeventsenabled}}<li><a href="#" data-tab="#tab-content-learningevents">Learning Events <span class="count badge"><i class="fa fa-refresh fa-spin"></i></span></a></li>{{/learningeventsenabled}}{{#kalturaenabled}}<li><a href="#" data-tab="#tab-content-kaltura">Videos <span class="count badge"><i class="fa fa-refresh fa-spin"></i></span></a></li>{{/kalturaenabled}}</ul>
+    <div class="tab-content-wrapper">
+        <div id="tab-content-courses" class="tab-content open" data-load="{{ courseloader }}" data-preloaded data-perpage="10" data-results-container=".course-results" data-result-element=".coursebox">{{{ preloadedcourses }}}</div>
+        {{#learningeventsenabled}}
+        <div id="tab-content-learningevents" class="tab-content loading loading-append" data-load="{{ searchloader }}" data-perpage="10" data-results-container=".lunchandlearn-search-results" data-result-element=".search-result">
+            <div class="search-results">
+                <div class="loading-bar">
+                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                    <p class="append">{{# str }} loadmore, local_lunchandlearn {{/ str }}</p>
+                    <p class="replace">{{# str }} loadfiltered, local_lunchandlearn {{/ str }}</p>
+                </div>
+            </div>
+        </div>
+        {{/learningeventsenabled}}
+        {{#kalturaenabled}}
+        <div id="tab-content-kaltura" class="tab-content loading loading-append" data-load="{{ kalturaloader }}" data-perpage="10" data-default-sort="-weight" data-results-container=".kaltura-search-results" data-result-element="article.search-result">
+            <div class="search-results">
+                <div class="loading-bar">
+                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                    <p class="append">{{# str }} loadmore, local_kalturaview {{/ str }}</p>
+                    <p class="replace">{{# str }} loadfiltered, local_kalturaview {{/ str }}</p>
+                </div>
+            </div>
+        </div>
+        {{/kalturaenabled}}
+    </div>
+    <div class="filter-block-container hide">
+        <form>
+        {{#filtersdata}}
+            <fieldset>
+                <legend>{{ filtertitle }}</legend>
+                <div class="container-fluid">
+                   <div class="row">
+                   {{#options}}
+                       <div class="filter-option col-sm-3"><label><input type="checkbox" name="filter[{{ fieldname }}][]" value="{{ optionvalue }}" {{# checked }}checked="checked"{{/checked}}>{{ optionvalue }}</label></div>
+                   {{/options}}
+                   </div>
+               </div>
+            </fieldset>
+        {{/filtersdata}}
+            <fieldset class="filter-action-buttons">
+                <input name="search" type="hidden" value="{{searchterm}}">
+                <input type="hidden" name="region" value="{{ regionid }}">
+                <input name="clearfilters" type="submit" value="Clear filters">
+                <input name="applyfilters" type="submit" class="btn-primary" value="Apply filters">
+            </fieldset>
+        </form>
+    </div>
+</div>
+<style>
+
+    .tab-container {
+        margin-top: 28px;
+    }
+
+    #localcoursesearch .input-group {
+        width: 328px;
+    }
+
+    #tab-content-learningevents .search-result {
+        padding: 6px 12px 12px 24px;
+        background-color: #fdfdfd;
+        border: 1px solid #e3e3e3;
+        border-radius: 3px;
+        border-left-width: 20px;
+        margin-bottom: 12px;
+    }
+    #tab-content-learningevents .search-result h1 {
+        margin: 5px 0;
+        float: left;
+    }
+    #tab-content-learningevents .search-result header p {
+        float: right;
+    }
+    #tab-content-learningevents .search-result > div {
+        clear: both;
+    }
+    #tab-content-learningevents .bottom-bar {
+        text-align: right;
+    }
+    .kaltura-search-results-container .orderby {
+        float: right;
+        margin: 10px 0;
+    }
+
+    .course-results,
+    .lunchandlearn-search-results,
+    .kaltura-search-results {
+        clear: both;
+    }
+    
+</style>

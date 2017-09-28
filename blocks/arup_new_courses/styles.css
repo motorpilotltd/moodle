@@ -1,0 +1,21 @@
+.block_arup_new_courses.block .content {padding-left: 0; padding-right: 0;}
+.block_arup_new_courses.block .content .no-new {padding-left: 14px; padding-right: 14px;}
+.block_arup_new_courses.block .footer {margin: 5px 14px; padding: 0; text-align: right;}
+.block_arup_new_courses table {margin-bottom: 5px; width: 100%;}
+.block_arup_new_courses table.arup-new-courses-table tr:hover {background: #EEEEEE;}
+.block_arup_new_courses table td {border-bottom: 1px solid #E5E5E5; padding: 0; vertical-align: middle;}
+.block_arup_new_courses table td.outer-spacer {border-bottom: none; padding: 0 7px; width: 0}
+.block_arup_new_courses table td img {padding: 5px 0;}
+.block_arup_new_courses table td a {display: inline-block; padding: 5px 0 0 5px; width: 100%;}
+.block_arup_new_courses table.arup-has-methodologies td.c1 {font-size: 8px; width: 35px;}
+.block_arup_new_courses table td span.new {color: #339966; font-weight: bold; margin-left: 10px;}
+.block_arup_new_courses table td div.summary {
+    color: #676767;
+    font-size: 12px;
+    line-height: 16px;
+    max-height: 32px;
+    overflow: hidden;
+    padding: 0;
+    word-break: break-word; /* Webkit */
+    word-wrap: break-word;
+}

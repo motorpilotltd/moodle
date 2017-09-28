@@ -1,0 +1,73 @@
+<div class="lastyearboxes m-t-10 {{type}}">
+    <a class="btn btn-warning" data-toggle="collapse" href="#{{type}}" aria-expanded="false" aria-controls="collapseExample">
+        {{#development}}
+            {{#str}}form:lastyear:cardinfo:developmentlink, local_onlineappraisal{{/str}}
+        {{/development}}
+        {{#performance}}
+            {{#str}}form:lastyear:cardinfo:performancelink, local_onlineappraisal{{/str}}
+        {{/performance}}
+    </a>
+    <div class="collapse" id="{{type}}">
+
+    {{#hasdata}}
+    <div class="row">
+    {{#lastyear}}
+        <div class="col-md-12">
+            <div class="panel panel-default m-t-10">
+             <div class="panel-heading">
+                {{{title}}}
+             </div>
+                <div class="panel-body">
+                    <dl class="dl-horizontal m-b-0">
+                        {{#development}}
+                            <dt>
+                                {{#str}}form:lastyear:cardinfo:competency, local_onlineappraisal{{/str}}
+                            </dt>
+                            <dd>
+                                {{{competency}}}
+                            </dd>
+
+                            <dt>
+                                {{#str}}form:lastyear:cardinfo:progress, local_onlineappraisal{{/str}}
+                            </dt>
+                            <dd>
+                                {{{description}}}
+                            </dd>
+
+                            <dt>
+                                {{#str}}form:lastyear:cardinfo:action, local_onlineappraisal{{/str}}
+                            </dt>
+                            <dd>
+                                {{{action_required}}}
+                            </dd>
+                        {{/development}}
+
+                        <dt>
+                            {{#str}}form:lastyear:cardinfo:date, local_onlineappraisal{{/str}}
+                        </dt>
+                        <dd>
+                            {{{date}}}
+                        </dd>
+
+                        {{#performance}}
+                            <dt>
+                                {{#str}}form:lastyear:cardinfo:description, local_onlineappraisal{{/str}}
+                            </dt>
+                            <dd>
+                                {{{description}}}
+                            </dd>
+                        {{/performance}}
+                    </dl>
+                </div>
+            </div>
+        </div>
+    {{/lastyear}}
+    </div>
+    {{/hasdata}}
+    {{^hasdata}}
+        <div class="alert alert-warning m-t-10" role="alert">
+            {{#str}}form:lastyear:cardinfo:none, local_onlineappraisal{{/str}}
+        </div>
+    {{/hasdata}}
+    </div>
+</div>

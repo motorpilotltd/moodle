@@ -328,7 +328,10 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
                 break;
             case 'delete':
                 // The user is deleting the activity.
-                this.delete_with_confirmation(ev, node, activity, action);
+/* BEGIN CORE MOD */
+// Block deletion if part of course completion criteria (by not allowing deletion via AJAX).
+                // this.delete_with_confirmation(ev, node, activity, action);
+/* END CORE MOD */
                 break;
             case 'duplicate':
                 // The user is duplicating the activity.

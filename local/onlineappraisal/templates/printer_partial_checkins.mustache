@@ -1,0 +1,29 @@
+{{!
+    This file is part of the Online Appraisal Plugin for Arup.
+}}
+{{!
+    @template local_onlineappraisal/printer_partial_checkins
+
+    PDF Content : Appraisal : Check-ins
+}}
+
+<div style="text-align:right; border-bottom: 1px solid black; background-color: #FFFFFF; color:black; font-size:1.25em;">{{#str}}checkins, local_onlineappraisal{{/str}}</div>
+<div style="display: inline-block; text-align: left; width: auto; margin-right: auto;">
+    {{#hascheckins}}
+        <table style="background-color: #FFFFFF; width: 100%; padding:3px;" nobr="true">
+            {{#checkins}}
+                <tr>
+                    <td>{{name}} [{{role}}]</td>
+                    <td style="text-align: right;">{{date}}</td>
+                </tr>
+                <tr><td colspan="2" style="background-color: #E7E6E6;">{{{checkin}}}</td></tr>
+                {{^last}}
+                <tr><td colspan="2"></td></tr>
+                {{/last}}
+            {{/checkins}}
+        </table>
+    {{/hascheckins}}
+    {{^hascheckins}}
+        {{#str}}pdf:checkins:none, local_onlineappraisal{{/str}}
+    {{/hascheckins}}
+</div>

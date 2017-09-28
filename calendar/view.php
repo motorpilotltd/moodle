@@ -50,6 +50,9 @@ $day = optional_param('cal_d', 0, PARAM_INT);
 $mon = optional_param('cal_m', 0, PARAM_INT);
 $year = optional_param('cal_y', 0, PARAM_INT);
 $time = optional_param('time', 0, PARAM_INT);
+/* BEGIN CORE MOD */
+$id   = optional_param('id', 0, PARAM_INT);
+/* END CORE MOD */
 
 $url = new moodle_url('/calendar/view.php');
 
@@ -60,6 +63,12 @@ if ($courseid != SITEID) {
 if ($view !== 'upcoming') {
     $url->param('view', $view);
 }
+
+/* BEGIN CORE MOD */
+if ($id !== 0) {
+    $url->param('id', $id);
+}
+/* END CORE MOD */
 
 // If a day, month and year were passed then convert it to a timestamp. If these were passed
 // then we can assume the day, month and year are passed as Gregorian, as no where in core
@@ -91,6 +100,12 @@ if ($courseid != SITEID && !empty($courseid)) {
 
 require_course_login($course);
 
+/* BEGIN CORE MOD */
+require_once "{$CFG->dirroot}/local/lunchandlearn/lib.php";
+lunchandlearn_add_page_navigation($PAGE, $url);
+lunchandlearn_add_admin_navigation($PAGE, $url);
+/* END CORE MOD */
+
 $calendar = new calendar_information(0, 0, 0, $time);
 $calendar->prepare_for_view($course, $courses);
 
@@ -99,6 +114,27 @@ $pagetitle = '';
 $strcalendar = get_string('calendar', 'calendar');
 
 switch($view) {
+/* BEGIN CORE MOD */
+    case 'event':
+        require_once "{$CFG->dirroot}/local/lunchandlearn/lib.php";
+        try {
+            if (empty($id)) {
+                $view = 'upcoming';
+                continue;
+            }
+            $lal = new lunchandlearn($id);
+            $PAGE->navbar->add(
+                    userdate($lal->scheduler->get_date(), get_string('strftimedate')),
+                    $lal->get_cal_url()
+                    );
+            $PAGE->navbar->add($lal->get_name());
+            $pagetitle = $lal->get_name();
+        } catch(Exception $ex) {
+            // Print a pretty notice.
+            notice($ex->getMessage());
+        }
+    break;
+/* END CORE MOD */
     case 'day':
         $PAGE->navbar->add(userdate($time, get_string('strftimedate')));
         $pagetitle = get_string('dayviewtitle', 'calendar', userdate($time, get_string('strftimedaydate')));
@@ -116,17 +152,32 @@ switch($view) {
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title("$course->shortname: $strcalendar: $pagetitle");
 $PAGE->set_heading($COURSE->fullname);
-$PAGE->set_button(calendar_preferences_button($course));
+/* BEGIN CORE MOD */
+// $PAGE->set_button(calendar_preferences_button($course));
+/* END CORE MOD */
 
 $renderer = $PAGE->get_renderer('core_calendar');
-$calendar->add_sidecalendar_blocks($renderer, true, $view);
+/* BEGIN CORE MOD */
+$calendar->add_sidecalendar_blocks($renderer, false, $view);
+/* END CORE MOD */
 
 echo $OUTPUT->header();
 echo $renderer->start_layout();
-echo html_writer::start_tag('div', array('class'=>'heightcontainer'));
+/* BEGIN CORE MOD (added view to class */
+echo html_writer::start_tag('div', array('class'=>'heightcontainer view-'.$view));
+/* END CORE MOD */
 echo $OUTPUT->heading(get_string('calendar', 'calendar'));
 
 switch($view) {
+/* BEGIN CORE MOD */
+    case 'event':
+        echo $renderer->show_event($lal);
+        $event = \local_lunchandlearn\event\event_viewed::create(array(
+            'objectid' => $lal->get_id(),
+        ));
+        $event->trigger();
+    break;
+/* END CORE MOD */
     case 'day':
         echo $renderer->show_day($calendar);
     break;
@@ -154,8 +205,12 @@ echo $OUTPUT->container_start('bottom');
 if (!empty($CFG->enablecalendarexport)) {
     echo $OUTPUT->single_button(new moodle_url('export.php', array('course'=>$courseid)), get_string('exportcalendar', 'calendar'));
     if (calendar_user_can_add_event($course)) {
-        echo $OUTPUT->single_button(new moodle_url('/calendar/managesubscriptions.php', array('course'=>$courseid)), get_string('managesubscriptions', 'calendar'));
+/* BEGIN CORE MOD */
+        // echo $OUTPUT->single_button(new moodle_url('/calendar/managesubscriptions.php', array('course'=>$courseid)), get_string('managesubscriptions', 'calendar'));
+/* END CORE MOD */
     }
+/* BEGIN CORE MOD */
+/*
     if (isloggedin()) {
         $authtoken = sha1($USER->id . $DB->get_field('user', 'password', array('id' => $USER->id)) . $CFG->calendar_exportsalt);
         $link = new moodle_url(
@@ -165,6 +220,8 @@ if (!empty($CFG->enablecalendarexport)) {
         echo html_writer::tag('a', 'iCal',
             array('href' => $link, 'title' => get_string('quickdownloadcalendar', 'calendar'), 'class' => 'ical-link'));
     }
+*/
+/* END CORE MOD */
 }
 
 echo $OUTPUT->container_end();

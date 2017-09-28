@@ -1,0 +1,82 @@
+.block.block_lunchandlearn .content,
+.block.block_mylunchandlearn .content {
+    padding-left: 0;
+    padding-right: 0; /* these paddings are applied to the LI  instead */
+    padding-top: 0;
+}
+
+.block_mylunchandlearn .content .upcomingsessions,
+.block_lunchandlearn .content .upcomingsessions
+{
+    list-style: none;
+    margin: 0;
+}
+.block_mylunchandlearn .content .upcomingsessions li,
+.block_lunchandlearn .content .upcomingsessions li
+{
+    padding: 8px 12px 8px 12px;
+    border-bottom: 1px dotted #e4deeb;
+}
+.block_mylunchandlearn .content .upcomingsessions li:first-child,
+.block_lunchandlearn .content .upcomingsessions li:first-child
+{
+    padding-top: 4px;
+}
+.block_mylunchandlearn .content .upcomingsessions li:hover,
+.block_lunchandlearn .content .upcomingsessions li:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+.block_mylunchandlearn .content .upcomingsessions li:hover a,
+.block_lunchandlearn .content .upcomingsessions li:hover a {
+    color: #08c;
+}
+.block_mylunchandlearn .content .upcomingsessions li div.summary,
+.block_lunchandlearn .content .upcomingsessions li div.summary {
+    color: #676767;
+    font-size: 12px;
+    line-height: 16px;
+    max-height: 32px;
+    overflow: hidden;
+    word-break: break-word;
+    word-wrap: break-word;
+    margin-bottom: 4px;
+}
+.block_mylunchandlearn .content .upcomingsessions li div.summary p:last-child,
+.block_lunchandlearn .content .upcomingsessions li div.summary p:last-child {
+    margin: 0px;
+}
+.block_mylunchandlearn .content .upcomingsessions li div.datestart,
+.block_lunchandlearn .content .upcomingsessions li div.datestart {
+    color: #676767;
+    font-size: 12px;
+    line-height: 16px;
+    text-align: right;
+}
+.block_mylunchandlearn .viewmore,
+.block_lunchandlearn .viewmore {
+    font-size: 12px;
+    float: right;
+    margin-right: 8px;
+    margin-top: 24px;
+}
+.block_mylunchandlearn .section-modchooser-link ,
+.block_lunchandlearn .section-modchooser-link {
+    float: left;
+    font-size: 12px;
+    margin-left: 8px;
+}
+.block_mylunchandlearn .section-modchooser-link a,
+.block_lunchandlearn .section-modchooser-link a{
+    color: #676767;
+}
+.block_mylunchandlearn .section-modchooser-link a:hover,
+.block_lunchandlearn .section-modchooser-link a:hover{
+    color: #39f;
+}
+.block_mylunchandlearn .section-modchooser-link *,
+.block_lunchandlearn .section-modchooser-link * {
+    vertical-align: middle;
+}
+.event .bottom-bar .btn-primary.lalsignup {
+    padding: 4px 10px;
+}

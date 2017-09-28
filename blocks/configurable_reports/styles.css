@@ -1,0 +1,161 @@
+/* BEGIN CORE MOD */
+/* MOVED TO THEME...
+@import url("../blocks/configurable_reports/js/datatables/media/css/jquery.dataTables.css");
+@import url("../blocks/configurable_reports/js/codemirror/lib/codemirror.css");
+@import url("../blocks/configurable_reports/js/codemirror/addon/display/fullscreen.css");
+*/
+/* END CORE MOD */
+
+.dir-rtl .CodeMirror {
+    direction: ltr;
+    text-align: left;
+}
+
+/* Left align Custom SQL textarea and SQL help, in RTL mode.
+*/
+#page-blocks-configurable_reports-editreport.dir-rtl textarea,
+#page-blocks-configurable_reports-editreport.dir-rtl .felement.fstatic {text-align: left;direction: ltr;}
+
+/* Fix table header padding, to show "Sort" arrows
+*/
+#reportslist th.header {padding: 0 20px;}
+
+/* Fix cell alignment in reports list table
+*/
+#page-blocks-configurable_reports-managereport .generaltable td.c5 {direction: ltr;}
+
+/* Left align Setting INPUT TEXT boxes
+*/
+#page-admin-setting-blocksettingconfigurable_reports.dir-rtl .settingsform input[type=text],
+#page-admin-setting-blocksettingconfigurable_reports.dir-rtl .settingsform input[type=password] {text-align: left;direction: ltr;}
+
+/* Table usability & UI fixes
+*/
+#page-blocks-configurable_reports-viewreport .generaltable {
+    border: 1px solid gray;
+    margin: 0 auto;
+
+}
+#page-blocks-configurable_reports-viewreport #calcstable {
+/* BEGIN CORE MOD */
+    width: 100%;
+/* END CORE MOD */
+}
+
+#page-blocks-configurable_reports-viewreport .generaltable th.header {
+    background-color: #f5f5dc;
+    border-bottom-width: 2px;
+}
+
+/* Center align bottom report statistics
+*/
+#page-blocks-configurable_reports-viewreport #totalrecords,
+#page-blocks-configurable_reports-viewreport #lastexecutiontime {
+    padding: 10px;
+    text-align: center;
+}
+
+/* Convert "Add report" link to a beautiful button
+    (Used: http://www.cssbuttongenerator.com/)
+*/
+.addbutton {text-align: center;}
+
+.linkbutton {
+    -moz-box-shadow:inset 0px 1px 0px 0px #dcecfb;
+    -webkit-box-shadow:inset 0px 1px 0px 0px #dcecfb;
+    box-shadow:inset 0px 1px 0px 0px #dcecfb;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #bddbfa), color-stop(1, #80b5ea) );
+    background:-moz-linear-gradient( center top, #bddbfa 5%, #80b5ea 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#bddbfa', endColorstr='#80b5ea');
+    background-color:#bddbfa;
+    -webkit-border-top-left-radius:0px;
+    -moz-border-radius-topleft:0px;
+    border-top-left-radius:0px;
+    -webkit-border-top-right-radius:0px;
+    -moz-border-radius-topright:0px;
+    border-top-right-radius:0px;
+    -webkit-border-bottom-right-radius:0px;
+    -moz-border-radius-bottomright:0px;
+    border-bottom-right-radius:0px;
+    -webkit-border-bottom-left-radius:0px;
+    -moz-border-radius-bottomleft:0px;
+    border-bottom-left-radius:0px;
+    text-indent:0;
+    border:1px solid #84bbf3;
+    display:inline-block;
+    color:#ffffff;
+    font-family:Arial;
+    font-size:15px;
+    font-weight:bold;
+    font-style:normal;
+    height:30px;
+    line-height:30px;
+    width:100px;
+    text-decoration:none;
+    text-align:center;
+    text-shadow:1px 1px 0px #528ecc;
+}
+.linkbutton:hover {
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #80b5ea), color-stop(1, #bddbfa) );
+    background:-moz-linear-gradient( center top, #80b5ea 5%, #bddbfa 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#80b5ea', endColorstr='#bddbfa');
+    background-color:#80b5ea;
+}.linkbutton:active {
+     position:relative;
+     top:1px;
+ }
+/* BEGIN CORE MOD */
+.block_configurable_reports.block .footer {
+    font-size: 12px;
+    margin: 5px 14px;
+    padding: 0;
+    text-align: right;
+}
+.block_configurable_reports .accordion {
+    margin : 0;
+}
+.block_configurable_reports .accordion a {
+    line-height: 16px;
+}
+.block_configurable_reports .accordion-group-heading {
+    padding: 0 15px;
+}
+.block_configurable_reports .accordion-group {
+    border: none;
+    border-radius: 0;
+    margin: 0;
+}
+.block_configurable_reports .accordion-heading {
+    padding: 0 15px 0 30px;
+}
+.block_configurable_reports .accordion-heading:hover {
+    background-color: #EEEEEE;
+}
+.block_configurable_reports .accordion-heading .accordion-toggle {
+    background-image: url("/theme/image.php?theme=arup&component=theme&image=icon_blueminus") !important;
+    background-position: 0 4px;
+    background-repeat: no-repeat;
+    display: block;
+    padding: 2px 0 2px 15px;
+}
+.block_configurable_reports .accordion-heading .accordion-toggle.collapsed {
+    background-image: url("/theme/image.php?theme=arup&component=theme&image=icon_blueplus") !important;
+}
+.block_configurable_reports .accordion-heading .accordion-toggle:hover,
+.block_configurable_reports .accordion-heading .accordion-toggle:focus {
+    color: #262626;
+    outline: none;
+}
+.block_configurable_reports a.accordion-item {
+    display: block;
+    padding: 2px 15px 2px 45px;
+}
+.block_configurable_reports a.accordion-item:hover {
+    background-color: #EEEEEE;
+}
+hr.bcr-accordion-hr {
+    margin: 5px 15px;
+    border-top: 1px solid #e5e5e5;
+    border-bottom: 1px solid #f7f7f7;
+}
+/* END CORE MOD */

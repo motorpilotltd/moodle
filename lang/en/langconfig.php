@@ -30,8 +30,10 @@ $string['iso6391'] = 'en';
 $string['iso6392'] = 'eng';
 $string['labelsep'] = ': ';
 $string['listsep'] = ',';
-$string['locale'] = 'en_AU.UTF-8';
-$string['localewin'] = 'English_Australia.1252';
+/* BEGIN CORE MOD */
+$string['locale'] = 'en_GB.UTF-8';
+$string['localewin'] = 'English_United Kingdom.1252';
+/* END CORE MOD */
 $string['localewincharset'] = '';
 $string['oldcharset'] = 'ISO-8859-1';
 $string['parentlanguage'] = '';

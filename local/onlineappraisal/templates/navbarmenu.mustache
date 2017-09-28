@@ -1,0 +1,150 @@
+
+{{#hasmenu}}
+{{^inappraisal}}
+<li class="Appraisal">
+    <a href="{{{appraisalurl}}}"
+    title="Appraisal">
+        {{#str}}appraisal, local_onlineappraisal{{/str}}
+        {{#notices}}
+            <span class="appraisal-menu-status">{{notices}}</span>
+        {{/notices}}
+    </a>
+</li>
+{{/inappraisal}}
+
+{{#inappraisal}}
+    {{#appraisee.is}}
+        {{#appraisee.active}}
+            <li>
+                <a class="appraisal-link" href="{{{appraiseelink}}}"
+                title="{{#str}}navbar:currentappraisal, local_onlineappraisal{{/str}}">
+                    {{#str}}navbar:currentappraisal, local_onlineappraisal{{/str}}
+                    {{#appraisee.new}}
+                        <span class="appraisal-menu-status">{{#str}}navbar:newappraisal, local_onlineappraisal{{/str}}</span>
+                    {{/appraisee.new}}
+                </a>
+            </li>
+        {{/appraisee.active}}
+    {{/appraisee.is}}
+    {{#hasdashboardlinks}}
+    <li>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#dashboardlinks" title="Appraisal">
+            {{#str}}index, local_onlineappraisal{{/str}}
+            <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+        {{#appraisee.is}}
+            <li>
+                <a class="appraisal-link" href="{{{dashboardlink}}}"
+                title="{{#str}}navbar:appraiseedashboard, local_onlineappraisal{{/str}}">
+                    {{#str}}navbar:appraiseedashboard, local_onlineappraisal{{/str}}
+                </a>
+            </li>
+        {{/appraisee.is}}
+
+        {{#firstdivider}}
+            <li class="divider first" role="presentation"></li>
+        {{/firstdivider}}
+        {{#appraiser.is}}
+            <li>
+                <a class="appraisal-link" href="{{{appraiserlink}}}"
+                title="{{#str}}navbar:appraiserdashboard, local_onlineappraisal{{/str}}">
+                    {{#str}}navbar:appraiserdashboard, local_onlineappraisal{{/str}}
+                    {{#appraiser.active}}
+                        <span class="appraisal-menu-status">{{appraiser.active}}</span>
+                    {{/appraiser.active}}
+                </a>
+            </li>
+        {{/appraiser.is}}
+        {{#signoff.is}}
+            <li>
+                <a class="appraisal-link" href="{{{signofflink}}}"
+                title="{{#str}}navbar:signoffdashboard, local_onlineappraisal{{/str}}">
+                    {{#str}}navbar:signoffdashboard, local_onlineappraisal{{/str}}
+                    {{#signoff.active}}
+                        <span class="appraisal-menu-status">{{signoff.active}}</span>
+                    {{/signoff.active}}
+                </a>
+            </li>
+        {{/signoff.is}}
+        {{#feedback.is}}
+            <li>
+                <a class="appraisal-link" href="{{{feedbacklink}}}"
+                title="{{#str}}navbar:contribdashboard, local_onlineappraisal{{/str}}">
+                    {{#str}}navbar:contribdashboard, local_onlineappraisal{{/str}}
+                    {{#feedback.active}}
+                        <span class="appraisal-menu-status">{{feedback.active}}</span>
+                    {{/feedback.active}}
+                </a>
+            </li>
+        {{/feedback.is}}
+        </ul>
+    </li>
+    {{/hasdashboardlinks}}
+    {{#hasadminlinks}}
+    <li>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#dashboardlinks" title="Appraisal">
+            {{#str}}admin, local_onlineappraisal{{/str}}
+            <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+        {{#itadmin}}
+            <li>
+                <a class="appraisal-link" href="{{{itadminlink}}}"
+                title="{{#str}}navbar:itadmindashboard, local_onlineappraisal{{/str}}">
+                    {{#str}}navbar:itadmindashboard, local_onlineappraisal{{/str}}
+                </a>
+            </li>
+        {{/itadmin}}
+        {{#businessadmin.is}}
+            <li>
+                <a class="appraisal-link" href="{{{businessadminlink}}}"
+                title="{{#str}}navbar:businessadmindashboard, local_onlineappraisal{{/str}}">
+                    {{#str}}navbar:businessadmindashboard, local_onlineappraisal{{/str}}
+                </a>
+            </li>
+        {{/businessadmin.is}}
+        {{#costcentreadmin.is}}
+            <li>
+                <a class="appraisal-link" href="{{{costcentreadminlink}}}"
+                title="{{#str}}navbar:costcentreadmindashboard, local_onlineappraisal{{/str}}">
+                    {{#str}}navbar:costcentreadmindashboard, local_onlineappraisal{{/str}}
+                </a>
+            </li>
+        {{/costcentreadmin.is}}
+        {{#groupleader.is}}
+            <li>
+                <a class="appraisal-link" href="{{{groupleaderlink}}}"
+                title="{{#str}}navbar:groupleaderdashboard, local_onlineappraisal{{/str}}">
+                    {{#str}}navbar:groupleaderdashboard, local_onlineappraisal{{/str}}
+                    {{#groupleader.active}}
+                        <span class="appraisal-menu-status">{{groupleader.active}}</span>
+                    {{/groupleader.active}}
+                </a>
+            </li>
+        {{/groupleader.is}}
+        {{#hrleader.is}}
+            <li>
+                <a class="appraisal-link" href="{{{hrleaderlink}}}"
+                title="{{#str}}navbar:hrleaderdashboard, local_onlineappraisal{{/str}}">
+                    {{#str}}navbar:hrleaderdashboard, local_onlineappraisal{{/str}}
+                </a>
+            </li>
+        {{/hrleader.is}}
+        </ul>
+    </li>
+    {{/hasadminlinks}}
+    <li>
+        <a class="appraisal-link" href="{{{moodleurl}}}"
+            title="{{#str}}navbar:returntomoodle, local_onlineappraisal{{/str}}">
+            {{#str}}navbar:returntomoodle, local_onlineappraisal{{/str}}
+        </a>
+    </li>
+    <li>
+        <a class="appraisal-link" href="{{{helpurl}}}"
+            title="{{#str}}help, local_onlineappraisal{{/str}}">
+            {{#str}}help, local_onlineappraisal{{/str}}
+        </a>
+    </li>
+{{/inappraisal}}
+{{/hasmenu}}

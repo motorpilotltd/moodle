@@ -1,0 +1,742 @@
+.accesshide {
+    left: 0px;
+    position: initial;
+    margin-right: 10px;
+}
+
+p {
+    color: #6b6b6b;
+}
+
+.generaltable td p {
+    margin: 0px;
+    line-height: 15px;
+}
+
+.assignment-type-block {
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.assignment-type-name {
+    position: absolute;
+    width: auto;
+    top: -11px;
+    left: 7px;
+    background-color: white;
+    padding: 0px 5px 0px 5px;
+}
+
+.assignment-modal-shadow {
+    background-color: #666;
+    height: 550px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 400px;
+    top: 11%;
+    z-index: 1;
+    left: 12px;
+}
+
+.assignment-modal {
+    background: white;
+    height: 550px;
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 400px;
+    top: 10%;
+    z-index: 2;
+    border: 1px solid #999;
+}
+
+.assignment-modal-header {
+    width: 100%;
+    height: 50px;
+    background: #eee;
+    border-bottom: 1px solid #BBB;
+}
+
+.assignment-modal-header p {
+    font-size: 15px;
+    font-weight: bold;
+    padding: 12px 0px 0px 12px;
+}
+
+.assignment-modal-header .close {
+    width: 25px;
+    height: 15px;
+    position: absolute;
+    top: 10px;
+    right: 1em;
+    cursor: pointer;
+    background: url("/theme/yui_image.php?file=moodle/enrol_manual/quickenrolment/quickenrolment/sprite.png") no-repeat scroll 0 0 transparent;
+}
+
+.modal_body {
+    height: 366px;
+    border-top: 1px solid #999;
+    border-bottom: 1px solid #999;
+    overflow: auto;
+}
+
+.assignment-modal .counter {
+    width: 100%;
+    height: 30px;
+    background: #eee;
+    border-bottom: 1px solid #BBB;
+    text-align: center;
+
+}
+
+.assignment-modal .counter span {
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 34px;
+    padding-left: 5px;
+}
+
+.user-row {
+    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #eee;
+    display: flex;
+    height: 40px;
+}
+
+.user-data {
+    width: 330px;
+}
+
+.odd .user-data, .odd .enrolbtn {
+    background: #f9f9f9;
+}
+
+.user-row span {
+    width: 20px;
+    background: #EEE;
+    border-right: 1px solid #ddd;
+    text-align: right;
+    font-size: 10px;
+    padding-top: 10px;
+    padding-right: 5px;
+}
+
+.user-row div {
+    float: left;
+}
+
+.user-personal p {
+    margin-bottom: 0px;
+    padding-left: 10px;
+    font-size: 13px;
+}
+
+.user-photo {
+    width: 35px;
+    height: auto;
+    padding: 3px;
+}
+
+.enrolbtn {
+    width: 50px;
+}
+
+.enrolbtn input {
+    font-size: 10px;
+    margin: 0px;
+    padding: 0px 8px 0px 8px;
+    margin-top: 9px;
+}
+
+.assignment-modal-footer {
+    height: 50px;
+    width: 400px;
+    background: #000;
+    background-color: #ddd;
+    text-align: center;
+}
+
+.assignment-modal-footer input {
+    margin-top: 9px;
+}
+
+.actions {
+    width: 100px;
+}
+
+.action-img {
+    text-align: center !important;
+}
+
+.action-img img {
+    cursor: pointer;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.assignment-modal-search {
+    height: 50px;
+    background: #ddd;
+    border-bottom: 1px solid #BBB;
+}
+
+.assignment-modal-search #search-input {
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.assignment-modal-search #search-btn {
+    margin: 7px 0px 0px 10px;
+
+}
+
+.assignment-modal-search #reset-btn {
+    margin: 7px 0px 0px 10px;
+
+}
+
+.generaltable td div {
+    float: left;
+}
+
+.user-info-container {
+    padding-left: 5px;
+    padding-top: 4px;
+}
+
+.certificationpath {
+    color: black;
+    border-bottom: 1px solid #bfbfbf;
+    margin: 0;
+}
+
+.programcontent {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-weight:bold;
+    font-size:14px;
+}
+
+input.coursesetbtn {
+    margin-top: 15px;
+    margin-left: 0px;
+}
+
+.coursesetbox {
+    border: 1px solid black;
+    border-radius: 10px;
+    position: relative;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.coursesetbox .content {
+    margin-top: 10px;
+    display: flex;
+    margin-top: 10px;
+}
+
+.coursesetbox .headerinfo {
+    background: white none repeat scroll 0 0;
+    left: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    position: absolute;
+    top: -11px;
+}
+
+.coursesetbox .labels {
+    float: left;
+    height: 100%;
+    width: 27%;
+}
+
+.coursesetbox .inputs {
+    float: left;
+    height: 100%;
+    width: 73%;
+}
+
+.coursesetbox .inputs input {
+    width: 90%;
+    margin-bottom: 8px;
+}
+
+.coursesetbox .inputs .course {
+    width: 80%;
+    background-color: #f7f8e8;
+    border: 1px solid #d0d676;
+    border-radius: 15px;
+    margin: 5px 0;
+    overflow: auto;
+    padding: 6px 10px;
+
+}
+
+.coursesetbox .inputs img {
+    float: right;
+    margin-top: 5px;
+    padding-left: 10px;
+}
+
+.coursesetbox .labels p {
+    padding-top: 8px;
+    padding-left: 10px;
+    width: 100%;
+    display: flex;
+}
+
+.coursesetmincourses {
+    width: auto !important;
+    float: left;
+}
+
+.coursesetmincourseserror {
+    width: 10px !important;
+    float: left;
+    font-size: 0px;
+
+}
+
+.custom-error {
+    color: #b94a48;
+    display: none;
+}
+
+.course span {
+    padding: 0;
+    margin: 0;
+    color: #000;
+}
+
+.course img {
+    cursor: pointer;
+}
+
+#addcoursebtn {
+    width: auto;
+    margin: 15px 0;
+}
+
+.coursesetoptions {
+    text-align: right;
+    padding-right: 20px;
+    padding-top: 20px;
+}
+
+.message-container {
+    padding-top: 40px;
+}
+
+.message-box {
+    border: 1px solid black;
+    border-radius: 10px;
+    display: block;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.message-box .headerinfo {
+    background: white none repeat scroll 0 0;
+    left: 8px;
+    padding: 0 5px;
+    position: absolute;
+    top: -12px;
+    color: black
+}
+
+.message-box .message-content {
+    padding: 50px 15px 15px 15px;
+}
+
+.message-box input[type="text"] {
+    width: 98%;
+}
+
+.certifications-table {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.certifications-container {
+    padding-top: 40px;
+}
+
+.certifications-footer {
+    background: #f9f9f9 none repeat scroll 0 0;
+    border: 1px solid #ddd;
+    margin-top: 50px;
+    padding: 10px;
+}
+
+.certifications-footer input {
+    margin: 0px;
+}
+
+.certifications-table td img {
+    cursor: pointer;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.certifications-table .certif-actions {
+    text-align: right;
+}
+
+.messagetriggertime {
+    width: 50px !important;
+}
+
+.helpbox {
+    padding-bottom: 5px;
+}
+
+.delete-message {
+    float: right;
+    position: relative;
+    margin: 15px !important;
+}
+
+.notconfirmed {
+    display: none;
+}
+
+#id_programdetails .fcontainer {
+    margin: 0 auto;
+}
+
+#fgroup_id_generalbtngroup {
+    margin-top: 20px;
+}
+
+.certification-dates {
+    text-align: center;
+    margin: 40px 0px 40px 0px;
+}
+
+.certification-dates span {
+    padding: 20px 40px 20px 40px;
+}
+
+.certif-label {
+    font-size: 20px;
+}
+
+.certif-value {
+    color: black;
+    font-weight: bolder;
+    padding-bottom: 20px;
+}
+
+.overview-coursesetbox {
+    padding: 20px;
+    padding-top: 0;
+}
+
+certification-overview > h2 {
+    margin-top: 15px;
+    float:left;
+}
+
+.viewing-user, .completioncriteriainfo{
+    clear:both;
+}
+
+
+
+.certification-overview .summary-details .labels {
+    float:none;
+    text-align: left;
+}
+.certification-overview .summary-details .inputs {
+    float:none;
+}
+.certification-overview .summary-details {
+    background-color: transparent;
+}
+
+.overview-coursesetbox .generaltable {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.generaltable .launchcourse a {
+    border: 1px solid black;
+    color: black;
+    cursor: pointer;
+    padding: 4px 20px;
+}
+
+.generaltable td a:hover {
+    text-decoration: none;
+}
+
+.custom-progressbar {
+    border: 1px solid black;
+    height: 20px;
+    width: 70%;
+}
+
+.custom-progress {
+    background: blue;
+    height: 20px;
+    float: left !important;
+}
+
+.progress-box {
+    padding-right: 30px;
+    padding-top: 15px;
+    width: 280px;
+}
+
+.progress-box > span {
+    padding-left: 15px;
+    width: 25%;
+}
+
+
+.progress-container div {
+    float: right;
+}
+
+.progress-container {
+    float: right;
+    height: 50%;
+    clear: both;
+    margin-top: 5px;
+}
+
+.custom-circle {
+    height: 50px;
+    width: 50px;
+    border-radius: 45px;
+}
+
+.circle-status > span {
+    line-height: 50px;
+    padding-right: 10px;
+}
+
+.edit-certification {
+    float: right;
+}
+
+.not-enrolled {
+    float: right;
+    color: red;
+}
+
+.not-set {
+    text-align: center;
+}
+
+.overview-coursesets-container {
+    border: 1px solid black;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.next-operator {
+    padding-left: 20px;
+}
+
+.recertification-container {
+    padding-top: 40px;
+}
+
+.certifduedatedate {
+    color: red;
+}
+.duedate-modal .accesshide {
+    display: none !important;
+}
+
+.modal-wrapper{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.4);
+    left: 0;
+    top: 0;
+    z-index: 1030;
+}
+
+.duedate-modal {
+    background: white none repeat scroll 0 0;
+    border: 1px solid black;
+    display: inline-table;
+    height: auto;
+    left: 0;
+    margin: auto;
+    position: fixed;
+    right: 0;
+    width: 600px;
+    overflow: hidden;
+    top: 50%;
+    bottom: 0;
+    margin-top: -170px;
+}
+.duedate-modal .mform .fitem .felement.fgroup input[type="text"]{
+    width:auto;
+}
+.duedate-modal .felement{
+    padding-top: 6px;
+}
+
+
+.duedate-modal .fduration input {
+    height: auto !important;
+}
+
+.fitem.fitem_actionbuttons.fitem_fgroup {
+    text-align: center;
+}
+
+.duedate-modal .assignment-modal-header {
+    font-size: 17px;
+    line-height: 45px;
+}
+
+.duedate-modal #fgroup_id_btngroup {
+    border-top: 1px solid black;
+    background: #ddd none repeat scroll 0 0;
+    padding-top: 10px;
+    margin-bottom: 0px;
+}
+
+.duedate-modal .hidden {
+    padding-top: 20px;
+}
+
+.fgrouplabel label {
+    line-height: 30px;
+}
+
+
+.disable-recertification{
+    display:none!important;
+}
+
+.status-red {
+    background-color: #d20d00;
+}
+
+.status-amber {
+    background-color: #ff9000;
+}
+
+.status-green {
+    background-color: #a6be22;
+}
+.status-optional {
+    border: 1px solid #817f7d;
+}
+
+.status-note {
+    color:#6b6b6b;
+    font-size:12px;
+}
+
+.loader-wrapper {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(34, 34, 34, 0.4);
+    z-index: 1000;
+}
+
+.loader {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #0f95ff;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+h2.certif-name{
+    padding-top: 0;
+    margin-top:0;
+}
+
+.content-wrapper{
+    padding-left:20px;
+}
+
+.summary-wrapper{
+    padding-top: 10px;
+}
+.summarylabel {
+    font-weight:bold;
+    font-size:14px;
+}
+
+.summary-details {
+    background-color: #E7E7E7;
+}
+.summary-details:after{
+    content:'';
+    display:block;
+    width:100%;
+    clear:both;
+}
+
+.summary-details p{
+    margin-bottom: 5px;
+    margin-top: 5px;
+    margin-left: 0xp;
+}
+.summary-details .labels{
+    float: left;
+    width: 27%;
+    text-align: right;
+    padding-right: 41px;
+}
+.summary-details .inputs{
+    float: left;
+    width: 73%;
+}
+#fitem_id_userecertif .fitemtitle,
+#fitem_id_usecertif .fitemtitle{
+    width: 27%;
+}
+#fitem_id_userecertif .fitemtitle label,
+#fitem_id_usecertif .fitemtitle label{
+    padding-right:15px;
+}
+#fitem_id_userecertif .felement,
+#fitem_id_usecertif .felement{
+    width: 73%;
+}
+
+
+.between-operator{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.local-custom-certification-multiselect {
+    max-width: 100%;
+}

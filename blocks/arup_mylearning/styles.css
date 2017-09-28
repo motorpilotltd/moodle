@@ -1,0 +1,75 @@
+#block_arup_mylearning_content {
+    margin-top: 20px;
+}
+.block_arup_mylearning .content h2 {
+    margin: 0 0 0.5em 0;
+}
+
+.block_arup_mylearning .content .tabtree {
+    margin-bottom: 0;
+}
+.block_arup_mylearning .content .mybookings .tabtree {
+    margin-bottom: 2.5em;
+}
+
+.block_arup_mylearning th.header {
+    font-size: 14px;
+}
+
+.block_arup_mylearning .hidden {
+    display: none;
+}
+
+.block_arup_mylearning .singlebutton {
+    text-align: left;
+}
+
+.block_arup_mylearning .content table {
+    width: 100%;
+}
+
+.block_arup_mylearning table th,
+.block_arup_mylearning table td {
+    vertical-align: middle;
+}
+
+.block_arup_mylearning table th.actions,
+.block_arup_mylearning table td.actions {
+    white-space: nowrap;
+    min-width: 48px;
+}
+
+.block_arup_mylearning table td.actions a.extra-action {
+    margin-left: 5px;
+}
+
+.block_arup_mylearning p.actions {
+    text-align: right;
+}
+
+.block_arup_mylearning p.actions a {
+    margin-left: 20px;
+}
+
+.block_arup_mylearning p.actions a.btn {
+    margin-bottom: 0;
+    padding-bottom: 4px;
+    padding-top: 4px;
+}
+
+.block_arup_mylearning .modal-upper {
+    float: left;
+    width: 50%;
+}
+
+/* Edit CPD form page */
+#page-blocks-arup_mylearning .editcpd_form input[type=text],
+#page-blocks-arup_mylearning .editcpd_form textarea {
+    width: 400px;
+}
+#page-blocks-arup_mylearning .editcpd_form select {
+    width: 414px;
+}
+#page-blocks-arup_mylearning .editcpd_form .fitem_fdate_selector select {
+    width: auto;
+}

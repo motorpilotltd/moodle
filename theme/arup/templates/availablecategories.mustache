@@ -1,0 +1,147 @@
+<ul class="flexcard flexcard-fixed-height p-0">
+{{#categories}}
+<li class="flexcard_item">
+    <div class="media block-link bg-white shadow-1">
+        <div class="card category-card">
+            <div class="card-header p-l-10 p-r-10">
+                <div class="cardtype category">
+                    {{#str}} typecategory, theme_arup{{/str}}
+                </div>
+                <h3 class="no-wrap max-200">
+                    <a href="{{{categorylink}}}" class="black-link">{{name}}</a>
+                </h3>
+                
+                {{#editing}}
+                    <div class="editcategory m-r-20 m-t-25">
+                        <a href="{{{editlink}}}"><i class="arup-gray fa fa-cog fa-small"></i></a>
+                    </div>
+                {{/editing}}
+            </div>
+            <a class="imagelink" href="{{{categorylink}}}">
+                <div class="responsive-image category-image image-with-text" style="background-image : url('{{{image}}}')" alt="{{name}}" >
+                </div>
+            </a>
+            <div class="p-10">
+                <div class="label label-invert">
+                {{numcourses}}
+                {{#singlecourse}}
+                    {{#str}} course, theme_arup {{/str}}
+                {{/singlecourse}}
+                {{#multicourses}}
+                    {{#str}} courses, theme_arup {{/str}}
+                {{/multicourses}}
+                </div>
+            </div>
+
+            {{#childcategories}}
+                <div class="p-10">
+                    <div class="label label-invert">
+                {{childcategories}} 
+                    {{#multichild}}
+                        {{#str}} subcategories, theme_arup {{/str}}
+                    {{/multichild}}
+                    {{#singlechild}}
+                        {{#str}} subcategory, theme_arup {{/str}}
+                    {{/singlechild}}
+                     </div>
+                </div>
+            {{/childcategories}}
+
+            {{#editing}}
+                <div class="p-10">
+                {{#tags}}
+                    <div class="label label-success m-r-5">
+                        {{tag}} <i  data-id="{{id}}" class="glyphicon glyphicon-remove"></i>
+                    </div>
+                        
+                {{/tags}}
+                <div class="p-t-10">
+                    <div contenteditable="true" class="taginput form-control">
+                    </div>
+                </div>
+                </div>
+            {{/editing}}
+
+            {{#descriptiontext}}
+                <div class="p-10 discriptiontext">
+                    {{{descriptiontext}}}
+                </div>
+            {{/descriptiontext}}
+            <div class="p-10">&nbsp;</div>
+            {{#parentname}}
+                <div class="backlink p-l-10">
+                    <a href="{{{parentlink}}}" class="pink-link m-l-10">{{#str}}parent, theme_arup{{/str}} : {{parentname}}</a>
+                </div>
+            {{/parentname}}
+        </div>
+    </div>
+</li>
+{{/categories}}
+
+{{#courses}}
+{{#hasvideo}}
+<li class="flexcard_item">
+<div class="media block-link bg-white shadow-1">
+    {{{video}}}
+</div>
+</li>
+{{/hasvideo}}
+
+<li class="flexcard_item">
+    <div class="media block-link bg-white shadow-1">
+        <div class="card course-card">
+
+            <div class="card-header p-l-10 p-r-10">
+                <div class="cardtype course">
+                    {{#str}} typecourse, theme_arup{{/str}}
+                </div>
+                <h3 class="no-wrap max-200">
+                    <a href="{{{courselink}}}" class="black-link">{{fullname}}</a>
+                </h3>
+            </div>
+            <div class="media_image">
+                <div class="responsive-image" style="background-image : url('{{courseimage}}')";>
+
+                <div class="overlay">
+                    <i class="md md-arrow-forward"></i>
+                </div>
+                </div>
+            </div>
+
+            <div class="media_content p-l-10 p-r-10 m-t-10 m-b-40">
+                <h4 class="media_title m-b-5">
+                    {{fullname}}
+                </h4>
+
+                <div class="media_institution m-b-5">
+                    {{insfullname}}
+                </div>
+
+                <p class="media_summary p-b-10">
+                    {{{summary}}}
+                </p>
+
+                <div class="progressbox">
+
+                    {{#enablecompletion}}
+                    <div class="progress m-l-10 m-r-10 m-r-10 m-t-15">
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress}}%">
+                        </div>
+                    </div>
+                    <span class="percentage">{{progress}}% </span>
+                    {{/enablecompletion}}
+                </div>
+                
+                <div class="media_tag p-l-10 p-r-10 p-b-10">
+                    {{coursedate}}
+                </div>
+
+            </div>
+            <a class="block-link_overlay-link" href="{{courselink}}" tabindex="-1">
+                {{fullname}}
+            </a>
+        </div>
+    </div>
+</li>
+{{/courses}}
+</ul>

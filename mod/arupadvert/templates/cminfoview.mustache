@@ -1,0 +1,31 @@
+<div class="arupavcminfo">
+    <h2 class="arupav_title m-b-20">{{name}}{{#logo}}<img class="arupav_logo" src="{{{logo}}}">{{/logo}}
+    </h2>
+    {{#hassections}}
+    <div class="avblock {{#hassections}}to-right{{/hassections}} shadow-1 clearblock">
+        {{#courseimage}}
+        <div class="av_image_wrapper">
+            <img src="{{{courseimage}}}" class="img-responsive">
+        </div>
+        {{/courseimage}}
+        <div class="av_metadata">
+            {{#blockelements}}
+                <h4 class="avheading">{{heading}}</h4>
+                <p class="metatext">{{{text}}}</p>
+            {{/blockelements}}
+        </div>
+    </div>
+
+    
+    <div class="avtext">
+        <div class="arupav_summary_wrapper">
+            {{#sections}}
+            {{#showheadings}}
+            <h3 class="avheading">{{heading}}</h3>
+            {{/showheadings}}
+            <p>{{{text}}}</p>
+            {{/sections}}
+        </div>
+    </div>
+    {{/hassections}}
+</div>

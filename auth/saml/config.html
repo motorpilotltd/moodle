@@ -1,0 +1,410 @@
+<?php
+
+// Get saml parameters stored in the saml_config.json.
+if (file_exists($CFG->dataroot.'/saml_config.json')) {
+    $contentfile = file_get_contents($CFG->dataroot.'/saml_config.json');
+    $samlsettings = json_decode($contentfile);
+} else {
+    $samlsettings = new stdClass();
+}
+
+// Set to defaults if undefined (SAML).
+if (!isset($samlsettings->samllib)) {
+    if (isset($config->samllib)) {
+        $samlsettings->samllib = $config->samllib;
+    } else {
+        $samlsettings->samllib = 'C:\inetpub\simplesaml\lib';
+    }
+}
+if (!isset($samlsettings->sp_source)) {
+    if (isset($config->sp_source)) {
+        $samlsettings->sp_source = $config->sp_source;
+    } else {
+        $samlsettings->sp_source = 'arup-sp';
+    }
+}
+if (!isset($samlsettings->dosinglelogout)) {
+    if (isset($config->dosinglelogout)) {
+        $samlsettings->dosinglelogout = $config->dosinglelogout;
+    } else {
+        $samlsettings->dosinglelogout = false;
+    }
+}
+if (!isset($config->username)) {
+    $config->username = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/upn';
+}
+if (!isset($config->autologin)) {
+    $config->autologin = false;
+}
+if (!isset($config->autologin_subnet)) {
+    $config->autologin_subnet = '';
+}
+if (!isset($config->samllogfile)) {
+    $config->samllogfile = '';
+}
+
+// Set to defaults if undefined (LDAP).
+if (!isset($config->host_url)) {
+     $config->host_url = '';
+}
+if (!isset($config->start_tls)) {
+    $config->start_tls = false;
+}
+if (empty($config->ldapencoding)) {
+    $config->ldapencoding = 'utf-8';
+}
+if (!isset($config->pagesize)) {
+    $config->pagesize = LDAP_DEFAULT_PAGESIZE;
+}
+if (!isset($config->contexts)) {
+    $config->contexts = '';
+}
+if (!isset($config->user_type)) {
+    $config->user_type = 'default';
+}
+if (!isset($config->user_attribute)) {
+    $config->user_attribute = '';
+}
+if (!isset($config->search_sub)) {
+    $config->search_sub = '';
+}
+if (!isset($config->opt_deref)) {
+    $config->opt_deref = LDAP_DEREF_NEVER;
+}
+if (!isset($config->bind_dn)) {
+    $config->bind_dn = '';
+}
+if (!isset($config->bind_pw)) {
+    $config->bind_pw = '';
+}
+if (!isset($config->ldap_version)) {
+    $config->ldap_version = '3';
+}
+if (!isset($config->objectclass)) {
+    $config->objectclass = '';
+}
+
+$yesno = array( get_string('no'), get_string('yes') );
+
+$disabled = '';
+if (!ldap_paged_results_supported($config->ldap_version)) {
+    $disabled = ' disabled="disabled"';
+    echo $OUTPUT->notification(get_string('pagedresultsnotsupp', 'auth_ldap'));
+}
+?>
+
+<div align="right">
+    <input type="submit" name="db_reset" value="<?php print_string('db_reset_button', 'auth_saml'); ?>" />
+</div>
+
+<table cellspacing="0" cellpadding="5" border="0">
+
+<?php
+if (isset($err) && !empty($err)) {
+    require_once('error.php');
+    saml_error($err, false, $config->samllogfile);
+    echo '
+    <tr>
+        <td class="center" colspan="4" style="background-color: red; color: white;text-">
+    ';
+    if (isset($err['reset'])) {
+        echo $err['reset'];
+    } else {
+        print_string('form_error', 'auth_saml');
+    }
+    echo '
+        </td>
+    </tr>
+    ';
+}
+?>
+
+<tr valign="top" class="required">
+    <td class="right">
+        <label for="samllib"><?php print_string('samllib', 'auth_saml'); ?>:</label>
+    </td>
+    <td>
+        <input name="samllib" type="text" size="30" value="<?php echo $samlsettings->samllib; ?>" />
+        <?php
+        if (isset($err['samllib'])) {
+            echo $OUTPUT->error_text($err['samllib']);
+        }
+        ?>
+    </td>
+    <td><?php print_string('samllib_description', 'auth_saml'); ?></td>
+</tr>
+
+<tr valign="top" class="required">
+    <td class="right">
+        <label for="sp_source"><?php print_string('sp_source', 'auth_saml'); ?>:</label>
+    </td>
+    <td>
+        <input name="sp_source" type="text" size="10" value="<?php echo $samlsettings->sp_source; ?>" />
+        <?php
+        if (isset($err['sp_source'])) {
+            echo $OUTPUT->error_text($err['sp_source']);
+        }
+        ?>
+    </td>
+    <td><?php print_string('sp_source_description', 'auth_saml'); ?></td>
+</tr>
+
+<tr valign="top" class="required">
+    <td class="right">
+        <label for="username"><?php print_string('username', 'auth_saml'); ?>:</label>
+    </td>
+    <td>
+        <input name="username" type="text" size="30" value="<?php echo $config->username; ?>" />
+    </td>
+    <td><?php print_string('username_description', 'auth_saml'); ?></td>
+</tr>
+
+<tr valign="top">
+    <td class="right">
+        <label for="dosinglelogout"><?php print_string('dosinglelogout', 'auth_saml'); ?>:</td>
+    <td>
+        <input name="dosinglelogout" type="checkbox" <?php if ($samlsettings->dosinglelogout) echo 'checked="CHECKED"'; ?> />
+    </td>
+    <td><?php print_string('dosinglelogout_description', 'auth_saml'); ?></td>
+</tr>
+
+<tr valign="top">
+    <td class="right">
+        <label for="autologin"><?php print_string('autologin', 'auth_saml'); ?>:</label>
+    </td>
+    <td>
+        <input name="autologin" type="checkbox" <?php if ($config->autologin) echo 'checked="CHECKED"'; ?> />
+    </td>
+    <td><?php print_string('autologin_description', 'auth_saml'); ?></td>
+</tr>
+
+<tr valign="top">
+    <td align="right">
+        <label for="autologin_subnet"><?php print_string('autologin_subnet', 'auth_saml') ?></label>
+    </td>
+    <td>
+        <input name="autologin_subnet" id="autologin_subnet" type="text" size="30" value="<?php p($config->autologin_subnet) ?>" />
+    </td>
+    <td>
+        <?php print_string('autologin_subnet_description', 'auth_saml') ?>
+    </td>
+</tr>
+
+<tr valign="top">
+    <td class="right">
+        <label for="samllogfile"><?php print_string('logfile', 'auth_saml'); ?>:</label>
+    </td>
+    <td>
+       <input name="samllogfile" type="text" size="30" value="<?php echo $config->samllogfile; ?>" />
+    </td>
+    <td><?php print_string('logfile_description', 'auth_saml'); ?></td>
+</tr>
+
+<?php
+print_auth_lock_options($this->authtype, $userfields, '<!-- empty help -->', true, false);
+?>
+
+<tr>
+   <td colspan="2">
+        <h4><?php print_string('auth_ldap_server_settings', 'auth_ldap') ?></h4>
+   </td>
+</tr>
+<tr valign="top" class="required">
+    <td align="right">
+        <label for="host_url"><?php print_string('auth_ldap_host_url_key', 'auth_ldap') ?></label>
+    </td>
+    <td>
+        <input name="host_url" id="host_url" type="text" size="30" value="<?php echo $config->host_url?>" />
+        <?php if (isset($err['host_url'])) { echo $OUTPUT->error_text($err['host_url']); } ?>
+    </td>
+    <td>
+        <?php print_string('auth_ldap_host_url', 'auth_ldap') ?>
+    </td>
+</tr>
+<tr valign="top" class="required">
+    <td align="right"><label for="ldap_version"><?php print_string('auth_ldap_version_key', 'auth_ldap') ?></label></td>
+    <td>
+        <?php
+             $versions = array();
+             $versions[2] = '2';
+             $versions[3] = '3';
+             echo html_writer::select($versions, 'ldap_version', $config->ldap_version, false);
+             if (isset($err['ldap_version'])) { echo $OUTPUT->error_text($err['ldap_version']); }
+        ?>
+    </td>
+    <td>
+        <?php print_string('auth_ldap_version', 'auth_ldap') ?>
+    </td>
+</tr>
+<tr valign="top">
+    <td align="right">
+        <label for="start_tls"><?php print_string('start_tls_key', 'auth_ldap') ?></label>
+    </td>
+    <td>
+        <?php echo html_writer::select($yesno, 'start_tls', $config->start_tls, false); ?>
+    </td>
+    <td>
+        <?php print_string('start_tls', 'auth_ldap') ?>
+    </td>
+</tr>
+<tr valign="top" class="required">
+    <td align="right">
+        <label for="ldapencoding"><?php print_string('auth_ldap_ldap_encoding_key', 'auth_ldap') ?></label>
+    </td>
+    <td>
+        <input id="ldapencoding" name="ldapencoding" type="text" value="<?php echo $config->ldapencoding ?>" />
+        <?php if (isset($err['ldapencoding'])) { echo $OUTPUT->error_text($err['ldapencoding']); } ?>
+    </td>
+    <td>
+        <?php print_string('auth_ldap_ldap_encoding', 'auth_ldap') ?>
+    </td>
+</tr>
+<tr valign="top">
+    <td align="right">
+        <label for="pagesize"><?php print_string('pagesize_key', 'auth_ldap') ?></label>
+    </td>
+    <td>
+        <input id="pagesize" name="pagesize" type="text" value="<?php echo $config->pagesize ?>" <?php echo $disabled ?>/>
+        <?php
+            if (isset($err['pagesize'])) { echo $OUTPUT->error_text($err['pagesize']); }
+            if ($disabled) {
+                // Don't lose the page size value (disabled fields are not submitted!)
+        ?>
+            <input id="pagesize" name="pagesize" type="hidden" value="<?php echo $config->pagesize ?>" />
+        <?php } ?>
+    </td>
+    <td>
+        <?php print_string('pagesize', 'auth_ldap') ?>
+    </td>
+</tr>
+<tr>
+    <td colspan="2">
+        <h4><?php print_string('auth_ldap_bind_settings', 'auth_ldap') ?></h4>
+    </td>
+</tr>
+<tr valign="top" class="required">
+    <td align="right">
+        <label for="bind_dn"><?php print_string('auth_ldap_bind_dn_key', 'auth_ldap') ?></label>
+    </td>
+    <td>
+        <input name="bind_dn" id="bind_dn" type="text" size="30" value="<?php echo $config->bind_dn?>" />
+        <?php if (isset($err['bind_dn'])) { echo $OUTPUT->error_text($err['bind_dn']); } ?>
+    </td>
+    <td>
+        <?php print_string('auth_ldap_bind_dn', 'auth_ldap') ?>
+    </td>
+</tr>
+<tr valign="top" class="required">
+    <td align="right">
+        <label for="bind_pw"><?php print_string('auth_ldap_bind_pw_key', 'auth_ldap') ?></label>
+    </td>
+    <td>
+        <input name="bind_pw" id="bind_pw" type="password" size="30" value="<?php echo $config->bind_pw?>" autocomplete="off"/>
+        <?php if (isset($err['bind_pw'])) { echo $OUTPUT->error_text($err['bind_pw']); } ?>
+    </td>
+    <td>
+        <?php print_string('auth_ldap_bind_pw', 'auth_ldap') ?>
+    </td>
+</tr>
+<tr>
+    <td colspan="2">
+        <h4><?php print_string('auth_ldap_user_settings', 'auth_ldap') ?></h4>
+    </td>
+</tr>
+<tr valign="top" class="required">
+    <td align="right">
+        <label for="menuuser_type"><?php print_string('auth_ldap_user_type_key', 'auth_ldap') ?></label>
+    </td>
+    <td>
+        <?php
+            echo html_writer::select(ldap_supported_usertypes(), 'user_type', $config->user_type, false);
+            if (isset($err['user_type'])) {
+                echo $OUTPUT->error_text($err['user_type']);
+            }
+        ?>
+    </td>
+    <td>
+        <?php print_string('auth_ldap_user_type', 'auth_ldap') ?>
+    </td>
+</tr>
+<tr valign="top" class="required">
+    <td align="right">
+        <label for="contexts"><?php print_string('auth_ldap_contexts_key', 'auth_ldap') ?></label>
+    </td>
+    <td>
+        <input name="contexts" id="contexts" type="text" size="30" value="<?php echo $config->contexts?>" />
+        <?php if (isset($err['contexts'])) { echo $OUTPUT->error_text($err['contexts']); } ?>
+    </td>
+    <td>
+        <?php print_string('auth_ldap_contexts', 'auth_ldap') ?>
+    </td>
+</tr>
+<tr valign="top" class="required">
+    <td align="right">
+        <label for="menusearch_sub"><?php print_string('auth_ldap_search_sub_key', 'auth_ldap') ?></label></td>
+    <td>
+        <?php echo html_writer::select($yesno, 'search_sub', $config->search_sub, false); ?>
+    </td>
+    <td>
+        <?php print_string('auth_ldap_search_sub', 'auth_ldap') ?>
+    </td>
+</tr>
+<tr valign="top" class="required">
+    <td align="right"><label for="menuopt_deref"><?php print_string('auth_ldap_opt_deref_key', 'auth_ldap') ?></label></td>
+    <td>
+        <?php
+             $opt_deref = array();
+             $opt_deref[LDAP_DEREF_NEVER] = get_string('no');
+             $opt_deref[LDAP_DEREF_ALWAYS] = get_string('yes');
+             echo html_writer::select($opt_deref, 'opt_deref', $config->opt_deref, false);
+             if (isset($err['opt_deref'])) {
+                 echo $OUTPUT->error_text($err['opt_deref']);
+             }
+        ?>
+    </td>
+    <td>
+        <?php print_string('auth_ldap_opt_deref', 'auth_ldap') ?>
+    </td>
+</tr>
+<tr valign="top" class="required">
+    <td align="right">
+        <label for="user_attribute"><?php print_string('auth_ldap_user_attribute_key', 'auth_ldap') ?></label>
+    </td>
+    <td>
+        <input name="user_attribute" id="user_attribute" type="text" size="30" value="<?php echo $config->user_attribute?>" />
+        <?php if (isset($err['user_attribute'])) {
+            echo $OUTPUT->error_text($err['user_attribute']);
+        } ?>
+    </td>
+    <td>
+        <?php print_string('auth_ldap_user_attribute', 'auth_ldap') ?>
+    </td>
+</tr>
+<tr valign="top" class="required">
+    <td align="right">
+        <label for="objectclass"><?php print_string('auth_ldap_objectclass_key', 'auth_ldap') ?></label>
+    </td>
+    <td>
+        <input name="objectclass" id="objectclass" type="text" size="30" value="<?php echo $config->objectclass?>" />
+        <?php if (isset($err['objectclass'])) {
+            echo $OUTPUT->error_text($err['objectclass']);
+        } ?>
+    </td>
+    <td>
+        <?php print_string('auth_ldap_objectclass', 'auth_ldap') ?>
+    </td>
+</tr>
+
+<tr><td colspan="3"><?php echo $OUTPUT->heading(get_string('auth_data_mapping', 'auth')); ?></td></tr>
+
+<?php foreach ($this->userfields as $field) : ?>
+<tr valign="top">
+    <td class="right">
+        <label for="ldap_map_<?php echo $field; ?>"><?php print_string($field); ?>:</label>
+    </td>
+    <td>
+        <input name="ldap_map_<?php echo $field; ?>" type="text" size="30" value="<?php echo $config->{"ldap_map_$field"}; ?>" />
+    </td>
+</tr>
+<?php endforeach; ?>
+</table>

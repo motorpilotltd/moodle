@@ -140,8 +140,9 @@ class enrol_guest_plugin extends enrol_plugin {
         global $USER, $CFG;
 
         $allow = false;
-
-        if ($instance->password === '') {
+/* BEGIN CORE MOD */
+        if ($instance->password === '' && !empty($USER->auth) && $USER->auth === 'saml') {
+/* END CORE MOD */
             $allow = true;
 
         } else if (isset($USER->enrol_guest_passwords[$instance->id])) { // this is a hack, ideally we should not add stuff to $USER...

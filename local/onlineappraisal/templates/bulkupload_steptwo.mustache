@@ -1,0 +1,28 @@
+<div class="alert alert-{{#nextstep}}success{{/nextstep}}{{^nextstep}}warning{{/nextstep}}" role="alert">
+    <h4>Processing results</h4>
+    <p>Rows processed: <strong>{{rowcount}}</strong><br />
+        Unique users found: <strong>{{usercount}}</strong><br />
+        Number of users with issues raised: <strong>{{badusercount}}</strong> (See above)</p>
+</div>
+{{^nextstep}}
+<p>There is an issue that means it is not possible to continue with this step, please see messages above for details.
+    Once these issues have been resolved and the CSV has been updated (if necessary) please return to the previous step to begin processing again.</p>
+<a href="{{prevstepurl}}" class="btn btn-primary pull-left oa-bulkupload-generic-submit">Return to previous step</a>
+{{/nextstep}}
+{{#nextstep}}
+<p>If you are happy with the above results please continue to the next step.<br />
+    In this step each of the appraisals will be pre-processed to ensure that all users have the correct permissions and that appraisals are enabled for all appropriate cost centres.</p>
+<div class="form-inline m-b-15">
+    <div class="form-group">
+        <label class="media-middle m-b-0" for="oa-init-duedate">{{#str}}admin:duedate, local_onlineappraisal{{/str}}</label>
+        <div class="input-group date">
+            <input id="oa-bulkupload-duedate" type="text" class="form-control datepicker" autocomplete="off" />
+            <div class="input-group-addon">
+                <i class="fa fa-lg fa-calendar"></i>
+            </div>
+        </div>
+        <div class="help-block  pull-right m-l-5 m-b-0 hidden">{{#str}}error:duedate, local_onlineappraisal{{/str}}</div>
+    </div>
+</div>
+<a id="oa-bulkupload-steptwo-submit" href="{{nextstepurl}}" class="btn btn-primary pull-right">Proceed to next step</a>
+{{/nextstep}}

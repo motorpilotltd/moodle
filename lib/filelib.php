@@ -2969,7 +2969,10 @@ class curl {
                 $this->responsefinished = false;
                 $this->response = array();
             }
-            list($key, $value) = explode(" ", rtrim($header, "\r\n"), 2);
+/* BEGIN CORE MOD */
+// Ensure there are at least two values in the array.
+            list($key, $value) = array_pad(explode(" ", rtrim($header, "\r\n"), 2), 2, '');
+/* END CORE MOD */
             $key = rtrim($key, ':');
             if (!empty($this->response[$key])) {
                 if (is_array($this->response[$key])) {

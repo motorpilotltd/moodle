@@ -26,7 +26,14 @@
 
 require('../config.php');
 require_once('lib.php');
-
+/* BEGIN CORE MOD */
+$loginstopped = get_config('local_sitemessaging', 'login_stopped');
+$bypass = optional_param('bypass', false, PARAM_BOOL);
+$userok = empty($USER) ? false : has_capability('moodle/site:config', context_system::instance());
+if ($loginstopped && !$bypass && empty($_POST) && !$userok) {
+    redirect(new moodle_url('/local/sitemessaging/nologin.php'));
+}
+/* END CORE MOD */
 // Try to prevent searching for sites that allow sign-up.
 if (!isset($CFG->additionalhtmlhead)) {
     $CFG->additionalhtmlhead = '';

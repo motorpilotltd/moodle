@@ -1,0 +1,28 @@
+<h2>{{#str}}allstaff, local_onlineappraisal{{/str}}</h2>
+
+<div>
+    {{#str}}admin:toptext:allstaff:notstarted, local_onlineappraisal, {{cohort}}{{/str}}
+</div>
+
+{{#form}}
+<form id={{id}} class="oa-form-allstaff form-inline m-b-15" {{#confirm}}data-confirm="{{.}}"{{/confirm}} data-button="{{buttonprocessing}}">
+    {{#hiddeninputs}}
+        <input type="hidden" name="{{name}}" value="{{value}}">
+    {{/hiddeninputs}}
+    <div class="form-group">
+        <label class="media-middle m-b-0" for="oa-init-duedate">{{#str}}admin:duedate:default, local_onlineappraisal{{/str}}</label>
+        <div class="input-group date">
+            <input type="hidden" name="duedate" {{#groupcohort.duedate}}value="{{.}}"{{/groupcohort.duedate}}>
+            <input id="oa-init-duedate" type="text" class="form-control datepicker" autocomplete="off"
+                {{#duedate}}data-y="{{y}}" data-m="{{m}}" data-d="{{d}}"{{/duedate}}/>
+            <div class="input-group-addon">
+                <i class="fa fa-lg fa-calendar"></i>
+            </div>
+        </div>
+        <div class="help-block pull-right m-l-5 m-b-0 hidden">{{#str}}error:duedate, local_onlineappraisal{{/str}}</div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary" data-confirm="{{confirmtext}}">{{buttontext}}</button>
+    </div>
+</form>
+{{/form}}

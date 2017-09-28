@@ -1,0 +1,103 @@
+.path-local-coursemanager .action-icon.disabled img {
+  opacity: 0.5;
+}
+.path-local-coursemanager .navbar .addcoursebtn {
+  position: absolute;
+  right: 10px;
+  top: 14.5px;
+}
+.path-local-coursemanager .navbar input#id_submitbutton {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+.path-local-coursemanager .navbar .mform {
+  margin-top: 14.5px;
+}
+.path-local-coursemanager .navbar .mform fieldset {
+  float: left;
+}
+.path-local-coursemanager .navbar .mform .fitem {
+  margin: 0;
+}
+.path-local-coursemanager .navbar .mform .fitem .fitemtitle {
+  display: none;
+}
+.path-local-coursemanager .navbar .mform .fitem .felement {
+  width: auto;
+}
+.path-local-coursemanager .navbar .mform .fitem .felement.fsubmit {
+  margin-left: 0;
+}
+.path-local-coursemanager .cmanchor::before {
+  content: "";
+  display: block;
+  height: 150px;
+  /* fixed header height*/
+  margin: -150px 0 0;
+  /* negative fixed header height */
+}
+.path-local-coursemanager .addclassbtn,
+.path-local-coursemanager .addcoursebtn {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.path-local-coursemanager .addclassbtn .innerbuttons,
+.path-local-coursemanager .addcoursebtn .innerbuttons {
+  display: table;
+}
+.path-local-coursemanager .addclassbtn .innerbuttons .singlebutton,
+.path-local-coursemanager .addcoursebtn .innerbuttons .singlebutton {
+  display: table-cell;
+}
+.path-local-coursemanager .addclassbtn .innerbuttons .singlebutton div,
+.path-local-coursemanager .addcoursebtn .innerbuttons .singlebutton div {
+  margin: 0;
+}
+.path-local-coursemanager .addclassbtn .innerbuttons .singlebutton div input[type="submit"],
+.path-local-coursemanager .addcoursebtn .innerbuttons .singlebutton div input[type="submit"] {
+  margin-bottom: 0;
+  margin-right: 10px;
+}
+.path-local-coursemanager .addclassbtn .innerbuttons a.btn,
+.path-local-coursemanager .addcoursebtn .innerbuttons a.btn {
+  display: table-cell;
+}
+.path-local-coursemanager .navbar-form {
+  float: left;
+}
+.path-local-coursemanager .yui3-overlay {
+    z-index: 1040;
+}
+@media (min-width: 992px) {
+  .path-local-coursemanager .cmselect {
+    margin-left: -10px;
+    margin-right: -10px;
+    margin-bottom: 15px;
+  }
+  .path-local-coursemanager .cmselect div.singleselect {
+    float: left;
+    position: relative;
+    padding-left: 10px;
+  }
+  .path-local-coursemanager .cmselect .cmselecttitle {
+    text-align: right;
+    float: left;
+    width: 33%;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+  .path-local-coursemanager .cmselect:before,
+  .path-local-coursemanager .cmselect:after {
+    content: " ";
+    display: table;
+    clear: both;
+  }
+}
+@media (min-width: 1200px) {
+  .path-local-coursemanager .cmselect .cmselecttitle {
+    float: left;
+    width: 25%;
+  }
+}

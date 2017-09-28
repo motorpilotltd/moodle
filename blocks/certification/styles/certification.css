@@ -1,0 +1,98 @@
+.block_certification .certification-table{
+    width:100%;
+    border: 1px solid #98aeb8;
+    table-layout: auto;
+    padding-right: 5px;
+}
+
+.block_certification .certification-row td,
+.block_certification .category-header td{
+    padding: 5px 5px 5px 5px;
+    border: 1px solid #dddddd;
+}
+
+.block_certification .certification-category td{
+    padding: 5px 5px 5px 10px;
+}
+
+.block_certification .certification-category{
+    background-color:#7895a2;color:white;
+    border: 1px solid #dddddd;
+}
+
+.block_certification .category-header{
+    background-color:#f9f9f9;
+    border: 1px solid #dddddd;
+    color:#817f7d;
+}
+
+.block_certification .certification-row{
+    background-color:#ffffff;
+    border: 1px solid #dddddd;
+    color:#817f7d;
+}
+
+.block_certification .certification-row-red {
+    background-color: #ffe5e5;
+}
+
+.block_certification .category-progress {
+    text-align: right;
+}
+.block_certification .category-progress span {
+    width: 95%;
+    display:inline-block;
+    text-align: center;
+    max-width: 100px;
+}
+
+.block_certification .status-red{
+    background-color:#d20d00;
+}
+
+.block_certification .status-amber{
+    background-color:#ff9000;
+}
+
+.block_certification .status-green{
+    background-color:#a6be22;
+}
+
+.block_certification .certification-center{
+    text-align: center;
+}
+.block_certification .status {
+    height: 14px;
+    width: 14px;
+    display: inline-block;
+    border: 1px solid #817f7d;
+    margin-right: 10px;
+    vertical-align: text-top;
+}
+
+.block_certification .learner-status-note{
+    color:#6b6b6b;
+    font-size:12px;
+}
+
+.block_certification .view-link {
+    font-size: 12px;
+    margin-top: 5px;
+    text-align: right;
+}
+
+.block_certification .exempt-help img {
+    cursor: pointer;
+    margin-top: 2px;
+    vertical-align: top;
+}
+
+.block_certification img.status {
+    border: none;
+}
+
+.block_certification .status-optional {
+    background-color: #c0c0c0;
+    border: none;
+    color: black;
+}

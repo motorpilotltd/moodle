@@ -1,0 +1,25 @@
+<div class="p-t-10 p-b-10">
+{{#str}}classtableintro, local_coursemanager{{/str}}
+</div>
+<table class="table table-bordered">
+    {{#rows}}
+    <tr>
+        {{#header}}
+            <th colspan="2">
+                {{name}}
+                {{#canedit}}
+                    <a href="{{{actionurl}}}" class="m-l-5">{{{icon}}}</a>
+                {{/canedit}}
+            </th>
+        {{/header}}
+        {{^header}}
+        <td>
+            {{name}}
+        </td>
+        <td>
+            {{{value}}}
+        </td>
+        {{/header}}
+    </tr>
+    {{/rows}}
+</table>

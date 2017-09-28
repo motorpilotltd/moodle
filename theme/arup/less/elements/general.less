@@ -1,0 +1,74 @@
+body {
+    padding-top: @navbar-height;
+    .container-fluid {
+        max-width: @screen-lg;
+        margin: 0 auto;
+    }
+    .navbar-fixed-top {
+        .navbar-inner {
+            max-width: @screen-lg;
+            margin: 0 auto;
+        }
+    }
+}
+
+#dndupload-status {
+    z-index: 1;
+}
+
+.progress {
+    box-shadow: none;
+    border-radius: 0;
+    height: 5px;
+    margin-bottom: 0;
+}
+
+h1, h2, h3, h4, h5, .h1, .h2, .h3, .h4, .h5 {
+    font-family: @headings-font-family;
+}
+
+@media (min-width: 992px) {
+    #block-region-side-pre {
+        &.col-md-3 {
+          width: 20%;
+        }
+        &.col-md-pull-9 {
+          right: 80%;
+        }
+    }
+    #region-main {
+        &.col-md-9 {
+          width: 80%;
+        }
+        &.col-md-push-3 {
+          left: 20%;
+        }
+    }
+}
+
+.label-invert {
+    background-color: @arup-white-bg;
+    color: @gray-darker;
+    border: 1px solid @gray-darker;
+}
+
+.pagelayout-frontpage {
+    background-color: #F0F0F0;
+}
+
+.path-course-view .completionprogress {
+    display: none;
+}
+
+.cataloguebtn {
+    color: #AAA;
+    font-size: 20px;
+    &:hover,
+    &.active {
+        color: @gray-light;
+    }
+}
+
+.mform .fitem .fitemtitle label {
+    font-weight: normal;
+}

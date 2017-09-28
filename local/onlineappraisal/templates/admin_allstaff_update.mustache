@@ -1,0 +1,153 @@
+<h2>{{#str}}allstaff, local_onlineappraisal{{/str}}</h2>
+
+<div>
+    {{#str}}admin:toptext:allstaff:notclosed, local_onlineappraisal, {{cohort}}{{/str}}
+</div>
+
+{{#form}}
+<form id={{id}} class="oa-form-allstaff form-inline m-b-15" {{#confirm}}data-confirm="{{.}}"{{/confirm}} data-button="{{buttonprocessing}}">
+    {{#hiddeninputs}}
+        <input type="hidden" name="{{name}}" value="{{value}}">
+    {{/hiddeninputs}}
+    <div class="form-group">
+        <label class="media-middle m-b-0" for="oa-init-duedate">{{#str}}admin:duedate:default, local_onlineappraisal{{/str}}</label>
+        <div class="input-group date">
+            <input type="hidden" name="duedate" {{#groupcohort.duedate}}value="{{.}}"{{/groupcohort.duedate}}>
+            <input id="oa-init-duedate" type="text" class="form-control datepicker" autocomplete="off"
+                {{#duedate}}data-y="{{y}}" data-m="{{m}}" data-d="{{d}}"{{/duedate}}/>
+            <div class="input-group-addon">
+                <i class="fa fa-lg fa-calendar"></i>
+            </div>
+        </div>
+        <div class="help-block pull-right m-l-5 m-b-0 hidden">{{#str}}error:duedate, local_onlineappraisal{{/str}}</div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">{{buttontext}}</button>
+    </div>
+</form>
+{{/form}}
+
+<h3>{{#str}}admin:allstaff:notassigned, local_onlineappraisal{{/str}} {{#str}}admin:usercount:notassigned, local_onlineappraisal, {{notassignedusercount}}{{/str}}</h3>
+<table class="generaltable" id="oa-appraisal-notassigned">
+    <thead>
+        <tr>
+            <th class="text-center w-1"></th>
+            <th class="text-center w-1">{{#str}}admin:requiresappraisal, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}admin:name, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}admin:staffid, local_onlineappraisal{{/str}}</th>
+            {{#ishrleader}}<th>{{#str}}admin:grade, local_onlineappraisal{{/str}}</th>{{/ishrleader}}
+            <th>{{#str}}admin:employmentcategory, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}admin:startdate, local_onlineappraisal{{/str}}</th>
+            <th class="text-center w-1">{{#str}}admin:appraisalvip, local_onlineappraisal{{/str}}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{#notassignedusers}}
+        <tr>
+            <td class="text-center w-1">
+                <i data-userid="{{id}}" data-assign="1"
+                        data-toggle="tooltip" data-container="body" title="{{#str}}admin:appraisalcycle:assign:tooltip, local_onlineappraisal{{/str}}"
+                        class="oa-toggle-assign fa fa-lg fa-fw fa-plus-square"><span class="sr-only">{{#str}}admin:appraisalcycle:assign, local_onlineappraisal{{/str}}</span></i>
+            </td>
+            <td class="text-center w-1">
+                <i class="fa fa-lg
+                          {{#appraisalnotrequired}}fa-times text-danger"
+                                                   data-toggle="tooltip"
+                                                   data-container="body"
+                                                   title="{{appraisalnotrequiredreason}}"
+                                                   {{/appraisalnotrequired}}
+                          {{^appraisalnotrequired}}fa-check text-success oa-toggle-required"
+                                                   data-userid="{{id}}"
+                                                   data-remove-toggle="1"
+                                                   data-confirm="1"
+                          {{/appraisalnotrequired}}>
+                    <span class="sr-only">
+                        {{#appraisalnotrequired}}
+                            {{#str}}admin:appraisalnotrequired, local_onlineappraisal{{/str}}
+                        {{/appraisalnotrequired}}
+                        {{^appraisalnotrequired}}
+                            {{#str}}admin:appraisalrequired, local_onlineappraisal{{/str}}
+                        {{/appraisalnotrequired}}
+                    </span>
+                </i>
+            </td>
+            <td>{{firstname}} {{lastname}}</td>
+            <td>{{idnumber}}</td>
+            {{#ishrleader}}<td>{{grade}}</td>{{/ishrleader}}
+            <td>{{employmentcategory}}</td>
+            <td>{{startdate}}</td>
+            <td class="text-center w-1">
+                <span data-userid="{{id}}" class="oa-vip-status{{#ishrleader}} oa-toggle-vip{{/ishrleader}}{{#isvip}} oa-vip-yes{{/isvip}}">{{#str}}vip, local_onlineappraisal{{/str}}</span>
+            </td>
+        </tr>
+    {{/notassignedusers}}
+    {{^notassignedusers}}
+        <tr>
+            <td colspan="5">
+                <div class="alert alert-info m-b-0"><i class="fa fa-exclamation-triangle"></i> {{#str}}admin:allstaff:notassigned:none, local_onlineappraisal{{/str}}</div>
+            </td>
+        </tr>
+    {{/notassignedusers}}
+    </tbody>
+</table>
+
+<h3>{{#str}}admin:allstaff:assigned, local_onlineappraisal{{/str}} {{#str}}admin:usercount:assigned, local_onlineappraisal, {{assignedusercount}}{{/str}}</h3>
+<table class="generaltable" id="oa-appraisal-assigned">
+    <thead>
+        <tr>
+            <th class="text-center w-1">&nbsp;</th>
+            <th>{{#str}}admin:name, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}admin:staffid, local_onlineappraisal{{/str}}</th>
+            {{#ishrleader}}<th>{{#str}}admin:grade, local_onlineappraisal{{/str}}</th>{{/ishrleader}}
+            <th>{{#str}}admin:employmentcategory, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}admin:startdate, local_onlineappraisal{{/str}}</th>
+            <th class="text-center w-1">{{#str}}admin:appraisalvip, local_onlineappraisal{{/str}}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{#assignedusers}}
+        <tr{{#suspended}} class="oa-user-suspended" data-toggle="tooltip" data-container="body" title="{{#str}}admin:leaver, local_onlineappraisal{{/str}}"{{/suspended}}>
+            <td class="text-center w-1">
+                <i data-userid="{{id}}" data-assign="0"
+                        data-toggle="tooltip" data-container="body" title="{{#str}}admin:appraisalcycle:unassign:tooltip, local_onlineappraisal{{/str}}"
+                        class="oa-toggle-assign oa-toggle-unassign fa fa-lg fa-fw fa-minus-square"><span class="sr-only">{{#str}}admin:appraisalcycle:unassign, local_onlineappraisal{{/str}}</span></i>
+            </td>
+            <td class="text-center w-1 hidden">
+                <i class="fa fa-lg
+                          {{#appraisalnotrequired}}fa-times text-danger"
+                                                   data-toggle="tooltip"
+                                                   data-container="body"
+                                                   title="{{appraisalnotrequiredreason}}"
+                                                   {{/appraisalnotrequired}}
+                          {{^appraisalnotrequired}}fa-check text-success oa-toggle-required"
+                                                   data-userid="{{id}}"
+                          {{/appraisalnotrequired}}>
+                    <span class="sr-only">
+                        {{#appraisalnotrequired}}
+                            {{#str}}admin:appraisalnotrequired, local_onlineappraisal{{/str}}
+                        {{/appraisalnotrequired}}
+                        {{^appraisalnotrequired}}
+                            {{#str}}admin:appraisalrequired, local_onlineappraisal{{/str}}
+                        {{/appraisalnotrequired}}
+                    </span>
+                </i>
+            </td>
+            <td>{{firstname}} {{lastname}}</td>
+            <td>{{idnumber}}</td>
+            {{#ishrleader}}<td>{{grade}}</td>{{/ishrleader}}
+            <td>{{employmentcategory}}</td>
+            <td>{{startdate}}</td>
+            <td class="text-center w-1">
+                <span data-userid="{{id}}" class="oa-vip-status{{#ishrleader}} oa-toggle-vip{{/ishrleader}}{{#isvip}} oa-vip-yes{{/isvip}}">{{#str}}vip, local_onlineappraisal{{/str}}</span>
+            </td>
+        </tr>
+    {{/assignedusers}}
+    {{^assignedusers}}
+        <tr>
+            <td colspan="4">
+                <div class="alert alert-info m-b-0"><i class="fa fa-exclamation-triangle"></i> {{#str}}admin:allstaff:assigned:none, local_onlineappraisal{{/str}}</div>
+            </td>
+        </tr>
+    {{/assignedusers}}
+    </tbody>
+</table>

@@ -66,7 +66,9 @@ class flexible_table {
     var $column_class    = array();
     var $column_suppress = array();
     var $column_nosort   = array('userpic');
-    private $column_textsort = array();
+/* BEGIN CORE MOD */
+    protected $column_textsort = array();
+/* END CORE MOD */
     /** @var boolean Stores if setup has already been called on this flixible table. */
     var $setup           = false;
     var $baseurl         = NULL;
@@ -75,7 +77,9 @@ class flexible_table {
     /**
      * @var bool Whether or not to store table properties in the user_preferences table.
      */
-    private $persistent = false;
+/* BEGIN CORE MOD */
+    protected $persistent = false;
+/* END CORE MOD */
     var $is_collapsible = false;
     var $is_sortable    = false;
     var $use_pages      = false;
@@ -129,7 +133,9 @@ class flexible_table {
     /**
      * @var array For storing user-customised table properties in the user_preferences db table.
      */
-    private $prefs = array();
+/* BEGIN CORE MOD */
+    protected $prefs = array();
+/* END CORE MOD */
 
     /**
      * Constructor

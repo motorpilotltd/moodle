@@ -1,0 +1,27 @@
+{{!
+    This file is part of the Online Appraisal Plugin for Arup.
+}}
+{{!
+    @template local_onlineappraisal/printer_appraisal
+
+    PDF Content : Appraisal
+}}
+<div style="width: 90%; margin: auto; color: black; font-size:0.8em;">
+
+    {{>local_onlineappraisal/printer_partial_summary_table}}
+
+    {{>local_onlineappraisal/printer_partial_summaries}}
+
+    <br pagebreak="true" />
+
+    {{>local_onlineappraisal/printer_partial_forms}}
+
+    <br pagebreak="true" />
+
+    {{>local_onlineappraisal/printer_partial_checkins}}
+
+    <br pagebreak="true" />
+
+    {{>local_onlineappraisal/printer_partial_learninghistory}}
+
+</div>

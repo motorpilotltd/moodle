@@ -29,6 +29,9 @@ require_once($CFG->dirroot.'/user/editadvanced_form.php');
 require_once($CFG->dirroot.'/user/editlib.php');
 require_once($CFG->dirroot.'/user/profile/lib.php');
 require_once($CFG->dirroot.'/user/lib.php');
+/* BEGIN CORE MOD - /local/regions */
+require_once($CFG->dirroot.'/local/regions/lib.php');
+/* END CORE MOD - /local/regions */
 
 // HTTPS is required in this page when $CFG->loginhttps enabled.
 $PAGE->https_required();
@@ -112,6 +115,9 @@ if ($user->deleted) {
 // Load user preferences.
 useredit_load_preferences($user);
 
+/* BEGIN CORE MOD - /local/regions */
+local_regions_load_data_user($user);
+/* END CORE MOD - /local/regions */
 // Load custom profile fields data.
 profile_load_data($user);
 
@@ -235,14 +241,23 @@ if ($usernew = $userform->get_data()) {
     // Update preferences.
     useredit_update_user_preference($usernew);
 
+/* BEGIN CORE MOD */
+// Hide personal tags field.
+/*
     // Update tags.
     if (!empty($CFG->usetags) and empty($USER->newadminuser)) {
         useredit_update_interests($usernew, $usernew->interests);
     }
+*/
+/* END CORE MOD */
 
     // Update user picture.
     if (empty($USER->newadminuser)) {
-        useredit_update_picture($usernew, $userform, $filemanageroptions);
+/* BEGIN CORE MOD */
+        if ($DB->get_field('user', 'auth', array('id' => $usernew->id)) != 'saml') {
+            useredit_update_picture($usernew, $userform, $filemanageroptions);
+        }
+/* END CORE MOD */
     }
 
     // Update mail bounces.
@@ -251,6 +266,9 @@ if ($usernew = $userform->get_data()) {
     // Update forum track preference.
     useredit_update_trackforums($user, $usernew);
 
+/* BEGIN CORE MOD - /local/regions */
+    local_regions_save_data_user($usernew);
+/* END CORE MOD - /local/regions */
     // Save custom profile fields data.
     profile_save_data($usernew);
 

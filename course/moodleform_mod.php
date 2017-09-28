@@ -217,6 +217,8 @@ abstract class moodleform_mod extends moodleform {
             }
         }
 
+/* BEGIN CORE MOD */
+// Block deletion if part of course completion criteria.
         // Completion: If necessary, freeze fields
         $completion = new completion_info($COURSE);
         if ($completion->is_enabled()) {
@@ -224,9 +226,19 @@ abstract class moodleform_mod extends moodleform {
             $completedcount = empty($this->_cm)
                 ? 0
                 : $completion->count_user_data($this->_cm);
-
+            // If this activity is part of course completion tracking, these options will be 'locked'.
+            $coursecriteria = false;
+            if (!empty($this->_cm)) { // Can't be if it's new!
+                $activities = $completion->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY);
+                foreach ($activities as $activity) {
+                    if ($activity->moduleinstance == $this->_cm->id) {
+                        $coursecriteria = true;
+                        break;
+                    }
+                }
+            }
             $freeze = false;
-            if (!$completedcount) {
+            if (!$completedcount && !$coursecriteria) {
                 if ($mform->elementExists('unlockcompletion')) {
                     $mform->removeElement('unlockcompletion');
                 }
@@ -234,11 +246,11 @@ abstract class moodleform_mod extends moodleform {
                 // in order to make it recalculate completion once the option
                 // is changed, maybe someone has completed it now)
                 $mform->getElement('completionunlocked')->setValue(1);
-            } else {
+            } elseif (!$coursecriteria) {
                 // Has the element been unlocked, either by the button being pressed
                 // in this request, or the field already being set from a previous one?
-                if ($mform->exportValue('unlockcompletion') ||
-                        $mform->exportValue('completionunlocked')) {
+                if (($mform->exportValue('unlockcompletion') ||
+                        $mform->exportValue('completionunlocked')) && !$coursecriteria) {
                     // Yes, add in warning text and set the hidden variable
                     $mform->insertElementBefore(
                         $mform->createElement('static', 'completedunlocked',
@@ -257,7 +269,22 @@ abstract class moodleform_mod extends moodleform {
                         'unlockcompletion');
                     $freeze = true;
                 }
+            } else {
+                $unlockhelp = $mform->createElement(
+                    'static', '', '',
+                    get_string('completionunlockhelp:coursecriteria', 'local_admin', core_text::strtolower(get_string('course')))
+                );
+                $mform->insertElementBefore(
+                    $unlockhelp,
+                    'unlockcompletion'
+                );
+                if ($mform->elementExists('unlockcompletion')) {
+                    $mform->removeElement('unlockcompletion');
+                }
+                $mform->getElement('completionunlocked')->setValue(0); // Just in case.
+                $freeze = true;
             }
+/* END CORE MOD */
 
             if ($freeze) {
                 $mform->freeze('completion');

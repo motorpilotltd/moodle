@@ -1,0 +1,39 @@
+<div class="section-group onesection" role="tablist" aria-multiselectable="false">
+    <ul class="nav nav-pills nav-stacked">
+    {{#items}}
+        <li class="{{active}} {{subactive}}">
+            <a href="{{{url}}}" {{#popup}}target="_blank"{{/popup}}>
+                <span class="name">
+                    {{{name}}}
+                </span>
+                {{#flagged}}
+                <span class="appraisal-menu-status pull-right">
+                    <i class="fa fa-exclamation" title="{{#str}}actionrequired, local_onlineappraisal{{/str}}" data-toggle="tooltip" data-container="body"><span class="sr-only">{{#str}}actionrequired, local_onlineappraisal{{/str}}</span></i>
+                </span>
+                <div class=clearfix"></div>
+                {{/flagged}}
+                {{#numbered}}
+                <span class="appraisal-menu-status{{#numberdimmed}} appraisal-menu-status-dimmed{{/numberdimmed}} pull-right">
+                    {{.}}
+                </span>
+                <div class=clearfix"></div>
+                {{/numbered}}
+            </a>
+        </li>
+    {{/items}}
+    </ul>
+    {{#debug}}
+    <hr>
+    <strong>Debug</strong><br>
+    <div class="small">
+        You: {{me}}</br>
+        View as: {{viewas}}<br>
+        Status: {{statusid}}<br>
+        Permissions status: {{permissionsid}}<br>
+        Appraisal id: {{appraisalid}}<br>
+        {{page}}:view {{canview}}<br>
+        {{page}}:add {{canadd}}<br>
+        groupleaderactive: {{groupleaderactive}}<br>
+    </div>
+    {{/debug}}
+</div>

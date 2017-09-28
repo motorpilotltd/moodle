@@ -1,0 +1,150 @@
+<h2>{{#str}}inprogress, local_onlineappraisal{{/str}}</h2>
+<div class="m-b-15">
+    {{#str}}admin:toptext:inprogress, local_onlineappraisal{{/str}}
+</div>
+
+{{#usercount}}
+    <form id="oa-filter" class="hidden form-inline pull-right">
+        <div class="form-group">
+            <label class="sr-only" for="oa-filter-select">{{#str}}form:filter, local_onlineappraisal{{/str}}</label>
+            <select class="form-control m-b-0" id="oa-filter-select" autocomplete="off">
+                <option value="0">{{#str}}form:all, local_onlineappraisal{{/str}}</option>
+                <option value="1">{{#str}}status:1, local_onlineappraisal{{/str}}</option>
+                <option value="2">{{#str}}status:2, local_onlineappraisal{{/str}}</option>
+                <option value="3">{{#str}}status:3, local_onlineappraisal{{/str}}</option>
+                <option value="4">{{#str}}status:4, local_onlineappraisal{{/str}}</option>
+                <option value="5">{{#str}}status:5, local_onlineappraisal{{/str}}</option>
+                <option value="6">{{#str}}status:6, local_onlineappraisal{{/str}}</option>
+            </select>
+        </div>
+    </form>
+    <table id="oa-inprogress-table" class="generaltable oa-bulk-table oa-editable-table">
+        <thead>
+            <tr>
+                <th class="text-center w-1">
+                    <input type="checkbox" id="oa-appraisal-select-all" value="1" aria-label="{{#str}}appraisals:select, local_onlineappraisal{{/str}}">
+                </th>
+                <th class="text-center w-1">{{#str}}appraisal:id, local_onlineappraisal{{/str}}</th>
+                <th>{{#str}}appraisee, local_onlineappraisal{{/str}}</th>
+                <th>{{#str}}appraiser, local_onlineappraisal{{/str}}</th>
+                <th>{{#str}}signoff, local_onlineappraisal{{/str}}</th>
+                {{#groupleaderactive}}<th>{{#str}}groupleader, local_onlineappraisal{{/str}}</th>{{/groupleaderactive}}
+                <th>{{#str}}progress, local_onlineappraisal{{/str}}</th>
+                <th>{{#str}}date:f2f, local_onlineappraisal{{/str}}</th>
+                <th class="text-center w-1">{{#str}}f2f:complete, local_onlineappraisal{{/str}}</th>
+                <th class="text-center w-1">{{#str}}actions, local_onlineappraisal{{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="oa-empty-filter hidden">
+                <td colspan="9">
+                    <div class="alert alert-warning m-b-0" role="alert">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        {{#str}}index:emptyfilter, local_onlineappraisal{{/str}}
+                    </div>
+                </td>
+            </tr>
+        {{#users}}
+            <tr data-appraisalid="{{id}}" data-status="{{statusid}}"
+                {{#suspended}} class="oa-user-suspended" data-toggle="tooltip" data-container="body" title="{{#str}}admin:leaver, local_onlineappraisal{{/str}}"{{/suspended}}>
+                <td class="text-center w-1">
+                    {{^suspended}}
+                        <input type="checkbox" id="oa-appraisal-select-{{id}}" class="oa-appraisal-select" value="{{id}}" aria-label="{{#str}}appraisal:select, local_onlineappraisal, {{id}}{{/str}}">
+                    {{/suspended}}
+                </td>
+                <td class="text-center w-1">{{id}}</td>
+                <td class="appraisee" data-email="{{appraiseeemail}}">
+                    {{appraisee}}
+                </td>
+                <td>
+                    <span>{{appraiser}}</span>
+                    {{^suspended}}{{#appraisers}}{{>local_onlineappraisal/select}}{{/appraisers}}{{/suspended}}
+                </td>
+                <td>
+                    <span>{{signoff}}</span>
+                    {{^suspended}}{{#signoffs}}{{>local_onlineappraisal/select}}{{/signoffs}}{{/suspended}}
+                </td>
+                {{#groupleaderactive}}
+                <td>
+                    <span>{{groupleader}}</span>
+                    {{^suspended}}{{#groupleaders}}{{>local_onlineappraisal/select}}{{/groupleaders}}{{/suspended}}
+                </td>
+                {{/groupleaderactive}}
+                <td>
+                    <div class="progress" data-toggle="tooltip" title="{{progress.text}}" data-container="body">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="{{progress.percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress.percentage}}%;">
+                          <span class="sr-only">{{progress.count}}/6</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="w-1">
+                    {{^suspended}}
+                        {{^face_to_face_held}}
+                            <input type="text" class="form-control datepicker hidden" autocomplete="off"
+                                {{#held_date_array}}data-y="{{y}}" data-m="{{m}}" data-d="{{d}}"{{/held_date_array}} />
+                        {{/face_to_face_held}}
+                    {{/suspended}}
+                    <span>{{held_date}}</span>
+                </td>
+                <td class="text-center w-1">
+                    <i class="fa fa-2x fa-fw
+                              {{#face_to_face_held}}fa-check-square{{/face_to_face_held}}
+                              {{^face_to_face_held}}fa-square-o{{/face_to_face_held}}">
+                        <span class="sr-only">
+                            {{#face_to_face_held}}{{#str}}f2f:complete, local_onlineappraisal{{/str}}{{/face_to_face_held}}
+                            {{^face_to_face_held}}{{#str}}f2f:notcomplete, local_onlineappraisal{{/str}}{{/face_to_face_held}}
+                        </span>
+                    </i>
+                </td>
+                <td class="text-center w-1">
+                    {{^suspended}}
+                        <button class="oa-inline-edit btn btn-default m-l-0" type="button" autocomplete="off" title="{{#str}}form:edit, local_onlineappraisal{{/str}}">
+                            <i class="fa fa-lg fa-fw fa-pencil"><span class="sr-only">{{#str}}form:edit, local_onlineappraisal{{/str}}</span></i>
+                        </button>
+                    {{/suspended}}
+                        <button class="oa-delete btn btn-default m-l-0" type="button" autocomplete="off" data-method="flag" title="{{#str}}form:delete, local_onlineappraisal{{/str}}">
+                            <i class="action fa fa-lg fa-fw fa-trash"><span class="sr-only">{{#str}}form:delete, local_onlineappraisal{{/str}}</span></i>
+                        </button>
+                    {{^suspended}}
+                        <button class="oa-inline-save btn btn-default m-l-0 hidden" type="button" autocomplete="off" title="{{#str}}form:save, local_onlineappraisal{{/str}}">
+                            <i class="fa fa-lg fa-fw fa-save"><span class="sr-only">{{#str}}form:save, local_onlineappraisal{{/str}}</span></i>
+                        </button>
+                        <button class="oa-inline-undo btn btn-default m-l-0 hidden" type="button" autocomplete="off" title="{{#str}}form:undo, local_onlineappraisal{{/str}}">
+                            <i class="fa fa-lg fa-fw fa-undo"><span class="sr-only">{{#str}}form:undo, local_onlineappraisal{{/str}}</span></i>
+                        </button>
+                    {{/suspended}}
+                </td>
+            </tr>
+        {{/users}}
+        </tbody>
+    </table>
+    <div class="clearfix">
+        <form id="oa-bulk-actions" class="form-inline pull-right">
+            <div class="form-group">
+                <label class="media-middle m-b-0" for="oa-bulk-actions-select">{{#str}}admin:bulkactions, local_onlineappraisal{{/str}}</label>
+                <select class="form-control m-b-0" id="oa-bulk-actions-select" autocomplete="off">
+                    <option value="">{{#str}}form:choosedots, local_onlineappraisal{{/str}}</option>
+                    <option value="email">{{#str}}admin:email, local_onlineappraisal{{/str}}</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">{{#str}}form:go, local_onlineappraisal{{/str}}</button>
+        </form>
+    </div>
+    <div id="oa-bulk-alert" class="alert m-t-5 hidden" role="alert">
+        <div class="alert-message"></div>
+    </div>
+{{/usercount}}
+{{^usercount}}
+    {{#groupcohort.closed}}
+        <div class="alert alert-warning" role="alert">
+            <i class="fa fa-exclamation-triangle"></i>
+            {{#str}}admin:appraisalcycle:closed, local_onlineappraisal{{/str}}
+        </div>
+    {{/groupcohort.closed}}
+    {{^groupcohort.closed}}
+        <div class="alert alert-warning" role="alert">
+            <i class="fa fa-exclamation-triangle"></i>
+            {{#str}}admin:nousers, local_onlineappraisal{{/str}}
+        </div>
+    {{/groupcohort.closed}}
+{{/usercount}}

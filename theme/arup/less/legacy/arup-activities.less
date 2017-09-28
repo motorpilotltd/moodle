@@ -1,0 +1,432 @@
+/** General **/
+.sitetopic .section .activity .activityinstance,
+.course-content .section .activity .activityinstance {
+    padding: 0;
+}
+/** END : General */
+/** TAPS Enrolment **/
+.course-content {
+    ul.section li.tapsenrol {
+        padding-left: 0;
+    }
+    li.tapsenrol {
+        div.no-overflow {
+            overflow: visible;
+        }
+        h2 {
+            line-height: 24px;
+            margin: 16px 95px 10px -24px;
+            width: auto;
+        }
+        h2>img {
+            margin-bottom: 8px;
+        }
+        h3 {
+            line-height: 1.2;
+            margin-bottom: 0;
+            margin-top: 0;
+            padding-top: 10px;
+        }
+        ul {
+            margin-bottom: 10px;
+        }
+        span.autocompletion {
+            display: none;
+        }
+        form.togglecompletion {
+            bottom: 0;
+            top: auto;
+        }
+        .btn-small {
+            font-size: 12px;
+            .caret, .caret-right {
+                margin: -1px 0 0 0;
+            }
+        }
+    }
+    li.tapscompletion {
+        span.autocompletion {
+            display: none;
+        }
+    }
+    .section {
+        li.modtype_kalvidres {
+            margin-bottom: 20px;
+        }
+        li.modtype_kalvidpres {
+            margin-bottom: 20px;
+        }
+    }
+}
+#tapsenrol_hide_button {
+    background: transparent url([[pix:theme|icon_blueminus]]) no-repeat scroll left top;
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    line-height: 12px;
+    padding-left: 12px;
+    padding-top: 1px;
+}
+#tapsenrol_hide_button.tapsenrol_hidden {
+    background: transparent url([[pix:theme|icon_blueplus]]) no-repeat scroll left top;
+}
+.modtype_kalvidres {
+    .kalvidres-holder {
+        margin-bottom: 10px;
+        min-height: 180px;
+        position: relative;
+        .playbutton {
+            height:50px;
+            left:95px;
+            position:absolute;
+            text-align:center;
+            top:65px;
+            width:50px;
+            a {
+                .opacity(0.75);
+                background:#000000;
+                color:#FFFFFF;
+                display: block;
+                font-size: 40px;
+                height: 50px;
+                line-height: 50px;
+                text-decoration: none;
+                width: 50px;
+                &:hover {
+                    background:#999999;
+                    color:#FFFFFF;
+                }
+            }
+        }
+        img {
+            height: 180px;
+            margin-right: 20px;
+            position: absolute;
+            width: 240px;
+        }
+        .kalvidres-info {
+            margin-left: 260px;
+            position: relative;
+        }
+    }
+}
+.modtype_kalvidpres {
+    .kalvidpres-holder {
+        margin-bottom: 10px;
+        min-height: 180px;
+        position: relative;
+        .playbutton {
+            height:50px;
+            left:70px;
+            left:95px;
+            position:absolute;
+            text-align:center;
+            top:65px;
+            width:100px;
+            width:50px;
+            a {
+                .opacity(0.75);
+                background:#000000;
+                color:#FFFFFF;
+                display: block;
+                font-size: 40px;
+                height: 50px;
+                line-height: 50px;
+                text-decoration: none;
+                width: 100px;
+                width: 50px;
+                &:hover {
+                    background:#999999;
+                    color:#FFFFFF;
+                }
+            }
+        }
+        img {
+            height: 180px;
+            margin-right: 20px;
+            position: absolute;
+            width: 240px;
+        }
+        .kalvidpres-info {
+            margin-left: 260px;
+            position: relative;
+        }
+    }
+}
+/** END : Kaltura Video Resource **/
+/** END : Kaltura Presentation Resource **/
+
+/** Book **/
+.path-mod-book {
+    .navtop {
+        float: right;
+        margin: 5px 0;
+        width: 48px;
+    }
+    .book_chapter_title {
+        font-family: "Times New Roman", serif;
+        font-size: 24px;
+        font-weight: normal;
+        line-height: 40px;
+        margin-bottom: 10px;
+        margin-left: 0;
+        text-align: left;
+    }
+    h2.book_chapter_title {
+        margin-right: 74px;
+    }
+    h3.book_chapter_title {
+        font-size: 22px;
+    }
+    img.bigicon {
+        height: 16px;
+        width: 16px;
+    }
+    .book_toc_bullets {
+        li {
+            li {
+                list-style: none outside none;
+            }
+        }
+        ul {
+            ul {
+                li {
+                    a {
+                        &:first-child {
+                            background: transparent url([[pix:mod_book|bullets]]) no-repeat scroll 15px 0;
+                            padding-left: 30px;
+                        }
+                    }
+                    span {
+                        &:first-child {
+                            background: transparent url([[pix:mod_book|bullets]]) no-repeat scroll 15px 0;
+                            padding-left: 30px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .book_toc_indented {
+        ul {
+            ul {
+                span {
+                    &:first-child {
+                        padding-left: 30px;
+                    }
+                }
+                a {
+                    &:first-child {
+                        padding-left: 30px;
+                    }
+                }
+            }
+        }
+    }
+}
+.path-mod-book .book_toc_none, .path-mod-book .book_toc_numbered, .path-mod-book .book_toc_bullets, .path-mod-book .book_toc_indented  {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    margin: 0 -14px;
+}
+.path-mod-book .book_toc_none ul, .path-mod-book .book_toc_numbered ul, .path-mod-book .book_toc_bullets ul, .path-mod-book .book_toc_indented ul  {
+    margin: 0 0 -10px 0;
+}
+.path-mod-book .book_toc_none li, .path-mod-book .book_toc_numbered li, .path-mod-book .book_toc_bullets li, .path-mod-book .book_toc_indented li  {
+    margin: 0 0 10px 0;
+}
+.path-mod-book .book_toc_none ul ul, .path-mod-book .book_toc_numbered ul ul, .path-mod-book .book_toc_bullets ul ul, .path-mod-book .book_toc_indented ul ul  {
+    margin: 0;
+}
+.path-mod-book .book_toc_none li li, .path-mod-book .book_toc_numbered li li, .path-mod-book .book_toc_bullets li li, .path-mod-book .book_toc_indented li li  {
+    margin: 0;
+}
+.path-mod-book .book_toc_none a, .path-mod-book .book_toc_numbered a, .path-mod-book .book_toc_bullets a, .path-mod-book .book_toc_indented a  {
+    display: block;
+    float: left;
+    margin-top: -6px;
+    padding-right: 3px;
+}
+.path-mod-book .book_toc_none a:first-child, .path-mod-book .book_toc_none span:first-child, .path-mod-book .book_toc_numbered a:first-child, .path-mod-book .book_toc_numbered span:first-child, .path-mod-book .book_toc_bullets a:first-child, .path-mod-book .book_toc_bullets span:first-child, .path-mod-book .book_toc_indented a:first-child, .path-mod-book .book_toc_indented span:first-child  {
+    display: block;
+    float: none;
+    margin-top: 0;
+    padding: 0 15px;
+}
+.path-mod-book .book_toc_none a:first-child:hover, .path-mod-book .book_toc_numbered a:first-child:hover, .path-mod-book .book_toc_bullets a:first-child:hover, .path-mod-book .book_toc_indented a:first-child:hover  {
+    background-color: #EEEEEE;
+}
+.path-mod-book .book_toc_none ul a span:first-child, .path-mod-book .book_toc_none ul ul a span:first-child, .path-mod-book .book_toc_numbered ul a span:first-child, .path-mod-book .book_toc_numbered ul ul a span:first-child, .path-mod-book .book_toc_bullets ul a span:first-child, .path-mod-book .book_toc_bullets ul ul a span:first-child, .path-mod-book .book_toc_indented ul a span:first-child, .path-mod-book .book_toc_indented ul ul a span:first-child  {
+    background: transparent;
+    padding-left: 0;
+}
+.path-mod-book.editing .book_toc_none ul, .path-mod-book.editing .book_toc_numbered ul, .path-mod-book.editing .book_toc_bullets ul, .path-mod-book.editing .book_toc_indented ul  {
+    margin-left: 15px;
+}
+.path-mod-book.editing .book_toc_none a:first-child, .path-mod-book.editing .book_toc_none span:first-child, .path-mod-book.editing .book_toc_numbered a:first-child, .path-mod-book.editing .book_toc_numbered span:first-child, .path-mod-book.editing .book_toc_bullets a:first-child, .path-mod-book.editing .book_toc_bullets span:first-child, .path-mod-book.editing .book_toc_indented a:first-child, .path-mod-book.editing .book_toc_indented span:first-child  {
+    padding: 0;
+}
+.path-mod-book.editing {
+    .book_toc_bullets {
+        ul {
+            ul {
+                li {
+                    a {
+                        &:first-child {
+                            background-image: none;
+                        }
+                    }
+                    span {
+                        &:first-child {
+                            background-image: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+/** END : Book **/
+
+/** SCORM **/
+// Color variables (appears count calculates by raw css)
+@color0: #f89406; // Appears 11 times
+
+
+
+#page-mod-scorm-player {
+    #header {
+        padding: 10px;
+    }
+    #scorm_layout {
+        background: transparent;
+        text-align: center;
+        .yui-layout-hd {
+            background-color: transparent;
+            border: none;
+        }
+        .yui-layout-bd {
+            background-color: transparent;
+            border: none;
+        }
+        .yui-resize-handle {
+            margin: 2px 0;
+        }
+    }
+    #page {
+        max-width: none;
+        width: 100%;
+    }
+    #page-content {
+        margin: 0;
+    }
+    #scorm-fullscreen-message {
+        color: #000000;
+        float: right;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        width: 50%;
+    }
+    #button-scorm-exit {
+        display: block !important;
+        float: right;
+        margin: 0;
+        text-align: right;
+        width: 25%;
+    }
+    iframe {
+        border: none;
+    }
+}
+@media only screen and (max-width: 767px) {
+    #page-mod-scorm-player {
+        #page-content-wrapper {
+            margin-top: 90px;
+        }
+        #scorm-fullscreen-message {
+            float: right;
+            margin-top: 30px;
+            text-align: left;
+            width: 50%;
+        }
+        #button-scorm-exit {
+            margin-right: 8%;
+            margin-top: 0;
+            width: 42%;
+        }
+    }
+}
+@media (max-width: 480px) {
+    #page-mod-scorm-player #button-scorm-exit {
+        margin-top: 30px;
+    }
+}
+/** END : SCORM **/
+
+/** Blackboard Collaborate (Elluminate) **/
+#page-mod-elluminate-view table.generaltable,
+#page-mod-elluminate-view table.generaltable tr,
+#page-mod-elluminate-view table.generaltable td {
+    background-color: #FFFFFF;
+    border: none;
+    font-size: 14px;
+}
+#page-mod-elluminate-view table.generaltable td.elluminatesessiontabletitle {
+    font-family: "Times New Roman",serif;
+    font-size: 22px;
+    font-weight: normal;
+    line-height: 40px;
+}
+#page-mod-elluminate-view table.generaltable td.elluminatesessioninfotablename {
+    font-weight: normal;
+    text-align: right !important;
+    white-space: nowrap;
+}
+@media (max-width: 480px) {
+    #page-mod-elluminate-view table.generaltable td.elluminatesessioninfotablename {
+        white-space: normal;
+    }
+}
+#page-mod-elluminate-view table.generaltable td #elluminatelink {
+    font-family: "Times New Roman",serif;
+    font-size: 18px;
+}
+#page-mod-elluminate-view table.generaltable td .elluminatejoinmeeting {
+    text-align: right;
+}
+#page-mod-elluminate-view a#vcrplayrecording img {
+    margin: 0;
+}
+.elluminateactionicon {
+    display: inline-block;
+    float: none;
+    margin-left: 10px;
+}
+.elluminateactionicon .action-icon .smallicon {
+    margin: 0;
+    vertical-align: middle;
+}
+.elluminatejoinmeeting a.btn {
+    font-weight: normal;
+}
+/** END : Blackboard Collaborate (Elluminate) */
+/** START : Arup enrolment (arupenrol) **/
+.course-content li.arupenrol span.autocompletion {
+    display: none;
+}
+.course-content li.arupenrol form.togglecompletion {
+    bottom: 0;
+    top: auto;
+}
+.path-mod-arupenrol #fgroup_id_buttontypes fieldset {
+    margin-top: 4px;
+}
+.path-mod-arupenrol textarea {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    width: 100%;
+}
+/** END : Arup enrolment (arupenrol) **/

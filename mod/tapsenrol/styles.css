@@ -1,0 +1,135 @@
+.tapsenrol_info_wrapper {
+    position: relative;
+}
+
+.tapsenrol_iw_enrolinfo,
+.tapsenrol_review_info,
+.tapsenrol_manage_enrolments_class,
+.tapsenrol_resend_invites_class {
+    padding: 10px 10px 5px 10px;
+}
+.mform fieldset div div.tapsenrol_manage_enrolments_class {
+    margin: 10px 0;
+}
+.tapsenrol_review_info,
+.tapsenrol_manage_enrolments_class,
+.tapsenrol_resend_invites_class {
+    background-color: #EEEEEE;
+}
+.tapsenrol_iw_enrolinfo.mform .fitem,
+.tapsenrol_review_info.mform .fitem,
+.tapsenrol_manage_enrolments_class.mform .fitem,
+.tapsenrol_resend_invites_class.mform .fitem {
+    margin: 0 0 5px 0;
+}
+.tapsenrol_review_info .fitemtitle,
+.tapsenrol_manage_enrolments_class .fitemtitle,
+.tapsenrol_resend_invites_class .fitemtitle {
+    font-weight: bold;
+}
+
+.path-mod-tapsenrol .mform textarea {
+    box-sizing: border-box;
+        -moz-box-sizing: border-box;
+    width: 100%;
+}
+
+.path-mod-tapsenrol .mform input[type="text"] {
+    width: 50%;
+}
+
+.tapsenrol .btn {
+    white-space: nowrap;
+}
+
+.tapsenrol table tr th,
+.tapsenrol table tr td {
+    text-align: left;
+}
+
+.tapsenrol table tr.hidden-class {
+    color: #CCCCCC;
+}
+
+.path-mod-tapsenrol-iw .btn-primary {
+    padding: 4px 10px;
+}
+
+.path-mod-tapsenrol-iw .mform textarea {
+    box-sizing: border-box;
+        -moz-box-sizing: border-box;
+    min-height: 200px;
+    width: 100%;
+}
+
+.path-mod-tapsenrol-iw .mform input[type="text"] {
+    width: 50%;
+}
+
+.path-mod-tapsenrol-iw table td.name,
+.path-mod-tapsenrol-iw table td.actions {
+    white-space: nowrap;
+}
+
+.path-mod-tapsenrol-iw table td.actions i.fa {
+    font-size: 18px;
+    padding: 0 4px;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+td.tapsenrol-request-comments {
+    max-height: 50px;
+}
+
+span.tapsenrol-new-window {
+    display: inline-block;
+    font-size: 80%;
+    margin-left: 10px;
+}
+
+#iw-email-modal iframe {
+    border: 1px solid #E5E5E5;
+    white-space: pre-wrap;
+    width: 100%;
+}
+
+#page-mod-tapsenrol-admin-emails .modal-backdrop {
+    position: fixed !important;
+    bottom: 0 !important;
+    height: auto !important;
+}
+
+#page-mod-tapsenrol-manage_enrolments .mform .alert {
+    margin-bottom: 10px;
+}
+
+#page-mod-tapsenrol-manage_enrolments div.tapsenrol-current-enrolments {
+    margin-bottom: 10px;
+}
+#page-mod-tapsenrol-manage_enrolments #userselector_options {
+    display: none;
+}
+
+.mform fieldset div.userselector div {
+    margin-top: 5px;
+}
+
+a.delegate-button {
+    color: #999999;
+    display: inline-block;
+    margin-left: 10px;
+}
+a.delegate-button:hover {
+    color: #3399ff;
+}
+a.delegate-button i {
+    font-size: 16px;
+}
+
+.path-mod-tapsenrol-iw .mform input[type="text"].tapsenrol-iw-numberfield {
+    min-width: 30px;
+    width: 5%;
+}

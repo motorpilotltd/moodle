@@ -1,0 +1,43 @@
+.block .header {
+    background-color: [[setting:maincolor]];
+}
+
+.usermenu .dropdown-menu>li>a {
+    color: [[setting:secondary]];
+}
+
+.usermenu .dropdown-menu>li>a:hover,
+.usermenu .dropdown-menu>li>a:focus, {
+    color: [[setting:secondaryhover]];
+    padding: 3px 10px;
+}
+#page-navbar .breadcrumb-nav .breadcrumb > li a {
+    color: [[setting:secondary]];
+}
+#page-navbar .breadcrumb-nav .breadcrumb>li+li::before {
+    color: [[setting:secondary]];
+}
+
+.page-header .pagelogo {
+	background-image: url("[[setting:categorylogo]]");
+}
+
+.socialicons  a {
+    color: [[setting:secondary]];
+}
+.socialicons  a:hover,
+.socialicons  a.active {
+    color: [[setting:secondaryhover]];
+}
+
+.nav-pills.nav-wizard > li.active a {
+    background-color: [[setting:secondary]];
+}
+
+.nav-pills.nav-wizard > li.active .nav-arrow {
+    border-color: transparent transparent transparent [[setting:secondary]];
+}
+
+.nav-pills.nav-wizard > li.active .nav-wedge {
+    border-color: [[setting:secondary]] [[setting:secondary]] [[setting:secondary]] transparent;
+}

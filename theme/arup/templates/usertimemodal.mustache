@@ -1,0 +1,21 @@
+<div class="modal fade" id="updatetimezone" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="margin-top: 100px;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center p-20">
+                    <button type="button" class="btn btn-default btn-sm text-dimmed pull-right" data-dismiss="modal" aria-label="Close">
+                        <i class="fa fa-times"></i>
+                    </button>
+                <h1 class="m-t-0 m-b-20">{{#str}}updatetimezone:heading, theme_arup{{/str}}</h1>
+                <p class="m-b-20 text-dimmed">{{#str}}updatetimezone:paragraph, theme_arup{{/str}}</p>
+                <form class="mform">
+                    <select name="timezone" id="timezoneselector">
+                        {{#countries}}
+                            <option value="{{name}}">{{name}}</option>
+                        {{/countries}}
+                    </select>
+                    <span id="updatetimezonesuccess" class="hidden"><img src="{{{checkmarkicon}}}" class="checkmarkicon"></span>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

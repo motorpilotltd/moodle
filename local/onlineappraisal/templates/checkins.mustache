@@ -1,0 +1,49 @@
+{{!
+    This file is part of the Online Appraisal Plugin for Arup.
+}}
+{{!
+    @template local_onlineappraisal/checkin
+
+    Display the checkin page used for monitoring progress after the apraisal
+}}
+
+<hr class="tophr">
+<div class="oa-tagline">{{tagline}}</div>
+<h2>{{#str}}appraisee_checkin_title, local_onlineappraisal{{/str}}</h2>
+<div class="m-b-10">
+{{#str}}checkins_intro, local_onlineappraisal{{/str}}
+</div>
+{{#canadd}}
+<form id="oa-checkin-form" class="form-inline row p-t-5 p-b-10">
+    <input type="hidden" name="sesskey" value="{{{sesskey}}}" />
+    <input type="hidden" name="c" value="checkins" />
+    <input type="hidden" name="a" value="submit_checkin" />
+    <input type="hidden" name="appraisalid" value="{{{appraisalid}}}" />
+    <input type="hidden" name="page" value="checkin" />
+    <input id="checkinid" type="hidden" name="checkinid" value="{{editcheckinid}}" />
+    <input type="hidden" name="view" value="{{{view}}}" />
+    <div class="form-group col-md-10 p-r-5">
+        <label for="oa-checkin-input" class="control-label sr-only">{{#str}}comment, local_onlineappraisal{{/str}}</label>
+        <textarea id="oa-checkin-input" name="checkin" class="form-control" placeholder="{{#str}}checkin:addnewdots, local_onlineappraisal{{/str}}" rows="5">{{editcheckin}}</textarea>
+        <span class="help-block hidden">{{#str}}error:comment:validation, local_onlineappraisal{{/str}}</span>
+    </div>
+    <div class="clearfix"></div>
+    <div>
+        <button id="oa-checkin-submit" type="submit" class="btn btn-primary m-l-10 m-t-10">{{buttontext}}</button>
+    </div>
+</form>
+{{/canadd}}
+<div class="alert alert-dismissible oa-checkins-alert hidden" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <div class="alert-message"></div>
+</div>
+<div class="oa-checkins oa-checkins">
+    <ul class="list-unstyled">
+    {{#checkins}}
+        {{#checkins}}
+            {{>local_onlineappraisal/checkin}}
+        {{/checkins}}
+    {{/checkins}}
+
+    </ul>
+</div>

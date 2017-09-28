@@ -1,0 +1,37 @@
+{{!
+    This file is part of the Online Appraisal Plugin for Arup.
+}}
+{{!
+    @template local_onlineappraisal/printer_partial_learning_history
+
+    PDF Content : Appraisal : Learning History
+}}
+
+<div style="text-align: right; border-bottom: 1px solid black; background-color: #FFFFFF; color: black; font-size:1.25em;">{{#str}}pdf:heading:learninghistory, local_onlineappraisal{{/str}}</div>
+<div style="display: inline-block; text-align: left; width: auto; margin-right: auto;">
+    {{#haslearninghistory}}
+        <table style="background-color: #FFFFFF; width: 100%; padding: 3px">
+            <tr style="background-color: #F2F2F2;">
+                <th style="border-bottom: 1px solid black; border-top: 1px solid black;">{{#str}}pdf:learninghistory:th:course, local_onlineappraisal{{/str}}</th>
+                <th style="border-bottom: 1px solid black; border-top: 1px solid black;">{{#str}}pdf:learninghistory:th:type, local_onlineappraisal{{/str}}</th>
+                <th style="border-bottom: 1px solid black; border-top: 1px solid black;">{{#str}}pdf:learninghistory:th:category, local_onlineappraisal{{/str}}</th>
+                <th style="border-bottom: 1px solid black; border-top: 1px solid black;">{{#str}}pdf:learninghistory:th:duration, local_onlineappraisal{{/str}}</th>
+                <th style="border-bottom: 1px solid black; border-top: 1px solid black;">{{#str}}pdf:learninghistory:th:date:completion, local_onlineappraisal{{/str}}</th>
+                <th style="border-bottom: 1px solid black; border-top: 1px solid black;">{{#str}}pdf:learninghistory:th:date:expiry, local_onlineappraisal{{/str}}</th>
+            </tr>
+            {{#learninghistory}}
+            <tr>
+                <td style="border-bottom: 1px solid black;">{{{course}}}</td>
+                <td style="border-bottom: 1px solid black;">{{{type}}}</td>
+                <td style="border-bottom: 1px solid black;">{{{category}}}</td>
+                <td style="border-bottom: 1px solid black;">{{{duration}}}</td>
+                <td style="border-bottom: 1px solid black;">{{{completiondate}}}</td>
+                <td style="border-bottom: 1px solid black;">{{{expirydate}}}</td>
+            </tr>
+            {{/learninghistory}}
+        </table>
+    {{/haslearninghistory}}
+    {{^haslearninghistory}}
+        {{#str}}pdf:learninghistory:none, local_onlineappraisal{{/str}}
+    {{/haslearninghistory}}
+</div>

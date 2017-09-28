@@ -1,0 +1,94 @@
+.navigationbuttons {
+    float: right;
+    margin: 0;
+}
+
+.navigationbuttons li {
+    display: inline-block;
+    list-style: none;
+    margin-left: 4px;
+}
+.navigationbuttons li:hover {
+    border-radius: 5px;
+    -webkit-box-shadow: inset 0px 0px 4px -2px rgba(75,75,75,0.75);
+    -moz-box-shadow: inset 0px 0px 4px -2px rgba(75,75,75,0.75);
+    box-shadow: inset 0px 0px 4px -2px rgba(75,75,75,0.75);
+}
+
+.navigationbuttons li a {
+    display: inline-block;
+    font-size: 11px;
+    text-decoration: none;
+    line-height: 1.1;
+    padding: 3px 6px 7px 6px;
+    width: 56px;
+    text-align: center;
+}
+.navigationbuttons li a i {
+    display: inline-block;
+    width: 100%;
+}
+.navigationbuttons li a i:after {
+    display: inline-block;
+    content: "\A";
+    white-space: pre;
+    line-height: 1;
+    padding-bottom: 3px;
+}
+
+.delegate-list-container {
+    margin-top: 10px;
+}
+
+.delegate-list-container .alert,
+.delegate-list-container .no-overflow {
+    clear: both;
+}
+
+.delegate-list-container table {
+    width: 100%;
+}
+
+.delegate-list-container div.singleselect {
+    float: right;
+    margin-bottom: 8px;
+}
+
+.delegate-summary {
+    padding: 12px 24px;
+    margin: 8px 12px 20px;
+    background-color: #F7F7F7;
+    border-radius: 5px;
+}
+.delegate-summary .row-fluid {
+    line-height: 32px;
+}
+
+.delegate-list-container .picture {
+    margin-right: 10px;
+}
+
+.delegate-list-container .buttons {
+    margin-top: 10px;
+}
+.delegate-list-container .buttons button {
+    margin-right: 10px;
+}
+
+p.delegate-list-back {
+    margin-top: 20px;
+}
+
+.delegate-close-window {
+    padding: 0;
+    margin: 8px 12px 20px;
+}
+
+body#page-local-delegatelist-print {
+    padding-top: 0;
+}
+
+body#page-local-delegatelist-print .resettable {
+    display: none;
+    visibility: hidden;
+}

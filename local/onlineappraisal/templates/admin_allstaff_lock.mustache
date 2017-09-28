@@ -1,0 +1,81 @@
+<h2>{{#str}}allstaff, local_onlineappraisal{{/str}}</h2>
+
+<div>
+    {{#str}}admin:toptext:allstaff:notlocked, local_onlineappraisal, {{cohort}}{{/str}}
+</div>
+
+<h3>
+    {{#str}}admin:allstaff:notassigned, local_onlineappraisal{{/str}}
+    {{#str}}admin:usercount:notassigned, local_onlineappraisal, {{notassignedusercount}}{{/str}}
+</h3>
+<table class="generaltable" id="oa-appraisal-notassigned">
+    <thead>
+        <tr>
+            <th class="text-center w-1">{{#str}}admin:requiresappraisal, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}admin:name, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}admin:staffid, local_onlineappraisal{{/str}}</th>
+            {{#ishrleader}}<th>{{#str}}admin:grade, local_onlineappraisal{{/str}}</th>{{/ishrleader}}
+            <th>{{#str}}admin:employmentcategory, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}admin:startdate, local_onlineappraisal{{/str}}</th>
+            <th class="text-center w-1">{{#str}}admin:appraisalvip, local_onlineappraisal{{/str}}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{#notassignedusers}}
+        <tr>
+            <td class="text-center w-1">
+                <i data-userid="{{id}}"
+                   data-confirm="1"
+                   class="oa-toggle-required fa fa-lg {{#appraisalnotrequired}}fa-times text-danger" data-toggle="tooltip" data-container="body" title="{{appraisalnotrequiredreason}}"{{/appraisalnotrequired}}{{^appraisalnotrequired}}fa-check text-success"{{/appraisalnotrequired}}>
+                    <span class="sr-only">
+                        {{#appraisalnotrequired}}
+                            {{#str}}admin:appraisalnotrequired, local_onlineappraisal{{/str}}
+                        {{/appraisalnotrequired}}
+                        {{^appraisalnotrequired}}
+                            {{#str}}admin:appraisalrequired, local_onlineappraisal{{/str}}
+                        {{/appraisalnotrequired}}
+                    </span>
+                </i>
+            </td>
+            <td>{{firstname}} {{lastname}}</td>
+            <td>{{idnumber}}</td>
+            {{#ishrleader}}<td>{{grade}}</td>{{/ishrleader}}
+            <td>{{employmentcategory}}</td>
+            <td>{{startdate}}</td>
+            <td class="text-center w-1">
+                <span data-userid="{{id}}" class="oa-vip-status{{#ishrleader}} oa-toggle-vip{{/ishrleader}}{{#isvip}} oa-vip-yes{{/isvip}}">{{#str}}vip, local_onlineappraisal{{/str}}</span>
+            </td>
+        </tr>
+    {{/notassignedusers}}
+    {{^notassignedusers}}
+        <tr>
+            <td colspan="4">
+                <div class="alert alert-info m-b-0"><i class="fa fa-exclamation-triangle"></i> {{#str}}admin:allstaff:nousers, local_onlineappraisal{{/str}}</div>
+            </td>
+        </tr>
+    {{/notassignedusers}}
+    </tbody>
+</table>
+
+{{#form}}
+<form id={{id}} class="oa-form-allstaff form-inline m-b-15" {{#confirm}}data-confirm="{{.}}"{{/confirm}} data-button="{{buttonprocessing}}">
+    {{#hiddeninputs}}
+        <input type="hidden" name="{{name}}" value="{{value}}">
+    {{/hiddeninputs}}
+    <div class="form-group">
+        <label class="media-middle m-b-0" for="oa-init-duedate">{{#str}}admin:duedate:default, local_onlineappraisal{{/str}}</label>
+        <div class="input-group date">
+            <input type="hidden" name="duedate" {{#groupcohort.duedate}}value="{{.}}"{{/groupcohort.duedate}}>
+            <input id="oa-init-duedate" type="text" class="form-control datepicker" autocomplete="off"
+                {{#duedate}}data-y="{{y}}" data-m="{{m}}" data-d="{{d}}"{{/duedate}}/>
+            <div class="input-group-addon">
+                <i class="fa fa-lg fa-calendar"></i>
+            </div>
+        </div>
+        <div class="help-block pull-right m-l-5 m-b-0 hidden">{{#str}}error:duedate, local_onlineappraisal{{/str}}</div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary" data-confirm="{{confirmtext}}">{{buttontext}}</button>
+    </div>
+</form>
+{{/form}}

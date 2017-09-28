@@ -1,0 +1,26 @@
+{{!
+    This file is part of the Online Appraisal Plugin for Arup.
+}}
+{{!
+    @template local_onlineappraisal/printer_partial_forms
+
+    PDF Content : Appraisal : Form Data
+}}
+
+{{#forms}}
+    <div style="text-align: right; border-bottom: 1px solid black; background-color: #FFFFFF; color: black; font-size:1.25em;">{{title}}</div>
+    <div style="display: inline-block; text-align: left; width: auto; margin-right: auto;">
+        <table style="background-color: #FFFFFF; width: 100%; padding: 3px">
+            {{#fields}}
+                <tr><td>{{title}}</td></tr>
+                <tr><td style="background-color: #E7E6E6;">{{^isarray}}{{{data}}}{{/isarray}}{{#isarray}}{{#data}}{{{.}}}<br />{{/data}}{{/isarray}}</td></tr>
+                {{^last}}
+                <tr><td></td></tr>
+                {{/last}}
+            {{/fields}}
+        </table>
+    </div>
+    {{^last}}
+        <br pagebreak="true" />
+    {{/last}}
+{{/forms}}

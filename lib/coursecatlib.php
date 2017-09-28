@@ -2250,11 +2250,12 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         foreach ($thislist as $id) {
             $path = preg_split('|/|', $baselist[$id]['path'], -1, PREG_SPLIT_NO_EMPTY);
             if (!$excludeid || !in_array($excludeid, $path)) {
-                $namechunks = array();
-                foreach ($path as $parentid) {
-                    $namechunks[] = $baselist[$parentid]['name'];
-                }
-                $names[$id] = join($separator, $namechunks);
+/* BEGIN CORE MOD */
+                $indentlength = (count($path) - 1) * 6;
+                $prefix = str_repeat('&nbsp;', $indentlength);
+                $thisname = $baselist[end($path)]['name'];
+                $names[$id] = $prefix . $thisname;
+/* END CORE MOD */
             }
         }
         return $names;

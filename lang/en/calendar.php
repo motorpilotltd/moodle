@@ -216,3 +216,7 @@ $string['weekthis'] = 'This week';
 $string['yesterday'] = 'Yesterday';
 $string['youcandeleteallrepeats'] = 'This event is part of a repeating event series. You can delete this event only, or all {$a} events in the series at once.';
 
+/* BEGIN CORE MOD */
+$string['showlunchandlearnevents'] = 'Show lunch and learn';
+$string['hidelunchandlearnevents'] = 'Hide lunch and learn';
+/* END CORE MOD */

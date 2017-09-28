@@ -1,0 +1,368 @@
+form#localcoursesearch .coursesearchbox label {
+    display: none;
+}
+
+h2.local-search {
+    margin-bottom: 0;
+}
+
+/* Filter Block */
+.path-local-search #arup_filter_block {
+    border: none;
+    padding: 0;
+}
+
+.path-local-search #arup_filter_block .content {
+    padding: 0;
+}
+
+.path-local-search #arup_filter_block .content .form_wrapper {
+    margin-bottom: 10px;
+}
+
+.path-local-search #arup_filter_block .content .form_wrapper_region {
+    margin-bottom: 0;
+}
+
+.path-local-search #arup_filter_block .mform fieldset div {
+    margin: 0;
+}
+
+.path-local-search #arup_filter_block span.filter_title {
+    background: #E5E5E5 url([[pix:local_search|icon_blueminus]]) no-repeat 10px center;
+    color: #262626;
+    cursor: pointer;
+    display: block;
+    padding: 4px 10px 4px 25px;
+    width: auto;
+}
+
+.path-local-search #arup_filter_block span.filter_title.closed {
+    background-image: url([[pix:local_search|icon_blueplus]]);
+}
+
+.path-local-search #arup_filter_block .mform .fitem {
+    background: #F7F7F7;
+    color: #262626;
+    display: block;
+    margin: 0;
+    padding: 4px 10px 4px 25px;
+    width: auto;
+}
+
+.path-local-search #arup_filter_block .mform .fitem .fitemtitle {
+    float: left;
+    text-align: left;
+    width: auto;
+}
+
+.path-local-search #arup_filter_block .mform .fitem .fitemtitle label {
+    margin: 0;
+}
+
+.path-local-search #arup_filter_block .mform .fitem .felement {
+    float: right;
+    margin-left: 10px;
+    padding-top: 0;
+    width: auto;
+}
+
+.path-local-search #arup_filter_block .form_wrapper_metadata .mform .fitem_fsubmit {
+    background: #FFFFFF;
+    color: #000000;
+}
+
+.path-local-search #arup_filter_block .mform .fitem .fsubmit {
+    float: right;
+    margin: 0;
+    padding: 0;
+    text-align: right;
+}
+
+/* Course print layout */
+.search-content .coursebox {
+    background: #F7F7F7;
+    border: none;
+    margin-top: 15px;
+    padding: 10px;
+    position: relative;
+}
+
+.search-content .coursebox .image {
+    float: left;
+    width: 150px;
+}
+
+.search-content .coursebox .info {
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    float: left;
+    padding-left: 20px;
+    width: calc(100% - 150px); /* IE9 up */
+}
+
+.search-content .coursebox > .info > .name {
+    clear: none;
+    float: none;
+    margin: 0;
+    width: auto;
+}
+.search-content .coursebox.dimmed > .info > .name a,
+.search-content .coursebox > .info > .category-hidden a {
+    color: #999;
+}
+
+.search-content .coursebox > .info > .name a {
+    background: none;
+    padding: 0;
+}
+
+.search-content .coursebox .summary {
+    float: none;
+    margin: 0;
+    width: auto;
+}
+
+.search-content div.arup_course_metadata {
+    font-size: 12px;
+    padding: 0;
+    text-align: right;
+}
+
+.search-content div.arup_course_metadata span {
+    font-weight: bold;
+    margin: 0 5px 0 10px;
+    padding: 0;
+    width: auto;
+}
+
+/* Paging */
+.search-content .paging .current-page {
+    font-weight: bold;
+}
+
+.search-results article {
+    background: #F7F7F7;
+    margin-top: 15px;
+    padding: 10px;
+}
+.search-result article header h1 {
+    margin-top: 0;
+}
+.search-results article .info,
+.search-results article .image-holder {
+    float: left;
+}
+.search-results article .image-holder {
+    margin-right: 12px;
+    display: inline-block;
+    width: 230px;
+    height: 130px;
+    background-repeat: no-repeat;
+    text-align: center;
+}
+.search-results article .image-holder i {
+    font-size: 4em;
+    line-height: 130px;
+    color: rgba(230,231,232, 0.8);
+}
+.search-results article .image-holder:hover i {
+    color: rgba(230,231,232, 1);
+}
+.search-results article .info {
+    width: 70%;
+}
+.search-result ul.tags {
+    margin: 12px 0 0 0;
+    padding: 0;
+}
+.search-result ul.tags li {
+    font-size: 0.94em;
+    display: inline-block;
+    background-color: #999999;
+    color: white;
+    border-radius: 3px;
+    padding: 2px 6px;
+    line-height: 1;
+}
+.search-result ul.tags li i.glyphicon {
+    padding-right: 4px;
+}
+.search-result ul.tags li * {
+    vertical-align: middle;
+}
+
+.search-results .search-result, .alert {
+    filter: blur(0px) saturate(100%);
+    opacity: 1;
+    transition: all 1s;
+}
+
+.loading-replace .search-result,
+.loading-replace .alert {
+    filter: blur(3px) saturate(35%);
+    opacity: 0.5;
+    transition: all 1s;
+}
+
+.search-results {
+    position: relative;
+}
+
+.tab-content {
+    min-height: 160px;
+}
+
+.tab-content.loading-append {
+    padding-bottom: 32px;
+}
+
+.tab-content .loading-bar {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    text-align: center;
+    color: #3c3c3b;
+
+    display: none;
+    opacity: 0;
+
+    background: #fff;
+    padding: 22px 44px;
+
+    transition: opacity 1s,
+                display 0s 1s;
+}
+.open.loading-replace .loading-bar {
+
+    top: 32px;
+
+    display: block;
+    opacity: 1;
+
+    transition: opacity 1s,
+                display 0s 1s;
+}
+.open.loading-append .loading-bar {
+
+    top: 24px;
+
+    position: relative;
+    display: block;
+    opacity: 1;
+
+    transition: opacity 1s,
+    display 0s 1s;
+}
+
+.loading-append  .loading-bar .append,
+.loading-replace .loading-bar .replace {
+    display: block;
+}
+.loading-append  .loading-bar .replace,
+.loading-replace .loading-bar .append {
+    display: none;
+}
+
+.loading-bar .dot {
+    display: inline-block;
+    background: #FEA518;
+    width: 10px;
+    height: 10px;
+    margin: 8px;
+    border-radius: 6px;
+}
+
+/* animation */
+.loading-bar .dot {
+    animation: expanderAnim 2s infinite ease-in-out;
+}
+.loading-bar .dot:nth-child(1) {
+    animation-delay: 0s;
+}
+.loading-bar .dot:nth-child(2) {
+    animation-delay: 0.5s;
+}
+.loading-bar .dot:nth-child(3) {
+    animation-delay: 1s;
+}
+
+@keyframes expanderAnim {
+    0%, 60%, 100% {
+        transform: scaleX(1.00) scaleY(1.00);
+    }
+    40% {
+        transform: scaleX(1.80) scaleY(1.80);
+    }
+}
+
+
+.bottom-bar {
+    margin-top: 6px;
+}
+.bottom-bar span,
+.bottom-bar span i {
+    padding-right: 6px;
+}
+
+form.orderby-form {
+    text-align: right;
+}
+
+
+/* filters */
+
+.filter-button-container {
+    float: left;
+    margin: 10px 0;
+}
+
+.tab-container {
+    position: relative;
+}
+.tab-container .filter-block-container {
+    position: absolute;
+    top: 42px;
+    border: 1px solid #dddddd;
+    background-color: #ffffff;
+    border-top-width: 0;
+    width: 100%;
+    z-index: 99;
+}
+.filter-block-container fieldset {
+    margin-top: 12px;
+}
+
+.filter-block-container fieldset legend {
+    font-weight: bold;
+    padding-left: 12px;
+}
+
+.filter-block-container .filter-option {
+    box-sizing: border-box;
+    padding-right: 24px;
+    position: relative;
+    margin-bottom: 6px;
+}
+.filter-block-container .filter-option label {
+    font-weight: normal;
+    margin-left: 24px;
+}
+.filter-block-container .filter-option label > input[type="checkbox"] {
+    position: absolute;
+    left: 2px;
+    top: 4px;
+}
+.filter-block-container .container-fluid {
+    padding: 0px 20px;
+}
+
+fieldset.filter-action-buttons {
+    text-align: right;
+    padding-bottom: 8px;
+}
+fieldset.filter-action-buttons input:last-child {
+    margin-right: 15px;
+}

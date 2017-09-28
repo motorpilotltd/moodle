@@ -1,0 +1,309 @@
+.calendar_event_course {
+    background-color: #f7cfe1;
+    border-color: #f7cfe1;
+}
+.calendar_event_group {
+    background-color: #d6e6d7;
+    border-color: #d6e6d7;
+}
+.calendar_event_user {
+    background-color: #e5edf9;
+    border-color: #e5edf9;
+}
+.calendar_event_global {
+    background-color: #ffe7cf;
+    border-color: #ffe7cf;
+}
+.calendar_event_region {
+    background-color: #ff665a;
+    border-color: #ff665a;
+}
+.calendar_event_lunchandlearn {
+    background-color:#e4deeb;
+    border-color: #e4deeb;
+}
+.calendar_event_lunchandlearn.signedup {
+    background-color:#9C82BB;
+    border-color: #9C82BB;
+}
+.minicalendar .hasevent {
+    background-color: transparent;
+    text-decoration: underline;
+}
+.block .minicalendar {
+    margin: 6px auto;
+}
+.minicalendar caption,
+.minicalendar caption h3 {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+.minicalendar .eventcontent {
+    text-align: left;
+}
+.minicalendar .eventcontent img {
+    padding-right: 8px;
+}
+.minicalendar .calendar-controls {
+    margin-bottom: 4px;
+}
+.block .minicalendar .calendar-controls .arrow_text {
+    display: none;
+}
+@media all and (max-width: 1064px) {
+    
+    .path-calendar .block_fake .content {
+        padding-left: 3px;
+        padding-right: 3px;
+    }
+    
+    .block table.minicalendar th {
+        font-size: 0.64em;
+    }
+    
+    .block table.minicalendar td {
+        font-size: 0.76em;
+    }
+}
+.block .minicalendar .calendar-controls .arrow_link,
+.block .minicalendar .calendar-controls .current {
+    float: none;
+    display: inline-block;
+    width: auto;
+}
+.block .minicalendar .calendar-controls .current {
+    margin: 0 10px;
+}
+.block .minicalendar .calendar-controls h1.current {
+    font-family: Arial;
+    font-size: 1em;
+    font-weight: bold;
+}
+.minicalendar .calendar-controls .current a {
+    font-weight: bold;
+}
+
+div.maincalendar table.calendarmonth td,
+div.maincalendar table.calendarmonth th {
+    border-width: 0;
+    padding: 0px 6px;
+    text-align: right;
+    font-size: 0.86em;
+}
+div.maincalendar table.calendarmonth td .day {
+    border-top: 1px solid #ddd;
+}
+div.maincalendar table.calendarmonth td.weekend {
+    background-color: #fafafa;
+}
+div.maincalendar table.calendarmonth td li {
+    background-color: transparent;
+    border-width: 1px 1px 1px 10px;
+    border-style: solid;
+    padding: 1px 2px 1px 4px;
+    border-radius: 2px;
+    text-align: left;
+    margin-bottom: 2px;
+    font-size: 0.8em;
+    line-height: 14px;
+}
+div.maincalendar table.calendarmonth td ul.events-underway li.cancelled,
+div.maincalendar table.calendarmonth td li.cancelled a {
+    text-decoration: line-through;
+}
+.path-calendar div.maincalendar h3.main,
+.path-calendar div.maincalendar table.calendarmonth {
+    clear: left;
+}
+.path-calendar div.maincalendar div.header {
+    float: left;
+    margin-top: 8px;
+    display: none;
+}
+.path-calendar div.maincalendar div.header div,
+.path-calendar div.maincalendar div.header form {
+    display: inline;
+}
+.path-calendar div.maincalendar .calendar-controls .current,
+.path-calendar div.maincalendar .controls {
+    float: left;
+    width: auto;
+    line-height: 27px;
+}
+.path-calendar div.maincalendar .controls .arrow_link {
+    font-size: 1.5em;
+    line-height: 1.4em;
+    text-decoration: none;
+    width: auto;
+}
+.path-calendar div.maincalendar .controls .arrow_text {
+    display: none;
+}
+.path-calendar div.maincalendar .controls h1.current,
+.path-calendar div.maincalendar .controls span.current {
+    width: auto;
+    font-family: Arial;
+    font-size: 1.8em;
+    line-height: 1em;
+    margin: 0 6px;
+}
+.path-calendar div.maincalendar .controls span.current {
+    font-size: 1.4em;
+    line-height: 1.4em;
+}
+
+.path-calendar div.maincalendar .bottom .singlebutton {
+    float: right;
+    margin-left: 8px;
+}
+
+/* single event style */
+
+.path-calendar .maincalendar .event {
+    clear: left;
+}
+
+.path-calendar .eventlist .event,
+.path-calendar .eventlist .event td.description {
+    background-color: transparent;
+}
+.path-calendar .maincalendar .eventlist .event {
+    border-left-width: 20px;
+    padding: 6px 0 0 38px;
+}
+.path-calendar .maincalendar .eventlist .event .side {
+    width: 18px;
+}
+.path-calendar .maincalendar .eventlist .event .icon {
+    margin: 0 11px 0 -28px;
+    padding: 0;
+}
+
+.path-calendar .maincalendar .eventlist .event .date {
+    float: right;
+    padding-right: 6px;
+}
+
+.path-calendar .maincalendar .eventlist .event .location {
+    position: absolute;
+    right: 6px; /* match padding in tabs */
+    margin-top: 28px;
+}
+
+.path-calendar .maincalendar .event.calendar_event_lunchandlearn .description {
+    padding: 0;
+}
+
+.path-calendar .maincalendar .event .description .tabs {
+    margin-bottom: 0;
+    border-width: 0;
+    padding: 0;
+}
+.path-calendar .maincalendar .event .description .tabs li {
+    border-width: 1px;
+    border-color: transparent;
+    border-bottom-width: 0;
+    border-style: solid;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 2px 8px 4px 8px;
+}
+.path-calendar .maincalendar .event .description .tabs li:hover {
+    border-color: #f3f3f3;
+}
+.path-calendar .maincalendar .event .description .tabs li.selected {
+    background-color: #f3f3f3;
+    border-color: transparent;
+}
+.path-calendar .maincalendar .tabbedcontent {
+    background-color: #f3f3f3;
+    overflow: visible;
+    position: relative;
+    padding: 12px 6px;
+}
+div.regionfilter {
+    float: right;
+    margin: 10px 0;
+}
+.view-upcoming div.regionfilter {
+    margin: 0;
+}
+.regionfilter select {
+    margin-left: 4px;
+}
+
+.calendar-event-panel h2.eventtitle {
+    font-family:   Arial;
+    font-size:     1.33em;
+    text-decoration: underline;
+}
+
+.event-full header h1 {
+    background-image: url([[pix:core|i/lunchandlearnevent]]);
+    background-repeat: no-repeat;
+    background-position: center left;
+    padding-left: 42px;
+}
+
+.event-full section {
+    margin-left: 42px;
+    margin-bottom: 18px;
+}
+
+.event-full section h1 {
+    font-size: 1.67em;
+    border-bottom: 1px solid #e4deeb;
+    margin-top: 0;
+    background-image: url([[pix:core|t/less]]);
+    background-repeat: no-repeat;
+    background-position: center left;
+    padding-left: 16px;
+}
+.event-full section h1.collapsed {
+    background-image: url([[pix:core|t/add]]);
+}
+
+.eventfullactions {
+    float: left;
+    width: 18px;
+}
+
+.event-full .eventfullactions {
+    margin-left: 6px;
+}
+
+.heightcontainer.view-event .bottom { 
+    display: none;
+}
+
+.heightcontainer.view-event .lalsignup,
+.heightcontainer.view-event .btn-group {
+    float: right;
+    padding: 4px 10px 4px;
+}
+
+#instek .type_setting .tree_item {
+    padding-left: 22px !important;
+}
+#instek .type_custom .tree_item {
+    padding-left: 22px;
+}
+#instek .type_custom .navicon {
+    display: none;
+}
+#instek .tree_item [href*="lunchandlearn"] .navicon {
+    background-color: #e4deeb;
+}
+#instek .tree_item [href*="course"] .navicon {
+    background-color: #f7cfe1;
+}
+#instek .tree_item [href*="group"] .navicon {
+    background-color: #d6e6d7;
+}
+#instek .tree_item [href*="global"] .navicon {
+    background-color: #ffe7cf;
+}
+#instek .tree_item span .navicon {
+    display: none;
+}

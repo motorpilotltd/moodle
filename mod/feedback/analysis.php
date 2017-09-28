@@ -94,17 +94,13 @@ $myurl = $CFG->wwwroot.'/mod/feedback/analysis.php?id='.$cm->id.'&do_show=analys
 $groupselect = groups_print_activity_menu($cm, $myurl, true);
 $mygroupid = groups_get_activity_group($cm);
 
+/* BEGIN CORE MOD */
 if ( has_capability('mod/feedback:viewreports', $context) ) {
 
     echo isset($groupselect) ? $groupselect : '';
     echo '<div class="clearer"></div>';
-
-    //button "export to excel"
-    echo $OUTPUT->container_start('form-buttons');
-    $aurl = new moodle_url('analysis_to_excel.php', array('sesskey'=>sesskey(), 'id'=>$id));
-    echo $OUTPUT->single_button($aurl, get_string('export_to_excel', 'feedback'));
-    echo $OUTPUT->container_end();
 }
+/* END CORE MOD */
 
 //get completed feedbacks
 $completedscount = feedback_get_completeds_group_count($feedback, $mygroupid);
@@ -133,7 +129,9 @@ if ($mygroupid > 0 AND $feedback->anonymous == FEEDBACK_ANONYMOUS_YES) {
     }
 }
 
-echo '<div><table width="80%" cellpadding="10"><tr><td>';
+/* BEGIN CORE MOD */
+echo '<div><table width="100%" cellpadding="10"><tr><td>';
+/* END CORE MOD */
 if ($check_anonymously) {
     $itemnr = 0;
     //print the items in an analysed form
@@ -161,6 +159,15 @@ if ($check_anonymously) {
                                     'feedback', '', '', 3);
 }
 echo '</td></tr></table></div>';
+/* BEGIN CORE MOD */
+if (has_capability('mod/feedback:viewreports', $context)) {
+    // Button "export to excel".
+    echo $OUTPUT->container_start('form-buttons');
+    $aurl = new moodle_url('analysis_to_excel.php', array('sesskey' => sesskey(), 'id' => $id));
+    echo $OUTPUT->single_button($aurl, get_string('export_to_excel', 'feedback'));
+    echo $OUTPUT->container_end();
+}
+/* END CORE MOD */
 echo $OUTPUT->box_end();
 
 echo $OUTPUT->footer();

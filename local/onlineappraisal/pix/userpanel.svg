@@ -1,0 +1,37 @@
+<svg version="1.1" id="user-panel" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 310 130" xml:space="preserve">
+<defs>
+    <style type="text/css"><![CDATA[
+        .background {
+            fill: #E4E4E4;
+        }
+        .overlay {
+            fill: #696EB4;
+        }
+        text {
+            fill: #262626;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .user-name-last {
+            font-size: 16px;
+            font-weight: normal;
+        }
+        .user-type {
+            fill: #FFFFFF;
+            font-size: 16px;
+            font-weight: normal;
+        }
+    ]]></style>
+</defs>
+<rect class="background" width="310" height="130"/>
+<rect class="overlay" y="105" width="310" height="25"/>
+<image class="user-picture" width="100" height="100" xlink:href="[[picture]]" x="15" y="15"/>
+<text class="user-name">
+    <tspan class="user-name-first" x="130" y="35">[[firstname]]</tspan>
+    <tspan class="user-name-last" x="130" y="53">[[lastname]]</tspan>
+</text>
+<text class="user-type">
+    <tspan x="300" y="122" fill="#FFFFFF" text-anchor="end">[[type]]</tspan>
+</text>
+</svg>

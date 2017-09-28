@@ -199,7 +199,9 @@ class enrol_self_plugin extends enrol_plugin {
 
         $this->enrol_user($instance, $USER->id, $instance->roleid, $timestart, $timeend);
 
-        if ($instance->password and $instance->customint1 and $data->enrolpassword !== $instance->password) {
+/* BEGIN CORE MOD */
+        if ($instance->customchar1 != 'y' and $instance->password and $instance->customint1 and $data->enrolpassword !== $instance->password) {
+/* END CORE MOD */
             // It must be a group enrolment, let's assign group too.
             $groups = $DB->get_records('groups', array('courseid'=>$instance->courseid), 'id', 'id, enrolmentkey');
             foreach ($groups as $group) {
@@ -238,8 +240,10 @@ class enrol_self_plugin extends enrol_plugin {
             // This user can self enrol using this instance.
             $form = new enrol_self_enrol_form(NULL, $instance);
             $instanceid = optional_param('instance', 0, PARAM_INT);
-            if ($instance->id == $instanceid) {
-                if ($data = $form->get_data()) {
+/* BEGIN CORE MOD */
+            if ($instance->id == $instanceid || $instance->customchar1 == 'y') {
+                if ($data = $form->get_data() || $instance->customchar1 == 'y') {
+/* END CORE MOD */
                     $this->enrol_self($instance, $data);
                 }
             }
@@ -278,6 +282,11 @@ class enrol_self_plugin extends enrol_plugin {
                 // Can not enrol guest.
                 return get_string('noguestaccess', 'enrol') . $OUTPUT->continue_button(get_login_url());
             }
+/* BEGIN CORE MOD */
+            if ($USER->auth != 'saml') {
+                return get_string('canntenrolsaml', 'enrol_self');
+            }
+/* END CORE MOD */
             // Check if user is already enroled.
             if ($DB->get_record('user_enrolments', array('userid' => $USER->id, 'enrolid' => $instance->id))) {
                 return get_string('canntenrol', 'enrol_self');

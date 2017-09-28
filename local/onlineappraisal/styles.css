@@ -1,0 +1,2368 @@
+.path-local-onlineappraisal .oa-tagline {
+  font-size: 0.85em;
+}
+.path-local-onlineappraisal .oa-appraisee {
+  color: #007FFF;
+}
+.path-local-onlineappraisal .oa-appraiser {
+  color: #FC9C10;
+}
+.path-local-onlineappraisal .oa-signoff {
+  color: #30AA8C;
+}
+.path-local-onlineappraisal .tooltip-inner {
+  max-width: 400px;
+}
+.path-local-onlineappraisal hr.tophr {
+  margin-top: 0;
+}
+.path-local-onlineappraisal .oa-progress-panel {
+  background: #F1F2F2;
+}
+.path-local-onlineappraisal .oa-progress-panel h2 {
+  margin: 10px 0 5px 0;
+}
+.path-local-onlineappraisal .oa-progress-panel p.oa-last-saved {
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+.path-local-onlineappraisal .oa-overview button {
+  display: block;
+  white-space: normal;
+}
+.path-local-onlineappraisal #oa-overview-comment {
+  height: 29px;
+  max-height: 200px;
+  resize: vertical;
+  width: 100%;
+}
+.path-local-onlineappraisal .oa-user-panel > div {
+  border: 2px solid white;
+  border-radius: 50%;
+  display: inline-block;
+}
+.path-local-onlineappraisal .oa-user-panel .oa-user-panel-appraisee {
+  border-color: #007FFF;
+}
+.path-local-onlineappraisal .oa-user-panel .oa-user-panel-appraiser {
+  border-color: #FC9C10;
+}
+.path-local-onlineappraisal .oa-user-panel .oa-user-panel-signoff {
+  border-color: #30AA8C;
+}
+.path-local-onlineappraisal .oa-user-panel .oa-user-panel-groupleader {
+  border-color: #967BDC;
+}
+.path-local-onlineappraisal .oa-user-panel img {
+  border: 2px solid white;
+  border-radius: 50%;
+}
+.path-local-onlineappraisal div.progress-svg {
+  margin: 0 auto;
+  max-width: 900px;
+  width: 100%;
+}
+@media (max-width: 767px) {
+  .path-local-onlineappraisal div.progress-svg-f2f #progress-svg .texts,
+  .path-local-onlineappraisal div.progress-svg-f2f #progress-svg .f2f-text {
+    display: none !important;
+  }
+}
+.path-local-onlineappraisal #progress-svg .line,
+.path-local-onlineappraisal #progress-svg .circle,
+.path-local-onlineappraisal #progress-svg .arrow {
+  fill: #BCBEC0;
+  stroke: #BCBEC0;
+  stroke-miterlimit: 10;
+  stroke-width: 3;
+}
+.path-local-onlineappraisal #progress-svg .arrow {
+  display: none;
+  stroke-width: 0;
+}
+.path-local-onlineappraisal #progress-svg .arrow-1-2,
+.path-local-onlineappraisal #progress-svg .arrow-3-4 {
+  fill: #007FFF;
+  stroke: #007FFF;
+}
+.path-local-onlineappraisal #progress-svg .arrow-2-3,
+.path-local-onlineappraisal #progress-svg .arrow-4-5 {
+  fill: #FC9C10;
+  stroke: #FC9C10;
+}
+.path-local-onlineappraisal #progress-svg .arrow-5-6 {
+  fill: #30AA8C;
+  stroke: #30AA8C;
+}
+.path-local-onlineappraisal #progress-svg .tick {
+  display: none;
+  fill: white;
+}
+.path-local-onlineappraisal #progress-svg .number {
+  fill: white;
+}
+.path-local-onlineappraisal #progress-svg .text {
+  fill: #BCBEC0;
+}
+.path-local-onlineappraisal #progress-svg .f2f-icon,
+.path-local-onlineappraisal #progress-svg .f2f-text {
+  fill: white;
+}
+.path-local-onlineappraisal #progress-svg .f2f-text-held {
+  display: none;
+}
+.path-local-onlineappraisal div.progress-svg-f2f #progress-svg .f2f-text-held {
+  display: block;
+}
+.path-local-onlineappraisal div.progress-svg-f2f.progress-svg-1 #progress-svg .f2f-icon,
+.path-local-onlineappraisal div.progress-svg-f2f.progress-svg-1 #progress-svg .f2f-text {
+  fill: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-1 #progress-svg .arrow-1-2 {
+  display: block;
+}
+.path-local-onlineappraisal div.progress-svg-1 #progress-svg .circle-1 {
+  fill: white;
+  stroke: #007FFF;
+}
+.path-local-onlineappraisal div.progress-svg-1 #progress-svg .number-1 {
+  fill: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-1 #progress-svg .text-1 {
+  fill: #007FFF;
+}
+.path-local-onlineappraisal div.progress-svg-2 #progress-svg .arrow-2-1 {
+  display: block;
+}
+.path-local-onlineappraisal div.progress-svg-2 #progress-svg .arrow-2-3 {
+  display: block;
+}
+.path-local-onlineappraisal div.progress-svg-2 #progress-svg .circle-1 {
+  fill: #777777;
+  stroke: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-2 #progress-svg .circle-2 {
+  fill: white;
+  stroke: #FC9C10;
+}
+.path-local-onlineappraisal div.progress-svg-2 #progress-svg .tick-1 {
+  display: block;
+}
+.path-local-onlineappraisal div.progress-svg-2 #progress-svg .number-1 {
+  display: none;
+}
+.path-local-onlineappraisal div.progress-svg-2 #progress-svg .number-2 {
+  fill: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-2 #progress-svg .text-1 {
+  fill: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-2 #progress-svg .text-2 {
+  fill: #FC9C10;
+}
+.path-local-onlineappraisal div.progress-svg-2 #progress-svg .f2f-icon-appraisee {
+  fill: #007FFF;
+}
+.path-local-onlineappraisal div.progress-svg-2 #progress-svg .f2f-icon-appraiser {
+  fill: #FC9C10;
+}
+.path-local-onlineappraisal div.progress-svg-2 #progress-svg .f2f-text {
+  fill: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-3 #progress-svg .arrow-3-2,
+.path-local-onlineappraisal div.progress-svg-3 #progress-svg .arrow-3-4 {
+  display: block;
+}
+.path-local-onlineappraisal div.progress-svg-3 #progress-svg .circle-1,
+.path-local-onlineappraisal div.progress-svg-3 #progress-svg .circle-2 {
+  fill: #777777;
+  stroke: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-3 #progress-svg .circle-3 {
+  fill: white;
+  stroke: #007FFF;
+}
+.path-local-onlineappraisal div.progress-svg-3 #progress-svg .tick-1,
+.path-local-onlineappraisal div.progress-svg-3 #progress-svg .tick-2 {
+  display: block;
+}
+.path-local-onlineappraisal div.progress-svg-3 #progress-svg .number-1,
+.path-local-onlineappraisal div.progress-svg-3 #progress-svg .number-2 {
+  display: none;
+}
+.path-local-onlineappraisal div.progress-svg-3 #progress-svg .number-3 {
+  fill: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-3 #progress-svg .text-1,
+.path-local-onlineappraisal div.progress-svg-3 #progress-svg .text-2 {
+  fill: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-3 #progress-svg .text-3 {
+  fill: #007FFF;
+}
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .arrow-4-3,
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .arrow-4-5 {
+  display: block;
+}
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .circle-1,
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .circle-2,
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .circle-3 {
+  fill: #777777;
+  stroke: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .circle-4 {
+  fill: white;
+  stroke: #FC9C10;
+}
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .tick-1,
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .tick-2,
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .tick-3 {
+  display: block;
+}
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .number-1,
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .number-2,
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .number-3 {
+  display: none;
+}
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .number-4 {
+  fill: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .text-1,
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .text-2,
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .text-3 {
+  fill: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-4 #progress-svg .text-4 {
+  fill: #FC9C10;
+}
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .arrow-5-6 {
+  display: block;
+}
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .circle-1,
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .circle-2,
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .circle-3,
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .circle-4 {
+  fill: #777777;
+  stroke: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .circle-5 {
+  fill: white;
+  stroke: #30AA8C;
+}
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .tick-1,
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .tick-2,
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .tick-3,
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .tick-4 {
+  display: block;
+}
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .number-1,
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .number-2,
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .number-3,
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .number-4 {
+  display: none;
+}
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .number-5 {
+  fill: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .text-1,
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .text-2,
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .text-3,
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .text-4 {
+  fill: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-5 #progress-svg .text-5 {
+  fill: #30AA8C;
+}
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .circle-1,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .circle-1,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .circle-1,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .circle-2,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .circle-2,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .circle-2,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .circle-3,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .circle-3,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .circle-3,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .circle-4,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .circle-4,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .circle-4,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .circle-5,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .circle-5,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .circle-5,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .circle-6,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .circle-6,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .circle-6 {
+  fill: #777777;
+  stroke: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .tick-1,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .tick-1,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .tick-1,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .tick-2,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .tick-2,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .tick-2,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .tick-3,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .tick-3,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .tick-3,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .tick-4,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .tick-4,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .tick-4,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .tick-5,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .tick-5,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .tick-5,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .tick-6,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .tick-6,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .tick-6 {
+  display: block;
+}
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .number-1,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .number-1,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .number-1,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .number-2,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .number-2,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .number-2,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .number-3,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .number-3,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .number-3,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .number-4,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .number-4,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .number-4,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .number-5,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .number-5,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .number-5,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .number-6,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .number-6,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .number-6 {
+  display: none;
+}
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .text-1,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .text-1,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .text-1,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .text-2,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .text-2,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .text-2,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .text-3,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .text-3,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .text-3,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .text-4,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .text-4,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .text-4,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .text-5,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .text-5,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .text-5,
+.path-local-onlineappraisal div.progress-svg-8 #progress-svg .text-6,
+.path-local-onlineappraisal div.progress-svg-7 #progress-svg .text-6,
+.path-local-onlineappraisal div.progress-svg-6 #progress-svg .text-6 {
+  fill: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-gla.progress-svg-5 #progress-svg .circle-5b {
+  fill: #BCBEC0;
+  stroke: #BCBEC0;
+}
+.path-local-onlineappraisal div.progress-svg-gla.progress-svg-5 #progress-svg .text-5b {
+  fill: #BCBEC0;
+}
+.path-local-onlineappraisal div.progress-svg-gla.progress-svg-5 #progress-svg .number-5b {
+  fill: white;
+}
+.path-local-onlineappraisal div.progress-svg-gla.progress-svg-5 #progress-svg .arrow-5b-6 {
+  display: none;
+}
+.path-local-onlineappraisal div.progress-svg-gla.progress-svg-5 #progress-svg .arrow-5a-5b {
+  display: block;
+  fill: #30AA8C;
+}
+.path-local-onlineappraisal div.progress-svg-gla.progress-svg-6 #progress-svg .circle-5b {
+  fill: white;
+  stroke: #967BDC;
+}
+.path-local-onlineappraisal div.progress-svg-gla.progress-svg-6 #progress-svg .tick-5b {
+  display: none;
+}
+.path-local-onlineappraisal div.progress-svg-gla.progress-svg-6 #progress-svg .number-5b {
+  display: block;
+  fill: #777777;
+}
+.path-local-onlineappraisal div.progress-svg-gla.progress-svg-6 #progress-svg .text-5b {
+  fill: #967BDC;
+}
+.path-local-onlineappraisal div.progress-svg-gla.progress-svg-6 #progress-svg .arrow-5b-6 {
+  display: block;
+  fill: #967BDC;
+}
+.path-local-onlineappraisal .mform .input-group {
+  max-width: 300px;
+}
+.path-local-onlineappraisal .mform .fitem .fitemtitle,
+.path-local-onlineappraisal .mform .fitem .felement {
+  float: none;
+  width: 100%;
+  text-align: left;
+  margin-left: 0;
+}
+.path-local-onlineappraisal .mform .fitem .fitemtitle select,
+.path-local-onlineappraisal .mform .fitem .felement select {
+  max-width: 100%;
+  width: auto;
+}
+.path-local-onlineappraisal .mform .fitem .fitemtitle {
+  padding-bottom: 0.8em;
+}
+.path-local-onlineappraisal .mform .fitem .fitemtitle label {
+  display: block;
+}
+.path-local-onlineappraisal .mform .fitem .felement input[type="text"],
+.path-local-onlineappraisal .mform .fitem textarea {
+  max-width: 635px;
+}
+.path-local-onlineappraisal .mform .fitem textarea {
+  min-height: 200px;
+  resize: vertical;
+}
+.path-local-onlineappraisal .mform .fitem textarea#id_twenty {
+  min-height: 60px;
+}
+.path-local-onlineappraisal .mform .fitem textarea#id_ten {
+  min-height: 30px;
+}
+.path-local-onlineappraisal .mform .fitem .locked {
+  border-width: 1px;
+  border-style: solid;
+  height: 200px;
+  overflow-y: scroll;
+  background-color: #eee;
+  border-radius: 3px;
+  padding: 5px;
+}
+.path-local-onlineappraisal .mform .fitem .felement .appraisee textarea,
+.path-local-onlineappraisal .mform .fitem .felement .appraisee .locked {
+  border-color: #007FFF;
+}
+.path-local-onlineappraisal .mform .fitem .felement .appraisee textarea:focus,
+.path-local-onlineappraisal .mform .fitem .felement .appraisee .locked:focus {
+  border-color: #007FFF;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(0, 127, 255, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(0, 127, 255, 0.6);
+}
+.path-local-onlineappraisal .mform .fitem .felement .appraiser textarea,
+.path-local-onlineappraisal .mform .fitem .felement .appraiser .locked {
+  border-color: #FC9C10;
+}
+.path-local-onlineappraisal .mform .fitem .felement .appraiser textarea:focus,
+.path-local-onlineappraisal .mform .fitem .felement .appraiser .locked:focus {
+  border-color: #FC9C10;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(252, 156, 16, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(252, 156, 16, 0.6);
+}
+.path-local-onlineappraisal .mform .fitem .felement .signoff textarea,
+.path-local-onlineappraisal .mform .fitem .felement .signoff .locked {
+  border-color: #30AA8C;
+}
+.path-local-onlineappraisal .mform .fitem .felement .signoff textarea:focus,
+.path-local-onlineappraisal .mform .fitem .felement .signoff .locked:focus {
+  border-color: #30AA8C;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(48, 170, 140, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(48, 170, 140, 0.6);
+}
+.path-local-onlineappraisal .mform .fitem .felement .groupleader textarea,
+.path-local-onlineappraisal .mform .fitem .felement .groupleader .locked {
+  border-color: #967BDC;
+}
+.path-local-onlineappraisal .mform .fitem .felement .groupleader textarea:focus,
+.path-local-onlineappraisal .mform .fitem .felement .groupleader .locked:focus {
+  border-color: #967BDC;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(150, 123, 220, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(150, 123, 220, 0.6);
+}
+.path-local-onlineappraisal .mform .fitem .felement .dateselect input {
+  margin-bottom: 0;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+.path-local-onlineappraisal .mform .fitem .felement .dateselect input + .input-group-addon {
+  cursor: pointer;
+}
+.path-local-onlineappraisal .mform .fitem .felement .dateselect input[disabled] {
+  cursor: not-allowed !important;
+  background-color: #eee !important;
+  opacity: 1;
+}
+.path-local-onlineappraisal .mform .fitem .felement .dateselect input[disabled] + .input-group-addon {
+  cursor: not-allowed !important;
+}
+.path-local-onlineappraisal .mform .fitem .felement.fstatic .groupleader {
+  background-color: #eee;
+  color: #555;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 4px 12px;
+  min-height: 70px;
+}
+.path-local-onlineappraisal .mform .fitem .fcheckbox > span > label {
+  display: inline;
+}
+.path-local-onlineappraisal .mform .fitem.fitem_fcheckbox .fitemtitle {
+  display: none;
+}
+.path-local-onlineappraisal .mform.admin_group {
+  position: relative;
+}
+.path-local-onlineappraisal .mform.admin_group .fitem {
+  margin-bottom: 5px;
+}
+.path-local-onlineappraisal .mform.admin_group .fitem .fitemtitle,
+.path-local-onlineappraisal .mform.admin_group .fitem .felement {
+  float: left;
+}
+.path-local-onlineappraisal .mform.admin_group .fitem .fitemtitle {
+  width: 15%;
+}
+.path-local-onlineappraisal .mform.admin_group .fitem .felement {
+  width: 85%;
+}
+.path-local-onlineappraisal .mform.admin_group .fitem_actionbuttons {
+  bottom: 0;
+  margin: 0;
+  position: absolute;
+  right: 0;
+}
+.path-local-onlineappraisal .mform.itadmin_group fieldset {
+  float: left;
+}
+.path-local-onlineappraisal .mform.itadmin_group .fitem .fitemtitle,
+.path-local-onlineappraisal .mform.itadmin_group .fitem .felement {
+  float: left;
+  width: auto;
+}
+.path-local-onlineappraisal .mform.itadmin_group .fitem_actionbuttons {
+  margin: 0;
+}
+.path-local-onlineappraisal .mform .well.emailmsg {
+  max-width: 635px;
+}
+.path-local-onlineappraisal .mform .well.emailmsg .placeholder {
+  visibility: hidden;
+}
+.path-local-onlineappraisal .mform .well.emailmsg .placeholder.visible {
+  visibility: visible;
+}
+.path-local-onlineappraisal .mform .input-group.inline-edit {
+  width: 240px;
+}
+.path-local-onlineappraisal .mform #id_submitcontinue {
+  color: #fff;
+  background-color: #38C19A;
+  border-color: #32ad8a;
+}
+.path-local-onlineappraisal .mform #id_submitcontinue:focus,
+.path-local-onlineappraisal .mform #id_submitcontinue.focus {
+  color: #fff;
+  background-color: #2d997a;
+  border-color: #164a3b;
+}
+.path-local-onlineappraisal .mform #id_submitcontinue:hover {
+  color: #fff;
+  background-color: #2d997a;
+  border-color: #257e64;
+}
+.path-local-onlineappraisal .mform #id_submitcontinue:active,
+.path-local-onlineappraisal .mform #id_submitcontinue.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .mform #id_submitcontinue {
+  color: #fff;
+  background-color: #2d997a;
+  border-color: #257e64;
+}
+.path-local-onlineappraisal .mform #id_submitcontinue:active:hover,
+.path-local-onlineappraisal .mform #id_submitcontinue.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .mform #id_submitcontinue:hover,
+.path-local-onlineappraisal .mform #id_submitcontinue:active:focus,
+.path-local-onlineappraisal .mform #id_submitcontinue.active:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .mform #id_submitcontinue:focus,
+.path-local-onlineappraisal .mform #id_submitcontinue:active.focus,
+.path-local-onlineappraisal .mform #id_submitcontinue.active.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .mform #id_submitcontinue.focus {
+  color: #fff;
+  background-color: #257e64;
+  border-color: #164a3b;
+}
+.path-local-onlineappraisal .mform #id_submitcontinue:active,
+.path-local-onlineappraisal .mform #id_submitcontinue.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .mform #id_submitcontinue {
+  background-image: none;
+}
+.path-local-onlineappraisal .mform #id_submitcontinue.disabled,
+.path-local-onlineappraisal .mform #id_submitcontinue[disabled],
+fieldset[disabled] .path-local-onlineappraisal .mform #id_submitcontinue,
+.path-local-onlineappraisal .mform #id_submitcontinue.disabled:hover,
+.path-local-onlineappraisal .mform #id_submitcontinue[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_submitcontinue:hover,
+.path-local-onlineappraisal .mform #id_submitcontinue.disabled:focus,
+.path-local-onlineappraisal .mform #id_submitcontinue[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_submitcontinue:focus,
+.path-local-onlineappraisal .mform #id_submitcontinue.disabled.focus,
+.path-local-onlineappraisal .mform #id_submitcontinue[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_submitcontinue.focus,
+.path-local-onlineappraisal .mform #id_submitcontinue.disabled:active,
+.path-local-onlineappraisal .mform #id_submitcontinue[disabled]:active,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_submitcontinue:active,
+.path-local-onlineappraisal .mform #id_submitcontinue.disabled.active,
+.path-local-onlineappraisal .mform #id_submitcontinue[disabled].active,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_submitcontinue.active {
+  background-color: #38C19A;
+  border-color: #32ad8a;
+}
+.path-local-onlineappraisal .mform #id_submitcontinue .badge {
+  color: #38C19A;
+  background-color: #fff;
+}
+.path-local-onlineappraisal .mform #id_submitcontinue:focus,
+.path-local-onlineappraisal .mform #id_submitcontinue.focus {
+  color: #fff;
+  background-color: #2d997a;
+  border-color: #164a3b;
+}
+.path-local-onlineappraisal .mform #id_submitcontinue:hover {
+  color: #fff;
+  background-color: #2d997a;
+  border-color: #257e64;
+}
+.path-local-onlineappraisal .mform #id_submitcontinue:active,
+.path-local-onlineappraisal .mform #id_submitcontinue.active {
+  color: #fff;
+  background-color: #2d997a;
+  border-color: #257e64;
+}
+.path-local-onlineappraisal .mform #id_submitcontinue:active:hover,
+.path-local-onlineappraisal .mform #id_submitcontinue.active:hover,
+.path-local-onlineappraisal .mform #id_submitcontinue:active:focus,
+.path-local-onlineappraisal .mform #id_submitcontinue.active:focus,
+.path-local-onlineappraisal .mform #id_submitcontinue:active.focus,
+.path-local-onlineappraisal .mform #id_submitcontinue.active.focus {
+  color: #fff;
+  background-color: #257e64;
+  border-color: #164a3b;
+}
+.path-local-onlineappraisal .mform #id_submitcontinue.disabled:hover,
+.path-local-onlineappraisal .mform #id_submitcontinue[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_submitcontinue:hover,
+.path-local-onlineappraisal .mform #id_submitcontinue.disabled:focus,
+.path-local-onlineappraisal .mform #id_submitcontinue[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_submitcontinue:focus,
+.path-local-onlineappraisal .mform #id_submitcontinue.disabled.focus,
+.path-local-onlineappraisal .mform #id_submitcontinue[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_submitcontinue.focus {
+  background-color: #38C19A;
+  border-color: #32ad8a;
+}
+@media (min-width: 768px) {
+  .path-local-onlineappraisal .mform .dl-horizontal dt {
+    width: 150px;
+  }
+  .path-local-onlineappraisal .mform .dl-horizontal dd {
+    margin-left: 155px;
+  }
+}
+.path-local-onlineappraisal .mform #id_resetbutton {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+.path-local-onlineappraisal .mform #id_resetbutton:focus,
+.path-local-onlineappraisal .mform #id_resetbutton.focus {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #8c8c8c;
+}
+.path-local-onlineappraisal .mform #id_resetbutton:hover {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+.path-local-onlineappraisal .mform #id_resetbutton:active,
+.path-local-onlineappraisal .mform #id_resetbutton.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .mform #id_resetbutton {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+.path-local-onlineappraisal .mform #id_resetbutton:active:hover,
+.path-local-onlineappraisal .mform #id_resetbutton.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .mform #id_resetbutton:hover,
+.path-local-onlineappraisal .mform #id_resetbutton:active:focus,
+.path-local-onlineappraisal .mform #id_resetbutton.active:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .mform #id_resetbutton:focus,
+.path-local-onlineappraisal .mform #id_resetbutton:active.focus,
+.path-local-onlineappraisal .mform #id_resetbutton.active.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .mform #id_resetbutton.focus {
+  color: #333;
+  background-color: #d4d4d4;
+  border-color: #8c8c8c;
+}
+.path-local-onlineappraisal .mform #id_resetbutton:active,
+.path-local-onlineappraisal .mform #id_resetbutton.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .mform #id_resetbutton {
+  background-image: none;
+}
+.path-local-onlineappraisal .mform #id_resetbutton.disabled,
+.path-local-onlineappraisal .mform #id_resetbutton[disabled],
+fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton,
+.path-local-onlineappraisal .mform #id_resetbutton.disabled:hover,
+.path-local-onlineappraisal .mform #id_resetbutton[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton:hover,
+.path-local-onlineappraisal .mform #id_resetbutton.disabled:focus,
+.path-local-onlineappraisal .mform #id_resetbutton[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton:focus,
+.path-local-onlineappraisal .mform #id_resetbutton.disabled.focus,
+.path-local-onlineappraisal .mform #id_resetbutton[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.focus,
+.path-local-onlineappraisal .mform #id_resetbutton.disabled:active,
+.path-local-onlineappraisal .mform #id_resetbutton[disabled]:active,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton:active,
+.path-local-onlineappraisal .mform #id_resetbutton.disabled.active,
+.path-local-onlineappraisal .mform #id_resetbutton[disabled].active,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.active {
+  background-color: #fff;
+  border-color: #ccc;
+}
+.path-local-onlineappraisal .mform #id_resetbutton .badge {
+  color: #fff;
+  background-color: #333;
+}
+.path-local-onlineappraisal .mform #id_resetbutton:focus,
+.path-local-onlineappraisal .mform #id_resetbutton.focus {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #8c8c8c;
+}
+.path-local-onlineappraisal .mform #id_resetbutton:hover {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+.path-local-onlineappraisal .mform #id_resetbutton:active,
+.path-local-onlineappraisal .mform #id_resetbutton.active {
+  color: #333;
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+.path-local-onlineappraisal .mform #id_resetbutton:active:hover,
+.path-local-onlineappraisal .mform #id_resetbutton.active:hover,
+.path-local-onlineappraisal .mform #id_resetbutton:active:focus,
+.path-local-onlineappraisal .mform #id_resetbutton.active:focus,
+.path-local-onlineappraisal .mform #id_resetbutton:active.focus,
+.path-local-onlineappraisal .mform #id_resetbutton.active.focus {
+  color: #333;
+  background-color: #d4d4d4;
+  border-color: #8c8c8c;
+}
+.path-local-onlineappraisal .mform #id_resetbutton.disabled:hover,
+.path-local-onlineappraisal .mform #id_resetbutton[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton:hover,
+.path-local-onlineappraisal .mform #id_resetbutton.disabled:focus,
+.path-local-onlineappraisal .mform #id_resetbutton[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton:focus,
+.path-local-onlineappraisal .mform #id_resetbutton.disabled.focus,
+.path-local-onlineappraisal .mform #id_resetbutton[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.focus {
+  background-color: #fff;
+  border-color: #ccc;
+}
+.path-local-onlineappraisal .mform .form-field-caption {
+  font-size: 0.85em;
+  margin-bottom: 15px;
+  margin-top: -13px;
+}
+.path-local-onlineappraisal .block_local_onlineappraisal ul.nav-stacked {
+  margin: 0;
+}
+.path-local-onlineappraisal .block_local_onlineappraisal ul.nav-stacked > li {
+  float: none;
+}
+.path-local-onlineappraisal .block_local_onlineappraisal li > a {
+  display: relative;
+}
+.path-local-onlineappraisal .block_local_onlineappraisal li > a .check {
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+}
+.path-local-onlineappraisal .block_local_onlineappraisal li > a .name {
+  display: inline-block;
+}
+.path-local-onlineappraisal .block_local_onlineappraisal li > a span.appraisal-menu-status {
+  margin-top: -3px;
+  padding: 2px 7px;
+}
+.path-local-onlineappraisal .block_local_onlineappraisal li > a span.appraisal-menu-status.appraisal-menu-status-dimmed {
+  background-color: #939598;
+}
+.path-local-onlineappraisal .block_local_onlineappraisal li.active > a span.appraisal-menu-status {
+  background-color: white;
+  color: #DB4453;
+}
+.path-local-onlineappraisal .block_local_onlineappraisal li.active > a span.appraisal-menu-status.appraisal-menu-status-dimmed {
+  color: #939598;
+}
+.path-local-onlineappraisal #oa-comment-input,
+.path-local-onlineappraisal #oa-checkin-input {
+  height: 29px;
+  max-height: 200px;
+  resize: vertical;
+  width: 100%;
+}
+.path-local-onlineappraisal .oa-comments ul {
+  margin: 0;
+}
+.path-local-onlineappraisal .oa-comments li {
+  background-color: #F1F2F2;
+  padding: 10px;
+}
+.path-local-onlineappraisal .oa-comments li h4 {
+  color: #3c3c3b;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 5px 0;
+}
+.path-local-onlineappraisal .oa-comments li h4 .oa-comment-created {
+  color: #777777;
+  cursor: default;
+  font-weight: normal;
+}
+.path-local-onlineappraisal .oa-comments li p {
+  margin: 0;
+  word-wrap: break-word;
+}
+.path-local-onlineappraisal .oa-comments li img {
+  border-radius: 50%;
+}
+.path-local-onlineappraisal .oa-comments li .oa-comment-role {
+  color: #777777;
+  display: block;
+  font-size: 0.85em;
+}
+.path-local-onlineappraisal .oa-checkins ul {
+  margin: 0;
+}
+.path-local-onlineappraisal .oa-checkins li {
+  background-color: #F1F2F2;
+  padding: 10px;
+}
+.path-local-onlineappraisal .oa-checkins li h4 {
+  color: #3c3c3b;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 5px 0;
+}
+.path-local-onlineappraisal .oa-checkins li h4 .oa-comment-created {
+  color: #777777;
+  cursor: default;
+  font-weight: normal;
+}
+.path-local-onlineappraisal .oa-checkins li p {
+  margin: 0;
+  word-wrap: break-word;
+}
+.path-local-onlineappraisal .oa-checkins li img {
+  border-radius: 50%;
+}
+.path-local-onlineappraisal .oa-checkins li .oa-comment-role {
+  color: #777777;
+  display: block;
+  font-size: 0.85em;
+}
+.path-local-onlineappraisal .oa-checkins li {
+  background-color: #FFF;
+  border: 1px solid #E6E7E8;
+}
+.path-local-onlineappraisal .oa-checkins li .checkintext {
+  word-wrap: break-word;
+}
+.path-local-onlineappraisal .generaltable thead > tr th,
+.path-local-onlineappraisal .generaltable tbody > tr th,
+.path-local-onlineappraisal .generaltable tfoot > tr th,
+.path-local-onlineappraisal .generaltable thead > tr td,
+.path-local-onlineappraisal .generaltable tbody > tr td,
+.path-local-onlineappraisal .generaltable tfoot > tr td {
+  vertical-align: middle;
+}
+.path-local-onlineappraisal .generaltable thead > tr th.w-1,
+.path-local-onlineappraisal .generaltable tbody > tr th.w-1,
+.path-local-onlineappraisal .generaltable tfoot > tr th.w-1,
+.path-local-onlineappraisal .generaltable thead > tr td.w-1,
+.path-local-onlineappraisal .generaltable tbody > tr td.w-1,
+.path-local-onlineappraisal .generaltable tfoot > tr td.w-1 {
+  white-space: nowrap;
+  width: 1%;
+}
+.path-local-onlineappraisal .generaltable .tr-alert,
+.path-local-onlineappraisal .generaltable .tr-alert:hover,
+.path-local-onlineappraisal .generaltable .tr-alert:focus {
+  background-color: transparent;
+}
+.path-local-onlineappraisal .generaltable .table-button {
+  margin-bottom: -5px;
+  margin-top: -6px;
+}
+.path-local-onlineappraisal .generaltable.oa-editable-table .form-control,
+.path-local-onlineappraisal .generaltable.oa-initialise-table .form-control {
+  font-size: 0.85em;
+  height: auto;
+  padding: 2px 4px;
+}
+.path-local-onlineappraisal .generaltable .oa-editable-table .btn {
+  padding: 2px 4px;
+}
+.path-local-onlineappraisal .progress {
+  height: 20px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+.path-local-onlineappraisal #oa-archived-table .progress-bar {
+  background-color: #939598;
+}
+.path-local-onlineappraisal i.action {
+  cursor: pointer;
+}
+.path-local-onlineappraisal .dropdown button .caret {
+  margin-top: -2px;
+}
+.path-local-onlineappraisal .oa-f2f-date {
+  display: inline-block;
+  line-height: 22px;
+  position: relative;
+  vertical-align: middle;
+}
+.path-local-onlineappraisal .oa-f2f-date input.datepicker {
+  border: 0;
+  display: inline;
+  height: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  width: 0;
+}
+.path-local-onlineappraisal span.oa-vip-status {
+  background-color: #E6E7E8;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  color: white;
+  display: inline-block;
+  font-weight: bold;
+  line-height: 1;
+  margin: 0 10px;
+  padding: 2px 5px;
+}
+.path-local-onlineappraisal span.oa-vip-yes {
+  background-color: #DB4453;
+}
+.path-local-onlineappraisal span.oa-toggle-vip {
+  cursor: pointer;
+}
+.path-local-onlineappraisal span.oa-toggle-vip:hover {
+  background-color: #DB4453;
+}
+.path-local-onlineappraisal span.oa-toggle-vip.oa-vip-yes:hover {
+  background-color: #E6E7E8;
+}
+.path-local-onlineappraisal table tbody tr.oa-user-suspended {
+  background-color: #BCBEC0;
+}
+.path-local-onlineappraisal table tbody tr.oa-user-suspended td {
+  opacity: 0.65;
+}
+.path-local-onlineappraisal table tbody tr.oa-user-suspended td.oa-user-suspended {
+  opacity: 1;
+}
+.path-local-onlineappraisal table tbody tr.oa-user-suspended td.oa-user-suspended div.oa-actions button {
+  opacity: 0.65;
+}
+.path-local-onlineappraisal .datepicker {
+  border-radius: 4px;
+  direction: ltr;
+}
+.path-local-onlineappraisal .datepicker-inline {
+  width: 220px;
+}
+.path-local-onlineappraisal .datepicker.path-local-onlineappraisal .datepicker-rtl {
+  direction: rtl;
+}
+.path-local-onlineappraisal .datepicker.path-local-onlineappraisal .datepicker-rtl table tr td span {
+  float: right;
+}
+.path-local-onlineappraisal .datepicker-dropdown {
+  top: 0;
+  left: 0;
+  padding: 4px;
+}
+.path-local-onlineappraisal .datepicker-dropdown:before {
+  content: '';
+  display: inline-block;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid rgba(0, 0, 0, 0.15);
+  border-top: 0;
+  border-bottom-color: rgba(0, 0, 0, 0.2);
+  position: absolute;
+}
+.path-local-onlineappraisal .datepicker-dropdown:after {
+  content: '';
+  display: inline-block;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #fff;
+  border-top: 0;
+  position: absolute;
+}
+.path-local-onlineappraisal .datepicker-dropdown.datepicker-orient-left:before {
+  left: 6px;
+}
+.path-local-onlineappraisal .datepicker-dropdown.datepicker-orient-left:after {
+  left: 7px;
+}
+.path-local-onlineappraisal .datepicker-dropdown.datepicker-orient-right:before {
+  right: 6px;
+}
+.path-local-onlineappraisal .datepicker-dropdown.datepicker-orient-right:after {
+  right: 7px;
+}
+.path-local-onlineappraisal .datepicker-dropdown.datepicker-orient-bottom:before {
+  top: -7px;
+}
+.path-local-onlineappraisal .datepicker-dropdown.datepicker-orient-bottom:after {
+  top: -6px;
+}
+.path-local-onlineappraisal .datepicker-dropdown.datepicker-orient-top:before {
+  bottom: -7px;
+  border-bottom: 0;
+  border-top: 7px solid rgba(0, 0, 0, 0.15);
+}
+.path-local-onlineappraisal .datepicker-dropdown.datepicker-orient-top:after {
+  bottom: -6px;
+  border-bottom: 0;
+  border-top: 6px solid #fff;
+}
+.path-local-onlineappraisal .datepicker table {
+  margin: 0;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.path-local-onlineappraisal .datepicker table tr td,
+.path-local-onlineappraisal .datepicker table tr th {
+  text-align: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  border: none;
+}
+.table-striped .path-local-onlineappraisal .datepicker table tr td,
+.table-striped .path-local-onlineappraisal .datepicker table tr th {
+  background-color: transparent;
+}
+.path-local-onlineappraisal .datepicker table tr td.old,
+.path-local-onlineappraisal .datepicker table tr td.new {
+  color: #777777;
+}
+.path-local-onlineappraisal .datepicker table tr td.day:hover,
+.path-local-onlineappraisal .datepicker table tr td.focused {
+  background: #eeeeee;
+  cursor: pointer;
+}
+.path-local-onlineappraisal .datepicker table tr td.disabled,
+.path-local-onlineappraisal .datepicker table tr td.disabled:hover {
+  background: none;
+  color: #777777;
+  cursor: default;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted {
+  color: #000;
+  background-color: #d9edf7;
+  border-color: #85c5e5;
+  border-radius: 0;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.focus {
+  color: #000;
+  background-color: #afd9ee;
+  border-color: #298fc2;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted:hover {
+  color: #000;
+  background-color: #afd9ee;
+  border-color: #52addb;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.highlighted {
+  color: #000;
+  background-color: #afd9ee;
+  border-color: #52addb;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.highlighted:hover,
+.path-local-onlineappraisal .datepicker table tr td.highlighted:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.active:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.active.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.highlighted.focus {
+  color: #000;
+  background-color: #91cbe8;
+  border-color: #298fc2;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.highlighted {
+  background-image: none;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted.disabled,
+.path-local-onlineappraisal .datepicker table tr td.highlighted[disabled],
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.highlighted,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.highlighted[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.highlighted:hover,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.highlighted.focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td.highlighted[disabled]:active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td.highlighted[disabled].active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.highlighted.active {
+  background-color: #d9edf7;
+  border-color: #85c5e5;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted .badge {
+  color: #d9edf7;
+  background-color: #000;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.focus {
+  color: #000;
+  background-color: #afd9ee;
+  border-color: #298fc2;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted:hover {
+  color: #000;
+  background-color: #afd9ee;
+  border-color: #52addb;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.active {
+  color: #000;
+  background-color: #afd9ee;
+  border-color: #52addb;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.active:hover,
+.path-local-onlineappraisal .datepicker table tr td.highlighted:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.active:focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.active.focus {
+  color: #000;
+  background-color: #91cbe8;
+  border-color: #298fc2;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.highlighted[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.highlighted:hover,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.highlighted[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.highlighted.focus {
+  background-color: #d9edf7;
+  border-color: #85c5e5;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted.focused {
+  background: #afd9ee;
+}
+.path-local-onlineappraisal .datepicker table tr td.highlighted.disabled,
+.path-local-onlineappraisal .datepicker table tr td.highlighted.disabled:active {
+  background: #d9edf7;
+  color: #777777;
+}
+.path-local-onlineappraisal .datepicker table tr td.today {
+  color: #000;
+  background-color: #ffdb99;
+  border-color: #ffb733;
+}
+.path-local-onlineappraisal .datepicker table tr td.today:focus,
+.path-local-onlineappraisal .datepicker table tr td.today.focus {
+  color: #000;
+  background-color: #ffc966;
+  border-color: #b37400;
+}
+.path-local-onlineappraisal .datepicker table tr td.today:hover {
+  color: #000;
+  background-color: #ffc966;
+  border-color: #f59e00;
+}
+.path-local-onlineappraisal .datepicker table tr td.today:active,
+.path-local-onlineappraisal .datepicker table tr td.today.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.today {
+  color: #000;
+  background-color: #ffc966;
+  border-color: #f59e00;
+}
+.path-local-onlineappraisal .datepicker table tr td.today:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.today.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.today:hover,
+.path-local-onlineappraisal .datepicker table tr td.today:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.today.active:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.today:focus,
+.path-local-onlineappraisal .datepicker table tr td.today:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.today.active.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.today.focus {
+  color: #000;
+  background-color: #ffbc42;
+  border-color: #b37400;
+}
+.path-local-onlineappraisal .datepicker table tr td.today:active,
+.path-local-onlineappraisal .datepicker table tr td.today.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.today {
+  background-image: none;
+}
+.path-local-onlineappraisal .datepicker table tr td.today.disabled,
+.path-local-onlineappraisal .datepicker table tr td.today[disabled],
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.today,
+.path-local-onlineappraisal .datepicker table tr td.today.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.today[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.today:hover,
+.path-local-onlineappraisal .datepicker table tr td.today.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.today[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.today:focus,
+.path-local-onlineappraisal .datepicker table tr td.today.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.today[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.today.focus,
+.path-local-onlineappraisal .datepicker table tr td.today.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td.today[disabled]:active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.today:active,
+.path-local-onlineappraisal .datepicker table tr td.today.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td.today[disabled].active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.today.active {
+  background-color: #ffdb99;
+  border-color: #ffb733;
+}
+.path-local-onlineappraisal .datepicker table tr td.today .badge {
+  color: #ffdb99;
+  background-color: #000;
+}
+.path-local-onlineappraisal .datepicker table tr td.today:focus,
+.path-local-onlineappraisal .datepicker table tr td.today.focus {
+  color: #000;
+  background-color: #ffc966;
+  border-color: #b37400;
+}
+.path-local-onlineappraisal .datepicker table tr td.today:hover {
+  color: #000;
+  background-color: #ffc966;
+  border-color: #f59e00;
+}
+.path-local-onlineappraisal .datepicker table tr td.today:active,
+.path-local-onlineappraisal .datepicker table tr td.today.active {
+  color: #000;
+  background-color: #ffc966;
+  border-color: #f59e00;
+}
+.path-local-onlineappraisal .datepicker table tr td.today:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.today.active:hover,
+.path-local-onlineappraisal .datepicker table tr td.today:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.today.active:focus,
+.path-local-onlineappraisal .datepicker table tr td.today:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.today.active.focus {
+  color: #000;
+  background-color: #ffbc42;
+  border-color: #b37400;
+}
+.path-local-onlineappraisal .datepicker table tr td.today.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.today[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.today:hover,
+.path-local-onlineappraisal .datepicker table tr td.today.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.today[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.today:focus,
+.path-local-onlineappraisal .datepicker table tr td.today.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.today[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.today.focus {
+  background-color: #ffdb99;
+  border-color: #ffb733;
+}
+.path-local-onlineappraisal .datepicker table tr td.today.focused {
+  background: #ffc966;
+}
+.path-local-onlineappraisal .datepicker table tr td.today.disabled,
+.path-local-onlineappraisal .datepicker table tr td.today.disabled:active {
+  background: #ffdb99;
+  color: #777777;
+}
+.path-local-onlineappraisal .datepicker table tr td.range {
+  color: #000;
+  background-color: #eeeeee;
+  border-color: #bbbbbb;
+  border-radius: 0;
+}
+.path-local-onlineappraisal .datepicker table tr td.range:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.focus {
+  color: #000;
+  background-color: #d5d5d5;
+  border-color: #7c7c7c;
+}
+.path-local-onlineappraisal .datepicker table tr td.range:hover {
+  color: #000;
+  background-color: #d5d5d5;
+  border-color: #9d9d9d;
+}
+.path-local-onlineappraisal .datepicker table tr td.range:active,
+.path-local-onlineappraisal .datepicker table tr td.range.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range {
+  color: #000;
+  background-color: #d5d5d5;
+  border-color: #9d9d9d;
+}
+.path-local-onlineappraisal .datepicker table tr td.range:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range:hover,
+.path-local-onlineappraisal .datepicker table tr td.range:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.active:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range:focus,
+.path-local-onlineappraisal .datepicker table tr td.range:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.range.active.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range.focus {
+  color: #000;
+  background-color: #c3c3c3;
+  border-color: #7c7c7c;
+}
+.path-local-onlineappraisal .datepicker table tr td.range:active,
+.path-local-onlineappraisal .datepicker table tr td.range.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range {
+  background-image: none;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.disabled,
+.path-local-onlineappraisal .datepicker table tr td.range[disabled],
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range,
+.path-local-onlineappraisal .datepicker table tr td.range.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.range[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.range[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.range[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.focus,
+.path-local-onlineappraisal .datepicker table tr td.range.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td.range[disabled]:active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range:active,
+.path-local-onlineappraisal .datepicker table tr td.range.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td.range[disabled].active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.active {
+  background-color: #eeeeee;
+  border-color: #bbbbbb;
+}
+.path-local-onlineappraisal .datepicker table tr td.range .badge {
+  color: #eeeeee;
+  background-color: #000;
+}
+.path-local-onlineappraisal .datepicker table tr td.range:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.focus {
+  color: #000;
+  background-color: #d5d5d5;
+  border-color: #7c7c7c;
+}
+.path-local-onlineappraisal .datepicker table tr td.range:hover {
+  color: #000;
+  background-color: #d5d5d5;
+  border-color: #9d9d9d;
+}
+.path-local-onlineappraisal .datepicker table tr td.range:active,
+.path-local-onlineappraisal .datepicker table tr td.range.active {
+  color: #000;
+  background-color: #d5d5d5;
+  border-color: #9d9d9d;
+}
+.path-local-onlineappraisal .datepicker table tr td.range:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.active:hover,
+.path-local-onlineappraisal .datepicker table tr td.range:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.active:focus,
+.path-local-onlineappraisal .datepicker table tr td.range:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.range.active.focus {
+  color: #000;
+  background-color: #c3c3c3;
+  border-color: #7c7c7c;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.range[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.range[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.range[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.focus {
+  background-color: #eeeeee;
+  border-color: #bbbbbb;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.focused {
+  background: #d5d5d5;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.disabled,
+.path-local-onlineappraisal .datepicker table tr td.range.disabled:active {
+  background: #eeeeee;
+  color: #777777;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted {
+  color: #000;
+  background-color: #e4eef3;
+  border-color: #9dc1d3;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.focus {
+  color: #000;
+  background-color: #c1d7e3;
+  border-color: #4b88a6;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted:hover {
+  color: #000;
+  background-color: #c1d7e3;
+  border-color: #73a6c0;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range.highlighted {
+  color: #000;
+  background-color: #c1d7e3;
+  border-color: #73a6c0;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range.highlighted:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.active:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.active.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range.highlighted.focus {
+  color: #000;
+  background-color: #a8c8d8;
+  border-color: #4b88a6;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range.highlighted {
+  background-image: none;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.disabled,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted[disabled],
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.highlighted,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.highlighted:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.highlighted.focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted[disabled]:active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted[disabled].active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.highlighted.active {
+  background-color: #e4eef3;
+  border-color: #9dc1d3;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted .badge {
+  color: #e4eef3;
+  background-color: #000;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.focus {
+  color: #000;
+  background-color: #c1d7e3;
+  border-color: #4b88a6;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted:hover {
+  color: #000;
+  background-color: #c1d7e3;
+  border-color: #73a6c0;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.active {
+  color: #000;
+  background-color: #c1d7e3;
+  border-color: #73a6c0;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.active:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.active:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.active.focus {
+  color: #000;
+  background-color: #a8c8d8;
+  border-color: #4b88a6;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.highlighted:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.highlighted.focus {
+  background-color: #e4eef3;
+  border-color: #9dc1d3;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.focused {
+  background: #c1d7e3;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.disabled,
+.path-local-onlineappraisal .datepicker table tr td.range.highlighted.disabled:active {
+  background: #e4eef3;
+  color: #777777;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today {
+  color: #000;
+  background-color: #f7ca77;
+  border-color: #f1a417;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today.focus {
+  color: #000;
+  background-color: #f4b747;
+  border-color: #815608;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today:hover {
+  color: #000;
+  background-color: #f4b747;
+  border-color: #bf800c;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today:active,
+.path-local-onlineappraisal .datepicker table tr td.range.today.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range.today {
+  color: #000;
+  background-color: #f4b747;
+  border-color: #bf800c;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.today.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range.today:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.today:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today.active:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range.today:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today.active.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range.today.focus {
+  color: #000;
+  background-color: #f2aa25;
+  border-color: #815608;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today:active,
+.path-local-onlineappraisal .datepicker table tr td.range.today.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.range.today {
+  background-image: none;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today.disabled,
+.path-local-onlineappraisal .datepicker table tr td.range.today[disabled],
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.today,
+.path-local-onlineappraisal .datepicker table tr td.range.today.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.today[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.today:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.today.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.today:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.today.focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td.range.today[disabled]:active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.today:active,
+.path-local-onlineappraisal .datepicker table tr td.range.today.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td.range.today[disabled].active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.today.active {
+  background-color: #f7ca77;
+  border-color: #f1a417;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today .badge {
+  color: #f7ca77;
+  background-color: #000;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today.focus {
+  color: #000;
+  background-color: #f4b747;
+  border-color: #815608;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today:hover {
+  color: #000;
+  background-color: #f4b747;
+  border-color: #bf800c;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today:active,
+.path-local-onlineappraisal .datepicker table tr td.range.today.active {
+  color: #000;
+  background-color: #f4b747;
+  border-color: #bf800c;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.today.active:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.today:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today.active:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today.active.focus {
+  color: #000;
+  background-color: #f2aa25;
+  border-color: #815608;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.today[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.today:hover,
+.path-local-onlineappraisal .datepicker table tr td.range.today.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.today:focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.range.today[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.range.today.focus {
+  background-color: #f7ca77;
+  border-color: #f1a417;
+}
+.path-local-onlineappraisal .datepicker table tr td.range.today.disabled,
+.path-local-onlineappraisal .datepicker table tr td.range.today.disabled:active {
+  background: #f7ca77;
+  color: #777777;
+}
+.path-local-onlineappraisal .datepicker table tr td.selected,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted {
+  color: #fff;
+  background-color: #777777;
+  border-color: #555555;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.path-local-onlineappraisal .datepicker table tr td.selected:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.focus {
+  color: #fff;
+  background-color: #5e5e5e;
+  border-color: #161616;
+}
+.path-local-onlineappraisal .datepicker table tr td.selected:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:hover {
+  color: #fff;
+  background-color: #5e5e5e;
+  border-color: #373737;
+}
+.path-local-onlineappraisal .datepicker table tr td.selected:active,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.selected.active,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.selected,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.selected.highlighted {
+  color: #fff;
+  background-color: #5e5e5e;
+  border-color: #373737;
+}
+.path-local-onlineappraisal .datepicker table tr td.selected:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.active:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.selected:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.active:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.active:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.selected:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.active.focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.active.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.selected.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.focus {
+  color: #fff;
+  background-color: #4c4c4c;
+  border-color: #161616;
+}
+.path-local-onlineappraisal .datepicker table tr td.selected:active,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.selected.active,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.selected,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.selected.highlighted {
+  background-image: none;
+}
+.path-local-onlineappraisal .datepicker table tr td.selected.disabled,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.disabled,
+.path-local-onlineappraisal .datepicker table tr td.selected[disabled],
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted[disabled],
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected.highlighted,
+.path-local-onlineappraisal .datepicker table tr td.selected.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected[disabled]:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected.highlighted:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected[disabled]:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.selected[disabled].focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected.focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected.highlighted.focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td.selected[disabled]:active,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted[disabled]:active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected:active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.selected.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td.selected[disabled].active,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted[disabled].active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected.active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected.highlighted.active {
+  background-color: #777777;
+  border-color: #555555;
+}
+.path-local-onlineappraisal .datepicker table tr td.selected .badge,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted .badge {
+  color: #777777;
+  background-color: #fff;
+}
+.path-local-onlineappraisal .datepicker table tr td.selected:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.focus {
+  color: #fff;
+  background-color: #5e5e5e;
+  border-color: #161616;
+}
+.path-local-onlineappraisal .datepicker table tr td.selected:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:hover {
+  color: #fff;
+  background-color: #5e5e5e;
+  border-color: #373737;
+}
+.path-local-onlineappraisal .datepicker table tr td.selected:active,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.selected.active,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.active {
+  color: #fff;
+  background-color: #5e5e5e;
+  border-color: #373737;
+}
+.path-local-onlineappraisal .datepicker table tr td.selected:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.active:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.active:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.active:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.active:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.active.focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.active.focus {
+  color: #fff;
+  background-color: #4c4c4c;
+  border-color: #161616;
+}
+.path-local-onlineappraisal .datepicker table tr td.selected.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected[disabled]:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected.highlighted:hover,
+.path-local-onlineappraisal .datepicker table tr td.selected.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected[disabled]:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.selected[disabled].focus,
+.path-local-onlineappraisal .datepicker table tr td.selected.highlighted[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected.focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.selected.highlighted.focus {
+  background-color: #777777;
+  border-color: #555555;
+}
+.path-local-onlineappraisal .datepicker table tr td.active,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted {
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.path-local-onlineappraisal .datepicker table tr td.active:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.focus {
+  color: #fff;
+  background-color: #286090;
+  border-color: #122b40;
+}
+.path-local-onlineappraisal .datepicker table tr td.active:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted:hover {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+.path-local-onlineappraisal .datepicker table tr td.active:active,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.active.active,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.active.highlighted {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+.path-local-onlineappraisal .datepicker table tr td.active:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.active:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.active.highlighted:hover,
+.path-local-onlineappraisal .datepicker table tr td.active:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.active:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.active:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.active:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.active.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.active:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.active.active.focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.active.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.active.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.active.highlighted.focus {
+  color: #fff;
+  background-color: #204d74;
+  border-color: #122b40;
+}
+.path-local-onlineappraisal .datepicker table tr td.active:active,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.active.active,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td.active.highlighted {
+  background-image: none;
+}
+.path-local-onlineappraisal .datepicker table tr td.active.disabled,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.disabled,
+.path-local-onlineappraisal .datepicker table tr td.active[disabled],
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted[disabled],
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active.highlighted,
+.path-local-onlineappraisal .datepicker table tr td.active.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.active[disabled]:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active.highlighted:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.active[disabled]:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.active[disabled].focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active.focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active.highlighted.focus,
+.path-local-onlineappraisal .datepicker table tr td.active.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td.active[disabled]:active,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted[disabled]:active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active:active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.active.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td.active[disabled].active,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted[disabled].active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active.active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active.highlighted.active {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+.path-local-onlineappraisal .datepicker table tr td.active .badge,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted .badge {
+  color: #337ab7;
+  background-color: #fff;
+}
+.path-local-onlineappraisal .datepicker table tr td.active:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.focus {
+  color: #fff;
+  background-color: #286090;
+  border-color: #122b40;
+}
+.path-local-onlineappraisal .datepicker table tr td.active:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted:hover {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+.path-local-onlineappraisal .datepicker table tr td.active:active,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted:active,
+.path-local-onlineappraisal .datepicker table tr td.active.active,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.active {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+.path-local-onlineappraisal .datepicker table tr td.active:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted:active:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.active:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.active:hover,
+.path-local-onlineappraisal .datepicker table tr td.active:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted:active:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.active:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.active:focus,
+.path-local-onlineappraisal .datepicker table tr td.active:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted:active.focus,
+.path-local-onlineappraisal .datepicker table tr td.active.active.focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.active.focus {
+  color: #fff;
+  background-color: #204d74;
+  border-color: #122b40;
+}
+.path-local-onlineappraisal .datepicker table tr td.active.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td.active[disabled]:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active.highlighted:hover,
+.path-local-onlineappraisal .datepicker table tr td.active.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td.active[disabled]:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active.highlighted:focus,
+.path-local-onlineappraisal .datepicker table tr td.active.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td.active[disabled].focus,
+.path-local-onlineappraisal .datepicker table tr td.active.highlighted[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active.focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td.active.highlighted.focus {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+.path-local-onlineappraisal .datepicker table tr td span {
+  display: block;
+  width: 23%;
+  height: 54px;
+  line-height: 54px;
+  float: left;
+  margin: 1%;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.path-local-onlineappraisal .datepicker table tr td span:hover,
+.path-local-onlineappraisal .datepicker table tr td span.focused {
+  background: #eeeeee;
+}
+.path-local-onlineappraisal .datepicker table tr td span.disabled,
+.path-local-onlineappraisal .datepicker table tr td span.disabled:hover {
+  background: none;
+  color: #777777;
+  cursor: default;
+}
+.path-local-onlineappraisal .datepicker table tr td span.active,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover {
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.path-local-onlineappraisal .datepicker table tr td span.active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.focus {
+  color: #fff;
+  background-color: #286090;
+  border-color: #122b40;
+}
+.path-local-onlineappraisal .datepicker table tr td span.active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:hover {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+.path-local-onlineappraisal .datepicker table tr td span.active:active,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.active,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active.disabled,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+.path-local-onlineappraisal .datepicker table tr td span.active:active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover:active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active:hover:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active:active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover:active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.active:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active:hover:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active.disabled:focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover:active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.active.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active:hover.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active.disabled.focus,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.focus {
+  color: #fff;
+  background-color: #204d74;
+  border-color: #122b40;
+}
+.path-local-onlineappraisal .datepicker table tr td span.active:active,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.active,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active:hover,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active.disabled,
+.open > .dropdown-toggle.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover {
+  background-image: none;
+}
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.disabled,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.disabled,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.disabled,
+.path-local-onlineappraisal .datepicker table tr td span.active[disabled],
+.path-local-onlineappraisal .datepicker table tr td span.active:hover[disabled],
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled[disabled],
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover[disabled],
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active[disabled]:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover[disabled]:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled[disabled]:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:hover:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active[disabled]:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover[disabled]:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled[disabled]:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:hover:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active[disabled].focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover[disabled].focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled[disabled].focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:hover.focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled.focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td span.active[disabled]:active,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover[disabled]:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled[disabled]:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover[disabled]:active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:hover:active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td span.active[disabled].active,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover[disabled].active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled[disabled].active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover[disabled].active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:hover.active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled.active,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.active {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+.path-local-onlineappraisal .datepicker table tr td span.active .badge,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover .badge,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled .badge,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover .badge {
+  color: #337ab7;
+  background-color: #fff;
+}
+.path-local-onlineappraisal .datepicker table tr td span.active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.focus {
+  color: #fff;
+  background-color: #286090;
+  border-color: #122b40;
+}
+.path-local-onlineappraisal .datepicker table tr td span.active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:hover {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+.path-local-onlineappraisal .datepicker table tr td span.active:active,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:active,
+.path-local-onlineappraisal .datepicker table tr td span.active.active,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.active,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.active {
+  color: #fff;
+  background-color: #286090;
+  border-color: #204d74;
+}
+.path-local-onlineappraisal .datepicker table tr td span.active:active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover:active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.active:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active:active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover:active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.active:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover:active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.active.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.active.focus {
+  color: #fff;
+  background-color: #204d74;
+  border-color: #122b40;
+}
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.disabled:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active[disabled]:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover[disabled]:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled[disabled]:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover[disabled]:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:hover:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:hover,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.disabled:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active[disabled]:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover[disabled]:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled[disabled]:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover[disabled]:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:hover:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover:focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.disabled.focus,
+.path-local-onlineappraisal .datepicker table tr td span.active[disabled].focus,
+.path-local-onlineappraisal .datepicker table tr td span.active:hover[disabled].focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled[disabled].focus,
+.path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover[disabled].focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active:hover.focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled.focus,
+fieldset[disabled] .path-local-onlineappraisal .datepicker table tr td span.active.disabled:hover.focus {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+.path-local-onlineappraisal .datepicker table tr td span.old,
+.path-local-onlineappraisal .datepicker table tr td span.new {
+  color: #777777;
+}
+.path-local-onlineappraisal .datepicker .datepicker-switch {
+  width: 145px;
+}
+.path-local-onlineappraisal .datepicker .datepicker-switch,
+.path-local-onlineappraisal .datepicker .prev,
+.path-local-onlineappraisal .datepicker .next,
+.path-local-onlineappraisal .datepicker tfoot tr th {
+  cursor: pointer;
+}
+.path-local-onlineappraisal .datepicker .datepicker-switch:hover,
+.path-local-onlineappraisal .datepicker .prev:hover,
+.path-local-onlineappraisal .datepicker .next:hover,
+.path-local-onlineappraisal .datepicker tfoot tr th:hover {
+  background: #eeeeee;
+}
+.path-local-onlineappraisal .datepicker .cw {
+  font-size: 10px;
+  width: 12px;
+  padding: 0 2px 0 5px;
+  vertical-align: middle;
+}
+.path-local-onlineappraisal .input-group.date .input-group-addon {
+  cursor: pointer;
+}
+.path-local-onlineappraisal .input-daterange {
+  width: 100%;
+}
+.path-local-onlineappraisal .input-daterange input {
+  text-align: center;
+}
+.path-local-onlineappraisal .input-daterange input:first-child {
+  border-radius: 3px 0 0 3px;
+}
+.path-local-onlineappraisal .input-daterange input:last-child {
+  border-radius: 0 3px 3px 0;
+}
+.path-local-onlineappraisal .input-daterange .input-group-addon {
+  width: auto;
+  min-width: 16px;
+  padding: 4px 5px;
+  line-height: 1.42857143;
+  text-shadow: 0 1px 0 #fff;
+  border-width: 1px 0;
+  margin-left: -5px;
+  margin-right: -5px;
+}
+.path-local-onlineappraisal .panel-heading .btn-group {
+  margin-top: -3px;
+}
+.path-local-onlineappraisal .fluid-width-video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+}
+.path-local-onlineappraisal .fluid-width-video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.path-local-onlineappraisal .oa-toggle-required {
+  cursor: pointer;
+}
+.path-local-onlineappraisal .oa-toggle-assign {
+  color: #38C19A;
+  cursor: pointer;
+}
+.path-local-onlineappraisal .oa-toggle-assign:hover {
+  color: #30AA8C;
+}
+.path-local-onlineappraisal .oa-toggle-assign.oa-toggle-unassign {
+  color: #ED5564;
+}
+.path-local-onlineappraisal .oa-toggle-assign.oa-toggle-unassign:hover {
+  color: #DB4453;
+}
+#page-local-onlineappraisal-addfeedback .navbar-inner .navbar-nav,
+#page-local-onlineappraisal-addfeedback .navbar-inner .search-wrapper,
+#page-local-onlineappraisal-addfeedback .navbar-inner .navbar-header {
+  display: none;
+}

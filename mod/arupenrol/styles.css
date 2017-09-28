@@ -1,0 +1,13 @@
+.path-course-view li.arupenrol-hidden {
+    display: none;
+}
+.editing.path-course-view li.arupenrol-hidden {
+    display: inherit;
+}
+.path-course-view li.arupenrol form {
+    text-align: right;
+}
+.path-course-view li.arupenrol form label,
+.path-course-view li.arupenrol form input[type="text"] {
+    margin-right: 5px;
+}

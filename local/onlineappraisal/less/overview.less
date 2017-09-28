@@ -1,0 +1,45 @@
+.oa-progress-panel {
+    background: @arupgrey1;
+    h2 {
+        margin: 10px 0 5px 0;
+    }
+    p.oa-last-saved {
+        font-size: 12px;
+        margin-bottom: 20px;
+    }
+}
+
+.oa-overview {
+    button {
+        display: block;
+        white-space: normal;
+    }
+}
+
+#oa-overview-comment {
+    #oa-comment-input;
+}
+
+.oa-user-panel {
+    & > div {
+        border: 2px solid white;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .oa-user-panel-appraisee {
+        border-color: @appraisee;
+    }
+    .oa-user-panel-appraiser {
+        border-color: @appraiser;
+    }
+    .oa-user-panel-signoff {
+        border-color: @signoff;
+    }
+    .oa-user-panel-groupleader {
+        border-color: @groupleader;
+    }
+    img {
+        border: 2px solid white;
+        border-radius: 50%;
+    }
+}

@@ -1,0 +1,25 @@
+{{^nextstep}}
+    <p>There is an issue that means it is not possible to continue with this step, please see messages above for details.
+        Once these issues have been resolved please return to the previous step to begin processing again.</p>
+        <a href="{{prevstepurl}}" class="btn btn-primary pull-left oa-bulkupload-generic-submit">Return to previous step</a>
+{{/nextstep}}
+{{#nextstep}}
+    <div class="alert alert-{{#processing.toprocess}}warning{{/processing.toprocess}}{{^processing.toprocess}}success{{/processing.toprocess}}" role="alert">
+        <h4>Processing {{#processing.toprocess}}progress{{/processing.toprocess}}{{^processing.toprocess}}results{{/processing.toprocess}}</h4>
+        {{^processing.toprocess}}
+        <p><strong>Processing is now complete, see files in data directory for analysis.</strong></p>
+        {{/processing.toprocess}}
+        <p>Total processed: <strong>{{processing.total}}</strong><br />
+            Errors: <strong>{{processing.error}}</strong><br />
+            Successes: <strong>{{processing.success}}</strong><br />
+            Remaining to process: <strong>{{processing.toprocess}}</strong></p>
+    </div>
+    {{#processing.inprogress}}
+        <a href="{{updateurl}}" class="btn btn-primary pull-right oa-bulkupload-generic-submit">Refresh and update status</a>
+    {{/processing.inprogress}}
+    {{^processing.inprogress}}
+        {{#processing.toprocess}}
+            <a href="{{processurl}}" class="btn btn-primary pull-right oa-bulkupload-generic-submit">Process the next 100 appraisals</a>
+        {{/processing.toprocess}}
+    {{/processing.inprogress}}
+{{/nextstep}}

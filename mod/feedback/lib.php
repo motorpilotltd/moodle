@@ -23,6 +23,11 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/* BEGIN CORE MOD */
+if (isset($PAGE)) {
+    $PAGE->blocks->show_only_fake_blocks();
+}
+/* END CORE MOD */
 /** Include eventslib.php */
 require_once($CFG->libdir.'/eventslib.php');
 /** Include calendar/lib.php */
@@ -2909,94 +2914,53 @@ function feedback_print_numeric_option_list($startval, $endval, $selectval = '',
  * @param int $userid
  * @return void
  */
+/* BEGIN CORE MOD */
+// Major overhaul to send to specified users
 function feedback_send_email($cm, $feedback, $course, $userid) {
     global $CFG, $DB;
 
-    if ($feedback->email_notification == 0) {  // No need to do anything
+    if ($feedback->email_notification == 0 || empty($feedback->email_addresses)) {  // No need to do anything.
         return;
     }
 
-    $user = $DB->get_record('user', array('id'=>$userid));
+    $strcompleted = ucfirst(get_string('completed', 'feedback'));
 
-    if (isset($cm->groupmode) && empty($course->groupmodeforce)) {
-        $groupmode =  $cm->groupmode;
-    } else {
-        $groupmode = $course->groupmode;
-    }
+    if ($feedback->anonymous == FEEDBACK_ANONYMOUS_NO) {
+		$user = $DB->get_record('user', array('id' => $userid));
+		$printusername = fullname($user);
+	} else {
+		$printusername = get_string('anonymous_user', 'feedback');
+	}
 
-    if ($groupmode == SEPARATEGROUPS) {
-        $groups = $DB->get_records_sql_menu("SELECT g.name, g.id
-                                               FROM {groups} g, {groups_members} m
-                                              WHERE g.courseid = ?
-                                                    AND g.id = m.groupid
-                                                    AND m.userid = ?
-                                           ORDER BY name ASC", array($course->id, $userid));
-        $groups = array_values($groups);
+	$info = new stdClass();
+	$info->username = $printusername;
+	$info->feedback = format_string($feedback->name, true);
 
-        $teachers = feedback_get_receivemail_users($cm->id, $groups);
-    } else {
-        $teachers = feedback_get_receivemail_users($cm->id);
-    }
+	if ($feedback->anonymous == FEEDBACK_ANONYMOUS_NO) {
+		$info->url = $CFG->wwwroot.'/mod/feedback/show_entries.php?'.
+			'id='.$cm->id.'&'.
+			'do_show=showoneentry&'.
+			'userid='.$userid;
+	} else {
+		$info->url = $CFG->wwwroot.'/mod/feedback/analysis.php?'.
+			'id='.$cm->id;
+	}
 
-    if ($teachers) {
+	$postsubject = $course->fullname.' -> '.$feedback->name.' -> '.$strcompleted.': '.$info->username;
+	$posttext = feedback_send_email_text($info, $course);
+	$posthtml = feedback_send_email_html($info, $course, $cm);
 
-        $strfeedbacks = get_string('modulenameplural', 'feedback');
-        $strfeedback  = get_string('modulename', 'feedback');
-
-        if ($feedback->anonymous == FEEDBACK_ANONYMOUS_NO) {
-            $printusername = fullname($user);
-        } else {
-            $printusername = get_string('anonymous_user', 'feedback');
-        }
-
-        foreach ($teachers as $teacher) {
-            $info = new stdClass();
-            $info->username = $printusername;
-            $info->feedback = format_string($feedback->name, true);
-            $info->url = $CFG->wwwroot.'/mod/feedback/show_entries.php?'.
-                            'id='.$cm->id.'&'.
-                            'userid='.$userid.'&'.
-                            'do_show=showentries';
-
-            $a = array('username' => $info->username, 'feedbackname' => $feedback->name);
-
-            $postsubject = get_string('feedbackcompleted', 'feedback', $a);
-            $posttext = feedback_send_email_text($info, $course);
-
-            if ($teacher->mailformat == 1) {
-                $posthtml = feedback_send_email_html($info, $course, $cm);
-            } else {
-                $posthtml = '';
-            }
-
-            if ($feedback->anonymous == FEEDBACK_ANONYMOUS_NO) {
-                $eventdata = new stdClass();
-                $eventdata->name             = 'submission';
-                $eventdata->component        = 'mod_feedback';
-                $eventdata->userfrom         = $user;
-                $eventdata->userto           = $teacher;
-                $eventdata->subject          = $postsubject;
-                $eventdata->fullmessage      = $posttext;
-                $eventdata->fullmessageformat = FORMAT_PLAIN;
-                $eventdata->fullmessagehtml  = $posthtml;
-                $eventdata->smallmessage     = '';
-                message_send($eventdata);
-            } else {
-                $eventdata = new stdClass();
-                $eventdata->name             = 'submission';
-                $eventdata->component        = 'mod_feedback';
-                $eventdata->userfrom         = $teacher;
-                $eventdata->userto           = $teacher;
-                $eventdata->subject          = $postsubject;
-                $eventdata->fullmessage      = $posttext;
-                $eventdata->fullmessageformat = FORMAT_PLAIN;
-                $eventdata->fullmessagehtml  = $posthtml;
-                $eventdata->smallmessage     = '';
-                message_send($eventdata);
-            }
-        }
-    }
+	$emailaddresses = preg_split('/,|;/', $feedback->email_addresses);
+    $userto = feedback_user::get_dummy_feedback_user();
+    $userfrom = feedback_user::get_noreply_user();
+	foreach ($emailaddresses as $email) {
+		$userto->email = trim($email);
+		if (validate_email($userto->email)) {
+			email_to_user($userto, $userfrom, $postsubject, $posttext, $posthtml);
+		}
+	}
 }
+/* END CORE MOD */
 
 /**
  * sends an email to the teachers of the course where the given feedback is placed.
@@ -3008,52 +2972,39 @@ function feedback_send_email($cm, $feedback, $course, $userid) {
  * @param object $course
  * @return void
  */
+/* BEGIN CORE MOD */
+// Major overhaul to send to specified users
 function feedback_send_email_anonym($cm, $feedback, $course) {
     global $CFG;
 
-    if ($feedback->email_notification == 0) { // No need to do anything
+    if ($feedback->email_notification == 0 || empty($feedback->email_addresses)) { // No need to do anything
         return;
     }
 
-    $teachers = feedback_get_receivemail_users($cm->id);
+    $strcompleted = ucfirst(get_string('completed', 'feedback'));
+	$printusername = get_string('anonymous_user', 'feedback');
 
-    if ($teachers) {
+	$info = new stdClass();
+	$info->username = $printusername;
+	$info->feedback = format_string($feedback->name, true);
+	$info->url = $CFG->wwwroot.'/mod/feedback/analysis.php?'.
+		'id='.$cm->id;
 
-        $strfeedbacks = get_string('modulenameplural', 'feedback');
-        $strfeedback  = get_string('modulename', 'feedback');
-        $printusername = get_string('anonymous_user', 'feedback');
+	$postsubject = $course->fullname.' -> '.$feedback->name.'->'.$strcompleted.': '.$info->username;
+	$posttext = feedback_send_email_text($info, $course);
+	$posthtml = feedback_send_email_html($info, $course, $cm);
 
-        foreach ($teachers as $teacher) {
-            $info = new stdClass();
-            $info->username = $printusername;
-            $info->feedback = format_string($feedback->name, true);
-            $info->url = $CFG->wwwroot.'/mod/feedback/show_entries_anonym.php?id='.$cm->id;
-
-            $a = array('username' => $info->username, 'feedbackname' => $feedback->name);
-
-            $postsubject = get_string('feedbackcompleted', 'feedback', $a);
-            $posttext = feedback_send_email_text($info, $course);
-
-            if ($teacher->mailformat == 1) {
-                $posthtml = feedback_send_email_html($info, $course, $cm);
-            } else {
-                $posthtml = '';
-            }
-
-            $eventdata = new stdClass();
-            $eventdata->name             = 'submission';
-            $eventdata->component        = 'mod_feedback';
-            $eventdata->userfrom         = $teacher;
-            $eventdata->userto           = $teacher;
-            $eventdata->subject          = $postsubject;
-            $eventdata->fullmessage      = $posttext;
-            $eventdata->fullmessageformat = FORMAT_PLAIN;
-            $eventdata->fullmessagehtml  = $posthtml;
-            $eventdata->smallmessage     = '';
-            message_send($eventdata);
-        }
-    }
+	$emailaddresses = preg_split('/,|;/', $feedback->email_addresses);
+    $userto = feedback_user::get_dummy_feedback_user();
+    $userfrom = feedback_user::get_noreply_user();
+	foreach ($emailaddresses as $email) {
+		$userto->email = trim($email);
+		if (validate_email($userto->email)) {
+			email_to_user($userto, $userfrom, $postsubject, $posttext, $posthtml);
+		}
+	}
 }
+/* END CORE MOD */
 
 /**
  * send the text-part of the email
@@ -3089,11 +3040,12 @@ function feedback_send_email_html($info, $course, $cm) {
     $course_url = $CFG->wwwroot.'/course/view.php?id='.$course->id;
     $feedback_all_url = $CFG->wwwroot.'/mod/feedback/index.php?id='.$course->id;
     $feedback_url = $CFG->wwwroot.'/mod/feedback/view.php?id='.$cm->id;
-
+/* BEGIN CORE MOD */
     $posthtml = '<p><font face="sans-serif">'.
-            '<a href="'.$course_url.'">'.$courseshortname.'</a> ->'.
-            '<a href="'.$feedback_all_url.'">'.get_string('modulenameplural', 'feedback').'</a> ->'.
+            '<a href="'.$course_url.'">'.$courseshortname.'</a> -> '.
+            '<a href="'.$feedback_all_url.'">'.get_string('modulenameplural', 'feedback').'</a> -> '.
             '<a href="'.$feedback_url.'">'.$info->feedback.'</a></font></p>';
+/* END CORE MOD */
     $posthtml .= '<hr /><font face="sans-serif">';
     $posthtml .= '<p>'.get_string('emailteachermailhtml', 'feedback', $info).'</p>';
     $posthtml .= '</font><hr />';
@@ -3215,3 +3167,18 @@ function feedback_ajax_saveitemorder($itemlist, $feedback) {
     }
     return $result;
 }
+/* BEGIN CORE MOD */
+class feedback_user extends \core_user {
+    public static function get_dummy_feedback_user($email = '', $firstname = '', $lastname = '') {
+        $user = self::get_dummy_user_record();
+        $user->maildisplay = true;
+        $user->mailformat = 1;
+        $user->email = $email;
+        $user->firstname = $firstname;
+        $user->lastname = $lastname;
+        $user->username = 'feedbackuser';
+        $user->timezone = date_default_timezone_get();
+        return $user;
+    }
+}
+/* END CORE MOD */

@@ -1,0 +1,255 @@
+{{!
+    This file is part of the Online Appraisal Plugin for Arup.
+}}
+{{!
+    @template local_onlineappraisal/printer_partial_legacy_objectives
+
+    PDF Content : Appraisal : Legacy : Objectives
+}}
+
+<div style="text-align: right; border-bottom: 1px solid black; background-color: #FFFFFF; color: black; font-size:1.25em;">{{#str}}z:legacy:pdf:heading:objective:per:ly, local_onlineappraisal{{/str}}</div>
+<div style="display: inline-block; text-align: left; width: auto; margin-right: auto;">
+    {{#objectives.haslyper}}
+        {{#objectives.lyper}}
+            <table style="background-color: #FFFFFF; width: 100%; padding: 3px">
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:per:title, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{title}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:per:desc, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{description}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:per:due_date, local_onlineappraisal{{/str}}</td>
+                    <td style="background-color: #E2EFD9;">{{duedate.due}}</td>
+                    <td>{{duedate.text}}</td>
+                    <td style="background-color: #E2EFD9;">{{duedate.created}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:per:status, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{status}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:per:appraisee_comments, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{appraiseecomments}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:per:appraiser_comments, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{appraisercomments}}}</td>
+                </tr>
+                {{^last}}
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                {{/last}}
+            </table>
+        {{/objectives.lyper}}
+    {{/objectives.haslyper}}
+    {{^objectives.haslyper}}
+        {{#str}}z:legacy:pdf:objective:per:none:ly, local_onlineappraisal{{/str}}
+    {{/objectives.haslyper}}
+</div>
+
+<br pagebreak="true" />
+
+<div style="text-align: right; border-bottom: 1px solid black; background-color: #FFFFFF; color: black; font-size:1.25em;">{{#str}}z:legacy:pdf:heading:objective:dev:ly, local_onlineappraisal{{/str}}</div>
+<div style="display: inline-block; text-align: left; width: auto; margin-right: auto;">
+    {{#objectives.haslydev}}
+        {{#objectives.lydev}}
+            <table style="background-color: #FFFFFF; width: 100%; padding: 3px">
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:title, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{title}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:competency, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{competency}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:desc, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{description}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:action_required, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{action}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:due_date, local_onlineappraisal{{/str}}</td>
+                    <td style="background-color: #E2EFD9;">{{duedate.due}}</td>
+                    <td>{{duedate.text}}</td>
+                    <td style="background-color: #E2EFD9;">{{duedate.created}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:status, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{status}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:progress, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{progress}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:further_development, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{further}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:appraiser_comments, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{appraisercomments}}}</td>
+                </tr>
+                {{^last}}
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                {{/last}}
+            </table>
+        {{/objectives.lydev}}
+    {{/objectives.haslydev}}
+    {{^objectives.haslydev}}
+        {{#str}}z:legacy:pdf:objective:dev:none:ly, local_onlineappraisal{{/str}}
+    {{/objectives.haslydev}}
+</div>
+
+<br pagebreak="true" />
+
+<div style="text-align: right; border-bottom: 1px solid black; background-color: #FFFFFF; color: black; font-size:1.25em;">{{#str}}z:legacy:pdf:heading:objective:per:ny, local_onlineappraisal{{/str}}</div>
+<div style="display: inline-block; text-align: left; width: auto; margin-right: auto;">
+    {{#objectives.hasnyper}}
+        {{#objectives.nyper}}
+            <table style="background-color: #FFFFFF; width: 100%; padding: 3px">
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:per:title, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{title}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:per:desc, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{description}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:per:due_date, local_onlineappraisal{{/str}}</td>
+                    <td style="background-color: #E2EFD9;">{{duedate.due}}</td>
+                    <td>{{duedate.text}}</td>
+                    <td style="background-color: #E2EFD9;">{{duedate.created}}</td>
+                </tr>
+                {{^last}}
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                {{/last}}
+            </table>
+        {{/objectives.nyper}}
+    {{/objectives.hasnyper}}
+    {{^objectives.hasnyper}}
+        {{#str}}z:legacy:pdf:objective:per:none:ny, local_onlineappraisal{{/str}}
+    {{/objectives.hasnyper}}
+</div>
+
+<br pagebreak="true" />
+
+<div style="text-align: right; border-bottom: 1px solid black; background-color: #FFFFFF; color: black; font-size:1.25em;">{{#str}}z:legacy:pdf:heading:objective:dev:ny, local_onlineappraisal{{/str}}</div>
+<div style="display: inline-block; text-align: left; width: auto; margin-right: auto;">
+    {{#objectives.hasnydev}}
+        {{#objectives.nydev}}
+            <table style="background-color: #FFFFFF; width: 100%; padding: 3px">
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:title, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{title}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:competency, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{competency}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:desc, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{description}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:action_required, local_onlineappraisal{{/str}}</td>
+                    <td colspan="3" style="background-color: #E2EFD9; width: 70%;">{{{action}}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td style="width: 30%">{{#str}}z:legacy:pdf:objective:dev:due_date, local_onlineappraisal{{/str}}</td>
+                    <td style="background-color: #E2EFD9;">{{duedate.due}}</td>
+                    <td>{{duedate.text}}</td>
+                    <td style="background-color: #E2EFD9;">{{duedate.created}}</td>
+                </tr>
+                {{^last}}
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                {{/last}}
+            </table>
+        {{/objectives.nydev}}
+    {{/objectives.hasnydev}}
+    {{^objectives.hasnydev}}
+        {{#str}}z:legacy:pdf:objective:dev:none:ny, local_onlineappraisal{{/str}}
+    {{/objectives.hasnydev}}
+</div>

@@ -1,0 +1,51 @@
+{{#resendinvitesurl}}
+    <div class="alert alert-warning">
+        {{#str}}resendinvites, local_coursemanager, {{{.}}}{{/str}}
+    </div>
+{{/resendinvitesurl}}
+<table id="coursemanager-courses" class="generaltable flexible boxaligncenter">
+    <thead>
+        <tr style="vertical-align: bottom">
+            {{#heading}}
+            <th scope="col {{class}}">
+                {{#sortasc}}
+                    <a href="{{{sortasc}}}" title="sort {{key}} asc">{{name}}</a>
+                {{/sortasc}}
+                {{#sortdesc}}
+                    <a href="{{{sortdesc}}}" title="sort {{key}} desc">{{name}} {{{iconsort}}}</a>
+                {{/sortdesc}}
+                {{#nosort}}
+                    {{name}}
+                {{/nosort}}
+            </th>
+            {{/heading}}
+        </tr>
+    </thead>
+    <tbody>
+        {{#classlist}}
+            <tr>
+                {{#values}}
+                    <td class="courseinfocell {{class}}">
+                        {{{value}}}
+                    </td>
+                {{/values}}
+            </tr>
+            {{#pendingdelete}}
+                <tr>
+                    <td colspan="7">
+                    <div class="alert alert-warning text-center">
+                        {{#str}}confirmclassdelete, local_coursemanager, {{numdelegates}}{{/str}}
+                        <br><br>
+                        <a href="{{{urldelete}}}" class="btn btn-warning">
+                            {{#str}}confirmdelete, local_coursemanager{{/str}}
+                        </a>
+                        <a href="{{{urlcancel}}}" class="btn btn-default">
+                            {{#str}}cancel, core{{/str}}
+                        </a>
+                    </div>
+                    </td>
+                </tr>
+            {{/pendingdelete}}
+        {{/classlist}}
+    </tbody>
+</table>

@@ -52,6 +52,17 @@ require_sesskey();
 header("Content-Type: text/csv; charset=utf-8");
 // TODO: make the filename more useful, include a date, a specific name, something...
 header('Content-Disposition: attachment; filename=outcomes.csv');
+/* BEGIN CORE MOD */
+if (is_https()) { // HTTPS sites - watch out for IE! KB812935 and KB316431.
+    header('Cache-Control: private, max-age=10, no-transform');
+    header('Expires: '. gmdate('D, d M Y H:i:s', 0) .' GMT');
+    header('Pragma: ');
+} else { //normal http - prevent caching at all cost
+    header('Cache-Control: private, must-revalidate, pre-check=0, post-check=0, max-age=0, no-transform');
+    header('Expires: '. gmdate('D, d M Y H:i:s', 0) .' GMT');
+    header('Pragma: no-cache');
+}
+/* END CORE MOD */
 
 // sending header with clear names, to make 'what is what' as easy as possible to understand
 $header = array('outcome_name', 'outcome_shortname', 'outcome_description', 'scale_name', 'scale_items', 'scale_description');

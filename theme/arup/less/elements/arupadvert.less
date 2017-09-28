@@ -1,0 +1,113 @@
+/** Arup av **/
+.course-content {
+    li.arupadvert {
+        .avtext {
+
+        }
+        .mod-indent-outer,
+        .contentwithoutlink {
+            display: block;
+        }
+        .avblock {
+            &.to-right {
+                float: right;
+                width: 33%;
+                margin: 0 0 10px 10px;
+            }
+        }
+        .av_metadata {
+            padding: 10px;
+            .avheading {
+                margin-bottom: 0;
+                margin-top: 0;
+                padding-top: 5px;
+            }
+            .metatext {
+                margin-bottom: 5px;
+                font-size: 12px;
+            }
+        }
+        @media (max-width: @screen-sm) {
+            .avblock {
+                &.to-right {
+                    float: none;
+                    width: 100%;
+                    margin: 0;
+                }
+                box-shadow: none;
+            }
+            .av_image_wrapper {
+                width: 40%;
+                float: left;
+            }
+            .av_metadata {
+                width: 60%;
+                float: right;
+                padding-top: 0 !important;
+            }
+            .clearblock {
+                .clearfix;
+            }
+        }
+        @media (max-width: @screen-xs) {
+            .av_image_wrapper {
+                width: 100%;
+                float: none;
+            }
+            .av_metadata {
+                width: 100%;
+                float: none;
+                padding-left: 0;
+                padding-right: 0;
+                border-bottom: 1px solid @gray-light;
+            }
+        }
+        .arupav_summary_wrapper > h3:first-child {
+            padding-top: 0;
+        }
+        div.no-overflow {
+            overflow: visible;
+        }
+        h2.arupav_title {
+            margin-top: 0;
+        }
+
+        h2 {
+            color: #000;
+        }
+
+        h2>img {
+            margin-bottom: 6px;
+        }
+        .avheading {
+            margin-bottom: 0;
+            margin-top: 0;
+            padding-top: 10px;
+        }
+        ul {
+            margin-bottom: 10px;
+        }
+        span.autocompletion {
+            display: none;
+        }
+        form.togglecompletion {
+            bottom: 0;
+            top: auto;
+        }
+    }
+}
+
+#arupav_hide_button {
+    background: transparent url([[pix:theme|icon_blueminus]]) no-repeat scroll left top;
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    line-height: 12px;
+    padding-left: 12px;
+    padding-top: 1px;
+}
+#arupav_hide_button.arupav_hidden {
+    background: transparent url([[pix:theme|icon_blueplus]]) no-repeat scroll left top;
+}
+
+/** END : Arup av **/

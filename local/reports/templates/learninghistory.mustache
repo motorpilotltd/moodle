@@ -1,0 +1,142 @@
+{{text}}
+
+<div class="navbar navbar-default">
+
+    {{#textsearch}}
+        <div class="form-small p-l-10 p-r-10 m-b-5 {{#searchformokay}}formokay{{/searchformokay}}{{^searchformokay}}formerror{{/searchformokay}}">
+            {{{searchformhtml}}}
+        </div>
+    {{/textsearch}}
+    {{#datesearch}}
+        {{{datesearchform}}}
+    {{/datesearch}}
+    <div class="clearfix"></div>
+    {{#hassearch}}
+        <div class="setfilters p-l-10 p-b-10 p-r-10">
+            {{#showfilters}}
+                <a href="{{{urlremove}}}" class="btn btn-sm btn-default">
+                    {{name}}: {{displayvalue}}
+                    {{#pix}}t/delete, core, Remove Filter{{/pix}}
+                </a>
+            {{/showfilters}}
+        </div>
+    {{/hassearch}}
+</div>
+{{#showxlsexport}}
+<a id="exportreport" href="#" class="btn btn-default pull-right">
+    {{#str}}exportreport, local_reports{{/str}}
+</a>
+<div id="exportmodal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">{{#str}}downloadreport, local_reports{{/str}}</h3>
+      </div>
+      <div class="modal-body">
+        <p>{{#str}}pleasewait, local_reports{{/str}}</p>
+        <div id="downloadlinkcontainer" class="hidden">
+            <a id="downloadlink" class="btn btn-info" href="#">{{#str}}processsingfile, local_reports{{/str}}</a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="closedownloadmodal" type="button" class="btn btn-default disabled" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{{/showxlsexport}}
+{{#pagination}}
+<ul class="pagination lv-pagination {{addclass}}">
+    <li>
+        <a href="{{{prevurl}}}">
+            {{{leftarrow}}}
+        </a>
+    </li>
+    {{#pages}}
+        <li class="{{active}}"><a href="{{{link}}}">{{number}}</a></li>
+    {{/pages}}
+    <li>
+        <a href="{{{nexturl}}}">
+            {{{rightarrow}}}
+        </a>
+    </li>
+</ul>
+{{/pagination}}
+<div class="numrecords">
+{{#str}}recordsfound, local_reports{{/str}}<span class="badge">{{numrecords}}</span>
+ {{#showall}}{{#str}}showingall, local_reports{{/str}}{{/showall}}
+ {{^showall}}{{#str}}showingactive, local_reports{{/str}}{{/showall}}
+</div>
+{{#errors}}
+    <label class="label-warning">{{error}}</label>
+{{/errors}}
+{{#table}}
+<table id="reports-courses" class="generaltable flexible boxaligncenter">
+    <thead>
+        <tr style="vertical-align: bottom">
+            {{#heading}}
+            <th scope="col {{class}}">
+                {{#sortasc}}
+                    <a href="{{{sortasc}}}" title="sort {{key}} asc">{{name}}</a>
+                {{/sortasc}}
+                {{#sortdesc}}
+                    <a href="{{{sortdesc}}}" title="sort {{key}} desc">{{name}} {{{iconsort}}}</a>
+                {{/sortdesc}}
+                {{#nosort}}
+                    {{name}}
+                {{/nosort}}
+            </th>
+            {{/heading}}
+        </tr>
+    </thead>
+    <tbody>
+        {{#rows}}
+            <tr>
+                {{#values}}
+                    <td class="courseinfocell {{data}}">
+                        {{{value}}}
+                        {{#hasicon}}
+                            {{#iconlink}}
+                                <a href="{{{iconlink}}}">
+                            {{/iconlink}}
+                            <i class="fa {{icon}}" {{#tooltip}} data-toggle="tooltip" data-placement="{{location}}" title="{{tooltip}}" {{/tooltip}}>
+                            </i>
+                            {{#iconlink}}
+                            </a>
+                            {{/iconlink}}
+                        {{/hasicon}}
+                    </td>
+                {{/values}}
+            </tr>
+            {{#pendingdelete}}
+                <tr>
+                    <td colspan="10">
+                    <div class="alert alert-warning text-center">
+                        {{#str}}confirmcoursedelete, local_reports{{/str}}
+                    </div>
+                    </td>
+                </tr>
+            {{/pendingdelete}}
+
+        {{/rows}}
+    </tbody>
+</table>
+{{/table}}
+
+{{#pagination}}
+<ul class="pagination lv-pagination">
+    <li>
+        <a href="{{{prevurl}}}">
+            {{{leftarrow}}}
+        </a>
+    </li>
+    {{#pages}}
+        <li class="{{active}}"><a href="{{{link}}}">{{number}}</a></li>
+    {{/pages}}
+    <li>
+        <a href="{{{nexturl}}}">
+            {{{rightarrow}}}
+        </a>
+    </li>
+</ul>
+{{/pagination}}

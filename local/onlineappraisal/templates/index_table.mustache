@@ -1,0 +1,178 @@
+<table id="oa-{{#iscurrent}}current{{/iscurrent}}{{#isarchived}}archived{{/isarchived}}-table" class="table generaltable">
+    <thead>
+        <tr>
+        {{^isappraisee}}
+            <th>{{#str}}appraisee, local_onlineappraisal{{/str}}</th>
+        {{/isappraisee}}
+        {{^isappraiser}}
+            <th>{{#str}}appraiser, local_onlineappraisal{{/str}}</th>
+        {{/isappraiser}}
+        {{^issignoff}}
+            <th>{{#str}}signoff, local_onlineappraisal{{/str}}</th>
+        {{/issignoff}}
+            <th>{{#str}}progress, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}date:f2f, local_onlineappraisal{{/str}}</th>
+            <th class="text-center w-1">{{#str}}f2f:complete, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}date:complete, local_onlineappraisal{{/str}}</th>
+            <th>{{#str}}checkins:latest, local_onlineappraisal{{/str}}</th>
+            <th class="text-center w-1">&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="oa-empty-filter hidden">
+            <td colspan="{{#isgroupleader}}9{{/isgroupleader}}{{#ishrleader}}9{{/ishrleader}}{{^isgroupleader}}{{^ishrleader}}8{{/ishrleader}}{{/isgroupleader}}">
+                <div class="alert alert-warning m-b-0" role="alert">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    {{#str}}index:emptyfilter, local_onlineappraisal{{/str}}
+                </div>
+            </td>
+        </tr>
+    {{#appraisals}}
+        <tr{{#requiresaction}} class="info"{{/requiresaction}} data-status="{{statusid}}" data-appraisalid="{{id}}"
+           {{#suspended}} class="oa-user-suspended" data-toggle="tooltip" data-container="body" title="{{#str}}admin:leaver, local_onlineappraisal{{/str}}"{{/suspended}}>
+        {{^isappraisee}}
+            <td>
+                {{appraisee}}
+            </td>
+        {{/isappraisee}}
+        {{^isappraiser}}
+            <td>
+                {{appraiser}}
+            </td>
+        {{/isappraiser}}
+        {{^issignoff}}
+            <td>
+                {{signoff}}
+            </td>
+        {{/issignoff}}
+            <td>
+                <div class="progress" data-toggle="tooltip" title="{{progress.text}}" data-container="body">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{progress.percentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{progress.percentage}}%;">
+                      <span class="sr-only">{{progress.count}}/6</span>
+                    </div>
+                </div>
+            </td>
+            <td class="w-1">
+                <span class="oa-f2f-date">
+                    {{#iscurrent}}{{^suspended}}
+                        {{#permissions.editf2f}}
+                            <input id="oa-f2f-date-{{id}}" type="text" class="datepicker"
+                                   {{#held_date_array}}data-y="{{y}}" data-m="{{m}}" data-d="{{d}}"{{/held_date_array}} />
+                        {{/permissions.editf2f}}
+                    {{/suspended}}{{/iscurrent}}
+                    <span>{{held_date}}</span>
+                </span>
+                {{#iscurrent}}{{^suspended}}
+                    {{#permissions.editf2f}}
+                        <button class="oa-f2f-edit btn btn-xs btn-default m-0" type="button" autocomplete="off" title="{{#str}}form:edit, local_onlineappraisal{{/str}}">
+                            <i class="fa fa-fw fa-pencil"><span class="sr-only">{{#str}}form:edit, local_onlineappraisal{{/str}}</span></i>
+                        </button>
+                        <button class="oa-f2f-save btn btn-xs btn-default m-0 hidden" type="button" autocomplete="off" title="{{#str}}form:save, local_onlineappraisal{{/str}}">
+                            <i class="fa fa-fw fa-save"><span class="sr-only">{{#str}}form:save, local_onlineappraisal{{/str}}</span></i>
+                        </button>
+                        <button class="oa-f2f-undo btn btn-xs btn-default m-0 hidden" type="button" autocomplete="off" title="{{#str}}form:undo, local_onlineappraisal{{/str}}">
+                            <i class="fa fa-fw fa-undo"><span class="sr-only">{{#str}}form:undo, local_onlineappraisal{{/str}}</span></i>
+                        </button>
+                    {{/permissions.editf2f}}
+                {{/suspended}}{{/iscurrent}}
+            </td>
+            <td class="text-center w-1">
+                <i class="fa fa-2x fa-fw
+                          {{#face_to_face_held}}fa-check-square{{/face_to_face_held}}
+                          {{^face_to_face_held}}fa-square-o{{/face_to_face_held}}
+                          {{#iscurrent}}{{^suspended}}
+                            {{#permissions.togglef2f}} oa-togglef2f{{^held_date}} disabled{{/held_date}}{{/permissions.togglef2f}}
+                          {{/suspended}}{{/iscurrent}}"
+                   {{#iscurrent}}{{^suspended}}
+                        {{#permissions.togglef2f}}
+                            {{^held_date}}data-toggle="tooltip" data-container="body" title="{{#str}}error:f2fdate, local_onlineappraisal{{/str}}"{{/held_date}}
+                        {{/permissions.togglef2f}}
+                   {{/suspended}}{{/iscurrent}}>
+                    <span class="sr-only">
+                        {{#face_to_face_held}}{{#str}}f2f:complete, local_onlineappraisal{{/str}}{{/face_to_face_held}}
+                        {{^face_to_face_held}}{{#str}}f2f:notcomplete, local_onlineappraisal{{/str}}{{/face_to_face_held}}
+                    </span>
+                </i>
+            </td>
+            <td>
+                {{completed_date}}
+            </td>
+            <td >
+                {{latestcheckin}}
+            </td>
+            <td class="text-center w-1{{#suspended}} oa-user-suspended{{/suspended}}">
+                {{#permissions.haspermissions}}
+                <div class="dropdown pull-right oa-actions">
+                    <button id="oa-actions-{{id}}" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{#str}}actions, local_onlineappraisal{{/str}} <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="oa-current-{{id}}">
+                    {{^suspended}}{{#permissions.start}}
+                        <li><a href="{{urls.start}}">{{#str}}index:start, local_onlineappraisal{{/str}}</a></li>
+                    {{/permissions.start}}{{/suspended}}
+                    {{#permissions.view}}
+                        <li><a href="{{urls.view}}">{{#str}}index:view, local_onlineappraisal{{/str}}</a></li>
+                    {{/permissions.view}}
+                    {{#permissions.printappraisal}}
+                        <li><a class="oa-actions-print" href="{{urls.printappraisal}}">{{#str}}index:printappraisal, local_onlineappraisal{{/str}}</a></li>
+                    {{/permissions.printappraisal}}
+                    {{#permissions.printfeedback}}
+                        <li><a class="oa-actions-print" href="{{urls.printfeedback}}">{{#str}}index:printfeedback, local_onlineappraisal{{/str}}</a></li>
+                    {{/permissions.printfeedback}}
+                    {{^suspended}}{{#permissions.togglef2f}}
+                            <li>
+                                <a class="oa-togglef2f{{^held_date}} disabled{{/held_date}}"
+                                   href="{{urls.togglef2f}}"
+                                   data-complete="{{#str}}index:togglef2f:complete, local_onlineappraisal{{/str}}"
+                                   data-notcomplete="{{#str}}index:togglef2f:notcomplete, local_onlineappraisal{{/str}}"
+                                   {{^held_date}}data-toggle="tooltip" data-container="body" title="{{#str}}error:f2fdate, local_onlineappraisal{{/str}}"{{/held_date}}>
+                                {{#face_to_face_held}}
+                                    {{#str}}index:togglef2f:notcomplete, local_onlineappraisal{{/str}}
+                                {{/face_to_face_held}}
+                                {{^face_to_face_held}}
+                                    {{#str}}index:togglef2f:complete, local_onlineappraisal{{/str}}
+                                {{/face_to_face_held}}
+                                </a>
+                            </li>
+                    {{/permissions.togglef2f}}{{/suspended}}
+                    </ul>
+                </div>
+                {{/permissions.haspermissions}}
+                {{^permissions.haspermissions}}
+                    {{#permissions.notstarted}}
+                        <div class="alert alert-warning m-0 p-5" role="alert"
+                             style="cursor: default;"
+                             data-toggle="tooltip"
+                             title="{{#str}}index:notstarted:tooltip, local_onlineappraisal{{/str}}">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            {{#str}}index:notstarted, local_onlineappraisal{{/str}}</div>
+                    {{/permissions.notstarted}}
+                {{/permissions.haspermissions}}
+                {{#permissions.vipnoview}}
+                    <span class="oa-vip-status">{{#str}}vip, local_onlineappraisal{{/str}}</span>
+                {{/permissions.vipnoview}}
+            </td>
+        </tr>
+    {{/appraisals}}
+    </tbody>
+</table>
+
+{{>local_onlineappraisal/modal_print_confirm}}
+
+{{#js}}
+require(['jquery', 'theme_bootstrap/bootstrap'], function($) {
+    $('.oa-actions a.oa-actions-print').click(function(e){
+        e.preventDefault();
+        var self = $(this);
+        $('#oa-print-confirm-modal-continue').attr('href', self.attr('href'));
+        $('#oa-print-confirm-modal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+
+    $('#oa-print-confirm-modal-continue').click(function(){
+        $('#oa-print-confirm-modal').modal('hide');
+    });
+});
+{{/js}}

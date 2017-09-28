@@ -1,0 +1,62 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            {{# returnurl }}<a class="" href="{{{ returnurl }}}">{{# str }} returntosearchresults, local_search {{/ str }}</a>{{/ returnurl }}
+        </div>
+        <div class="col-md-8">
+            <div id="kaltura-video" class="video-holder">
+                <!--  inner pusher div defines aspect ratio: in this case 16:9 ~ 56.25% -->
+                <div id="kaltura-video-dummy" style="margin-top: {{aspect_ratio}}%;"></div>
+                <!--  the player embed target, set to take up available absolute space   -->
+                <div id="kaltura-video-embed-target"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{scheme}}://cdnapisec.kaltura.com/p/{{partner_id}}/sp/{{partner_id}}00/embedIframeJs/uiconf_id/{{uiconfid}}/partner_id/{{partner_id}}"></script>
+<script>
+    kWidget.embed({
+        'targetId': 'kaltura-video-embed-target',
+        'wid': '_{{partner_id}}',
+        'uiconf_id' : '{{uiconfid}}',
+        'entry_id' : '{{entry_id}}',
+        'flashvars':{
+            'autoPlay': false,
+            'ks': '{{session}}'
+        },
+        'params':{
+            'wmode': 'transparent'
+        }
+    });
+</script>
+<style>
+    #kaltura-video {
+        position: relative;
+        width: 100%;
+        display: inline-block;
+    }
+    #kaltura-video-embed-target {
+        position: absolute;
+        top: 0;
+        left: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .video-holder .overlay {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-60px, -60px);
+        z-index: 1;
+    }
+    .video-holder .overlay .fa-play-circle {
+        font-size: 120px;
+        line-height: 1;
+        color: rgba(230,231,232,0.8);
+    }
+    .video-holder .overlay .fa-play-circle:hover {
+        color: rgba(230,231,232,1);
+    }
+</style>

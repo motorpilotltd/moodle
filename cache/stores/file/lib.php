@@ -354,7 +354,10 @@ class cachestore_file extends cache_store implements cache_is_key_aware, cache_i
             return false;
         }
         // Open ensuring the file for reading in binary format.
-        if (!$handle = fopen($file, 'rb')) {
+/* BEGIN CORE MOD */
+// Suppressing warnings as error is handled.
+        if (!$handle = @fopen($file, 'rb')) {
+/* END CORE MOD */
             return false;
         }
         // Lock it up!
@@ -718,7 +721,10 @@ class cachestore_file extends cache_store implements cache_is_key_aware, cache_i
         }
 
         // Finally rename the temp file to the desired file, returning the true|false result.
-        $result = rename($tempfile, $file);
+/* BEGIN CORE MOD */
+// Suppressing warnings as error is handled.
+        $result = @rename($tempfile, $file);
+/* END CORE MOD */
         @chmod($file, $this->cfg->filepermissions);
         if (!$result) {
             // Failed to rename, don't leave files lying around.

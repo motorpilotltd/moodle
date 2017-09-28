@@ -1,0 +1,9 @@
+.path-admin-local-taps h2.main,
+.path-admin-local-taps h3.main,
+.path-admin-local-taps h4.main {
+    text-align: left;
+}
+
+.path-admin-local-taps .mform .fsubmit {
+    text-align: left;
+}

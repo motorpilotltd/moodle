@@ -53,7 +53,12 @@ class enrol_self_edit_form extends moodleform {
         $mform->addElement('select', 'customint6', get_string('newenrols', 'enrol_self'), $options);
         $mform->addHelpButton('customint6', 'newenrols', 'enrol_self');
         $mform->disabledIf('customint6', 'status', 'eq', ENROL_INSTANCE_DISABLED);
-
+/* BEGIN CORE MOD */
+        $options = array('n' => get_string('no'), 'y'  => get_string('yes'));
+        $mform->addElement('select', 'customchar1', get_string('auto', 'enrol_self'), $options);
+        $mform->addHelpButton('customchar1', 'auto', 'enrol_self');
+        $mform->setDefault('customchar1', 'n');
+/* END CORE MOD */
         $passattribs = array('size' => '20', 'maxlength' => '50');
         $mform->addElement('passwordunmask', 'password', get_string('password', 'enrol_self'), $passattribs);
         $mform->addHelpButton('password', 'password', 'enrol_self');
@@ -61,12 +66,17 @@ class enrol_self_edit_form extends moodleform {
             $mform->addRule('password', get_string('required'), 'required', null, 'client');
         }
         $mform->addRule('password', get_string('maximumchars', '', 50), 'maxlength', 50, 'server');
-
+/* BEGIN CORE MOD */
+        $mform->setDefault('password', '');
+        $mform->disabledIf('password', 'customchar1', 'eq', 'y');
+/* END CORE MOD */
         $options = array(1 => get_string('yes'),
                          0 => get_string('no'));
         $mform->addElement('select', 'customint1', get_string('groupkey', 'enrol_self'), $options);
         $mform->addHelpButton('customint1', 'groupkey', 'enrol_self');
-
+/* BEGIN CORE MOD */
+        $mform->disabledIf('customint1', 'customchar1', 'eq', 'y');
+/* END CORE MOD */
         $roles = $this->extend_assignable_roles($context, $instance->roleid);
         $mform->addElement('select', 'roleid', get_string('role', 'enrol_self'), $roles);
 

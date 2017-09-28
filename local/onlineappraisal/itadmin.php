@@ -1,0 +1,92 @@
+<?php
+// This file is part of the Arup online appraisal system
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Version details
+ *
+ * @package     local_onlineappraisal
+ * @copyright   2016 Motorpilot Ltd / Sonsbeekmedia.nl
+ * @author      Bas Brands, Simon Lewis
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+require_once '../../config.php';
+require_once 'locallib.php';
+
+$PAGE->set_context(context_system::instance());
+$PAGE->set_url('/local/onlineappraisal/itadmin.php');
+$PAGE->set_pagelayout('incourse');
+
+// Setup language.
+\local_onlineappraisal\lang_setup();
+
+require_login();
+
+$PAGE->navbar->add(get_string('pluginname', 'local_onlineappraisal'), '/local/onlineappraisal/');
+
+$PAGE->blocks->show_only_fake_blocks();
+
+$page = optional_param('page', 'itadmin', PARAM_ALPHA);
+$search = optional_param('search', '', PARAM_RAW);
+try {
+    \local_onlineappraisal\user::loginas_check();
+    $itadmin = new \local_onlineappraisal\itadmin($page, $search);
+    $itadmin->setup_page();
+    $itadmin->prepare_page();
+} catch (Exception $e) {
+    $PAGE->set_title(get_string('error', 'local_onlineappraisal'));
+    $PAGE->set_heading(get_string('error', 'local_onlineappraisal'));
+
+    $renderer = $PAGE->get_renderer('local_onlineappraisal');
+    $alert = new \local_onlineappraisal\output\alert($e->getMessage(), 'danger', false);
+
+    echo $OUTPUT->header();
+    echo $renderer->render($alert);
+    echo $OUTPUT->footer();
+
+    exit;
+}
+
+// Add params to clone and reset $PAGE->url.
+$url = $PAGE->url;
+$url->params(array('page' => $itadmin->page));
+$PAGE->set_url($url);
+
+$PAGE->set_title($itadmin->pagetitle);
+$PAGE->set_heading($itadmin->pageheading);
+
+$renderer = $PAGE->get_renderer('local_onlineappraisal', 'navlist');
+$navlist = new \local_onlineappraisal\output\navlist\navlist_itadmin($itadmin);
+
+$regions = $PAGE->blocks->get_regions();
+$PAGE->blocks->add_fake_block($renderer->render($navlist), reset($regions));
+
+$PAGE->navbar->add(get_string('navbar:businessadmindashboard', 'local_onlineappraisal'));
+$PAGE->navbar->add(get_string($itadmin->page, 'local_onlineappraisal'), $PAGE->url);
+
+echo $OUTPUT->header();
+
+echo $itadmin->main_content();
+
+echo $OUTPUT->footer();
+
+// $event = \local_onlineappraisal\event\appraisal_itadmin_viewed::create(array(
+//     'other' => array(
+//         'page' => $admin->page,
+//         'group' => $admin->groupid,
+//     ),
+// ));
+// $event->trigger();

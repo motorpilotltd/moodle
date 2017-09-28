@@ -1,0 +1,40 @@
+{{!
+    This file is part of the Online Appraisal Plugin for Arup.
+}}
+{{!
+    @template local_onlineappraisal/printer_header
+
+    PDF Header
+}}
+<br />
+<div>
+    <table>
+        <tr>
+            <td colspan="3">
+                <div style="text-align:centre; display:inline-block; color:red;">{{! ***Avoid whitespace***
+                    }}{{{warning}}}
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="text-align:left; display:inline-block; color:black;">{{! ***Avoid whitespace***
+                    }}{{appraisal.appraisee.firstname}} {{appraisal.appraisee.lastname}} {{#str}}pdf:header:appraisal, local_onlineappraisal{{/str}}
+                    <br />{{#str}}pdf:header:staffid, local_onlineappraisal{{/str}} {{appraisal.appraisee.idnumber}}
+                    <br />{{#str}}pdf:header:helddate, local_onlineappraisal{{/str}} {{appraisal.held_date}}
+                </div>
+            </td>
+            <td>
+                <div style="text-align:center; display:inline-block; width:75%; color:black;">
+                    <h3 style="color:red">{{#str}}pdf:header:confidential, local_onlineappraisal{{/str}}</h3>
+                    {{currentstatus}}{{#archived}} ({{.}}){{/archived}}
+                </div>
+            </td>
+            <td>
+                <div style="text-align:right; color:black;">
+                    <img src="{{logopath}}">
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>

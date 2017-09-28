@@ -1,0 +1,63 @@
+@arupprimarylight: #DA361D; 
+@arupprimarydark: #AD3321; 
+@aruppink: #EC87C0; 
+@aruppinkhover: #D770AD; 
+@aruporange: #FEA518; 
+@aruporangehover: #F98A11; 
+@arupred: #ED5564; 
+@arupredhover: #DB4453; 
+@arupyellow: #FFB41D; 
+@arupyellowhover: #FC9C10; 
+@arupgreen: #38C19A; 
+@arupgreenhover: #30AA8C; 
+@arupblue: #0F95FF; 
+@arupbluehover: #007FFF; 
+@aruppurple: #AC92ED; 
+@aruppurplehover: #967BDC;
+
+@arup-text: #3c3c3b;
+
+@arupgrey1: #F1F2F2;
+@arupgrey2: #E6E7E8;
+@arupgrey3: #BCBEC0;
+@arupgrey4: #939598;
+@arupgrey5: #777777;
+
+@btn-success-color:              #fff;
+@btn-success-bg:                 @arupgreen;
+@btn-success-border:             darken(@btn-success-bg, 5%);
+
+@btn-default-color:              #333;
+@btn-default-bg:                 #fff;
+@btn-default-border:             #ccc;
+
+@appraisee: @arupbluehover;
+@appraiser: @arupyellowhover;
+@signoff: @arupgreenhover;
+@groupleader: @aruppurplehover;
+
+.path-local-onlineappraisal {
+    @import "general.less";
+    @import "overview.less";
+    @import "svg.less";
+    @import "forms.less";
+    @import "fakeblock.less";
+    @import "comments.less";
+    @import "checkins.less";
+    @import "tables.less";
+    @import "dashboards.less";
+    @import "bootstrap-datepicker/build3.less";
+    @import "panel.less";
+    @import "videos.less";
+    @import "admin.less";
+}
+
+#page-local-onlineappraisal-addfeedback {
+    .navbar-inner {
+        .navbar-nav,
+        .search-wrapper,
+        .navbar-header {
+            display:none;
+        }
+    }
+}

@@ -156,6 +156,9 @@ class tinymce_texteditor extends texteditor {
             'theme_advanced_statusbar_location' => "bottom",
             'language_load' => false, // We load all lang strings directly from Moodle.
             'langrev' => $langrev,
+/* BEGIN CORE MOD */
+            'theme_advanced_blockformats' => "p,h2,h3,h4,h5,h6",
+/* END CORE MOD */
         );
 
         // Should we override the default toolbar layout unconditionally?

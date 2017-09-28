@@ -1,0 +1,46 @@
+<div class="course-results-container">
+    <div class="filter-button-container"><button class="toggle-filters">{{# appliedcount }} {{.}} filter(s) applied {{/appliedcount}}{{^ appliedcount}}{{#str}}filterbuttonlabel, local_search{{/str}}{{/appliedcount}}</button></div>
+    <form class="region-filter-form form-inline">
+        <div class="regionfilter" class="input-group">
+            <label for="course-region-select">{{#str}}regionslabel, local_search{{/str}}</label>
+            <select id="course-region-select" class="form-control">
+                {{# regions }}
+                    <option value="{{ value }}"{{# selected }} selected="selected"{{/ selected }}>{{ name }}</option>
+                {{/ regions }}
+            </select>
+        </div>
+    </form>
+    <div class="search-results course-results" data-result-count="{{ coursecount }}">
+    {{# learningpaths }}
+    {{/ learningpaths }}
+    {{# courses }}
+        <div class="coursebox clearfix search-result {{ titleclass }}">
+            <div class="image">
+                <img src="{{ imgurl }}" style="width: 150px;">
+            </div>
+            <div class="info">
+                <h3 class="name"><a title="{{ titletext }}" href="{{{ titlehref }}}">{{{ title }}}</a></h3>
+
+                {{# category }}
+                    <p class="category {{ categoryclass }}">{{# str }}by, local_search{{/ str }} {{{ link }}}</p>
+                {{/ category }}
+
+                <div class="summary">
+                    {{{ summary }}}
+                </div>
+                <div class="arup_course_metadata">
+                    {{{ meta }}}
+                </div>
+            </div>
+        </div>
+    {{/ courses }}
+    {{^ courses }}
+        {{# str }} noresults, local_search {{/ str }}
+    {{/ courses }}
+        <div class="loading-bar">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <p class="append">{{# str }} loadmore, local_search {{/ str }}</p>
+            <p class="replace">{{# str }} loadfiltered, local_search {{/ str }}</p>
+        </div>
+    </div>
+</div>

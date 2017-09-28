@@ -1,0 +1,42 @@
+/**
+ * @package    mod_arupmyproxy
+ * @copyright  2016 Motorpilot Ltd
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+form.arupmyproxy-form-proxy {
+    margin-top: 10px;
+}
+
+form.arupmyproxy-form-proxy label {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+form.arupmyproxy-form-proxy button,
+form.arupmyproxy-form-proxy input[type="submit"] {
+    margin-left: 10px;
+}
+
+.arupmyproxy .alert,
+.path-mod-arupmyproxy .alert {
+    margin: 10px 0 0 0;
+}
+
+.arupmyproxy-wrapper-button {
+    cursor: pointer;
+}
+
+.arupmyproxy-wrapper-button,
+.arupmyproxy-wrapper-button .arupmyproxy-wrapper-button-pre,
+.arupmyproxy-wrapper-button .arupmyproxy-wrapper-button-post {
+    text-decoration: none;
+}
+
+.arupmyproxy-wrapper-button .arupmyproxy-wrapper-button-main {
+    text-decoration: underline;
+}
+
+.arupmyproxy-wrapper-button:hover .arupmyproxy-wrapper-button-main {
+    text-decoration: none;
+}
