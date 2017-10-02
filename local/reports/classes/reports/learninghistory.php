@@ -196,9 +196,8 @@ class learninghistory extends base {
         $params = array();
         $wherestring = '';
 
-        $wherestring .= "WHERE ( lte.archived = '' OR lte.archived IS NULL )";
         if (!$this->showall) {
-            $wherestring .= ' AND ';
+            $wherestring = 'WHERE ';
             $wherestring .= $DB->sql_like('staff.LEAVER_FLAG', ':' . 'staffleaver_flag', false);
             $params['staffleaver_flag'] = 'n';
             $wherestring .= " AND ( lte.archived = '' OR lte.archived IS NULL )";
@@ -267,8 +266,8 @@ class learninghistory extends base {
             }
         }
 
-        // echo $wherestring;
-        // $wherestring = '';
+        //echo $wherestring;
+        //$wherestring = '';
 
         $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode
                   FROM {local_taps_enrolment} as lte

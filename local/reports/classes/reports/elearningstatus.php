@@ -95,10 +95,10 @@ class elearningstatus extends base {
 
     private function reportfields() {
         $this->displayfields = array(
-            'employee_number',
-            'full_name',
+            'staffid',
+            'first_name',
+            'last_name',
             'email_address',
-            'bookingstatus',
             'grade',
             'employment_category',
             'discipline_name',
@@ -112,6 +112,7 @@ class elearningstatus extends base {
             'classenddate',
             'duration',
             'durationunits',
+            'bookingstatus',
             'classcost',
             'classcostcurrency',
             'cpd',  
@@ -137,11 +138,12 @@ class elearningstatus extends base {
             'coursename');
 
         $this->textfilterfields = array(
+            'actualregion' => 'dropdown',
+            'georegion' => 'dropdown',
             'classname' => 'autocomplete',
             'exclusion' => 'dropdown',
-            'region' => 'dropdown',
             'location_name' => 'char',
-            'employee_number' => 'int',
+            'staffid' => 'int',
             'costcentre' => 'costcentre',
             'groupname' => 'char',
             'leaver_flag' => 'yn',
@@ -149,8 +151,9 @@ class elearningstatus extends base {
 
         $this->filtertodb = array(
             'classname' => 'lte.classid',
-            'region' => 'staff.geo_region',
-            'employee_number' => 'staff.EMPLOYEE_NUMBER',
+            'actualregion' => 'staff.REGION_NAME',
+            'georegion' => 'staff.GEO_REGION',
+            'staffid' => 'lte.staffid',
             'full_name' => 'staff.FULL_NAME',
             'location_name' => 'staff.LOCATION_NAME',
             'groupname' => 'staff.GROUP_NAME',
@@ -300,7 +303,7 @@ class elearningstatus extends base {
                     $wherestring .= " $filter->field = $value ";
                 } else {
                     $fieldname = $this->filtertodb[$filter->field];
-                    $fieldnameparam = str_replace('.', '', $fieldname);
+                    $fieldnameparam = strtolower(str_replace('.', '', $fieldname));
                     $wherestring .= $DB->sql_like($fieldname, ':' . $fieldnameparam . $loopcount, false);
                     $params[$fieldnameparam . $loopcount] = '%' . $filtervalue . '%';
                 }
@@ -311,7 +314,7 @@ class elearningstatus extends base {
             }
         }
 
-        // echo $wherestring;
+        //echo $wherestring;
         //$wherestring = '';
 
         $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode
@@ -342,6 +345,7 @@ class elearningstatus extends base {
         $all = array();
         $this->errors = array();
         if ($exclusion) {
+            $allstaff = [];
             try {
                 $staffsql = "SELECT * from SQLHUB.ARUP_ALL_STAFF_V as staff WHERE 1 = 1 $wherestring";
                 $allstaff = $DB->get_records_sql($staffsql, $params);
@@ -355,7 +359,7 @@ class elearningstatus extends base {
             }
             // Unset allstaff records that have an enrolment.
             foreach ($enrolments as $enrolment) {
-                if (isset($allstaf[$enrolment->staffid])) {
+                if (array_key_exists(intval($enrolment->staffid), $allstaff)) {
                     unset($allstaff[$enrolment->staffid]);
                 }
             }
@@ -563,7 +567,8 @@ class elearningstatus extends base {
         if ($key == 'classenddate') {
             // CPD records use classcompletiondate instead of classenddate
             if ($row->classtype == 'Self Paced') {
-                return $this->myuserdate($row->classcompletiondate, $row);
+                $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->classcompletiondate);
+                return $this->myuserdate($date, $row);
             }
             if (!empty($row->cpdid)) {
                 return $this->myuserdate($row->classcompletiondate, $row);
@@ -573,10 +578,11 @@ class elearningstatus extends base {
         }
 
         if ($key == 'bookingstatus') {
-            if (empty($row->bookingstatus)) {
-                return $this->mystr('bookingnotokay');
+            if (!empty($row->cpdid)) {
+                return 'Full Attendance';
+            } else {
+                return $row->bookingstatus;
             }
-            return $row->bookingstatus;
         }
 
         if ($key == 'classtype') {
@@ -594,8 +600,8 @@ class elearningstatus extends base {
     public function get_dropdown($field) {
         global $DB;
         $options = array();
-        if ($field == 'region') {
-            return $this->get_regions();
+        if ($field == 'actualregion' || $field == 'georegion') {
+            return $this->get_regions($field);
         }
         if ($field == 'cpd') {
             $options[''] = $this->mystr('cpdandlms');
@@ -609,26 +615,23 @@ class elearningstatus extends base {
             return $options;
         }
         if ($field == 'classname') {
-            $sql = "SELECT classid, classname from {local_taps_class} where classtype = ?";
+            $sql = "SELECT classid, classname from {local_taps_class} where classtype = ? ORDER BY classname ASC";
             $classes = $DB->get_records_sql($sql, array('Self Paced'));
             foreach ($classes as $class) {
                 $options[$class->classid] = $class->classname;
             }
-            return $options;
+            return ['0' => ''] + $options;
         }
     }
 
     /**
      * Get regions from DB
      */
-    function get_regions() {
+    function get_regions($infield) {
         global $DB;
-        $regions = array('0' => get_string('allregions', 'local_reports'));
-        $regions['Global'] = 'Global';
-        $dbregions = $DB->get_records('local_regions_reg', array('userselectable' => 1));
-        foreach ($dbregions as $dbr) {
-            $regions[$dbr->name] = $dbr->name;
-        }
+        $dbfield = ($infield == 'actualregion') ? 'REGION_NAME' : 'GEO_REGION';
+        $sql = "SELECT DISTINCT {$dbfield} as id, {$dbfield} as value FROM SQLHUB.ARUP_ALL_STAFF_V WHERE {$dbfield} IS NOT NULL AND {$dbfield} != '' ORDER BY {$dbfield} ASC";
+        $regions = ['0' => get_string('allregions', 'local_reports')] + $DB->get_records_sql_menu($sql) + ['NOT SET' => 'NOT SET'];
         return $regions;
     }
 }

@@ -39,6 +39,8 @@ class searchform extends moodleform {
         $mform->setType('page', PARAM_RAW);
         $filters = $data->filteroptions;
 
+        //echo '<pre>' . print_r($filters, true) . '</pre>';
+
         $count = 0;
         foreach ($filters as $filter) {
             $count++;
@@ -58,9 +60,11 @@ class searchform extends moodleform {
             } else if ($filter->type == 'autocomplete') {
                 $options = $data->get_dropdown($filter->field);
                 $params = array(                                                      
-                    'placeholder' => get_string('learninghistory:' . $filter->field, 'local_reports'),                                                              
+                    'placeholder' => get_string('learninghistory:' . $filter->field, 'local_reports'),
+                    'noselectstring' => 'select'                                                      
                 );   
-                $mform->addElement('autocomplete', $filter->field, '', $options, $params);
+                $mform->addElement('autocomplete', $filter->field, $filter->name, $options, $params);
+                $mform->setDefault($filter->field, '');
             } else {
                 $mform->addElement('text', $filter->field, $filter->name);
                 if ($filter->type == 'int') {

@@ -30,8 +30,9 @@ $PAGE->set_pagelayout('admin');
 echo $OUTPUT->header();
 echo html_writer::tag('h1', get_string('pluginname', 'local_reports'));
 echo html_writer::link(new moodle_url('/local/reports/index.php'),
-    get_string('managecourses', 'local_reports'),
+    get_string('learninghistory', 'local_reports'),
     array('class' => 'btn btn-default m-r-5'));
-echo html_writer::link(new moodle_url('/local/reports/cpd.php'), get_string('cpduploadheading', 'local_reports'),
+echo html_writer::link(new moodle_url('/local/reports/index.php', ['page' => 'elearningstatus']),
+    get_string('elearningstatus', 'local_reports'),
     array('class' => 'btn btn-default m-r-5'));
 echo $OUTPUT->footer();
