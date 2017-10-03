@@ -3,6 +3,7 @@
 namespace block_certification_report;
 use local_custom_certification\certification;
 use local_custom_certification\completion;
+use local_costcentre\costcentre;
 
 /**
  * @package block_certification_report
@@ -66,8 +67,180 @@ class certification_report {
         return ['sql' => $res, 'params' => $params];
     }
 
+    public static function get_filter_options() {
+        global $DB, $USER;
+
+        $options = [];
+
+        $options['actualregions'] = self::get_hub_options('REGION_NAME');
+        $options['georegions'] = self::get_hub_options('GEO_REGION');
+
+        if (has_capability('block/certification_report:view_all_costcentres', \context_system::instance())){
+            $options['costcentres'] = [-1 => 'NOT SET']
+                + $DB->get_records_select_menu('user', "icq != ''", [], 'icq ASC', 'DISTINCT icq as id, icq as value');
+        } else {
+            $costcentres = array_keys(costcentre::get_user_cost_centres($USER->id, [
+                costcentre::GROUP_LEADER,
+                costcentre::HR_LEADER,
+                costcentre::HR_ADMIN,
+                costcentre::LEARNING_REPORTER,
+            ]));
+            $options['costcentres'] = array_combine($costcentres,  $costcentres);
+        }
+
+        $options['cohorts'] = $DB->get_records_menu('cohort', [], 'name ASC', 'id, name');
+
+        $rootcategory = (int) get_config('block_certification_report', 'root_category');
+        $options['categories'] = certification::get_categories($rootcategory);
+
+        $certificationfilter = ['visible' => true, 'reportvisible' => true];
+        if ($rootcategory) {
+            // All child categories of root.
+            $certificationfilter['category'] = array_merge([$rootcategory], array_keys(certification::get_categories($rootcategory)));
+        }
+        $certifications = certification::get_all($certificationfilter, 'ORDER by c.fullname');
+        $certificationselect = [];
+        foreach ($certifications as $certifid => $certification) {
+            $certificationselect[$certifid] = $certification->fullname;
+        }
+        $options['certificationsdata'] = $certifications;
+        $options['certifications'] = $certificationselect;
+
+        $options['groupnames'] = self::get_hub_options('GROUP_NAME');
+        $options['locationnames'] = self::get_hub_options('LOCATION_NAME');
+        $options['employmentcategories'] = self::get_hub_options('EMPLOYMENT_CATEGORY');
+        $options['grades'] = self::get_hub_options('GRADE');
+
+        return $options;
+    }
+
+    public static function get_filter_data($filteroptions, $data = null) {
+        global $DB, $USER;
+
+        $filters = new \stdClass();
+
+        if (!has_capability('block/certification_report:view_all_regions', \context_system::instance())){
+            $sql = "SELECT REGION_NAME as actualregion, GEO_REGION as georegion FROM SQLHUB.ARUP_ALL_STAFF_V WHERE EMPLOYEE_NUMBER = :idnumber";
+            $userregions = $DB->get_record_sql($sql, ['idnumber' => (int) $USER->idnumber]);
+            
+            $filters->actualregions = !empty($userregions->actualregion) ? [$userregions->actualregion => $userregions->actualregion] : [-1 => 'NOT SET'];
+            $filters->georegions = !empty($userregions->georegion) ? [$userregions->georegion => $userregions->georegion] : [-1 => 'NOT SET'];
+        }
+
+        if (has_capability('block/certification_report:view_all_costcentres', \context_system::instance())){
+            // Empty filter (may get populated later).
+            $filters->costcentres = [];
+        } else {
+            // Pre-apply a filter if cannot view all cost centres.
+            $filters->costcentres = array_keys(costcentre::get_user_cost_centres($USER->id, [
+                costcentre::GROUP_LEADER,
+                costcentre::HR_LEADER,
+                costcentre::HR_ADMIN,
+                costcentre::LEARNING_REPORTER,
+            ]));
+        }
+
+        if ($data) {
+            // From form.
+            $filters->fullname = $data->fullname;
+            $filters->cohorts = !empty($data->cohorts) ? $data->cohorts : [];
+
+            $filters->certifications = !empty($data->certifications) ? $data->certifications : [];
+            $filters->categories = !empty($data->categories) ? $data->categories : [];
+
+            if (!isset($filters->actualregions)) {
+                $filters->actualregions = !empty($data->actualregions) ? $data->actualregions : [];
+            }
+
+            if (!isset($filters->georegions)) {
+                $filters->georegions = !empty($data->georegions) ? $data->georegions : [];
+            }
+
+            if (!empty($data->costcentres)) {
+                // Only allows cost centres user can view (from form select).
+                $filters->costcentres = $data->costcentres;
+            }
+
+            $filters->groupnames = !empty($data->groupnames) ? $data->groupnames : [];
+            $filters->locationnames = !empty($data->locationnames) ? $data->locationnames : [];
+            $filters->employmentcategories = !empty($data->employmentcategories) ? $data->employmentcategories : [];
+            $filters->grades = !empty($data->grades) ? $data->grades : [];
+
+            return $filters;
+        }
+
+        // Otherwise get from URL.
+        $filters->fullname = optional_param('fullname', '', PARAM_TEXT);
+        $filters->cohorts = optional_param_array('cohorts', [], PARAM_INT);
+        $filters->certifications = optional_param_array('certifications', [], PARAM_INT);
+        $filters->categories = optional_param_array('categories', [], PARAM_INT);
+
+        if (!isset($filters->actualregions)) {
+            $filters->actualregions = optional_param_array('actualregions', [], PARAM_TEXT);
+        }
+
+        if (!isset($filters->georegions)) {
+            $filters->georegions = optional_param_array('georegions', [], PARAM_TEXT);
+        }
+
+        $filtercostcentres = array_intersect(optional_param_array('costcentres', [], PARAM_ALPHANUMEXT), array_keys($filteroptions['costcentres']));
+        if (!empty($filtercostcentres)) {
+            $filters->costcentres = $filtercostcentres;
+        }
+
+        $filters->groupnames = optional_param_array('groupnames', [], PARAM_TEXT);
+        $filters->locationnames = optional_param_array('locationnames', [], PARAM_TEXT);
+        $filters->employmentcategories = optional_param_array('employmentcategories', [], PARAM_TEXT);
+        $filters->grades = optional_param_array('grades', [], PARAM_TEXT);
+
+        return $filters;
+    }
+
+    public static function get_base_url($filters, $page = 'report') {
+        if (!in_array($page, ['report'])) {
+            $page = 'report';
+        }
+        $params = [];
+        $allowedparams = [
+            'actualregions',
+            'georegions',
+            'costcentres',
+            'fullname',
+            'cohorts',
+            'certifications',
+            'categories',
+            'groupnames',
+            'locationnames',
+            'employmentcategories',
+            'grades',
+        ];
+        foreach ($allowedparams as $param) {
+            if (!empty($filters->{$param})) {
+                $params[$param] = $filters->{$param};
+            }
+        }
+
+        $params['regionview'] = optional_param('regionview', 'actual', PARAM_ALPHA) == 'geo' ? 'geo' : 'actual';
+
+        return new \moodle_url("/blocks/certification_report/{$page}.php?".http_build_query($params));
+    }
+
+    /**
+     * Get hub options from DB
+     */
+    public static function get_hub_options($field) {
+        global $DB;
+        $sql = "SELECT DISTINCT {$field} as id, {$field} as value FROM SQLHUB.ARUP_ALL_STAFF_V WHERE {$field} IS NOT NULL AND {$field} != '' ORDER BY {$field} ASC";
+        $options = [-1 => 'NOT SET'] + $DB->get_records_sql_menu($sql);
+        return $options;
+    }
+
     public static function get_data($filters = []){
         global $DB;
+
+        $regionview = optional_param('regionview', 'actual', PARAM_ALPHA);
+        $regionfield = $regionview == 'geo' ? 'georegion' : 'actualregion';
+        $regionhubfield = $regionview == 'geo' ? 'GEO_REGION' : 'REGION_NAME';
 
         /**
          * Filter certifications
@@ -97,20 +270,42 @@ class certification_report {
         $view = 'regions';
 
         /**
-         * Filter for region
+         * Filter for region.
          */
-        if (!empty($filters->regions)){
+        if (!empty($filters->actualregions)){
             // Check for not set region selection.
             $notsetwhere = '';
-            if (in_array(-1, $filters->regions)) {
-                $notsetwhere = 'lrr.id IS NULL';
-                $filters->regions = array_diff($filters->regions, [-1]);
+            if (in_array(-1, $filters->actualregions)) {
+                $notsetwhere = "(REGION_NAME IS NULL OR REGION_NAME = '')";
+                $filters->actualregions = array_diff($filters->actualregions, [-1]);
             }
             // Any more to filter?
             $generalwhere = '';
-            if (!empty($filters->regions)) {
-                list($sqldata, $sqlparams) = $DB->get_in_or_equal($filters->regions, SQL_PARAMS_NAMED, 'region');
-                $generalwhere .= "lrr.id {$sqldata}";
+            if (!empty($filters->actualregions)) {
+                list($sqldata, $sqlparams) = $DB->get_in_or_equal($filters->actualregions, SQL_PARAMS_NAMED, 'actualregion');
+                $generalwhere .= "REGION_NAME {$sqldata}";
+                $params += $sqlparams;
+            }
+            if ($notsetwhere && $generalwhere) {
+                $where .= " AND ({$notsetwhere} OR {$generalwhere})";
+            } else {
+                // Only one of two will be set...
+                $where .= " AND {$notsetwhere}{$generalwhere}";
+            }
+            $view = 'costcentre';
+        }
+        if (!empty($filters->georegions)){
+            // Check for not set region selection.
+            $notsetwhere = '';
+            if (in_array(-1, $filters->georegions)) {
+                $notsetwhere = "(GEO_REGION IS NULL OR GEO_REGION = '')";
+                $filters->georegions = array_diff($filters->georegions, [-1]);
+            }
+            // Any more to filter?
+            $generalwhere = '';
+            if (!empty($filters->georegions)) {
+                list($sqldata, $sqlparams) = $DB->get_in_or_equal($filters->georegions, SQL_PARAMS_NAMED, 'georegion');
+                $generalwhere .= "GEO_REGION {$sqldata}";
                 $params += $sqlparams;
             }
             if ($notsetwhere && $generalwhere) {
@@ -179,6 +374,96 @@ class certification_report {
             $params['assignmenttype'] = certification::ASSIGNMENT_TYPE_AUDIENCE;
         }
 
+        // Other hub field filters.
+        // Group name.
+        if (!empty($filters->groupnames)){
+            // Check for not set groupname selection.
+            $notsetwhere = '';
+            if (in_array(-1, $filters->groupnames)) {
+                $notsetwhere = "(GROUP_NAME IS NULL OR GROUP_NAME = '')";
+                $filters->groupnames = array_diff($filters->groupnames, [-1]);
+            }
+            // Any more to filter?
+            $generalwhere = '';
+            if (!empty($filters->groupnames)) {
+                list($sqldata, $sqlparams) = $DB->get_in_or_equal($filters->groupnames, SQL_PARAMS_NAMED, 'groupname');
+                $generalwhere .= "GROUP_NAME {$sqldata}";
+                $params += $sqlparams;
+            }
+            if ($notsetwhere && $generalwhere) {
+                $where .= " AND ({$notsetwhere} OR {$generalwhere})";
+            } else {
+                // Only one of two will be set...
+                $where .= " AND {$notsetwhere}{$generalwhere}";
+            }
+        }
+        // Location name.
+        if (!empty($filters->locationnames)){
+            // Check for not set locationname selection.
+            $notsetwhere = '';
+            if (in_array(-1, $filters->locationnames)) {
+                $notsetwhere = "(LOCATION_NAME IS NULL OR LOCATION_NAME = '')";
+                $filters->locationnames = array_diff($filters->locationnames, [-1]);
+            }
+            // Any more to filter?
+            $generalwhere = '';
+            if (!empty($filters->locationnames)) {
+                list($sqldata, $sqlparams) = $DB->get_in_or_equal($filters->locationnames, SQL_PARAMS_NAMED, 'locationname');
+                $generalwhere .= "LOCATION_NAME {$sqldata}";
+                $params += $sqlparams;
+            }
+            if ($notsetwhere && $generalwhere) {
+                $where .= " AND ({$notsetwhere} OR {$generalwhere})";
+            } else {
+                // Only one of two will be set...
+                $where .= " AND {$notsetwhere}{$generalwhere}";
+            }
+        }
+        // Employment category.
+        if (!empty($filters->employmentcategories)){
+            // Check for not set employment category selection.
+            $notsetwhere = '';
+            if (in_array(-1, $filters->employmentcategories)) {
+                $notsetwhere = "(EMPLOYMENT_CATEGORY IS NULL OR EMPLOYMENT_CATEGORY = '')";
+                $filters->employmentcategories = array_diff($filters->employmentcategories, [-1]);
+            }
+            // Any more to filter?
+            $generalwhere = '';
+            if (!empty($filters->employmentcategories)) {
+                list($sqldata, $sqlparams) = $DB->get_in_or_equal($filters->employmentcategories, SQL_PARAMS_NAMED, 'employmentcategory');
+                $generalwhere .= "EMPLOYMENT_CATEGORY {$sqldata}";
+                $params += $sqlparams;
+            }
+            if ($notsetwhere && $generalwhere) {
+                $where .= " AND ({$notsetwhere} OR {$generalwhere})";
+            } else {
+                // Only one of two will be set...
+                $where .= " AND {$notsetwhere}{$generalwhere}";
+            }
+        }
+        // Grade.
+        if (!empty($filters->grades)){
+            // Check for not set employment category selection.
+            $notsetwhere = '';
+            if (in_array(-1, $filters->grades)) {
+                $notsetwhere = "(GRADE IS NULL OR GRADE = '')";
+                $filters->grades = array_diff($filters->grades, [-1]);
+            }
+            // Any more to filter?
+            $generalwhere = '';
+            if (!empty($filters->grades)) {
+                list($sqldata, $sqlparams) = $DB->get_in_or_equal($filters->grades, SQL_PARAMS_NAMED, 'employmentcategory');
+                $generalwhere .= "GRADE {$sqldata}";
+                $params += $sqlparams;
+            }
+            if ($notsetwhere && $generalwhere) {
+                $where .= " AND ({$notsetwhere} OR {$generalwhere})";
+            } else {
+                // Only one of two will be set...
+                $where .= " AND {$notsetwhere}{$generalwhere}";
+            }
+        }
+
         // Do we need to flip view?
         if (defined('BLOCK_CERTIFICATION_REPORT_EXPORT') && BLOCK_CERTIFICATION_REPORT_EXPORT && optional_param('exportview', '', PARAM_ALPHA) === 'users') {
             $view = 'users';
@@ -188,7 +473,7 @@ class certification_report {
          * Prepare query basing on view type
          */
         $groupby = '';
-        $orderby = 'ORDER by region, costcentre';
+        $orderby = "ORDER by {$regionfield}, costcentre";
         $fields = "
               cua.id,
               cua.userid,
@@ -196,7 +481,8 @@ class certification_report {
               u.firstname,
               u.lastname,
               u.email,
-              lrr.name as region,
+              CASE WHEN (h.REGION_NAME IS NULL OR h.REGION_NAME = '') THEN '-1' ELSE h.REGION_NAME END as actualregion,
+              CASE WHEN (h.GEO_NAME IS NULL OR h.GEO_NAME = '') THEN '-1' ELSE h.GEO_NAME END as georegion,
               CASE WHEN u.icq = '' THEN '-1' ELSE u.icq END as costcentre,
               ce.id as exemptionid, 
               cc.duedate,
@@ -207,15 +493,15 @@ class certification_report {
               ";
 
         if ($view == 'regions') {
-            $groupby = 'GROUP BY lrr.id, lrr.name, cua.certifid ';
-            $groupbycompliant = 'GROUP BY u.regionid, u.region ';
-            $fieldscompliantid = 'CASE WHEN u.regionid IS NULL THEN -1 ELSE u.regionid END ';
-            $fieldscompliantname = "CASE WHEN u.region IS NULL THEN 'NOT SET' ELSE u.region END ";
-            $orderby = 'ORDER by lrr.name ';
+            $groupby = "GROUP BY h.{$regionhubfield}, cua.certifid ";
+            $groupbycompliant = "GROUP BY u.{$regionfield} ";
+            $fieldscompliantid = "CASE WHEN (u.{$regionfield} IS NULL OR u.{$regionfield} = '') THEN '-1' ELSE u.{$regionfield} END ";
+            $fieldscompliantname =  "CASE WHEN (u.{$regionfield} IS NULL OR u.{$regionfield} = '') THEN 'NOT SET' ELSE u.{$regionfield} END ";
+            $orderby = "ORDER BY h.{$regionhubfield} ";
             $fields = "
                 cua.certifid,
-                CASE WHEN lrr.id IS NULL THEN -1 ELSE lrr.id END as itemid,
-                CASE WHEN lrr.name IS NULL THEN 'NOT SET' ELSE lrr.name END as itemname,
+                CASE WHEN (h.{$regionhubfield} IS NULL OR h.{$regionhubfield} = '') THEN '-1' ELSE h.{$regionhubfield} END as itemid,
+                CASE WHEN (h.{$regionhubfield} IS NULL OR h.{$regionhubfield} = '') THEN 'NOT SET' ELSE h.{$regionhubfield} END as itemname,
                 SUM(1) as alluserscounter,
                 SUM(
                     CASE WHEN
@@ -508,7 +794,8 @@ class certification_report {
                 u.lastname,
                 u.idnumber,
                 u.email,
-                lrr.name as region,
+                h.REGION_NAME as actualregion,
+                h.GEO_REGION as georegion,
                 CASE WHEN u.icq = '' THEN '-1' ELSE u.icq END as costcentre,
                 ce.id as exemptionid, 
                 cc.duedate,
@@ -520,21 +807,21 @@ class certification_report {
                 (CASE WHEN cc.timeexpires > 0 THEN cc.timeexpires WHEN cca.timeexpires IS NOT NULL THEN cca.timeexpires ELSE 0 END) as timeexpires,
                 h.GRADE as grade,
                 h.GROUP_NAME as groupname,
+                h.LOCATION_NAME as locationname,
                 h.EMPLOYMENT_CATEGORY as employmentcategory
             ";
-            $castidnumber = $DB->sql_cast_char2int('u.idnumber');
-            $join .= "
-                LEFT JOIN SQLHUB.ARUP_ALL_STAFF_V h ON h.EMPLOYEE_NUMBER = {$castidnumber}
-            ";
         }
+        // Join to hub table.
+        $castidnumber = $DB->sql_cast_char2int('u.idnumber');
+        $join .= "
+            LEFT JOIN SQLHUB.ARUP_ALL_STAFF_V h ON h.EMPLOYEE_NUMBER = {$castidnumber}
+        ";
 
         $query = "
             SELECT
               ".$fields."
             FROM {certif_user_assignments} cua
             JOIN {user} u ON u.id = cua.userid
-            LEFT JOIN {local_regions_use} lru ON lru.userid = u.id
-            LEFT JOIN {local_regions_reg} lrr ON lrr.id = lru.geotapsregionid
             LEFT JOIN {certif_completions} cc ON cc.userid = cua.userid AND cc.certifid = cua.certifid
             LEFT JOIN {certif_exemptions} ce ON ce.userid = cua.userid AND ce.certifid = cua.certifid AND ce.archived = :archived AND (ce.timeexpires = 0 OR ce.timeexpires > :now)
             LEFT JOIN (
@@ -579,9 +866,8 @@ class certification_report {
                 (   
                     SELECT
                         u.id,
-                        lrr.id as regionid,
-                        lrr.name as region,
                         u.icq,
+                        h.{$regionhubfield} as {$regionfield},
                         SUM(
                             CASE WHEN ce.id IS NULL AND cua.optional = 0
                             THEN 1
@@ -679,8 +965,6 @@ class certification_report {
                         ) as exemptcompliant
                     FROM {certif_user_assignments} cua
                     JOIN {user} u ON u.id = cua.userid
-                    LEFT JOIN {local_regions_use} lru ON lru.userid = u.id
-                    LEFT JOIN {local_regions_reg} lrr ON lrr.id = lru.geotapsregionid
                     LEFT JOIN {certif_exemptions} ce ON ce.userid = cua.userid AND ce.certifid = cua.certifid AND ce.archived = :archived AND (ce.timeexpires = 0 OR ce.timeexpires > :now)
                     LEFT JOIN {certif_completions} cc ON cc.userid = cua.userid AND cc.certifid = cua.certifid
                     LEFT JOIN (
@@ -695,7 +979,7 @@ class certification_report {
                     " . $join . "
                     WHERE u.suspended = 0 AND u.deleted = 0 AND cua.certifid " . $insql . "
                     " . $where . "
-                    GROUP BY u.id, lrr.id, lrr.name, u.icq
+                    GROUP BY u.id, h.{$regionhubfield}, u.icq
                 ) u
                 ".$groupbycompliant."
             ";
@@ -1130,54 +1414,70 @@ class certification_report {
      * @param $data
      * @return mixed
      */
-    public static function export_to_csv($certifications, $data, $view = 'regions'){
-        global $CFG;
+    public static function export_to_csv($filters, $filteroptions, $data, $view = 'regions') {
+        global $CFG, $PAGE;
+
         require_once($CFG->libdir . '/csvlib.class.php');
+
         $lines = [];
+
         $usersheader = [];
         $usersheader[] = get_string('staffid', 'block_certification_report');
         $usersheader[] = get_string('username');
         $usersheader[] = get_string('email');
         $usersheader[] = get_string('grade', 'block_certification_report');
         $usersheader[] = get_string('employmentcategory', 'block_certification_report');
-        $usersheader[] = get_string('region', 'block_certification_report');
+        $usersheader[] = get_string('actualregion', 'block_certification_report');
+        $usersheader[] = get_string('georegion', 'block_certification_report');
         $usersheader[] = get_string('costcentre', 'block_certification_report');
         $usersheader[] = get_string('groupname', 'block_certification_report');
+        $usersheader[] = get_string('locationname', 'block_certification_report');
 
         $header = [];
-        $header[] = '';
-        foreach($certifications as $certification){
-            if(isset($data['viewtotal']['certifications'][$certification->id]) && $data['viewtotal']['certifications'][$certification->id]['progress'] !== null) {
+        $regionview = optional_param('regionview', 'actual', PARAM_ALPHA) == 'geo' ? 'geo' : 'actual';
+        if ($view == 'regions') {
+            $header[] = get_string('header'.$view.$regionview, 'block_certification_report');
+        } else {
+            $header[] = get_string('header'.$view, 'block_certification_report');
+        }
+        foreach($filteroptions['certificationsdata'] as $certification){
+            if (isset($data['viewtotal']['certifications'][$certification->id]) && $data['viewtotal']['certifications'][$certification->id]['progress'] !== null) {
                 $header[] = $certification->shortname.($data['viewtotal']['certifications'][$certification->id]['optional']==1? get_string('optional', 'block_certification_report') : '');
                 $usersheader[] = $certification->shortname;
+            }
         }
-        }
-        if($view == 'users'){
+
+        if ($view == 'users') {
             $lines[] = $usersheader;
             $ccs = \block_certification_report\certification_report::get_costcentre_names();
-        }else{
+        } else {
+            // Show filters on first line.
+            $renderer = $PAGE->get_renderer('block_certification_report');
+            $lines[] = [$renderer->show_active_filters($filters, $filteroptions, false)];
             $lines[] = $header;
         }
 
-        foreach($data as $itemname => $item){
-            if($view == 'users' && $itemname == 'viewtotal'){
+        foreach ($data as $itemname => $item) {
+            if ($view == 'users' && $itemname == 'viewtotal') {
                 continue;
             }
             $line = [];
-            if($view == 'users'){
+            if ($view == 'users') {
                 $line[] = $item['userdata']->idnumber;
                 $line[] = $item['userdata']->firstname.' '.$item['userdata']->lastname;
                 $line[] = $item['userdata']->email;
                 $line[] = $item['userdata']->grade;
                 $line[] = $item['userdata']->employmentcategory;
-                $line[] = $item['userdata']->region;
+                $line[] = $item['userdata']->actualregion;
+                $line[] = $item['userdata']->georegion;
                 $line[] = isset($ccs[$item['userdata']->costcentre]) ? $ccs[$item['userdata']->costcentre] : $item['userdata']->costcentre;
                 $line[] = $item['userdata']->groupname;
-            }else{
+                $line[] = $item['userdata']->locationname;
+            } else {
                 $line[] = isset($item['fullname']) ? $item['fullname'] : $item['name'];
             }
-            foreach($item['certifications'] as $certificationid => $certification){
-                if(isset($data['viewtotal']['certifications'][$certificationid]) && $data['viewtotal']['certifications'][$certificationid]['progress'] !== null) {
+            foreach ($item['certifications'] as $certificationid => $certification) {
+                if (isset($data['viewtotal']['certifications'][$certificationid]) && $data['viewtotal']['certifications'][$certificationid]['progress'] !== null) {
                     if (isset($certification['exemptionid']) && $certification['exemptionid'] > 0) {
                         $line[] = get_string('notrequired', 'block_certification_report');
                     } elseif ($certification['progress'] === null) {
