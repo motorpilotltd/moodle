@@ -27,11 +27,26 @@ class block_certification_report_renderer extends plugin_renderer_base {
             // Only 'viewtotal' set so no actual data.
             return html_writer::tag('div', get_string('nodata', 'block_certification_report'), array('class' => 'alert alert-warning', 'style' => 'margin-top: 10px;'));
         }
+        
+        // Which region view are we looking at?
+        $regionview = optional_param('regionview', 'actual', PARAM_ALPHA) == 'geo' ? 'geo' : 'actual';
+
         if ($view == 'users') {
             $this->canreset = has_capability('block/certification_report:reset_certification', context_system::instance());
         }
+
         $header = [];
-        $header[] = get_string('header'.$view, 'block_certification_report');
+        if ($view == 'regions') {
+            $headerstring = get_string('header'.$view.$regionview, 'block_certification_report');
+            $altview = $regionview == 'actual' ? 'geo' : 'actual';
+            $alturl = new moodle_url($urlbase);
+            $alturl->param('regionview', $altview);
+            $headerstring .= ' (' . html_writer::link($alturl, get_string('header'.$view.$altview.':view', 'block_certification_report')) . ')';
+            $header[] = $headerstring;
+        } else {
+            $header[] = get_string('header'.$view, 'block_certification_report');
+        }
+        
         $tabledata = [];
         foreach($certifications as $certification){
             if(isset($data['viewtotal']['certifications'][$certification->id]) && $data['viewtotal']['certifications'][$certification->id]['progress'] !== null){
@@ -52,10 +67,9 @@ class block_certification_report_renderer extends plugin_renderer_base {
                 $line = [];
                 if($itemid != 'viewtotal'){
                     $url = new moodle_url($urlbase);
-                    $param = ($view === 'regions' ? 'regions[]' : $view);
                     switch ($view) {
                         case 'regions':
-                            $param = 'regions[]';
+                            $param = $regionview.'regions[]';
                             break;
                         case 'costcentre':
                             $param = 'costcentres[]';
@@ -212,57 +226,65 @@ class block_certification_report_renderer extends plugin_renderer_base {
      * @param array $filters
      * @return string
      */
-    public function show_active_filters($filters = [], $certifications = [], $categories = [], $regions = [], $cohorts = []){
+    public function show_active_filters($filters = [], $filteroptions = [], $html = true){
         $output = html_writer::start_div();
-        if(!empty($filters['regions'])){
-            $selectedregions = [];
-            foreach ($filters['regions'] as $regionid) {
-                if (!empty($regions[$regionid])) {
-                    $selectedregions[] = $regions[$regionid];
+        $plaintext = [];
+        if(!empty($filters->actualregions)){
+            $selectedactualregions = [];
+            foreach ($filters->actualregions as $actualregion) {
+                if ($actualregion == '-1') {
+                    $selectedactualregions[] = 'NOT SET';
+                } else {
+                    $selectedactualregions[] = $actualregion;
                 }
             }
-            $output .= html_writer::div(html_writer::span(get_string('regions', 'block_certification_report'), 'bold').' : '.implode(', ', $selectedregions));
+            $plaintext[] = get_string('actualregions', 'block_certification_report').': '.implode(', ', $selectedactualregions);
+            $output .= html_writer::div(html_writer::span(get_string('actualregions', 'block_certification_report'), 'bold').' : '.implode(', ', $selectedactualregions));
         }
-        if(!empty($filters['costcentres'])){
+        if(!empty($filters->georegions)){
+            $selectedgeoregions = [];
+            foreach ($filters->georegions as $georegion) {
+                if ($georegion == '-1') {
+                    $selectedgeoregions[] = 'NOT SET';
+                } else {
+                    $selectedgeoregions[] = $georegion;
+                }
+            }
+            $plaintext[] = get_string('georegions', 'block_certification_report').': '.implode(', ', $selectedgeoregions);
+            $output .= html_writer::div(html_writer::span(get_string('georegions', 'block_certification_report'), 'bold').' : '.implode(', ', $selectedgeoregions));
+        }
+        if(!empty($filters->costcentres)){
             $ccs = \block_certification_report\certification_report::get_costcentre_names();
             $ccs[-1] = 'NOT SET';
             $selectedccs = [];
-            foreach ($filters['costcentres'] as $costcentre) {
+            foreach ($filters->costcentres as $costcentre) {
                 $selectedccs[] = isset($ccs[$costcentre]) ? $ccs[$costcentre] : $costcentre;
             }
+            $plaintext[] = get_string('costcentres', 'block_certification_report').': '.implode(', ', $selectedccs);
             $output .= html_writer::div(html_writer::span(get_string('costcentres', 'block_certification_report'), 'bold').' : '.implode(', ', $selectedccs));
         }
-        if(!empty($filters['fullname'])){
-            $output .= html_writer::div(html_writer::span(get_string('fullname', 'block_certification_report'), 'bold').' : '.$filters['fullname']);
+        if(!empty($filters->fullname)){
+            $plaintext[] = get_string('fullname', 'block_certification_report').': '.$filters->fullname;
+            $output .= html_writer::div(html_writer::span(get_string('fullname', 'block_certification_report'), 'bold').' : '.$filters->fullname);
         }
-        if(!empty($filters['cohorts'])){
-            $selectedcohorts = [];
-            foreach ($filters['cohorts'] as $cohortid) {
-                if (!empty($cohorts[$cohortid])) {
-                    $selectedcohorts[] = $cohorts[$cohortid];
-                }
-            }
-            $output .= html_writer::div(html_writer::span(get_string('cohorts', 'block_certification_report'), 'bold').' : '.implode(', ', $selectedcohorts));
-        }
-        if(!empty($filters['certifications'])){
-            $selectedcertifications = [];
-            foreach ($filters['certifications'] as $certificationid) {
-                if (!empty($certifications[$certificationid])) {
-                    $selectedcertifications[] = $certifications[$certificationid];
-                }
-            }
-            $output .= html_writer::div(html_writer::span(get_string('certifications', 'block_certification_report'), 'bold').' : '.implode(', ', $selectedcertifications));
-        }
-        if(!empty($filters['categories'])){
-            $selectedcategories = [];
-            foreach ($filters['categories'] as $categoryid) {
-                if (!empty($categories[$categoryid])) {
-                    $selectedcategories[] = $categories[$categoryid];
-                }
-            }
-            $output .= html_writer::div(html_writer::span(get_string('categories', 'block_certification_report'), 'bold').' : '.implode(', ', $selectedcategories));
+        $otherfilters = ['cohorts', 'certifications', 'categories', 'groupnames', 'locationnames', 'employmentcategories', 'grades'];
+        foreach ($otherfilters as $otherfilter) {
+            $this->get_generic_filter_info($otherfilter, $filters, $filteroptions, $plaintext, $output);
         }
         $output .= html_writer::end_div();
-        return $output;
+        return $html ? $output : implode("\n", $plaintext);
+    }
+
+    private function get_generic_filter_info($filter, $filters, $filteroptions, &$plaintext, &$output) {
+        if(!empty($filters->{$filter})){
+            $selected = [];
+            foreach ($filters->{$filter} as $id) {
+                if (!empty($filteroptions[$filter][$id])) {
+                    $selected[] = $filteroptions[$filter][$id];
+                }
+            }
+            $plaintext[] = get_string($filter, 'block_certification_report').': '.implode(', ', $selected);
+            $output .= html_writer::div(html_writer::span(get_string($filter, 'block_certification_report'), 'bold').' : '.implode(', ', $selected));
+        }
     }
 }
