@@ -16,13 +16,8 @@ $string['certification_report:reset_certification'] = 'Reset certification for u
 
 $string['pluginname'] = 'Certification report';
 $string['header'] = 'Certification report';
-$string['region'] = 'Region';
 $string['costcentre'] = 'Cost centre';
 $string['costcentres'] = 'Cost centres';
-$string['collapseallregions'] = 'Collapse all Regions';
-$string['expandallregions'] = 'Expand all Regions';
-$string['collapseallcentres'] = 'Collapse all Cost Centres';
-$string['expandallcentres'] = 'Expand all Cost Centres';
 $string['reason'] = 'Reason for exemption';
 $string['exemptionexpiry'] = 'Exemption expiry';
 $string['savedatabtn'] = 'Save';
@@ -32,7 +27,10 @@ $string['notrequired'] = 'Not Required (Note)';
 $string['na'] = 'n/a';
 
 $string['headerusers'] = 'Username';
-$string['headerregions'] = 'Regions';
+$string['headerregionsactual'] = 'Regions';
+$string['headerregionsactual:view'] = 'View Regions';
+$string['headerregionsgeo'] = 'Geographic Regions';
+$string['headerregionsgeo:view'] = 'View Geographic Regions';
 $string['headercostcentre'] = 'Cost centre';
 
 $string['headerconfig'] = 'Threshold configuration';
@@ -46,13 +44,14 @@ $string['defaultamberthreshold'] = '70';
 $string['defaultgreenthreshold'] = '90';
 
 $string['fullname'] = 'User Fullname';
-$string['region'] = 'Region';
-$string['regions'] = 'Regions';
-$string['costcentre'] = 'Cost Centre';
+$string['actualregion'] = 'Region';
+$string['actualregions'] = 'Regions';
+$string['georegion'] = 'Geographic Region';
+$string['georegions'] = 'Geographic Regions';
 $string['cohort'] = 'Cohort';
-$string['cohorts'] = 'Cohort';
-$string['certifications'] = 'Certification';
-$string['categories'] = 'Certification Category';
+$string['cohorts'] = 'Cohorts';
+$string['certifications'] = 'Certifications';
+$string['categories'] = 'Certification Categories';
 $string['searchbutton'] = 'Search';
 $string['clearbutton'] = 'Clear';
 $string['nodatafound'] = 'No data found';
@@ -87,6 +86,11 @@ $string['staffid'] = 'Staff ID';
 $string['grade'] = 'Grade';
 $string['employmentcategory'] = 'Employment Category';
 $string['groupname'] = 'Group Name';
+$string['locationname'] = 'Location Name';
+$string['employmentcategories'] = 'Employment Categories';
+$string['groupnames'] = 'Group Names';
+$string['locationnames'] = 'Location Names';
+$string['grades'] = 'Grades';
 
 $string['resetcertification'] = 'Reset Certification';
 
