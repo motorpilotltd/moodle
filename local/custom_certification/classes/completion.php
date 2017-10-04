@@ -59,12 +59,12 @@ class completion
             return false;
         }
 
-        $completionrecord = $DB->get_record('certif_completions', ['userid' => $userid, 'certifid' => $certificationid]);
+        $completionrecord = $DB->get_record('certif_completions', ['userid' => $userid, 'certifid' => $certification->id]);
         if($completionrecord && $completionrecord->certifpath == certification::CERTIFICATIONPATH_RECERTIFICATION){
             return true;
         }
 
-        $completionrecordarchived = $DB->get_records('certif_completions_archive', ['userid' => $userid, 'certifid' => $certificationid]);
+        $completionrecordarchived = $DB->get_records('certif_completions_archive', ['userid' => $userid, 'certifid' => $certification->id]);
         if($completionrecordarchived){
             return true;
         }
