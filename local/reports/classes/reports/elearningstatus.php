@@ -350,7 +350,7 @@ class elearningstatus extends base {
         if ($exclusion) {
             $allstaff = [];
             try {
-                $staffsql = "SELECT *, employee_number as staffid from SQLHUB.ARUP_ALL_STAFF_V as staff WHERE 1 = 1 $wherestring";
+                $staffsql = "SELECT *, EMPLOYEE_NUMBER as staffid from SQLHUB.ARUP_ALL_STAFF_V as staff WHERE 1 = 1 $wherestring";
                 $allstaff = $DB->get_records_sql($staffsql, $params);
             } catch (dml_read_exception $e) {
                 $this->errors[] = $e;
