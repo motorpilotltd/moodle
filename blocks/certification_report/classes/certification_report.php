@@ -1503,6 +1503,7 @@ class certification_report {
         $completionrecord = \local_custom_certification\completion::get_completion_info($certifid, $userid);
         if ($completionrecord && $completionrecord->timecompleted > 0) {
             \local_custom_certification\completion::open_window($completionrecord);
+            \cache::make('core', 'completion')->purge();
         }
         return;
     }

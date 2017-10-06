@@ -583,17 +583,25 @@ EOS;
 
             self::delete_courseset_completion_data($completionrecord->certifid, $completionrecord->userid);
             $coursesets = empty($certification->recertificationcoursesets) ? $certification->certificationcoursesets : $certification->recertificationcoursesets;
+            // Track which courses have been reset.
+            $resetcourses = [];
             foreach($coursesets as $courseset){
                 foreach($courseset->courses as $course){
                     self::reset_course_for_user($course->courseid, $completionrecord->userid);
+                    $resetcourses[] = $course->courseid;
                 }
             }
-            // Update linked enrolment if still needs resetting.
+            // Update linked enrolment if still needs resetting (i.e. if 'faked' certification completion from historical TAPS data.
+            // Only necessary if related (Moodle) course is one of the ones being reset.
             if ($insertrecord->tapsenrolmentid
                     && $enrolment = $DB->get_record('local_taps_enrolment', ['enrolmentid' => $insertrecord->tapsenrolmentid, 'active' => 1])) {
-                $enrolment->active = 0;
-                $enrolment->timemodifed = time();
-                $DB->update_record('local_taps_enrolment', $enrolment);
+                // Check it relates to a reset Moodle course.
+                $mdlcourseid = $DB->get_field('course', 'id', ['idnumber' => $this->cmcourse->courseid]);
+                if (in_array($mdlcourseid, $resetcourses)) {
+                    $enrolment->active = 0;
+                    $enrolment->timemodifed = time();
+                    $DB->update_record('local_taps_enrolment', $enrolment);
+                }
             }
             self::check_completion($completionrecord->certifid, $completionrecord->userid);
 
@@ -611,6 +619,9 @@ EOS;
             ];
             $event = event\certification_window_opened::create($params);
             $event->trigger();
+
+            // Return all linked courses that have been reset.
+            return $resetcourses;
         }
     }
 

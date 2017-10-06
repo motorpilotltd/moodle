@@ -116,6 +116,7 @@ function tapscompletion_cm_info_view(cm_info $cm) {
                 WHERE
                     lte.courseid = :tapscourse
                     AND (lte.archived = 0 OR lte.archived IS NULL)
+                    AND lte.active = 1
                     AND {$compare} {$in}
                     AND lte.staffid = :staffid
                 ORDER BY

@@ -144,80 +144,25 @@ if ($mform->is_cancelled()) {
     exit;
 }
 
-// Can user enrol?
-// If have active full attendance enrolment can't re-enrol. Check linked certification for window opening date and advise.
-list($attendedin, $attendedinparams) = $DB->get_in_or_equal(
-    $tapsenrol->taps->get_statuses('attended'),
-    SQL_PARAMS_NAMED, 'status'
-);
-$attendedcompare = $DB->sql_compare_text('bookingstatus');
-$attendedparams = array(
-    'courseid' => $class->courseid,
-    'staffid' => $USER->idnumber
-);
-$attendedsql = <<<EOS
-SELECT
-    id
-FROM
-    {local_taps_enrolment}
-WHERE
-    courseid = :courseid
-    AND staffid = :staffid
-    AND (archived = 0 OR archived IS NULL)
-    AND active = 1
-    AND {$attendedcompare} {$attendedin}
-EOS;
-$attended = $DB->get_records_sql(
-    $attendedsql,
-    array_merge($attendedparams, $attendedinparams)
-);
-
-if ($attended) {
-    $message = [get_string('enrol:alert:alreadyattended', 'tapsenrol')];
-
-    if (get_config('local_custom_certification', 'version')) {
-        $windowopensql = <<<EOS
-SELECT
-    MIN(cc.timewindowsopens)
-FROM
-    {certif_user_assignments} cua
-JOIN
-    {certif_completions} cc
-    ON cc.userid = cua.userid
-    AND cc.certifid = cua.certifid
-JOIN {certif} c
-    ON c.id = cc.certifid
-WHERE
-    cua.certifid IN (
-        SELECT certifid FROM {certif_courseset_courses} WHERE courseid = :courseid
-    )
-    AND c.deleted = 0
-    AND c.visible = 1
-    AND cua.userid = :userid
-    AND cc.timewindowsopens > 0
-EOS;
-        $windowopen = $DB->get_field_sql($windowopensql, ['courseid' => $tapsenrol->course->id, 'userid' => $USER->id]);
-        if ($windowopen) {
-            $a = userdate($windowopen, get_string('strftimedate'));
-            $message[] = get_string('enrol:alert:alreadyattended:certification', 'tapsenrol', $a);
-        }
-    }
-
-    $message[] = get_string('enrol:alert:alreadyattended:help', 'tapsenrol');
-
-    $SESSION->tapsenrol->alert = new stdClass();
-    $SESSION->tapsenrol->alert->message = implode('<br>', $message);
-    $SESSION->tapsenrol->alert->type = 'alert-warning';
-    redirect($redirecturl);
-    exit;
-}
-
 // Do we need the form?
 $passthru = !$tapsenrol->iw
             || ($tapsenrol->iw->approvalrequired == 0
                 && !$DB->get_records('tapsenrol_iw_declaration', array('internalworkflowid' => $tapsenrol->iw->id)));
 if ((!$enrolmentkey && $passthru) || $fromform = $mform->get_data()) {
+    // Here we need to find and reset any linked certifications.
+    $alreadyattended = $tapsenrol->already_attended($USER);
+    $resetcourses = [];
+    foreach ($alreadyattended->completions as $completion) {
+        $resetcourses = \local_custom_certification\completion::open_window($completion);
+    }
+    // If not already done via a linked certification, simply reset the course.
+    if (!in_array($tapsenrol->course->id, $resetcourses)) {
+        \local_custom_certification\completion::reset_course_for_user($tapsenrol->course->id, $USER->id);
+    }
+    \cache::make('core', 'completion')->purge();
+
     $SESSION->tapsenrol->alert = new stdClass();
+
     if ($passthru) {
         // Auto approve if no workflow.
         $enrolresult = $tapsenrol->enrol_employee($classid, $USER->idnumber, !$tapsenrol->iw);

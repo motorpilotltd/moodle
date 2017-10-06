@@ -118,61 +118,21 @@ if ($type == 'future' || $type == 'past') {
                 $a .= "<br />FAILED: User (Moodle User ID: {$userid}) not found.";
                 continue;
             }
-            // Here we need to reset any linked certifications.
-            $linkedcertifs = $DB->get_records_menu('certif_courseset_courses', ['courseid' => $tapsenrol->course->id], '', 'DISTINCT certifid as id, certifid as value');
-            foreach ($linkedcertifs as $linkedcertif) {
-                $query = <<<EOS
-SELECT
-    cc.*
-FROM {certif_completions} cc
-JOIN {certif} c ON c.id = cc.certifid
-WHERE 
-    cc.userid = :userid
-    AND cc.certifid = :certifid
-    AND c.deleted = 0
-    AND c.visible = 1
-    AND cc.timecompleted > 0
-EOS;
-                $completionrecords = $DB->get_records_sql($query, ['userid' => $user->id, 'certifid' => $linkedcertif]);
 
-                foreach($completionrecords as $completionrecord){
-                    \local_custom_certification\completion::open_window($completionrecord);
-                }
+            // Here we need to find and reset any linked certifications.
+            $alreadyattended = $tapsenrol->already_attended($user);
+            $resetcourses = [];
+            foreach ($alreadyattended->completions as $completion) {
+                $resetcourses = \local_custom_certification\completion::open_window($completion);
             }
-            // Check we are OK to re-enrol.
-            // If still active full attendance enrolment can't re-enrol.
-            list($attendedin, $attendedinparams) = $DB->get_in_or_equal(
-                $tapsenrol->taps->get_statuses('attended'),
-                SQL_PARAMS_NAMED, 'status'
-            );
-            $attendedcompare = $DB->sql_compare_text('bookingstatus');
-            $attendedparams = array(
-                'staffid' => $user->idnumber,
-                'courseid' => $class->courseid,
-            );
-            $attendedsql = <<<EOS
-SELECT
-    id
-FROM
-    {local_taps_enrolment}
-WHERE
-    staffid = :staffid
-    AND courseid = :courseid
-    AND (archived = 0 OR archived IS NULL)
-    AND active = 1
-    AND {$attendedcompare} {$attendedin}
-EOS;
-            $attended = $DB->get_records_sql(
-                $attendedsql,
-                array_merge($attendedparams, $attendedinparams)
-            );
+            // If not already done via a linked certification, simply reset the course.
+            if (!in_array($tapsenrol->course->id, $resetcourses)) {
+                \local_custom_certification\completion::reset_course_for_user($tapsenrol->course->id, $user->id);
+            }
+            \cache::make('core', 'completion')->purge();
 
-            $username = fullname($user);
-            if ($attended) {
-                $a .= "<br />FAILED: [{$username}] Could not enrol as there is an active completed enrolment present.";
-                continue;
-            }
             $enrolresult = $tapsenrol->enrol_employee($fromform->classid, $user->idnumber);
+            $username = fullname($user);
             if ($enrolresult->success) {
                 $iwtrack = new stdClass();
                 $iwtrack->enrolmentid = $enrolresult->enrolment->enrolmentid;
