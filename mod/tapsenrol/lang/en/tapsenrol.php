@@ -150,6 +150,7 @@ $string['enrol:error:classdoesnotexist'] = 'Sorry, the class does not exist, ple
 $string['enrol:error:failedtoconnect'] = 'Failed to connect to enrolment server';
 $string['enrol:error:unavailable'] = 'Currently unavailable';
 $string['enrol:planned'] = 'Register Interest';
+$string['enrol:reenrol'] = 'Re-enrol Here';
 $string['enrol:submit'] = 'Submit for Approval';
 $string['enrol:submit:noapproval'] = 'Enrol';
 $string['enrol:waitinglist'] = 'Join Waiting List';

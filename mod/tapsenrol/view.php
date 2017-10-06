@@ -70,7 +70,13 @@ if (!$tapsenrol->check_installation()) {
     }
 
     if (!$canview || !$canviewclasses) {
-        $enrolmentoutput = $output->alert(html_writer::tag('p', get_string('cannotenrol', 'tapsenrol', core_text::strtolower(get_string('course')))), 'alert-warning', false);
+        $a = new stdClass();
+        $a->course = core_text::strtolower(get_string('course'));
+        $a->reason = '';
+        if (!$canviewclasses && !empty($regions)) {
+            $a->reason = get_string('cannotenrol:regions', 'tapsenrol', implode(', ', $regions));
+        }
+        $enrolmentoutput = $renderer->alert(html_writer::tag('p', get_string('cannotenrol', 'tapsenrol', $a)), 'alert-warning', false);
     }
 
     if (!empty($SESSION->tapsenrol->alert->message)) {

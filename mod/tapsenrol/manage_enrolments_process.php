@@ -120,16 +120,20 @@ if ($type == 'future' || $type == 'past') {
             }
 
             // Here we need to find and reset any linked certifications.
+            $completioncache = \cache::make('core', 'completion');
             $alreadyattended = $tapsenrol->already_attended($user);
             $resetcourses = [];
             foreach ($alreadyattended->completions as $completion) {
                 $resetcourses = \local_custom_certification\completion::open_window($completion);
+                foreach ($resetcourses as $resetcourseid) {
+                    $completioncache->delete("{$user->id}_{$resetcourseid}");
+                }
             }
             // If not already done via a linked certification, simply reset the course.
             if (!in_array($tapsenrol->course->id, $resetcourses)) {
                 \local_custom_certification\completion::reset_course_for_user($tapsenrol->course->id, $user->id);
+                $completioncache->delete("{$user->id}_{$tapsenrol->course->id}");
             }
-            \cache::make('core', 'completion')->purge();
 
             $enrolresult = $tapsenrol->enrol_employee($fromform->classid, $user->idnumber);
             $username = fullname($user);

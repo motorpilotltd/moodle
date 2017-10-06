@@ -1502,8 +1502,11 @@ class certification_report {
         }
         $completionrecord = \local_custom_certification\completion::get_completion_info($certifid, $userid);
         if ($completionrecord && $completionrecord->timecompleted > 0) {
-            \local_custom_certification\completion::open_window($completionrecord);
-            \cache::make('core', 'completion')->purge();
+            $resetcourses = \local_custom_certification\completion::open_window($completionrecord);
+            $completioncache = \cache::make('core', 'completion');
+            foreach ($resetcourses as $courseid) {
+                $completioncache->delete("{$userid}_{$courseid}");
+            }
         }
         return;
     }

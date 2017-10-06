@@ -244,16 +244,17 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
 
         if ($classes) {
             foreach ($classes as $index => $class) {
+                $classclasstype = $tapsenrol->taps->get_classtype_type($class->classtype);
+                $classtype = $classclasstype ? $classclasstype : 'unknown';
                 $delegateurl->param('classid', $class->classid);
                 $delegatebutton = html_writer::link($delegateurl, $delegateicon, array('class' => 'delegate-button'));
-                if (in_array($class->classid, $completedclasses) || in_array($class->classid, $enrolledclasses)) {
+                // Allow completed if elearning.
+                if (($classtype != 'elearning' && in_array($class->classid, $completedclasses)) || in_array($class->classid, $enrolledclasses)) {
                     unset($classes[$index]);
                     continue;
                 }
                 $cells = array();
                 $cells[] = $class->classname;
-                $classclasstype = $tapsenrol->taps->get_classtype_type($class->classtype);
-                $classtype = $classclasstype ? $classclasstype : 'unknown';
                 if ($classtype == 'elearning') {
                     $cells[] = get_string('online', 'tapsenrol');
                     if ($overallclasstype == 'mixed') {
@@ -315,8 +316,9 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                     $enroltext = get_string('enrol:planned', 'tapsenrol') . ' ' . html_writer::tag('span', '', array('class' => 'caret caret-right'));
                     $cells[] = html_writer::link($enrolurl, $enroltext, array('class' => 'btn btn-small btn-default'));
                 } else {
+                    $enrolstring = ($classtype == 'elearning' && in_array($class->classid, $completedclasses)) ? 'enrol:reenrol' : 'enrol';
                     $enrolurl = new moodle_url('/mod/tapsenrol/enrol.php', array('id' => $cmid, 'classid' => $class->classid));
-                    $enroltext = get_string('enrol', 'tapsenrol') . ' ' . html_writer::tag('span', '', array('class' => 'caret caret-right'));
+                    $enroltext = get_string($enrolstring, 'tapsenrol') . ' ' . html_writer::tag('span', '', array('class' => 'caret caret-right'));
                     $cells[] = html_writer::link($enrolurl, $enroltext, array('class' => 'btn btn-primary btn-small'));
                 }
                 $row = new html_table_row($cells);
