@@ -40,6 +40,7 @@ $capabilities = array(
         ),
     ),
 
+    // Deprecated.
     'block/certification_report:view' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_BLOCK,
@@ -64,6 +65,7 @@ $capabilities = array(
         )
     ),
 
+    // Deprecated.
     'block/certification_report:filter' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_BLOCK,

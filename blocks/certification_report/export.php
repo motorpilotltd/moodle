@@ -12,7 +12,7 @@ $PAGE->set_context(context_system::instance());
 /**
  * Verify capabilities
  */
-if(!has_capability('block/certification_report:view', context_system::instance())){
+if(!certification_report::can_view_report()){
     echo get_string('nopermissions', 'block_certification_report');
     exit;
 }

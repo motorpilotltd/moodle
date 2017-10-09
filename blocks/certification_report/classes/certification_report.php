@@ -1506,4 +1506,18 @@ class certification_report {
         }
         return;
     }
+
+    public static function can_view_report() {
+        global $USER;
+        // Check capabilities.
+        if (has_any_capability(['block/certification_report:view_all_costcentres', 'block/certification_report:view_all_regions'], \context_system::instance())) {
+            return true;
+        }
+        // Check cost centre permissions.
+        if (costcentre::is_user($USER->id, [costcentre::GROUP_LEADER, costcentre::HR_LEADER, costcentre::HR_ADMIN, costcentre::LEARNING_REPORTER])) {
+            return true;
+        }
+        // No permissions.
+        return false;
+    }
 }

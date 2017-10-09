@@ -39,7 +39,7 @@ class block_certification_report extends block_base {
         /**
          * Verify capabilities
          */
-        if(!has_capability('block/certification_report:view', context_system::instance())){
+        if(!certification_report::can_view_report()){
             $this->content->text = get_string('nopermissions', 'block_certification_report');
         } else {
             $reporturl = new moodle_url('/blocks/certification_report/report.php');
