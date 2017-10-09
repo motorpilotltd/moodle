@@ -209,15 +209,18 @@ class elearningstatus extends base {
         if ($exclusion && isset($this->setfilters['classname'])) {
             $filter = $this->setfilters['classname'];
             $classinfo = $DB->get_record('local_taps_class', array('classid' => $filter->value[0]));
+
             $exclusionmissingfields = array (
-            'coursename' => $classinfo->coursename,
-            'classname' => $classinfo->classname,
-            'classtype' => 'Self Paced',
-            'classstartdate' => $classinfo->classstartdate,
-            'classenddate' => $classinfo->classenddate,
-            'bookingstatus' => '',
-            'bookingplaceddate' => '',
-            'classcompletiondate' => ''
+                'coursename' => $classinfo->coursename,
+                'classname' => $classinfo->classname,
+                'classtype' => 'Self Paced',
+                'classstartdate' => $classinfo->classstartdate,
+                'classenddate' => $classinfo->classenddate,
+                'classcost' => $classinfo->classcost,
+                'classcostcurrency' => $classinfo->classcostcurrency,
+                'bookingstatus' => 'No Enrolment',
+                'bookingplaceddate' => '',
+                'classcompletiondate' => ''
             );
 
         }
@@ -347,7 +350,7 @@ class elearningstatus extends base {
         if ($exclusion) {
             $allstaff = [];
             try {
-                $staffsql = "SELECT * from SQLHUB.ARUP_ALL_STAFF_V as staff WHERE 1 = 1 $wherestring";
+                $staffsql = "SELECT *, EMPLOYEE_NUMBER as staffid from SQLHUB.ARUP_ALL_STAFF_V as staff WHERE 1 = 1 $wherestring";
                 $allstaff = $DB->get_records_sql($staffsql, $params);
             } catch (dml_read_exception $e) {
                 $this->errors[] = $e;
@@ -360,15 +363,17 @@ class elearningstatus extends base {
             // Unset allstaff records that have an enrolment.
             foreach ($enrolments as $enrolment) {
                 if (array_key_exists(intval($enrolment->staffid), $allstaff)) {
-                    unset($allstaff[$enrolment->staffid]);
+                    unset($allstaff[intval($enrolment->staffid)]);
                 }
             }
+
             // Add missing table info for staff.
             foreach($allstaff as &$as) {
                 foreach ($exclusionmissingfields as $mk => $val) {
                     $as->$mk = $val;
                 }
             }
+
             $this->numrecords = count($allstaff);
             if ($limited) {
                 $chunks = array_chunk($allstaff, $this->limit);
