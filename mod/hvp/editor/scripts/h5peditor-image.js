@@ -88,22 +88,18 @@ ns.widgets.image.prototype.constructor = ns.widgets.image;
 ns.widgets.image.prototype.appendTo = function ($wrapper) {
   var self = this;
 
-  var label = '';
-  if (this.field.label !== 0) {
-    var labelString = this.field.label === undefined ? this.field.name : this.field.label;
-    label = '<span class="h5peditor-label' + (this.field.optional ? '' : ' h5peditor-required') + '">' + labelString + '</span>';
-  }
-
-  var htmlString = label + '<div class="file"></div>' +
+  var htmlString = '<div class="file"></div>' +
     '<div class="h5p-editor-image-buttons">' +
-      '<button class="h5p-editing-image-button">' + ns.t('core', 'editImage') + '</button>' +
-      '<button class="h5p-copyright-button">' + ns.t('core', 'editCopyright') + '</button>' +
+      '<button class="h5peditor-button-textual h5p-editing-image-button">' + ns.t('core', 'editImage') + '</button>' +
+      '<button class="h5peditor-button-textual h5p-copyright-button">' + ns.t('core', 'editCopyright') + '</button>' +
     '</div>' +
     '<div class="h5p-editor-dialog">' +
       '<a href="#" class="h5p-close" title="' + ns.t('core', 'close') + '"></a>' +
     '</div>';
 
-  var html = ns.createItem(this.field.type, htmlString, this.field.description);
+
+  var html = ns.createFieldMarkup(this.field, htmlString);
+
   var $container = ns.$(html).appendTo($wrapper);
   this.$editImage = $container.find('.h5p-editing-image-button');
   this.$copyrightButton = $container.find('.h5p-copyright-button');
@@ -170,17 +166,13 @@ ns.widgets.image.prototype.appendTo = function ($wrapper) {
     }
   });
 
-  var group = new ns.widgets.group(self, ns.copyrightSemantics, self.copyright,
-    function (field, value) {
-      if (self.params !== undefined) {
-        self.params.copyright = value;
-      }
-      self.copyright = value;
-    });
-  group.appendTo($dialog);
-  group.expand();
-  group.$group.find('.title').remove();
-  this.children = [group];
+  ns.File.addCopyright(self, $dialog, function (field, value) {
+    if (self.params !== undefined) {
+      self.params.copyright = value;
+    }
+    self.copyright = value;
+  });
+
 };
 
 
@@ -204,7 +196,11 @@ ns.widgets.image.prototype.addFile = function () {
 
     // No image look
     this.$file
-      .html('<a href="#" class="add" title="' + ns.t('core', 'addFile') + '"></a>')
+      .html(
+        '<a href="#" class="add" title="' + ns.t('core', 'addFile') + '">' +
+          '<div class="h5peditor-field-file-upload-text">' + ns.t('core', 'add') + '</div>' +
+        '</a>'
+      )
       .children('.add')
       .click(function () {
         that.openFileSelector();
@@ -220,18 +216,10 @@ ns.widgets.image.prototype.addFile = function () {
   }
 
   var source = H5P.getPath(this.params.path, H5PEditor.contentId);
-  var thumbnail = {};
-  thumbnail.path = source;
-  thumbnail.height = 100;
-  if (this.params.width !== undefined) {
-    thumbnail.width = thumbnail.height * (this.params.width / this.params.height);
-  }
-
-  var thumbnailWidth = thumbnail.width === undefined ? '' : ' width="' + thumbnail.width + '"';
   var altText = (this.field.label === undefined ? '' : this.field.label);
   var fileHtmlString =
     '<a href="#" title="' + ns.t('core', 'changeFile') + '" class="thumbnail">' +
-      '<img ' + thumbnailWidth + 'height="' + thumbnail.height + '" alt="' + altText + '"/>' +
+      '<img alt="' + altText + '"/>' +
     '</a>' +
     '<a href="#" class="remove" title="' + ns.t('core', 'removeFile') + '"></a>';
 
@@ -242,7 +230,7 @@ ns.widgets.image.prototype.addFile = function () {
       return false;
     })
     .children('img')
-    .attr('src', thumbnail.path)
+    .attr('src', source)
     .end()
     .next()
     .click(function () {

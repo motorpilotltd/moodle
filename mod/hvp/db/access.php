@@ -17,8 +17,18 @@
 /**
  * Capability definitions for the hvp module.
  *
+ * Available archetypes:
+ *  manager
+ *  coursecreator
+ *  editingteacher
+ *  teacher
+ *  student
+ *  guest
+ *  user
+ *  frontpage
+ *
  * @package    mod_hvp
- * @copyright  2013 Amendor
+ * @copyright  2016 Joubel AS <contact@joubel.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -48,6 +58,9 @@ $capabilities = array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
+            'manager' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW
         )
     ),
 
@@ -92,6 +105,16 @@ $capabilities = array(
         )
     ),
 
+    'mod/hvp:viewallresults' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW
+        )
+    ),
+
     'mod/hvp:getcachedassets' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
@@ -100,7 +123,8 @@ $capabilities = array(
             'editingteacher' => CAP_ALLOW,
             'teacher' => CAP_ALLOW,
             'student' => CAP_ALLOW,
-            'user' => CAP_ALLOW
+            'user' => CAP_ALLOW,
+            'guest' => CAP_ALLOW
         )
     ),
 
@@ -125,10 +149,14 @@ $capabilities = array(
         )
     ),
 
-    'mod/hvp:updatesavailable' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_SYSTEM,
+    'mod/hvp:installrecommendedh5plibraries' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
+          'manager' => CAP_ALLOW,
+          'editingteacher' => CAP_ALLOW,
+          'teacher' => CAP_ALLOW
         )
     ),
+
 );

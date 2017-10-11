@@ -33,6 +33,9 @@ require_once($CFG->dirroot . '/mod/hvp/library/h5p-file-storage.interface.php');
  * @since      Moodle 2.7
  * @copyright  2016 Joubel AS
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class file_storage implements \H5PFileStorage {
 
@@ -42,6 +45,7 @@ class file_storage implements \H5PFileStorage {
      * @param array $library
      *  Library properties
      */
+    // @codingStandardsIgnoreLine
     public function saveLibrary($library) {
         // Libraries are stored in a system context.
         $context = \context_system::instance();
@@ -65,22 +69,21 @@ class file_storage implements \H5PFileStorage {
      *
      * @param string $source
      *  Path on file system to content directory.
-     * @param int $id
-     *  What makes this content unique.
+     * @param array $content
+     *  Content properties
      */
-    public function saveContent($source, $id) {
-        global $COURSE;
-
+    // @codingStandardsIgnoreLine
+    public function saveContent($source, $content) {
         // Remove any old content.
-        $this->deleteContent($id);
+        $this->deleteContent($content);
 
         // Contents are stored in a course context.
-        $context = \context_course::instance($COURSE->id);
+        $context = \context_module::instance($content['coursemodule']);
         $options = array(
             'contextid' => $context->id,
             'component' => 'mod_hvp',
             'filearea' => 'content',
-            'itemid' => $id,
+            'itemid' => $content['id'],
             'filepath' => '/',
         );
 
@@ -91,25 +94,20 @@ class file_storage implements \H5PFileStorage {
     /**
      * Remove content folder.
      *
-     * @param int $id
-     *  Content identifier
+     * @param array $content
+     *  Content properties
      */
-    public function deleteContent($id) {
-        global $COURSE;
-
-        $context = \context_course::instance($COURSE->id);
-        self::deleteFileTree($context->id, 'content', '/', $id);
+    // @codingStandardsIgnoreLine
+    public function deleteContent($content) {
+        $context = \context_module::instance($content['coursemodule']);
+        self::deleteFileTree($context->id, 'content', '/', $content['id']);
     }
 
     /**
-     * Creates a stored copy of the content folder.
-     *
-     * @param string $id
-     *  Path on file system to content directory.
-     * @param int $newId
-     *  What makes this content unique.
+     * @inheritdoc
      */
-    public function cloneContent($id, $newId) {
+    // @codingStandardsIgnoreLine
+    public function cloneContent($id, $newid) {
         // Not implemented in Moodle.
     }
 
@@ -118,6 +116,7 @@ class file_storage implements \H5PFileStorage {
      *
      * @return string Path
      */
+    // @codingStandardsIgnoreLine
     public function getTmpPath() {
         global $CFG;
 
@@ -132,10 +131,10 @@ class file_storage implements \H5PFileStorage {
      * @param string $target
      *  Where the content folder will be saved
      */
+    // @codingStandardsIgnoreLine
     public function exportContent($id, $target) {
-        global $COURSE;
-
-        $context = \context_course::instance($COURSE->id);
+        $cm = \get_coursemodule_from_instance('hvp', $id);
+        $context = \context_module::instance($cm->id);
         self::exportFileTree($target, $context->id, 'content', '/', $id);
     }
 
@@ -147,6 +146,7 @@ class file_storage implements \H5PFileStorage {
      * @param string $target
      *  Where the library folder will be saved
      */
+    // @codingStandardsIgnoreLine
     public function exportLibrary($library, $target) {
         $folder = \H5PCore::libraryToString($library, true);
         $context = \context_system::instance();
@@ -161,6 +161,7 @@ class file_storage implements \H5PFileStorage {
      * @param string $filename
      *  Name of export file.
      */
+    // @codingStandardsIgnoreLine
     public function saveExport($source, $filename) {
         global $COURSE;
 
@@ -184,21 +185,44 @@ class file_storage implements \H5PFileStorage {
     }
 
     /**
-     * Removes given export file
+     * Get file object for given export file.
      *
      * @param string $filename
+     * @return stdClass Moodle file object
      */
-    public function deleteExport($filename) {
+    // @codingStandardsIgnoreLine
+    private function getExportFile($filename) {
         global $COURSE;
         $context = \context_course::instance($COURSE->id);
 
         // Check if file exists.
         $fs = get_file_storage();
-        $file = $fs->get_file($context->id, 'mod_hvp', 'exports', 0, '/', $filename);
+        return $fs->get_file($context->id, 'mod_hvp', 'exports', 0, '/', $filename);
+    }
+
+    /**
+     * Removes given export file
+     *
+     * @param string $filename
+     */
+    // @codingStandardsIgnoreLine
+    public function deleteExport($filename) {
+        $file = $this->getExportFile($filename);
         if ($file) {
             // Remove old export.
             $file->delete();
         }
+    }
+
+    /**
+     * Check if the given export file exists
+     *
+     * @param string $filename
+     * @return boolean
+     */
+    // @codingStandardsIgnoreLine
+    public function hasExport($filename) {
+        return !!$this->getExportFile($filename);
     }
 
     /**
@@ -210,6 +234,7 @@ class file_storage implements \H5PFileStorage {
      * @param string $key
      *  Hashed key for cached asset
      */
+    // @codingStandardsIgnoreLine
     public function cacheAssets(&$files, $key) {
         $context = \context_system::instance();
         $fs = get_file_storage();
@@ -272,6 +297,7 @@ class file_storage implements \H5PFileStorage {
      *  Hashed key for cached asset
      * @return array
      */
+    // @codingStandardsIgnoreLine
     public function getCachedAssets($key) {
         $context = \context_system::instance();
         $fs = get_file_storage();
@@ -303,6 +329,7 @@ class file_storage implements \H5PFileStorage {
      * @param array $keys
      *   The hash keys of removed files
      */
+    // @codingStandardsIgnoreLine
     public function deleteCachedAssets($keys) {
         $context = \context_system::instance();
         $fs = get_file_storage();
@@ -318,33 +345,49 @@ class file_storage implements \H5PFileStorage {
     }
 
     /**
-     * Read file content of given file and then return it.
-     *
-     * @param string $file_path
-     * @return string
+     * @inheritdoc
      */
-    public function getContent($file_path) {
-      // Grab context and file storage
-      $context = \context_system::instance();
-      $fs = get_file_storage();
+    // @codingStandardsIgnoreLine
+    public function getContent($filepath) {
+        // Grab context and file storage.
+        $context = \context_system::instance();
+        $fs      = get_file_storage();
 
-      // Find location of file
-      $location = array();
-      preg_match('/^\/(libraries|development|cachedassets)(.*\/)([^\/]+)$/', $file_path, $location);
+        // Find location of file.
+        $location = [];
+        preg_match('/^\/(libraries|development|cachedassets)(.*\/)([^\/]+)$/', $filepath, $location);
 
-      // Locate file
-      $file = $fs->get_file($context->id, 'mod_hvp', $location[1], 0, $location[2], $location[3]);
+        // Locate file.
+        $file = $fs->get_file($context->id, 'mod_hvp', $location[1], 0, $location[2], $location[3]);
 
-      // Return content
-      return $file->get_content();
+        // Return content.
+        return $file->get_content();
     }
 
     /**
      * Save files uploaded through the editor.
      *
      * @param \H5peditorFile $file
+     * @param int $contentid
+     * @param \stdClass $contextid Course Context ID
+     *
+     * @return int
      */
+    // @codingStandardsIgnoreLine
     public function saveFile($file, $contentid, $contextid = null) {
+        if ($contentid !== 0) {
+            // Grab cm context.
+            $cm = \get_coursemodule_from_instance('hvp', $contentid);
+            $context = \context_module::instance($cm->id);
+            $contextid = $context->id;
+        } else if ($contextid === null) {
+            // Check for context id in params.
+            $contextid = optional_param('contextId', null, PARAM_INT);
+        }
+
+        // Files not yet related to any activities are stored in a course context
+        // These are temporary files and should not be part of backups.
+
         $record = array(
             'contextid' => $contextid,
             'component' => 'mod_hvp',
@@ -356,13 +399,12 @@ class file_storage implements \H5PFileStorage {
         $fs = get_file_storage();
         $filedata = $file->getData();
         if ($filedata) {
-            $stored_file = $fs->create_file_from_string($record, $filedata);
-        }
-        else {
-            $stored_file = $fs->create_file_from_pathname($record, $_FILES['file']['tmp_name']);
+            $storedfile = $fs->create_file_from_string($record, $filedata);
+        } else {
+            $storedfile = $fs->create_file_from_pathname($record, $_FILES['file']['tmp_name']);
         }
 
-        return $stored_file->get_id();
+        return $storedfile->get_id();
     }
 
     /**
@@ -371,40 +413,39 @@ class file_storage implements \H5PFileStorage {
      *
      * @param string $file path + name
      * @param string|int $fromid Content ID or 'editor' string
-     * @param int $toid Target Content ID
+     * @param stdClass $tocontent Target Content
      */
-    public function cloneContentFile($file, $fromid, $toid) {
-      global $COURSE;
+    // @codingStandardsIgnoreLine
+    public function cloneContentFile($file, $fromid, $tocontent) {
+        // Determine source file area and item id.
+        $sourcefilearea = ($fromid === 'editor' ? $fromid : 'content');
+        $sourceitemid   = ($fromid === 'editor' ? 0 : $fromid);
 
-      // Determine source file area and item id
-      $sourcefilearea = ($fromid === 'editor' ? $fromid : 'content');
-      $sourceitemid = ($fromid === 'editor' ? 0 : $fromid);
+        // Check to see if source exist.
+        $sourcefile = $this->getFile($sourcefilearea, $sourceitemid, $file);
+        if ($sourcefile === false) {
+            return; // Nothing to copy from.
+        }
 
-      // Check to see if source exist
-      $sourcefile = $this->getFile($sourcefilearea, $sourceitemid, $file);
-      if ($sourcefile === false) {
-          return; // Nothing to copy from
-      }
+        // Check to make sure source doesn't exist already.
+        if ($this->getFile('content', $tocontent, $file) !== false) {
+            return; // File exists, no need to copy.
+        }
 
-      // Check to make sure source doesn't exist already
-      if ($this->getFile('content', $toid, $file) !== false) {
-          return; // File exists, no need to copy
-      }
+        // Grab context for CM.
+        $context = \context_module::instance($tocontent->coursemodule);
 
-      // Grab current context
-      $context = \context_course::instance($COURSE->id);
-
-      // Create new file record
-      $record = array(
-          'contextid' => $context->id,
-          'component' => 'mod_hvp',
-          'filearea' => 'content',
-          'itemid' => $toid,
-          'filepath' => $this->getFilepath($file),
-          'filename' => $this->getFilename($file)
-      );
-      $fs = get_file_storage();
-      $fs->create_file_from_storedfile($record, $sourcefile);
+        // Create new file record.
+        $record = [
+            'contextid' => $context->id,
+            'component' => 'mod_hvp',
+            'filearea'  => 'content',
+            'itemid'    => $tocontent->id,
+            'filepath'  => $this->getFilepath($file),
+            'filename'  => $this->getFilename($file),
+        ];
+        $fs     = get_file_storage();
+        $fs->create_file_from_storedfile($record, $sourcefile);
     }
 
     /**
@@ -412,11 +453,12 @@ class file_storage implements \H5PFileStorage {
      * Used when saving content.
      *
      * @param string $file path + name
-     * @param int $contentid
-     * @return string|int File ID or NULL if not found
+     * @param stdClass $content
+     * @return string|int File ID or null if not found
      */
-    public function getContentFile($file, $contentid) {
-        $file = $this->getFile('content', $contentid, $file);
+    // @codingStandardsIgnoreLine
+    public function getContentFile($file, $content) {
+        $file = $this->getFile('content', $content, $file);
         return ($file === false ? null : $file->get_id());
     }
 
@@ -425,10 +467,11 @@ class file_storage implements \H5PFileStorage {
      * Used when saving content.
      *
      * @param string $file path + name
-     * @param int $contentid
+     * @param stdClass $content
      */
-    public function removeContentFile($file, $contentid) {
-        $file = $this->getFile('content', $contentid, $file);
+    // @codingStandardsIgnoreLine
+    public function removeContentFile($file, $content) {
+        $file = $this->getFile('content', $content, $file);
         if ($file !== false) {
             $file->delete();
         }
@@ -443,6 +486,7 @@ class file_storage implements \H5PFileStorage {
      *  For Moodle's file record
      * @throws \Exception Unable to copy
      */
+    // @codingStandardsIgnoreLine
     private static function readFileTree($source, $options) {
         $dir = opendir($source);
         if ($dir === false) {
@@ -481,6 +525,7 @@ class file_storage implements \H5PFileStorage {
      * @param int $itemid
      *  Optional Moodle item ID
      */
+    // @codingStandardsIgnoreLine
     private static function exportFileTree($target, $contextid, $filearea, $filepath, $itemid = 0) {
         // Make sure target folder exists.
         if (!file_exists($target)) {
@@ -516,6 +561,7 @@ class file_storage implements \H5PFileStorage {
      * @param string $filepath
      * @param int $itemid
      */
+    // @codingStandardsIgnoreLine
     private static function deleteFileTree($contextid, $filearea, $filepath, $itemid = 0) {
         $fs = get_file_storage();
         if ($filepath === '/') {
@@ -541,16 +587,29 @@ class file_storage implements \H5PFileStorage {
      * Help make it easy to load content files.
      *
      * @param string $filearea
-     * @param int $itemid
+     * @param int|object $itemid
      * @param string $file path + name
+     *
+     * @return \stored_file|bool
      */
+    // @codingStandardsIgnoreLine
     private function getFile($filearea, $itemid, $file) {
         global $COURSE;
 
-        // Grab current context
-        $context = \context_course::instance($COURSE->id);
+        if ($filearea === 'editor') {
+            // Use Course context.
+            $context = \context_course::instance($COURSE->id);
+        } else if (is_object($itemid)) {
+            // Grab CM context from item.
+            $context = \context_module::instance($itemid->coursemodule);
+            $itemid = $itemid->id;
+        } else {
+            // Use item ID to find CM context.
+            $cm = \get_coursemodule_from_instance('hvp', $itemid);
+            $context = \context_module::instance($cm->id);
+        }
 
-        // Load file
+        // Load file.
         $fs = get_file_storage();
         return $fs->get_file($context->id, 'mod_hvp', $filearea, $itemid, $this->getFilepath($file), $this->getFilename($file));
     }
@@ -561,6 +620,7 @@ class file_storage implements \H5PFileStorage {
      * @param string $file
      * @return string With slashes
      */
+    // @codingStandardsIgnoreLine
     private function getFilepath($file) {
         return '/' . dirname($file) . '/';
     }
@@ -571,6 +631,7 @@ class file_storage implements \H5PFileStorage {
      * @param string $file
      * @return string Without slashes
      */
+    // @codingStandardsIgnoreLine
     private function getFilename($file) {
         return basename($file);
     }
@@ -584,9 +645,176 @@ class file_storage implements \H5PFileStorage {
      * @param  string     $filename [description]
      * @return boolean
      */
+    // @codingStandardsIgnoreLine
     public static function fileExists($contextid, $filearea, $filepath, $filename) {
         // Check if file exists.
         $fs = get_file_storage();
         return ($fs->get_file($contextid, 'mod_hvp', $filearea, 0, $filepath, $filename) !== false);
+    }
+
+    /**
+     * Check if server setup has write permission to
+     * the required folders
+     *
+     * @return bool true if server has the proper write access
+     */
+    // @codingStandardsIgnoreLine
+    public function hasWriteAccess() {
+        global $CFG;
+
+        if (!is_dir($CFG->dataroot)) {
+            trigger_error('Path is not a directory ' . $CFG->dataroot, E_USER_WARNING);
+            return false;
+        }
+
+        if (!is_writable($CFG->dataroot)) {
+            trigger_error('Unable to write to ' . $CFG->dataroot . ' – check directory permissions –', E_USER_WARNING);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Copy a content from one directory to another. Defaults to cloning
+     * content from the current temporary upload folder to the editor path.
+     *
+     * @param string $source path to source directory
+     * @param string $contentid path of target directory. Defaults to editor path
+     *
+     * @return object|null Object containing h5p json and content json data
+     */
+    // @codingStandardsIgnoreLine
+    public function moveContentDirectory($source, $contentid = null) {
+        if ($source === null) {
+            return null;
+        }
+
+        // Default to 0 (editor).
+        if (!isset($contentid)) {
+            $contentid = 0;
+        }
+
+        // Find content context.
+        if ($contentid > 0) {
+            // Grab cm context.
+            $cm = \get_coursemodule_from_instance('hvp', $contentid);
+            $context = \context_module::instance($cm->id);
+            $contextid = $context->id;
+        }
+
+        // Get context from parameters.
+        if (!isset($contextid)) {
+            $contextid = required_param('contextId', PARAM_INT);
+        }
+
+        // Get h5p and content json.
+        $contentsource = $source . DIRECTORY_SEPARATOR . 'content';
+        $h5pjson = file_get_contents($source . DIRECTORY_SEPARATOR . 'h5p.json');
+        $contentjson = file_get_contents($contentsource . DIRECTORY_SEPARATOR . 'content.json');
+
+        // Move all temporary content files to editor.
+        $contentfiles = array_diff(scandir($contentsource), array('.', '..', 'content.json'));
+        foreach ($contentfiles as $file) {
+            if (is_dir("{$contentsource}/{$file}")) {
+                self::moveFileTree("{$contentsource}/{$file}", $contextid, $contentid);
+            } else {
+                self::moveFile("{$contentsource}/{$file}", $contextid, $contentid);
+            }
+        }
+
+        return (object) array(
+            'h5pJson' => $h5pjson,
+            'contentJson' => $contentjson
+        );
+    }
+
+    /**
+     * Move a single file to editor
+     *
+     * @param string $sourcefile Path to source fil
+     * @param int $contextid Id of context
+     * @param int $contentid Id of content, 0 if editor
+     */
+    // @codingStandardsIgnoreLine
+    private static function moveFile($sourcefile, $contextid, $contentid) {
+        $fs = get_file_storage();
+
+        $pathparts = pathinfo($sourcefile);
+        $filename  = $pathparts['basename'];
+        $filepath  = $pathparts['dirname'];
+        $foldername = basename($filepath);
+
+        if ($contentid > 0) {
+            // Create file record for content.
+            $record = array(
+                'contextid' => $contextid,
+                'component' => 'mod_hvp',
+                'filearea' => $contentid > 0 ? 'content' : 'editor',
+                'itemid' => $contentid,
+                'filepath' => '/' . $foldername . '/',
+                'filename' => $filename
+            );
+        } else {
+            // Create file record for editor.
+            $record = array(
+                'contextid' => $contextid,
+                'component' => 'mod_hvp',
+                'filearea' => 'editor',
+                'itemid' => 0,
+                'filepath' => '/' . $foldername . '/',
+                'filename' => $filename
+            );
+        }
+
+        $sourcedata = file_get_contents($sourcefile);
+
+        // Check if file already exists.
+        $fileexists = $fs->file_exists($record['contextid'], 'mod_hvp',
+            $record['filearea'], $record['itemid'], $record['filepath'],
+            $record['filename']
+        );
+
+        if ($fileexists) {
+            // Delete it to make sure that it is replaced with correct content.
+            $file = $fs->get_file($record['contextid'], 'mod_hvp',
+                $record['filearea'], $record['itemid'], $record['filepath'],
+                $record['filename']
+            );
+            if ($file) {
+                $file->delete();
+            }
+        }
+
+        $fs->create_file_from_string($record, $sourcedata);
+    }
+
+    /**
+     * Move a complete file tree to the editor
+     *
+     * @param string $sourcefiletree Path of file tree that should be moved
+     * @param int $contextid Id of context
+     * @param int $contentid Id of content, 0 for editor
+     *
+     * @throws \Exception
+     */
+    // @codingStandardsIgnoreLine
+    private static function moveFileTree($sourcefiletree, $contextid, $contentid) {
+        $dir = opendir($sourcefiletree);
+        if ($dir === false) {
+            trigger_error('Unable to open directory ' . $sourcefiletree, E_USER_WARNING);
+            throw new \Exception('unabletocopy');
+        }
+
+        while (false !== ($file = readdir($dir))) {
+            if (($file != '.') && ($file != '..') && $file != '.git' && $file != '.gitignore') {
+                if (is_dir("{$sourcefiletree}/{$file}")) {
+                    self::moveFileTree("{$sourcefiletree}/{$file}", $contextid, $contentid);
+                } else {
+                    self::moveFile("{$sourcefiletree}/{$file}", $contextid, $contentid);
+                }
+            }
+        }
+        closedir($dir);
     }
 }

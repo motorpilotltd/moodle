@@ -19,17 +19,16 @@
  *
  * @package     mod_hvp
  * @category    backup
- * @copyright   2013 Amendor
+ * @copyright   2016 Joubel AS <contact@joubel.com>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/hvp/backup/moodle2/backup_hvp_stepslib.php');
-require_once($CFG->dirroot . '/mod/hvp/backup/moodle2/backup_hvp_settingslib.php');
 
 /**
- * Provides the steps to perform one complete backup of the Choice instance
+ * Provides the steps to perform one complete backup of a H5P instance
  */
 class backup_hvp_activity_task extends backup_activity_task {
 
@@ -40,12 +39,26 @@ class backup_hvp_activity_task extends backup_activity_task {
     }
 
     /**
-     * Defines a backup step to store the instance data in the choice.xml file
+     * Defines a backup step to store the instance data in the hvp.xml file
      */
     protected function define_my_steps() {
-        // $this->add_step(new backup_hvp_activity_structure_step('hvp_structure', 'hvp.xml'));
+        global $CFG;
+
+        // Add hvp activity data and content files.
+        $this->add_step(new backup_hvp_activity_structure_step('hvp_structure', 'hvp.xml'));
+
+        // Allow user to override library backup.
+        $backuplibraries = !(isset($CFG->mod_hvp_backup_libraries) && $CFG->mod_hvp_backup_libraries === '0');
+
+        // Exclude hvp libraries step for local 'imports'.
+        if ($backuplibraries && backup_controller_dbops::backup_includes_files($this->plan->get_backupid())) {
+
+            // Note that this step will only run once per backup as it generates
+            // a shared resource.
+            $this->add_step(new backup_hvp_libraries_structure_step('hvp_libraries', 'hvp_libraries.xml'));
+        }
     }
-    
+
     /**
      * Encodes URLs to the index.php and view.php scripts
      *
@@ -55,15 +68,15 @@ class backup_hvp_activity_task extends backup_activity_task {
     static public function encode_content_links($content) {
         global $CFG;
 
-        $base = preg_quote($CFG->wwwroot,"/");
+        $base = preg_quote($CFG->wwwroot, "/");
 
-        // Link to the list of glossaries
-        $search="/(".$base."\/mod\/hvp\/index.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@HVPINDEX*$2@$', $content);
+        // Link to the list of glossaries.
+        $search = "/(".$base."\/mod\/hvp\/index.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@HVPINDEX*$2@$', $content);
 
-        // Link to hvp view by moduleid
-        $search="/(".$base."\/mod\/hvp\/view.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@HVPVIEWBYID*$2@$', $content);
+        // Link to hvp view by module id.
+        $search = "/(".$base."\/mod\/hvp\/view.php\?id\=)([0-9]+)/";
+        $content = preg_replace($search, '$@HVPVIEWBYID*$2@$', $content);
 
         return $content;
     }

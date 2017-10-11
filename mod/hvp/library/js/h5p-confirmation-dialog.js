@@ -118,8 +118,8 @@ H5P.ConfirmationDialog = (function (EventDispatcher) {
 
     // Confirm button
     var confirmButton = document.createElement('button');
-    confirmButton.classList.add('h5p-core-button',
-      'h5p-confirmation-dialog-confirm-button');
+    confirmButton.classList.add('h5p-core-button');
+    confirmButton.classList.add('h5p-confirmation-dialog-confirm-button');
     confirmButton.textContent = options.confirmText;
 
     // Exit button
@@ -315,7 +315,7 @@ H5P.ConfirmationDialog = (function (EventDispatcher) {
           if (resizeIFrame && options.instance) {
             var minHeight = parseInt(popup.offsetHeight, 10) +
               exitButtonOffset + (2 * shadowOffset);
-            wrapperElement.style.minHeight = minHeight + 'px';
+            self.setViewPortMinimumHeight(minHeight);
             options.instance.trigger('resize');
             resizeIFrame = false;
           }
@@ -340,9 +340,20 @@ H5P.ConfirmationDialog = (function (EventDispatcher) {
       setTimeout(function () {
         popupBackground.classList.add('hidden');
         wrapperElement.removeChild(popupBackground);
+        self.setViewPortMinimumHeight(null);
       }, 100);
 
       return this;
+    };
+
+    /**
+     * Sets the minimum height of the view port
+     *
+     * @param {number|null} minHeight
+     */
+    this.setViewPortMinimumHeight = function(minHeight) {
+      var container = document.querySelector('.h5p-container') || document.body;
+      container.style.minHeight = (typeof minHeight === 'number') ? (minHeight + 'px') : minHeight;
     };
   }
 

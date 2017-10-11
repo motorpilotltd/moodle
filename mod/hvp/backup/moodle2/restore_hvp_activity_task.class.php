@@ -15,10 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package moodlecore
- * @subpackage backup-moodle2
- * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Describe how H5P activites are to be restored from backup
+ *
+ * @package     mod_hvp
+ * @category    backup
+ * @copyright   2016 Joubel AS <contact@joubel.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -26,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/mod/hvp/backup/moodle2/restore_hvp_stepslib.php'); // Because it exists (must).
 
 /**
- * choice restore task that provides all the settings and steps to perform one
+ * hvp restore task that provides all the settings and steps to perform one
  * complete restore of the activity
  */
 class restore_hvp_activity_task extends restore_activity_task {
@@ -42,8 +44,11 @@ class restore_hvp_activity_task extends restore_activity_task {
      * Define (add) particular steps this activity can have
      */
     protected function define_my_steps() {
-        // Choice only has one structure step.
-        // $this->add_step(new restore_choice_activity_structure_step('choice_structure', 'choice.xml'));
+        // Add H5P libraries.
+        $this->add_step(new restore_hvp_libraries_structure_step('hvp_structure', 'hvp_libraries.xml'));
+
+        // Add H5P content.
+        $this->add_step(new restore_hvp_activity_structure_step('hvp_structure', 'hvp.xml'));
     }
 
     /**
@@ -53,7 +58,7 @@ class restore_hvp_activity_task extends restore_activity_task {
     static public function define_decode_contents() {
         $contents = array();
 
-        // $contents[] = new restore_decode_content('choice', array('intro'), 'choice');
+        $contents[] = new restore_decode_content('hvp', array('intro'), 'hvp');
 
         return $contents;
     }
@@ -65,29 +70,25 @@ class restore_hvp_activity_task extends restore_activity_task {
     static public function define_decode_rules() {
         $rules = array();
 
-        // $rules[] = new restore_decode_rule('CHOICEVIEWBYID', '/mod/choice/view.php?id=$1', 'course_module');
-        // $rules[] = new restore_decode_rule('CHOICEINDEX', '/mod/choice/index.php?id=$1', 'course');
+        $rules[] = new restore_decode_rule('HVPVIEWBYID', '/mod/hvp/view.php?id=$1', 'course_module');
+        $rules[] = new restore_decode_rule('HVPINDEX', '/mod/hvp/index.php?id=$1', 'course');
 
         return $rules;
-
     }
 
     /**
      * Define the restore log rules that will be applied
      * by the {@link restore_logs_processor} when restoring
-     * choice logs. It must return one array
+     * hvp logs. It must return one array
      * of {@link restore_log_rule} objects
      */
     static public function define_restore_log_rules() {
         $rules = array();
-        /*
-        $rules[] = new restore_log_rule('choice', 'add', 'view.php?id={course_module}', '{choice}');
-        $rules[] = new restore_log_rule('choice', 'update', 'view.php?id={course_module}', '{choice}');
-        $rules[] = new restore_log_rule('choice', 'view', 'view.php?id={course_module}', '{choice}');
-        $rules[] = new restore_log_rule('choice', 'choose', 'view.php?id={course_module}', '{choice}');
-        $rules[] = new restore_log_rule('choice', 'choose again', 'view.php?id={course_module}', '{choice}');
-        $rules[] = new restore_log_rule('choice', 'report', 'report.php?id={course_module}', '{choice}');
-        */
+
+        $rules[] = new restore_log_rule('hvp', 'add', 'view.php?id={course_module}', '{hvp}');
+        $rules[] = new restore_log_rule('hvp', 'update', 'view.php?id={course_module}', '{hvp}');
+        $rules[] = new restore_log_rule('hvp', 'view', 'view.php?id={course_module}', '{hvp}');
+
         return $rules;
     }
 
@@ -103,12 +104,9 @@ class restore_hvp_activity_task extends restore_activity_task {
      */
     static public function define_restore_log_rules_for_course() {
         $rules = array();
-        /*
-        // Fix old wrong uses (missing extension)
-        $rules[] = new restore_log_rule('choice', 'view all', 'index?id={course}', null,
-                                        null, null, 'index.php?id={course}');
-        $rules[] = new restore_log_rule('choice', 'view all', 'index.php?id={course}', null);
-        */
+
+        $rules[] = new restore_log_rule('hvp', 'view all', 'index.php?id={course}', null);
+
         return $rules;
     }
 }

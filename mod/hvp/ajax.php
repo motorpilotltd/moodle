@@ -23,7 +23,10 @@
 
 define('AJAX_SCRIPT', true);
 require(__DIR__ . '/../../config.php');
+require_once($CFG->libdir . '/filelib.php');
 require_once("locallib.php");
+
+require_login();
 
 $action = required_param('action', PARAM_ALPHA);
 switch($action) {
@@ -54,7 +57,7 @@ switch($action) {
      */
     case 'restrictlibrary':
 
-        // Check permissions
+        // Check permissions.
         $context = \context_system::instance();
         if (!has_capability('mod/hvp:restrictlibraries', $context)) {
             \H5PCore::ajaxError(get_string('nopermissiontorestrict', 'hvp'));
@@ -62,23 +65,23 @@ switch($action) {
             break;
         }
 
-        $library_id = required_param('library_id', PARAM_INT);
+        $libraryid = required_param('library_id', PARAM_INT);
         $restrict = required_param('restrict', PARAM_INT);
 
-        if (!\H5PCore::validToken('library_' . $library_id, required_param('token', PARAM_RAW))) {
+        if (!\H5PCore::validToken('library_' . $libraryid, required_param('token', PARAM_RAW))) {
             \H5PCore::ajaxError(get_string('invalidtoken', 'hvp'));
             exit;
         }
 
-        hvp_restrict_library($library_id, $restrict);
-        header('Cache-Control', 'no-cache');
+        hvp_restrict_library($libraryid, $restrict);
+        header('Cache-Control: no-cache');
         header('Content-Type: application/json');
         echo json_encode(array(
             'url' => (new moodle_url('/mod/hvp/ajax.php', array(
                 'action' => 'restrict_library',
-                'token' => \H5PCore::createToken('library_' . $library_id),
+                'token' => \H5PCore::createToken('library_' . $libraryid),
                 'restrict' => ($restrict === '1' ? 0 : 1),
-                'library_id' => $library_id
+                'library_id' => $libraryid
             )))->out(false)));
         break;
 
@@ -92,7 +95,7 @@ switch($action) {
      */
     case 'getlibrarydataforupgrade':
 
-        // Check permissions
+        // Check permissions.
         $context = \context_system::instance();
         if (!has_capability('mod/hvp:updatelibraries', $context)) {
             \H5PCore::ajaxError(get_string('nopermissiontoupgrade', 'hvp'));
@@ -110,7 +113,7 @@ switch($action) {
 
         $library = hvp_get_library_upgrade_info($library[0], $library[1], $library[2]);
 
-        header('Cache-Control', 'no-cache');
+        header('Cache-Control: no-cache');
         header('Content-Type: application/json');
         print json_encode($library);
 
@@ -125,7 +128,7 @@ switch($action) {
      *  - library_id
      */
     case 'libraryupgradeprogress':
-        // Check upgrade permissions
+        // Check upgrade permissions.
         $context = \context_system::instance();
         if (!has_capability('mod/hvp:updatelibraries', $context)) {
             \H5PCore::ajaxError(get_string('nopermissiontoupgrade', 'hvp'));
@@ -133,10 +136,13 @@ switch($action) {
             break;
         }
 
-        if (filter_input(INPUT_SERVER, 'REQUEST_METHOD') === 'POST') {
-            $library_id = required_param('library_id', PARAM_INT);
-            $out = hvp_content_upgrade_progress($library_id);
-            header('Cache-Control', 'no-cache');
+        // Because of a confirmed bug in PHP, filter_input(INPUT_SERVER, ...)
+        // will return null on some versions of FCGI/PHP (5.4 and probably
+        // older versions as well), ref. https://bugs.php.net/bug.php?id=49184.
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $libraryid = required_param('library_id', PARAM_INT);
+            $out = hvp_content_upgrade_progress($libraryid);
+            header('Cache-Control: no-cache');
             header('Content-Type: application/json');
             print json_encode($out);
         } else {
@@ -186,28 +192,41 @@ switch($action) {
      *  int minorVersion
      */
     case 'libraries':
-        /// Get parameters
+        if (!\mod_hvp\framework::has_access('addinstance', 'nopermissiontoviewcontenttypes')) {
+            break;
+        }
+
+        // Get parameters.
         $name = optional_param('machineName', '', PARAM_TEXT);
         $major = optional_param('majorVersion', 0, PARAM_INT);
         $minor = optional_param('minorVersion', 0, PARAM_INT);
-
         $editor = \mod_hvp\framework::instance('editor');
 
-        header('Cache-Control: no-cache');
-        header('Content-type: application/json');
-
         if (!empty($name)) {
-            print $editor->getLibraryData($name, $major, $minor, \mod_hvp\framework::get_language());
+            $editor->ajax->action(H5PEditorEndpoints::SINGLE_LIBRARY, $name,
+                $major, $minor, \mod_hvp\framework::get_language());
+
             new \mod_hvp\event(
-                    'library', NULL,
-                    NULL, NULL,
+                    'library', null,
+                    null, null,
                     $name, $major . '.' . $minor
             );
-        }
-        else {
-            print $editor->getLibraries();
+        } else {
+            $editor->ajax->action(H5PEditorEndpoints::LIBRARIES);
         }
 
+        break;
+
+    /*
+     * Load content type cache list to display available libraries in hub
+     */
+    case 'contenttypecache':
+        if (!\mod_hvp\framework::has_access('addinstance', 'nopermissiontoviewcontenttypes')) {
+            break;
+        }
+
+        $editor = \mod_hvp\framework::instance('editor');
+        $editor->ajax->action(H5PEditorEndpoints::CONTENT_TYPE_CACHE);
         break;
 
     /*
@@ -218,38 +237,55 @@ switch($action) {
      *  int contextId
      */
     case 'files':
-        global $DB;
-        // TODO: Check permissions
-
-        if (!\H5PCore::validToken('editorajax', required_param('token', PARAM_RAW))) {
-            \H5PCore::ajaxError(get_string('invalidtoken', 'hvp'));
-            exit;
-        }
-
-        // Get Content ID and Context ID for upload
+        $token = required_param('token', PARAM_RAW);
         $contentid = required_param('contentId', PARAM_INT);
-        $contextid = required_param('contextId', PARAM_INT);
-
-        // Create file
-        $file = new H5peditorFile(\mod_hvp\framework::instance('interface'));
-        if (!$file->isLoaded()) {
-            H5PCore::ajaxError(get_string('filenotfound', 'hvp'));
+        if (!\mod_hvp\framework::has_access('addinstance', 'nopermissiontouploadfiles')) {
             break;
         }
 
-        // Make sure file is valid
-        if ($file->validate()) {
-            $core = \mod_hvp\framework::instance('core');
-            // Save the valid file
-            $file_id = $core->fs->saveFile($file, $contentid, $contextid);
+        $editor = \mod_hvp\framework::instance('editor');
+        $editor->ajax->action(H5PEditorEndpoints::FILES, $token, $contentid);
+        break;
 
-            $DB->insert_record_raw('hvp_tmpfiles', array(
-                'id' => $file_id
-            ), false, false, true);
+    /*
+     * Handle file upload through the editor.
+     *
+     * Parameters:
+     *  raw token
+     *  raw contentTypeUrl
+     */
+    case 'libraryinstall':
+        $token = required_param('token', PARAM_RAW);
+        $machinename = required_param('id', PARAM_TEXT);
+        $editor = \mod_hvp\framework::instance('editor');
+        $editor->ajax->action(H5PEditorEndpoints::LIBRARY_INSTALL, $token, $machinename);
+        break;
+
+    /*
+     * Install libraries from h5p and retrieve content json
+     *
+     * Parameters:
+     *  file h5p
+     */
+    case 'libraryupload':
+        $token = required_param('token', PARAM_RAW);
+        if (!\mod_hvp\framework::has_access('addinstance', 'nopermissiontouploadcontent')) {
+            break;
         }
 
-        $file->printResult();
+        $editor = \mod_hvp\framework::instance('editor');
+        $uploadpath = $_FILES['h5p']['tmp_name'];
+        $contentid = optional_param('contentId', 0, PARAM_INT);
+        $editor->ajax->action(H5PEditorEndpoints::LIBRARY_UPLOAD, $token, $uploadpath, $contentid);
         break;
+
+    /*
+     * Record xAPI result from view
+     */
+    case 'xapiresult':
+        \mod_hvp\xapi_result::handle_ajax();
+        break;
+
 
     /*
      * Throw error if AJAX isnt handeled
