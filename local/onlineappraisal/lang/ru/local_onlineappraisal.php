@@ -259,7 +259,7 @@ $string['feedbackrequests:emailcopy'] = 'Отправить мне копию п
 $string['feedbackrequests:submitfeedback'] = 'Отправить отзыв';
 $string['email:subject:myfeedback'] = 'Ваш отзыв на аттестацию для {{appraisee}}';
 $string['email:body:myfeedback'] = '<p>Уважаемый {{recipient}},</p>
-<p>Вы отправили следующий {{confidential}} отзыв для {{appraisee}}:</p> <div>{{feedback}}</div>';
+<p>Вы отправили следующий {{confidential}} отзыв для {{appraisee}}:</p> <div>{{feedback}}</div> <div>{{feedback_2}}</div>';
 $string['feedbackrequests:confidential'] = 'конфиденциальный';
 $string['feedbackrequests:nonconfidential'] = 'не конфиденциальный';
 

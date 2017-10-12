@@ -527,7 +527,7 @@ $string['feedbackrequests:paneltitle:nonconfidential']='Feedback';
 
 $string['email:subject:myfeedback'] = 'Tu feedback para {{appraisee}}';
 $string['email:body:myfeedback'] = '<p>Estimado/a {{recipient}},</p>
-<p>Has enviado el sguiente {{confidential}}  feedback de {{appraisee}}:</p> <div>{{feedback}}</div>';
+<p>Has enviado el sguiente {{confidential}}  feedback de {{appraisee}}:</p> <div>{{feedback}}</div> <div>{{feedback_2}}</div>';
 
 $string['success:checkin:add'] = 'Añadido con éxito al registro';
 $string['error:checkin:add'] = 'Fallo al añadirlo al registro';
