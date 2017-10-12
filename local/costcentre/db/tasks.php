@@ -1,5 +1,5 @@
 <?php
-// This file is part of the Arup cost centre local plugin
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,20 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Definition of local_costcentre scheduled tasks.
  *
- * @package     local_costcentre
- * @copyright   2016 Motorpilot Ltd
- * @author      Simon Lewis
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   local_costcentre
+ * @category  task
+ * @copyright 2017 Motorpilot Ltd
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2016080303;
-$plugin->requires  = 2015111600; // Moodle 3.0.
-$plugin->component = 'local_costcentre';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.3 (Build: {$plugin->version})";
-
-$plugin->dependencies = array();
+$tasks = [
+    [
+        'classname' => 'local_costcentre\task\tidy_users',
+        'blocking' => 0,
+        'minute' => 'R',
+        'hour' => '*/2',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ],
+];
