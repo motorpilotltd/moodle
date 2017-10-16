@@ -29,6 +29,13 @@
 .path-local-coursemanager .navbar .mform .fitem .felement.fsubmit {
   margin-left: 0;
 }
+.path-local-coursemanager .navbar .mform .fitem .felement.fstatic {
+  margin-bottom: 5px;
+  margin-top: 0;
+}
+.path-local-coursemanager .navbar .mform .fitem .felement.fstatic .visibleifjs {
+  display: none;
+}
 .path-local-coursemanager .cmanchor::before {
   content: "";
   display: block;
@@ -67,9 +74,6 @@
 .path-local-coursemanager .navbar-form {
   float: left;
 }
-.path-local-coursemanager .yui3-overlay {
-    z-index: 1040;
-}
 @media (min-width: 992px) {
   .path-local-coursemanager .cmselect {
     margin-left: -10px;
@@ -100,4 +104,11 @@
     float: left;
     width: 25%;
   }
+}
+.path-local-coursemanager .mform .fitem .felement.fstatic {
+  margin-bottom: 5px;
+  margin-top: 0;
+}
+.path-local-coursemanager .mform .fitem .felement.fstatic .visibleifjs {
+  display: none;
 }

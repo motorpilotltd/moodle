@@ -254,7 +254,6 @@ class cmform_class extends moodleform {
         }
     }
 
-
     private function &createGroup($elements, $name=null, $groupLabel='', $separator=null, $appendName = true)
     {
         $mform = $this->_form;
@@ -266,5 +265,45 @@ class cmform_class extends moodleform {
         }
         $group =& $mform->createElement('group', $name, $groupLabel, $elements, $separator, $appendName);
         return $group;
-    } // end func addGroup
+    }
+
+    public function definition_after_data() {
+        global $DB;
+        $mform = $this->_form;
+        $classid = $mform->exportValue('classid');
+        if ($classid > 0) {
+            // Check for attended enrolments and unset duration/time fields so they are not updated.
+            $taps = new \local_taps\taps();
+            list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
+            $sql = "SELECT COUNT(id)
+                  FROM {local_taps_enrolment}
+                  WHERE
+                    classid = :classid
+                    AND (archived = 0 OR archived IS NULL)
+                    AND {$DB->sql_compare_text('bookingstatus')} {$insql}";
+
+            $params['classid'] = $classid;
+            if ($DB->count_records_sql($sql, $params)) {
+                $elements = [
+                    'classstarttime',
+                    'classstarttimegroup',
+                    'classendtime',
+                    'classendtimegroup',
+                    'classduration',
+                    'classdurationunitscode',
+                    'usedtimezone'
+                ];
+                foreach ($elements as $element) {
+                    if ($mform->elementExists($element)) {
+                        $mform->freeze($element);
+                    }
+                }
+                if ($mform->elementExists('classstatus')) {
+                    // As can be in this form for self paced!
+                    // We disable for consistency with disabling single_select.
+                    $mform->getElement('classstatus')->updateAttributes('disabled="disabled"');
+                }
+            }
+        }
+    }
 }

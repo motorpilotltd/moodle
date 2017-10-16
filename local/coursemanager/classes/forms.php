@@ -364,6 +364,28 @@ class forms {
             if (isset($data->unlimitedattendees) && $data->unlimitedattendees == 1) {
                 $data->maximumattendees = -1;
             }
+            if ($data->classid > 0) {
+                // Check for attended enrolments and unset duration/time fields so they are not updated.
+                list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
+                $sql = "SELECT COUNT(id)
+                      FROM {local_taps_enrolment}
+                      WHERE
+                        classid = :classid
+                        AND (archived = 0 OR archived IS NULL)
+                        AND {$DB->sql_compare_text('bookingstatus')} {$insql}";
+
+                    $params['classid'] = $data->classid;
+                if ($DB->count_records_sql($sql, $params)) {
+                    unset($data->classtype);
+                    unset($data->classstatus);
+                    unset($data->classstarttime);
+                    unset($data->classendtime);
+                    unset($data->classduration);
+                    unset($data->classdurationunits);
+                    unset($data->classdurationunitscode);
+                    unset($data->usedtimezone);
+                }
+            }
         }
 
         // Set some event details before page info is unset.
@@ -417,6 +439,12 @@ class forms {
         }
 
         if ($datatype == 'class') {
+            if ($record) {
+                // Reset required unset data from DB record;
+                $data->classtype = $record->classtype;
+                $data->classstatus = $record->classstatus;
+                $data->classstarttime = $record->classstarttime;
+            }
             $params = array('page' => 'classoverview', 'cmcourse' => $data->cmcourse, 'start' => 0);
             if ($eventtype === 'updated' && $data->classtype == 'Scheduled' && $data->classstatus == 'Normal' && $data->classstarttime > time()) {
                 // Any 'placed' enrolments?

@@ -60,6 +60,9 @@ class cmclass {
         $classinfo = $this->get_current_classinfo($this->coursemanager->cmclass->id);
         if ($this->coursemanager->editing) {
             if ($this->coursemanager->cmclass->id !== 0) {
+                if ($classinfo->hasattendedenrolments) {
+                    $output = html_writer::tag('div', get_string('form:alert:attendedenrolments', 'local_coursemanager'), array('class' => 'alert alert-warning')) . $output;
+                }
                 // Class Types
                 $duplicate = optional_param('duplicate', false, PARAM_BOOL);
 
@@ -77,6 +80,9 @@ class cmclass {
 
                 $selectstr = array('class' => get_string('form:class:selectclasstype', 'local_coursemanager'));
                 $select = new \single_select($url, 'page', $classtypes, $classinfo->type, $selectstr);
+                if ($classinfo->hasattendedenrolments) {
+                    $select->disabled = true;
+                }
                 $output .= html_writer::start_tag('div', array('class' => 'cmselect'));
                 $output .= html_writer::tag('div', get_string('form:class:classtype', 'local_coursemanager'), array('class' => 'cmselecttitle'));
                 $output .= $OUTPUT->render($select);
@@ -88,6 +94,9 @@ class cmclass {
                         "class_scheduled_planned" => $this->str('class_scheduled_planned'));
                     $selectstr = array('' => get_string('form:class:selectstatustype', 'local_coursemanager'));
                     $select = new \single_select($url, 'page', $classsatus, $classinfo->status, $selectstr);
+                    if ($classinfo->hasattendedenrolments) {
+                        $select->disabled = true;
+                    }
                     $output .= html_writer::start_tag('div', array('class' => 'cmselect'));
                     $output .= html_writer::tag('div', get_string('form:class:classstatus', 'local_coursemanager'), array('class' => 'cmselecttitle'));
                     $output .= $OUTPUT->render($select);
@@ -131,6 +140,22 @@ class cmclass {
             }
         }
         if ($cmclass >= 1) {
+            $classinfo->hasattendedenrolments = false;
+            $classrecord = $DB->get_record('local_taps_class', ['id' => $cmclass]);
+            
+            if ($classrecord) {
+                $taps = new \local_taps\taps();
+                list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
+                $sql = "SELECT COUNT(id)
+                      FROM {local_taps_enrolment}
+                      WHERE
+                        classid = :classid
+                        AND (archived = 0 OR archived IS NULL)
+                        AND {$DB->sql_compare_text('bookingstatus')} {$insql}";
+
+                $params['classid'] = $classrecord->classid;
+                $classinfo->hasattendedenrolments = (bool) $DB->count_records_sql($sql, $params);
+            }
 
             if ($this->coursemanager->page == 'class') {
                 $classinfo->type = 'class_scheduled';

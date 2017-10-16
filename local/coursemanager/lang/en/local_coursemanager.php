@@ -34,6 +34,7 @@ $string['eventcoursecreated'] = 'Course Created';
 $string['eventcourseupdated'] = 'Course Updated';
 
 // Form strings.
+$string['form:alert:attendedenrolments'] = 'This class has completed enrolments associated with it, therefore not all fields are editable.';
 $string['form:alert:cancelled'] = 'Form Cancelled';
 $string['form:alert:saved'] = 'Form Saved';
 $string['form:alert:error'] = 'Failed to Save';

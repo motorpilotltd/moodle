@@ -65,6 +65,7 @@ class cmform_class_self_paced extends cmform_class {
         $mform = $this->_form;
         // Necessary as seem to hang on to previous values (when editing and changing type) for some reason.
         $mform->getElement('classtype')->setValue('Self Paced');
+        parent::definition_after_data();
     }
     
     public function validation($data, $files){

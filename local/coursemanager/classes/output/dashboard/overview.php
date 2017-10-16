@@ -214,7 +214,10 @@ class overview extends base {
                 $deleteparams = array('action' => 'deletecourse',
                     'cmcourse' => $course->id,
                     'page' => 'overview',
-                    'start' => $this->coursemanager->start);
+                    'start' => $this->coursemanager->start,
+                    'limit' => $this->coursemanager->limit,
+                    'sort' => $this->coursemanager->sort,
+                    'dir' => $this->coursemanager->direction);
                 $params = array_merge($this->coursemanager->searchparams, $deleteparams);
                 $urldelete = new moodle_url('/local/coursemanager/index.php', $params);
                 $urldelete->set_anchor('course' . $prevcourseid);
