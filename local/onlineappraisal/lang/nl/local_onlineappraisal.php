@@ -481,8 +481,10 @@ $string['feedbackrequests:nocompleted'] = 'Geen afgeronde feedback verzoeken';
 $string['feedbackrequests:th:actions'] = 'acties';
 $string['feedbackrequests:emailcopy'] = 'mail mij een kopie';
 $string['feedbackrequests:submitfeedback'] = 'stuur feedback in';
+/*
 $string['email:subject:myfeedback'] = 'Jouw appraisal feedback voor {{appraisee}}';
 $string['email:body:myfeedback'] = 'Beste {{recipient}}, je hebt het volgende {{confidential}} feedback ingediend voor {{appraisee}}: {{feedback}} {{feedback_2}}';
+*/
 $string['feedbackrequests:confidential'] = 'Vertrouwelijk';
 $string['feedbackrequests:nonconfidential'] = 'Niet vertrouwelijk';
 

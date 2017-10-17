@@ -533,9 +533,11 @@ $string['feedbackrequests:received:nonconfidential'] = 'Đã nhận';
 $string['feedbackrequests:paneltitle:confidential'] = 'Phản hồi (bảo mật)';
 $string['feedbackrequests:paneltitle:nonconfidential'] = 'Phản hồi';
 $string['feedbackrequests:legend'] = '* có nghĩa là người đóng góp do người đánh giá thêm vào';
+/*
 $string['email:subject:myfeedback'] = 'Phản hồi của bạn cho bản đánh giá  của   {{appraisee}}';
 $string['email:body:myfeedback'] = 'Kính gửi {{recipient}},
 Bạn đã nộp {{confidential}} feedback for {{appraisee}}: {{feedback}} {{feedback_2}}';
+*/
 $string['feedbackrequests:confidential'] = 'bảo mật';
 $string['feedbackrequests:nonconfidential'] = 'không bảo mật';
 $string['success:checkin:add'] = 'check-in thành công';

@@ -480,10 +480,12 @@ $string['feedbackrequests:nocompleted'] = 'Niewypełnione Wnioski';
 $string['feedbackrequests:th:actions'] = 'Działania';
 $string['feedbackrequests:emailcopy'] = 'Wyślij mi kopię';
 $string['feedbackrequests:submitfeedback'] = 'Zatwierdź ocenę zwrotną';
+/*
 $string['email:subject:myfeedback'] = 'Twoja ocena zwrotna dla {{appraisee}}';
 $string['email:body:myfeedback'] = 'Drogi/a {{recipient}},
 <br/>
 Złożyłeś następującą {{confidential}} ocenę zwrotną dla {{appraisee}}: {{feedback}} {{feedback_2}}';
+*/
 $string['feedbackrequests:confidential'] = 'Poufny';
 $string['feedbackrequests:nonconfidential'] = 'Jawny';
 $string['success:checkin:add'] = 'Dodano spotkanie śródroczne';
