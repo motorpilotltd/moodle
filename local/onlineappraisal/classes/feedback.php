@@ -538,7 +538,7 @@ class feedback {
      * Actions coming form the feedback request page.
      */
     public function request_action($action, $requestid) {
-        global $DB, $USER;
+        global $DB, $PAGE, $USER;
         if ($action == 'resend') {
             if ($fb = $DB->get_record('local_appraisal_feedback', array('id' => $requestid))) {
                 // Make both lowercase for comparison just in case (legacy data).
@@ -553,6 +553,7 @@ class feedback {
                         get_string('feedbackrequests:confidential', 'local_onlineappraisal') :
                         get_string('feedbackrequests:nonconfidential', 'local_onlineappraisal');
                     $emailvars->feedback = format_text($fb->feedback, FORMAT_PLAIN, array('filter' => 'false', 'nocache' => true));
+                    $emailvars->feedback_2 = format_text($fb->feedback_2, FORMAT_PLAIN, array('filter' => 'false', 'nocache' => true));
 
                     $to = \local_onlineappraisal\user::get_dummy_appraisal_user($fb->email, $fb->firstname, $fb->lastname);
 
@@ -561,6 +562,8 @@ class feedback {
                     $feedbackemail->send();
                 }
             }
+            // Avoid attempts to resend again on refresh (e.g. changing language).
+            redirect($PAGE->url);
         }
     }
 

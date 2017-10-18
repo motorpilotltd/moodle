@@ -1249,7 +1249,7 @@ $string['feedbackrequests:emailcopy'] = 'Email me a copy';
 $string['feedbackrequests:submitfeedback'] = 'Submit feedback';
 $string['email:subject:myfeedback'] = 'Your appraisal feedback for {{appraisee}}';
 $string['email:body:myfeedback'] = '<p>Dear {{recipient}},</p>
-<p>You submitted the following {{confidential}} feedback for {{appraisee}}:</p> <div>{{feedback}}</div>';
+<p>You submitted the following {{confidential}} feedback for {{appraisee}}:</p> <div>{{feedback}}</div> <div>{{feedback_2}}</div>';
 $string['feedbackrequests:confidential'] = 'confidential';
 $string['feedbackrequests:nonconfidential'] = 'non confidential';
 $string['feedbackrequests:received:confidential'] = 'Received (confidential)';

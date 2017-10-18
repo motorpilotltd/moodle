@@ -526,8 +526,10 @@ $string['feedbackrequests:nocompleted'] = '尚未完成的反馈请求';
 $string['feedbackrequests:th:actions'] = '操作';
 $string['feedbackrequests:emailcopy'] = '发邮件给我一份副本';
 $string['feedbackrequests:submitfeedback'] = '提交反馈';
+/*
 $string['email:subject:myfeedback'] = '你为{{被评议人}}的评议反馈';
 $string['email:body:myfeedback'] = '尊敬的{{收件人}},你提交的为{{被评议人}}做的{{机密的}}反馈如下：{{反馈}}';
+*/
 $string['feedbackrequests:confidential'] = '机密的';
 $string['feedbackrequests:nonconfidential'] = '非机密的';
 $string['feedbackrequests:received:confidential'] = '收到（保密）';
