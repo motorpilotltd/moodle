@@ -65,7 +65,7 @@ if (!$tapsenrol->check_installation()) {
 
     if ($canview) {
         $classes = $tapsenrol->get_tapsclasses($canviewclasses);
-        $enrolments = $tapsenrol->taps->get_enroled_classes($USER->idnumber, $tapsenrol->tapsenrol->tapscourse, true, false);
+        $enrolments = $tapsenrol->taps->get_enroled_classes($USER->idnumber, $tapsenrol->tapsenrol->tapscourse, false, false);
         $enrolmentoutput = $output->enrolment_history($tapsenrol, $enrolments, $classes, $tapsenrol->cm->id);
     }
 
@@ -76,7 +76,7 @@ if (!$tapsenrol->check_installation()) {
         if (!$canviewclasses && !empty($regions)) {
             $a->reason = get_string('cannotenrol:regions', 'tapsenrol', implode(', ', $regions));
         }
-        $enrolmentoutput = $renderer->alert(html_writer::tag('p', get_string('cannotenrol', 'tapsenrol', $a)), 'alert-warning', false);
+        $enrolmentoutput = $output->alert(html_writer::tag('p', get_string('cannotenrol', 'tapsenrol', $a)), 'alert-warning', false);
     }
 
     if (!empty($SESSION->tapsenrol->alert->message)) {

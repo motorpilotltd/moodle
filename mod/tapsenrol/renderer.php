@@ -113,6 +113,9 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                     case 'requested':
                     case 'waitlisted':
                     case 'placed' :
+                        if (!$enrolment->active) {
+                            continue;
+                        }
                         $enrolledclasses[] = $enrolment->classid;
                         $activeclasses++;
                         break;
