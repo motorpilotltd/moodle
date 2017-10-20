@@ -228,20 +228,16 @@ EOF;
         }
         switch ($type) {
             case 'cancel':
-                $columns[] = 'cancel';
-                $headers[] = get_string('manageenrolments:table:cancel', 'tapsenrol');
-                break;
             case 'waitlist':
-                $columns[] = 'waitlist';
-                $headers[] = get_string('manageenrolments:table:waitlist', 'tapsenrol');
-                break;
             case 'move':
-                $columns[] = 'move';
-                $headers[] = get_string('manageenrolments:table:move', 'tapsenrol');
-                break;
             case 'delete':
-                $columns[] = 'delete';
-                $headers[] = get_string('manageenrolments:table:delete', 'tapsenrol');
+                $columns[] = $type;
+                $attributes = array(
+                    'id' => 'tapsenrol-checkbox-selectall',
+                    'type' => 'checkbox'
+                );
+                $checkbox = html_writer::empty_tag('input', $attributes);
+                $headers[] = get_string("manageenrolments:table:{$type}", 'tapsenrol') . '<br>' . $checkbox;
                 break;
         }
         $table->define_columns($columns);
@@ -429,11 +425,12 @@ class mod_tapsenrol_manage_enrolments_waitlist_form extends mod_tapsenrol_manage
         $a = new stdClass();
         $a->value = $seatsremaining;
         $a->text = ($seatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $seatsremaining);
+        $alerttype = ($seatsremaining === 0) ? 'alert-danger' : (($seatsremaining > 0 && $seatsremaining < 3) ? 'alert-warning' : 'alert-info');
         $mform->addElement(
                 'html',
                 $this->_renderer->alert(
                         get_string('manageenrolments:waitlist:seatsremaining', 'tapsenrol', $a),
-                        'alert-info',
+                        $alerttype,
                         false
                         )
                 );
