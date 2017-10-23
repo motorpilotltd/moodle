@@ -28,6 +28,7 @@ $string['costcentre:administer'] = 'Administer cost centres';
 
 // Menu items.
 $string['menu:index'] = 'Cost centre setup';
+$string['menu:view'] = 'User permission setup';
 
 // Error strings.
 $string['error:invalid:action'] = 'Invalid action specified.';
@@ -35,9 +36,14 @@ $string['error:invalid:page'] = 'Invalid page requested.';
 
 // General strings.
 $string['choosecostcentre'] = 'Choose cost centre';
+$string['chooseuser'] = 'Choose one or more users';
+$string['choospermission'] = 'Choose one or more permissions';
 
 $string['edit:cancelled'] = 'Editing cancelled, your changes were not saved.';
 $string['edit:success'] = 'Editing successful, your changes have been saved.';
+
+$string['view:save:success'] = 'Changes successfully saved.';
+$string['view:save:cancelled'] = 'Changes not saved. Action has been cancelled.';
 
 $string['header:adminonly'] = 'Leader / Appraisal Administrator Users';
 $string['header:groupleaderappraisal'] = 'Appraisal Specific Leaders';
@@ -61,12 +67,27 @@ $string['label:hrleader'] = 'HR Leader(s)';
 $string['label:learningreporter'] = 'Can run learning reports';
 $string['label:reporter'] = 'Can run reports';
 $string['label:signatory'] = 'Can sign off appraisal (in addition to leader / primary sign off)';
+$string['label:userlist'] = 'User List';
+$string['label:permissions'] = 'Permissions';
 $string['loadcostcentre'] = 'Load cost centre';
+
+
+$string['select:appraiser'] = 'Additional appraisers (outside cost centre)';
+$string['select:businessadmin'] = 'Appraisal administrator(s)';
+$string['select:costcentre'] = 'Cost centre';
+$string['select:groupleader'] = 'Leader / Primary Sign Off(s)';
+$string['select:groupleaderappraisal'] = 'Additional Leader(s) for specific appraisal(s) only';
+$string['select:hradmin'] = 'HR Admin(s)';
+$string['select:hrleader'] = 'HR Leader(s)';
+$string['select:learningreporter'] = 'Can run learning reports';
+$string['select:reporter'] = 'Can run reports';
+$string['select:signatory'] = 'Can sign off appraisal (in addition to leader / primary sign off)';
 
 $string['selectuser'] = 'Select user';
 $string['selectusers'] = 'Select users';
 
 $string['title:index'] = 'Cost centre setup';
+$string['title:view'] = 'Cost centre user permission setup';
 
 // Other alerts.
 $string['alert:restrictedaccess'] = 'Having trouble with this page? Complete the <a href="{$a}">Appraisal Admin Learning Burst</a> if you haven\'t already.';

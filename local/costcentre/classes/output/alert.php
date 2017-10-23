@@ -41,7 +41,7 @@ class alert implements renderable, templatable {
         $this->data->message = $message;
         $this->data->type = $type;
     }
-    
+
     /**
      * Export this data so it can be used as the context for a mustache template.
      * @return stdClass

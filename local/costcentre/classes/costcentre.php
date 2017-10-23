@@ -45,6 +45,8 @@ class costcentre {
     private $context;
     /** @var string The current cost centre. */
     private $costcentre = '';
+    /** @var string[] Array (permissions) of permissions. */
+    private $permissions;
     /** @var string[] Array (menu) of costcentres for current user. */
     private $costcentresmenu;
     /** @var false|stdClass Settings for current cost centre. */
@@ -61,6 +63,7 @@ class costcentre {
     /** @var string[] Valid actions by page. */
     private static $validaction = array(
         'index' => 'edit',
+        'view' => 'save'
     );
 
     /**
@@ -71,10 +74,22 @@ class costcentre {
      * @throws moodle_exception
      */
     public function __construct($page, \local_costcentre\output\renderer $renderer) {
-        global $DB;
+        global $DB, $SESSION;
+
+        if (!isset($SESSION->localcostcentre)) {
+            $SESSION->localcostcentre = new stdClass();
+        }
+
+        if (!empty($SESSION->localcostcentre->alerts)) {
+            $this->alerts = $SESSION->localcostcentre->alerts;
+        }
+
+        $SESSION->localcostcentre->alerts = [];
 
         $this->context = \context_system::instance();
         $this->canaccessall = has_capability('local/costcentre:administer', $this->context);
+
+        $this->set_permission_mappings();
 
         $this->page = $page;
         if (!array_key_exists($this->page, self::$validaction)) {
@@ -85,22 +100,24 @@ class costcentre {
             throw new moodle_exception('error:invalid:action', 'local_costcentre');
         }
 
-        $this->costcentresmenu = $this->get_costcentresmenu();
+        if ($this->page == 'index') {
+            $this->costcentresmenu = $this->get_costcentresmenu();
 
-        $costcentre = optional_param('costcentre', '', PARAM_ALPHANUMEXT);
-        if ($this->action == self::$validaction[$this->page] && empty($costcentre)) {
-            // Reset action as no cost centre selected.
-            $this->action = '';
-        } else if ($this->action == self::$validaction[$this->page]) {
-            $this->costcentre = $costcentre;
-        } else if (count($this->costcentresmenu) == 1) {
-            $this->action = self::$validaction[$this->page];
-            reset($this->costcentresmenu);
-            $this->costcentre = key($this->costcentresmenu);
-        }
+            $costcentre = optional_param('costcentre', '', PARAM_ALPHANUMEXT);
+            if ($this->action == self::$validaction[$this->page] && empty($costcentre)) {
+                // Reset action as no cost centre selected.
+                $this->action = '';
+            } else if ($this->action == self::$validaction[$this->page]) {
+                $this->costcentre = $costcentre;
+            } else if (count($this->costcentresmenu) == 1) {
+                $this->action = self::$validaction[$this->page];
+                reset($this->costcentresmenu);
+                $this->costcentre = key($this->costcentresmenu);
+            }
 
-        if (!empty($this->costcentre)) {
-            $this->settings = $DB->get_record('local_costcentre', array('costcentre' => $this->costcentre));
+            if (!empty($this->costcentre)) {
+                $this->settings = $DB->get_record('local_costcentre', array('costcentre' => $this->costcentre));
+            }
         }
 
         $this->renderer = $renderer;
@@ -131,7 +148,18 @@ class costcentre {
     private function get_validaction() {
         return self::$validaction[$this->page];
     }
-    
+
+    /**
+     * Set alert.
+     *
+     * @global stdClass $SESSION
+     * @param \local_costcentre\output\alert $alert
+     */
+    private function set_alert(\local_costcentre\output\alert $alert) {
+        global $SESSION;
+        $SESSION->localcostcentre->alerts[] = $this->alerts[] = $alert;
+    }
+
     /**
      * Prepare the page for rendering.
      *
@@ -142,27 +170,72 @@ class costcentre {
         if (!method_exists($this, $method)) {
             throw new Exception('Undefined method ' .$method. ' requested');
         }
-        // Prepare generic select form.
-        $this->forms[] = new \local_costcentre\local\form\select(null, array('costcentre' => $this));
+        // Prepare generic select form for index page.
+        if ($this->page == 'index') {
+            $this->forms[] = new \local_costcentre\local\form\select(null, array('costcentre' => $this));
+        }
         // Prepare specific page.
         $this->{$method}();
+    }
+
+    private function prepare_page_view() {
+        $userpermissionform = new \local_costcentre\local\form\user_permission(null, array('costcentre' => $this));
+        $this->forms[] = $userpermissionform;
+
+        if ($userpermissionform->process()) {
+            $this->set_alert(
+                    new \local_costcentre\output\alert(
+                            get_string('view:save:success', 'local_costcentre'),
+                            'success',
+                            false)
+                    );
+            redirect(new moodle_url('/local/costcentre/view.php'));
+        } else if ($userpermissionform->is_cancelled()) {
+            $this->set_alert(
+                    new \local_costcentre\output\alert(
+                            get_string('view:save:cancelled', 'local_costcentre'),
+                            'warning',
+                            false)
+                    );
+        }
+
+        if (!$this->canaccessall) {
+            throw new moodle_exception('error:invalid:page', 'local_costcentre');
+        }
     }
 
     /**
      * Prepare the index page for rendering.
      */
     private function prepare_page_index() {
-        // Edit form
+        // Edit form.
         $editform = new \local_costcentre\local\form\edit(null, array('costcentre' => $this));
         $this->forms[] = $editform;
         if ($editform->process()) {
-            $this->alerts[] = new \local_costcentre\output\alert(get_string('edit:success', 'local_costcentre'), 'success', false);
+            $this->set_alert(
+                    new \local_costcentre\output\alert(
+                            get_string('edit:success', 'local_costcentre'),
+                            'success',
+                            false)
+                    );
+            redirect(new moodle_url('/local/costcentre/index.php', ['costcentre' => $this->costcentre, 'action' => 'edit']));
         } else if ($editform->is_cancelled()) {
-            $this->alerts[] = new \local_costcentre\output\alert(get_string('edit:cancelled', 'local_costcentre'), 'warning', false);
+            $this->set_alert(
+                    new \local_costcentre\output\alert(
+                            get_string('edit:cancelled', 'local_costcentre'),
+                            'warning',
+                            false)
+                    );
         }
         if ($this->costcentre && !$this->canaccessall) {
             $a = (new moodle_url('/course/view.php', array('id' => get_config('local_costcentre', 'help_courseid'))))->out(false);
-            $this->alerts[] = new \local_costcentre\output\alert(get_string('alert:restrictedaccess', 'local_costcentre', $a), 'info', false);
+            $this->set_alert(
+                    new \local_costcentre\output\alert(
+                            get_string('alert:restrictedaccess',
+                                    'local_costcentre', $a),
+                            'info',
+                            false)
+                    );
         }
     }
 
@@ -172,15 +245,22 @@ class costcentre {
      * @return string
      */
     public function output_page() {
+        global $SESSION;
+
         $output = '';
+
         // Alerts.
         foreach ($this->alerts as $alert) {
             $output .= $this->renderer->render($alert);
         }
+        // Clear alerts.
+        $SESSION->localcostcentre->alerts = $this->alerts = [];
+
         // Forms.
         foreach ($this->forms as $form) {
             $output .= $form->render();
         }
+
         // Other content.
         if (!empty($this->content)) {
             $output .= $this->renderer->render($this->content);
@@ -233,29 +313,31 @@ class costcentre {
             return $mappings;
         }
 
-        $tomap = array(
-            'groupleader' => self::GROUP_LEADER,
-            'groupleaderappraisal' => self::GROUP_LEADER_APPRAISAL,
-            'hrleader' => self::HR_LEADER,
-            'hradmin' => self::HR_ADMIN,
-            'businessadmin' => self::BUSINESS_ADMINISTRATOR,
-            'appraiser' => self::APPRAISER,
-            'signatory' => self::SIGNATORY,
-            'reporter' => self::REPORTER,
-            'learningreporter' => self::LEARNING_REPORTER,
-        );
-
-        foreach ($tomap as $input => $constant) {
+        foreach ($this->permissions as $key => $value) {
             $mapping = $DB->get_records_select_menu(
                     'local_costcentre_user',
-                    'costcentre = :costcentre AND '.$DB->sql_bitand('permissions', $constant).' = :permission',
-                    array('costcentre' => $this->costcentre, 'permission' => $constant),
+                    'costcentre = :costcentre AND '.$DB->sql_bitand('permissions', $key).' = :permission',
+                    array('costcentre' => $this->costcentre, 'permission' => $key),
                     '',
                     'userid as id, userid');
-            $mappings->{$input} = $mapping;
+            $mappings->{$value} = $mapping;
         }
 
         return $mappings;
+    }
+
+    public function set_permission_mappings() {
+        $this->permissions = array(
+            self::GROUP_LEADER              => 'groupleader',
+            self::GROUP_LEADER_APPRAISAL    => 'groupleaderappraisal',
+            self::HR_LEADER                 => 'hrleader',
+            self::HR_ADMIN                  => 'hradmin',
+            self::BUSINESS_ADMINISTRATOR    => 'businessadmin',
+            self::APPRAISER                 => 'appraiser',
+            self::SIGNATORY                 => 'signatory',
+            self::REPORTER                  => 'reporter',
+            self::LEARNING_REPORTER         => 'learningreporter',
+        );
     }
 
     /**
@@ -266,32 +348,19 @@ class costcentre {
      */
     public function process_mappings($data) {
         global $DB;
-
-        $tomap = array(
-            'groupleader' => self::GROUP_LEADER,
-            'groupleaderappraisal' => self::GROUP_LEADER_APPRAISAL,
-            'hrleader' => self::HR_LEADER,
-            'hradmin' => self::HR_ADMIN,
-            'businessadmin' => self::BUSINESS_ADMINISTRATOR,
-            'appraiser' => self::APPRAISER,
-            'signatory' => self::SIGNATORY,
-            'reporter' => self::REPORTER,
-            'learningreporter' => self::LEARNING_REPORTER,
-        );
-
         $select = "auth = 'saml' AND deleted = 0 AND suspended = 0 AND confirmed = 1";
         $validusers = $DB->get_records_select_menu('user', $select, array(), 'lastname ASC', "id, id as userid");
 
         $users = array();
-        foreach ($tomap as $input => $constant) {
-            if (!empty($data->{$input})) {
-                foreach ($data->{$input} as $userid) {
+        foreach ($this->permissions as $key => $value) {
+            if (!empty($data->{$value})) {
+                foreach ($data->{$value} as $userid) {
                     $userid = (int) $userid;
                     if (!array_key_exists($userid, $validusers)) {
                         continue;
                     }
                     // Add up permissions bits.
-                    $users[$userid] = isset($users[$userid]) ? $users[$userid] + $constant : $constant;
+                    $users[$userid] = isset($users[$userid]) ? $users[$userid] + $key : $key;
                 }
             }
         }
@@ -338,33 +407,28 @@ class costcentre {
                 // User can access all so need list of all user cost centres in Moodle.
                 // @TODO: Update this to use webservice to obtain full current list.
                 $concat = $DB->sql_concat('u.icq', "' - '", 'u.department');
-                $sql = <<<EOS
-SELECT
-    u.icq, {$concat}
-FROM
-    {user} u
-INNER JOIN
-    (SELECT
-        MAX(id) maxid
-    FROM
-        {user} inneru
-    INNER JOIN
-        (SELECT
-            icq, MAX(timemodified) as maxtimemodified
-        FROM
-            {user}
-        GROUP BY
-            icq) groupedicq
-        ON inneru.icq = groupedicq.icq AND inneru.timemodified = groupedicq.maxtimemodified
-    GROUP BY
-        groupedicq.icq) groupedid
-    ON u.id = groupedid.maxid
-WHERE
-    u.icq != ''
-ORDER BY
-    u.icq ASC
-EOS;
-                $distinctusercostcentres = $DB->get_records_menu('local_costcentre_user', array(), 'costcentre ASC', 'DISTINCT costcentre as id, costcentre as value');
+                $sql = "SELECT u.icq, {$concat}
+                          FROM {user} u
+                          JOIN (
+                                SELECT MAX(id) maxid
+                                  FROM {user} inneru
+                                  JOIN (
+                                        SELECT icq, MAX(timemodified) as maxtimemodified
+                                          FROM {user}
+                                      GROUP BY icq
+                                       ) groupedicq
+                                    ON inneru.icq = groupedicq.icq
+                                       AND inneru.timemodified = groupedicq.maxtimemodified
+                              GROUP BY groupedicq.icq
+                               ) groupedid
+                            ON u.id = groupedid.maxid
+                         WHERE u.icq <> ''
+                      ORDER BY u.icq ASC";
+                $distinctusercostcentres = $DB->get_records_menu(
+                        'local_costcentre_user',
+                        array(),
+                        'costcentre ASC',
+                        'DISTINCT costcentre as id, costcentre as value');
                 $costcentres = $DB->get_records_sql_menu($sql) + $distinctusercostcentres;
                 ksort($costcentres);
                 $this->costcentresmenu = $costcentres;
@@ -416,34 +480,26 @@ EOS;
 
         $where .= ' AND (' . implode(' OR ', $bitandwhere) . ')';
 
-        // @TODO: Use list of cost centres from webservice.
+        // TODO: Use list of cost centres from webservice.
         $concat = $DB->sql_concat('u.icq', "' - '", 'u.department');
-        $sql = <<<EOS
-SELECT
-    u.icq, {$concat}
-FROM
-    {user} u
-INNER JOIN
-    (SELECT
-        MAX(id) maxid
-    FROM
-        {user} inneru
-    INNER JOIN
-        (SELECT
-            icq, MAX(timemodified) as maxtimemodified
-        FROM
-            {user}
-        GROUP BY
-            icq) groupedicq
-        ON inneru.icq = groupedicq.icq AND inneru.timemodified = groupedicq.maxtimemodified
-    GROUP BY
-        groupedicq.icq) groupedid
-    ON u.id = groupedid.maxid
-INNER JOIN
-    {local_costcentre_user} lcu ON lcu.costcentre = u.icq AND {$where}
-ORDER BY
-    u.icq ASC
-EOS;
+        $sql = "SELECT u.icq, {$concat}
+                  FROM {user} u
+                  JOIN (
+                        SELECT MAX(id) maxid
+                          FROM {user} inneru
+                          JOIN (
+                                SELECT icq, MAX(timemodified) as maxtimemodified
+                                  FROM {user}
+                              GROUP BY icq
+                               ) groupedicq
+                             ON inneru.icq = groupedicq.icq
+                                AND inneru.timemodified = groupedicq.maxtimemodified
+                      GROUP BY groupedicq.icq
+                       ) groupedid
+                    ON u.id = groupedid.maxid
+                  JOIN {local_costcentre_user} lcu
+                    ON lcu.costcentre = u.icq AND {$where}
+              ORDER BY u.icq ASC";
         return $DB->get_records_sql_menu($sql, $params);
     }
 
@@ -496,16 +552,10 @@ EOS;
         if (!empty($bitandwhere)) {
             $where .= ' AND (' . implode(' OR ', $bitandwhere) . ')';
         }
-        
 
-        $sql = <<<EOS
-SELECT
-    lcu.userid, lcu.permissions
-FROM
-    {local_costcentre_user} lcu
-WHERE
-    {$where}
-EOS;
+        $sql = "SELECT lcu.userid, lcu.permissions
+                  FROM {local_costcentre_user} lcu
+                 WHERE {$where}";
         return $DB->get_records_sql_menu($sql, $params);
     }
 
@@ -564,7 +614,8 @@ EOS;
      * @param array $removepermissions
      * @return bool
      */
-    public static function update_user_permissions($userid, $costcentre, array $addpermissions = [], array $removepermissions = []) {
+    public static function update_user_permissions(
+            $userid, $costcentre, array $addpermissions = [], array $removepermissions = []) {
         global $DB;
 
         $settings = self::get_setting($costcentre);
@@ -572,7 +623,7 @@ EOS;
             // Cost centre is not set up.
             return false;
         }
-        
+
         $existing = $DB->get_record('local_costcentre_user', array('costcentre' => $costcentre, 'userid' => $userid));
         if (!$existing) {
             $existing = new stdClass();
@@ -585,11 +636,11 @@ EOS;
         $existingpermissions = $existing->permissions;
 
         foreach ($addpermissions as $addpermission) {
-            if (self::ALL & $addpermission != $addpermission) {
+            if ((self::ALL & (int) $addpermission) !== (int) $addpermission) {
                 // Not a valid permission.
                 continue;
             }
-            if ($existing->permissions & $addpermission == $addpermission) {
+            if (((int) $existing->permissions & (int) $addpermission) === (int) $addpermission) {
                 // Already set.
                 continue;
             }
@@ -598,11 +649,11 @@ EOS;
         }
 
         foreach ($removepermissions as $removepermission) {
-            if (self::ALL & $removepermission != $removepermission) {
+            if ((self::ALL & (int) $removepermission) !== (int) $removepermission) {
                 // Not a valid permission.
                 continue;
             }
-            if ($existing->permissions & $removepermission != $removepermission) {
+            if (((int) $existing->permissions & (int) $removepermission) !== (int) $removepermission) {
                 // Already not set.
                 continue;
             }

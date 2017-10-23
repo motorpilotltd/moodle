@@ -34,7 +34,7 @@ if (get_config('local_costcentre', 'version')) {
     $ADMIN->add('local_costcentre', $settings);
 
     $name = 'local_costcentre/help_courseid';
-    $title = get_string('setting:help_courseid','local_costcentre', \core_text::strtolower(get_string('course')));
+    $title = get_string('setting:help_courseid', 'local_costcentre', \core_text::strtolower(get_string('course')));
     $description = get_string('setting:help_courseid_desc', 'local_costcentre', \core_text::strtolower(get_string('course')));
     $settings->add(new admin_setting_configtext($name, $title, $description, '', PARAM_INT));
 
@@ -43,5 +43,21 @@ if (get_config('local_costcentre', 'version')) {
         $fakecap = 'moodle/block:view';
     }
     $adminurl = new moodle_url('/local/costcentre/index.php');
-    $ADMIN->add('local_costcentre', new admin_externalpage('local_costcentre_index', get_string('menu:index', 'local_costcentre'), $adminurl, $fakecap));
+    $ADMIN->add(
+            'local_costcentre',
+            new admin_externalpage('local_costcentre_index',
+                    get_string('menu:index', 'local_costcentre'),
+                    $adminurl,
+                    $fakecap)
+            );
+
+    $viewurl = new moodle_url('/local/costcentre/view.php');
+    $ADMIN->add(
+            'local_costcentre',
+            new admin_externalpage(
+                    'local_costcentre_view',
+                    get_string('menu:view', 'local_costcentre'),
+                    $viewurl,
+                    'local/costcentre:administer')
+            );
 }

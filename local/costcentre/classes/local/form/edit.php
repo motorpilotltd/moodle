@@ -84,7 +84,7 @@ class edit extends \moodleform {
                 array('class' => 'select2-user', 'data-placeholder' => get_string('selectusers', 'local_costcentre'))
                 );
         $reporter->setMultiple(true);
-        
+
         // Admin only settings (GL/BA).
         $mform->addElement('header', 'header-adminonly', get_string('header:adminonly', 'local_costcentre'));
         $mform->setExpanded('header-adminonly', false);
@@ -132,7 +132,7 @@ class edit extends \moodleform {
                 array('class' => 'select2-user', 'data-placeholder' => get_string('selectusers', 'local_costcentre'))
                 );
         $hradmin->setMultiple(true);
-        
+
         // Appraisal specific groupleader settings.
         $mform->addElement('header', 'header-groupleaderappraisal', get_string('header:groupleaderappraisal', 'local_costcentre'));
         $mform->setExpanded('header-groupleaderappraisal', false);
@@ -153,7 +153,7 @@ class edit extends \moodleform {
         // Learning specific settings.
         $mform->addElement('header', 'header-learning', get_string('header:learning', 'local_costcentre'));
         $mform->setExpanded('header-learning', false);
-        
+
         $mform->addElement('html', get_string('html:learning', 'local_costcentre'));
 
         $learningreporter = $mform->addElement(
@@ -188,7 +188,7 @@ class edit extends \moodleform {
     public function set_data($defaultvalues) {
         global $DB;
 
-        foreach (array('groupleader', 'groupleaderappraisal', 'hrleader', 'hradmin', 'businessadmin', 'appraiser', 'reporter', 'signatory', 'learningreporter') as $type) {
+        foreach ($this->_customdata['costcentre']->permissions as $type) {
             if (!empty($defaultvalues->{$type})) {
                 $fullname = $DB->sql_concat('firstname', "' '", 'lastname', "' ('", 'email', "')'");
                 list($usql, $params) = $DB->get_in_or_equal($defaultvalues->{$type}, SQL_PARAMS_NAMED, 'id');
@@ -218,7 +218,7 @@ class edit extends \moodleform {
         if (empty($data->groupleaderactive)) {
             $data->groupleaderactive = 0;
         }
-        foreach (array('groupleader', 'groupleaderappraisal', 'hrleader', 'hradmin', 'businessadmin', 'appraiser', 'reporter', 'signatory', 'learningreporter') as $type) {
+        foreach ($this->_customdata['costcentre']->permissions as $type) {
             $data->{$type} = is_array($_POST[$type]) ? optional_param_array($type, array(), PARAM_INT) : array();
         }
 
@@ -242,7 +242,7 @@ class edit extends \moodleform {
             $this->costcentre->process_mappings($data);
             return true;
         }
-        
+
         return false;
     }
 
@@ -266,11 +266,9 @@ class edit extends \moodleform {
     private function _pre_validation() {
         if (isset($_POST['_qf__local_costcentre_local_form_edit']) && !$this->costcentre->canaccessall) {
             $originalmappings = $this->costcentre->get_mappings();
-            $_POST['groupleader'] = empty($originalmappings->groupleader) ? array() : $originalmappings->groupleader;
-            $_POST['groupleaderappraisal'] = empty($originalmappings->groupleaderappraisal) ? array() : $originalmappings->groupleaderappraisal;
-            $_POST['hrleader'] = empty($originalmappings->hrleader) ? array() : $originalmappings->hrleader;
-            $_POST['hradmin'] = empty($originalmappings->hradmin) ? array() : $originalmappings->hradmin;
-            $_POST['businessadmin'] = empty($originalmappings->businessadmin) ? array() : $originalmappings->businessadmin;
+            foreach (['groupleader', 'groupleaderappraisal', 'hrleader', 'hradmin', 'businessadmin'] as $type) {
+                $_POST[$type] = empty($originalmappings->{$type}) ? [] : $originalmappings->{$type};
+            }
         }
     }
 }
