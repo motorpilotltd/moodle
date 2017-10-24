@@ -42,7 +42,7 @@ class user_permission extends \moodleform {
             'userlist',
             get_string('label:userlist', 'local_costcentre'),
             array(),
-            array('class' => 'select2 select2-user', 'data-placeholder' => get_string('chooseuser', 'local_costcentre'))
+            array('class' => 'select2-user', 'data-placeholder' => get_string('chooseuser', 'local_costcentre'))
         );
         $users->setMultiple(true);
         $mform->addRule('userlist', $strrequired, 'required', null, 'client');
@@ -53,7 +53,7 @@ class user_permission extends \moodleform {
             'costcentre',
             get_string('label:costcentre', 'local_costcentre'),
             array('' => '') + $this->costcentre->costcentresmenu,
-            array('class' => 'select2', 'data-placeholder' => get_string('choosecostcentre', 'local_costcentre')));
+            array('class' => 'select2-costcentre', 'data-placeholder' => get_string('choosecostcentre', 'local_costcentre')));
         $costcentres->setMultiple(true);
         $mform->addRule('costcentre', $strrequired, 'required', null, 'client');
 

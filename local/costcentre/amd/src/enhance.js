@@ -34,6 +34,10 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
             $('.select2').select2({
                 width: '75%'
             });
+            $('.select2-costcentre').select2({
+                width: '75%',
+                closeOnSelect: false
+            });
             $('.select2-user').select2({
                 width: '75%',
                 minimumInputLength: 2,
