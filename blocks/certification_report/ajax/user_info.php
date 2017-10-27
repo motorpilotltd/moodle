@@ -33,6 +33,14 @@ try {
         WHERE u.id = :userid
         ";
     $user = $DB->get_record_sql($sql, ['userid' => $userid]);
+    $cohortssql = "SELECT c.id, c.name
+                     FROM {cohort} c
+                     JOIN {cohort_members} cm ON c.id = cm.cohortid
+                     JOIN {user} u ON cm.userid = u.id
+                    WHERE u.id = :userid";
+    // Re-index for mustache.
+    $user->cohorts = array_values($DB->get_records_sql_menu($cohortssql, ['userid' => $userid]));
+    $user->hascohorts = !empty($user->cohorts);
     $user->userpic = $OUTPUT->user_picture($user, array('size' => 100, 'link' => true));
     echo $OUTPUT->render_from_template('block_certification_report/user_info', $user);
 } catch (Exception $e) {

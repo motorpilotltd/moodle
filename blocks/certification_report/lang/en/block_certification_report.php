@@ -91,6 +91,7 @@ $string['employmentcategories'] = 'Employment Categories';
 $string['groupnames'] = 'Group Names';
 $string['locationnames'] = 'Location Names';
 $string['grades'] = 'Grades';
+$string['email'] = 'Email';
 
 $string['resetcertification'] = 'Reset Certification';
 
