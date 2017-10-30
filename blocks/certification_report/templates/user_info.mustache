@@ -4,15 +4,6 @@
         {{#str}}staffid, block_certification_report{{/str}}: {{idnumber}}<br>
         {{#str}}email, block_certification_report{{/str}}: {{email}}<br>
         {{#str}}employmentcategory, block_certification_report{{/str}}: {{employment_category}}<br>
-        {{#str}}locationname, block_certification_report{{/str}}: {{location_name}}<br><br>
-        {{#str}}cohorts, block_certification_report{{/str}}:
-        {{^hascohorts}}
-            {{#str}}na, block_certification_report{{/str}}
-        {{/hascohorts}}
-        {{#hascohorts}}
-            <ul>
-            {{#cohorts}}<li>{{.}}</li>{{/cohorts}}
-            </ul>
-        {{/hascohorts}}
+        {{#str}}locationname, block_certification_report{{/str}}: {{location_name}}
     </div>
 </div>
