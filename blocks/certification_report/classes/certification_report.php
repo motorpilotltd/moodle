@@ -196,7 +196,7 @@ class certification_report {
         return $filters;
     }
 
-    public static function get_base_url($filters, $page = 'report') {
+    public static function get_base_url($filters, $view, $page = 'report') {
         if (!in_array($page, ['report'])) {
             $page = 'report';
         }
@@ -219,8 +219,9 @@ class certification_report {
                 $params[$param] = $filters->{$param};
             }
         }
-
-        $params['regionview'] = optional_param('regionview', 'actual', PARAM_ALPHA) == 'geo' ? 'geo' : 'actual';
+        if ($view == 'regions') {
+            $params['regionview'] = optional_param('regionview', 'actual', PARAM_ALPHA) == 'geo' ? 'geo' : 'actual';
+        }
 
         return new \moodle_url("/blocks/certification_report/{$page}.php?".http_build_query($params));
     }

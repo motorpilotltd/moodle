@@ -36,7 +36,8 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'block_certifi
              * Add Select2.
              */
             $('.select2').select2({
-                width: '75%'
+                width: '75%',
+                allowClear: true
             });
             
             /**

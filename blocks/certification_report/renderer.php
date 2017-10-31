@@ -78,6 +78,7 @@ class block_certification_report_renderer extends plugin_renderer_base {
                         default:
                             $param = $view;
                     }
+                    $url->remove_params('regionview');
                     $url->param($param, $itemid);
                     $line[] = html_writer::link($url, $item['fullname']);
                     if (count($header) > 2) {
@@ -226,7 +227,8 @@ class block_certification_report_renderer extends plugin_renderer_base {
      * @param array $filters
      * @return string
      */
-    public function show_active_filters($filters = [], $filteroptions = [], $html = true){
+    public function show_active_filters($filters = [], $filteroptions = [], $html = true, $url = ''){
+        $filterurl = new moodle_url($url);
         $output = html_writer::start_div();
         $plaintext = [];
         if(!empty($filters->actualregions)){
@@ -271,6 +273,9 @@ class block_certification_report_renderer extends plugin_renderer_base {
         foreach ($otherfilters as $otherfilter) {
             $this->get_generic_filter_info($otherfilter, $filters, $filteroptions, $plaintext, $output);
         }
+        $plaintext[] = get_string('url', 'block_certification_report').': '.rawurldecode($filterurl->out(false));
+        $link = html_writer::link($filterurl, rawurldecode($filterurl));
+        $output .= html_writer::div(html_writer::span(get_string('url', 'block_certification_report'), 'bold').' : '.$link);
         $output .= html_writer::end_div();
         return $html ? $output : implode("\n", $plaintext);
     }
