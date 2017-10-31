@@ -43,6 +43,7 @@ $string['descgreenthreshold'] = 'Set lower percentage threshold of green status 
 $string['defaultamberthreshold'] = '70';
 $string['defaultgreenthreshold'] = '90';
 
+$string['url'] = 'Report URL';
 $string['fullname'] = 'User Fullname';
 $string['actualregion'] = 'Region';
 $string['actualregions'] = 'Regions';
@@ -95,5 +96,3 @@ $string['grades'] = 'Grades';
 $string['resetcertification'] = 'Reset Certification';
 
 $string['nodata'] = 'There are no certification assignments for the filter options selected.';
-
-$string['url'] = 'Report URL';
