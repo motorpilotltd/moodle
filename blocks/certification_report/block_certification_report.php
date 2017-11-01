@@ -53,7 +53,8 @@ class block_certification_report extends block_base {
     private function get_demo_report_link() {
         global $DB, $OUTPUT, $USER;
 
-        if (has_capability('block/certification_report:view_all_costcentres', context_system::instance())) {
+        if (has_capability('block/certification_report:view_all_costcentres', context_system::instance())
+                || has_capability('block/certification_report:view_all_regions', context_system::instance())) {
                 $concat = $DB->sql_concat('u.icq', "' - '", 'u.department');
                 $sql = <<<EOS
 SELECT
@@ -87,6 +88,8 @@ EOS;
         } else {
             $costcentres = costcentre::get_user_cost_centres($USER->id, [
                 costcentre::GROUP_LEADER,
+                costcentre::HR_LEADER,
+                costcentre::HR_ADMIN,
                 costcentre::LEARNING_REPORTER,
             ]);
         }
