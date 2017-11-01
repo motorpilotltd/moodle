@@ -83,7 +83,9 @@ class block_certification_report_renderer extends plugin_renderer_base {
                     if (count($header) > 2) {
                         $line[0] .= ' ';
                         $extraclass = $item['users'] == 0 ? 'optional' : 'status-text-'.certification_report::get_rag_status($item['progress']);
-                        $line[0] .= html_writer::span($item['progress'].'%', "user-progress {$extraclass}");
+                        // $line[0] .= html_writer::span($item['progress'].'%', "user-progress {$extraclass}");
+                        $userscomplete = round(($item['progress']/100) * $item['users']);
+                        $line[0] .= html_writer::span($userscomplete.' / '.$item['users'], "user-progress {$extraclass}");
                     }
                 }else{
                     $line[] = $item['name'];
@@ -93,7 +95,9 @@ class block_certification_report_renderer extends plugin_renderer_base {
                         if ($certification['progress'] === null) {
                             $cell = new html_table_cell(get_string('na', 'block_certification_report'));
                         } else {
-                            $cell = new html_table_cell($certification['progress'].'%');
+                            // $cell = new html_table_cell($certification['progress'].'%');
+                            $userscomplete = round(($certification['progress']/100) * $certification['userscounter']);
+                            $cell = new html_table_cell($userscomplete.' / '.$certification['userscounter']);
                         }
                         if ($certification['progress'] === null) {
                             $cell->attributes['class'] = 'status-na';

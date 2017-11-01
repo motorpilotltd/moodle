@@ -1058,18 +1058,22 @@ class certification_report {
                              * Progress for required (non-optional, not exempt) assignments.
                              */
                             'progress' => null,
+                            'users' => 0,
                             /**
                              * Progress for all (including optional and exempt) assignments.
                              */
                             'allprogress' => 0,
+                            'allusers' => 0,
                             /**
                              * Progress for optional assignments.
                              */
                             'optionalprogress' => 0,
+                            'optionalusers' => 0,
                             /**
                              * Progress for exempt assignments.
                              */
                             'exemptprogress' => 0,
+                            'exemptusers' => 0,
                             /**
                              * Is this overall (everyone) optional?
                              */
@@ -1083,9 +1087,13 @@ class certification_report {
                 }
 
                 $data[$compldata->itemid]['certifications'][$compldata->certifid]['progress'] = $compldata->userscounter ? round($compldata->progresssum / $compldata->userscounter) : null;
+                $data[$compldata->itemid]['certifications'][$compldata->certifid]['userscounter'] = $compldata->userscounter;
                 $data[$compldata->itemid]['certifications'][$compldata->certifid]['allprogress'] = round($compldata->allprogresssum / MAX(1, $compldata->alluserscounter));
+                $data[$compldata->itemid]['certifications'][$compldata->certifid]['alluserscounter'] = $compldata->alluserscounter;
                 $data[$compldata->itemid]['certifications'][$compldata->certifid]['optionalprogress'] = round($compldata->optionalprogresssum / MAX(1, $compldata->optionaluserscounter));
+                $data[$compldata->itemid]['certifications'][$compldata->certifid]['optionaluserscounter'] = $compldata->optionaluserscounter;
                 $data[$compldata->itemid]['certifications'][$compldata->certifid]['exemptprogress'] = round($compldata->exemptprogresssum / MAX(1, $compldata->exemptuserscounter));
+                $data[$compldata->itemid]['certifications'][$compldata->certifid]['exemptuserscounter'] = $compldata->exemptuserscounter;
                 
                 $data['viewtotal']['certifications'][$compldata->certifid]['progresssum'] += $compldata->progresssum;
                 $data['viewtotal']['certifications'][$compldata->certifid]['userscounter'] += $compldata->userscounter;
