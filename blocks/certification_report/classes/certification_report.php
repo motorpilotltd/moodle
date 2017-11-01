@@ -1058,22 +1058,22 @@ class certification_report {
                              * Progress for required (non-optional, not exempt) assignments.
                              */
                             'progress' => null,
-                            'users' => 0,
+                            'userscounter' => 0,
                             /**
                              * Progress for all (including optional and exempt) assignments.
                              */
                             'allprogress' => 0,
-                            'allusers' => 0,
+                            'alluserscounter' => 0,
                             /**
                              * Progress for optional assignments.
                              */
                             'optionalprogress' => 0,
-                            'optionalusers' => 0,
+                            'optionaluserscounter' => 0,
                             /**
                              * Progress for exempt assignments.
                              */
                             'exemptprogress' => 0,
-                            'exemptusers' => 0,
+                            'exemptuserscounter' => 0,
                             /**
                              * Is this overall (everyone) optional?
                              */
