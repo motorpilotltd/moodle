@@ -32,6 +32,8 @@ $string['headerregionsactual:view'] = 'View Regions';
 $string['headerregionsgeo'] = 'Geographic Regions';
 $string['headerregionsgeo:view'] = 'View Geographic Regions';
 $string['headercostcentre'] = 'Cost centre';
+$string['headercomplete'] = '[COMPLETE]';
+$string['headertotal'] = '[TOTAL]';
 
 $string['headerconfig'] = 'Threshold configuration';
 $string['descconfig'] = '';
