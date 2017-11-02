@@ -193,6 +193,23 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'core/log',
                 });
             });
 
+            var modalloader;
+            $(document).on('click', 'a[data-toggle=modal]', function() {
+                /* Extra functionality, normal event will still trigger and load data, etc. */
+                var datatarget = $(this).data('target');
+                var datalabel = $(this).data('label');
+                modalloader = $(datatarget + ' .modal-body').html();
+                $(datatarget + '-label').text(datalabel);
+                $(datatarget + ' .modal-body').load($(this).data('url'));
+            });
+
+            $(document).on('hidden.bs.modal', '.modal', function () {
+                /* Revert on close */
+                $(this).data('modal', null);
+                $('#info-modal-label').empty();
+                $(this).find('.modal-body').html(modalloader);
+            });
+
             /**
              * Copy report URL to clipboard.
              */

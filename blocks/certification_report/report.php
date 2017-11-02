@@ -92,4 +92,6 @@ if (count($certificationsreport['data']) == 0) {
     echo $renderer->show_table($filteroptions['certificationsdata'], $certificationsreport['data'], $certificationsreport['view'], $currenturl);
 }
 
+echo $renderer->render_from_template('block_certification_report/modal', ['imgsrc' => $OUTPUT->pix_url('loader', 'block_certification_report')]);
+
 echo $OUTPUT->footer();

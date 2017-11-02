@@ -95,7 +95,10 @@ $string['employmentcategories'] = 'Employment Categories';
 $string['groupnames'] = 'Group Names';
 $string['locationnames'] = 'Location Names';
 $string['grades'] = 'Grades';
+$string['email'] = 'Email';
 
 $string['resetcertification'] = 'Reset Certification';
 
 $string['nodata'] = 'There are no certification assignments for the filter options selected.';
+
+$string['modal:close'] = 'Close';
