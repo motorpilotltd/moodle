@@ -138,6 +138,18 @@ class block_certification_report_renderer extends plugin_renderer_base {
             $output .= html_writer::tag('button', get_string('exportdatacsv', 'block_certification_report'), ['onclick' => 'window.open("'.$url->out(false).'");']);
         }
 
+        $filterurl = new moodle_url($urlbase);
+        $templatevars = new stdClass();
+        $templatevars->url = rawurldecode($filterurl);
+        $attributes = [
+            'id' => 'copy-to-clipboard-popover',
+            'data-toggle' => 'popover',
+            'data-content' => $this->render_from_template('block_certification_report/url_popover', $templatevars),
+            'data-placement' => 'top',
+            'data-html' => true,
+        ];
+        $output .= html_writer::tag('button', get_string('url', 'block_certification_report'), $attributes);
+
         $output .= html_writer::end_div();
         $output .= html_writer::end_div();
 
@@ -227,8 +239,7 @@ class block_certification_report_renderer extends plugin_renderer_base {
      * @param array $filters
      * @return string
      */
-    public function show_active_filters($filters = [], $filteroptions = [], $html = true, $url = ''){
-        $filterurl = new moodle_url($url);
+    public function show_active_filters($filters = [], $filteroptions = [], $html = true){
         $output = html_writer::start_div();
         $plaintext = [];
         if(!empty($filters->actualregions)){
@@ -273,9 +284,6 @@ class block_certification_report_renderer extends plugin_renderer_base {
         foreach ($otherfilters as $otherfilter) {
             $this->get_generic_filter_info($otherfilter, $filters, $filteroptions, $plaintext, $output);
         }
-        $plaintext[] = get_string('url', 'block_certification_report').': '.rawurldecode($filterurl->out(false));
-        $link = html_writer::link($filterurl, rawurldecode($filterurl));
-        $output .= html_writer::div(html_writer::span(get_string('url', 'block_certification_report'), 'bold').' : '.$link);
         $output .= html_writer::end_div();
         return $html ? $output : implode("\n", $plaintext);
     }
