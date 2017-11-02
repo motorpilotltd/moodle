@@ -238,8 +238,8 @@ class certification_report {
     public static function get_data($infilters = null){
         global $DB;
 
-        // Clone as might be manipulated in this method.
-        $filters = clone($infilters);
+        // Clone if an object as might be manipulated in this method.
+        $filters = is_object($infilters) ? clone $infilters : $infilters;
 
         $regionview = optional_param('regionview', 'actual', PARAM_ALPHA);
         $regionfield = $regionview == 'geo' ? 'georegion' : 'actualregion';
