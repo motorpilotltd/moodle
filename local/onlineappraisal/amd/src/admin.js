@@ -219,8 +219,8 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                 }).fail(notification.exception);
 
                 // Get group and cohort.
-                var groupid = $('input[name=currentgroupid]').val();
-                var cohortid = $('input[name=currentcohortid]').val();
+                var groupid = $('select[name=groupid]').val();
+                var cohortid = $('select[name=cohortid]').val();
 
                 // Get users.
                 var appraiseeid = self.data('id');
