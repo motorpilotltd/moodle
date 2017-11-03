@@ -111,6 +111,204 @@ function hvp_update_instance($hvp) {
     return true;
 }
 
+function hvp_cm_info_dynamic(cm_info $cm) {
+    global $CFG, $COURSE, $DB, $PAGE;
+
+    if ($COURSE->id == $cm->course && !$PAGE->requires->is_head_done()) {
+        $hvp = $DB->get_record('hvp', ['id' => $cm->instance]);
+        if (!$hvp || !$hvp->displaycontent) {
+            // Don't load everything unless absolutely necessary.
+            return;
+        }
+
+        // We're on the actual course page, can inject into the header, and need to!
+        require_once($CFG->dirroot . "/mod/hvp/locallib.php");
+
+        // Load H5P Core.
+        $core = \mod_hvp\framework::instance();
+
+        // Load H5P Content.
+        $content = $core->loadContent($cm->instance);
+        if ($content === null) {
+            return;
+        }
+        // prevent load hvp assets to course page
+        if (!$content['displaycontent']) {
+            return;
+        }
+
+        // Attach scripts, styles, etc. from core.
+        $settings = hvp_get_core_assets();
+
+        // Display options.
+        $displayoptions = $core->getDisplayOptionsForView($content['disable'], $content['id']);
+        // Embed is not supported in Moodle.
+        $displayoptions[\H5PCore::DISPLAY_OPTION_EMBED] = false;
+
+        // Filter content parameters.
+        $safeparameters = $core->filterParameters($content);
+        $decodedparams = json_decode($safeparameters);
+        $renderer = $PAGE->get_renderer('mod_hvp');
+        $renderer->hvp_alter_filtered_parameters(
+            $decodedparams,
+            $content['library']['name'],
+            $content['library']['majorVersion'],
+            $content['library']['minorVersion']
+        );
+        $safeparameters = json_encode($decodedparams);
+
+        $export = '';
+        if ($displayoptions[\H5PCore::DISPLAY_OPTION_DOWNLOAD] && (!isset($CFG->mod_hvp_export) || $CFG->mod_hvp_export === true)) {
+            // Find course context.
+            $context = \context_course::instance($cm->course);
+            $hvppath = "{$CFG->httpswwwroot}/pluginfile.php/{$context->id}/mod_hvp";
+            $exportfilename = ($content['slug'] ? $content['slug'] . '-' : '') . $content['id'] . '.h5p';
+            $export = "{$hvppath}/exports/{$exportfilename}";
+        }
+
+        // Find cm context.
+        $context = \context_module::instance($cm->id);
+
+        // Add JavaScript settings for this content.
+        $cid = 'cid-' . $content['id'];
+        $settings['contents'][$cid] = array(
+            'library' => \H5PCore::libraryToString($content['library']),
+            'jsonContent' => $safeparameters,
+            'fullScreen' => $content['library']['fullscreen'],
+            'exportUrl' => $export,
+            'title' => $content['title'],
+            'displayOptions' => $displayoptions,
+            'url' => "{$CFG->httpswwwroot}/mod/hvp/view.php?id={$cm->id}",
+            'contentUrl' => "{$CFG->httpswwwroot}/pluginfile.php/{$context->id}/mod_hvp/content/" . $content['id'],
+            'contentUserData' => array(
+                0 => \mod_hvp\content_user_data::load_pre_loaded_user_data($content['id'])
+            )
+        );
+
+        // Get assets for this content.
+        $preloadeddependencies = $core->loadContentDependencies($content['id'], 'preloaded');
+        $files = $core->getDependenciesFiles($preloadeddependencies);
+
+        // Determine embed type.
+        $embedtype = \H5PCore::determineEmbedType($content['embedType'], $content['library']['embedTypes']);
+
+        // Add additional asset files if required.
+        $renderer->hvp_alter_scripts($files['scripts'], $preloadeddependencies, $embedtype);
+        $renderer->hvp_alter_styles($files['styles'], $preloadeddependencies, $embedtype);
+
+        if ($embedtype === 'div') {
+            $context = \context_system::instance();
+            $hvppath = "/pluginfile.php/{$context->id}/mod_hvp";
+
+            // Schedule JavaScripts for loading through Moodle.
+            foreach ($files['scripts'] as $script) {
+                $url = $script->path . $script->version;
+
+                // Add URL prefix if not external.
+                $isexternal = strpos($script->path, '://');
+                if ($isexternal === false) {
+                    $url = $hvppath . $url;
+                }
+                $settings['loadedJs'][] = $url;
+                $PAGE->requires->js(new moodle_url($isexternal ? $url : $CFG->httpswwwroot . $url), true);
+            }
+
+            // Schedule stylesheets for loading through Moodle.
+            foreach ($files['styles'] as $style) {
+                $url = $style->path . $style->version;
+
+                // Add URL prefix if not external.
+                $isexternal = strpos($style->path, '://');
+                if ($isexternal === false) {
+                    $url = $hvppath . $url;
+                }
+                $settings['loadedCss'][] = $url;
+                $PAGE->requires->css(new moodle_url($isexternal ? $url : $CFG->httpswwwroot . $url));
+            }
+        } else {
+            // JavaScripts and stylesheets will be loaded through h5p.js.
+            $settings['contents'][$cid]['scripts'] = $core->getAssetsUrls($files['scripts']);
+            $settings['contents'][$cid]['styles'] = $core->getAssetsUrls($files['styles']);
+        }
+        // XAPI collector token.
+        $xapiresultsurl = new moodle_url('/mod/hvp/ajax.php',
+            array(
+                'token' => \H5PCore::createToken('xapiresult'),
+                'action' => 'xapiresult'
+            ));
+
+        $settings['ajax']['xAPIResult'] = $xapiresultsurl->out(false);
+
+        // Print JavaScript settings to page.
+        $PAGE->requires->data_for_js('H5PIntegration', $settings, true);
+
+        // Add xAPI collector script.
+        $PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/mod/hvp/xapi-collector.js'), true);
+    }
+}
+
+function hvp_cm_info_view(cm_info $cm) {
+    global $DB, $OUTPUT;
+
+    $hvp = $DB->get_record('hvp', ['id' => $cm->instance]);
+    if (!$hvp || !$hvp->displaycontent) {
+        // Don't load everything unless absolutely necessary.
+        return;
+    }
+
+    $output = '';
+    // Load H5P Core.
+    $core = \mod_hvp\framework::instance();
+
+    // Load H5P Content.
+    $content = $core->loadContent($cm->instance);
+    if ($content === null) {
+        return;
+    }
+
+    // Print page HTML.
+    $output .= html_writer::div('', 'clearer');
+
+        // Print any messages.
+    \mod_hvp\framework::printMessages('info', \mod_hvp\framework::messages('info'));
+    \mod_hvp\framework::printMessages('error', \mod_hvp\framework::messages('error'));
+
+    // Print intro.
+    if (trim(strip_tags($content['intro']))) {
+        $output .= $OUTPUT->box_start('mod_introbox', 'hvpintro');
+        $output .= format_module_intro('hvp', (object) array(
+            'intro' => $content['intro'],
+            'introformat' => $content['introformat'],
+        ), $cm->id);
+        $output .= $OUTPUT->box_end();
+    }
+
+    // Determine embed type.
+    $embedtype = \H5PCore::determineEmbedType($content['embedType'], $content['library']['embedTypes']);
+
+    // Print H5P Content.
+    if ($embedtype === 'div') {
+        $output .= '<div class="h5p-content" data-content-id="' .  $content['id'] . '"></div>';
+    } else {
+        $output .= '<div class="h5p-iframe-wrapper"><iframe id="h5p-iframe-' . $content['id'] .
+            '" class="h5p-iframe" data-content-id="' . $content['id'] .
+            '" style="height:1px" src="about:blank" frameBorder="0" scrolling="no"></iframe></div>';
+    }
+
+    // Find cm context.
+    $context = \context_module::instance($cm->id);
+
+    // Trigger module viewed event.
+    $event = \mod_hvp\event\course_module_viewed::create(array(
+        'objectid' => $cm->instance,
+        'context' => $context
+    ));
+    $event->add_record_snapshot('course_modules', $cm);
+    $event->trigger();
+
+    $cm->set_content($output);
+}
+
 /**
  * Does the actual process of saving the H5P content that's submitted through
  * the activity form
