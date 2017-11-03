@@ -530,8 +530,10 @@ $string['feedbackrequests:nocompleted'] = '完了したフィードバック依�
 $string['feedbackrequests:th:actions'] = '操作';
 $string['feedbackrequests:emailcopy'] = 'コピーをEメールする';
 $string['feedbackrequests:submitfeedback'] = 'フィードバックを提出する';
+/*
 $string['email:subject:myfeedback'] = '{{appraisee}}へのフィードバック';
-$string['email:body:myfeedback'] = '{{recipient}}さん、あなたは以下のとおり{{appraisee}}に対しての{{confidential}}のフィードバックを提出しました： {{feedback}}';
+$string['email:body:myfeedback'] = '{{recipient}}さん、あなたは以下のとおり{{appraisee}}に対しての{{confidential}}のフィードバックを提出しました： {{feedback}} {{feedback_2}}';
+*/
 $string['feedbackrequests:confidential'] = '開示しない';
 $string['feedbackrequests:nonconfidential'] = '開示する';
 $string['feedbackrequests:received:confidential'] = '受取りました（開示しない）';

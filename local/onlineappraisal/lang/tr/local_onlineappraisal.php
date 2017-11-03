@@ -470,9 +470,11 @@ $string['feedbackrequests:nocompleted'] = 'Kapanmış geri bildirim talepleri yo
 $string['feedbackrequests:th:actions'] = 'Eylemler';
 $string['feedbackrequests:emailcopy'] = 'Bir kopyasını bana gönder';
 $string['feedbackrequests:submitfeedback'] = 'Geri bildirimi gönder';
+/*
 $string['email:subject:myfeedback'] = '{{appraisee}} ile ilgili değerlendirme geri bildiriminiz';
 $string['email:body:myfeedback'] = 'Sayın {{recipient}},
-{{appraisee}} ile ilgili göndermiş olduğunuz {{confidential}} geri bildirim şöyledir: {{feedback}}';
+{{appraisee}} ile ilgili göndermiş olduğunuz {{confidential}} geri bildirim şöyledir: {{feedback}} {{feedback_2}}';
+*/
 $string['feedbackrequests:confidential'] = 'gizli';
 $string['feedbackrequests:nonconfidential'] = 'gizli değil';
 $string['success:checkin:add'] = 'Giriş kaydı başarıyla eklendi';
