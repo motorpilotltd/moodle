@@ -335,6 +335,44 @@ class completion
     }
 
     /**
+     * Update users record, calculate new timewindowsopen
+     *
+     * @param $certification Certification ID or object
+     */
+    public static function update_records_completion_status($certification) {
+        global $DB;
+
+        if(!is_object($certification)){
+            $certification = new certification($certification, false);
+        }
+
+        $params = [];
+        $query = "
+            SELECT 
+              cc.*
+            FROM {certif_completions} as cc
+            WHERE cc.timewindowsopens > :now
+            AND cc.certifid = :certifid";
+
+
+        $params['now'] = time();
+        $params['certifid'] = $certification->id;
+
+        $records = $DB->get_records_sql($query, $params);
+
+        foreach ($records as $record) {
+            $datetime = new \DateTime();
+            $datetime->setTimestamp($record->timeexpires);
+            $interval = new \DateInterval('P'.$certification->windowperiod.certification::get_time_period_for_interval($certification->windowperiodunit));
+            $datetime->sub($interval);
+            $record->timewindowsopens = $datetime->getTimestamp();
+
+            $DB->update_record('certif_completions', $record);
+        }
+
+    }
+
+    /**
      * Update completion status.
      * Create if not exists, calculate time expires, window open time, actual duedate
      * \
