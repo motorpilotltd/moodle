@@ -153,7 +153,18 @@ class block_certification_report_renderer extends plugin_renderer_base {
      */
     public function prepare_user_row($user, $data){
         $line = [];
-        $line[] = $user['userdata']->firstname.' '.$user['userdata']->lastname;
+        $modalurl = new moodle_url(
+                '/blocks/certification_report/ajax/user_info.php',
+                ['userid' => $user['userdata']->userid, 'sesskey' => sesskey()]);
+        $modallink = html_writer::link(
+                '#',
+                $user['userdata']->firstname.' '.$user['userdata']->lastname,
+                ['data-toggle' => 'modal',
+                    'data-target' => '#info-modal',
+                    'data-label' => $user['userdata']->firstname.' '.$user['userdata']->lastname,
+                    'data-url' => $modalurl]
+                );
+        $line[] = $modallink;
         foreach($user['certifications'] as $certificationid => $certification){
             if(isset($data['viewtotal']['certifications'][$certificationid]) && $data['viewtotal']['certifications'][$certificationid]['progress'] !== null) {
                 if ($certification['exemptionid'] > 0) {
