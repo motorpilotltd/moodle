@@ -125,9 +125,8 @@ $string['duration'] = 'Duration';
 $string['editclass'] = 'Edit Linked Course Classes';
 $string['editcourse'] = 'Edit Linked Course';
 $string['enrol'] = 'Enrol Here';
-$string['enrol:alert:alreadyattended'] = 'Sorry, you cannot currently enrol on another class as you have an active completed enrolment.';
-$string['enrol:alert:alreadyattended:certification'] = 'Your window for retaking this course opens on {$a}, please come back to re-enrol after this date.';
-$string['enrol:alert:alreadyattended:help'] = 'Should you have any further questions or require further assistance please contact moodle.support@arup.com.';
+$string['enrol:alert:alreadyattended'] = 'Please note that re-enrolling will reset the module so that you can re-take it. Your learning history will not be affected.';
+$string['enrol:alert:alreadyattended:certification'] = 'You have completed certifications to which this course is linked, on re-enrolling these will be archived and restarted:<br>{$a}';
 $string['enrol:alert:cancelled'] = 'Enrolment process cancelled, you have not been enrolled on a class.';
 $string['enrol:alert:enrolmentclosed'] = 'Sorry, you can not enrol on a class in the {$a} hours prior to it starting.';
 $string['enrol:alert:error'] = 'Sorry, there was a problem processing your enrolment on the class {$a->classname} for {$a->coursename}.<br />Error message: {$a->message}';
@@ -151,6 +150,7 @@ $string['enrol:error:classdoesnotexist'] = 'Sorry, the class does not exist, ple
 $string['enrol:error:failedtoconnect'] = 'Failed to connect to enrolment server';
 $string['enrol:error:unavailable'] = 'Currently unavailable';
 $string['enrol:planned'] = 'Register Interest';
+$string['enrol:reenrol'] = 'Re-enrol Here';
 $string['enrol:submit'] = 'Submit for Approval';
 $string['enrol:submit:noapproval'] = 'Enrol';
 $string['enrol:waitinglist'] = 'Join Waiting List';
@@ -416,7 +416,7 @@ $string['manageenrolments:footeralert:future'] = 'When you enrol a user on an up
     . '\'Approved Place\' or \'W:Wait Listed\', as appropriate, and you will be recorded as being their approver. The user will receive '
     . 'an approval email and, if they receive a status of \'Approved Place\', an invite. Any future cancellation will result in the '
     . 'user receiving a cancellation email and if they received an invite that will be cancelled. You, as their approver, will also receive '
-    . 'notification of the cancellation.<br><br>If applicable, any certifications will be reset prior to enrolling the user.';
+    . 'notification of the cancellation.<br><br>If applicable, any certifications (or just the Moodle module) will be reset prior to enrolling the user.';
 $string['manageenrolments:footeralert:move'] = 'When you move users between classes their current status will be retained, unless moving between a \'Planned class\' and a \'Normal\' class. '
     . 'If the are waitlisted on a planned class they will be approved on a normal class and vice versa.<br /><br />'
     . 'You can choose whether to re-send applicable emails (i.e. approval request, invite) which will then be automatically be sent based on the status:<br />'
@@ -425,7 +425,7 @@ $string['manageenrolments:footeralert:move'] = 'When you move users between clas
     . '<li>If approval is/was required the approver will be notified of the class change.</li></ul><br />'
     . 'We would advise that you always send emails when moving users with requested or approved places as it will ensure approval requests are resent or current invites are cancelled and new invites sent.';
 $string['manageenrolments:footeralert:past'] = 'When you enrol a user on a past class they will be enrolled with a status of '
-    . '\'Full Attendance\'. No emails will be sent.<br><br>If applicable, any certifications will be reset prior to enrolling the user.';
+    . '\'Full Attendance\' if classroom and \'Approved Place\' if elearning.<br>No emails will be sent.<br><br>If applicable, any certifications (or just the Moodle module) will be reset prior to enrolling the user.';
 $string['manageenrolments:footeralert:update'] = 'Coming soon...';
 $string['manageenrolments:footeralert:waitlist'] = 'When you approve a waitlisted application the enrolment will be updated with a status of '
     . '\'Approved Place\'. A notification email and invitation will be sent.';
