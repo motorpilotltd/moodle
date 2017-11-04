@@ -1129,6 +1129,17 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                     $(this).remove();
                 });
             });
+
+            // Expand initialise table.
+            $('.oa-expand-table').on('click', '.oa-expand-link', function(){
+                $('.oa-initialise-table').find('select').css('width', 'auto');
+                $(this).addClass('hidden');
+                $(this).siblings('.oa-compress-link').removeClass('hidden');
+            }).on('click', '.oa-compress-link', function(){
+                $('.oa-initialise-table').find('select').css('width', '100%');
+                $(this).addClass('hidden');
+                $(this).siblings('.oa-expand-link').removeClass('hidden');
+            });
         }
     };
 });
