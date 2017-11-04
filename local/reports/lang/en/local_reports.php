@@ -45,6 +45,7 @@ $string['learninghistory:last_name'] = 'Last Name';
 $string['learninghistory:leaver_flag'] = 'Current Employees';
 $string['learninghistory:email_address'] = 'Email Address';
 $string['learninghistory:grade'] = 'Grade';
+$string['learninghistory:full_name'] = 'Full Name';
 $string['learninghistory:employment_category'] = 'Employment Category';
 $string['learninghistory:discipline_name'] = 'Discipline';
 $string['learninghistory:group_name'] = 'Group';
@@ -80,7 +81,11 @@ $string['learninghistory:centre_code'] = 'Centre Code';
 $string['learninghistory:costcentre'] = 'Cost Centre';
 $string['learninghistory:classroom'] = 'Classroom';
 $string['learninghistory:elearning'] = 'e-Learning';
-
+$string['learninghistory:exclusion'] = 'Exclusion Report';
+$string['learninghistory:bookingok'] = 'Enrolled';
+$string['learninghistory:bookingnotokay'] = 'No enrolment';
+$string['learninghistory:allbookings'] = 'All Booking statuses';
+$string['learninghistory:employee_number'] = 'Employee number';
 //Help in search form.
 $string['learninghistory:cpd_help'] = 'CPD helptext';
 $string['learninghistory:coursename_help'] = 'Course Name helptext';
@@ -92,7 +97,13 @@ $string['learninghistory:groupname_help'] = 'Group helptext';
 $string['learninghistory:actualregion_help'] = 'Region helptext';
 $string['learninghistory:georegion_help'] = 'Geographic region helptext';
 $string['learninghistory:leaver_flag_help'] = 'Active Users helptext';
+$string['learninghistory:region_help'] = 'Region Help';
+$string['learninghistory:exclusion_help'] = 'Exclusion Help';
+$string['learninghistory:employee_number_help'] = 'Employee number Help';
 
+
+
+$string['elearningstatus'] = 'Elearning Status';
 // Other UI elements
 $string['next'] = 'Next';
 $string['previous'] = 'Previous';
@@ -103,8 +114,10 @@ $string['showingactive'] = 'in active users';
 $string['incorrectcostcentreformat'] = 'Incorrect cost centre format. use digits only or digits with a - divider';
 $string['allregions'] = 'All regions';
 $string['learninghistory:geo_region'] = 'Geographic Region';
+$string['learninghistory:region'] = 'Region';
 $string['learninghistory:region_name'] = 'Region';
 $string['pleasewait'] = 'Please wait while we process your request. Generating exports can take up to 2 minutes. Once your export is ready your download link will appear here';
 $string['downloadreport'] = 'Download your report';
 $string['processsingfile'] = 'Your Report is being generated';
 $string['showall'] = 'Uncheck to show all employees (including past)';
+$string['all'] = 'All';

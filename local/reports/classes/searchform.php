@@ -35,8 +35,11 @@ class searchform extends moodleform {
         global $OUTPUT;
         $data = $this->_customdata;
         $mform = $this->_form;
-
+        $mform->addElement('hidden', 'page', $data->reportname);
+        $mform->setType('page', PARAM_RAW);
         $filters = $data->filteroptions;
+
+        //echo '<pre>' . print_r($filters, true) . '</pre>';
 
         $count = 0;
         foreach ($filters as $filter) {
@@ -54,6 +57,14 @@ class searchform extends moodleform {
             } else if ($filter->type == 'dropdown') {
                 $options = $data->get_dropdown($filter->field);
                 $mform->addElement('select', $filter->field, $filter->name, $options);
+            } else if ($filter->type == 'autocomplete') {
+                $options = $data->get_dropdown($filter->field);
+                $params = array(                                                      
+                    'placeholder' => get_string('learninghistory:' . $filter->field, 'local_reports'),
+                    'noselectstring' => 'select'                                                      
+                );   
+                $mform->addElement('autocomplete', $filter->field, $filter->name, $options, $params);
+                $mform->setDefault($filter->field, '');
             } else {
                 $mform->addElement('text', $filter->field, $filter->name);
                 if ($filter->type == 'int') {
@@ -62,7 +73,8 @@ class searchform extends moodleform {
                     $mform->setType($filter->field, PARAM_RAW);
                 }
             }
-            $mform->addHelpButton($filter->field, $data->reportname . ':' . $filter->field, 'local_reports');
+            
+            $mform->addHelpButton($filter->field, 'learninghistory:' . $filter->field, 'local_reports');
         }
         $mform->addelement('html', '</div>');
         $moreless = $OUTPUT->render_from_template('local_reports/moreless', new stdClass());

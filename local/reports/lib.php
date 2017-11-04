@@ -30,7 +30,7 @@ array $options=array()) {
         return false;
     }
 
-    $validfileareas = array('learninghistory');
+    $validfileareas = array('learninghistory', 'elearningstatus');
 
     if (in_array($filearea, $validfileareas)) {
         $itemid = $args[0];

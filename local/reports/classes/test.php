@@ -17,22 +17,33 @@
 /**
  *
  * @package     local_reports
- * @copyright   2016 Motorpilot Ltd / Sonsbeekmedia.nl
+ * @copyright   2017 Motorpilot Ltd / Sonsbeekmedia.nl
  * @author      Bas Brands, Simon Lewis
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 
-$PAGE->set_context(context_system::instance());
-$PAGE->set_url(new moodle_url('/local/reports/view.php'));
-$PAGE->set_pagelayout('admin');
+define('CLI_SCRIPT', true);
 
-echo $OUTPUT->header();
-echo html_writer::tag('h1', get_string('pluginname', 'local_reports'));
-echo html_writer::link(new moodle_url('/local/reports/index.php'),
-    get_string('learninghistory', 'local_reports'),
-    array('class' => 'btn btn-default m-r-5'));
-echo html_writer::link(new moodle_url('/local/reports/index.php', ['page' => 'elearningstatus']),
-    get_string('elearningstatus', 'local_reports'),
-    array('class' => 'btn btn-default m-r-5'));
-echo $OUTPUT->footer();
+require_once '../../../config.php';
+
+$start = 1;
+$limit = 20;
+$params = array();
+
+$sql = "SELECT  lte.*, staff.*
+                  FROM SQLHUB.ARUP_ALL_STAFF_V as staff
+             LEFT JOIN {local_taps_enrolment} as lte
+             ON staff.EMPLOYEE_NUMBER = lte.staffid
+                WHERE EMPLOYEE_NUMBER = 32417";
+
+
+// $sql = "SELECT * from {local_taps_enrolment} where staffid = 32417";
+
+$all = $DB->get_records_sql($sql, $params, $start * $limit, $limit);
+
+
+foreach ($all as $a) {
+    echo "RUN LINE";
+    print_r($a);
+    echo "\n";
+}
