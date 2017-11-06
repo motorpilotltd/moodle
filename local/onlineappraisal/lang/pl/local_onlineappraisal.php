@@ -31,14 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['alert:language:notdefault'] = '<strong>Uwaga</strong>: Nie używasz domyślnego języka dla tej strony. Upewnij się, że udzielasz odpowiedzi na pytania w języku najbardziej odpowiednim dla wszystkich zainteresowanych.';
 // INTRODUCTION PAGE
 $string['appraisee_heading'] = 'Witaj w wersji online Rozmowy Oceniającej';
-// ERROR: missing translation
-$string['appraisee_welcome'] = 'Niniejszy formularz ma na celu pomóc Tobie oraz Twojemu Oceniającemu w przeprowadzeniu istotnej, wartościowej rozmowy w odniesieniu do Twojego rozwoju zawodowego oraz efektywnosci w pracy.<br /><br />
-Celem tego narzędzia jest ułatwienie dostępu i przegląd zapisanej rozmowy podczas całego roku.<br /><br />
-Kliknij na zdjęcie by zobaczyć list przewodni od Gregory Hodkinson.<br /><br />
-Dalsze informacje dotyczące rozmowy oceniającej możesz znaleźć <a href="https://moodle.arup.com/appraisal/essentials" target="_blank">tutaj</a>';
 
-// REQUEST FEEDBACK
-$string['feedback_intro'] = 'Proszę wybierz 3 lub więcej współpracowników, których poprosisz o informację zwrotną. W większości regionów o informację zwrotną możesz poprosić współpracowników wewnętrznych bądź zewnętrznych. Przy wyborze kieruj się regułami obowiązującymi w Twoim regionie.<br/><br/>  Wybierając współpracowników wewnętrznych kieruj się prespektywą oceny 360 stopni. Warto zadbać o różne perspektywy oceny, wybierz zarówno osoby, które są na równoległych stanowiskach, wyższe, niższe stopniem. <div data-visible-regions="East Asia"><br />This is East Asia Region Specific Note to be Added</div> <br /><br /> <div class="alert alert-danger"> Feedback udzielony przez wybrane przez Ciebie osoby będzie udostępniony po Twoim spotkaniu z osobą oceniającą, chyba, że osoby dające feedback zaznaczą, że jest on poufny. </div>';
 // ERROR: remove east asia specfic content?
 
 // LAST YEAR REVIEW
@@ -202,35 +195,18 @@ $string['appraisee_checkin_title'] = 'Section 6. Check-in';
 $string['checkins_intro'] = 'Warto aby podczas roku dokonać ewaluacji uzgodnionego Planu Wpływu, Planu Rozwoju czy innych zaplanowanych działań oraz ich wyników. Do takiego podsumowania można użyć poniższej części formularza. Częstotliwość spotkań jest ustalana pomiędzy osobą oceniającą a ocenianą, rekomendujemy minimum jedno spotkanie w ciągu roku.';
 
 // FEEDBACK CONTRIBUTION
-$string['feedback_header'] = 'Twoja informacja zwrotna dla {$a->appraisee_fullname}';
 $string['feedback_addfeedback'] = 'Proszę opisz trzy obszary, które uważasz za mocne strony osoby ocenianej w ostatnich 12 miesiącach. Późnej proszę podaj do trzech obszarów, nad którymi Twoim zdaniem osoba oceniająca powinna popracować. Bądź szczery, pamiętaj, żeby Twoja informacja zwrotna była konstruktywna i mogła się przyczynić do poprawy efektywności.';
 // ERROR: word for "constructively" not marked as italic
 $string['confidential_label_text'] = 'Zaznacz jeśli chesz by Twój komentarz był poufny. Jeśli nie odznaczysz, Twój komentarz zostanie przekazany osobie ocenianej. ';
 
 // FEEDBACK EMAIL appraisee
 $string['email:subject:appraiseefeedback'] = 'Prośba o informację zwrotną na potrzeby mojej oceny rocznej';
-$string['email:body:appraiseefeedbackmsg'] =
-'<p>Drogi <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
-<p>Zbliża sie czas mojej oceny rocznej, a ponieważ współpracowaliśmy podczas ostatniego roku chiałbym/chciałabym Cię prosić o informację zwrotną odnośnie obszarów, które uważasz za moją mocną stronę oraz obszarów, w których uważasz mógłbym/mogłabym być bardziej efektywna/efektywny. Jeśli się zgadzasz proszę kliknij w link poniżej aby przesłać swoją informację zwrotną.</p>
-<p>Moja rozmowa oceniająca odbędzie się <span class="placeholder">{{held_date}}</span>], proszę odpowiedz przed tym terminem. </p>
-<p>Twoja informacja zwrotna zostanie mi przekazana po spotkaniu, chyba, że zaznaczysz inaczej wysyłając swoją odpowiedź.</p>
-<p>Poniżej dodatkowe komentarze od <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
-<p>Z poważaniem,<br />
-<span class="placeholder">{{appraisee_fullname}}</span></p>';
 
 $string['email:body:appraiseefeedback_link_here'] = 'here';
 
 $string['email:subject:appraiserfeedback'] = 'Prośba o informację zwrotną dla {{appraisee_fullname}} na potrzeby oceny rocznej';
 
 // FEEDBACK EMAIL appraiser
-$string['email:body:appraiserfeedbackmsg'] =
-'<p>Drogi <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
-<p>Obecnie pracuje nad formularzem oceny rocznej dla <span class="placeholder">{{appraisee_fullname}}</span> i ponieważ z nim/nią współpracowałeś chiałbym/chiałabym prosić o informację zwrotną dotyczącą ich pracy. Proszę o informacje dotyczącą jej/jego mocnych stron, jak i obszarów, w których mógłby/mogłaby być bardziej efektywna/efektywny.</p>
-<p>Rozmowa oceniająca odbędzie się <span class="placeholder">{{held_date}}</span>, prosze odpowiedz przed tym terminem.</p>
-<p>Twoja informacja zwrotna zostanie przekazana <span class="placeholder">{{appraisee_fullname}}</span> po spotkaniu, chyba, że zaznaczysz inaczej wysyłając swoją odpowiedź.</p>
-<p>Poniżej dodatkowe komentarze od <span class="placeholder">{{appraiser_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
-<p>Z poważaniem,<br />
-<span class="placeholder">{{appraiser_fullname}}</span></p>';
 
 // END FORM
 
@@ -256,18 +232,6 @@ $string['overview:content:appraisee:2:3'] = 'Osoba oceniająca zażądała zmian
     <li>Dokonaj zmian zgodnie z wymaganiami Osoby oceniającej (proszę sprawdzić raport aktywności, celem uzyskania dodatkowych informacji na temat tego, co zostało zażądane).</li>
     <li>Udostępnij swój projekt {$a->styledappraisername}.</li>
 </ul>';
-
-$string['overview:content:appraisee:3'] = 'Teraz złożyłeś swój projekt {$a->styledappraisername} do przeglądu.<br /><br />
-<strong>Następne kroki:</strong>
-<ul class="m-b-20">
-    <li>Spotkanie osobiste – przed spotkaniem możesz chcieć:</li>
-    <ul class="m-b-0">
-        <li><a href="{$a->printappraisalurl}">Pobrać Formularz oc></a></li>
-        <li><a href="https://moodle.arup.com/appraisal/reference" target="_blank">Pobrać Skróconą Instrukcję Obsługi</a></li>
-    </ul>
-    <li>Następnie, po Twoim spotkaniu, Osoba oceniająca zwróci ci formularz oceny. Będziesz poproszony o wprowadzenie zmian uzgodnionych podczas spotkania lub o napisanie swoich uwag końcowych.</li>
-</ul>
-<div class="alert alert-danger" role="alert"><strong>Uwaga:</strong> Możesz kontynuować edycję formularza oceny podczas spotkania z Osobą oceniającą ale sugeruję użycie  raportu aktywności aby podkreślić jakiekolwiek wprowadzone zmiany.</div>';
 
 $string['overview:content:appraisee:3:4'] = 'Wróciłeś do formularza oceny {$a->styledappraisername}, aby wprowadzić zmiany.<br /><br /> Otrzymasz powiadomienie, gdy uaktualni swój formularz oceny, gotowy do ponownego przeanalizowania.Uwaga:<br /><br /> <div class="alert alert-danger" role="alert"><strong>Uwaga:</strong> Możesz kontynuować edycję formularza oceny podczas spotkania z Osobą oceniającą ale sugeruję użycie  raportu aktywności aby podkreślić jakiekolwiek wprowadzone zmiany.</div>';
 
@@ -298,26 +262,6 @@ $string['overview:content:appraiser:2'] = 'Formularz oceny jest obecnie opracowy
 
 $string['overview:content:appraiser:2:3'] = 'Zwróciłeś formularza oceny do {$a->styledappraiseename} aby wprowadzić zmiany. Otrzymasz powiadomienie, gdy uaktualni ona swój formularz oceny, wtedy będzie on gotowy do ponownego przeanalizowania.<br /><br />
 <div class="alert alert-danger" role="alert"><strong>Uwaga:</strong> Jesteś jeszcze w stanie dokonać zmian w swoich polach</div>';
-
-$string['overview:content:appraiser:3'] = '{$a->styledappraiseename} przedstawiła swój projekt w ramach przygotowań do spotkania.<br /><br />
-<strong>Następne kroki:</strong>
-<ul class="m-b-20">
-    <li>Proszę dokonać przeglądu formularza oceny w ramach przygotowań do spotkania. Jeśli to konieczne zwrócić formularz oceny do Osoby ocenianej jeśli wymaga jakiś dodatkowych informacji.</li>
-    <li>Przed spotkaniem zalecamy</li>
-    <ul class="m-b-0">
-        <li><a href="{$a->printappraisalurl}">Pobierz Formularz oceny</a></li>
-        <li><a href="{$a->printfeedbackurl}">Pobierz otrzymane opinie</a></li>
-        <li>Można również <a href="https://moodle.arup.com/appraisal/reference" target="_blank">pobrać krótki przewodnik</a></li>
-    </ul>
-    <li>Following the face to face meeting please</li>
-    <ul class="m-b-0">
-        <li>Mark that the face to face meeting has taken place in the Appraisee Info section</li>
-        <li>Add your comments to each section</li>
-        <li>Write your summary and agreed actions in the Summaries section</li>
-        (If necessary you may return the appraisal to the appraisee to modify before you add your comments.)
-    </ul>
-    <li>Send to the appraisee to review your comments, view feedback and for them to add their final comments</li>
-</ul>';
 
 $string['overview:content:appraiser:3:4'] = '{$a->styledappraiseename} poprosił o zmiany w ich formularzu oceny.<br /><br />
 <strong>Następne kroki:</strong>
@@ -351,8 +295,6 @@ $string['overview:content:signoff:3'] = 'Ocena w toku.<br /><br /><div class="al
 
 $string['overview:content:signoff:4'] = 'Ocena w toku.<br /><br /><div class="alert alert-danger" role="alert"><strong>Uwaga:</strong>Zostaniesz powiadomiony, gdy formularz będzie gotowy do sprawdzenia i zatwierdzenia.
 </div>';
-
-$string['overview:content:signoff:5'] = 'Ocena w tokuUwaga<br /><br /><div class="alert alert-danger" role="alert"><strong>Uwaga:</strong> Zostaniesz powiadomiony, gdy formularz będzie gotowy do sprawdzenia i ostatecznego zatwierdzenia.</div>';
 
 $string['overview:content:signoff:6'] = 'Formularz oceny dla {$a->styledappraiseename} został przesłany do Twojego sprawdzenia.<br /><br />
 <strong>Następne kroki:</strong>
@@ -471,7 +413,6 @@ $string['form:feedback:alert:saved'] = 'Twoja prośba o ocenę zwrotną została
 $string['form:lastyear:nolastyear'] = 'Uwaga: Zauważyliśmy, że nie masz poprzedniego formularza oceny w systemie. Proszę dodaj ostatni formularz ocenę jako dokument PDF / Word poniżej.';
 $string['form:lastyear:file'] = '<strong>Plik z przeglądem został przesłany przez Osobę Ocenianą: <a href="{$a->path}" target="_blank">{$a->filename}</a></strong>';
 $string['form:lastyear:cardinfo:developmentlink'] = 'Zeszłoroczne Działania Rozwojowe';
-$string['form:lastyear:cardinfo:performancelink'] = 'Zeszłoroczna Ocena Wyników Pracy';
 $string['feedbackrequests:description'] = 'Ten panel pokazuje wszystkie zaległe prośby o ocenę zwrotną i umożliwia dostęp do wszelkich informacji zwrotnych, których udzieliłeś w przeszłości.';
 $string['feedbackrequests:outstanding'] = 'Zaległe Wnioski';
 $string['feedbackrequests:norequests'] = 'Brak zaległych wniosków o ocenę zwrotną';
@@ -522,7 +463,6 @@ $string['form:addfeedback:notfound'] = 'Nie znaleziono prośby o informację zwr
 $string['form:addfeedback:sendemailbtn'] = 'Wysłano informację zwrotną';
 $string['form:addfeedback:closed'] = 'Okno do złożenia informacji zwrotnej jest zamknięte ';
 $string['form:addfeedback:submitted'] = 'Informacja zwrotna złożona';
-$string['form:addfeedback:addfeedback'] = 'Proszę opisz trzy obszary, które uważasz za mocne strony osoby ocenianej w ostatnich 12 miesiącach. Późnej proszę podaj do trzech obszarów, nad którymi Twoim zdaniem osoba oceniająca powinna popracować. Bądź szczery, pamiętaj, żeby Twoja informacja zwrotna była konstruktywna i mogła się przyczynić do poprawy efektywności.';
 
 $string['form:feedback:alert:cancelled'] = 'Wysyłanie anulowane, informacja zwrotna nie została wysłana.';
 $string['form:feedback:alert:error'] = 'Przepraszamy, wystąpił błąd podczas wysyłania informacji zwrotnej.';
@@ -534,3 +474,80 @@ $string['form:feedback:language'] = 'Wybierz język informacji zwrotnej';
 
 
 // END PO STRING TRANSLATIONS - SPREADSHEET
+
+// 2017 : UPdates and additions.
+$string['addreceivedfeedback'] = 'Dodaj otrzymaną opinię';
+$string['appraisee_feedback_savedraft_error'] = 'Wystąpił błąd podczas zapisywania wersji roboczej';
+$string['appraisee_feedback_savedraft_success'] = 'Zapisz wersję roboczą opinii';
+$string['appraisee_feedback_viewrequest_text'] = 'Wyświetl wiadomość e-mail z prośbą.';
+$string['appraisee_welcome'] = 'Twoje spotkanie oceniające jest dla Ciebie i Twojego Oceniającego okazją do rozmowy na temat wyników, rozwoju kariery, Twojego przyszłego wkładu dla rozwoju firmy. Chcemy, aby była to konstruktywna rozmowa, która jest osobista i przydatna dla wszsytkich.<br /><br />
+Celem tego narzędzia online jest utwralenie przeprowadzonej rozmowy i odwoływanie się niej przez cały rok.<br /><br />więcej informacji na temat przeprowadzonego spotkania znajdziesz<a href="https://moodle.arup.com/appraisal/essentials" target="_blank"> tutaj</a>';
+$string['appraisee_welcome_info'] = 'Termin tegorocznego spotkania został wyznaczony na {$a}.';
+$string['email:body:appraiseefeedback'] = '{{emailmsg}} <br> <hr> <p>Kliknij {{link}} aby dodać opinię.</p>
+<p>Appraisal Name {{appraisee_fullname}}<br>
+ My appraisal is on <span class="placeholder">{{held_date}}</span></p>
+<p>This is an auto generated email sent by {{appraisee_fullname}} to {{firstname}} {{lastname}}.</p> <p>If the link above does not work, please copy the following link into your browser to access the appraisal:<br />{{linkurl}}</p>';
+$string['email:body:appraiseefeedbackmsg'] = 'Drogi <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+<p>
+Zbliża się termin mojego spotkania oceniającego<span class="placeholder">{{held_date}}</span>. Moim Oceniającym jest <span class="placeholder">{{appraiser_fullname}}</span>. Ponieważ pracowaliśmy razem w ciągu ubiegłego roku, bardzo ważne byłoby dla mnie gdybyś wyraził/a swoją opinię co bceniłeś/aś w moim  działaniu oraz co mógłbym/mogłabym zrobić inaczej. Jeśli wyrażasz zgodę kliknij poniższy link aby przesłać swoją opinię.</p> <p>
+Byłbym wdzięczny za odpowiedź przed moim spotkaniem. </p>
+<p class="ignoreoncopy">Poniżej znajdziesz dodatkowy formularz<span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p> <p>Z poważaniem,<br /> <span class="placeholder">{{appraisee_fullname}}</span></p>';
+$string['email:body:appraiserfeedback'] = '{{emailmsg}} <br> <hr> <p>Kliknij {{link}} aby dodać opinię.</p>
+<p>Nazwa spotkania {{appraisee_fullname}}<br>
+Moje spotkanie jest wyznaczone na <span class="placeholder">{{held_date}}</span></p>
+<p>To jest automatycznie wygenerowany mail przez {{appraiser_fullname}} do {{firstname}} {{lastname}}.</p> <p>Jeśli link powyżej nie działa, proszę spokój załączony link do przeglądarki aby uzyskać dostęp do formularza:<br />{{linkurl}}</p>';
+$string['email:body:appraiserfeedbackmsg'] = '<p>Drogi<span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+<p>Spotkanie oceniające dla <span class="placeholder">{{appraisee_fullname}}</span> zostało wyznaczone na<span class="placeholder">{{held_date}}</span>.  Ponieważ pracowaliście razem w ciągu ostatniego roku, bardzo ważne byłoby gdybyś wyraził/a swoją opinię co według Ciebie było wartościowe w jego/jej działaniu oraz co mógłby/mogłaby poprawić. Jeśli wyrażasz zgodę kliknij link poniżej aby przesłać swoją opinię.</p> <p>Byłbym wdzięczny za odpowiedź przed moim spotkaniem. </p>
+<p class="ignoreoncopy">Poniżej znajdziesz dodatkowy formularz<span class="placeholder">{{appraiser_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
+<p>Z poważaniem<br /> <span class="placeholder">{{appraiser_fullname}}</span></p>';
+$string['email:body:myfeedback'] = '<p>Drogi {{recipient}},</p> <p>Wysłałeś/aś poniższą {{confidential}}  informację zwrotną dla {{appraisee}}:</p> <div>{{feedback}}</div><div>{{feedback_2}}</div>';
+$string['email:subject:myfeedback'] = 'Twoja informacja zwrotna dla {{appraisee}}';
+$string['error:noappraisal'] = 'Błąd - nie masz formularza oceniającego w systemie. Aby uzyskać pomoc, skontaktuj  się z Administratorem systemu oceny, jeśli potrzebujesz wypełnić formularz:
+{$a}';
+$string['feedback_header'] = 'Przekaż opinię {$a->appraisee_fullname} (Oceniający: {$a->appraiser_fullname} - Data spotkania: {$a->facetofacedate})';
+$string['feedback_intro'] = 'Wybierz proszę trzy lub więcej osób, które przekarzą swoją opinię o Tobie. W większości regionów informacja zwrotna może być wewnętrzna lub zewnętrzna. Więcej informacji znajdziesz w przewodniku danego regionu.<br/><br/> W przypadku wewnętrznych opiniodawców warto rozważyć zebranie informacji zwrotnej z perspektywy "360 stopni" czyli rówieśników, starszych oraz młodszych od Ciebie. Warto wybraż zróżnicowana grupę osób.<br/><br/><div data-visible-regions="UKMEA, EUROPE, AUSTRALASIA">Jednym z opiniodawców może być klient lub współpracownik, który zna cię bardzo dobrze.</div><div data-visible-regions="East Asia"><br /><div class="alert alert-warning">For East Asia region, we expect feedback to be from internal source only. Comments from external client or collaborator should be understood and fed back through internal people.</div></div> <div data-visible-regions="Americas"><br /><div class="alert alert-warning">For the Americas Region, comments from external clients or collaborators should be fed back through conversations gathered outside of this feedback tool.</div></div>
+<br /><div class="alert alert-danger"> Uwaga: informacja zwrotna opiniodawców zostanie opublikowana tuż po jej otrzymaniu, chyba że Oceniający zażądał odpowiedzi zwrotnej. W tym przypadku Oceniający musi przesłać ci formularz do wprowadzenia ostatecznych poprawek (etap 3) aby informacja zwrotna była widoczna dla ciebie.</div>';
+$string['feedbackrequests:paneltitle:requestmail'] = 'Wiadomość e-mail zwrotna.';
+$string['form:addfeedback:addfeedback'] = 'Opisz proszę trzy obszary, w których osoba oceniana wniosła istotny wkład w ostatnich 12 miesiącach';
+$string['form:addfeedback:addfeedback_2'] = 'Proszę podaj szczegóły dotyczące trzech obszarów, w których osoba oceniana może być bardziej efektywna. Bądź szczery, ale konstruktywnie krytyczny, tak aby Twoja opinia zwrotna pomogła koledze być bardziej efektywnym.';
+$string['form:addfeedback:addfeedback_2help'] = '<div
+class="well well-sm">Ważne jest aby wszyscy otrzymali wartościowe, zrównoważone informacje zwrotne, zarówno pozytywne jak i krytyczne. <br>Aby uzyskać więcej informacji, kliknij <a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf"
+target="_blank">tutaj</a></div>';
+$string['form:addfeedback:addfeedback_help'] = 'Proszę skopiuj i wklej opinię zwrotną w pole "cenny wkład" chyba że możesz podzielić opinię na "cenne" i "bardziej efektywne"';
+$string['form:addfeedback:addfeedbackhelp'] = '<div
+class="well well-sm">Ważne jest aby wszyscy otrzymali wartościowe, zrównoważone informacje zwrotne, zarówno pozytywne jak i krytyczne. <br>Aby uzyskać więcej informacji, kliknij <a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf"
+target="_blank">tutaj</a></div>';
+$string['form:addfeedback:firstname'] = 'Imię osoby wystawiającej opinię';
+$string['form:addfeedback:saveddraft'] = 'Wysłałeś wersję roboczą Twojej opinii. Dopóki nie wyślesz swojej opinii zwrotej, będzie ona niewidoczna ani dla Oceniającego, ani dla Ocenianego';
+$string['form:addfeedback:savedraftbtn'] = 'Zapisz jako kopię roboczą';
+$string['form:addfeedback:savedraftbtntooltip'] = 'Zapisz kopię roboczą aby dokończyć później. Zapisanie kopii nie spowoduje wysłania Twojej opinii do osoby oceniającej / ocenianej';
+$string['form:addfeedback:savefeedback'] = 'Zachowaj opinię zwrotną';
+$string['form:development:comments'] = 'Komentarze Oceniającego';
+$string['form:development:commentshelp'] = '<div class="well well-sm"><em>Do wypełnienia przez Oceniającego</em></div>';
+$string['form:feedback:editemail'] = 'Edytuj';
+$string['form:feedback:providefirstnamelastname'] = 'Proszę wpisać imię i nazwisko odbiorcy zanim klikniesz przycisk edycji.';
+$string['form:lastyear:cardinfo:performancelink'] = 'Zeszłoroczny plan działania';
+$string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">Zeszłoroczna ocena</a> jest dostępna do przejrzenia (PDF - opens in new window).';
+$string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>Do uzupełniania przez lidera grupy.</em></div>';
+$string['helppage:intro'] = 'Kliknij przycisk poniżej, aby uzyskać dostęp do strony wsparcia.';
+$string['leadersignoff'] = 'Podpis Lidera Grupy';
+$string['modal:printconfirm:cancel'] = 'Nie, jest ok';
+$string['modal:printconfirm:content'] = 'Czy naprawdę potrzebujesz wydrukować ten dokument?';
+$string['modal:printconfirm:continue'] = 'Tak, kontynuuj';
+$string['modal:printconfirm:title'] = 'Zastanów się przed wydrukowaniem';
+$string['overview:content:appraisee:3'] = 'Możesz przesłać forlumarz oceny do{$a->styledappraisername}  do sprawdzenia.<br /><br /> <strong>Następne kroki:</strong> <ul class="m-b-20">
+<li>Spotkanie twarzą w twarz - przez spotkaniem możesz:</li> <ul class="m-b-0"> <li><a class="oa-print-confirm" href="{$a->printappraisalurl}">Pobrać wypełniony formularz oceny</a>
+</li> <li><a
+href="https://moodle.arup.com/appraisal/reference" target="_blank">Pobierz przewodnik</a></li> </ul> <li>Po spotakniu Oceniający prześle ci ponownie formularz oceny.  Zostaniesz poproszony o dokonanie zmian uzgodnionych w trakcie spotkania twarzą w twarz lub do wprowadzenia swoich ostatecznych komentarzy</li> </ul> <div class="alert alert-danger" role="alert"><strong>Note:</strong> Możesz nadal edytować formularz w czasie gdy Twój oceniający nanosi swoje uwagi. Pamiętaj, że warto do tego użyć panelu aktywności by podkreślić zmiany, które zostały naniesione.</div>';
+$string['overview:content:appraiser:3'] = '{$a->styledappraiseename} wysłał wypełniony formularz oceny na wasze spotkanie twarzą w twarz.<br /><br /> <strong>
+Następne kroki:</strong> <ul class="m-b-20"> <li>Proszę zapoznaj się z przygotowaną oceną przed spotkaniem. W razie konieczności zwróć formularz do Ocenianego, jeśli potrzebujesz dodatkowych informacji.</li> <li>Przed spotkaniem powinieneś:</li> <ul class="m-b-0"> <li><a class="oa-print-confirm" href="{$a->printappraisalurl}">Pobrać wypełniony formularz oceny</a></li> <li><a class="oa-print-confirm" href="{$a->printfeedbackurl}">Pobrać wszystkie otrzymane opinie</a></li> <li>Możesz również <a href="https://moodle.arup.com/appraisal/reference" target="_blank">pobrać przewodnik</a></li> </ul> <li>Po spotkaniu twarzą w twarz</li> <ul class="m-b-0"> <li>Zaznacz, że spotkanie twarzą w twarz się odbyło w sekcji informacji dla Ocenianego</li> <li>Dodaj komentarze do każdej sekcji</li> <li>Napisz podsumowanie i uzgodnione działania w sekcji podsumowania </li> (w razie potrzeby możesz zwrócić formularz do Ocenianego do modyfikacji przed wprowadzeniem swoich komentarzy.) </ul> <li>Wyślij formularz do Ocenianego aby zapoznała sie z twoimi komentarzami, przeczytaj opinie i dodaj końcowe komentarze</li> </ul>';
+$string['overview:content:signoff:5'] = 'Ocena w toku.<br /><br /><div class="alert alert-danger" role="alert"><strong>Uwaga:</strong> Zostaniesz powiadomiony, gdy formularz będzie gotowy do sprawdzenia i ostatecznego zatwierdzenia.</div>';
+$string['overview:content:special:archived'] = '<div class="alert alert-danger" role="alert">Formularz został zarchiwizowany.<br />Teraz można jedynie <a class="oa-print-confirm" href="{$a->printappraisalurl}">pobrać dokument.</a>.</div>';
+$string['overview:content:special:archived:appraisee'] = '<div class="alert alert-danger" role="alert">Formularz został zarchiwizowany.<br />Teraz można jedynie<a class="oa-print-confirm" href="{$a->printappraisalurl}">pobrać dokument</a>.</div>';
+$string['overview:lastsaved'] = 'Ostatni zapis: {$a}';
+$string['overview:lastsaved:never'] = 'Nigdy';
+$string['pdf:feedback:confidentialhelp:appraisee'] = '# Oznacza poufne opinie, które są niewidoczne dla ciebie.';
+$string['pdf:feedback:notyetavailable'] = 'Jeszcze niewidoczne.';
+$string['pdf:feedback:requestedfrom'] = 'Recenzent {$a->firstname}{$a->lastname}{$a->appraiserflag}{$a->confidentialflag}:';
+$string['pdf:feedback:requestedhelp'] = '* Oznacza informacje zwrotne przekazane przez Oceniającego, które jeszcze są niewidoczne dla Ciebie.';
+$string['pdf:header:warning'] = 'Pobrane przez: {$a->who} on {$a->when}<br>Proszę nie zachowywać i nie pozostawiać w niezabezpieczonym miejscu.';

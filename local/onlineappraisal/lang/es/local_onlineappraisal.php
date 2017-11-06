@@ -45,27 +45,6 @@ Por favor, notifica tus propuestas a tu appraiser al menos con <strong>una seman
 
 <div class="alert alert-danger" role="alert"><strong>Importante:</strong> Tu appraiser no podrá ver tus propuestas hasta que se las hayas notificado. </div>';
 
-$string['overview:content:appraisee:2:3'] = '
-Tu appraiser ha solicitado modificaciones en tu propuesta de appraisal.<br/><br/>
-<strong>Próximos pasos:</strong>
-<ul class="m-b-20">
-<li>Realiza los cambios solicitados por tu appraiser (puedes consultar el registro de actividades para obtener información adicional sobre lo que tu appraiser ha solicitado)</li>
-<li>Vuelve a notificar tu propuesta de appraisal a {$a->styledappraisername.</li>
-</ul>';
-
-$string['overview:content:appraisee:3'] = '
-Acabas de enviar tu propuesta de appraisal a {$a->styledappraisername} para su revisión.<br /><br />
-<strong>Próximos pasos:</strong>
-<ul class="m-b-20">
-    <li>Mantén tu entrevista de appraisal. Previamente deberás:</li>
-    <ul class="m-b-0">
-        <li><a href="{$a->printappraisalurl}">Descargar el formulario del Appraisal</a></li>
-        <li><a href="https://moodle.arup.com/appraisal/reference" target="_blank">Descargar la Quick Reference Guide</a></li>
-    </ul>
-    <li>Tras la entrevista, tu appraiser te devolverá el appraisal con sus comentarios. Cuando lo vuelvas a recibir, podrás hacer las modificaciones pertinentes que hubiesen sido acordadas durante la reunión y escribir tus comentarios finales.</li>
-</ul>
-<div class="alert alert-danger" role="alert"><strong>Importante:</strong> Podrás seguir modificando tu appraisal aunque ya se lo hayas enviado a tu appraiser para que rellene las secciones de su competencia. En ese caso, te recomendamos que hagas uso del Activity Log, a través del cual resaltarás los cambios introducidos. </div>';
-
 $string['overview:content:appraisee:3:4'] = '
 Has reenviado tu appraisal a {$a->styledappraisername} para introducir modificaciones.<br /><br />
 Se te notificará cuando los cambios hayan sido introducidos y el appraisal vuelva a estar listo para tu revisión.<br /><br />
@@ -104,27 +83,6 @@ El appraisal está siendo redactado por {$a->styledappraiseename}. Se te avisar�
 
 $string['overview:content:appraiser:2:3'] ='Has solicitado la modificación de la propuesta de appraisal a {$a->styledappraiseename} para introducir cambios. Se te notificará cuando el appraisal esté listo para que lo revises de nuevo.
 <div class="alert alert-danger" role="alert"><strong>Importante:</strong> Todavía puedes introducir cambios en las secciones a rellenar por ti del appraisal.';
-
-$string['overview:content:appraiser:3'] = '
-{$a->styledappraiseename} te ha enviado su propuesta de appraisal para vuestra próxima reunión.<br /><br />
-<strong>Próximos pasos:</strong>
-<ul class="m-b-20">
-    <li>Por favor, revisa esta propuesta antes de vuestra reunión. Si fuese necesario hacer algún cambio/introducir información adicional, la propuesta se le enviaría de nuevo al appraisee para su modificación.</li>
-    <li>Previamente a la reunión deberás:</li>
-    <ul class="m-b-0">
-        <li><a href="{$a->printappraisalurl}">Descargar el formulario de appraisal</a></li>
-        <li><a href="{$a->printfeedbackurl}">Descargar el feedback recibido por parte de los colaboradores a los que se les hubiese solicitado</a></li>
-        <li>También te podría ser útil descargar la <a href="https://moodle.arup.com/appraisal/reference" target="_blank">quick reference guide</a></li>
-    </ul>
-    <li>Tras mantener la reunión deberás:</li>
-    <ul class="m-b-0">
-        <li>Marcar la casilla que indica que la reunión ya ha sido mantenida y que encontrarás en la sección Apraisee Info</li>
-        <li>Añade los comentarios pertinentes en las secciones de tu competencia </li>
-        <li>Añade tu resumen y Agreed Actions en la sección de Summaries</li>
-        (Si fuese necesario, puedes reenviar el appraisal a tu appraisee para su modificación antes de añadir tus comentarios, resumen y Agreed Actions)
-    </ul>
-    <li>Reenvía toda la información añadida a tu appraisee para que revise tus comentarios, el feedback recibido durante la reunión y para que pueda introducir sus comentarios finales.</li>
-</ul>';
 
 $string['overview:content:appraiser:3:4'] = '
 {$a->styledappraiseename} ha solicitado modificaciones en su appraisal.<br /><br />
@@ -201,10 +159,6 @@ $string['overview:button:signoff:6:submit'] = 'Firma';
 //START FORM
 // Introduction Page
 $string['appraisee_heading'] = 'Bienvenido a tu Appraisal';
-$string['appraisee_welcome'] = 'El appraisal es una oportunidad única para ti y tu appraiser para mantener una conversación útil y en profundidad acerca de tu desempeño y desarrollo.<br /><br />
-El propósito de esta nueva herramienta es únicamente el de ayudar en esta conversación, orientando a ambas partes en las reflexiones y acciones a llevar cabo. Podrás acceder a esta plataforma en cualquier momento, lo que te permitirá la posibilidad de consultar lo acordado con tu appraiser en cualquier momento del año. <br /><br />
-Haz click en la imagen de tu derecha para ver el mensaje introductorio de Gregory Hodkinson.<br /><br />
-Puedes encontrar información adicional acerca del nuevo appraisal  <a href="https://moodle.arup.com/appraisal/essentials" target="_blank">aquí</a>';
 
 // Userinfo.
 $string['form:userinfo:intro'] = 'Por favor, rellena los siguientes campos. Algunos apartados vienen completados por defecto a partir de tus datos registrados en TAPS. Si alguno de estos datos predeterminados fuera incorrecto, por favor contacta con el Departamento de Recursos Humanos.';
@@ -373,35 +327,17 @@ $string['appraisee_checkin_title'] = 'Section 6. Check-in';
 $string['checkins_intro'] = 'A lo largo del año, se espera que el appraiser y el appraisee revisen lo acordado en este formulario. La finalidad de esta sección es que todas las revisiones que se hagan del presente appraisal queden aquí reflejadas. Como en años anteriores, la revisión del appraisal deberá hacerse, como mínimo, una vez al año.';
 
 // Give Feedback.
-$string['feedback_header'] = 'Se aporta feedback de {$a->appraisee_fullname}';
 $string['confidential_label'] = 'Confidential';
 $string['confidential_label_text'] = 'Marca la casilla para mantener tus comentarios ocultos. Si no marcas la casilla, tus comentarios serán notificados al appraisee.';
 
 $string['feedback_send_copy'] = 'Email me a copy';
-$string['feedback_intro'] = 'Conforme a lo previamente acordado entre tu appraiser y tú, notifica la petición de feedback a tus colaboradores.<br/><br/>  Estos colaboradores pueden ser tanto internos como externos. Para colaboradores internos (ej. supervisores, colegas de proyecto junior o senior) y externos (ej. clientes) selecciona personas con la que hayas trabajado activamente durante este año y puedan aportar una visión realista y constructiva de tu desempeño.<br/><br/>Lo indicado sería una perspectiva lo más amplia y heterogénea posible de tu rendimiento (lo que llamamos feedback “360 grados”). Para cualquier consulta, no dudes en acudir al Departamento de RRHH. <br /><br /><div class="alert alert-danger"> Observaciones: los comentarios de tus colaboradores de feedback se publicarán aquí tras tu reunión de appraisal, a no ser que decidan conservárselo.</div>';
 
 // FEEDBACK EMAIL - SENT BY APPRAISEE
 
 $string['email:subject:appraiseefeedback'] = 'Solicitar feedback para mi appraisal';
-$string['email:body:appraiseefeedbackmsg'] =
-'<p>Estimado/a <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
-<p>Mi appraisal será proximamente. Por ello y ya que hemos tenido la oportunidad de trabajar de forma conjunta durante este último año, apreciaría enormemente feedback por tu parte tanto en las áreas en las que hayas podido comprobar mi valía como en aquellas otras en las que consideres hubiera podido ser más eficiente. Si estás de acuerdo, por favor haz click en el link que se adjunta para ser parte de mis colaboradores de feedback.</p>
-<p>Mi appraisal se llevará a cabo el <span class="placeholder">{{held_date}}</span>], por ello necesitaría que registrases mi feedback antes de esa fecha.</p>
-<p>Además, tu feedback se me hará saber tras la reunión del appraisal, a no ser que marques la casilla de confidencialidad antes de registrar el feedback.</p>
-<p>A continuación puedes encontrar comentarios adicionales de <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
-<p>Muchas gracias,<br />
-<span class="placeholder">{{appraisee_fullname}}</span></p>';
-
 
 //FEEDBACK EMAIL - SENT BY APPRAISER
 $string['email:subject:appraiserfeedback'] = 'Solicitar feedback para el appraisal de {{appraisee_fullname}}';
-$string['email:body:appraiserfeedbackmsg'] = '<p>Estimado/a <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
-<p>Actualmente me encuentro realizando el appraisal de <span class="placeholder">{{appraisee_fullname}}</span>. Ya que has tenido la oportunidad de trabajar de forma conjunta con esta persona, apreciaría enormemente feedback por tu parte tanto en las áreas en las que hayas podido comprobar su valía como en las que consideres su rendimiento podría haber sido mayor. Si estás de acuerdo, por favor haz click en el link que se adjunta para aportar tu feedback. </p>
-<p>Este appraisal se llevará a cabo el <span class="placeholder">{{held_date}}</span>, por ello necesitaría tu respuesta antes de esta fecha.</p>
-<p>Tu feedback se compartirá con <span class="placeholder">{{appraisee_fullname}}</span> tras la reunión del appraisal, a no ser que marques la casilla de confidencialidad antes de registrar el feedback.</p>
-<p>A continuación puedes encontrar comentarios adicionales de <span class="placeholder">{{appraiser_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
-<p>Muchas gracias,<br />
-<span class="placeholder">{{appraiser_fullname}}</span></p>';
 
 // PDF strings
 $string['pdf:form:summaries:appraisee'] = 'Comentarios adicionales del appraisee';
@@ -491,7 +427,6 @@ $string['form:addfeedback:notfound']='No se ha encontrado ninguna solicitud de f
 $string['form:addfeedback:sendemailbtn']='Enviar feedback';
 $string['form:addfeedback:closed']='La pestaña para enviar el feedback ya está cerrada';
 $string['form:addfeedback:submitted']='Feedback enviado';
-$string['form:addfeedback:addfeedback']='Por favor, describe al menos tres áreas en las cuáles hayas podido valorar el rendimiento del appraisee en los últimos 12 meses. Por favor, aporta ejemplos de áreas en las que su rendimiento debería haber sido más efectivo. Se espera una crítica constructiva que pueda ayudar a appraiser y appraisee en su reunión. ';
 
 //Feedback ALERT MESSAGES
 $string['form:addfeedback:alert:cancelled'] = 'Envío cancelado, el feedback del appraisal no ha sido enviado';
@@ -506,7 +441,6 @@ $string['form:feedback:alert:saved'] = 'Tu petición de feedback ha sido enviada
 $string['form:lastyear:nolastyear'] = 'Importante: No tienes ningún appraisal registrado en la plataforma. Por favor, sube tu último appraisal como documento en word/pdf';
 $string['form:lastyear:file'] = '<strong>El appraisee ha subido un archivo para su revisión <a href="{$a->path}" target="_blank">{$a->filename}</a></strong>';
 $string['form:lastyear:cardinfo:developmentlink'] = 'Desarrollo del año anterior';
-$string['form:lastyear:cardinfo:performancelink'] = 'Desempeño del año anterior';
 
 //Feedback requests
 $string['feedbackrequests:description'] = 'El siguiente interfaz muestra todas las peticiones de feedback pendientes que tienes y te permite acceder a cualquiera de los feedbacks que ya hubieses registrado en el pasado';
@@ -539,3 +473,87 @@ $string['checkin:addnewdots'] = 'Registrar…';
 
 // Checkins
 $string['checkins_intro'] = 'A lo largo del año, se espera que el appraiser y el appraisee revisen lo acordado en este formulario. La finalidad de esta sección es que todas las revisiones que se hagan del presente appraisal queden aquí reflejadas. Como en años anteriores, la revisión del appraisal deberá hacerse, como mínimo, una vez al año. ';
+
+// 2017 : Updates and additions.
+$string['addreceivedfeedback'] = 'Añadir feedback recibido';
+$string['appraisee_feedback_savedraft_error'] = 'Ha sucedido un error guardando el borrador';
+$string['appraisee_feedback_savedraft_success'] = 'Feedback guardado en borrador';
+$string['appraisee_feedback_viewrequest_text'] = 'Ver correo solicitado';
+$string['appraisee_welcome'] = 'Tu appraisal es una oportunidad para ti y para tu appraiser de tener  una conversación sobre tu trabajo, así como el desarrollo de tu carrera en Arup y tu futura contribución al negocio. Queremos que sea una conversación constructiva, útil para todos. <br /><br /> El propósito de esta herramienta es ayudar a registrar la conversación para que pueda ser consultada durante el año.<br /><br />Más información sobre el proceso del appraisal puede ser encontrada <a href="https://moodle.arup.com/appraisal/essentials" target="_blank">aquí.</a>';
+$string['appraisee_welcome_info'] = 'Tu appraisal debe ser realizado antes de {$a}.';
+$string['email:body:appraiseefeedback'] = '{{emailmsg}}
+<br>
+<hr>
+<p>Por favor, haz click {{link}} para enviar tu feedback
+.</p>
+<p>Appraisal Name {{appraisee_fullname}}<br>
+Fecha de appraisal <span class="placeholder">{{held_date}}</span></p>
+<p>Este es un correo generado automáticamente por {{appraisee_fullname}} to {{firstname}} {{lastname}}.</p>
+<p>Si el link de abajo no funciona, por favor copia el siguiente link en tu navegador para acceder al appraisal:<br />{{linkurl}}</p>';
+$string['email:body:appraiseefeedbackmsg'] = 'Estimado <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+<p>
+Mi reunión para el appraisal está fijada para el <span class="placeholder">{{held_date}}</span>. My appraiser is <span class="placeholder">{{appraiser_fullname}}</span>.Como hemos trabajado juntos durante el pasado año, agradecería tu feedback en aquellas areas en las que valores mi trabajo, así como aquellas en las que crees que debo mejorar.</p> <p>
+Te estaré muy agradecido si puedes enviar tu feedback antes de mi reunión de appraisal. </p>
+<p class="ignoreoncopy">Aquí puedes encontrar comentarios adicionales sobre <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
+<p>Muchas gracias,<br />
+<span class="placeholder">{{appraisee_fullname}}</span></p>';
+$string['email:body:appraiserfeedback'] = '{{emailmsg}}
+<br>
+<hr>
+<p>Por favor, haz click {{link}}para enviar tu feedback.</p>
+<p>Nombre del appraisal {{appraisee_fullname}}<br>
+   Their appraisal is on <span class="placeholder">{{held_date}}</span></p>
+<p>Este es un correo generado automáticamente por  {{appraiser_fullname}} a {{firstname}} {{lastname}}.</p>
+<p>Si el link de abajo no funciona, por favor copia el siguiente link en tu navegador para acceder al appraisa:<br />{{linkurl}}</p>';
+$string['email:body:appraiserfeedbackmsg'] = '<p>Estimado <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+<p>
+Mi reunión para el appraisal está fijada para el <span class="placeholder">{{appraisee_fullname}}</span> Mi appraiser será <span class="placeholder">{{held_date}}</span>. Como hemos trabajado juntos durante el pasado año, agradecería tu feedback en aquellas areas en las que valores mi trabajo, así como aquellas en las que crees que debo mejorar. Si te apetece contribuir, por favor, pincha en el link de más abajo.</p> <p>Te estaré muy agradecido si puedes enviar tu feedback antes de mi reunión de appraisal. </p>
+<p class="ignoreoncopy">Aquí puedes encontrar comentarios adicionales sobre <span class="placeholder">{{appraiser_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
+<p>Muchas gracias,<br /> <span class="placeholder">{{appraiser_fullname}}</span></p>';
+$string['email:body:myfeedback'] = '<p>Estimado {{recipient}}, </p>
+<p>Has enviado el siguiente {{confidential}} feedback de {{appraisee}}:</p> <div>{{feedback}}</div><div>{{feedback_2}}</div>';
+$string['email:subject:myfeedback'] = 'Tu feedback para {{appraisee}}';
+$string['error:noappraisal'] = 'Error - No tienes un appraisal en el sistema. Por favor, contacta con tu administrador de la herramienta si necesitas que sea incluido tu appraisal (lista de nombres):{$a}';
+$string['feedback_header'] = 'Da tu feedback sobre {$a->appraisee_fullname} (Appraiser: {$a->appraiser_fullname} - Fecha del appraisal: {$a->facetofacedate})';
+$string['feedback_intro'] = 'Por favor elige tres o más colegas para que sean colaboradores de feedback en tu appraisal. En muchas regiones este feedback puede ser interno o externo. Por favor, dirígete a tu región si necesitas indicaciones específicas.<br/><br/>
+Para colaboradores de feedback internos, debes buscar feedback desde una perspectiva de "360 grados". Cuenta con tus compañeros, con aquellos más senior y más junior que tú. Debes elegir un grupo diverso.<br/><br/><div data-visible-regions="UKMEA, EUROPE, AUSTRALASIA">Al menos uno de tus colaboradores debe ser un cliente externo o colaborador que te conozca bien.</div><div data-visible-regions="East Asia"><br /><div class="alert alert-warning">For East Asia region, we expect feedback to be from internal source only. Comments from external client or collaborator should be understood and fed back through internal people.</div></div> <div data-visible-regions="Americas"><br /><div class="alert alert-warning">For the Americas Region, comments from external clients or collaborators should be fed back through conversations gathered outside of this feedback tool.</div></div>
+<br /><div class="alert alert-danger"> Nota: El feedback recibido por tus colaboradores elegidos será publicados aqui tan pronto como se reciba, a no ser que la solicitud de feedback haya sido solicitada por tu appraiser. En este caso el feedback aparecerá en tu appraisal cuando tu appraiser te envíe este para tus comentarios finales (tercera etapa).</div>';
+$string['feedbackrequests:paneltitle:requestmail'] = 'Solicitado correo de feedback';
+$string['form:addfeedback:addfeedback'] = 'Por favor, describe hasta tres áreas en las que puedas evaluar la aportación del appraisee en los últimos doce meses.';
+$string['form:addfeedback:addfeedback_2'] = 'Por favor, da detalles sobre las tres áreas en las que piensas que podrían haber sido más efectivas. Sé honesto, pero críticamente constructivo, ya que este feedback ayudará a tu colega a mejorar sus capacidades.';
+$string['form:addfeedback:addfeedback_2help'] = '<div class="well well-sm">Es importante para todos los miembros recibir feedback valioso y equitativo, incluyendo puntos fuertes y áreas de mejora. <br>Para ampliar la información, por favor haz click aquí <a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf" target="_blank">aquí</a></div>';
+$string['form:addfeedback:addfeedbackhelp'] = '<div class="well well-sm">Es importante para todos los miembros recibir feedback valioso y equitativo, incluyendo puntos fuertes y áreas de mejora. <br>Para ampliar la información, por favor haz click aquí <a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf" target="_blank">aquí</a></div>';
+$string['form:addfeedback:firstname'] = 'Nombre del proveedor de feedback';
+$string['form:addfeedback:lastname'] = 'Apellido del proveedor de feedback';
+$string['form:addfeedback:saveddraft'] = 'Has guardado una versión en borrador de tu feedback. Hasta que no confirmes el envío, no podrá ser visto por el appraiser o por el apraisee';
+$string['form:addfeedback:savedraftbtn'] = 'Guardar en borrador';
+$string['form:addfeedback:savedraftbtntooltip'] = 'Guardar en borrador para completar más tarde. Esta acción no enviará una copia del feedback a appraiser y appraisee.';
+$string['form:addfeedback:savefeedback'] = 'Guardar feedback';
+$string['form:development:comments'] = 'Comentarios del appraiser';
+$string['form:development:commentshelp'] = '<div class="well well-sm"><em>Para ser completado por el appraiser</em></div>';
+$string['form:feedback:editemail'] = 'Editar';
+$string['form:feedback:providefirstnamelastname'] = 'Por favor, añade el nombre y apellido antes de hacer click en el botón de editar';
+$string['form:lastyear:cardinfo:performancelink'] = 'Plan de Impacto del año pasado';
+$string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">Tu appraisal del año pasado</a> está disponible (PDF - opens in new window).';
+$string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>Para ser completado por quien confirma el appraisal.</em></div>';
+$string['helppage:intro'] = 'Haz click en el botón inferior para acceder a la página de ayuda del appraisal.';
+$string['leadersignoff'] = 'Firma de confirmación';
+$string['modal:printconfirm:cancel'] = 'No, está perfecto';
+$string['modal:printconfirm:content'] = 'Realmente necesitas imprimir este documento?';
+$string['modal:printconfirm:continue'] = 'Si, continúa';
+$string['modal:printconfirm:title'] = 'Piensa antes de imprimir';
+$string['overview:content:appraisee:2:3'] = 'Tu appraiser ha solicitado modificaciones en tu propuesta de appraisal.<br/><br/> <strong>Próximos pasos:</strong> <ul class="m-b-20"> <li>Realiza los cambios solicitados por tu appraiser (puedes consultar el registro de actividades para obtener información adicional sobre lo que tu appraiser ha solicitado)</li> <li>Vuelve a notificar tu propuesta de appraisal a {$a->styledappraisername}.</li> </ul>';
+$string['overview:content:appraisee:3'] = 'Acabas de enviar el draft de tu appraisal a (nombre del appraiser) para su revisión. <br /><br /><strong>Siguientes pasos:</strong><ul class="m-b-20"><li>Mantén la reunión cara a cara. Antes de la reunión puedes:</li><ul class="m-b-0"><li><a class="oa-print-confirm" href="{$a->printappraisalurl}">Bajarte el appraisal</a></li><li><a href="https://moodle.arup.com/appraisal/reference" target="_blank">Bajarte la guía de referencia</a></li></ul><li>A continuación de la reunión, el appraiser te enviará de vuelta el appraisal. Tu puedes o solicitar que se incluyan cambios tras la reunión o escribir los comentarios finales.</li></ul><div class="alert alert-danger" role="alert"><strong>Note:</strong>  puedes continuar editando el appraisal mientras está con tu appraiser, pero sugerimos que le notifiques cualquier cambio en el Activity log. </div>';
+$string['overview:content:appraiser:3'] = '{$a->styledappraiseename} ha enviado el borrador como preparación para tu reunion cara a cara. <br /><br />
+<strong>Siguientes pasos:</strong> <ul class="m-b-20"> <li>Por favor, revisar el appraisal de cada a tu reunión. Si es necesario, devuelve el appraisal al appraisee si necesitas cualquier información adicional. </li> <li> Antes de la entrevista deberás</li> <ul class="m-b-0"> <li><a class="oa-print-confirm" href="{$a->printappraisalurl}"> Bajar el appraisal</a></li> <li><a class="oa-print-confirm" href="{$a->printfeedbackurl}"> Bajar cualquier feedback recibido</a></li> <li> Quizá quieras consultar<a href="https://moodle.arup.com/appraisal/reference" target="_blank"> la guría de referencia de grados</a></li> </ul><li>Después de la reunión con tu appraiser, por favor:</li> <ul class="m-b-0"> <li>Marcar que la reunión cara a cara ha sido realizada en la sección del appraisee</li> <li> Añadir tus comentarios en todas las secciones</li> <li>Escribir ru resumen y las acciones acordadas en la sección de resúmenes</li> (Si es necesario, puedes devolver el appraisal al appraisee para ser modificado antes de que incluyas tus comentarios) </ul> <li>Enviárselo al appraisee para que revise tus comentarios, ver feedback y añadir los comentarios finales</li> </ul>';
+$string['overview:content:special:archived'] = '<div class="alert alert-danger" role="alert">Este appraisal ha sido archivado.<br /> A partir de ahora es posible<a class="oa-print-confirm" href="{$a->printappraisalurl}"> bajarse el appraisal</a>.</div>';
+$string['overview:content:special:archived:appraisee'] = '<div class="alert alert-danger" role="alert">Este appraisal ha sido archivado.<br />A partir de ahora es posible<a class="oa-print-confirm" href="{$a->printappraisalurl}">bajarse el appraisal </a>.</div>';
+$string['overview:lastsaved'] = 'Guardado por última vez: {$a}';
+$string['overview:lastsaved:never'] = 'Nunca';
+$string['pdf:feedback:confidentialhelp:appraisee'] = '# Feedback confidencial que no es visible para ti';
+$string['pdf:feedback:notyetavailable'] = 'No visible todavía';
+$string['pdf:feedback:requestedfrom'] = 'Revisor {$a->firstname} {$a->lastname}{$a->appraiserflag}{$a->confidentialflag}:';
+$string['pdf:feedback:requestedhelp'] = '# Feedback pedido por tu appraiser que aún no es visible para ti.';
+$string['pdf:header:warning'] = 'Guardado por: {$a->who} en {$a->when}<br>
+Por favor, asegura la confidencialidad de este documento.';
+$string['status:7:leadersignoff'] = 'Firma de confirmación';
