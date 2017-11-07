@@ -265,6 +265,15 @@ $string['overview:content:appraiser:2:3'] = 'Je hebt de beoordeling terug gestuu
 <div class="alert alert-danger" role="alert">Je kan nog steeds aanpassingen maken in de verschillende secties.</div>';
 
 // ERROR: translated word "note" is missing
+$string['overview:content:appraiser:5'] = '{$a->styledappraiseename} heeft zijn laatste commentaar toegevoegd.<br /><br />
+<strong>Volgende stappen:</strong>
+    <ol class="m-b-20">
+        <li>Review de laatste versie van de beoordeling voordat hij wordt afgetekend</li>
+        <li>Stuur de beoordeling naar (naam verantwoordelijke voor aftekenen) om te laten reviewen en eventueel commentaar toe te voegen</li>
+        <li>Jij en de beoordeelde worden bericht wanneer de beoordeling is afgetekend</li>
+    </ol>
+<div class="alert alert-danger" role="alert"> Je kan geen wijzigingen in de beoordeling meer aanbrengen behalve wanneer je de beoordeling daarna terug stuurt naar de beoordeelde.</div>';
+// ERROR: translated word "note" is missing
 $string['overview:content:appraiser:6'] = 'Je hebt de beoordeling naar {$a->styledsignoffname} gestuurd om deze af te sluiten.<br /><br />
     <div class="alert alert-danger" role="alert">Het appraisal is afgesloten, er kunnen geen wijzigingen meer worden gedaan. </div>';
 $string['overview:content:appraiser:7'] = 'Deze beoordeling is nu afgesloten.';
