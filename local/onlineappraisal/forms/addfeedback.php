@@ -93,7 +93,7 @@ class apform_addfeedback extends moodleform {
                     $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $this->str('savefeedback'));
                 } else {
                     $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $this->str('sendemailbtn'),
-                    'class="sendfeedbackbtn"'));
+                    'class="sendfeedbackbtn"');
                     $buttonarray[] = &$mform->createElement('submit', 'savedraft', $this->str('savedraftbtn'),
                     'class="savedraftbtn" data-toggle="tooltip" data-placement="top" title="' . $this->str('savedraftbtntooltip') . '"');
                 }
