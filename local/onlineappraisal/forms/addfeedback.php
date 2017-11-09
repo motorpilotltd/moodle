@@ -92,9 +92,10 @@ class apform_addfeedback extends moodleform {
                 if ($this->pw == 'self') {
                     $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $this->str('savefeedback'));
                 } else {
-                    $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $this->str('sendemailbtn'));
+                    $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $this->str('sendemailbtn'),
+                    'class="sendfeedbackbtn"'));
                     $buttonarray[] = &$mform->createElement('submit', 'savedraft', $this->str('savedraftbtn'),
-                    'data-toggle="tooltip" data-placement="top" title="' . $this->str('savedraftbtntooltip') . '"');
+                    'class="savedraftbtn" data-toggle="tooltip" data-placement="top" title="' . $this->str('savedraftbtntooltip') . '"');
                 }
 
                 $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
