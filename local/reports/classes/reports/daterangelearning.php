@@ -167,8 +167,8 @@ class daterangelearning extends base {
             'company_code' => 'staff.COMPANY_CODE',
             'centre_code' => 'staff.CENTRE_CODE',
             'lastupdatedate' => 'lte.lastupdatedate',
-            'bookingplaceddate' => 'lte.bookingplaceddate',
-            'classcompletiondate' => 'lte.classcompletiondate'
+            'classcompletiondate' => 'lte.classcompletiondate',
+            'classenddate' => 'lte.classenddate'
         );
 
         $this->datefields = array(
@@ -257,10 +257,8 @@ class daterangelearning extends base {
                 }
                 if (in_array($filter->field, $this->datefields)) {
                     
-
-                    $lastupdatedate = $this->filtertodb['lastupdatedate'];
-                    $bookingplaceddate = $this->filtertodb['bookingplaceddate'];
                     $classcompletiondate = $this->filtertodb['classcompletiondate'];
+                    $classenddate = $this->filtertodb['classenddate'];
 
                     if ($filter->field == 'startdate') {
                         
@@ -269,9 +267,8 @@ class daterangelearning extends base {
                         $end = $this->setfilters['enddate'];
                         $enddate = $end->value[0];
                         $wherestring .= "
-                            ( ( $lastupdatedate > $startdate AND $lastupdatedate < $enddate ) OR
-                              ( $bookingplaceddate > $startdate AND $bookingplaceddate < $enddate ) OR
-                              ( $classcompletiondate > $startdate AND $classcompletiondate < $enddate )
+                            ( ( $classenddate > $startdate AND $classenddate < $enddate ) OR
+                              ( $classenddate = 0 AND ($classcompletiondate > $startdate AND $classcompletiondate < $enddate ) )
                             )";
                     } else {
                         $wherestring .= "1 = 1";
