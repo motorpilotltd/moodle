@@ -168,7 +168,8 @@ class daterangelearning extends base {
             'centre_code' => 'staff.CENTRE_CODE',
             'lastupdatedate' => 'lte.lastupdatedate',
             'classcompletiondate' => 'lte.classcompletiondate',
-            'classenddate' => 'lte.classenddate'
+            'classenddate' => 'lte.classenddate',
+            'classtype' => 'lte.classtype'
         );
 
         $this->datefields = array(
@@ -259,6 +260,7 @@ class daterangelearning extends base {
                     
                     $classcompletiondate = $this->filtertodb['classcompletiondate'];
                     $classenddate = $this->filtertodb['classenddate'];
+                    $classtype = $this->filtertodb['classtype'];
 
                     if ($filter->field == 'startdate') {
                         
@@ -267,8 +269,18 @@ class daterangelearning extends base {
                         $end = $this->setfilters['enddate'];
                         $enddate = $end->value[0];
                         $wherestring .= "
-                            ( ( $classenddate > $startdate AND $classenddate < $enddate ) OR
-                              ( $classenddate = 0 AND ($classcompletiondate > $startdate AND $classcompletiondate < $enddate ) )
+                            (
+                                (
+                                    $classtype = 'Scheduled'
+                                    AND
+                                    ($classenddate > $startdate AND $classenddate < $enddate)
+                                ) 
+                                OR
+                                (
+                                    ($classtype = 'Self Paced' OR cpdid > '')
+                                    AND
+                                    ($classcompletiondate > $startdate AND $classcompletiondate < $enddate )
+                                )
                             )";
                     } else {
                         $wherestring .= "1 = 1";
