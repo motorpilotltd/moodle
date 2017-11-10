@@ -80,6 +80,7 @@ class block_certification_report_renderer extends plugin_renderer_base {
                     }
                     $url->param($param, $itemid);
                     $line[] = html_writer::link($url, $item['fullname']);
+                    /* Temporarily hide
                     if (count($header) > 2) {
                         $line[0] .= ' ';
                         $extraclass = $item['users'] == 0 ? 'optional' : 'status-text-'.certification_report::get_rag_status($item['progress']);
@@ -87,6 +88,7 @@ class block_certification_report_renderer extends plugin_renderer_base {
                         $userscomplete = round(($item['progress']/100) * $item['users']);
                         $line[0] .= html_writer::span($userscomplete.' / '.$item['users'], "user-progress {$extraclass}");
                     }
+                    */
                 }else{
                     $line[] = $item['name'];
                 }
