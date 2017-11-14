@@ -57,12 +57,24 @@ if (isset($ADMIN)) {
             'local/reports:view'
             )
         );
+
     $url = new moodle_url('/local/reports/index.php', array('page' => 'elearningstatus'));
     $ADMIN->add(
         'local_reports',
         new admin_externalpage(
             'local_reports_elearningstatus',
             get_string('elearningstatus', 'local_reports'),
+            $url,
+            'local/reports:view'
+            )
+        );
+
+    $url = new moodle_url('/local/reports/index.php', array('page' => 'daterangelearning'));
+    $ADMIN->add(
+        'local_reports',
+        new admin_externalpage(
+            'local_reports_daterangelearning',
+            get_string('daterangelearning', 'local_reports'),
             $url,
             'local/reports:view'
             )

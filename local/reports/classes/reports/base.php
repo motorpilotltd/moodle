@@ -55,9 +55,10 @@ class base {
     public $reportname;
     public $errors;
     public $baseurl;
-
+    public $datefields;
     private $strings;
     public $taps;
+    public $visiblesearchfields;
 
     public function __construct(\local_reports\report $report) {
         $this->taps = new \local_taps\taps();
@@ -65,14 +66,13 @@ class base {
         $this->reportname = 'base';
         $this->report = $report;
         $this->baseurl = '/local/reports/index.php';
-        // $this->reportfields();
-
         $this->start = optional_param('start', 0, PARAM_INT);
         $this->limit = optional_param('limit', 100, PARAM_INT);
         $this->sort = optional_param('sort', '', PARAM_TEXT);
         $this->direction = optional_param('dir', 'ASC', PARAM_TEXT);
         $this->search = optional_param('search', '', PARAM_TEXT);
         $this->action = optional_param('action', '', PARAM_TEXT);
+        $this->visiblesearchfields = 1;
     }
 
     public function removefilter() {
@@ -143,6 +143,7 @@ class base {
         $filter->field = $key;
         $filter->name = $this->mystr($key);
         $filter->type = $this->textfilterfields[$key];
+        
         // $value will be array when make_filter is called from
         // function get_filters
         if (is_array($value)) {
@@ -150,10 +151,14 @@ class base {
             $filter->value = $value;
         } else {
             $filter->value = array($value);
+            if (in_array($key, $this->datefields)) {
+                $filter->displayvalue = userdate($value, get_string('strftimedate'), 'UTC');
+            }
         }
+
         $params = array('action' => 'removefilter', 'filter' => $key, 'page' => $this->reportname );
         $filter->urlremove = new moodle_url($this->baseurl, $params);
-        $params= array('report' => 'elearningstatus', 'search' => $key);
+        $params = array('report' => 'elearningstatus', 'search' => $key);
         $filter->url = new moodle_url($this->baseurl, $params);
         // We can fill setfilters when make_filter is called from
         // function get_filters, these filters were stored in session
@@ -166,11 +171,18 @@ class base {
             // the filter->values into an array.
             // If the filter was not set yet it we can just add the filter to setfilters
             if (!array_key_exists($key, $this->setfilters)) {
-                $filter->displayvalue = $value;
+                if (in_array($key, $this->datefields)) {
+                    $filter->displayvalue = userdate($value, get_string('strftimedate'), 'UTC');
+                } else {
+                    $filter->displayvalue = $value;
+                }
                 $this->setfilters[$key] = $filter;
             } else {
                 $oldfilter = $this->setfilters[$key];
-                if (!in_array($value, $oldfilter->value)) {
+                // Date fields alway overwrite
+                if (in_array($key, $this->datefields)) {
+                    $this->setfilters[$key] = $filter;
+                } else if (!in_array($value, $oldfilter->value)) {
                     array_push($oldfilter->value, $value);
                     $filter->value = $oldfilter->value;
                     $filter->displayvalue = implode(", ", $filter->value);
@@ -208,10 +220,11 @@ class base {
 
         // Check if search for validated okay, if not it needs to be displayed without collapse
         $this->searchformokay = true;
-        if ($this->searchform->is_submitted() && !$this->searchform->is_validated()) {
+        if ($this->searchform->is_submitted() && ! $this->searchform->is_validated()) {
             $this->searchformokay = false;
-        } 
-        $this->searchformhtml = $this->get_form_html($this->searchform);
+        }
+        
+        $this->searchformhtml = $this->searchform->render();
 
         // Add all setfilters to sessions
         $sfilters = array();
@@ -234,14 +247,5 @@ class base {
             return 'nostring';
         }
         return get_string('learninghistory:' . $string, 'local_reports', $vars);
-    }
-
-    public function get_form_html($form) {
-        $o = '';
-        ob_start();
-        $form->display();
-        $o = ob_get_contents();
-        ob_end_clean();
-        return $o;
     }
 }
