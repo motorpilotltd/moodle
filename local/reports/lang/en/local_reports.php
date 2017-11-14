@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Arup Reports';
 $string['learninghistory'] = 'Learning History';
+$string['daterangelearning'] = 'Date Range Learning';
 $string['noaccess'] = 'You are not allowed to access this page.';
 $string['exportreport'] = 'Export Report';
 $string['csv_export_limit'] = 'Maximum records for CSV export';
@@ -100,8 +101,12 @@ $string['learninghistory:leaver_flag_help'] = 'Active Users helptext';
 $string['learninghistory:region_help'] = 'Region Help';
 $string['learninghistory:exclusion_help'] = 'Exclusion Help';
 $string['learninghistory:employee_number_help'] = 'Employee number Help';
-
-
+$string['learninghistory:startdate'] = 'Start date';
+$string['learninghistory:startdate_help'] = 'Start date Help';
+$string['learninghistory:enddate'] = 'End date';
+$string['learninghistory:enddate_help'] = 'End date Help';
+$string['learninghistory:lastupdatedate'] = 'Last update date';
+$string['learninghistory:lastupdatedate_help'] = 'Last update date help';
 
 $string['elearningstatus'] = 'Elearning Status';
 // Other UI elements

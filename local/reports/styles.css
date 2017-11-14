@@ -39,3 +39,7 @@
 .path-local-reports .form-small.formerror .showmore.collapsed {
     display: none;
 }
+.path-local-reports .form-datesearch .fitem_id_startdate,
+.path-local-reports .form-datesearch .fitem_id_enddate {
+    display: inline-block;
+}

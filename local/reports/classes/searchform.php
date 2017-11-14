@@ -39,12 +39,10 @@ class searchform extends moodleform {
         $mform->setType('page', PARAM_RAW);
         $filters = $data->filteroptions;
 
-        //echo '<pre>' . print_r($filters, true) . '</pre>';
-
-        $count = 0;
+        $count = -1;
         foreach ($filters as $filter) {
             $count++;
-            if ($count == 2) {
+            if ($count == $data->visiblesearchfields) {
                 $mform->addelement('html', '<div id="extrafields" class="collapse">');
             }
             if ($filter->type == 'yn') {
@@ -65,6 +63,9 @@ class searchform extends moodleform {
                 );   
                 $mform->addElement('autocomplete', $filter->field, $filter->name, $options, $params);
                 $mform->setDefault($filter->field, '');
+            } else if ($filter->type == 'date') {
+                $mform->addElement('date_selector', $filter->field, $filter->name);
+                $mform->setDefault($filter->field, '');
             } else {
                 $mform->addElement('text', $filter->field, $filter->name);
                 if ($filter->type == 'int') {
@@ -73,7 +74,6 @@ class searchform extends moodleform {
                     $mform->setType($filter->field, PARAM_RAW);
                 }
             }
-            
             $mform->addHelpButton($filter->field, 'learninghistory:' . $filter->field, 'local_reports');
         }
         $mform->addelement('html', '</div>');
