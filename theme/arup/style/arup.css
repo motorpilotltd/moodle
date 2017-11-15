@@ -24056,6 +24056,10 @@ img.media-object {
 .nav.nav-tabs {
   margin: 0 0 10px 0;
 }
+.notloggedin .usermenu {
+  padding-top: 0;
+  padding-bottom: 0;
+}
 .navbar-nav.usermenu .moodleuser .picspan {
   margin-right: 5px;
 }
