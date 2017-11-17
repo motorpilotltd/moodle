@@ -236,8 +236,11 @@ class certification_report {
         return $options;
     }
 
-    public static function get_data($filters = []){
+    public static function get_data($infilters = null){
         global $DB;
+
+        // Clone if an object as might be manipulated in this method.
+        $filters = is_object($infilters) ? clone $infilters : $infilters;
 
         $regionview = optional_param('regionview', 'actual', PARAM_ALPHA);
         $regionfield = $regionview == 'geo' ? 'georegion' : 'actualregion';
@@ -1059,18 +1062,22 @@ class certification_report {
                              * Progress for required (non-optional, not exempt) assignments.
                              */
                             'progress' => null,
+                            'userscounter' => 0,
                             /**
                              * Progress for all (including optional and exempt) assignments.
                              */
                             'allprogress' => 0,
+                            'alluserscounter' => 0,
                             /**
                              * Progress for optional assignments.
                              */
                             'optionalprogress' => 0,
+                            'optionaluserscounter' => 0,
                             /**
                              * Progress for exempt assignments.
                              */
                             'exemptprogress' => 0,
+                            'exemptuserscounter' => 0,
                             /**
                              * Is this overall (everyone) optional?
                              */
@@ -1084,9 +1091,13 @@ class certification_report {
                 }
 
                 $data[$compldata->itemid]['certifications'][$compldata->certifid]['progress'] = $compldata->userscounter ? round($compldata->progresssum / $compldata->userscounter) : null;
+                $data[$compldata->itemid]['certifications'][$compldata->certifid]['userscounter'] = $compldata->userscounter;
                 $data[$compldata->itemid]['certifications'][$compldata->certifid]['allprogress'] = round($compldata->allprogresssum / MAX(1, $compldata->alluserscounter));
+                $data[$compldata->itemid]['certifications'][$compldata->certifid]['alluserscounter'] = $compldata->alluserscounter;
                 $data[$compldata->itemid]['certifications'][$compldata->certifid]['optionalprogress'] = round($compldata->optionalprogresssum / MAX(1, $compldata->optionaluserscounter));
+                $data[$compldata->itemid]['certifications'][$compldata->certifid]['optionaluserscounter'] = $compldata->optionaluserscounter;
                 $data[$compldata->itemid]['certifications'][$compldata->certifid]['exemptprogress'] = round($compldata->exemptprogresssum / MAX(1, $compldata->exemptuserscounter));
+                $data[$compldata->itemid]['certifications'][$compldata->certifid]['exemptuserscounter'] = $compldata->exemptuserscounter;
                 
                 $data['viewtotal']['certifications'][$compldata->certifid]['progresssum'] += $compldata->progresssum;
                 $data['viewtotal']['certifications'][$compldata->certifid]['userscounter'] += $compldata->userscounter;
@@ -1443,7 +1454,14 @@ class certification_report {
         }
         foreach($filteroptions['certificationsdata'] as $certification){
             if (isset($data['viewtotal']['certifications'][$certification->id]) && $data['viewtotal']['certifications'][$certification->id]['progress'] !== null) {
-                $header[] = $certification->shortname.($data['viewtotal']['certifications'][$certification->id]['optional']==1? get_string('optional', 'block_certification_report') : '');
+                $header[] = $certification->shortname
+                        . ($data['viewtotal']['certifications'][$certification->id]['exempt'] == 1 ? "\n" . get_string('exempt', 'block_certification_report') : '')
+                        . ($data['viewtotal']['certifications'][$certification->id]['optional'] == 1 ? "\n" . get_string('optional', 'block_certification_report') : '')
+                        . "\n" . get_string('headercomplete', 'block_certification_report');
+                $header[] = $certification->shortname
+                        . ($data['viewtotal']['certifications'][$certification->id]['exempt'] == 1 ? "\n" . get_string('exempt', 'block_certification_report') : '')
+                        . ($data['viewtotal']['certifications'][$certification->id]['optional'] == 1 ? "\n" . get_string('optional', 'block_certification_report') : '')
+                        . "\n" . get_string('headertotal', 'block_certification_report');
                 $usersheader[] = $certification->shortname;
             }
         }
@@ -1454,7 +1472,10 @@ class certification_report {
         } else {
             // Show filters on first line.
             $renderer = $PAGE->get_renderer('block_certification_report');
-            $lines[] = [$renderer->show_active_filters($filters, $filteroptions, false)];
+            $filterline = $renderer->show_active_filters($filters, $filteroptions, false);
+            if (!empty($filterline)) {
+                $lines[] = [$filterline];
+            }
             $lines[] = $header;
         }
 
@@ -1471,7 +1492,8 @@ class certification_report {
                 $line[] = $item['userdata']->employmentcategory;
                 $line[] = $item['userdata']->actualregion;
                 $line[] = $item['userdata']->georegion;
-                $line[] = isset($ccs[$item['userdata']->costcentre]) ? $ccs[$item['userdata']->costcentre] : $item['userdata']->costcentre;
+                $costcentre = isset($ccs[$item['userdata']->costcentre]) ? $ccs[$item['userdata']->costcentre] : $item['userdata']->costcentre;
+                $line[] = $costcentre == -1 ? '' : $costcentre;
                 $line[] = $item['userdata']->groupname;
                 $line[] = $item['userdata']->locationname;
             } else {
@@ -1481,14 +1503,23 @@ class certification_report {
                 if (isset($data['viewtotal']['certifications'][$certificationid]) && $data['viewtotal']['certifications'][$certificationid]['progress'] !== null) {
                     if (isset($certification['exemptionid']) && $certification['exemptionid'] > 0) {
                         $line[] = get_string('notrequired', 'block_certification_report');
+                        if ($view != 'users') {
+                            $line[] = get_string('notrequired', 'block_certification_report');
+                        }
                     } elseif ($certification['progress'] === null) {
                         $line[] = get_string('na', 'block_certification_report');
-                    } else {
+                        if ($view != 'users') {
+                            $line[] = get_string('na', 'block_certification_report');
+                        }
+                    } elseif ($view == 'users') {
                         $cell = $certification['progress'] . '%';
                         if (isset($certification['completiondate']) && $certification['completiondate'] > 0) {
                             $cell .= ' (' . userdate($certification['completiondate'], get_string('strftimedatefullshort')) . ')';
                         }
                         $line[] = $cell;
+                    } else {
+                        $line[] = round(($certification['progress']/100) * $certification['userscounter']);
+                        $line[] = $certification['userscounter'];
                     }
                 }
             }
