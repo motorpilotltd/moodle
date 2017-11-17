@@ -32,10 +32,6 @@ $string['alert:language:notdefault'] ='Waarschuwing: je gebruikt niet de standaa
 // START FORM
 // Introduction Page
 $string['appraisee_heading'] = 'Welkom bij het online beoordeling systeem';
-$string['appraisee_welcome'] = 'Je beoordeling is een mogelijkheid voor jou en je beoordelaar om een waardevol gesprek te hebben over je eigen resultaten en ontwikkeling.<br /><br />
-De doelstelling van dit online hulpmiddel is je te helpen het gesprek vast te leggen en gedurende het jaar te gebruiken als referentie.<br /><br />
-Klik op het plaatje aan de rechterkant om de introductie van Gregory Hodkinson te zien.<br /><br />
-Extra informatie kan je <a href="https://moodle.arup.com/appraisal/essentials" target="_blank">hier</a>  vinden.';
 
 // Userinfo.
 $string['form:userinfo:intro'] = 'Vul alsjeblieft de gegevens hieronder in. Sommige velden zijn al ingevuld door middel van TAPS data. Als de informatie in deze velden niet correct is, neem dan contact op met de HR afdeling. ';
@@ -47,10 +43,6 @@ $string['form:userinfo:operationaljobtitle'] = 'Operationele functietitel
 ';
 $string['form:userinfo:facetoface'] = 'Voorgestelde face to face datum';
 $string['form:userinfo:facetofaceheld'] = 'Face to face bijeenkomst datum';
-
-// Give Feedback.
-$string['feedback_intro'] = 'Kies drie of meer collega’s die je feedback kunnen geven op je beoordeling. In de meeste regio’s kan deze feedback zowel door interne medewerkers als door externen gedaan worden. Voor specifieke ondersteuning refereer altijd naar je eigen regio.<br/><br/> Bij feedback van interne medewerkers probeer “360 graden” feedback te krijgen dus zowel van mensen op gelijk niveau, op hoger en op lager niveau. Selecteer altijd een mengeling.<br/><br/>
-Een van de externen kan een klant zijn of iemand waarmee wordt samen gewerkt.';
 
 // Feedback
 $string['form:feedback:email']='Email adres';
@@ -212,31 +204,16 @@ $string['form:addfeedback:notfound']='Geen feedback verzoek gevonden';
 $string['form:addfeedback:sendemailbtn']='Verstuur appraisal feedback';
 $string['form:addfeedback:closed']='Het formulier om je feedback te geven is nu afgesloten';
 $string['form:addfeedback:submitted']='Feedback verzonden';
-$string['form:addfeedback:addfeedback']='Geef voor tenminste drie gebieden aan waarvoor je de appraisee hebt gewaardeerd de afgelopen 12 maanden. Geef vervolgens voor drie onderwerpen aan waar je het gevoel hebt dat de appraisee meer effectief had kunnen zijn. Wees eerlijk maar constructief in je feedback om je collega te helpen.';
 
 // Feedback Contribution
-$string['feedback_header'] = 'Feedback over {$a->appraisee_fullname}';
 $string['feedback_addfeedback'] = 'Beschrijf drie gebieden waarin de bijdrage van de beoordeelde in de laatste 12 positief wordt gewaardeerd. Geef dan ook drie gebieden waarin de bijdrage effectiever zou kunnen zijn. Wees eerlijk en geef constructieve feedback want dat maakt het eenvoudiger voor de beoordeelde om de naar voren gebrachte onderwerpen aan te pakken.';
 $string['confidential_label_text'] = 'Hierin kan worden aangegeven of de informatie vertrouwelijk behandeld moet worden. Wanneer dit niet is aangegeven wordt de informatie gedeeld met de beoordeelde.';
 
 // Feedback request email - sent by APPRAISEE
 $string['email:subject:appraiseefeedback'] = 'Verzoek voor feedback voor mijn appraisal';
-$string['email:body:appraiseefeedbackmsg'] = '<p>Beste <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
-<p>Mijn beoordeling vindt binnenkort plaats. Omdat wij het afgelopen jaar met elkaar hebben samen gewerkt zou ik het op prijs stellen wanneer je mij feedback zou kunnen geven op de gebieden waarin je mijn bijdrage waardeert en waar je vindt dat ik effectiever had kunnen zijn. Als je het zou willen doen, klik dan op de hieronder aangegeven link.</p>
-<p>Mijn beoordeling is op <span class="placeholder">{{held_date}}</span>, geef de feedback dus voor deze datum.</p>
-<p>De feedback wordt met mij gedeeld aan het einde van de bijeenkomst met mijn beoordelaar tenzij je aangeeft dat de informatie confidentieel is.</p>
-<p>Hieronder vind je eventueel extra commentaar van <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
-<p>Bij voorbaat dank,<br />
-<span class="placeholder">{{appraisee_fullname}}</span></p>';
 
 // Feedback request email - sent by APPRAISER
 $string['email:subject:appraiserfeedback'] = 'Verzoek voor feedback voor {{appraisee_fullname}}';
-$string['email:body:appraiserfeedbackmsg'] = '<p>Beste <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
-<p>Ik ben op dit moment bezig met een beoordeling van <span class="placeholder">{{appraisee_fullname}}</span> en omdat jij recentelijk nauw met hem/haar hebt samengewerkt zou ik je willen vragen om feedback te geven over zijn/haar bijdrage. Ik zou het op prijs stellen als je zowel feedback geeft op gebieden waar je de bijdrage positief beoordeeld als gebieden waar de bijdrage volgens jou effectiever zou kunnen zijn. Als je het zou willen doen, klik dan op de onderstaande link.</p>
-<p>De beoordeling is op <span class="placeholder">{{held_date}}</span>, dus doe het voor deze datum.</p>
-<p>De feedback wordt gedeeld met <span class="placeholder">{{appraisee_fullname}}</span> na de bijeenkomst met de beoordeelde tenzij jij aangeeft dat de informatie confidentieel is.</p>
-<p>Hieronder vind je eventueel extra commentaar van <span class="placeholder">{{appraiser_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
-<p>Bij voorbaat dank,<br /> <span class="placeholder">{{appraiser_fullname}}</span></p>';
 
 // START OVERVIEW CONTENT
 
@@ -260,17 +237,7 @@ $string['overview:content:appraisee:2:3'] = 'De beoordelaar heeft gevraagd om en
         <li>Maak de door de beoordelaar gewenste aanpassingen (gebruik de activiteiten log voor meer informatie over wat er gewenst is).</li>
         <li>Deel je draft beoordeling met {$a->styledappraisername}.</li>
     </ol>';
-$string['overview:content:appraisee:3'] = 'Je hebt je draft beoordelingsformulier toegestuurd aan {$a->styledappraisername} om te reviewen.<br /><br />
-<strong>Volgende stappen:</strong>
-    <ol class="m-b-20">
-        <li>Heb het beoordelingsgesprek - voor de bijeenkomst kan het interessant zijn het volgende te downloaden:</li>
-        <ul class="m-b-0">
-            <li>De <a href="{$a->printappraisalurl}">beoordeling</a></li>
-            <li>De "<a href="https://moodle.arup.com/appraisal/reference" target="_blank">quick reference guide</a>"</li>
-        </ul>
-        <li>Na de bijeenkomst zal de beoordelaar de beoordeling aan je terug geven. Daarbij zal aan je worden gevraagd om ofwel aanpassingen te maken zoals die tijdens de bijeenkomst zijn overeengekomen</li>
-    </ol>
-<div class="alert alert-danger" role="alert">Je kan de beoordeling nog aanpassen wanneer het al bij de beoordelaar is, maar zorg ervoor dat je eventuele wijzigingen markeert in de activiteiten log.</div>';
+
 // ERROR: translated word "note" is missing
 $string['overview:content:appraisee:3:4'] = 'Je hebt de beoordeling terug gestuurd naar {$a->styledappraisername} om veranderingen aan te brengen.<br /><br /> Je ontvangt een bericht wanneer de beoordeling is aangepast en klaar is om gereviewed te worden.<br /><br /> <div class="alert alert-danger" role="alert">Je kan de beoordeling blijven aanpassen wanneer deze bij de beoordelaar ligt maar het is verstandig wijzigingen te markeren in de activiteiten log.</div>';
 // ERROR: translated word "note" is missing
@@ -284,11 +251,7 @@ $string['overview:content:appraisee:4'] = '{$a->styledappraisername} heft zijn c
 <div class="alert alert-danger" role="alert"> Je mag de secties aanpassen zolang de beoordeling nog niet is afgetekend maar het is verstandig de wijzigingen te markeren in de activiteiten log.</div>';
 // ERROR: translated word "note" is missing
 // ERROR: type "heft" --> "heeft" ?
-$string['overview:content:appraisee:5'] = 'Je hebt je compleet ingevulde beoordeling naar {$a->styledappraisername} gestuurd voor de laatste review.<br /><br /> <strong>Volgende stappen: </strong>
-    <ol class="m-b-20">
-        <liJe beoordelaar stuurt de beoordeling naar {$a->styledsignoffname} om af te laten tekenen.</li>
-    </ol>
-<div class="alert alert-danger" role="alert">Je kan geen veranderingen meer aanbrengen in de beoordeling behalve wanneer de beoordelaar de beoordeling naar je terugstuurt om veranderingen aan te brengen.</div>';
+
 // ERROR: translated word "note" is missing
 $string['overview:content:appraisee:6'] = 'Je beoordeling is naar {$a->styledsignoffname} gestuurd om te reviewen en een samenvatting te schrijven.<br /><br />
 <div class="alert alert-danger" role="alert">De beoordeling is nu afgesloten en er kunnen geen wijzigingen meer worden aangebracht.</div>';
@@ -300,35 +263,7 @@ $string['overview:content:appraiser:2'] = 'De beoordeling wordt opgesteld door {
 <div class="alert alert-danger" role="alert">Het is niet mogelijk om het appraisal te bekijken voordat het is gedeeld met je.</div>';
 $string['overview:content:appraiser:2:3'] = 'Je hebt de beoordeling terug gestuurd naar {$a->styledappraiseename} om aan te passen. Je krijgt een bericht wanneer de draft beoordeling is aangepast en opnieuw gereviewed kan worden.<br /><br />
 <div class="alert alert-danger" role="alert">Je kan nog steeds aanpassingen maken in de verschillende secties.</div>';
-// ERROR: translated word "note" is missing
-$string['overview:content:appraiser:3'] = '{$a->styledappraiseename} heeft een draft beoordelingsformulier ingediend als voorbereiding voor de beoordelingsbijeenkomst.<br /><br />
-<strong>Volgende stappen:</strong>
-    <ol class="m-b-20">
-        <li>Review a.u.b. de beoordeling als voorbereiding voor de bijeenkomst. Als bijvoorbeeld extra informatie nodig is vermeld dit en stuur het formulier terug.</li>
-        <li>Het is aan te raden om het volgende te downloaden</li>
-        <ul class="m-b-0">
-            <li>de <a href="{$a->printappraisalurl}">beoordeling</a></li>
-            <li><a href="{$a->printfeedbackurl}">alle feedback</a></li>
-            <li>de <a href="https://moodle.arup.com/appraisal/reference" target="_blank">quick reference guide.</a></li>
-        </ul>
-        <li>Na de bijeenkomst zorg dat</li>
-        <ul class="m-b-0">
-            <li>het plaatsvinden van de bijeenkomst wordt vastgelegd in de Beoordeelde Sectie</li>
-            <li>vul het commentaar in bij iedere sectie</li>
-            <li>vul de samenvatting en de overeengekomen afspraken in bij de samenvatting sectie</li>
-            (Indien nodig kan je het beoordelingsformulier eerst terugsturen naar de beoordeelde om aanpassingen te doen voordat je je eigen commentaar toevoegt)
-        </ul>
-        <li>Stuur de beoordeelde je commentaar, bekijk de feedback en geef ze de mogelijkheid om het laatste commentaar toe te voegen.</li>
-    </ol>';
-$string['overview:content:appraiser:3:4'] = '{$a->styledappraiseename} heft gevraagd veranderingen aan te brengen in de beoordeling.<br /><br />
-<strong>Volgende stappen:</strong>
-    <ol class="m-b-20">
-        <li>Pas de beoordeling aan conform het verzoek van de beoordeelde (zie activiteiten log voor meer) </li>
-        <li>Deel de beoordeling met (naam beoordeelde) voor laatste commentaar</li>
-    </ol>';
-// ERROR: typo? "heft" --> "heeft"
-$string['overview:content:appraiser:4'] = 'Je hebt je commentaar en samenvatting toegevoegd en de beoordeling terug gestuurd naar {$a->styledappraiseename}om het laatste commentaar toe te voegen. Je krijgt een bericht wanneer de beoordeling klaar is voor een laatste review.<br /><br />
-<div class="alert alert-danger" role="alert">Je mag de secties aanpassen zolang de beoordeling nog niet is afgetekend maar het is verstandig de wijzigingen te markeren in de activiteiten log voor de beoordeelde.</div>';
+
 // ERROR: translated word "note" is missing
 $string['overview:content:appraiser:5'] = '{$a->styledappraiseename} heeft zijn laatste commentaar toegevoegd.<br /><br />
 <strong>Volgende stappen:</strong>
@@ -470,7 +405,6 @@ $string['form:feedback:alert:saved'] = 'Je appraisal feedback verzoek is succesv
 $string['form:lastyear:nolastyear'] = 'Opmerking: er is geen vorig appraisal document aanwezig in het systeem, upload je laatste appraisal document (pdf/word) hieronder.';
 
 $string['form:lastyear:cardinfo:developmentlink'] = 'Ontwikkeling van vorig jaar';
-$string['form:lastyear:cardinfo:performancelink'] = 'Prestatie van vorig jaar';
 
 // Feedback Requests
 $string['feedbackrequests:description'] = 'Dit dashboard geeft openstaande feedback verzoeken weer en geeft je de mogelijkheid om feedback wat je in het verleden hebt gegeven te bekijken. ';
@@ -508,3 +442,88 @@ $string['pdf:form:summaries:signoff'] = 'Af te tekenen samenvatting';
 $string['pdf:form:summaries:recommendations'] = 'Overeengekomen acties';
 
 // END NL string translations - spreadsheet
+
+// 2017 : Updates and additions.
+$string['addreceivedfeedback'] = 'Voeg ontvangen feedback toe';
+$string['appraisee_feedback_savedraft_error'] = 'Foutmelding bij het opslaan van je concept';
+$string['appraisee_feedback_savedraft_success'] = 'Concept feedback opgeslagen';
+$string['appraisee_feedback_viewrequest_text'] = 'Bekijk de e-mail voor het verzoeken van feedback';
+$string['appraisee_welcome'] = 'Jouw appraisal is een kans voor jou en je beoordelaar om een waardevol gesprek te hebben over je performance, loopbaan en toekomstige bijdrage aan de organisatie. Wij willen dat dit een nuttig gesprek wordt, welke persoonlijk is en bruikbaar voor iedereen.<br />
+<br /> Het doel van deze online tool is om jou te ondersteunen bij het gedurende het jaar terughalen van het gesprek.<br /><br />Meer informatie over het appraisal proces vind je<a href="https://moodle.arup.com/appraisal/essentials" target="_blank">hier.</a>';
+$string['appraisee_welcome_info'] = 'De deadline van jouw appraisal dit jaar is {$a}.';
+$string['email:body:appraiseefeedback'] = '{{emailmsg}}
+<br>
+<hr>
+<p>Klik op deze link {{link}} om feedback te geven.</p>
+<p>Naam appraisal {{appraisee_fullname}}<br>
+   Mijn appraisal vindt plaats op <span class="placeholder">{{held_date}}</span></p>
+<p>Dit is een automatisch gegenereerde e-mail, verstuurd door {{appraisee_fullname}} aan {{firstname}} {{lastname}}.</p>
+<p>Als bovenstaande link niet werkt, kopieer de volgende link in je internet browser om toegang te krijgen tot het appraisal:<br />{{linkurl}}</p>';
+$string['email:body:appraiseefeedbackmsg'] = 'Beste <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+<p>Mijn appraisal gesprek vindt plaats op <span class="placeholder">{{held_date}}</span>. Mijn beoordelaar is <span class="placeholder">{{appraiser_fullname}}</span>. Omdat wij het afgelopen jaar nauw hebben samengewerkt, zou ik het op prijs stellen als je feedback geeft op welke onderdelen je mijn bijdrage als waardevol hebt ervaren en op welke onderdelen ik effectiever kan zijn. Als je feedback wilt geven, klik dan op onderstaande link om dit te doen.</p><p>Het zou fijn zijn als je voor mijn appraisal gesprek kunt reageren.</p>
+<p class="ignoreoncopy">Onderstaand zijn een aantal opmerkingen van <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
+<p>Met vriendelijke groet,<br />
+<span class="placeholder">{{appraisee_fullname}}</span></p>';
+$string['email:body:appraiserfeedback'] = '{{emailmsg}}
+<br>
+<hr>
+<p>Klik op deze link {{link}} om feedback te geven.</p>
+
+<p>Naam appraisal {{appraisee_fullname}}<br>
+
+<p>Het appraisal vindt plaats op <span class=""placeholder"">{{held_date}}</span></p>
+
+<p>Dit is een automatisch gegenereerde e-mail, verstuurd door {{appraiser_fullname}} aan {{firstname}} {{lastname}}.</p>
+
+<p>Als bovenstaande link niet werkt, kopieer de volgende link in je internet browser om toegang te krijgen tot het appraisal:<br />{{linkurl}}</p>';
+$string['email:body:appraiserfeedbackmsg'] = '<p>Beste <span class="placeholder bind_firstname">{{firstname}}</span>,</p><p>Het appraisal van <span class="placeholder">{{appraisee_fullname}}</span> vindt plaats op <span class="placeholder">{{held_date}}</span>. Omdat jullie het afgelopen jaar nauw hebben samengewerkt, zou ik het op prijs stellen als je feedback geeft op welke onderdelen jij zijn/haar bijdrage als waardevol hebt ervaren en op welke onderdelen hij/zij effectiever kan zijn. Als je feedback wilt geven, klik dan op onderstaande link om dit te doen.</p><p>Het zou fijn zijn als je voor het appraisal gesprek kunt reageren.</p><p class="ignoreoncopy">Onderstaand zijn een aantal opmerkingen van <span class="placeholder">{{appraiser_fullname}}</span>:<br /> <span>{{emailtext}}</span></p><p>Met vriendelijke groet,<br /> <span class="placeholder">{{appraiser_fullname}}</span></p>';
+$string['email:body:myfeedback'] = '<p>Beste {{recipient}},</p>
+<p>Je hebt de volgende {{confidential}} feedback voor {{appraisee}}ingediend:</p> <div>{{feedback}}</div><div>{{feedback_2}}</div>';
+$string['email:subject:myfeedback'] = 'Jouw appraisal feedback voor {{appraisee}}';
+$string['error:noappraisal'] = 'Foutmelding - Je hebt geen appraisal in het systeem. Indien een appraisal opzet dient te worden, neem dan voor hulp contact op met een Appraisal Administrator in de lijst hieronder: {$a}';
+$string['feedback_header'] = 'Geef je feedback over {$a->appraisee_fullname} (Appraiser: {$a->appraiser_fullname} - Appraisal datum: {$a->facetofacedate})';
+$string['feedback_intro'] = 'Kies drie of meer collega\'s om feedback te geven op jouw appraisal. In de meeste regio\'s kan deze feedback zowel intern als extern zijn. Verwijs naar jouw regio voor specifieke informatie.<br/><br/> Met betrekking tot interne feedbackgevers: je dient 360 graden feedback op te halen bij diverse collega\'s; collega\'s die zowel meer junior als senior zijn.<br/><br/><div data-visible-regions="UKMEA, EUROPE, AUSTRALASIA">Een van de feedbackgevers kan een extere klant of medewerker zijn die jou goed kent.</div><div data-visible-regions="East Asia"><br /><div class="alert alert-warning">For East Asia region, we expect feedback to be from internal source only. Comments from external client or collaborator should be understood and fed back through internal people.</div></div> <div data-visible-regions="Americas"><br /><div class="alert alert-warning">For the Americas Region, comments from external clients or collaborators should be fed back through conversations gathered outside of this feedback tool.</div></div><br /><div class="alert alert-danger"> Aantekening: de feedback van jouw geselecteerde feedbackgevers wordt zo snel mogelijk hier gepubliceerd, tenzij de feedback is opgevraagd door jouw beoordelaar. In dit geval moet de beoordelaar de appraisal naar jou sturen voor jouw laatste opmerkingen (stadium 3) om de feedback zichtbaar te krijgen.</div>';
+$string['feedbackrequests:paneltitle:requestmail'] = 'E-mail voor het verzoeken van feedback';
+$string['form:addfeedback:addfeedback'] = 'Omschrijf maximaal drie onderdelen waarin je de bijdrage van de beoordeelde hebt gewaardeerd in de afgelopen 12 maanden.';
+$string['form:addfeedback:addfeedback_2'] = 'Omschrijft maximaal drie onderdelen waarin jij denkt dat de beoordeelde effectiever kan zijn. Wees eerlijk en geef opbouwende feedback, zodat deze feedback jouw collega helpt effectiever om te gaan met problemen.';
+$string['form:addfeedback:addfeedback_2help'] = '<div class="well well-sm">Het is voor iedereen belangrijk om waardevolle en evenwichtige feedback te ontvangen, inclusief positieve en kritische inbreng. <br>Voor meer informatie klik <a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf" target="_blank">hier</a></div>';
+$string['form:addfeedback:addfeedback_help'] = 'Kopieer en plak je ontvangen feedback in het veld waardevolle bijdrage, tenzij dit gesplitst kan worden in waardevol en effectiever.';
+$string['form:addfeedback:addfeedbackhelp'] = '<div class="well well-sm">Het is voor iedereen belangrijk om waardevolle en evenwichtige feedback te ontvangen, inclusief positieve en kritische inbreng. <br>Voor meer informatie klik <a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf" target="_blank">hier</a></div>';
+$string['form:addfeedback:firstname'] = 'Voornaam feedbackgever';
+$string['form:addfeedback:lastname'] = 'Achternaam feedbackgever';
+$string['form:addfeedback:saveddraft'] = 'Je hebt een concept van je feedback opgeslagen. Totdat je de appraisal feedback verstuurt, kan de beoordelaar of de beoordeelde de feedback niet zien.';
+$string['form:addfeedback:savedraftbtn'] = 'Als concept opslaan';
+$string['form:addfeedback:savedraftbtntooltip'] = 'Sla op als concept om later te voltooien. Er wordt geen kopie van je feedback naar de beoordelaar/beoordeelde gestuurd.';
+$string['form:addfeedback:savefeedback'] = 'Feedback opslaan';
+$string['form:development:comments'] = 'Opmerkingen beoordelaar';
+$string['form:development:commentshelp'] = '<div class="well well-sm"><em>Te voltooien door beoordelaar</em></div>';
+$string['form:feedback:editemail'] = 'Bewerken';
+$string['form:feedback:providefirstnamelastname'] = 'Vul de naam van de ontvanger in voordat je op de knop bewerken drukt.';
+$string['form:lastyear:cardinfo:performancelink'] = 'Impact plan afgelopen jaar';
+$string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">Het appraisal van afgelopen jaar</a> s beschikbaar om in te zien.
+(PDF - opent in een nieuw scherm).';
+$string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>In te vullen door de senior manager om te voltooien.</em></div>';
+$string['helppage:intro'] = 'Klik op onderstaande knop voor toegang tot de Online Appraisal helppagina';
+$string['leadersignoff'] = 'Afmelding manager';
+$string['modal:printconfirm:cancel'] = 'Nee, het is goed';
+$string['modal:printconfirm:content'] = 'Is het echt nodig om dit document te printen?';
+$string['modal:printconfirm:continue'] = 'Ja, ga verder';
+$string['modal:printconfirm:title'] = 'Denk na voordat je print';
+$string['overview:content:appraisee:3'] = 'Je hebt een conceptversie van het appraisal ter beoordeling voorgelegd aan {$a->styledappraisername} <br/><br/> <strong>Volgende stappen:</strong> <ul class="m-b-20"> <li>Heb het appraisal gesprek - voor het gesprek kun je:</li> <ul class="m-b-0"> <li><a class="oa-print-confirm" href="{$a->printappraisalurl}">Het appraisal downloaden</a></li> <li><a href="https://moodle.arup.com/appraisal/reference" target="_blank">De Quick Reference Guide downloaden</a></li> </ul> <li>Na het gesprek zet de beoordelaar het appraisal terug naar jou. Je wordt dan gevraagd om op basis van het gesprek overeengekomen wijzigingen door te voeren of je laatste opmerkingen toe te voegen.</li> </ul> <div class="alert alert-danger" role="alert"><strong>Opmerking:</strong> je kunt wijzigingen aanbrengen als je appraisal bij jouw beoordelaar is, maar dient dan wel de activity log te gebruiken om de wijzigingen te markeren.</div>';
+$string['overview:content:appraisee:5'] = 'Je hebt je compleet ingevulde beoordeling naar {$a->styledappraisername} gestuurd voor de laatste review.<br /><br /> <strong>Volgende stappen: </strong> <ol class="m-b-20"> <li> Je beoordelaar stuurt de beoordeling naar {$a->styledsignoffname} om af te laten tekenen.</li> </ol> <div class="alert alert-danger" role="alert">Je kan geen veranderingen meer aanbrengen in de beoordeling behalve wanneer de beoordelaar de beoordeling naar je terugstuurt om veranderingen aan te brengen.</div>';
+$string['overview:content:appraiser:3'] = '{$a->styledappraiseename} heeft een conceptversie voorgelegd ter voorbereiding van het appraisal.<br /><br /><strong>Volgende stappen:</strong> <ul class="m-b-20"> <li>Beoordeel het appraisal ter voorbereiding van het gesprek. Indien nodig, stuur het appraisal terug naar de beoordeelde als je meer informatie nodig hebt.</li> <li>Voor het appraisel dien je:</li> <ul class="m-b-0"> <li><a class="oa-print-confirm" href="{$a->printappraisalurl}">Het appraisal te downloaden</a></li> <li><a class="oa-print-confirm" href="{$a->printfeedbackurl}">Ontvangen feedback te downloaden</a></li> <li>Je kunt ook de <a href="https://moodle.arup.com/appraisal/reference" target="_blank">Quick Reference Guide downloaden</a></li>
+   </ul><li>Naar aanleiding van het appraisal:</li> <ul class="m-b-0"> <li>Noteer in het info gedeelte dat het gesprek heeft plaatsgevonden</li> <li>Voeg je opmerkingen toe aan elk onderdeel</li> <li>Schrijf een samenvatting inclusief gemaakte afspraken in het onderdeel Samenvatting</li>(indien noodzakelijk kun je het appraisal terugsturen naar de beoordeelde om het appraisal aan te passen voordat jij je opmerkingen toevoegt). </ul> <li>Stuur het appraisal naar de beoordeelde om jouw opmerkingen te beoordelen, feedback te bekijken en om zijn/haar laatste opmerkingen toe te voegen.</li> </ul>';
+$string['overview:content:appraiser:3:4'] = '{$a->styledappraiseename} heft gevraagd veranderingen aan te brengen in de beoordeling.<br /><br /> <strong>Volgende stappen:</strong> <ol class="m-b-20"> <li>Pas de beoordeling aan conform het verzoek van de beoordeelde (zie activiteiten log voor meer) </li> <li>Deel de beoordeling met {$a->styledappraiseename} voor laatste commentaar</li> </ol>';
+$string['overview:content:appraiser:4'] = 'Je hebt je commentaar en samenvatting toegevoegd en de beoordeling terug gestuurd naar {$a->styledappraiseename} om het laatste commentaar toe te voegen. Je krijgt een bericht wanneer de beoordeling klaar is voor een laatste review.<br /><br /> <div class="alert alert-danger" role="alert">Je mag de secties aanpassen zolang de beoordeling nog niet is afgetekend maar het is verstandig de wijzigingen te markeren in de activiteiten log voor de beoordeelde.</div>';
+$string['overview:content:special:archived'] = '<div class="alert alert-danger" role="alert">Dit appraisal is gearchiveerd.<br />Het is alleen mogelijk om het appraisa <a class="oa-print-confirm" href="{$a->printappraisalurl}">te downloaden.</a>.</div>';
+$string['overview:content:special:archived:appraisee'] = '<div class="alert alert-danger" role="alert">Dit appraisal is gearchiveerd.<br />Het is alleen mogelijk om je appraisal <a class="oa-print-confirm" href="{$a->printappraisalurl}">te downloaden.</a>.</div>';
+$string['overview:lastsaved'] = 'Laatst opgeslagen: {$a}';
+$string['overview:lastsaved:never'] = 'Nooit';
+$string['pdf:feedback:confidentialhelp:appraisee'] = '# Bevat vertrouwelijke feedback welke niet zichtbaar is voor jou';
+$string['pdf:feedback:notyetavailable'] = 'Nog niet zichtbaar.';
+$string['pdf:feedback:requestedfrom'] = 'Beoordelaar: {$a->firstname} {$a->lastname}{$a->appraiserflag}{$a->confidentialflag}:';
+$string['pdf:feedback:requestedhelp'] = '* Bevat feedback waar jouw beoordelaar om heeft verzocht en welke nog niet zichbaar is voor jou.';
+$string['pdf:header:warning'] = 'Gedownload door: {$a->who} op {$a->when}
+<br>
+Geef niet af of laat het niet op een onveilige plaats achter.';
+$string['status:7:leadersignoff'] = 'Afmelding manager';

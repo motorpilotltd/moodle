@@ -31,15 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // INTRODUCTION PAGE
 $string['appraisee_heading'] = 'Çevrimiçi Değerlendirmeye Hoş Geldiniz';
-$string['appraisee_welcome'] = 'Performans değerlendirme süreci, göstermiş olduğunuz performans ve gelişimle ilgili olarak siz ve değerlendiriciniz arasında değerli bir diyalog fırsatı oluşturmaktadır.<br /><br />
-Bu çevrimiçi aracın amacı, diyaloğu kaydederek yıl içinde tekrar incelemenize yardımcı olmaktır.<br /><br />
-Gregory Hodkinson’un giriş mesajı için sağdaki simgeye tıklayın.<br /><br />
-Değerlendirme süreciyle ilgili ayrıntılı bilgilere <a href="https://moodle.arup.com/appraisal/essentials" target="_blank">buradan</a> ulaşabilirsiniz.';
 
-// REQUEST FEEDBACK
-$string['feedback_intro'] = 'Değerlendirme formunuzla ilgili geri bildirim katkısı sağlamaları için üç veya daha fazla iş arkadaşı seçin. Çoğu bölgede bu geri bildirimler kurum içi veya kurum dışı olabilir.  İlgili yönlendirici bilgiler için bölgenize danışmanız gerekmektedir.<br/><br/>
-Kurum içi geri bildirim katkılarında; bu geri bildirimlerin “360 derecelik” bir perspektifle, bir başka deyişle sizden daha kıdemli, daha kıdemsiz ve eş seviyedeki kişilerden toplanmasına özen gösterilmelidir.   Karma bir insan topluluğunu tercih etmeniz zorunludur. <br/><br/>
-Geri bildirim katkısında bulunanlardan biri, sizi iyi tanıyan kurum dışı bir müşteri veya işbirliği yapılan bir şahıs olabilir.<div data-visible-regions="East Asia"><br />This is East Asia Region Specific Note to be Added</div> <br /><br /> <div class="alert alert-danger"> Not: Seçilmiş geri bildirim sağlayacak kişinin geri bildirimi, yüz yüze görüşmeden sonra, onlar gizli geri bildirim seçeneğini seçmedikleri sürece burada yayınlanacaktır. </div>';
 // ERROR: remove east asia specfic content?
 
 // LAST YEAR REVIEW
@@ -209,22 +201,9 @@ $string['confidential_label_text'] = 'Yorumlarınızın gizli kalması için bu 
 
 // FEEDBACK EMAILS - sent by appraisee
 $string['email:subject:appraiseefeedback'] = 'Değerlendirmem için geri bildirim talep et';
-$string['email:body:appraiseefeedbackmsg'] = '<p>Sayın <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
-<p>Performans değerlendirmem çok yakında hazır olacak. Geçtiğimiz yıl boyunca sizinle yakın bir çalışma ilişkimiz olduğundan, katkıda bulunduğumu düşündüğünüz alanlar ve daha etkin olabileceğimi hissettiğiniz alanlar ile ilgili geri bildirimleriniz benim için son derece önemlidir. Kabul ediyorsanız, geri bildirim katkısında bulunmak için aşağıdaki linke tıklayabilirsiniz.</p>
-<p>Değerlendirme tarihim <span class="placeholder">{{held_date}}</span> olduğundan, lütfen, yanıtınızı bu tarihten önce verin.</p>
-<p>Gönderirken gizlilik kutusunu işaretlememeniz halinde, geri bildirimleriniz yüz yüze görüşmenin ardından benimle paylaşılacaktır.</p>
-<p><span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span> kişisinden gelen ilave yorumlar aşağıdadır:</p>
-<p>Saygılarımla,<br />
-<span class="placeholder">{{appraisee_fullname}}</span></p>';
 
 // FEEDBACK EMAIL - sent by appraiser
 $string['email:subject:appraiserfeedback'] = '{{appraisee_fullname}}in değerlendirmesi için geri bildirim talep et';
-$string['email:body:appraiserfeedbackmsg'] = '<p>Sayın <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
-<p>Şu anda <span class="placeholder">{{appraisee_fullname}}</span> ile ilgili değerlendirme formu üzerinde çalışmaktayım. Kendisiyle son dönemde yakından çalışma fırsatı bulduğunuzdan dolayı, ilgili kişinin katkıları hakkında sizden bazı geri bildirimler almak istiyorum. Adı geçen kişinin katkıda bulunduğunu düşündüğünüz alanlar ve daha etkin olabileceğini hissettiğiniz alanlar ile ilgili geri bildirimleriniz benim için son derece önemlidir. Kabul ediyorsanız, geri bildirim katkısında bulunmak için aşağıdaki linke tıklayabilirsiniz.</p>
-<p>Adı geçen kişiyle ilgili değerlendirme tarihi <span class="placeholder">{{held_date}}</span> olduğundan, bu tarihten önce yanıt vermenizi rica ediyorum.</p>
-<p>Gönderirken gizlilik kutusunu işaretlememeniz halinde, geri bildirimleriniz yüz yüze görüşmenin ardından <span class="placeholder">{{appraisee_fullname}}</span> ile paylaşılacaktır.</p>
-<p><span class="placeholder">{{appraiser_fullname}}</span>:<br /> <span>{{emailtext}}</span> kişisinden gelen ilave yorumlar aşağıdadır:</p>
-<p>Saygılarımla,<br /> <span class="placeholder">{{appraiser_fullname}}</span></p>';
 
 // END FORM
 
@@ -250,18 +229,6 @@ $string['overview:content:appraisee:2:3'] = 'Değerlendiriciniz değerlendirme t
     <li>Değerlendiriciniz tarafından talep edilen değişiklikleri yapın (talep edilenler hakkında daha fazla bilgi için faaliyet günlüğüne bakın).</li>
     <li>Taslak formunuzu {$a->styledappraisername} ile paylaşın.</li>
 </ul>';
-
-$string['overview:content:appraisee:3'] = 'Değerlendirme taslak formunuzu gözden geçirilmek üzere şu kişiye gönderdiniz:{$a->styledappraisername}.<br /><br />
-<strong>Sonraki aşamalar: </strong>
-<ul class="m-b-20">
-    <li>Yüz yüze görüşmeyi gerçekleştirin. Görüşmeden önce aşağıdakileri yapmak isteyebilirsiniz:</li>
-    <ul class="m-b-0">
-        <li><a href="{$a->printappraisalurl}">Değerlendirme Formunu İndir</a></li>
-        <li><a href="https://moodle.arup.com/appraisal/reference" target="_blank">Hızlı Referans Kılavuzunu İndir</a></li>
-    </ul>
-    <li>Değerlendirici, görüşmenin ardından değerlendirme formunu size geri verecektir. Yüz yüze görüşmede kararlaştırılan değişiklikleri yapmanız ya da son yorumlarınızı yazmanız istenecektir.</li>
-</ul>
-<div class="alert alert-danger" role="alert"><strong>Not:</strong> Değerlendirme formunuz değerlendiricinizdeyken form üzerinde düzenleme yapmaya devam edebilirsiniz. Ancak yaptığınız değişiklikleri vurgulamak için faaliyet günlüğünü kullanmanızı öneririz.</div>';
 
 $string['overview:content:appraisee:3:4'] = 'Değerlendirme formunuzu, üzerinde değişiklikler yapılmak üzere şu kişiye geri gönderdiniz: {$a->styledappraisername} <br /><br /> Değerlendirme formu güncellenip, tekrar gözden geçirmeniz için hazır olduğunda size bildirim gönderilecektir.<br /><br /> <div class="alert alert-danger" role="alert"><strong>Not:</strong> Değerlendirme formunuz değerlendiricideyken form üzerinde düzenleme yapmaya devam edebilirsiniz. Ancak yaptığınız değişiklikleri vurgulamak için faaliyet günlüğünü kullanmanızı öneririz.</div>';
 
@@ -293,26 +260,6 @@ $string['overview:content:appraiser:2'] = 'Değerlendirme formu şu anda {$a->st
 
 $string['overview:content:appraiser:2:3'] = 'Değerlendirme formunu, üzerinde değişiklikler yapılmak üzere şu kişiye geri gönderdiniz: {$a->styledappraiseename}. Değerlendirme taslak formu güncellenip, tekrar gözden geçirmeniz için hazır olduğunda size bildirim gönderilecektir.<br /><br />
 <div class="alert alert-danger" role="alert"><strong>Not:</strong> Kendi bölümlerinizde değişiklik yapmaya devam edebilirsiniz.</div>';
-
-$string['overview:content:appraiser:3'] = '{$a->styledappraiseename} yüz yüze görüşmenize hazırlık kapsamında bir taslak sundu.<br /><br />
-<strong>Sonraki adımlar:</strong>
-<ul class="m-b-20">
-    <li>Görüşmenize hazırlık kapsamında değerlendirme formunu gözden geçirin. Ek bilgiye ihtiyaç duyarsanız değerlendirme formunu değerlendirilen kişiye geri gönderin.</li>
-    <li>Görüşme öncesinde aşağıdakileri yapmanız gerekir:</li>
-    <ul class="m-b-0">
-        <li><a href="{$a->printappraisalurl}">Değerlendirme formunu indirin</a></li>
-        <li><a href="{$a->printfeedbackurl}">Alınan geri bildirimleri indirin</a></li>
-        <li>Ayrıca <a href="https://moodle.arup.com/appraisal/reference" target="_blank">Hızlı Referans Kılavuzunu</a> da indirebilirsiniz.</li>
-    </ul>
-    <li>Yüz yüze görüşmenin ardından:</li>
-    <ul class="m-b-0">
-        <li>Yüz yüze görüşmenin gerçekleştirildiğini Değerlendirilen Kişi Bilgileri bölümünde işaretleyin</li>
-        <li>Her bölüme kendi yorumlarınızı ekleyin</li>
-        <li>Özetler bölümünde kendi özetinizi ve kararlaştırılan eylemleri belirtin</li>
-        (Gerekirse, yorumlarınızı yazmadan önce üzerinde değişiklik yapılmak üzere değerlendirme formunu değerlendirilen kişiye geri gönderebilirsiniz.)
-    </ul>
-    <li>Yorumlarınızı gözden geçirmesi, geri bildirimleri görmesi ve nihai yorumlarını belirtmesi için değerlendirilen kişiye gönderin</li>
-</ul>';
 
 $string['overview:content:appraiser:3:4'] = '{$a->styledappraiseename} değerlendirme formunda değişiklikler yapılmasını talep etti.<br /><br />
 <strong>Sonraki adımlar:</strong>
@@ -461,7 +408,6 @@ $string['form:feedback:alert:saved'] = 'Değerlendirme geri bildirim talebiniz b
 $string['form:lastyear:nolastyear'] = 'Not: Önceki değerlendirmenizin sistemde kayıtlı olmadığını farkettik. Lütfen son yapılmış değerlendirmenizi pdf ya da word formatında yükleyin.';
 $string['form:lastyear:file'] = '<strong>Değerlendirilen kişi tarafından bir gözden geçirme dosyası yüklendi: <a href="{$a->path}" target="blank">{$a->filename}</a></strong>';
 $string['form:lastyear:cardinfo:developmentlink'] = 'Geçen Yıla Ait Gelişme';
-$string['form:lastyear:cardinfo:performancelink'] = 'Geçen Yıl Ait Performans';
 $string['feedbackrequests:description'] = 'Bu pano, yapmış olduğunuz açık geri bildirim taleplerini gösterir ve geçmişte yaptığınız herhangi bir geri bildirime erişmenize olanak sağlar.';
 $string['feedbackrequests:outstanding'] = 'Açık Talepler';
 $string['feedbackrequests:norequests'] = 'Açık geri bildirim talepleri yok';
@@ -511,7 +457,6 @@ $string['form:feedback:language'] = 'Geri bildirim e-postasının dilini seçin'
 $string['form:addfeedback:sendemailbtn'] = 'Değerlendirme geri bildirimini gönder';
 $string['form:addfeedback:closed'] = 'Geri bildirim göndereceğiniz pencere şu an kapalı';
 $string['form:addfeedback:submitted'] = 'Geri bildirim gönderildi';
-$string['form:addfeedback:addfeedback'] = 'Değerlendirilen kişinin son 12 aylık dönemdeki katkısını takdir ettiğiniz üç alanı belirtin. Daha fazla verimli olabileceğini hissettiğiniz en fazla üç alanla ilgili bilgi verin. Bu geri bildirim iş arkadaşlarınızın sorunları daha etkin bir şekilde çözmesine yardımcı olacağından, eleştiri yaparken dürüst fakat yapıcı davranın.';
 $string['form:feedback:alert:cancelled'] = 'Gönderim iptal edildi, değerlendirme geri bildirim talebiniz henüz gönderilmedi.';
 $string['form:feedback:alert:error'] = 'Üzgünüz, değerlendirme geri bildirim talebiniz gönderilirken bir hata oluştu.';
 $string['form:feedback:alert:saved'] = 'Değerlendirme geri bildirim talebiniz başarıyla gönderildi.';
@@ -523,3 +468,83 @@ $string['pdf:form:summaries:signoff'] = 'Onaylama özeti';
 $string['pdf:form:summaries:recommendations'] = 'Kararlaştırılan eylemler';
 
 // END TR STRING TRANSLATIONS - SPREADSHEET
+
+// 2017 : Updates and additions.
+$string['addreceivedfeedback'] = 'Add Received Feedback';
+$string['appraisee_feedback_savedraft_error'] = 'Taslak Kaydedilirken Hata Oluştu';
+$string['appraisee_feedback_savedraft_success'] = 'Geri Bildirim Taslağı Kaydedildi';
+$string['appraisee_feedback_viewrequest_text'] = 'Talep e-postasını görüntüle';
+$string['appraisee_welcome'] = 'Performans Değerlendirmesi; Değerlendiricinizle birlikte, performansınız, kariyer gelişminiz ve işinize gelecekte yapabileceğiniz katkınıza dair konuşabileceğiniz değerli bir görüşme fırsatıdır. Bu görüşmenin, kişisel ve her iki taraf için de yararlı, yapıcı bir diyalog şeklinde olması dileğimizdir.<br /><br />
+Bu çevrimiçi araç, yaptığınız görüşmeleri kaydetmenizi ve yıl boyu formunuza erişmenizi sağlar. <br /><br />Değerlendirme süreciyle ilgili daha detaylı bilgi <a href="https://moodle.arup.com/appraisal/essentials" target="_blank">burada bulunabilir.</a>';
+$string['appraisee_welcome_info'] = 'Bu yılki değerlendirmenizi tamamlamanız için en son tarih {$a}.';
+$string['email:body:appraiseefeedback'] = '{{emailmsg}}
+<br>
+<hr>
+<p>Kliknij {{link}} aby dodać opinię.</p>
+<p>Appraisal Name {{appraisee_fullname}}<br>My appraisal is on <span class="placeholder">{{held_date}}</span></p>
+<p>This is an auto generated email sent by {{appraisee_fullname}} to {{firstname}} {{lastname}}.</p>
+<p>If the link above does not work, please copy the following link into your browser to access the appraisal:<br />{{linkurl}}</p>';
+$string['email:body:appraiseefeedbackmsg'] = 'Değerli <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+<p> Bu yılki performans değerlendirmesi görüşmem <span class="placeholder">{{held_date}}</span>. Değerlendirme görüşmemi<span class="placeholder">{{appraiser_fullname}} ile yapacağım</span>. Geçtiğimiz yıl boyunca sizinle birlikte çalıştığımız için, sizden bu yıl değer yaratıp, katkı sağladığım alanlar ve daha etkin olduğum ve olabileceğim, gelişime açık alanlar hakkındaki geri bildirimlerinizi rica ediyorum. Eğer geri bildirim vererek kişisel ve profesyonel gelişimime katkı sağlamak istiyorsanız aşağıdaki linke tıklamanızı rica ederim.</p> <p>
+Yüzyüze görüşmem öncesinde geri bildiriminizi gönderebilirseniz çok memnun olurum.</p>
+<p class="ignoreoncopy">Aşağıda \'a ait ek yorumları bulabilirsiniz. <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
+<p>Saygılarımla,<br />
+<span class="placeholder">{{appraisee_fullname}}</span></p>';
+$string['email:body:appraiserfeedback'] = '{{emailmsg}}
+<br>
+<hr>
+<p>Lütfen tıklayıp {{link}} geri bildiriminizi veriniz.</p>
+<p>Değerlendirilenin Adı Soyadı {{appraisee_fullname}}<br>
+Değerlendirme tarihi <span class="placeholder">{{held_date}}</span></p>
+<p>Bu e-mail {{appraiseer_fullname}} tarafından otomatik olarak {{firstname}} {{lastname}}\'a gönderilmiştir.</p>
+<p>Eğer yukarıdaki link çalışmıyorsa lütfen aşağıdaki linki tarayıcınızın adres çubuğuna kopyalayıp deneyiniz.<br />{{linkurl}}</p>';
+$string['email:body:appraiserfeedbackmsg'] = '<p>Değerli <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+<p>için performans değerlendirme görüşmemiz <span class="placeholder">{{appraisee_fullname}}</span> tarihinde gerçekleşecektir <span class="placeholder">{{held_date}}</span>.  Kendisi geçtiğimiz yıl boyunca sizinle birlikte çalıştığı için, sizden bu yıl değer yaratıp, katkı sağladığı alanlar ve daha etkin olmuş olabileceği, gelişime açık alanları hakkındaki geri bildirimlerinizi rica ediyorum. Eğer geri bildirim vermek istiyorsanız aşağıdaki linke tıklamanızı rica ederim.</p> <p>Yüzyüze görüşme öncesinde geri bildiriminizi gönderebilirseniz çok memnun olurum.</p>
+<p class="ignoreoncopy">Aşağıda\'a ait ek yorumları bulabilirsiniz <span class="placeholder">{{appraiser_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
+<p>Saygılarımla,<br /> <span class="placeholder">{{appraiser_fullname}}</span></p>';
+$string['email:body:myfeedback'] = '<p>Dear {{recipient}},<p><p>{{appraisee}}\'nin değerlendirmesi için {{confidential}} geribildiriminizi ilettiniz.</p> <div>{{feedback}}</div> <div>{{feedback_2}}</div>';
+$string['email:subject:myfeedback'] = '{{appraisee}} \'nin değerlendirmesi için geri bildiriminiz';
+$string['error:noappraisal'] = 'Hata - Sistemde bir değerlendirmeniz bulunmamaktadır. Lütfen aşağıda isimleri bulunan Performans Değerlendirme süreci yöneticilerinin birinden yardım talep ediniz:
+{$a}';
+$string['feedback_intro'] = 'Değerlendirme sürecinizde size geri bildirim vermesi için lütfen 3 yada daha fazla çalışma arkadaşı seçiniz. Geri bildirimler şirket içinde ya da dışındaki kişilerden alınabilir. Spesifik geribildirim alabilmek için ofisinizin hangi bölgeye bağlı olduğu bilgisini veriniz.<br/><br/> Şirket içindeki kişilerden geribildirim alırken, "360 derece" perspektifini dikkate almalısınız;  yani çalışma arkadaşlarınız, sizden deneyimli ve sizden daha az deneyimli kişiler olabilir. Bu kriterlere uyan birkaç kişi seçmelisiniz.<br/><br/><div data-visible-regions="UKMEA, EUROPE, AUSTRALASIA"> Geri bildirim alacağınız kişilerden birisi de sizi çok iyi tanıyan şirket dışından bir iş ortağınız ya da işvereniniz olabilir.</div><div data-visible-regions="East Asia"><br /><div class="alert alert-warning">For East Asia region, we expect feedback to be from internal source only. Comments from external client or collaborator should be understood and fed back through internal people.</div></div> <div data-visible-regions="Americas"><br /><div class="alert alert-warning">For the Americas Region, comments from external clients or collaborators should be fed back through conversations gathered outside of this feedback tool.</div></div>
+<br /><div class="alert alert-danger"> Not: Seçtiğiniz kişilerin geri bildirimleri ulaştığında buradan görebileceksiniz fakat Değerlendirici\'nin talep ettiği geri bildirimleri göremeyeceksiniz. Bu durumda geri bildirimi ancak Değerlendirici size değerlendirmenizi son yorumlarınız için gönderdiği zaman görebileceksiniz (3ncü Aşama). </div>';
+$string['feedbackrequests:paneltitle:requestmail'] = 'Geri bildirim talep e-postası';
+$string['form:addfeedback:addfeedback'] = 'Lütfen son 12 ay içerisinde Değerlendirilen\'e katkı sağladığınız 3 alanı özetleyin.';
+$string['form:addfeedback:addfeedback_2'] = 'Lütfen Değerlendirilen\'in daha da etkin olabileceği 3 alanı paylaşın. Dürüst olun, yapıcı eleştiriler yapın çünkü bu geri bildirimler çalışma arkadaşınızın gelişimi için önemli olacaktır.';
+$string['form:addfeedback:addfeedback_2help'] = '<div class="well well-sm">Tüm çalışanlar için değerli, dengeli, pozitif ve kritik tavsiyeler içeren geri bildirim almak önemlidir. <br>Daha detaylı yardım için lütfen tıklayın <a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf" target="_blank">buraya</a></div>';
+$string['form:addfeedback:addfeedback_help'] = 'Eğer aldığın geri bildirimi "değerli" ve "etkili" olarak değerlendirmiyorsan, geri bildirimi "değerli katkı" kutusuna kopyala yapıştır yapman yeterli olacaktır.';
+$string['form:addfeedback:addfeedbackhelp'] = '<div class="well well-sm">Tüm çalışanlar için değerli, dengeli, pozitif ve kritik tavsiyeler içeren geri bildirim almak önemlidir. <br>Daha detaylı yardım için lütfen tıklayın <a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf" target="_blank">buraya</a></div>';
+$string['form:addfeedback:firstname'] = 'Geri Bildirim veren kişinin Adı';
+$string['form:addfeedback:lastname'] = 'Geri Bildirim Veren Kişinin Soyadı';
+$string['form:addfeedback:saveddraft'] = 'Geri Bildiriminin taslak halini kaydettin. Göndermediğin sürece, geri bildirimin değerlendirici yada değerlendirilen tarafından görülemeyecektir.';
+$string['form:addfeedback:savedraftbtn'] = 'Taslak Olarak Kaydet';
+$string['form:addfeedback:savedraftbtntooltip'] = 'Taslağı daha sonra tamamlamak üzere kaydet. Bu aksiyon sonucu geri bildirimin değerlendirici yada değerlendirilen ile paylaşılmaz.';
+$string['form:addfeedback:savefeedback'] = 'Geri Bildirimi Kaydet';
+$string['form:development:comments'] = 'Değerlendirici Yorumları';
+$string['form:development:commentshelp'] = '<div class="well well-sm"><em>Değerlendirici tarafından doldurulmalı</em></div>';
+$string['form:feedback:editemail'] = 'Düzenle';
+$string['form:feedback:providefirstnamelastname'] = 'Lütfen düzenle tuşuna basmadan önce alıcının adını ve soyadını girin.';
+$string['form:lastyear:cardinfo:performancelink'] = 'Geçtiğimiz yılın katkı planı';
+$string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">Geçtiğimiz yılın değerlendirmesi</a> görüntülenebilir
+(PDF - opens in new window)';
+$string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>Son Yönetici tarafından onaylanarak tamamlanacaktır.</em></div>';
+$string['helppage:intro'] = 'Aşağıdaki tuşa tıklayarak Çevrimiçi Değerlendirme Yardımı sayfasını açabilirsiniz.';
+$string['leadersignoff'] = 'Son Yönetici Onayı';
+$string['modal:printconfirm:cancel'] = 'Hayır';
+$string['modal:printconfirm:content'] = 'Bu Belgeyi Yazdırmaya Gerçekten İhtiyacın Var mı?';
+$string['modal:printconfirm:continue'] = 'Evet, Devam Et';
+$string['modal:printconfirm:title'] = 'Yazdırmadan Önce Bir Daha Düşün';
+$string['overview:content:appraisee:3'] = 'Değerlendirme taslağınızı gözden geçirebilmesi için {appraiser name}\'a ilettiniz.<br /><br />
+<strong>Bir sonraki adım:</strong> <ul class="m-b-20"> <li>Yüzyüze görüşmenizi gerçekleştirin - yüzyüze görüşme öncesi aşağıdakilere göz atmanız faydalı olacaktır:</li> <ul class="m-b-0"> <li><a class="oa-print-confirm" href="{$a->printappraisalurl}">Değerlendirmeyi İndir</a></li> <li><a href="https://moodle.arup.com/appraisal/reference" target="_blank">Hızlı Referans Kılavuzunu İndir</a></li> </ul> <li> Görüşme sonrasında, Değerlendirici değerlendirmenizi size geri gönderecektir. Bu aşamada, yüz yüze görüşmenizde uzlaştığınız değişiklikleri yapabilir yada son yorumlarınızı yazabilirsiniz.</li> </ul> <div class="alert alert-danger" role="alert"><strong>Not:</strong>  Değerlendirmenizi Değerlendirici\'ye gönderdikten sonra da üzerinde ekleme ya da düzeltme yapabilirsiniz. Bu durumda yaptığınız değişiklikleri faaliyet kaydı / activiti log bölümünde vurgulamanı öneririz.</div>';
+$string['overview:content:appraiser:3'] = '{$a->styledappraiseename} değerlendirme taslağını yüz yüze görüşmenize hazırlık olması için size iletti.<br /><br /> <strong>Bir sonraki adım:</strong> <ul class="m-b-20"> <li>Yüz yüze görüşmenize hazırlık olması için değerlendirme taslağını inceleyin. Eğer detaylı bilgiye ihtiyacınız varsa Değerlendirilen\'e geri gönderebilirsiniz.</li> <li>Görüşme öncesi yapabilecekleriniz:</li><ul class="m-b-0"> <li><a class="oa-print-confirm" href="{$a->printappraisalurl}"> Değerlendirmeyi İndir</a></li> <li><a class="oa-print-confirm" href="{$a->printfeedbackurl}">Gelen Geri Bildirimleri İndir</a></li> <li><a href="https://moodle.arup.com/appraisal/reference" target="_blank"> Hızlı Referans Kılavuzunu İndir</a></li> </ul> <li>Görüşme sonrasında lütfen</li> <ul class="m-b-0"> <li>Değerlendirilen Bilgisi kısmından yüz yüze görüşmenin gerçekleştiğini işaretleyin</li> <li>Her bölüme yorumlarınızı yazın</li> <li>Özet kısmına, uzlaşılan aksiyonları ve özetinizi yazın</li> (Eğer gerekirse, yorumlarınızı eklemeden önce değerlendirmeyi değerlendirilen\'e gönderip düzenlemesini sağlayabilirsiniz.) </ul> <li>Yorumlarınızı gözden geçirmesi için değerlendirmeyi değerlendirilen\'e gönderin, geri bildirimleri görüntüleyin ve değerlendirilenin son yorumlarını eklemesini sağlayın</li> </ul>';
+$string['overview:content:special:archived'] = '<div class="alert alert-danger" role="alert">Bu değerlendirme arşivlenmiştir. <br /> <a class="oa-print-confirm" href="{$a->printappraisalurl}"> Değerlendirmenizi sadece indirebilirsiniz </a>.</div>';
+$string['overview:content:special:archived:appraisee'] = '<div class="alert alert-danger" role="alert">Bu değerlendirme arşivlenmiştir. <br /> <a class="oa-print-confirm" href="{$a->printappraisalurl}"> Değerlendirmenizi sadece indirebilirsiniz </a>.</div>';
+$string['overview:lastsaved'] = 'En son zaman kaydedildi: {$a}';
+$string['overview:lastsaved:never'] = 'Asla';
+$string['pdf:feedback:confidentialhelp:appraisee'] = '# Senin görün, gizli verilen geri bildirimleri gösterir.';
+$string['pdf:feedback:notyetavailable'] = 'Henüz görüntülenemez.';
+$string['pdf:feedback:requestedfrom'] = 'Gözden Geçiren {$a->firstname} {$a->lastname}{$a->appraiserflag}{$a->confidentialflag}:';
+$string['pdf:feedback:requestedhelp'] = '* Değerlendirici tarafından talep edilen, henüz görüntüleyemeyeceğin geribildirimleri gösterir.';
+$string['pdf:header:warning'] = 'Tarafından İndirildi: {$a->who} on {$a->when}<br>
+Lütfen dosyayı bilgisayarınıza kaydetmeyin veya çıktısını güvenli olmayan bir yerde bırakmayın.';
+$string['status:7:leadersignoff'] = 'Son Yönetici Onayı';
