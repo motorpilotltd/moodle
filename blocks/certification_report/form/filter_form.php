@@ -15,7 +15,8 @@ class certification_report_filter_form extends \moodleform
         $mform->addElement('text', 'fullname', get_string('fullname', 'block_certification_report'), ['class' => 'select2-match']);
         $mform->setType('fullname', PARAM_TEXT);
 
-        if (has_capability('block/certification_report:view_all_regions', context_system::instance())) {
+        if (has_capability('block/certification_report:view_all_regions', context_system::instance())
+                || has_capability('block/certification_report:view_all_costcentres', context_system::instance())) {
             $actualregionselect = $mform->addElement('select', 'actualregions', get_string('actualregions', 'block_certification_report'), $this->_customdata['actualregions'], ['class' => 'select2']);
             $actualregionselect->setMultiple(true);
             $mform->setType('actualregions', PARAM_TEXT);

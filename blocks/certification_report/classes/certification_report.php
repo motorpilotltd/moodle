@@ -75,7 +75,8 @@ class certification_report {
         $options['actualregions'] = self::get_hub_options('REGION_NAME');
         $options['georegions'] = self::get_hub_options('GEO_REGION');
 
-        if (has_capability('block/certification_report:view_all_costcentres', \context_system::instance())){
+        if (has_capability('block/certification_report:view_all_costcentres', \context_system::instance())
+                || has_capability('block/certification_report:view_all_regions', \context_system::instance())){
             $options['costcentres'] = [-1 => 'NOT SET']
                 + $DB->get_records_select_menu('user', "icq != ''", [], 'icq ASC', 'DISTINCT icq as id, icq as value');
         } else {
@@ -119,15 +120,8 @@ class certification_report {
 
         $filters = new \stdClass();
 
-        if (!has_capability('block/certification_report:view_all_regions', \context_system::instance())){
-            $sql = "SELECT REGION_NAME as actualregion, GEO_REGION as georegion FROM SQLHUB.ARUP_ALL_STAFF_V WHERE EMPLOYEE_NUMBER = :idnumber";
-            $userregions = $DB->get_record_sql($sql, ['idnumber' => (int) $USER->idnumber]);
-            
-            $filters->actualregions = !empty($userregions->actualregion) ? [$userregions->actualregion => $userregions->actualregion] : [-1 => 'NOT SET'];
-            $filters->georegions = !empty($userregions->georegion) ? [$userregions->georegion => $userregions->georegion] : [-1 => 'NOT SET'];
-        }
-
-        if (has_capability('block/certification_report:view_all_costcentres', \context_system::instance())){
+        if (has_capability('block/certification_report:view_all_costcentres', \context_system::instance())
+                || has_capability('block/certification_report:view_all_regions', \context_system::instance())) {
             // Empty filter (may get populated later).
             $filters->costcentres = [];
         } else {
@@ -138,6 +132,10 @@ class certification_report {
                 costcentre::HR_ADMIN,
                 costcentre::LEARNING_REPORTER,
             ]));
+
+            // Force no region filtering as driven by costcentre.
+            $filters->actualregions = [];
+            $filters->georegions = [];
         }
 
         if ($data) {
@@ -1541,5 +1539,19 @@ class certification_report {
             }
         }
         return;
+    }
+
+    public static function can_view_report() {
+        global $USER;
+        // Check capabilities.
+        if (has_any_capability(['block/certification_report:view_all_costcentres', 'block/certification_report:view_all_regions'], \context_system::instance())) {
+            return true;
+        }
+        // Check cost centre permissions.
+        if (costcentre::is_user($USER->id, [costcentre::GROUP_LEADER, costcentre::HR_LEADER, costcentre::HR_ADMIN, costcentre::LEARNING_REPORTER])) {
+            return true;
+        }
+        // No permissions.
+        return false;
     }
 }
