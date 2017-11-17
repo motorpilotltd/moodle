@@ -468,7 +468,7 @@ $string['manageenrolments:unavailable'] = 'Unavailable';
 $string['manageenrolments:waitlist:button'] = 'Proceed';
 $string['manageenrolments:waitlist:header'] = 'Approve applications';
 $string['manageenrolments:waitlist:results'] = 'Application approval results:{$a}';
-$string['manageenrolments:waitlist:seatsremaining'] = 'Seats currently remaining: <span id="tapsenrol-waitlist-seatsremaining" data="{$a->value}">{$a->text}</span> (Including those selected below)';
+$string['manageenrolments:waitlist:seatsremaining'] = 'Seats currently remaining: <span id="tapsenrol-waitlist-seatsremaining" data-seatsremaining="{$a->value}">{$a->text}</span> (Including those selected below)';
 $string['manageenrolments:waitlist:users'] = 'Applications to approve';
 $string['modulename'] = 'Arup linked course enrolment';
 $string['modulename_help'] = 'Adds an Arup linked course enrolment activity';

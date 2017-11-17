@@ -229,6 +229,28 @@ if ($type == 'future' || $type == 'past') {
         redirect($actionurl);
         exit;
     }
+
+    $jscode = <<<EOJ
+$('#tapsenrol-checkbox-selectall').change(function(){
+    var that = $(this);
+    if (that.prop('checked') === true) {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') !== true) {
+                that.prop('checked', true).change();
+            }
+        });
+    } else {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') === true) {
+                that.prop('checked', false).change();
+            }
+        });
+    }
+});
+EOJ;
+    $PAGE->requires->js_init_code($jscode, true);
 } else if ($type == 'waitlist') {
     $mform = new mod_tapsenrol_manage_enrolments_waitlist_form($actionurl, $customdata);
 
@@ -279,13 +301,32 @@ if ($type == 'future' || $type == 'past') {
     }
 
     $jscode = <<<EOJ
+$('#tapsenrol-checkbox-selectall').change(function(){
+    var that = $(this);
+    if (that.prop('checked') === true) {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') !== true) {
+                that.prop('checked', true).change();
+            }
+        });
+    } else {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') === true) {
+                that.prop('checked', false).change();
+            }
+        });
+    }
+});
 $('.tapsenrol-current-enrolments .tapsenrol-checkbox').change(function(){
     var that = $(this);
-    var seatsremaining = paresInt($('#tapsenrol-waitlist-seatsremaining').data('seatsremaining'));
+    var seatsremainingspan = $('#tapsenrol-waitlist-seatsremaining');
+    var seatsremaining = parseInt(seatsremainingspan.data('seatsremaining'));
     if (seatsremaining === -1) {
         return;
     }
-    var seatsremainingalert = seatsremaining.closest('.alert');
+    var seatsremainingalert = seatsremainingspan.closest('.alert');
     if (seatsremaining === 0 && that.prop('checked') === true) {
         that.prop('checked', false);
         $('html, body').animate({
@@ -296,7 +337,7 @@ $('.tapsenrol-current-enrolments .tapsenrol-checkbox').change(function(){
     } else if (that.prop('checked') === false) {
         seatsremaining = seatsremaining + 1;
     }
-    $('#tapsenrol-waitlist-seatsremaining').text(seatsremaining);
+    $('#tapsenrol-waitlist-seatsremaining').text(seatsremaining).data('seatsremaining', seatsremaining);
     if (seatsremaining === 0) {
         seatsremainingalert.removeClass('alert-info').removeClass('alert-warning').addClass('alert-danger');
     } else if (seatsremaining < 3) {
@@ -395,6 +436,28 @@ EOJ;
         redirect($actionurl);
         exit;
     }
+
+    $jscode = <<<EOJ
+$('#tapsenrol-checkbox-selectall').change(function(){
+    var that = $(this);
+    if (that.prop('checked') === true) {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') !== true) {
+                that.prop('checked', true).change();
+            }
+        });
+    } else {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') === true) {
+                that.prop('checked', false).change();
+            }
+        });
+    }
+});
+EOJ;
+    $PAGE->requires->js_init_code($jscode, true);
 } else if ($type == 'update') {
     // @TODO
     $mform = new mod_tapsenrol_manage_enrolments_update_form($actionurl, $customdata);
@@ -454,6 +517,28 @@ EOJ;
         redirect($actionurl);
         exit;
     }
+
+    $jscode = <<<EOJ
+$('#tapsenrol-checkbox-selectall').change(function(){
+    var that = $(this);
+    if (that.prop('checked') === true) {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') !== true) {
+                that.prop('checked', true).change();
+            }
+        });
+    } else {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') === true) {
+                that.prop('checked', false).change();
+            }
+        });
+    }
+});
+EOJ;
+    $PAGE->requires->js_init_code($jscode, true);
 }
 
 echo $html;
