@@ -79,16 +79,17 @@ if (!empty($form)) {
     $form->display();
 }
 
-echo $renderer->show_active_filters($filters, $filteroptions);
-
-/**
- * Get report data
- */
+// Get report data.
 $certificationsreport = certification_report::get_data($filters);
+
+$currenturl = certification_report::get_base_url($filters, $certificationsreport['view'], 'report');
+
+echo $renderer->show_active_filters($filters, $filteroptions, true, $currenturl);
+
 if (count($certificationsreport['data']) == 0) {
     echo html_writer::div(get_string('nodatafound', 'block_certification_report'));
 } else {
-    echo $renderer->show_table($filteroptions['certificationsdata'], $certificationsreport['data'], $certificationsreport['view'], certification_report::get_base_url($filters, 'report'));
+    echo $renderer->show_table($filteroptions['certificationsdata'], $certificationsreport['data'], $certificationsreport['view'], $currenturl);
 }
 
 echo $renderer->render_from_template('block_certification_report/modal', ['imgsrc' => $OUTPUT->pix_url('loader', 'block_certification_report')]);

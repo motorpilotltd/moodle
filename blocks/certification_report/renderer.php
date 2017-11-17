@@ -78,6 +78,7 @@ class block_certification_report_renderer extends plugin_renderer_base {
                         default:
                             $param = $view;
                     }
+                    $url->remove_params('regionview');
                     $url->param($param, $itemid);
                     $line[] = html_writer::link($url, $item['fullname']);
                     if (count($header) > 2) {
@@ -136,6 +137,18 @@ class block_certification_report_renderer extends plugin_renderer_base {
             $url->param('exportview', 'users');
             $output .= html_writer::tag('button', get_string('exportdatacsv', 'block_certification_report'), ['onclick' => 'window.open("'.$url->out(false).'");']);
         }
+
+        $filterurl = new moodle_url($urlbase);
+        $templatevars = new stdClass();
+        $templatevars->url = rawurldecode($filterurl);
+        $attributes = [
+            'id' => 'copy-to-clipboard-popover',
+            'data-toggle' => 'popover',
+            'data-content' => $this->render_from_template('block_certification_report/url_popover', $templatevars),
+            'data-placement' => 'top',
+            'data-html' => true,
+        ];
+        $output .= html_writer::tag('button', get_string('url', 'block_certification_report'), $attributes);
 
         $output .= html_writer::end_div();
         $output .= html_writer::end_div();

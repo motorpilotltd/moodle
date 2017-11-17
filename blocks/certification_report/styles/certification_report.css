@@ -165,3 +165,7 @@
     padding-bottom: 6px;
     width: 75%;
 }
+
+.path-blocks-certification_report .copy-to-clipboard {
+    cursor: pointer;
+}
