@@ -289,8 +289,6 @@ class cmform_class extends moodleform {
                     'classstarttimegroup',
                     'classendtime',
                     'classendtimegroup',
-                    'classduration',
-                    'classdurationunitscode',
                     'usedtimezone'
                 ];
                 foreach ($elements as $element) {

@@ -380,9 +380,6 @@ class forms {
                     unset($data->classstatus);
                     unset($data->classstarttime);
                     unset($data->classendtime);
-                    unset($data->classduration);
-                    unset($data->classdurationunits);
-                    unset($data->classdurationunitscode);
                     unset($data->usedtimezone);
                 }
             }
