@@ -17,7 +17,8 @@
 
 /**
  * @package    filter_formattimestamp
- * @copyright  2017 onwards Andrew Hancox (andrewdchancox@googlemail.com) on behalf of Ove Arup & Partners International Limited <https://www.arup.com>
+ * @copyright  2017 onwards Andrew Hancox (andrewdchancox@googlemail.com) on behalf of Ove Arup & Partners International Limited
+ *         <https://www.arup.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +35,7 @@ class filter_formattimestamp extends moodle_text_filter {
             return $text;
         }
 
-        $hideforrolesearch = '/<span\s+class="formattimestamp(_([0-9a-zA-Z\/]+)){0,1}"\s*>([0-9]*)<\/span>/ims';
+        $hideforrolesearch = '/<span\s+class="formattimestamp(_([_0-9a-zA-Z\/]+)){0,1}"\s*>([0-9]{10})<\/span>/ims';
         $result = preg_replace_callback($hideforrolesearch, [$this, 'dofiltering'], $text);
 
         if (is_null($result)) {
@@ -45,14 +46,36 @@ class filter_formattimestamp extends moodle_text_filter {
     }
 
     function dofiltering($block) {
-        $tz = empty($block[2]) ? 99 : $block[2];
+
+        $tz = 99;
+        $format = 'strftimedaydatetime';
+
+        if (!empty($block[2])) {
+            $options = explode('_', $block[2]);
+
+            for($i=0; $i < count($options); $i++) {
+                if (!isset($options[$i+1])) {
+                    break;
+                }
+
+                if ($options[$i] == 'tz') {
+                    $tz = $options[$i+1];
+                }
+                if ($options[$i] == 'format') {
+                    $format = $options[$i+1];
+                }
+            }
+        }
+
         $timestamp = $block[3];
 
         if (empty($timestamp)) {
             return '';
         }
 
-        return userdate($timestamp, '', $tz);
+        $format = get_string($format, 'langconfig');
+
+        return userdate($timestamp, $format, $tz);
     }
 }
 

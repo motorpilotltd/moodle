@@ -17,7 +17,31 @@ Where "1510656103" is a valid Unix timestamp.
 If you wish to show the date for a different timezone you can supply one as below:
 
 ```html
-<span class="formattimestamp_Pacific/Fiji">1510656103</span>
+<span class="formattimestamp_tz_Pacific/Fiji">1510656103</span>
+```
+Where Pacific/Fiji is any valid time zone for your version of PHP as listed on http://php.net/manual/en/timezones.php
+
+If you wish to show the date in a different format you can supply one as below:
+
+```html
+<span class="formattimestamp_format_strftimedate">1510656103</span>
+```
+Where strftimedate is any date format from lang/en/langconfig.php e.g.
+
+```$xslt
+$string['strftimedate'] = '%d %B %Y';
+$string['strftimedatefullshort'] = '%d/%m/%y';
+$string['strftimedateshort'] = '%d %B';
+$string['strftimedatetime'] = '%d %B %Y, %I:%M %p';
+$string['strftimedatetimeshort'] = '%d/%m/%y, %H:%M';
+$string['strftimedaydate'] = '%A, %d %B %Y';
+$string['strftimedaydatetime'] = '%A, %d %B %Y, %I:%M %p';
+$string['strftimedayshort'] = '%A, %d %B';
+$string['strftimedaytime'] = '%a, %H:%M';
+$string['strftimemonthyear'] = '%B %Y';
+$string['strftimerecent'] = '%d %b, %H:%M';
+$string['strftimerecentfull'] = '%a, %d %b %Y, %I:%M %p';
+$string['strftimetime'] = '%I:%M %p';
 ```
 
 Note - the filter won't work if any other classes or IDs are set on this element.
