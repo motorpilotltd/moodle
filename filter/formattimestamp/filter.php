@@ -35,7 +35,7 @@ class filter_formattimestamp extends moodle_text_filter {
             return $text;
         }
 
-        $hideforrolesearch = '/<span\s+class="formattimestamp(_([_0-9a-zA-Z\/]+)){0,1}"\s*>([0-9]{10})<\/span>/ims';
+        $hideforrolesearch = '/<span\s+class="formattimestamp(_format_([a-z]+)){0,1}"\s*>([0-9]{10})([ ]*)([a-zA-Z-\/+_]*){0,1}<\/span>/ims';
         $result = preg_replace_callback($hideforrolesearch, [$this, 'dofiltering'], $text);
 
         if (is_null($result)) {
@@ -46,25 +46,16 @@ class filter_formattimestamp extends moodle_text_filter {
     }
 
     function dofiltering($block) {
-
-        $tz = 99;
-        $format = 'strftimedaydatetime';
+        if (!empty($block[5])) {
+            $tz = $block[5];
+        } else {
+            $tz = 99;
+        }
 
         if (!empty($block[2])) {
-            $options = explode('_', $block[2]);
-
-            for($i=0; $i < count($options); $i++) {
-                if (!isset($options[$i+1])) {
-                    break;
-                }
-
-                if ($options[$i] == 'tz') {
-                    $tz = $options[$i+1];
-                }
-                if ($options[$i] == 'format') {
-                    $format = $options[$i+1];
-                }
-            }
+            $format = $block[2];
+        } else {
+            $format = 'strftimedaydatetime';
         }
 
         $timestamp = $block[3];

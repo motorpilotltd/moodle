@@ -17,16 +17,16 @@ Where "1510656103" is a valid Unix timestamp.
 If you wish to show the date for a different timezone you can supply one as below:
 
 ```html
-<span class="formattimestamp_tz_Pacific/Fiji">1510656103</span>
+<span class="formattimestamp">1510656103 Pacific/Fiji</span>
 ```
 Where Pacific/Fiji is any valid time zone for your version of PHP as listed on http://php.net/manual/en/timezones.php
 
 If you wish to show the date in a different format you can supply one as below:
 
 ```html
-<span class="formattimestamp_format_strftimedate">1510656103</span>
+<span class="formattimestamp_format_strftimemonthyear">1510656103</span>
 ```
-Where strftimedate is any date format from lang/en/langconfig.php e.g.
+Where strftimemonthyear is any date format from lang/en/langconfig.php e.g.
 
 ```$xslt
 $string['strftimedate'] = '%d %B %Y';
@@ -43,5 +43,7 @@ $string['strftimerecent'] = '%d %b, %H:%M';
 $string['strftimerecentfull'] = '%a, %d %b %Y, %I:%M %p';
 $string['strftimetime'] = '%I:%M %p';
 ```
+
+N.B. If you want to understand what the strings above mean then visit http://php.net/manual/en/function.strftime.php
 
 Note - the filter won't work if any other classes or IDs are set on this element.
