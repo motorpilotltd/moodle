@@ -75,19 +75,7 @@ class cmform_class extends moodleform {
         $this->add_element("trainingcenter", "text", PARAM_TEXT);
         $this->add_element("maximumattendees", "text", PARAM_INT);
 
-        // See variables in \local_taps\taps for options.
-        $currencycode = array(
-            '' => null,
-            'AUD' => 'Australian Dollars',
-            'CNY' => 'Chinese Yuan',
-            'EUR' => 'Euro',
-            'GBP' => 'Pounds Sterling',
-            'HKD' => 'Hong Kong Dollars',
-            'RON' => 'Romanian New Leu',
-            'SGD' => 'Singapore Dollars',
-            'USD' => 'US Dollars'
-        );
-        $this->add_element("currencycode", "select", null, $currencycode);
+        $this->add_element("currencycode", "select", null, $taps->get_classcostcurrency());
         // Float? Decimal(20,2) in DB.
         $this->add_element("price", "text", PARAM_TEXT);
         $this->add_element("jobnumber", "text", PARAM_TEXT);
@@ -271,7 +259,8 @@ class cmform_class extends moodleform {
         global $DB;
         $mform = $this->_form;
         $classid = $mform->exportValue('classid');
-        if ($classid > 0) {
+        $id = $mform->exportValue('id');
+        if ($id > 0 && $classid > 0) {
             // Check for attended enrolments and unset duration/time fields so they are not updated.
             $taps = new \local_taps\taps();
             list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');

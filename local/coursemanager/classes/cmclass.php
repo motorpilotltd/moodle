@@ -57,15 +57,14 @@ class cmclass {
         $classes = $this->coursemanager->classlist;
         $output = '';
 
-        $classinfo = $this->get_current_classinfo($this->coursemanager->cmclass->id);
+        $duplicate = optional_param('duplicate', false, PARAM_BOOL);
+        $classinfo = $this->get_current_classinfo($this->coursemanager->cmclass->id, $duplicate);
         if ($this->coursemanager->editing) {
             if ($this->coursemanager->cmclass->id !== 0) {
                 if ($classinfo->hasattendedenrolments) {
                     $output = html_writer::tag('div', get_string('form:alert:attendedenrolments', 'local_coursemanager'), array('class' => 'alert alert-warning')) . $output;
                 }
                 // Class Types
-                $duplicate = optional_param('duplicate', false, PARAM_BOOL);
-
                 $params = array(
                     'cmcourse' => $this->coursemanager->cmcourse->id,
                     'start' => $this->coursemanager->start,
@@ -107,7 +106,7 @@ class cmclass {
         return $output;
     }
 
-    public function get_current_classinfo($cmclass) {
+    public function get_current_classinfo($cmclass, $duplicate) {
         global $DB;
 
         $classinfo = new stdClass();
@@ -142,8 +141,9 @@ class cmclass {
         if ($cmclass >= 1) {
             $classinfo->hasattendedenrolments = false;
             $classrecord = $DB->get_record('local_taps_class', ['id' => $cmclass]);
-            
-            if ($classrecord) {
+
+            // Ignore attended enrolments if duplicating.
+            if ($classrecord && !$duplicate) {
                 $taps = new \local_taps\taps();
                 list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
                 $sql = "SELECT COUNT(id)
