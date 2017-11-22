@@ -113,6 +113,7 @@ class cmclass {
         
         $classinfo->type = '';
         $classinfo->status = 'none';
+        $classinfo->hasattendedenrolments = false;
         if ($cmclass === 0) {
             return $classinfo;
         }
@@ -139,7 +140,6 @@ class cmclass {
             }
         }
         if ($cmclass >= 1) {
-            $classinfo->hasattendedenrolments = false;
             $classrecord = $DB->get_record('local_taps_class', ['id' => $cmclass]);
 
             // Ignore attended enrolments if duplicating.
