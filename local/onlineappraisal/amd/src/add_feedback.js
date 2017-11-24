@@ -32,26 +32,29 @@ define(['jquery', 'core/str', 'core/notification'],
          */
         init: function() {
             // Submission confirmation.
-            
+            $('.sendfeedbackbtn').click(function() {
+                $('input[name=buttonclicked]').val(1);
+            });
+            $('.savedraftbtn').click(function() {
+                $('input[name=buttonclicked]').val(2);
+            });
             str.get_string('form:addfeedback:confirm', 'local_onlineappraisal').done(function(s) {
                 $('input[name="_qf__apform_addfeedback"]').closest('form').submit(function(e){
                     e.preventDefault();
                     var myform = $(this);
-                    var btn = myform.find("input[type=submit]:focus").attr('id');
+                    var btn = $('input[name=buttonclicked]').val();
 
-                    if (btn == 'id_submitbutton') {
-                        $('input[name=buttonclicked]').val(1);
+                    if (btn == 1) {
                         notification.confirm('Submit Feedback', s, 'Ok', 'Cancel', function() {
                             myform.unbind('submit').submit();
                         });
                     }
-                    if (btn == 'id_savedraft') {
-                        $('input[name=buttonclicked]').val(2);
+                    if (btn == 2) {
                         str.get_string('form:addfeedback:saveddraft', 'local_onlineappraisal').done(function(d) {
                             notification.alert('Save Draft', d, 'OK');
                             setTimeout( function () { 
                                 myform.unbind('submit').submit();
-                            }, 2000);
+                            }, 4000);
                         });
 
                     }
