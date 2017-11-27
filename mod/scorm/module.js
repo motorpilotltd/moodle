@@ -298,36 +298,11 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
             }
 
             // Calculate the rough new height from the viewport height.
-/* BEGIN CORE MOD */
-            var scormheader = Y.one('nav#header');
-            if (scormheader !== null) {
-                // Fixed header margin has no effect on this page.
-                var scormheaderheight = scormheader.get('offsetHeight');
-                var activitytitleheight = 0;
-                var scormtopheight = 0;
-
-                var activitytitle = Y.one('div[role="main"] h2:first-of-type');
-                if (activitytitle !== null) {
-                    activitytitleheight = activitytitle.get('offsetHeight') +
-                        parseFloat(activitytitle.getComputedStyle('marginTop')) +
-                        parseFloat(activitytitle.getComputedStyle('marginBottom'));
-                }
-
-                var scormtop = Y.one('#scormtop');
-                if (scormtop !== null) {
-                    scormtopheight = scormtop.get('offsetHeight') +
-                        parseFloat(scormtop.getComputedStyle('marginTop')) +
-                        parseFloat(scormtop.getComputedStyle('marginBottom'));
-                }
-
-                var newheight = Y.one('body').get('winHeight') - scormheaderheight - activitytitleheight - scormtopheight - 5;
-            } else {
-                // Original Code
-                var newheight = Y.one('body').get('winHeight') - 5;
-            }
-/* END CORE MOD */
-            if (newheight < 600) {
-                newheight = 600;
+            var newheight = Y.one('body').get('winHeight') - 5
+                - Y.one('#scorm_layout').getY()
+                - window.pageYOffset;
+            if (newheight < 680 || isNaN(newheight)) {
+                newheight = 680;
             }
             Y.one('#scorm_layout').setStyle('height', newheight);
 
@@ -586,6 +561,10 @@ M.mod_scorm.init = function(Y, nav_display, navposition_left, navposition_top, h
                     .addClass(cssclasses.scorm_grid_content_toc_hidden);
             }
         }
+
+        // Basic initialization completed, show the elements.
+        Y.one('#scorm_toc').removeClass('loading');
+        Y.one('#scorm_toc_toggle').removeClass('loading');
 
         // TOC Resize handle.
         var layout_width = parseInt(Y.one('#scorm_layout').getComputedStyle('width'), 10);

@@ -63,7 +63,14 @@ define('MEMORY_HUGE', -4);
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @deprecated since 2.0
  */
-class object extends stdClass {};
+class object extends stdClass {
+    /**
+     * Constructor.
+     */
+    public function __construct() {
+        debugging("'object' class has been deprecated, please use stdClass instead.", DEBUG_DEVELOPER);
+    }
+};
 
 /**
  * Base Moodle Exception class
@@ -377,7 +384,15 @@ function default_exception_handler($ex) {
                 // If you enable db debugging and exception is thrown, the print footer prints a lot of rubbish
                 $DB->set_debug(0);
             }
-            echo $OUTPUT->fatal_error($info->message, $info->moreinfourl, $info->link, $info->backtrace, $info->debuginfo);
+            if (AJAX_SCRIPT) {
+                // If we are in an AJAX script we don't want to use PREFERRED_RENDERER_TARGET.
+                // Because we know we will want to use ajax format.
+                $renderer = $PAGE->get_renderer('core', null, 'ajax');
+            } else {
+                $renderer = $OUTPUT;
+            }
+            echo $renderer->fatal_error($info->message, $info->moreinfourl, $info->link, $info->backtrace, $info->debuginfo,
+                $info->errorcode);
         } catch (Exception $e) {
             $out_ex = $e;
         } catch (Throwable $e) {
@@ -453,7 +468,7 @@ function is_early_init($backtrace) {
     $dangerouscode = array(
         array('function' => 'header', 'type' => '->'),
         array('class' => 'bootstrap_renderer'),
-        array('file' => dirname(__FILE__).'/setup.php'),
+        array('file' => __DIR__.'/setup.php'),
     );
     foreach ($backtrace as $stackframe) {
         foreach ($dangerouscode as $pattern) {
@@ -722,13 +737,16 @@ function get_docs_url($path = null) {
 /**
  * Formats a backtrace ready for output.
  *
+ * This function does not include function arguments because they could contain sensitive information
+ * not suitable to be exposed in a response.
+ *
  * @param array $callers backtrace array, as returned by debug_backtrace().
  * @param boolean $plaintext if false, generates HTML, if true generates plain text.
  * @return string formatted backtrace, ready for output.
  */
 function format_backtrace($callers, $plaintext = false) {
     // do not use $CFG->dirroot because it might not be available in destructors
-    $dirroot = dirname(dirname(__FILE__));
+    $dirroot = dirname(__DIR__);
 
     if (empty($callers)) {
         return '';
@@ -886,7 +904,11 @@ function initialise_fullme() {
     // (That is, the Moodle server uses http, with an external box translating everything to https).
     if (empty($CFG->sslproxy)) {
         if ($rurl['scheme'] === 'http' and $wwwroot['scheme'] === 'https') {
-            print_error('sslonlyaccess', 'error');
+            if (defined('REQUIRE_CORRECT_ACCESS') && REQUIRE_CORRECT_ACCESS) {
+                print_error('sslonlyaccess', 'error');
+            } else {
+                redirect($CFG->wwwroot, get_string('wwwrootmismatch', 'error', $CFG->wwwroot), 3);
+            }
         }
     } else {
         if ($wwwroot['scheme'] !== 'https') {
@@ -1320,26 +1342,23 @@ function get_real_size($size = 0) {
     if (!$size) {
         return 0;
     }
-    $scan = array();
-    $scan['GB'] = 1073741824;
-    $scan['Gb'] = 1073741824;
-    $scan['G'] = 1073741824;
-    $scan['MB'] = 1048576;
-    $scan['Mb'] = 1048576;
-    $scan['M'] = 1048576;
-    $scan['m'] = 1048576;
-    $scan['KB'] = 1024;
-    $scan['Kb'] = 1024;
-    $scan['K'] = 1024;
-    $scan['k'] = 1024;
 
-    while (list($key) = each($scan)) {
-        if ((strlen($size)>strlen($key))&&(substr($size, strlen($size) - strlen($key))==$key)) {
-            $size = substr($size, 0, strlen($size) - strlen($key)) * $scan[$key];
-            break;
-        }
+    static $binaryprefixes = array(
+        'K' => 1024,
+        'k' => 1024,
+        'M' => 1048576,
+        'm' => 1048576,
+        'G' => 1073741824,
+        'g' => 1073741824,
+        'T' => 1099511627776,
+        't' => 1099511627776,
+    );
+
+    if (preg_match('/^([0-9]+)([KMGT])/i', $size, $matches)) {
+        return $matches[1] * $binaryprefixes[$matches[2]];
     }
-    return $size;
+
+    return (int) $size;
 }
 
 /**
@@ -1373,19 +1392,41 @@ function disable_output_buffering() {
     ini_set('output_handler', '');
 
     error_reporting($olddebug);
+
+    // Disable buffering in nginx.
+    header('X-Accel-Buffering: no');
+
 }
 
 /**
- * Check whether a major upgrade is needed. That is defined as an upgrade that
- * changes something really fundamental in the database, so nothing can possibly
- * work until the database has been updated, and that is defined by the hard-coded
- * version number in this function.
+ * Check whether a major upgrade is needed.
+ *
+ * That is defined as an upgrade that changes something really fundamental
+ * in the database, so nothing can possibly work until the database has
+ * been updated, and that is defined by the hard-coded version number in
+ * this function.
+ *
+ * @return bool
+ */
+function is_major_upgrade_required() {
+    global $CFG;
+    $lastmajordbchanges = 2017040403.00;
+
+    $required = empty($CFG->version);
+    $required = $required || (float)$CFG->version < $lastmajordbchanges;
+    $required = $required || during_initial_install();
+    $required = $required || !empty($CFG->adminsetuppending);
+
+    return $required;
+}
+
+/**
+ * Redirect to the Notifications page if a major upgrade is required, and
+ * terminate the current user session.
  */
 function redirect_if_major_upgrade_required() {
     global $CFG;
-    $lastmajordbchanges = 2014093001.00;
-    if (empty($CFG->version) or (float)$CFG->version < $lastmajordbchanges or
-            during_initial_install() or !empty($CFG->adminsetuppending)) {
+    if (is_major_upgrade_required()) {
         try {
             @\core\session\manager::terminate_current();
         } catch (Exception $e) {

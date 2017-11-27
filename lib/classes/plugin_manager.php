@@ -146,7 +146,7 @@ class core_plugin_manager {
     public function get_plugin_types() {
         if (func_num_args() > 0) {
             if (!func_get_arg(0)) {
-                throw coding_exception('core_plugin_manager->get_plugin_types() does not support relative paths.');
+                throw new coding_exception('core_plugin_manager->get_plugin_types() does not support relative paths.');
             }
         }
         if ($this->plugintypes) {
@@ -185,19 +185,6 @@ class core_plugin_manager {
         }
 
         $this->installedplugins = array();
-
-        // TODO: Delete this block once Moodle 2.6 or later becomes minimum required version to upgrade.
-        if ($CFG->version < 2013092001.02) {
-            // We did not upgrade the database yet.
-            $modules = $DB->get_records('modules', array(), 'name ASC', 'id, name, version');
-            foreach ($modules as $module) {
-                $this->installedplugins['mod'][$module->name] = $module->version;
-            }
-            $blocks = $DB->get_records('block', array(), 'name ASC', 'id, name, version');
-            foreach ($blocks as $block) {
-                $this->installedplugins['block'][$block->name] = $block->version;
-            }
-        }
 
         $versions = $DB->get_records('config_plugins', array('name'=>'version'));
         foreach ($versions as $version) {
@@ -1659,12 +1646,17 @@ class core_plugin_manager {
         // Moodle 2.3 supports upgrades from 2.2.x only.
         $plugins = array(
             'qformat' => array('blackboard', 'learnwise'),
+            'auth' => array('radius'),
+            'block' => array('course_overview'),
             'enrol' => array('authorize'),
+            'report' => array('search'),
+            'repository' => array('alfresco'),
             'tinymce' => array('dragmath'),
             'tool' => array('bloglevelupgrade', 'qeupgradehelper', 'timezoneimport'),
-            'theme' => array('mymobile', 'afterburner', 'anomaly', 'arialist', 'binarius', 'boxxie', 'brick', 'formal_white',
-                'formfactor', 'fusion', 'leatherbound', 'magazine', 'nimble', 'nonzero', 'overlay', 'serenity', 'sky_high',
-                'splash', 'standard', 'standardold'),
+            'theme' => array('afterburner', 'anomaly', 'arialist', 'base', 'binarius', 'boxxie', 'brick', 'canvas',
+                'formal_white', 'formfactor', 'fusion', 'leatherbound', 'magazine', 'mymobile', 'nimble', 'nonzero',
+                'overlay', 'serenity', 'sky_high', 'splash', 'standard', 'standardold'),
+            'webservice' => array('amf'),
         );
 
         if (!isset($plugins[$type])) {
@@ -1682,6 +1674,10 @@ class core_plugin_manager {
     public static function standard_plugins_list($type) {
 
         $standard_plugins = array(
+
+            'antivirus' => array(
+                'clamav'
+            ),
 
             'atto' => array(
                 'accessibilitychecker', 'accessibilityhelper', 'align',
@@ -1705,9 +1701,8 @@ class core_plugin_manager {
             ),
 
             'auth' => array(
-                'cas', 'db', 'email', 'fc', 'imap', 'ldap', 'manual', 'mnet',
-                'nntp', 'nologin', 'none', 'pam', 'pop3', 'radius',
-                'shibboleth', 'webservice'
+                'cas', 'db', 'email', 'fc', 'imap', 'ldap', 'lti', 'manual', 'mnet',
+                'nntp', 'nologin', 'none', 'oauth2', 'pam', 'pop3', 'shibboleth', 'webservice'
             ),
 
             'availability' => array(
@@ -1718,9 +1713,9 @@ class core_plugin_manager {
                 'activity_modules', 'activity_results', 'admin_bookmarks', 'badges',
                 'blog_menu', 'blog_recent', 'blog_tags', 'calendar_month',
                 'calendar_upcoming', 'comments', 'community',
-                'completionstatus', 'course_list', 'course_overview',
-                'course_summary', 'feedback', 'glossary_random', 'html',
-                'login', 'mentees', 'messages', 'mnet_hosts', 'myprofile',
+                'completionstatus', 'course_list', 'course_summary',
+                'feedback', 'globalsearch', 'glossary_random', 'html',
+                'login', 'lp', 'mentees', 'messages', 'mnet_hosts', 'myoverview', 'myprofile',
                 'navigation', 'news_items', 'online_users', 'participants',
                 'private_files', 'quiz_results', 'recent_activity',
                 'rss_client', 'search_forums', 'section_links',
@@ -1737,7 +1732,7 @@ class core_plugin_manager {
             ),
 
             'cachestore' => array(
-                'file', 'memcache', 'memcached', 'mongodb', 'session', 'static'
+                'file', 'memcache', 'memcached', 'mongodb', 'session', 'static', 'apcu', 'redis'
             ),
 
             'calendartype' => array(
@@ -1753,8 +1748,16 @@ class core_plugin_manager {
                 'number', 'picture', 'radiobutton', 'text', 'textarea', 'url'
             ),
 
+            'dataformat' => array(
+                'html', 'csv', 'json', 'excel', 'ods',
+            ),
+
             'datapreset' => array(
                 'imagegallery'
+            ),
+
+            'fileconverter' => array(
+                'unoconv', 'googledrive'
             ),
 
             'editor' => array(
@@ -1763,7 +1766,7 @@ class core_plugin_manager {
 
             'enrol' => array(
                 'category', 'cohort', 'database', 'flatfile',
-                'guest', 'imsenterprise', 'ldap', 'manual', 'meta', 'mnet',
+                'guest', 'imsenterprise', 'ldap', 'lti', 'manual', 'meta', 'mnet',
                 'paypal', 'self'
             ),
 
@@ -1802,6 +1805,10 @@ class core_plugin_manager {
 
             'ltiservice' => array(
                 'memberships', 'profile', 'toolproxy', 'toolsettings'
+            ),
+
+            'media' => array(
+                'html5audio', 'html5video', 'swf', 'videojs', 'vimeo', 'youtube'
             ),
 
             'message' => array(
@@ -1855,21 +1862,25 @@ class core_plugin_manager {
             ),
 
             'quizaccess' => array(
-                'delaybetweenattempts', 'ipaddress', 'numattempts', 'openclosedate',
+                'delaybetweenattempts', 'ipaddress', 'numattempts', 'offlineattempts', 'openclosedate',
                 'password', 'safebrowser', 'securewindow', 'timelimit'
             ),
 
             'report' => array(
-                'backups', 'completion', 'configlog', 'courseoverview', 'eventlist',
-                'log', 'loglive', 'outline', 'participation', 'progress', 'questioninstances', 'security', 'stats', 'performance',
-                'usersessions',
+                'backups', 'competency', 'completion', 'configlog', 'courseoverview', 'eventlist',
+                'log', 'loglive', 'outline', 'participation', 'progress', 'questioninstances',
+                'security', 'stats', 'performance', 'usersessions'
             ),
 
             'repository' => array(
-                'alfresco', 'areafiles', 'boxnet', 'coursefiles', 'dropbox', 'equella', 'filesystem',
+                'areafiles', 'boxnet', 'coursefiles', 'dropbox', 'equella', 'filesystem',
                 'flickr', 'flickr_public', 'googledocs', 'local', 'merlot',
-                'picasa', 'recent', 'skydrive', 's3', 'upload', 'url', 'user', 'webdav',
+                'onedrive', 'picasa', 'recent', 'skydrive', 's3', 'upload', 'url', 'user', 'webdav',
                 'wikimedia', 'youtube'
+            ),
+
+            'search' => array(
+                'solr'
             ),
 
             'scormreport' => array(
@@ -1885,19 +1896,19 @@ class core_plugin_manager {
             ),
 
             'theme' => array(
-                'base', 'bootstrapbase', 'canvas', 'clean', 'more'
+                'boost', 'bootstrapbase', 'clean', 'more'
             ),
 
             'tool' => array(
-                'assignmentupgrade', 'availabilityconditions', 'behat', 'capability', 'customlang',
+                'assignmentupgrade', 'availabilityconditions', 'behat', 'capability', 'cohortroles', 'customlang',
                 'dbtransfer', 'filetypes', 'generator', 'health', 'innodb', 'installaddon',
-                'langimport', 'log', 'messageinbound', 'multilangupgrade', 'monitor', 'phpunit', 'profiling',
-                'replace', 'spamcleaner', 'task', 'templatelibrary',
-                'unittest', 'uploadcourse', 'uploaduser', 'unsuproles', 'xmldb'
+                'langimport', 'log', 'lp', 'lpimportcsv', 'lpmigrate', 'messageinbound', 'mobile', 'multilangupgrade', 'monitor',
+                'oauth2', 'phpunit', 'profiling', 'recyclebin', 'replace', 'spamcleaner', 'task', 'templatelibrary',
+                'unittest', 'uploadcourse', 'uploaduser', 'unsuproles', 'usertours', 'xmldb'
             ),
 
             'webservice' => array(
-                'amf', 'rest', 'soap', 'xmlrpc'
+                'rest', 'soap', 'xmlrpc'
             ),
 
             'workshopallocation' => array(
@@ -1936,7 +1947,7 @@ class core_plugin_manager {
 
         if (!$this->is_plugin_folder_removable($plugin->component)) {
             throw new moodle_exception('err_removing_unremovable_folder', 'core_plugin', '',
-                array('plugin' => $pluginfo->component, 'rootdir' => $pluginfo->rootdir),
+                array('plugin' => $plugin->component, 'rootdir' => $plugin->rootdir),
                 'plugin root folder is not removable as expected');
         }
 

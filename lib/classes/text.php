@@ -89,7 +89,7 @@ class core_text {
         $GLOBALS['TYPO3_CONF_VARS']['BE']['folderCreateMask'] = decoct($CFG->directorypermissions);
 
         // Default mask for Typo
-        $GLOBALS['TYPO3_CONF_VARS']['BE']['fileCreateMask'] = $CFG->directorypermissions;
+        $GLOBALS['TYPO3_CONF_VARS']['BE']['fileCreateMask'] = decoct($CFG->filepermissions);
 
         // This full path constants must be defined too, transforming backslashes
         // to forward slashed because Typo3 requires it.
@@ -243,6 +243,30 @@ class core_text {
         } else {
             $result = self::typo3()->substr($charset, (string)$text, $start, $len);
         }
+        error_reporting($oldlevel);
+
+        return $result;
+    }
+
+    /**
+     * Truncates a string to no more than a certain number of bytes in a multi-byte safe manner.
+     * UTF-8 only!
+     *
+     * Many of the other charsets we test for (like ISO-2022-JP and EUC-JP) are not supported
+     * by typo3, and will give invalid results, so we are supporting UTF-8 only.
+     *
+     * @param string $string String to truncate
+     * @param int $bytes Maximum length of bytes in the result
+     * @return string Portion of string specified by $bytes
+     * @since Moodle 3.1
+     */
+    public static function str_max_bytes($string, $bytes) {
+        if (function_exists('mb_strcut')) {
+            return mb_strcut($string, 0, $bytes, 'UTF-8');
+        }
+
+        $oldlevel = error_reporting(E_PARSE);
+        $result = self::typo3()->strtrunc('utf-8', $string, $bytes);
         error_reporting($oldlevel);
 
         return $result;

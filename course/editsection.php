@@ -49,9 +49,14 @@ if ($deletesection) {
     $cancelurl = course_get_url($course, $sectioninfo, array('sr' => $sectionreturn));
     if (course_can_delete_section($course, $sectioninfo)) {
         $confirm = optional_param('confirm', false, PARAM_BOOL) && confirm_sesskey();
+        if (!$confirm && optional_param('sesskey', null, PARAM_RAW) !== null &&
+                empty($sectioninfo->summary) && empty($sectioninfo->sequence) && confirm_sesskey()) {
+            // Do not ask for confirmation if section is empty and sesskey is already provided.
+            $confirm = true;
+        }
         if ($confirm) {
-            course_delete_section($course, $sectioninfo, true);
-            $courseurl = course_get_url($course, 0, array('sr' => $sectionreturn));
+            course_delete_section($course, $sectioninfo, true, true);
+            $courseurl = course_get_url($course, $sectioninfo->section - 1, array('sr' => $sectionreturn));
             redirect($courseurl);
         } else {
             if (get_string_manager()->string_exists('deletesection', 'format_' . $course->format)) {
@@ -114,28 +119,7 @@ if ($mform->is_cancelled()){
             $data->availability = null;
         }
     }
-    $DB->update_record('course_sections', $data);
-    rebuild_course_cache($course->id, true);
-    if (isset($data->section)) {
-        // Usually edit form does not change relative section number but just in case.
-        $sectionnum = $data->section;
-    }
-    course_get_format($course->id)->update_section_format_options($data);
-
-    // Set section info, as this might not be present in form_data.
-    if (!isset($data->section))  {
-        $data->section = $sectionnum;
-    }
-    // Trigger an event for course section update.
-    $event = \core\event\course_section_updated::create(
-            array(
-                'objectid' => $data->id,
-                'courseid' => $course->id,
-                'context' => $context,
-                'other' => array('sectionnum' => $data->section)
-            )
-        );
-    $event->trigger();
+    course_update_section($course, $section, $data);
 
     $PAGE->navigation->clear_cache();
     redirect(course_get_url($course, $section, array('sr' => $sectionreturn)));

@@ -191,7 +191,7 @@ class graded_users_iterator {
                             LEFT JOIN (SELECT * FROM {user_info_data}
                                 WHERE fieldid = :cf$customfieldscount) cf$customfieldscount
                             ON u.id = cf$customfieldscount.userid";
-                    $userfields .= ", cf$customfieldscount.data AS customfield_{$field->shortname}";
+                    $userfields .= ", cf$customfieldscount.data AS customfield_{$field->customid}";
                     $params['cf'.$customfieldscount] = $field->customid;
                     $customfieldscount++;
                 }
@@ -813,13 +813,23 @@ function grade_print_tabs($active_type, $active_plugin, $plugin_info, $return=fa
         }
     }
 
-    $tabs[] = $top_row;
-    $tabs[] = $bottom_row;
+    // Do not display rows that contain only one item, they are not helpful.
+    if (count($top_row) > 1) {
+        $tabs[] = $top_row;
+    }
+    if (count($bottom_row) > 1) {
+        $tabs[] = $bottom_row;
+    }
+    if (empty($tabs)) {
+        return;
+    }
+
+    $rv = html_writer::div(print_tabs($tabs, $active_plugin, $inactive, $activated, true), 'grade-navigation');
 
     if ($return) {
-        return print_tabs($tabs, $active_plugin, $inactive, $activated, true);
+        return $rv;
     } else {
-        print_tabs($tabs, $active_plugin, $inactive, $activated);
+        echo $rv;
     }
 }
 
@@ -970,6 +980,13 @@ function print_grade_page_head($courseid, $active_type, $active_plugin=null,
                                $user = null) {
     global $CFG, $OUTPUT, $PAGE;
 
+    // Put a warning on all gradebook pages if the course has modules currently scheduled for background deletion.
+    require_once($CFG->dirroot . '/course/lib.php');
+    if (course_modules_pending_deletion($courseid)) {
+        \core\notification::add(get_string('gradesmoduledeletionpendingwarning', 'grades'),
+            \core\output\notification::NOTIFY_WARNING);
+    }
+
     if ($active_type === 'preferences') {
         // In Moodle 2.8 report preferences were moved under 'settings'. Allow backward compatibility for 3rd party grade reports.
         $active_type = 'settings';
@@ -1000,6 +1017,11 @@ function print_grade_page_head($courseid, $active_type, $active_plugin=null,
     $PAGE->set_button($buttons);
     if ($courseid != SITEID) {
         grade_extend_settings($plugin_info, $courseid);
+    }
+
+    // Set the current report as active in the breadcrumbs.
+    if ($active_plugin !== null && $reportnav = $PAGE->settingsnav->find($active_plugin, navigation_node::TYPE_SETTING)) {
+        $reportnav->make_active();
     }
 
     $returnval = $OUTPUT->header();
@@ -1034,7 +1056,8 @@ function print_grade_page_head($courseid, $active_type, $active_plugin=null,
             if (isset($user)) {
                 $output = $OUTPUT->context_header(
                         array(
-                            'heading' => fullname($user),
+                            'heading' => html_writer::link(new moodle_url('/user/view.php', array('id' => $user->id,
+                                'course' => $courseid)), fullname($user)),
                             'user' => $user,
                             'usercontext' => context_user::instance($user->id)
                         ), 2
@@ -1104,8 +1127,11 @@ class grade_plugin_return {
 
     /**
      * Old syntax of class constructor. Deprecated in PHP7.
+     *
+     * @deprecated since Moodle 3.1
      */
     public function grade_plugin_return($params = null) {
+        debugging('Use of class name as constructor is deprecated', DEBUG_DEVELOPER);
         self::__construct($params);
     }
 
@@ -1470,8 +1496,15 @@ class grade_structure {
                         $icon->pix = 'i/outcomes';
                         $icon->title = s(get_string('outcome', 'grades'));
                     } else {
-                        $icon->pix = 'icon';
-                        $icon->component = $element['object']->itemmodule;
+                        $modinfo = get_fast_modinfo($element['object']->courseid);
+                        $module = $element['object']->itemmodule;
+                        $instanceid = $element['object']->iteminstance;
+                        if (isset($modinfo->instances[$module][$instanceid])) {
+                            $icon->url = $modinfo->instances[$module][$instanceid]->get_icon_url();
+                        } else {
+                            $icon->pix = 'icon';
+                            $icon->component = $element['object']->itemmodule;
+                        }
                         $icon->title = s(get_string('modulename', $element['object']->itemmodule));
                     }
                 } else if ($element['object']->itemtype == 'manual') {
@@ -1496,6 +1529,8 @@ class grade_structure {
             if ($spacerifnone) {
                 $outputstr = $OUTPUT->spacer() . ' ';
             }
+        } else if (isset($icon->url)) {
+            $outputstr = html_writer::img($icon->url, $icon->title, $icon->attributes);
         } else {
             $outputstr = $OUTPUT->pix_icon($icon->pix, $icon->title, $icon->component, $icon->attributes);
         }
@@ -1524,7 +1559,8 @@ class grade_structure {
             $header .= $this->get_element_icon($element, $spacerifnone);
         }
 
-        $header .= $element['object']->get_name($fulltotal);
+        $title = $element['object']->get_name($fulltotal);
+        $header .= $title;
 
         if ($element['type'] != 'item' and $element['type'] != 'categoryitem' and
             $element['type'] != 'courseitem') {
@@ -1534,11 +1570,12 @@ class grade_structure {
         if ($withlink && $url = $this->get_activity_link($element)) {
             $a = new stdClass();
             $a->name = get_string('modulename', $element['object']->itemmodule);
+            $a->title = $title;
             $title = get_string('linktoactivity', 'grades', $a);
 
-            $header = html_writer::link($url, $header, array('title' => $title));
+            $header = html_writer::link($url, $header, array('title' => $title, 'class' => 'gradeitemheader'));
         } else {
-            $header = html_writer::span($header);
+            $header = html_writer::span($header, 'gradeitemheader', array('title' => $title, 'tabindex' => '0'));
         }
 
         if ($withdescription) {
@@ -2058,8 +2095,11 @@ class grade_seq extends grade_structure {
 
     /**
      * Old syntax of class constructor. Deprecated in PHP7.
+     *
+     * @deprecated since Moodle 3.1
      */
     public function grade_seq($courseid, $category_grade_last=false, $nooutcomes=false) {
+        debugging('Use of class name as constructor is deprecated', DEBUG_DEVELOPER);
         self::__construct($courseid, $category_grade_last, $nooutcomes);
     }
 
@@ -2245,9 +2285,12 @@ class grade_tree extends grade_structure {
 
     /**
      * Old syntax of class constructor. Deprecated in PHP7.
+     *
+     * @deprecated since Moodle 3.1
      */
     public function grade_tree($courseid, $fillers=true, $category_grade_last=false,
                                $collapsed=null, $nooutcomes=false) {
+        debugging('Use of class name as constructor is deprecated', DEBUG_DEVELOPER);
         self::__construct($courseid, $fillers, $category_grade_last, $collapsed, $nooutcomes);
     }
 
@@ -3148,7 +3191,7 @@ abstract class grade_helper {
      */
     public static function get_user_field_value($user, $field) {
         if (!empty($field->customid)) {
-            $fieldname = 'customfield_' . $field->shortname;
+            $fieldname = 'customfield_' . $field->customid;
             if (!empty($user->{$fieldname}) || is_numeric($user->{$fieldname})) {
                 $fieldvalue = $user->{$fieldname};
             } else {

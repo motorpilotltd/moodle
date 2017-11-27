@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -41,103 +40,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 function xmldb_forum_upgrade($oldversion) {
-    global $CFG, $DB, $OUTPUT;
+    global $CFG, $DB;
 
     $dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
-
-    // Moodle v2.2.0 release upgrade line.
-    // Put any upgrade step following this.
-
-    // Moodle v2.3.0 release upgrade line.
-    // Put any upgrade step following this.
-
-    // Moodle v2.4.0 release upgrade line.
-    // Put any upgrade step following this.
-
-    if ($oldversion < 2013020500) {
-
-        // Define field displaywordcount to be added to forum.
-        $table = new xmldb_table('forum');
-        $field = new xmldb_field('displaywordcount', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'completionposts');
-
-        // Conditionally launch add field displaywordcount.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Forum savepoint reached.
-        upgrade_mod_savepoint(true, 2013020500, 'forum');
-    }
-
-    // Forcefully assign mod/forum:allowforcesubscribe to frontpage role, as we missed that when
-    // capability was introduced.
-    if ($oldversion < 2013021200) {
-        // If capability mod/forum:allowforcesubscribe is defined then set it for frontpage role.
-        if (get_capability_info('mod/forum:allowforcesubscribe')) {
-            assign_legacy_capabilities('mod/forum:allowforcesubscribe', array('frontpage' => CAP_ALLOW));
-        }
-        // Forum savepoint reached.
-        upgrade_mod_savepoint(true, 2013021200, 'forum');
-    }
-
-
-    // Moodle v2.5.0 release upgrade line.
-    // Put any upgrade step following this.
-    if ($oldversion < 2013071000) {
-        // Define table forum_digests to be created.
-        $table = new xmldb_table('forum_digests');
-
-        // Adding fields to table forum_digests.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('forum', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('maildigest', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '-1');
-
-        // Adding keys to table forum_digests.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        $table->add_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
-        $table->add_key('forum', XMLDB_KEY_FOREIGN, array('forum'), 'forum', array('id'));
-        $table->add_key('forumdigest', XMLDB_KEY_UNIQUE, array('forum', 'userid', 'maildigest'));
-
-        // Conditionally launch create table for forum_digests.
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-        // Forum savepoint reached.
-        upgrade_mod_savepoint(true, 2013071000, 'forum');
-    }
-
-    // Moodle v2.6.0 release upgrade line.
-    // Put any upgrade step following this.
-
-    if ($oldversion < 2014040400) {
-
-        // Define index userid-postid (not unique) to be dropped form forum_read.
-        $table = new xmldb_table('forum_read');
-        $index = new xmldb_index('userid-postid', XMLDB_INDEX_NOTUNIQUE, array('userid', 'postid'));
-
-        // Conditionally launch drop index userid-postid.
-        if ($dbman->index_exists($table, $index)) {
-            $dbman->drop_index($table, $index);
-        }
-
-
-        // Define index postid-userid (not unique) to be added to forum_read.
-        $index = new xmldb_index('postid-userid', XMLDB_INDEX_NOTUNIQUE, array('postid', 'userid'));
-
-        // Conditionally launch add index postid-userid.
-        if (!$dbman->index_exists($table, $index)) {
-            $dbman->add_index($table, $index);
-        }
-
-        // Forum savepoint reached.
-        upgrade_mod_savepoint(true, 2014040400, 'forum');
-    }
-
-    // Moodle v2.7.0 release upgrade line.
-    // Put any upgrade step following this.
 
     if ($oldversion < 2014051201) {
 
@@ -252,6 +160,73 @@ function xmldb_forum_upgrade($oldversion) {
 
     // Moodle v3.0.0 release upgrade line.
     // Put any upgrade step following this.
+
+    if ($oldversion < 2015120800) {
+
+        // Add support for pinned discussions.
+        $table = new xmldb_table('forum_discussions');
+        $field = new xmldb_field('pinned', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'timeend');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Forum savepoint reached.
+        upgrade_mod_savepoint(true, 2015120800, 'forum');
+    }
+    // Moodle v3.1.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    if ($oldversion < 2016091200) {
+
+        // Define field lockdiscussionafter to be added to forum.
+        $table = new xmldb_table('forum');
+        $field = new xmldb_field('lockdiscussionafter', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'displaywordcount');
+
+        // Conditionally launch add field lockdiscussionafter.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Forum savepoint reached.
+        upgrade_mod_savepoint(true, 2016091200, 'forum');
+    }
+
+    // Automatically generated Moodle v3.2.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    // Automatically generated Moodle v3.3.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    if ($oldversion < 2017051501) {
+
+        // Remove duplicate entries from forum_subscriptions.
+        // Find records with multiple userid/forum combinations and find the highest ID.
+        // Later we will remove all those entries.
+        $sql = "
+            SELECT MIN(id) as minid, userid, forum
+            FROM {forum_subscriptions}
+            GROUP BY userid, forum
+            HAVING COUNT(id) > 1";
+
+        if ($duplicatedrows = $DB->get_recordset_sql($sql)) {
+            foreach ($duplicatedrows as $row) {
+                $DB->delete_records_select('forum_subscriptions',
+                    'userid = :userid AND forum = :forum AND id <> :minid', (array)$row);
+            }
+        }
+        $duplicatedrows->close();
+
+        // Define key useridforum (primary) to be added to forum_subscriptions.
+        $table = new xmldb_table('forum_subscriptions');
+        $key = new xmldb_key('useridforum', XMLDB_KEY_UNIQUE, array('userid', 'forum'));
+
+        // Launch add key useridforum.
+        $dbman->add_key($table, $key);
+
+        // Forum savepoint reached.
+        upgrade_mod_savepoint(true, 2017051501, 'forum');
+    }
 
     return true;
 }

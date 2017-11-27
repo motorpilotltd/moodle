@@ -1275,8 +1275,11 @@ class environment_results {
 
     /**
      * Old syntax of class constructor. Deprecated in PHP7.
+     *
+     * @deprecated since Moodle 3.1
      */
     public function environment_results($part) {
+        debugging('Use of class name as constructor is deprecated', DEBUG_DEVELOPER);
         self::__construct($part);
     }
 
@@ -1578,4 +1581,26 @@ function restrict_php_version(&$result, $version) {
         // We're using an unsupported PHP version, apply restriction.
         return true;
     }
+}
+
+/**
+ * Check if the current PHP version is greater than or equal to
+ * PHP version 7.1.
+ *
+ * @param object $result an environment_results instance
+ * @return bool result of version check
+ */
+function restrict_php_version_71(&$result) {
+    return restrict_php_version($result, '7.1');
+}
+
+/**
+ * Check if the current PHP version is greater than or equal to
+ * PHP version 7.2.
+ *
+ * @param object $result an environment_results instance
+ * @return bool result of version check
+ */
+function restrict_php_version_72(&$result) {
+    return restrict_php_version($result, '7.2');
 }

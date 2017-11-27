@@ -126,17 +126,43 @@ class manager {
     }
 
     /**
+     * Checks if the task with the same classname, component and customdata is already scheduled
+     *
+     * @param adhoc_task $task
+     * @return bool
+     */
+    protected static function task_is_scheduled($task) {
+        global $DB;
+        $record = self::record_from_adhoc_task($task);
+        $params = [$record->classname, $record->component, $record->customdata];
+        $sql = 'classname = ? AND component = ? AND ' .
+            $DB->sql_compare_text('customdata', \core_text::strlen($record->customdata) + 1) . ' = ?';
+        return $DB->record_exists_select('task_adhoc', $sql, $params);
+    }
+
+    /**
      * Queue an adhoc task to run in the background.
      *
      * @param \core\task\adhoc_task $task - The new adhoc task information to store.
+     * @param bool $checkforexisting - If set to true and the task with the same classname, component and customdata
+     *     is already scheduled then it will not schedule a new task. Can be used only for ASAP tasks.
      * @return boolean - True if the config was saved.
      */
-    public static function queue_adhoc_task(adhoc_task $task) {
+    public static function queue_adhoc_task(adhoc_task $task, $checkforexisting = false) {
         global $DB;
 
         $record = self::record_from_adhoc_task($task);
-        // Schedule it immediately.
-        $record->nextruntime = time() - 1;
+        // Schedule it immediately if nextruntime not explicitly set.
+        if (!$task->get_next_run_time()) {
+            $record->nextruntime = time() - 1;
+        }
+
+        // Check if the same task is already scheduled.
+        if ($checkforexisting && self::task_is_scheduled($task)) {
+            return false;
+        }
+
+        // Queue the task.
         $result = $DB->insert_record('task_adhoc', $record);
 
         return $result;
@@ -419,8 +445,16 @@ class manager {
 
         foreach ($records as $record) {
 
-            if ($lock = $cronlockfactory->get_lock('adhoc_' . $record->id, 10)) {
+            if ($lock = $cronlockfactory->get_lock('adhoc_' . $record->id, 0)) {
                 $classname = '\\' . $record->classname;
+
+                // Safety check, see if the task has been already processed by another cron run.
+                $record = $DB->get_record('task_adhoc', array('id' => $record->id));
+                if (!$record) {
+                    $lock->release();
+                    continue;
+                }
+
                 $task = self::adhoc_task_from_record($record);
                 // Safety check in case the task in the DB does not match a real class (maybe something was uninstalled).
                 if (!$task) {
@@ -470,7 +504,7 @@ class manager {
 
         foreach ($records as $record) {
 
-            if ($lock = $cronlockfactory->get_lock(($record->classname), 10)) {
+            if ($lock = $cronlockfactory->get_lock(($record->classname), 0)) {
                 $classname = '\\' . $record->classname;
                 $task = self::scheduled_task_from_record($record);
                 // Safety check in case the task in the DB does not match a real class (maybe something was uninstalled).
