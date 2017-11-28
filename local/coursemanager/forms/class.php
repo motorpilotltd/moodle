@@ -296,7 +296,8 @@ class cmform_class extends moodleform {
                     'classendtimegroup',
                     'usedtimezone'
                 ];
-                if ($this->_customdata->classtype == 'Self Paced'
+                if (isset($this->_customdata->classtype)
+                        && $this->_customdata->classtype == 'Self Paced'
                         && empty($this->_customdata->classendtime)) {
                     // Do not freeze class end time for self paced classes if not already set.
                     $elements = array_diff($elements, ['classendtime', 'classendtimegroup']);
