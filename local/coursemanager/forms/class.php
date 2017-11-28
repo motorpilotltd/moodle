@@ -151,7 +151,7 @@ class cmform_class extends moodleform {
                 $errors['price'] = $this->str('priceerror'); 
             }
         }
-        if ($data['classtype'] == "0") {
+        if (isset($data['classtype']) && $data['classtype'] == "0") {
             $errors['classtype'] = get_string('required', 'local_coursemanager');
         }
         if ($data['usedtimezone'] == "0") {
