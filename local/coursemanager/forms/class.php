@@ -23,6 +23,8 @@
  */
 
 class cmform_class extends moodleform {
+    protected $hasattendedenrolments;
+
     public function definition() {
         $data = $this->_customdata;
         $mform = $this->_form;
@@ -167,7 +169,22 @@ class cmform_class extends moodleform {
         if (count($dupes) > 0) {
             $errors['classname'] =  get_string('duplicateclassname', 'local_coursemanager');
         }
-
+        // Don't want to use empty() to check classendtime as need it to actually be set.
+        if (!empty($this->hasattendedenrolments)
+                && isset($this->_customdata->classendtime) && !$this->_customdata->classendtime
+                && $this->_customdata->classtype = 'Self Paced' && !empty($data['classendtimeenabled'])) {
+            // Need to offset UTC timestamps based on chosen timezone.
+            try {
+                $timezone = new DateTimeZone($data['usedtimezone']);
+            } catch (Exception $e) {
+                $timezone = new DateTimeZone(date_default_timezone_get());
+            }
+            $classendtimestring = gmdate('Y-m-d H:i', $data['classendtime']);
+            $classendtime = new DateTime($classendtimestring, $timezone);
+            if ($classendtime->getTimestamp() < time()) {
+                $errors['classendtimegroup'] =  get_string('classendtime:past', 'local_coursemanager');
+            }
+        }
         return $errors;
     }
 
@@ -258,9 +275,7 @@ class cmform_class extends moodleform {
     public function definition_after_data() {
         global $DB;
         $mform = $this->_form;
-        $classid = $mform->exportValue('classid');
-        $id = $mform->exportValue('id');
-        if ($id > 0 && $classid > 0) {
+        if ($this->_customdata->id > 0 && $this->_customdata->classid > 0) {
             // Check for attended enrolments and unset duration/time fields so they are not updated.
             $taps = new \local_taps\taps();
             list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
@@ -271,8 +286,9 @@ class cmform_class extends moodleform {
                     AND (archived = 0 OR archived IS NULL)
                     AND {$DB->sql_compare_text('bookingstatus')} {$insql}";
 
-            $params['classid'] = $classid;
-            if ($DB->count_records_sql($sql, $params)) {
+            $params['classid'] = $this->_customdata->classid;
+            $this->hasattendedenrolments = $DB->count_records_sql($sql, $params);
+            if ($this->hasattendedenrolments) {
                 $elements = [
                     'classstarttime',
                     'classstarttimegroup',
@@ -280,6 +296,11 @@ class cmform_class extends moodleform {
                     'classendtimegroup',
                     'usedtimezone'
                 ];
+                if ($this->_customdata->classtype == 'Self Paced'
+                        && empty($this->_customdata->classendtime)) {
+                    // Do not freeze class end time for self paced classes if not already set.
+                    $elements = array_diff($elements, ['classendtime', 'classendtimegroup']);
+                }
                 foreach ($elements as $element) {
                     if ($mform->elementExists($element)) {
                         $mform->freeze($element);
