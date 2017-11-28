@@ -43,3 +43,7 @@
 .path-local-reports .form-datesearch .fitem_id_enddate {
     display: inline-block;
 }
+.path-local-reports #id_bookingstatus {
+    height: 110px;
+}
+

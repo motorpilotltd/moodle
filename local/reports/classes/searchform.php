@@ -55,6 +55,10 @@ class searchform extends moodleform {
             } else if ($filter->type == 'dropdown') {
                 $options = $data->get_dropdown($filter->field);
                 $mform->addElement('select', $filter->field, $filter->name, $options);
+            } else if ($filter->type == 'dropdownmulti') {
+                $options = $data->get_dropdown($filter->field);
+                $mform->addElement('select', $filter->field, $filter->name, $options);
+                $mform->getElement($filter->field)->setMultiple(true);
             } else if ($filter->type == 'autocomplete') {
                 $options = $data->get_dropdown($filter->field);
                 $params = array(                                                      

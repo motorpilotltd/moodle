@@ -147,7 +147,14 @@ class base {
         // $value will be array when make_filter is called from
         // function get_filters
         if (is_array($value)) {
-            $filter->displayvalue = implode(", ", $value);
+            if (in_array($key, $this->datefields)) {
+                foreach ($value as $v) {
+                    $dates[] = userdate($v, get_string('strftimedate'), 'UTC');
+                }
+                $filter->displayvalue = implode(", ", $dates);
+            } else {
+                $filter->displayvalue = implode(", ", $value);
+            }
             $filter->value = $value;
         } else {
             $filter->value = array($value);
@@ -155,6 +162,7 @@ class base {
                 $filter->displayvalue = userdate($value, get_string('strftimedate'), 'UTC');
             }
         }
+
 
         $params = array('action' => 'removefilter', 'filter' => $key, 'page' => $this->reportname );
         $filter->urlremove = new moodle_url($this->baseurl, $params);

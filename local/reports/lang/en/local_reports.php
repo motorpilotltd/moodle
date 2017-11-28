@@ -107,6 +107,13 @@ $string['learninghistory:enddate'] = 'End date';
 $string['learninghistory:enddate_help'] = 'End date Help';
 $string['learninghistory:lastupdatedate'] = 'Last update date';
 $string['learninghistory:lastupdatedate_help'] = 'Last update date help';
+$string['learninghistory:bookingstatus_help'] = 'Booking Status help';
+$string['learninghistory:allbookingstatus'] = 'All booking statusus';
+$string['learninghistory:requested'] = 'Requested';
+$string['learninghistory:waitlisted'] = 'Waitlisted';
+$string['learninghistory:placed'] = 'Placed';
+$string['learninghistory:attended'] = 'Attended';
+$string['learninghistory:cancelled'] = 'Cancelled';
 
 $string['elearningstatus'] = 'Elearning Status';
 // Other UI elements

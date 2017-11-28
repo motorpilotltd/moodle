@@ -69,9 +69,10 @@ class daterangelearning extends base {
         $this->direction = optional_param('dir', 'ASC', PARAM_TEXT);
         $this->search = optional_param('search', '', PARAM_TEXT);
         $this->action = optional_param('action', '', PARAM_TEXT);
-        $this->visiblesearchfields = 2;
+        $this->visiblesearchfields = 3;
         $this->exportxlsurl = new moodle_url('/local/reports/export.php', array('page' => 'daterangelearning'));
         $this->showall = false;
+        $this->taps = new \local_taps\taps();
 
         if (!empty($this->action)) {
             $this->action($this->action);
@@ -141,6 +142,7 @@ class daterangelearning extends base {
         $this->textfilterfields = array(
             'startdate' => 'date',
             'enddate' => 'date',
+            'bookingstatus' => 'dropdownmulti',
             'actualregion' => 'dropdown',
             'georegion' => 'dropdown',
             'cpd' => 'dropdown',
@@ -169,7 +171,8 @@ class daterangelearning extends base {
             'lastupdatedate' => 'lte.lastupdatedate',
             'classcompletiondate' => 'lte.classcompletiondate',
             'classenddate' => 'lte.classenddate',
-            'classtype' => 'lte.classtype'
+            'classtype' => 'lte.classtype',
+            'bookingstatus' => 'lte.bookingstatus'
         );
 
         $this->datefields = array(
@@ -293,6 +296,21 @@ class daterangelearning extends base {
                     // Looking for NULL or empty.
                     $fieldname = $this->filtertodb[$filter->field];
                     $wherestring .= "({$fieldname} IS NULL OR {$fieldname} = '')";
+                } else if ($filter->field == 'bookingstatus') {
+                    // Bookingstatusus are configured in TAPS
+                    $fieldname = $this->filtertodb[$filter->field];
+                    $statuses = $this->taps->get_statuses($filtervalue);
+                    $fieldnameparam = strtolower(str_replace('.', '', $fieldname));
+                    if (!empty($statuses)) {
+                        list($in, $inparams) = $DB->get_in_or_equal(
+                            $statuses,
+                            SQL_PARAMS_NAMED, 'status'
+                        );
+                        $compare = $DB->sql_compare_text($fieldname);
+                        $wherestring .= "{$compare} {$in}";
+                        $params = array_merge($params, $inparams);
+                    }
+
                 } else {
                     $fieldname = $this->filtertodb[$filter->field];
                     $fieldnameparam = strtolower(str_replace('.', '', $fieldname));
@@ -306,8 +324,9 @@ class daterangelearning extends base {
             }
         }
 
-        //echo '<pre>' . $wherestring . '</pre>';
-        //$wherestring = '';
+        // echo '<pre>' . $wherestring . '</pre>';
+        // echo '<pre>' . print_r($params, true) . '</pre>';
+        // $wherestring = '';
 
         $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode
                   FROM {local_taps_enrolment} as lte
@@ -614,6 +633,17 @@ class daterangelearning extends base {
             $options[''] = $this->mystr('cpdandlms');
             $options['cpd'] = $this->mystr('cpd');
             $options['lms'] = $this->mystr('lms');
+            return $options;
+        }
+
+        if ($field == 'bookingstatus') {
+            $options = array();
+            $options[''] = $this->mystr('allbookingstatus');
+            $options['requested'] = $this->mystr('requested');
+            $options['waitlisted'] = $this->mystr('waitlisted');
+            $options['placed'] = $this->mystr('placed');
+            $options['attended'] = $this->mystr('attended');
+            $options['cancelled'] = $this->mystr('cancelled');
             return $options;
         }
     }
