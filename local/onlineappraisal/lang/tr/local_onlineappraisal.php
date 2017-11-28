@@ -528,7 +528,6 @@ $string['form:lastyear:cardinfo:performancelink'] = 'Geçtiğimiz yılın katkı
 $string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">Geçtiğimiz yılın değerlendirmesi</a> görüntülenebilir
 (PDF - opens in new window)';
 $string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>Son Yönetici tarafından onaylanarak tamamlanacaktır.</em></div>';
-$string['helppage:intro'] = 'Aşağıdaki tuşa tıklayarak Çevrimiçi Değerlendirme Yardımı sayfasını açabilirsiniz.';
 $string['leadersignoff'] = 'Son Yönetici Onayı';
 $string['modal:printconfirm:cancel'] = 'Hayır';
 $string['modal:printconfirm:content'] = 'Bu Belgeyi Yazdırmaya Gerçekten İhtiyacın Var mı?';

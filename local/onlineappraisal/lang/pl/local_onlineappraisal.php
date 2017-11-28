@@ -529,7 +529,6 @@ $string['form:feedback:providefirstnamelastname'] = 'Proszę wpisać imię i naz
 $string['form:lastyear:cardinfo:performancelink'] = 'Zeszłoroczny plan działania';
 $string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">Zeszłoroczna ocena</a> jest dostępna do przejrzenia (PDF - opens in new window).';
 $string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>Do uzupełniania przez lidera grupy.</em></div>';
-$string['helppage:intro'] = 'Kliknij przycisk poniżej, aby uzyskać dostęp do strony wsparcia.';
 $string['leadersignoff'] = 'Podpis Lidera Grupy';
 $string['modal:printconfirm:cancel'] = 'Nie, jest ok';
 $string['modal:printconfirm:content'] = 'Czy naprawdę potrzebujesz wydrukować ten dokument?';

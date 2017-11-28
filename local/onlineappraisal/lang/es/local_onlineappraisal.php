@@ -533,7 +533,6 @@ $string['form:feedback:providefirstnamelastname'] = 'Por favor, añade el nombre
 $string['form:lastyear:cardinfo:performancelink'] = 'Plan de Impacto del año pasado';
 $string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">Tu appraisal del año pasado</a> está disponible (PDF - opens in new window).';
 $string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>Para ser completado por quien confirma el appraisal.</em></div>';
-$string['helppage:intro'] = 'Haz click en el botón inferior para acceder a la página de ayuda del appraisal.';
 $string['leadersignoff'] = 'Firma de confirmación';
 $string['modal:printconfirm:cancel'] = 'No, está perfecto';
 $string['modal:printconfirm:content'] = 'Realmente necesitas imprimir este documento?';
