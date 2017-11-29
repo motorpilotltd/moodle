@@ -35,6 +35,8 @@ class cmform_class extends moodleform {
         $mform->setType('disabletrick', PARAM_INT);
         $mform->addElement('hidden', 'edit', 1);
         $mform->settype('edit', PARAM_INT);
+        $mform->addElement('hidden', 'duplicate', optional_param('duplicate', 0, PARAM_INT));
+        $mform->settype('duplicate', PARAM_INT);
 
         $this->add_element("start", "hidden", PARAM_INT);
         $this->add_element("cmcourse", "hidden", PARAM_INT);

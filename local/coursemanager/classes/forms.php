@@ -367,7 +367,7 @@ class forms {
             if (isset($data->unlimitedattendees) && $data->unlimitedattendees == 1) {
                 $data->maximumattendees = -1;
             }
-            if ($data->classid > 0) {
+            if ($data->id > 0 && $data->classid > 0) {
                 // Check for attended enrolments and unset duration/time fields so they are not updated.
                 list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
                 $sql = "SELECT COUNT(id)
