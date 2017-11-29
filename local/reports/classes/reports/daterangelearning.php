@@ -638,7 +638,6 @@ class daterangelearning extends base {
 
         if ($field == 'bookingstatus') {
             $options = array();
-            $options[''] = $this->mystr('allbookingstatus');
             $options['requested'] = $this->mystr('requested');
             $options['waitlisted'] = $this->mystr('waitlisted');
             $options['placed'] = $this->mystr('placed');
