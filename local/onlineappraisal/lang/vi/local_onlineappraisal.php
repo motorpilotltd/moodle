@@ -54,7 +54,6 @@ $string['form:addfeedback:sendemailbtn'] = 'Gửi phản hồi Bản đánh giá
 $string['form:addfeedback:title'] = 'Feedback Contribution';
 $string['form:addfeedback:closed'] = 'Cửa sổ gửi phản hồi hiện nay đang  đóng';
 $string['form:addfeedback:submitted'] = 'Phản hồi đã gửi';
-$string['form:addfeedback:addfeedback'] = 'Vui lòng mô tả ba lĩnh vực mà bạn đã đánh giá cao sự đóng góp của người được đánh giá trong 12 tháng qua. Sau đó cung cấp các chi tiết lĩnh vực mà bạn cảm thấy thực tế họ đã có thể  đạt được hiệu quả hơn. Hãy trung thực, phê bình mang tính chất xây dựng, vì thông tin phản hồi này sẽ giúp đồng nghiệp của bạn giải quyết vấn đề hiệu quả hơn.';
 
 $string['form:feedback:alert:cancelled'] = 'Lệnh gửi đi đã được hủy bỏ, Yêu cầu phản hồi bản đánh giá của bạn chưa được gửi đi';
 $string['form:feedback:alert:error'] = 'Rất tiếc, xãy ra lỗi khi gửi Yêu cầu phản hồi của bạn';
@@ -69,17 +68,6 @@ $string['form:feedback:title'] = 'Feedback - Add a new Contributor';
 // START FORM
 // Introduction Page
 $string['appraisee_heading'] = 'Chào mừng đến với Bản Đánh Giá Trực Tuyến';
-$string['appraisee_welcome'] = 'Bản đánh giá là cơ hội tốt để bạn và người đánh giá có thể trao đổi với nhau về sự thể hiện và phát triển của bạn.<br /><br />
-Mục đích của công cụ trực tuyến này là giúp lưu lại buổi thảo luận và dùng nó để đối chiếu trong suốt năm.<br /><br />
-Bấm vào hình bên phải để xem thông điệp giới thiệu của Gregory Hodkinson.<br /><br />
-Để biết thêm thông tin về quá trình làm bản đánh giá, bạn có thể tìm thấy  <a href="https://moodle.arup.com/appraisal/essentials" target="_blank">ở đây </a>';
-
-$string['introduction:video'] = '<img src="https://moodle.arup.com/scorm/_assets/Gregory_Hodkinson.jpg" alt="Changes to Appraisal" onclick="window.open(\'https://moodle.arup.com/scorm/_assets/intro.pdf\', \'_blank\');"/>';
-
-// Request Feedback
-$string['feedback_intro'] = 'Vui lòng chọn ba người đồng nghiệp hoặc nhiều hơn để đóng góp ý kiến phản hồi cho bản đánh giá của bạn. Ở hầu hết các khu vực, phản hồi này có thể là người nội bộ hoặc bên ngoài. <br/><br/>  Vui lòng tham chiếu khu vực của bạn để có hướng dẫn cụ thể.
-Đối với người góp ý kiến phản hồi nội bộ, bạn nên thu thập phản hồi với góc nhìn “360 độ”, VD: đồng nghiệp, người nào đó bậc cao hơn bạn và người nào đó có bậc thấp hơn bạn. Bạn phải lựa chọn đa dạng người góp ý.
-<br/><br/>Một trong những người nhận xét phản hồi có thể là khách hàng hoặc người cộng tác mà biết bạn rất rõ.<div data-visible-regions="East Asia"><br />Đối với khu vực Đông Á, chúng tôi mong muốn phản hồi chỉ đến từ nguồn nội bộ. Nhận xét từ khách hàng hay đối tác bên ngoài được hiểu và phản hồi qua người ngoài .</div> <br /><br /> <div class="alert alert-danger"> Ghi chú: Phản hồi của người đóng góp mà bạn lựa chọn sẽ được đăng ở đây sau buổi gặp mặt trực tiếp trừ khi họ muốn bảo mật.</div>';
 
 // Last Year Review
 $string['form:lastyear:title'] = 'Section 1: Review of last year';
@@ -238,42 +226,24 @@ $string['form:summaries:appraisee'] = '5.3 Nhận xét của người được �
 $string['form:summaries:appraiseehelp'] = '<div class="well well-sm"><em>Do người được đánh giá hoàn tất</em></div>';
 $string['form:summaries:signoff'] = '5.4 Tổng kết sign off';
 $string['form:summaries:signoffhelp'] = '<div class="well well-sm"><em>Do người trưởng nhóm/ người được chỉ định hoàn tất</em></div>';
-$string['form:summaries:grpleader'] = '5.5 Tóm tắt của Leader';
-$string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>Do Senior leader hoàn tất.</em></div>';
-$string['form:summaries:grpleadercaption'] = 'Hoàn tất bởi {$a->fullname}{$a->date}';
 
 // Checkins
 $string['appraisee_checkin_title'] = 'Section 6. Check-in';
 $string['checkins_intro'] = 'Trong suốt một năm, chúng tôi mong rằng người được đánh giá và người đánh giá sẽ cần trao đổi về  tình hình thực hiện so với Kế Hoạch Hành Động Theo Thỏa Thuận, Kế Hoạch Phát Triển, hành động và thể hiện. Người được đánh giá và/ hoặc người đánh giá có thể sử dụng phần dưới đây để ghi chép lại tiến trình. Tần suất trao đổi là tùy thuộc vào các bạn nhưng đề xuất là ít nhất một lần một năm';
 
 // Feedback contribution
-$string['feedback_header'] = 'Đưa ra ý kiến phản hồi cho {$a->appraisee_fullname}';
-$string['form:addfeedback:addfeedback'] = 'Vui lòng mô tả ba lĩnh vực mà bạn đã đánh giá cao sự đóng góp của người được đánh giá trong 12 tháng qua. Sau đó cung cấp các chi tiết lĩnh vực mà bạn cảm thấy thực tế họ đã có thể  đạt được hiệu quả hơn – có thể lên đến ba lĩnh vực. Hãy trung thực, phê bình mang tính chất xây dựng, vì thông tin phản hồi này sẽ giúp đồng nghiệp của bạn giải quyết vấn đề hiệu quả hơn.';
 $string['confidential_label_text'] = 'Đánh dấu vào ô này để bảo mật nhận xét của bạn. Nếu bạn không đánh dấu, người được đánh giá sẽ thấy nhận xét của bạn.';
 
 // Feedback Email - APPRAISEE
 $string['email:subject:appraiseefeedback'] = 'Yêu cầu phản hồi cho bản đánh giá của tôi';
-$string['email:body:appraiseefeedbackmsg'] = '<p>Kính gửi <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
-<p>Bản đánh giá của tôi sắp được gửi đến cho bạn. Vì trong năm qua, chúng ta đã làm việc mật thiết với nhau, tôi rất cảm kích nếu bạn cho ý kiến phản hồi về lĩnh vực mà bạn đánh giá cao những đóng góp của tôi, và về lĩnh vực mà bạn cảm thấy tôi có thể làm tốt hơn. Nếu bạn chấp thuận, vui lòng bấm vào đường dẫn bên dưới để đóng góp ý kiến phản hồi của bạn.</p> <p>Ngày đánh giá của tôi vào ngày <span class="placeholder">{{held_date}}</span>, xin vui lòng phản hồi trước ngày này.</p>
-<p>Phản hồi của bạn sẽ được chia sẻ với tôi sau buổi gặp trực tiếp, trừ khi bạn đánh dấu vào ô bảo mật khi bạn gửi đi.</p>
-<p>Dưới đây là bất kỳ nhận xét bổ sung từ <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
-<p>Trân trọng,<br />
-<span class="placeholder">{{appraisee_fullname}}</span></p>';
 
 // Feedback Email - APPRAISER
 $string['email:subject:appraiserfeedback'] = 'Yêu cầu phản hồi cho bản đánh giá của  {{appraisee_fullname}}';
-$string['email:body:appraiserfeedbackmsg'] = '<p>Kính gửi <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
-<p>Tôi đang làm bản đánh giá cho <span class="placeholder">{{appraisee_fullname}}</span>, vì bạn đã làm việc mật thiết với người được đánh giá trên, tôi mong muốn bạn sẽ  đưa ra một số phản hồi về những đóng góp của họ. Tôi rất cảm kích nếu phản hồi nhận xét ở lĩnh vực mà bạn đánh giá cao và lĩnh vực mà bạn cảm thấy họ có thể làm tốt hơn. Nếu bạn chấp thuận, vui lòng bấm vào đường dẫn bên dưới để đóng góp ý kiến phản hồi của bạn.</p>
-<p>Ngày đánh giá của họ vào ngày <span class="placeholder">{{held_date}}</span>, xin vui lòng phản hồi trước ngày này.</p>
-<p>Phản hồi của bạn sẽ được chia sẻ với <span class="placeholder">{{appraisee_fullname}}</span> sau buổi gặp trực tiếp, trừ khi bạn đánh dấu vào ô bảo mật khi bạn gửi đi.</p>
-<p>Dưới đây là bất kỳ nhận xét bổ sung từ <span class="placeholder">{{appraiser_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
-<p>Trân trọng,<br /> <span class="placeholder">{{appraiser_fullname}}</span></p>';
 
 // PDF Strings
 $string['pdf:form:summaries:appraisee'] = 'Nhận xét của người được đánh giá';
 $string['pdf:form:summaries:appraiser'] = 'Tóm tắt của người đánh giá về biểu hiện chung của người được đánh giá';
 $string['pdf:form:summaries:signoff'] = 'Tổng kết sign off';
-$string['pdf:form:summaries:grpleader'] = 'Tóm tắt của Leader';
 $string['pdf:form:summaries:recommendations'] = 'Những hành động đã thống nhất';
 
 // END FORM
@@ -282,17 +252,6 @@ $string['pdf:form:summaries:recommendations'] = 'Những hành động đã th�
 
 // Overview page APPRAISEE Content.
 $string['overview:content:appraisee:1'] = ''; // Never seen...
-$string['overview:content:appraisee:2'] = 'Vui lòng hoàn tất bản đánh giá bản thân của bạn.<br /><br />
-<strong>Các bước tiếp theo:</strong>
-    <ul class="m-b-20">
-        <li>Điền ngày sẽ gặp mặt trực tiếp </li>
-        <li>Yêu cầu đưa ra phản hồi</li>
-        <li>Phản ánh và nhận xét về Thể hiện và Phát triển của bạn trong năm ngoái</li>
-        <li>Điền vào Định Hướng Nghề Nghiệp, Tác Động và Kế Hoạch Phát Triển để thảo luận trong buổi gặp mặt trực tiếp</li>
-        <li>Share bản thảo cho {$a->styledappraisername}], người đánh giá bạn</li>
-    </ul>
-Vui lòng gửi bản thảo cho người đánh giá bạn ít nhất <strong><u>một tuần</u></strong> trước ngày gặp trực tiếp. Bạn vẫn có thể tiếp tục bổ sung thêm sau khi share.<br /><br />
-<div class="alert alert-danger" role="alert"><strong>Chú ý:</strong> Người đánh giá bạn sẽ không thể thấy bản thảo cho đến khi bạn share với họ.</div>';
 
 $string['overview:content:appraisee:2:3'] = 'Người đánh giá đã đề nghị thay đổi lên bản thảo<br /><br />
 <strong>Bước tiếp theo</strong>
@@ -300,18 +259,6 @@ $string['overview:content:appraisee:2:3'] = 'Người đánh giá đã đề ngh
     <li>Thay đổi như đề nghị của người đánh giá (vui lòng xem nhật ký hoạt động để biết thêm về những điều được đề nghị)</li>
     <li>Share bản thảo với {$a->styledappraisername}.</li>
 </ul>';
-
-$string['overview:content:appraisee:3'] = 'Bạn đã nộp bản thảo đánh giá cho {$a->styledappraisername} để xem lại.<br /><br />
-<strong>Bước tiếp theo:</strong>
-<ul class="m-b-20">
-    <li>Có một buổi gặp trực tiếp – trước buổi gặp, bạn có thể mong muốn:</li>
-    <ul class="m-b-0">
-        <li><a href="{$a->printappraisalurl}" target="_blank">Tải bản đánh giá</a></li>
-        <li><a href="https://moodle.arup.com/appraisal/reference" target="_blank" target="_blank">Tải Hướng Dẫn Tham Khảo </a></li>
-    </ul>
-    <li>Tiếp sau buổi gặp mặt, người đánh giá sẽ trả bản đánh giá cho bạn. Bạn có thể được yêu cầu chỉnh sửa theo những thay đổi đã được thống nhất trong buổi gặp trực tiếp hoặc viết nhận xét cuối cùng của bạn.</li>
-</ul>
-<div class="alert alert-danger" role="alert"><strong>Chú ý:</strong> Bạn có thể tiếp tục chỉnh sửa bản đánh giá trong khi người đánh giá đang xem, nhưng đề nghị bạn nên sử dụng nhật ký hoạt động để làm nổi bật bất kỳ thay đổi nào đã thực hiện.</div>';
 
 $string['overview:content:appraisee:3:4'] = 'Bạn đã trả bản đánh giá cho {$a->styledappraisername} để thực hiện thay đổi.<br /><br /> Bạn sẽ nhận được thông báo khi họ cập nhật lên bản đánh giá, và sẵn sàng cho bạn xem lại lần nữa.<br /><br /> <div class="alert alert-danger" role="alert"><strong>Ghi chú:</strong> Bạn có thể tiếp tục chỉnh sữa bản đánh giá khi người đánh giá đang xem nhưng đề nghị bạn sử dụng Nhật ký hoạt động/Activity log để làm nổi bật các thay đổi.</div>';
 
@@ -330,7 +277,6 @@ $string['overview:content:appraisee:6'] = 'Bản đánh giá của bạn đã đ
 <div class="alert alert-danger" role="alert"><strong>Chú ý:</strong> bản đánh giá đã bị khóa và không thể bổ sung thêm được nữa.</div>';
 
 $string['overview:content:appraisee:7'] = 'Bản đánh giá của bạn đã hoàn tất. Bạn có thể tải bản PDF bất cứ lúc nào bằng cách bấm vào “Tải bản đánh giá”';
-$string['overview:content:appraisee:7:groupleadersummary'] = 'Bản đánh giá của bạn hiện nay đã hoàn tất và chờ leader xem và tóm tắt. Bạn sẽ được thông báo khi việc này được thực hiện.';
 $string['overview:content:appraisee:8'] = $string['overview:content:appraisee:7']; // For legacy where there was a six month status.
 $string['overview:content:appraisee:9'] = $string['overview:content:appraisee:7']; // When Groupleader added summary.
 
@@ -341,26 +287,6 @@ $string['overview:content:appraiser:2'] = 'Bản đánh giá hiện đang đư�
 
 $string['overview:content:appraiser:2:3'] = 'Bạn đã trả lại bản đánh giá cho {$a->styledappraiseename} để thay đổi. Bạn sẽ nhận được thông báo khi bản đánh giá được cập nhật, và sẵn sàng để bạn xem lại lần nữa.<br /><br />
 <div class="alert alert-danger" role="alert"><strong>Chú ý:</strong> Bạn vẫn có thể thay đổi những phần của mình</div>';
-
-$string['overview:content:appraiser:3'] = '{$a->styledappraiseename} đã nộp bản thảo để chuẩn bị cho buổi gặp trực tiếp<br /><br />
-<strong>Bước tiếp theo:</strong>
-<ul class="m-b-20">
-    <li>Vui lòng xem lại bản đánh giá để chuẩn bị cho buổi gặp. Nếu cần thì hoàn trả lại bản đánh giá cho người được đánh giá nếu bạn thấy cần bổ sung thêm thông tin.</li>
-    <li>Trước buổi gặp bạn nên</li>
-    <ul class="m-b-0">
-        <li><a href="{$a->printappraisalurl}" target="_blank">Tải bản đánh giá</a></li>
-        <li><a href="{$a->printfeedbackurl}" target="_blank">Tải bất kỳ phản hồi nào nhận được</a></li>
-        <li>Bạn có thể mong muốn <a href="https://moodle.arup.com/appraisal/reference" target="_blank">tải hướng dẫn tham khảo nhanh</a></li>
-    </ul>
-    <li>Sau buổi gặp, vui lòng</li>
-    <ul class="m-b-0">
-        <li>Đánh dấu là buổi gặp trực tiếp đã diễn ra lên mục Thông Tin Người Được Đánh Giá</li>
-        <li>Thêm nhận xét cho mỗi mục</li>
-        <li>Viết bản tóm tắt và các hành động đã thống nhất trong mục Tóm Tắt</li>
-        (Nếu cần, bạn có thể trả bản đánh giá cho người được đánh giá để chỉnh sửa trước khi bạn thêm nhận xét của mình vào).
-    </ul>
-    <li>Gửi cho người được đánh giá để xem lại nhận xét của bạn, xem phản hồi và họ sẽ thêm nhận xét cuối cùng của mình vào.</li>
-</ul>';
 
 $string['overview:content:appraiser:3:4'] = '{$a->styledappraiseename} đã đề nghị một số thay đổi lên bản đánh giá của họ<br /><br />
 <strong>Bước tiếp theo:</strong>
@@ -386,7 +312,6 @@ $string['overview:content:appraiser:6'] = 'Bạn đã nộp bản đánh giá ch
     <div class="alert alert-danger" role="alert"><strong>Chú ý:</strong> bản đánh giá đã bị khóa và không thể bổ sung thêm được nữa.</div>';
 
 $string['overview:content:appraiser:7'] = 'Bản đánh giá đã hoàn tất và được sign off';
-$string['overview:content:appraiser:7:groupleadersummary'] = 'Bản đánh giá  hiện nay đã hoàn tất và chờ leader xem và tóm tắt. Bạn sẽ được thông báo khi việc này được thực hiện.';
 
 $string['overview:content:appraiser:8'] = $string['overview:content:appraiser:7']; // For legacy where there was a six month status.
 $string['overview:content:appraiser:9'] = $string['overview:content:appraiser:7']; // When Groupleader added summary.
@@ -406,27 +331,12 @@ $string['overview:content:signoff:6'] = 'Bản đánh giá của {$a->styledappr
 </ul>';
 
 $string['overview:content:signoff:7'] = 'Bản đánh giá này đã hoàn tất và được sign off';
-$string['overview:content:signoff:7:groupleadersummary'] = 'Bản đánh giá  hiện nay đã hoàn tất và chờ leader xem và tóm tắt. Bạn sẽ được thông báo khi việc này được thực hiện';
 
 $string['overview:content:signoff:8'] = $string['overview:content:signoff:7']; // For legacy where there was a six month status.
 $string['overview:content:signoff:9'] = $string['overview:content:signoff:7']; // When groupleader added summary.
 
 // Overview page GROUP LEADER Content.
 $string['overview:content:groupleader:1'] = ''; // Never seen...
-$string['overview:content:groupleader:2'] = 'Bản đánh giá đang trong quá trình thực hiện';
-$string['overview:content:groupleader:3'] = 'Bản đánh giá đang trong quá trình thực hiện';
-$string['overview:content:groupleader:4'] = 'Bản đánh giá đang trong quá trình thực hiện';
-$string['overview:content:groupleader:5'] = 'Bản đánh giá đang trong quá trình thực hiện';
-$string['overview:content:groupleader:6'] = 'Bản đánh giá đang trong quá trình thực hiện';
-$string['overview:content:groupleader:7'] = 'Bản đánh giá này đã hoàn tất và được sign off';
-$string['overview:content:groupleader:7:groupleadersummary'] = 'Bản đánh giá này đã hoàn tất và chờ bạn xem và tóm tắt<br /><br />
-<strong>Các bước tiếp theo:</strong>
-<ul class="m-b-20">
-    <li>Vui lòng thêm tóm tắt của Leader vào Mục Tóm tắt và lưu lại</li>
-    <li>Người được đánh giá, người đánh giá và người sign off sẽ được thông báo khi bạn thêm vào nhận xét của mình</li>
-</ul>';
-$string['overview:content:groupleader:8'] = $string['overview:content:groupleader:7']; // For legacy where there was a six month status.
-$string['overview:content:groupleader:9'] = $string['overview:content:groupleader:7'];
 
 // Overview page buttons.
 $string['overview:button:appraisee:2:extra'] = 'Bắt đầu thực hiện Bản đánh giá';
@@ -519,7 +429,6 @@ $string['form:feedback:alert:saved'] = 'Yêu cầu phản hồi cho bản đánh
 $string['form:lastyear:nolastyear'] = 'Chú ý: Chúng tôi không thấy bản đánh giá trước đây của bạn trên hệ thống. Vui lòng tải bản đánh giá cũ bằng file pdf/ word bên dưới';
 $string['form:lastyear:file'] = '<strong>File xem lại đã được người được đánh giá tải lên: <a href="{$a->path}" target="_blank">{$a->filename}</a></strong>';
 $string['form:lastyear:cardinfo:developmentlink'] = 'Phát triển đạt được trong năm trước';
-$string['form:lastyear:cardinfo:performancelink'] = 'Kết quả thể hiện trong năm trước';
 $string['feedbackrequests:description'] = 'Dashboard thể hiện bất kỳ yêu cầu phản hồi nào còn tồn đọng và cho phép bạn truy cập bất kỳ phản hồi nào mà bạn đã đưa ra trong quá khứ';
 $string['feedbackrequests:outstanding'] = 'Yêu cầu còn tồn đọng';
 $string['feedbackrequests:norequests'] = 'Không có yêu cầu phản hồi nào còn tồn đọng';
@@ -575,3 +484,165 @@ $string['checkin:addnewdots'] = 'check-in…';
 //$string['email:replacement:comment'] = '<p>Nhận xét của tôi:<br />{$a}</p>';
 
 // ERROR: mising translation - further assistance
+
+// 2017 : Updates and additions.
+$string['addreceivedfeedback'] = 'Thêm Phản hồi nhận được';
+$string['admin:allstaff:assigned'] = 'Phân công cho đợt đánh giá này';
+$string['admin:allstaff:assigned:none'] = 'Không có người sử dụng được phân công cho đợt đánh giá này';
+$string['admin:allstaff:button:lock'] = 'Phân công người sử dụng cho đợt đánh giá';
+$string['admin:allstaff:button:start'] = 'Bắt đầu đợt đánh giá';
+$string['admin:allstaff:button:update'] = 'Cập nhật ngày đến hạn mặc định';
+$string['admin:allstaff:notassigned'] = 'Chưa phân công cho đợt đánh giá này';
+$string['admin:allstaff:notassigned:none'] = 'Tất cả người sử dụng đã được phân công cho đợt đánh giá này';
+$string['admin:allstaff:nousers'] = 'Không có người sử dụng active trong nhóm này';
+$string['admin:appraisalcycle:assign'] = 'Phân công';
+$string['admin:appraisalcycle:assign:tooltip'] = 'Phân công người sử dụng cho đợt đánh giá';
+$string['admin:appraisalcycle:closed'] = 'Đợt đánh giá này đã kết thúc, tất cả bản đánh giá của đợt này đã được lưu';
+$string['admin:appraisalcycle:unassign'] = 'Hủy phân công';
+$string['admin:appraisalcycle:unassign:tooltip'] = 'Hủy phân công người sử dụng cho đợt đánh giá';
+$string['admin:appraisalnotrequired:noreason'] = 'Chưa có lý do';
+$string['admin:appraisalvip'] = 'Bản đánh giá VIP';
+$string['admin:confirm:lock'] = 'Bạn có chắc chắn phân công những người sử dụng được đánh dấu và khóa danh sách người sử dụng?';
+$string['admin:confirm:start'] = 'Bạn có chắc chắn mình muốn bắt đầu làm bản đánh giá không?';
+$string['admin:duedate:default'] = 'Ngày đến hạn mặc định';
+$string['admin:leaver'] = 'Người sử dụng không còn là nhân viên active nữa';
+$string['admin:lockingdots'] = 'Phân công …';
+$string['admin:requiresappraisal'] = 'Yêu cầu làm bản đánh giá';
+$string['admin:start'] = 'Bắt đầu đợt đánh giá';
+$string['admin:startingdots'] = 'Bắt đầu…';
+$string['admin:toptext:allstaff:closed'] = '<div class="alert alert-danger">Đợt đánh giá {$a} đã kết thúc.</div>
+Đợt đánh giá này đã kết thúc và không thể chỉnh sửa được nữa.';
+$string['admin:toptext:allstaff:notclosed'] = '<div class="alert alert-success">Đợt đánh giá {$a} đã mở</div><p>Danh sách sau đây thể hiện tất cả người sử dụng có trong cost centre trên đây trong Moodle. Nếu có khác biệt nào trong danh sách, vui lòng liên hệ BP Nhân sự để kiểm tra dữ liệu trong TAPS.</p><p>Sử dụng danh sách phân công và hủy phân công dưới đây để thêm hoặc bớt người sử dụng từ đợt đánh giá hiện tại. Những nhân viên mới sẽ không được tự động thêm vào và cần phải được phân công nếu như họ có yêu cầu làm bản đánh giá. Nhân viên nghỉ việc với bản đánh giá active(assigned) sẽ hiển thị màu xám trừ khi bạn xóa chúng khỏi đợt đánh già này. Để tạo bản đánh giá, vui lòng sử dụng tab "Initialise" trong navigation box.</p>';
+$string['admin:toptext:allstaff:notlocked'] = '<div class="alert alert-warning">Người sử dụng cho đợt đánh giá mới {$a} chưa được phân công. </div><p>Danh sách sau đây thể hiện tất cả người sử dụng có trong cost centre trên đây trong Moodle. Nếu có khác biệt nào trong danh sách, vui lòng liên hệ BP Nhân sự để kiểm tra dữ liệu trong TAPS.</p><p>Vui lòng kiểm tra và đánh dấu những người sử dụng có cần làm bản đánh giá hay không cho đợt đánh giá này trước khi nhấn vào nút "phân công người dử dụng cho đợt đánh giá" ở phía dưới trang nhằm kích hoạt quá trình làm bản đánh giá.(Ghi chú: việc này có thể được điều chỉnh bất cứ khi nào trên trang Tất cả nhân viên khi chọn người sử dụng cho đợt đánh giá hiện tại).</p>';
+$string['admin:toptext:allstaff:notstarted'] = '<div class="alert alert-warning">Đợt đánh giá mới {$a}  chưa bắt đầu </div>Bắt đầu một đợt đánh giá mới sẽ lưu trữ tất cả các bản đánh giá hiện tại cho nhóm này. Một khi đã lưu trữ, bạn sẽ có thể sắp xếp ai cần phải làm bản đánh giá trong đợt này trước khi chuyển sang trang initialise để bắt đầu khởi động bản đánh giá. Vui lòng thêm vào ngày đến hạn mặc định cho bản đánh giá của bạn trước khi nhân nút "Bắt đầu đợt đánh giá" để bắt đầu.';
+$string['admin:updatingdots'] = 'Cập nhật …';
+$string['admin:usercount:assigned'] = '({$a} người sử dụng)';
+$string['appraisee_feedback_savedraft_error'] = 'Xuất hiện lỗi khi lưu bản thảo';
+$string['appraisee_feedback_savedraft_success'] = 'Bản thảo phản hồi đã được lưu';
+$string['appraisee_feedback_viewrequest_text'] = 'Email yêu cầu xem';
+$string['appraisee_welcome'] = 'Bản đánh giá của bạn là 1 cơ hội để bạn và người đánh giá của mình trao đổi về thể hiện của bạn, hướng phát triển nghề nghiệp cũng như đóng góp cho công ty. Chúng tôi mong muốn đây là cuộc trao đổi mang tính xây dựng, cụ thể và hữu ích cho từng cá nhân.<br /><br />
+Mục đích công cụ trực tuyến là giúp bạn có được các ghi nhận trong khi trao đổi mà bạn có thể xem lại bất cứ lúc nào trong năm. Thông tin thêm về quá trình đánh giá có thể tìm thấy <a href="https://moodle.arup.com/appraisal/essentials" target="_blank"> ở đây</a>';
+$string['appraisee_welcome_info'] = 'Hạn chót bản đánh giá của bạn cho năm này là {$a}.';
+$string['email:body:appraiseefeedback'] = '{{emailmsg}}
+<br>
+<hr>
+<p>Vui lòng nhấp {{link}}  để đóng góp phản hồi. </p>
+<p>Appraisal Name {{appraisee_fullname}}<br>
+Tên bản đánh giá  <span class="placeholder">{{held_date}}</span></p>
+<p>
+Bản đánh giá của tôi vào ngày {{appraisee_fullname}} đến {{firstname}} {{lastname}}.</p>
+<p>
+Nếu đường dẫn bên trên không hoạt động, vui lòng chép đường dẫn sau vào trình duyệt của bạn để đăng nhập vào bản đánh giá:<br />{{linkurl}}</p>';
+$string['email:body:appraiseefeedbackmsg'] = '<span class="placeholder bind_firstname">{{firstname}}</span> thân mến,</p>
+<p>
+Buổi họp đánh giá của tôi sẽ được sắp xếp vào <span class="placeholder">{{held_date}}</span>. Người đánh giá của tôi là <span class="placeholder">{{appraiser_fullname}}</span>. Vì bạn và tôi đã làm việc mật thiết với nhau trong năm vừa qua, tôi rất mong nhận được phản hồi của bạn cho những mặt mà bạn đánh giá cao đóng góp của tôi cũng như những lĩnh vực mà bạn thấy tôi có thể làm hiệu quả hơn. Nếu bạn thấy muốn đóng góp, vui lòng nhấp vào đường dẫn sau đây để phản hồi. </p> <p>
+
+Tôi rất cám ơn nếu bạn có thể phản hồi trước ngày họp đánh giá của tôi.</p>
+<p class="ignoreoncopy">Dưới đây là các ý kiến bổ sung từ <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
+<p>Trân trọng,<br />
+<span class="placeholder">{{appraisee_fullname}}</span></p>';
+$string['email:body:appraiserfeedback'] = '{{emailmsg}}
+<br>
+<hr>
+<p>Vui lòng nhấp {{link}} để đóng góp phản hồi.</p>
+<p>Tên bản đánh giá {{appraisee_fullname}}<br>
+Bản đánh giá của họ vào ngày <span class="placeholder">{{held_date}}</span></p>
+<p>Đây là email tự động gửi từ {{appraiser_fullname}} đến {{firstname}} {{lastname}}.</p>
+<p>Nếu đường dẫn bên trên không hoạt động, vui lòng chép đường dẫn sau vào trình duyệt của bạn để đăng nhập vào bản đánh giá:<br />{{linkurl}}</p>';
+$string['email:body:appraiserfeedbackmsg'] = '<p><span class="placeholder bind_firstname">{{firstname}}</span> thân mến,</p>
+<p>Buổi họp đánh giá cho <span class="placeholder">{{appraisee_fullname}}</span> đã được thu xếp vào ngày <span class="placeholder">{{held_date}}</span>. Vì chúng ta gần đây đã làm việc mật thiết với nhau, tôi rất mong nhận được phản hồi của bạn về những mặt mà bạn đánh giá cao đóng góp của tôi cũng như những lĩnh vực mà bạn thấy tôi có thể làm hiệu quả hơn. Nếu bạn thấy muốn đóng góp, vui lòng nhấp vào đường dẫn sau đây để phản hồi.</p> <p>Tôi rất cám ơn nếu bạn có thể phản hồi trước ngày họp đánh giá của tôi.</p>
+<p class="ignoreoncopy">Dưới đây là các ý kiến bổ sung từ <span class="placeholder">{{appraiser_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
+<p>Trân trọng, <br /> <span class="placeholder">{{appraiser_fullname}}</span></p>';
+$string['email:body:myfeedback'] = '<p>{{recipient}} thân mến,</p> <p>Bạn đã gửi phản hồi {{confidential}} sau đây cho {{appraisee}}:</p> <div>{{feedback}}</div> <div>{{feedback_2}}</div>';
+$string['email:subject:myfeedback'] = 'Phản hồi đánh giá của bạn cho {{appraisee}}';
+$string['error:appraisalcycle:groupcohort'] = 'Nhóm không đúng hoặc thông tin đợt đánh giá đã được đệ trình';
+$string['error:cohortold'] = 'Đợt đánh giá được chọn không còn active nữa và chưa bao giờ được sắp xếp cho nhóm này <br><a href="{$a}">Go to current appraisal cycle</a>';
+$string['error:cohortuser'] = 'Người được đánh giá không cần làm bản đánh giá cho đợt đánh giá hiện tại';
+$string['error:noappraisal'] = 'Xãy ra lỗi - Bạn không có bản đánh giá trong hệ thống. Vui lòng liên hệ BP Quản lý liệt kê dưới đây để được trợ giúp nếu bạn cần lập bản đánh giá: {$a}';
+$string['error:permission:appraisalcycle:lock'] = 'Bạn không được phép phân công người sử dụng cho đợt đánh giá';
+$string['error:permission:appraisalcycle:start'] = 'Bạn không được phép bắt đầu một đợt đánh giá mới.';
+$string['error:permission:appraisalcycle:update'] = 'Bạn không được phép cập nhật đợt đánh giá.';
+$string['error:toggleassign:confirm:assign'] = 'Việc này sẽ phân công người sử dụng cho đợt đánh giá hiện tạu và đánh dấu là yêu cầu làm bản đánh giá.<br />Nếu người sử dụng đã có bản đánh giá được lưu trước đây trong đợt đánh giá này thì nó sẽ được kích hoạt lại, nếu không nó sẽ có sẵn để bắt đầu trong trang initialise.<br />Bạn có chắc chắn muốn tiến hành?<br />{$a->yes} {$a->no}';
+$string['error:toggleassign:confirm:unassign'] = 'Người sử dụng sẽ được hủy phân công trong đợt đánh giá hiện tại và được đánh dấu là không yêu cầu làm bản đánh giá và sẽ cần phải cung cấp lý do cho việc xác nhận dưới đây.<br />Bạn có chắc chắn muốn tiến hành?<br />{$a->yes} {$a->no}';
+$string['error:toggleassign:confirm:unassign:appraisalexists'] = 'Cảnh báo: Có 1 bản đánh giá được khởi động trong hệ thống cho người sử dụng này.<br />Nếu tiếp tục, bạn sẽ lưu (nếu có nội dung) hoặc xóa (nếu chưa bắt đầu) bản đánh giá của họ tùy theo tình trạng (có nghĩa là họ sẽ không thể chỉnh sửa được).<br />Người sử dụng sẽ được hủy phân công trong đợt đánh giá hiện tại và được đánh dấu là không yêu cầu làm bản đánh giá và sẽ cần phải cung cấp lý do cho việc xác nhận dưới đây.<br />Bạn có chắc chắn muốn tiến hành?<br />{$a->yes} {$a->no}';
+$string['error:toggleassign:reason'] = 'Vui lòng xác nhận lý do người sử dụng sau đây không yêu cầu làm appraisal .
+
+{$a->reasonfield} {$a->continue} {$a->cancel}';
+$string['error:toggleassign:reason:cancel'] = 'Hủy bỏ';
+$string['error:toggleassign:reason:continue'] = 'Tiếp tục';
+$string['error:togglerequired:confirmnotrequired'] = 'Thay đổi người sử dụng sang trạng thái không yêu cầu làm bản đánh giá sẽ hủy phân công những người này khỏi đợt đánh giá hiện tại nếu họ đã được phân công trong đó.<br />
+Người sử dụng này hiện tại không có bản đánh giá active trong đợt đánh giá hiện tại.<br />
+Bạn có chắc chắn muốn tiến hành? <br />{$a->yes} {$a->no}';
+$string['error:togglerequired:confirmnotrequired:appraisalexists'] = 'Cảnh báo: Có 1 bản đánh giá hiện tại đã được khởi động trong hệ thống cho người sử dụng này.<br />
+ 
+Nếu tiếp tục, bạn sẽ lưu (nếu có nội dung) hoặc xóa (nếu chưa bắt đầu) bản đánh giá của họ tùy theo tình trạng (có nghĩa là họ sẽ không thể chỉnh sửa được).<br /> Người sử dụng sẽ được hủy phân công trong đợt đánh giá liên quan. <br /> Bạn có chắc chắn muốn tiến hành? <br />{$a->yes} {$a->no}';
+$string['error:togglerequired:confirmrequired'] = 'Thay đổi người sử dụng sang trạng thái yêu cầu làm bản đánh giá sẽ phân công những người này trong đợt đánh giá hiện tại.<br /> Nếu người sử dụng đã có bản đánh giá được lưu trước đây trong đợt đánh giá này thì nó sẽ được kích hoạt lại, nếu không nó sẽ có sẵn để bắt đầu trong trang initialise. <br /> Bạn có chắc chắn muốn tiến hành?
+    <br />{$a->yes} {$a->no}';
+$string['error:togglerequired:reason'] = 'Vui lòng xác nhận lý do người sử dụng sau đây không yêu cầu làm appraisal .
+
+{$a->reasonfield} {$a->continue} {$a->cancel}';
+$string['error:togglerequired:reason:cancel'] = 'Hủy bỏ';
+$string['error:togglerequired:reason:continue'] = 'Tiếp tục';
+$string['feedback_header'] = 'Đã đưa ra phản hồi cho {$a->appraisee_fullname} (Người đánh giá: {$a->appraiser_fullname} - Ngày đánh giá: {$a->facetofacedate})';
+$string['feedback_intro'] = 'Vui lòng chọn 3 hoặc hơn 3 đồng nghiệp gửi phản hồi cho bản đánh giá của bạn. Ở hầu hết các khu vực, bản đánh giá có thể là nội bộ hoặc bên ngoài. Vui lòng xem khu vực của bạn để có hướng dẫn cụ thể. <br/><br/> Đối với người đóng góp phản hồi nội bộ, bạn nên cân nhắc thu thập phản hồi từ quan điểm "360 độ", có nghĩa là người cùng cấp, cấp cao hơn và cấp thấp hơn. Bạn phải lựa chọn thành phần đa dạng. <br/><br/><div data-visible-regions="UKMEA, EUROPE, AUSTRALASIA">Một trong những người đóng góp của bạn có thể là khách hàng hoặc công tác viên bên ngoài mà biết rõ về bạn.</div> <div data-visible-regions="East Asia"><br /><div class="alert alert-warning">FĐối với Khu vực Đông Á, chúng tôi mong rằng phản hồi chỉ từ nguồn nội bộ. Ý kiến từ khách hàng hoặc cộng tác viên bên ngoài sẽ được tiếp thu và phải hồi qua người trong nội bộ. </div></div> <br /><div class="alert alert-danger"> Ghi chú: Phản hồi của người đóng góp ý kiến sẽ được đăng tải ở đây ngay khi nhận được trừ khi phản hồi được người đánh giá yêu cầu. Trong trường hợp này, người đánh giá của bạn sẽ gửi bản đánh giá của bạn để lấy ý kiến sau cùng của bạn (giai đoạn 3) đối với phản hồi đã đưa ra.</div>';
+$string['feedbackrequests:paneltitle:requestmail'] = 'Email yêu cầu phản hồi';
+$string['form:addfeedback:addfeedback'] = 'Vui lòng mô tả 3 lĩnh vực mà bạn đánh giá cao đóng góp của người được đánh giá trong 12 tháng quá.';
+$string['form:addfeedback:addfeedback_2'] = 'Vui lòng cung cấp chi tiết 3 lĩnh vực mà bạn cảm thấy họ có thể làm hiệu quả hơn. Hãy trung thực nhưng góp ý mang tính xây dựng vì phản hồi này có thể giúp đồng nghiệp của bạn xử lý các vấn đề hiệu quả hơn.';
+$string['form:addfeedback:addfeedback_2help'] = '<div
+class="well well-sm">Điều quan trọng là tất cả thành viên đều nhận được phản hồi cân bằng, có giá trị bao gồm cả ý kiến tích cực cũng như phê bình. <br>Để xem hướng dẫn vui lòng nhấp <a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf"
+target="_blank">vào đây.</a></div>';
+$string['form:addfeedback:addfeedback_help'] = 'Vui lòng chỉ copy và paste phản hồi của bạn vào hộp "đóng góp có giá trị" trừ khi  bạn có thể tách ra giữa "có giá trị" và "hiệu quả hơn".';
+$string['form:addfeedback:addfeedbackhelp'] = '<div
+class="well well-sm">Điều quan trọng là tất cả thành viên đều nhận được phản hồi cân bằng, có giá trị bao gồm cả ý kiến tích cực cũng như phê bình. <br>Để xem hướng dẫn vui lòng nhấp <a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf"
+target="_blank">vào đây.</a></div>';
+$string['form:addfeedback:firstname'] = 'Tên người đưa ra phản hồi';
+$string['form:addfeedback:lastname'] = 'Họ người đưa ra phản hồi';
+$string['form:addfeedback:saveddraft'] = 'Bạn đã lưu bản thảo phản hồi của mình. Người đánh giá và người được đánh giá sẽ không nhìn thấy bản thảo này trừ khi bạn gửi phản hồi đi.';
+$string['form:addfeedback:savedraftbtn'] = 'Lưu bản thảo';
+$string['form:addfeedback:savedraftbtntooltip'] = 'Lưu bản thảo để hoàn chỉnh sau. Bản này sẽ không được gửi cho người đánh giá và người được đánh giá';
+$string['form:addfeedback:savefeedback'] = 'Lưu Phản hồi';
+$string['form:development:comments'] = 'Ý kiến của người đánh giá';
+$string['form:development:commentshelp'] = '<div class="well well-sm"><em>Do người đánh giá điền vào</em></div>';
+$string['form:feedback:editemail'] = 'Soạn thảo';
+$string['form:feedback:providefirstnamelastname'] = 'Vui lòng nhập họ và tên người nhận trước khi nhấn vào nút soạn thảo.';
+$string['form:lastyear:cardinfo:performancelink'] = 'Kế hoạch tác động năm trước';
+$string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">Bản đánh giá năm trước </a>có sẵn để xem (PDF - mở cửa sổ mới).';
+$string['form:summaries:grpleader'] = '5.5 Tóm tắt của nhóm trưởng';
+$string['form:summaries:grpleadercaption'] = 'Hoàn tất bởi {$a->fullname}{$a->date}';
+$string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>Do nhân sự cấp cao hoàn tất với vai trò người phê duyệt sau cùng.</em></div>';
+$string['introduction:video'] = '<img src="https://moodle.arup.com/scorm/_assets/ArupAppraisal.png" alt="Arup Appraisal logo"/>';
+$string['leadersignoff'] = 'Giám đốc phê duyệt sau cùng';
+$string['modal:printconfirm:cancel'] = 'Không, được rồi';
+$string['modal:printconfirm:content'] = 'Bạn có thật sự cần in tài liệu này không?';
+$string['modal:printconfirm:continue'] = 'Vâng, tiến hành';
+$string['modal:printconfirm:title'] = 'Hãy cân nhắc trước khi in';
+$string['overview:content:appraisee:2'] = 'Vui lòng hoàn tất bản đánh giá bản thân của bạn.<br /><br /> <strong>Các bước tiếp theo:</strong> <ul class="m-b-20"> <li>Điền ngày sẽ gặp mặt trực tiếp </li> <li>Yêu cầu đưa ra phản hồi</li> <li>Phản ánh và nhận xét về Thể hiện và Phát triển của bạn trong năm ngoái</li> <li>Điền vào Định Hướng Nghề Nghiệp, Tác Động và Kế Hoạch Phát Triển để thảo luận trong buổi gặp mặt trực tiếp</li> <li>Share bản thảo cho {$a->styledappraisername}, người đánh giá bạn</li> </ul> Vui lòng gửi bản thảo cho người đánh giá bạn ít nhất <strong><u>một tuần</u></strong> trước ngày gặp trực tiếp. Bạn vẫn có thể tiếp tục bổ sung thêm sau khi share.<br /><br /> <div class="alert alert-danger" role="alert"><strong>Chú ý:</strong> Người đánh giá bạn sẽ không thể thấy bản thảo cho đến khi bạn share với họ.</div>';
+$string['overview:content:appraisee:3'] = 'Hiện tại bạn đã nộp bản thảo đánh giá của mình cho {$a->styledappraisername} xem xét. <br /><br /> <strong>Bước tiếp theo: </strong> <ul class="m-b-20"><li>Họp trực tiếp gặp mặt - trước khi họp bạn có thể mong muốn:</li> <ul class="m-b-0"> <li><a class="oa-print-confirm" href="{$a->printappraisalurl}">Tải Bản đánh giá</a></li> <li><a href="https://moodle.arup.com/appraisal/reference" target="_blank">Tải Hướng dẫn Tham khảo nhanh</a></li> </ul> <li>Sau cuộc họp, người đánh giá sẽ trả lại bản đánh giá cho bạn. Bạn sẽ được yêu cầu chỉnh sửa như đã thống nhất trong buổi họp trực tiếp gặp mặt hoặc viết các ý kiến sau cùng.</li> </ul> <div class="alert alert-danger" role="alert"><strong>Ghi chú:</strong> Bạn có thể tiếp tục soạn thảo bản đánh giá trong khi nó đang ở chỗ người đanh giá tuy nhiên đề nghị bạn sử dụng Activity log để báo các điểm mà bạn đã thay đổi.</div>';
+$string['overview:content:appraisee:7:groupleadersummary'] = 'Bản đánh giá của bạn hiện nay đã hoàn tất và chờ giám đốc xem xét và tóm tắt. Bạn sẽ được thông báo khi được phê duyệt xong';
+$string['overview:content:appraiser:3'] = '{$a->styledappraiseename} đã nộp bản thảo để chuẩn bị cho buổi họp trực tiếp gặp mặt. <br /><br /> <strong>Các bước tiếp theo:</strong> <ul class="m-b-20"> <li>Vui lòng xem xét bản đánh giá để chuẩn bị cho buổi họp. Nếu bạn thấy cần thêm thông tin bổ sung thì trả lại cho người được đánh giá.</li> <li>Trước khi họp bạn nên</li> <ul class="m-b-0"> <li><a class="oa-print-confirm" href="{$a->printappraisalurl}">Tải bản đánh giá</a></li> <li><a class="oa-print-confirm" href="{$a->printfeedbackurl}">Tải các phản hồi nhận được</a></li> <li>Bạn cũng có thể muốn <a href="https://moodle.arup.com/appraisal/reference" target="_blank">tải hướng dẫn tham khảo nhanh </a></li></ul> <li>Tiếp theo buổi họp trực tiếp gặp mặt, vui lòng </li> <ul class="m-b-0"> <li>Đánh dấu buổi họp trực tiếp gặp mặt đã được tiến hành trong Mục Thông tin Người được đánh giá </li> <li>Thêm các ý kiến vào từng mục </li> <li>Viết tóm tắt và các hành động thống nhất vào mục Tóm tắt </li> (Nếu cần thiết bạn có thể  chuyển cho người được đánh giá bổ sung trước khi bạn bổ sung ý kiến của mình) </ul> <li>Gửi cho người được đánh giá xem ý kiến của bạn, xem các phản hồi và bổ sung ý kiến sau cùng của họ </li> </ul>';
+$string['overview:content:appraiser:7:groupleadersummary'] = 'Bản đánh giá của bạn hiện nay đã hoàn tất và chờ giám đốc xem xét và tóm tắt. Bạn sẽ được thông báo khi được phê duyệt xong';
+$string['overview:content:groupleader:2'] = 'Bản đánh giá đang thực hiện';
+$string['overview:content:groupleader:3'] = 'Bản đánh giá đang thực hiện';
+$string['overview:content:groupleader:4'] = 'Bản đánh giá đang thực hiện';
+$string['overview:content:groupleader:5'] = 'Bản đánh giá đang thực hiện';
+$string['overview:content:groupleader:6'] = 'Bản đánh giá đang thực hiện';
+$string['overview:content:groupleader:7'] = 'Bản đánh giá đã hoàn tất và được phê duyệt';
+$string['overview:content:groupleader:7:groupleadersummary'] = 'Bản đánh giá đã hoàn tất và chờ bạn xem xét tóm tắt.<br /><br /> <strong> Các bước tiếp theo:</strong> <ul class="m-b-20"> <li>Vui lòng thêm Tóm tắt của Giám đốc vào mục Tóm tắt.</li> <li>Nhấp vào nút Sign off</li> <li>Người được đánh giá, người đánh giá và người sign off sẽ nhận được thông báo khi bạn thêm ý kiến nhận xét.</li> </ul>';
+$string['overview:content:groupleader:7:groupleadersummary:generic'] = 'Bản đánh giá này đã hoàn tất và chờ giám đốc nhận xét tóm tắt';
+$string['overview:content:signoff:7:groupleadersummary'] = 'Bản đánh giá này đã hoàn tất và chờ giám đốc nhận xét tóm tắt. Bạn sẽ được thông báo khi tóm tắt xong.';
+$string['overview:content:special:archived'] = '<div class="alert alert-danger" role="alert">Bản đánh giá này đã được lưu.<br />Hiện nay chỉ<a class="oa-print-confirm" href="{$a->printappraisalurl}">có thể tải xuống</a>.</div>';
+$string['overview:content:special:archived:appraisee'] = '<div class="alert alert-danger" role="alert">Bản đánh giá này đã được lưu.<br /> <a class="oa-print-confirm" href="{$a->printappraisalurl}">Hiện nay chỉ có thể tải xuống </a>.</div>';
+$string['overview:content:special:archived:groupleader:2'] = '<div class="alert alert-danger" role="alert">Bản đánh giá này đã được lưu. <br />
+Bạn không được đăng nhập để chỉnh sửa nữa.</div>';
+$string['overview:lastsaved'] = 'Lưu lần cuối: {$a}';
+$string['overview:lastsaved:never'] = 'Chưa bao giờ';
+$string['pdf:feedback:confidentialhelp:appraisee'] = '# Chú ý Phản hồi bảo mật bạn không thể xem';
+$string['pdf:feedback:notyetavailable'] = 'Chưa xem được';
+$string['pdf:feedback:requestedfrom'] = 'Người xem xét {$a->firstname} {$a->lastname}{$a->appraiserflag}{$a->confidentialflag}:';
+$string['pdf:feedback:requestedhelp'] = '* Chú ý phản hồi do Người đánh giá yêu cầu chưa cho bạn xem được';
+$string['pdf:form:summaries:grpleader'] = 'Tóm tắt của nhóm trưởng';
+$string['pdf:header:warning'] = 'Tải xuống bởi: {$a->who} vào {$a->when}<br>Vui lòng không lưu nhưng chỗ không an toàn.';
+$string['status:7:leadersignoff'] = 'Giám đốc ký phê duyệt';
+
+$string['overview:content:groupleader:8'] = $string['overview:content:groupleader:7']; // For legacy where there was a six month status.
+$string['overview:content:groupleader:9'] = $string['overview:content:groupleader:7'];

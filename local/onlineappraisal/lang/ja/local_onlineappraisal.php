@@ -45,23 +45,15 @@ $string['form:userinfo:jobtitle'] = 'Job title';
 $string['form:userinfo:operationaljobtitle'] = 'Operational job title';
 $string['form:userinfo:facetoface'] = 'アプレイザルミーティングの実施予定日';
 $string['form:userinfo:facetofaceheld'] = 'アプレイザルミーティングを終了しました。';
-$string['form:userinfo:setf2f'] = 'Set your face to face meeting time and date';
 
 // Introduction Page
 $string['appraisee_heading'] = 'オンラインアプレイザルへようこそ';
-$string['appraisee_welcome'] = 'アプレイザルはあなたと評価者があなたの業績と成績について価値ある議論を行うための機会です。<br /><br />
-このオンラインツールはその議論を記録し、年間を通じて振り返るためのものです。<br /><br />
-右のイメージをクリックし、Gregory Hodkinsonのイントロダクションメッセージをご覧ください。<br /><br />
-アプレイザルに関するより詳細な説明は<a href="https://moodle.arup.com/appraisal/essentials" target="_blank"> ここから</a> 確認できます。';
 
 $string['introduction:video'] = '<img src="https://moodle.arup.com/scorm/_assets/Gregory_Hodkinson.jpg" alt="Changes to Appraisal" onclick="window.open(\'https://moodle.arup.com/scorm/_assets/intro.pdf\', \'_blank\');"/>';
 
 //Request Feedback.
 
 $string['feedback_send_copy'] = 'Email me a copy';
-$string['feedback_intro'] = '情報提供者を3人以上選んでください。社内外いずれから選んでも可能な場合がほとんどですが、詳しくは各リージョンの指示に従ってください。<br/><br/>  リージョン内の情報提供者については、「360度評価」という観点でフィードバックを得るようにしてください。すなわち、同期だけでなく自分より経験の長い同僚、短い同僚も情報提供者として選んでください。<br/><br/>
-<div data-visible-regions="East Asia"><br />
-EAリージョンにおいては、社内にのみフィードバックを依頼するようお願いします。外部のクライアントもしくはパートナーからのコメントは社内関係者を通じてフィードバックされることが期待されます。</div> <br /><br /> <div class="alert alert-danger"> 注意：あなたへのフィードバックは、情報提供者が不開示としないかぎり、アプレイザルミーティング後にこちらに開示されます。</div>';
 
 // Last Year Review
 $string['form:lastyear:title'] = 'Section 1: Review of last year';
@@ -216,17 +208,14 @@ $string['form:summaries:signoff'] = '5.4 承認者によるまとめ';
 $string['form:summaries:signoffhelp'] = '<div class="well well-sm"><em>リーダー、もしくは任命された承認者が入力してください。</em></div>';
 $string['form:summaries:groupleader'] = '5.5 リーダーによるまとめ';
 $string['form:summaries:groupleaderhelp'] = '<div class="well well-sm"><em>グループリーダーが入力してください。</em></div>';
-$string['form:summaries:grpleadercaption'] = '{$a->fullname}{$a->date}が完了しました。';
 
 // Check-in
 $string['checkins_intro'] = '年間を通じて、評価者と被評価者はインパクトプラン、ディベロプメントプラン、各自の行動や実績について話し合うことが期待されます。評価者・被評価者とも、この下の欄を利用して進捗を記録してください。話し合いの頻度は個々に任されていますが、少なくとも一年に一度は行ってください。';
 
 // Feedback contribution
-$string['feedback_header'] = '{$a->appraisee_fullname} さんへのフィードバックを入力してください。';
 $string['feedback_addfeedback'] = '被評価者のこの12ヶ月の取り組みのうち、あなたの評価する3つの領域について記述してください。また、より効率よくできたであろう3つの領域についても記述してください。被評価者がより効果的に課題に取り組めるよう、率直に、ただし、建設的に論じるようにしてください。';
 $string['confidential_label_text'] = 'あなたのコメントを開示したくない場合はこのチェックボックスにチェックを入れてください。チェックを入れなかった場合はあなたのコメントが被評価者に共有されます。';
 
-$string['form:addfeedback:addfeedback'] = '被評価者のこの12ヶ月の取り組みのうち、あなたの評価する3つの領域について記述してください。また、より効率よくできたであろう3つの領域についても記述してください。被評価者がより効果的に課題に取り組めるよう、率直に、ただし、建設的に論じるようにしてください。';
 $string['form:addfeedback:notfound'] = 'フィードバック依頼が見つかりません。';
 $string['form:addfeedback:sendemailbtn'] = 'フィードバック依頼を送信します。';
 $string['form:addfeedback:closed'] = 'フィードバック提出の期限が切れました。';
@@ -243,29 +232,15 @@ $string['comment:status:7_to_9'] = ' {$a->relateduser}がコメントを追加�
 
 // Feedback request email - sent by APPRAISEE
 $string['email:subject:appraiseefeedback'] = 'フィードバック依頼';
-$string['email:body:appraiseefeedbackmsg'] = '<p><span class="placeholder bind_firstname">{{firstname}}</span> さん</p>
-<p>私のアプレイザルが近づいています。この一年、一緒に働く機会が多かったため、私の仕事ぶりについてフィードバックをいただきたいと思っています。同意いただける場合は、以下のリンクをクリックしフィードバックを入力してください。</p>
-<p>私のアプレイザルは<span class="placeholder">{{held_date}}</span>の予定です。この日より前にご提出ください。</p>
-<p>入力いただいたフィードバックは、あなたが「開示しない」というチェックボックスにチェックを入れない限り、アプレイザルミーティング後に私に共有されます。</p>
-<p>その他、<span class="placeholder">{{appraisee_fullname}}</span>からの補足コメントです：<br /> <span>{{emailtext}}</span></p>
-<p>宜しくお願いいたします。<br />
-<span class="placeholder">{{appraisee_fullname}}</span></p>';
 
 // Feedback request email - sent by APPRAISER
 $string['email:subject:appraiserfeedback'] = '{{appraisee_fullname}}さんへのフィードバック依頼';
-$string['email:body:appraiserfeedbackmsg'] = '<p><span class="placeholder bind_firstname">{{firstname}}</span>さん</p>
-<p><span class="placeholder">{{appraisee_fullname}}</span>さんのアプレイザルを行っています。あなたは最近<span class="placeholder">{{appraisee_fullname}}</span>さんと一緒に働く機会多かったため、彼らの仕事ぶりについてフィードバックをいただきたいと思っています。同意いただける場合は、以下のリンクをクリックしフィードバックを入力してください。</p>
-<p>対象者のアプレイザルは<span class="placeholder">{{held_date}}</span>の予定です。この日より前にご提出ください。</p>
-<p>入力いただいたフィードバックは、あなたが「開示しない」というチェックボックスにチェックを入れない限り、アプレイザルミーティング後に<span class="placeholder">{{appraisee_fullname}}</span> さんに共有されます。</p>
-<p>その他、<span class="placeholder">{{appraisee_fullname}}</span>からの補足コメントです：<br /> <span>{{emailtext}}</span></p>
-<p>宜しくお願いいたします。<br /> <span class="placeholder">{{appraiser_fullname}}</span></p>';
 
 // PDF Strings
 $string['pdf:form:summaries:appraisee'] = '被評価者によるコメント';
 $string['pdf:form:summaries:appraiser'] = '評価者による、業績全体のまとめ';
 $string['pdf:form:summaries:signoff'] = '承認';
 $string['pdf:form:summaries:recommendations'] = '合意されたアクションについて';
-$string['pdf:form:summaries:grpleader'] = 'リーダーによるまとめ';
 
 // END FORM
 
@@ -293,17 +268,6 @@ $string['overview:content:appraisee:2:3'] = '評価者からドラフトの変�
     <li>ドラフトを{$a->styledappraisername}に提出</li>
 </ul>';
 
-$string['overview:content:appraisee:3'] = '{$a->styledappraisername}にアプレイザルのドラフトを提出しました。<br /><br />
-<strong>手順の流れ：</strong>
-<ul class="m-b-20">
-    <li>アプレイザルミーティングを行います。事前に以下の資料をダウンロードすることをお勧めします。</li>
-    <ul class="m-b-0">
-        <li><a href="{$a->printappraisalurl}" target="_blank">アプレイザル</a></li>
-        <li><a href="https://moodle.arup.com/appraisal/reference" target="_blank">Quick Reference Guide</a></li>
-    </ul>
-    <li>ミーティング後、評価者がアプレイザルをあなたに返却します。ミーティング中で合意した項目に応じて変更するか、最終コメントを入力するか、いずれかをお願いします。</li>
-</ul>
-<div class="alert alert-danger" role="alert"><strong>注意：</strong> 引き続きアプレイザルの変更は可能ですが、その際は変更した項目をアクティビティログに明記してください。</div>';
 
 $string['overview:content:appraisee:3:4'] = '{$a->styledappraisername}にアプレイザルの編集を依頼しました。<br /><br /> アプレイザルが更新され、レビューできる状態になり次第、通知されます。<br /><br /> <div class="alert alert-danger" role="alert"><strong>注意：</strong> 引き続きアプレイザルの変更は可能ですが、その際は変更した項目をアクティビティログに明記してください。</div>';
 
@@ -328,8 +292,6 @@ $string['overview:content:appraisee:6'] = 'あなたのアプレイザルが{$a-
 
 $string['overview:content:appraisee:7'] = 'あなたのアプレイザルが完了しました。「アプレイザルをダウンロードする」ボタンをクリックすればいつでもPDFでダウンロードすることが可能です。';
 
-$string['overview:content:appraisee:7:groupleadersummary'] = 'あなたのアプレイザルが完了し、リーダーがレビュー及びまとめを作成中です。完了次第、通知されます。';
-
 $string['overview:content:appraisee:8'] = $string['overview:content:appraisee:7']; // For legacy where there was a six month status.
 $string['overview:content:appraisee:9'] = $string['overview:content:appraisee:7']; // When Groupleader added summary.
 
@@ -340,26 +302,6 @@ $string['overview:content:appraiser:2'] = 'アプレイザルのドラフトは�
 
 $string['overview:content:appraiser:2:3'] = '{$a->styledappraiseename}にアプレイザルを返却しました。ドラフトが更新され次第、再レビューの通知がされます。<br /><br />
 <div class="alert alert-danger" role="alert"><strong>注意：</strong>あなたが入力したセクションは引き続き変更可能です。</div>';
-
-$string['overview:content:appraiser:3'] = '{$a->styledappraiseename}がアプレイザルミーティングに備えてアプレイザルのドラフトを提出しました。<br /><br />
-<strong>手順の流れ：</strong>
-<ul class="m-b-20">
-    <li>アプレイザルミーティングまでにアプレイザルをレビューしてください。内容の追加が必要な場合、アプレイザルを被評価者に返却してください。</li>
-    <li>事前に以下の資料をダウンロードすることをお勧めします。</li>
-        <ul class="m-b-0">
-            <li><a href="{$a->printappraisalurl}" target="_blank">アプレイザル</a></li>
-            <li><a href="{$a->printfeedbackurl}" target="_blank">フィードバック</a></li>
-            <li><a href="https://moodle.arup.com/appraisal/reference" target="_blank">Quick Reference Guide</a></li>
-        </ul>
-    <li>ミーティング後、下記の通り進めてください。</li>
-        <ul class="m-b-0">
-            <li>Appraisee Infoのページでアプレイザルミーティングの終了を入力</li>
-            <li>自分のコメントを各セクションに入力</li>
-            <li>「Summariesのセクションに自分のまとめと合意されたアクションを入力</li>
-            （必要であれば、アプレイザルを被評価者に返却し、被評価者が変更した後にコメントを入力。）
-        </ul>
-    <li>被評価者に提出します。被評価者があなたのコメントをレビューし、フィードバックを読み、最終コメントを入力します。</li>
-</ul>';
 
 $string['overview:content:appraiser:3:4'] = '{$a->styledappraiseename}からアプレイザルの変更依頼がありました。<br /><br />
 <strong>手順の流れ：</strong>
@@ -386,27 +328,12 @@ $string['overview:content:appraiser:6'] = 'アプレイザルを{$a->styledsigno
 
 $string['overview:content:appraiser:7'] = 'アプレイザルが承認され終了しました。';
 
-$string['overview:content:appraiser:7:groupleadersummary'] = 'アプレイザルが完了し、リーダーがレビュー及びまとめを作成中です。完了次第、通知されます。';
-
 $string['overview:content:appraiser:8'] = $string['overview:content:appraiser:7']; // For legacy where there was a six month status.
 $string['overview:content:appraiser:9'] = $string['overview:content:appraiser:7']; // When Groupleader added summary.
 
 // Overview page GROUP LEADER Content.
 $string['overview:content:groupleader:1'] = ''; // Never seen...
-$string['overview:content:groupleader:2'] = 'アプレイザルは進行中です。';
-$string['overview:content:groupleader:3'] = 'アプレイザルは進行中です。';
-$string['overview:content:groupleader:4'] = 'アプレイザルは進行中です。';
 $string['overview:content:groupleader:5'] = 'アプレイザルは進行中です。';
-$string['overview:content:groupleader:6'] = 'アプレイザルは進行中です。';
-$string['overview:content:groupleader:7'] = 'アプレイザルが承認され終了しました。';
-$string['overview:content:groupleader:7:groupleadersummary'] = 'このアプレイザルは完了しています。レビュー及びまとめの入力をお願いします。<br /><br />
-<strong>手順の流れ：</strong>
-<ul class="m-b-20">
-    <li>Summariesセクションにまとめを追記し、保存してください。</li>
-    <li>あなたがコメントを追記次第、被評価者、評価者及び承認者に通知されます。</li>
-</ul>';
-$string['overview:content:groupleader:8'] = $string['overview:content:groupleader:7']; // For legacy where there was a six month status.
-$string['overview:content:groupleader:9'] = $string['overview:content:groupleader:7'];
 
 // Overview page SIGN OFF Content.
 $string['overview:content:signoff:1'] = ''; // Never seen...
@@ -422,8 +349,6 @@ $string['overview:content:signoff:6'] = '{$a->styledappraiseename}のアプレ�
     <li>アプレイザルを完了し、「承認する」ボタンをクリックします。</li>
 </ul>';
 $string['overview:content:signoff:7'] = 'アプレイザルが承認され終了しました。';
-
-$string['overview:content:signoff:7:groupleadersummary'] = 'アプレイザルが完了し、リーダーがレビュー及びまとめを作成中です。完了次第、通知されます。';
 
 $string['overview:content:signoff:8'] = $string['overview:content:signoff:7']; // For legacy where there was a six month status.
 $string['overview:content:signoff:9'] = $string['overview:content:signoff:7']; // When groupleader added summary.
@@ -521,7 +446,6 @@ $string['form:feedback:alert:saved'] = 'フィードバック依頼の送信が�
 $string['form:lastyear:nolastyear'] = 'あなたの前回のアプレイザルが登録されていません。前回のアプレイザルをPDFもしくはWordでアップロードしてください。';
 $string['form:lastyear:file'] = '<strong>アプレイザルがアップロードされました：<a href="{$a->path}" target="_blank">{$a->filename}</a></strong>';
 $string['form:lastyear:cardinfo:developmentlink'] = '昨年の成長';
-$string['form:lastyear:cardinfo:performancelink'] = '昨年の実績';
 $string['feedbackrequests:description'] = 'このダッシュボードでは、完了していないフィードバック依頼および過去に行ったフィードバックを表示しています。';
 $string['feedbackrequests:outstanding'] = '未完了の依頼';
 $string['feedbackrequests:norequests'] = '未完了の依頼フィードバック依頼はありません';
@@ -586,3 +510,197 @@ $string['checkin:addnewdots'] = 'チェックインのコメントを入力し�
 //$string['email:body:summaries:groupleaderemail:signoff'] = '<p>{{signofffirstname}}さん</p><p>{{appraiseefirstname}} {{appraiseelastname}}さんのアプレイザルにコメントを記入しました。</p><p>完成したアプレイザルは<a href="{{appraisalurl}}">こちら</a>で閲覧できます。</p>宜しくお願いします。<br><br>{{groupleadername}}';
 
 //$string['status:9'] = 'アプレイザルが完成しました。';
+
+// 2017 : Updates and additions.
+$string['addreceivedfeedback'] = '受取ったフィードバックを追加する';
+$string['admin:allstaff:assigned'] = 'このアプレイザルサイクルに設定されました';
+$string['admin:allstaff:assigned:none'] = 'このアプレイザルサイクルに設定されたユーザーがいません。';
+$string['admin:allstaff:button:lock'] = 'ユーザーをアプレイザルサイクルに設定する';
+$string['admin:allstaff:button:start'] = 'アプレイザルサイクルを開始する';
+$string['admin:allstaff:button:update'] = '初期設定の締切日を更新する';
+$string['admin:allstaff:notassigned'] = 'この年度のアプレイザルサイクルに設定されていません';
+$string['admin:allstaff:notassigned:none'] = '全てのユーザーがこの年度のアプレイザルサイクルに設定されました。';
+$string['admin:allstaff:nousers'] = 'このグループには該当者がいません。';
+$string['admin:appraisalcycle:assign'] = '指定する';
+$string['admin:appraisalcycle:assign:tooltip'] = 'アプレイザルサイクルにユーザーを指定する';
+$string['admin:appraisalcycle:closed'] = '今年度のアプレイザルサイクルは終了となり、アプレイザルが全てアーカイブされました。';
+$string['admin:appraisalcycle:unassign'] = '指定しない';
+$string['admin:appraisalcycle:unassign:tooltip'] = 'ユーザーをアプレイザルサイクルに指定しない';
+$string['admin:appraisalnotrequired:noreason'] = '理由を設定されていません';
+$string['admin:confirm:lock'] = 'チェックしたユーザーをアプレイザルサイクルに追加し、ユーザーリストを確定しますか？';
+$string['admin:confirm:start'] = '新しいアプレイザルサイクルを開始しますか？';
+$string['admin:duedate:default'] = '初期設定の締切日';
+$string['admin:leaver'] = '現在ユーザーは在籍していません。';
+$string['admin:lockingdots'] = '設定中…';
+$string['admin:start'] = 'アプレイザルサイクルを開始する';
+$string['admin:startingdots'] = '開始中…';
+$string['admin:toptext:allstaff:closed'] = '<div class="alert alert-danger"> {$a} のアプレイザルサイクルが終了となりました。</div>
+
+今年度のアプレイザルサイクルが終了しアプレイザルへの変更はできません。';
+$string['admin:toptext:allstaff:notclosed'] = '<div class="alert alert-success">{$a}年度のアプレイザルサイクルが開始されました</div><p>
+
+このリストは、Moodle上で上記のコストセンターに該当する全てのユーザを表示しています。リストに相違がある場合、HRにTAPSの確認依頼をしてください。</p><p>
+下記の設定リスト及び未設定リストにて今年度のアプレイザルのユーザーを追加、又は削除してください。New starterはリストに自動追加をされないため、必要であれば手動で設定してください。アプレイザルに設定された退職者はサイクルから削除するまでグレーで表示されます。アプレイザルを作成する場合、「Navigation」にある「Initialise」にアクセスしてください。</p>';
+$string['admin:toptext:allstaff:notlocked'] = '<div class="alert alert-warning"> {$a}年度の新しいアプレイザルサイクルにユーザーが設定されていません</div><p>
+
+このリストは、Moodle上で上記のコストセンターに該当する全てのユーザを表示しています。リストに相違がある場合、HRにTAPSの確認依頼をしてください。</p><p>
+
+アプレイザルを作成するため、ユーザーがこのアプレイザルサイクルに必要かどうかを判断しボックスにチェックし、ページの下にある「ユーザーを設定する」ボタンをクリックしてください。
+
+（上記の設定は「All Staff」ページに現在のサイクルを選択しいつでも操作できます。）</p>';
+$string['admin:toptext:allstaff:notstarted'] = '<div class="alert alert-warning">{$a}年度の新しいアプレイザルサイクルは開始されていません</div>
+
+新しいアプレイザルサイクルを開始するとこのグループの現在のアプレイザルが全てアーカイブされます。アーカイブの後にこのサイクルに該当されるユーザーを設定しInitialiseのページにアプレイザルを作成できます。「アプレイザルサイクルを開始する」ボタンをクリックする前に初期設定のアプレイザルサイクルを設定してください。';
+$string['admin:updatingdots'] = '更新中…';
+$string['admin:usercount:assigned'] = '({$a}人)';
+$string['admin:usercount:notassigned'] = '({$a} 人)';
+$string['appraisee_feedback_savedraft_error'] = '下書きを保存中にエラーが発生しました';
+$string['appraisee_feedback_savedraft_success'] = 'フィードバックの下書きを保存しました';
+$string['appraisee_feedback_viewrequest_text'] = '依頼メールを見る';
+$string['appraisee_welcome'] = 'アプレイザルはあなたと評価者があなたの業績と成績について価値ある議論を行うための機会です。議論は皆さんに対して建設的であり、直接的であり、役に立つことが望ましいです。<br /><br /> このオンラインツールはその議論を記録し、年間を通じて振り返るためのものです。<br /><br />アプレイザルに関するより詳細の説明は<a href="https://moodle.arup.com/appraisal/essentials" target="_blank">こちら</a>から確認できます。';
+$string['email:body:appraiseefeedback'] = '{{emailmsg}}
+<br>
+<hr>
+<p>フィードバックを入力するには、{{link}} をクリックしてください。</p>
+
+<p>被評価者の氏名 {{appraisee_fullname}}<br>
+
+私のアプレイザルは<span class="placeholder">{{held_date}}</span></p>の予定です
+
+<p>このメールは{{appraisee_fullname}}から{{firstname}} {{lastname}}に送信された自動メールです。</p>
+
+<p>上記のリンク先にアクセスできない場合は、以下のリンクをコピーしてブラウザのアドレスバーに貼り付けてください。<br />{{linkurl}}</p>';
+$string['email:body:appraiseefeedbackmsg'] = '<p><span class="placeholder bind_firstname">{{firstname}}</span>さん</p> <p>私のアプレイザルは <span class="placeholder">{{held_date}}</span>の予定です。私の評価者は<span class="placeholder">{{appraiser_fullname}}</span>さんです。この一年、一緒に働く機会が多かったため、私の仕事ぶりについて、評価する点・より効率よくできた点をフィードバックいただきたいと思っています。
+同意いただける場合は、以下のリンクをクリックしフィードバックを入力してください。</p> <p>また、上記日程より前にご提出いただければ幸いです。</p>
+<p class="ignoreoncopy">その他、<span class="placeholder">{{appraisee_fullname}}</span> からの補足コメントです：<br /> <span>{{emailtext}}</span></p>
+<p> 宜しくお願いいたします,<br /> <span class="placeholder">{{appraisee_fullname}}</span></p>';
+$string['email:body:appraiserfeedback'] = '{{emailmsg}}
+<br>
+<hr>
+<p>フィードバックを入力するには、{{link}} をクリックしてください。</p>
+<p>被評価者の氏名 {{appraisee_fullname}}<br>
+
+アプレイザルは<span class="placeholder">{{held_date}}</span>の予定です></p>
+<p> このメールは{{appraiser_fullname}} から{{firstname}} {{lastname}}に送信された自動メールです。</p>
+<p>上記のリンク先にアクセスできない場合は、以下のリンクをコピーしてブラウザのアドレスバーに貼り付けてください:<br />{{linkurl}}</p>';
+$string['email:body:appraiserfeedbackmsg'] = '<p><span class="placeholder bind_firstname">{{firstname}}</span>さん</p>
+<p><span class="placeholder">{{appraisee_fullname}}</span> さんのアプレイザルを<span class="placeholder">{{held_date}}</span>に行っています。お二人は最近一緒に働く機会多かったため、彼（彼女）の仕事ぶりについてフィードバックをいただきたいと思っています。同意いただける場合は、以下のリンクをクリックしフィードバックを入力してください。</p> <p>また、上記日程より前にご提出いただければ幸いです。</p> <p class="ignoreoncopy">その他、<span class="placeholder">{{appraiser_fullname}}</span>からの補足コメントです：<br /> <span>{{emailtext}}</span></p> <p>宜しくお願いいたします。<br /> <span class="placeholder">{{appraiser_fullname}}</span></p>';
+$string['email:body:myfeedback'] = '<p>さん {{recipient}},</p> <p>あなたは下記の{{confidential}}フィードバックを{{appraisee}} に送信しました:</p> <div>{{feedback}}</div> <div>{{feedback_2}}</div>';
+$string['email:subject:myfeedback'] = '{{appraisee}}へのアプレイザルフィードバック';
+$string['error:appraisalcycle:alreadylocked'] = 'このアプレイザルサイクルに設定されたユーザーがいます。';
+$string['error:appraisalcycle:alreadystarted'] = 'このアプレイザルサイクルに設定されたユーザーがいます。';
+$string['error:appraisalcycle:closed'] = '今年度のアプレイザルサイクルが終了しアプレイザルへの変更はできません。';
+$string['error:appraisalcycle:groupcohort'] = '無効なコストセンターか無効なアプレイザルサイクルの情報が提出されています。';
+$string['error:cohortold'] = '選択されたアプレイザルサイクルは有効ではなく、コストセンターが設定されていません。';
+$string['error:noappraisal'] = 'エラー - あなたのアプレイザルが見つかりません。アプレイザルのセットアップに関しては下記アプレイザルの管理者に連絡してください。{$a}';
+$string['error:permission:appraisalcycle:lock'] = 'あなたはアプレイザルサイクルにユーザーを割り当てる権限がありません。';
+$string['error:permission:appraisalcycle:start'] = 'あなたは新しいアプレイザルサイクルを開始する権限がありません。';
+$string['error:permission:appraisalcycle:update'] = 'あなたはアプレイザルサイクルを更新する権限がありません。';
+$string['error:toggleassign:confirm:assign'] = 'ユーザーはこのアプレイザルサイクルに設定され、アプレイザルを始める必要があります。<br />
+
+ユーザーはこのサイクルに以前アーカイブされたアプレイザルがある場合、その記録を再起動されます。アーカイブ記録のない場合、「Initialise」のページからアプレイザルを作成可能です。<br />
+
+続行してもよろしいですか。<br />{$a->yes} {$a->no}';
+$string['error:toggleassign:confirm:unassign'] = 'このユーザーは現在のアプレイザルサイクルから削除されアプレイザル不要とされました。以下「はい」の場合は、理由の明記してください。<br />続行してもよろしいですか。<br />{$a->yes} {$a->no}';
+$string['error:toggleassign:confirm:unassign:appraisalexists'] = '注意：このユーザーはシステム上で既存のアプレイザル記録があります。<br />
+
+続行すると、ステータスにより既存のアプレイザルが（記入中の場合）アーカイブされ、（未開始の場合）削除されます。そのため、今後は編集することはできません。<br />
+
+このユーザーは現在のアプレイザルサイクルから削除されアプレイザル不要とされました。以下「はい」の場合は、理由の明記してください。<br />
+
+続行してもよろしいですか。<br />{$a->yes} {$a->no}';
+$string['error:toggleassign:reason'] = 'このユーザーがアプレイザルの不要な理由を記入してください。
+
+
+{$a->reasonfield} {$a->continue} {$a->cancel}';
+$string['error:toggleassign:reason:cancel'] = 'キャンセルする';
+$string['error:togglerequired:confirmnotrequired'] = 'このユーザーを設定の場合、アプレイザル不要に変更すると、現在のアプレイザルサイクルから削除されます。<br />
+
+このユーザーは、アプレイザルサイクルに進行中のアプレイザルがありません。<br />
+
+続行してもよろしいですか。<br />{$a->yes} {$a->no}';
+$string['error:togglerequired:confirmnotrequired:appraisalexists'] = '注意：このユーザーはシステム上で既存のアプレイザル記録があります。<br />
+
+続行すると、ステータスにより既存のアプレイザルが（記入中の場合）アーカイブされ、（未開始の場合）削除されます。そのため今後は編集することはできません。<br />
+
+このユーザーはアプレイザルサイクルからも削除されます。<br />
+
+続行してもよろしいですか。<br />{$a->yes} {$a->no}';
+$string['error:togglerequired:confirmrequired'] = 'このユーザーはアプレイザルを必要に変更すると、現在のアプレイザルサイクルに設定されます。<br />
+
+このサイクルに以前アーカイブされたアプレイザルがある場合、その記録が再起動されます。アーカイブの記録がない場合、「Initialise」のページからアプレイザルを作成可能です。<br />
+
+続行してもよろしいですか。 <br />{$a->yes} {$a->no}';
+$string['error:togglerequired:reason'] = 'このユーザーがアプレイザルの不要な理由を記入してください。{$a->reasonfield} {$a->continue} {$a->cancel}';
+$string['error:togglerequired:reason:cancel'] = 'キャンセルする';
+$string['error:togglerequired:reason:continue'] = '継続する';
+$string['feedback_header'] = '{$a->appraisee_fullname}さんにフィードバックを記入する (評価者: {$a->appraiser_fullname}さん - アプレイザルミーティングの実施日: {$a->facetofacedate})';
+$string['feedback_intro'] = '情報提供者を3人以上選んでください。社内外いずれから選んでも可能な場合がほとんどですが、詳しくは各リージョンの指示に従ってください。<br/><br/> リージョン内の情報提供者については、「360度評価」という観点でフィードバックを得るようにしてください。すなわち、同期だけでなく自分より経験の長い同僚、短い同僚も情報提供者として選んでください。<br/><br/> </div> <div data-visible-regions="East Asia"><br /><div class="alert alert-warning">EAリージョンにおいては、社内にのみフィードバックを依頼するようお願いします。外部のクライアントもしくはパートナーからのコメントは社内関係者を通じてフィードバックされることが期待されます。</div></div>
+ <br /><div class="alert alert-danger"> 注意：あなたが選んだ情報提供者からのフィードバックは、頂いた次第ここに公開されます。評価者から依頼されたフィードバックを開示されるには、アプレイザルミーティング後、あなたが最終コメントを入力できるよう評価者がアプレイザルをあなたに返却する（ステージ3）ことが必要です。</div>';
+$string['feedbackrequests:paneltitle:requestmail'] = '依頼メールの内容';
+$string['form:addfeedback:addfeedback'] = '過去１２ヶ月間に、あなたが被評価者の貢献に対して評価する分野を３つ記述してください。';
+$string['form:addfeedback:addfeedback_2'] = 'あなたは被評価者がより効果的にこなすべきだと考えている分野を３つ記述してください。このフィードバックは被評価者が問題をより効果的に解決するのに役立つため、正直かつ建設的な評価をお願いします。';
+$string['form:addfeedback:addfeedback_2help'] = '<div
+class="well well-sm">皆さんに正直かつ建設的な観点を含め、貴重なバランスのとれた評価をいただくことが大切です。<br>詳しく は<a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf"target="_blank">こちら</a> をご覧ください</div>';
+$string['form:addfeedback:addfeedback_help'] = '受取ったフィードバックの内容を2つのボックスに分けられない場合、メールからコピーして上の「被評価者の貢献に対して評価」ボックスにそのまま貼り付けてください。';
+$string['form:addfeedback:addfeedbackhelp'] = '<div class="well well-sm">皆さんに正直かつ建設的な観点を含め、貴重なバランスのとれた評価をいただくことが大切です。<br>詳しく は<a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf"target="_blank">こちら</a> をご覧ください</div>';
+$string['form:addfeedback:firstname'] = '情報提供者のファーストネーム';
+$string['form:addfeedback:lastname'] = '情報提供者のラストネーム';
+$string['form:addfeedback:saveddraft'] = 'あなたはフィードバックの下書きを保存しました。フィードバックを提出するまでは評価者、又は被評価者が閲覧できません。';
+$string['form:addfeedback:savedraftbtn'] = '下書きを保存する';
+$string['form:addfeedback:savedraftbtntooltip'] = '下書きを保存します。この下書きは評価者、又は被評価者に送信しません。';
+$string['form:addfeedback:savefeedback'] = 'フィードバックを保存する';
+$string['form:development:comments'] = '評価者のコメント';
+$string['form:development:commentshelp'] = '<div class="well well-sm"><em>評価者が入力してください。</em></div>';
+$string['form:feedback:editemail'] = '編集する';
+$string['form:feedback:providefirstnamelastname'] = '「編集する」ボタンをクリックする前に受信者の氏名を記入してください。';
+$string['form:lastyear:cardinfo:performancelink'] = '去年度のインパクトプラン';
+$string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">去年度のアプレイザル</a> は閲覧できます
+
+(PDFファイル - 新しいウィンドウで開く)。';
+$string['form:summaries:grpleader'] = '5.5  リーダーによるまとめ';
+$string['form:summaries:grpleadercaption'] = '{$a->fullname}さんが{$a->date}に記入しました';
+$string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>リーダーが入力し、アプレイザルの承認を終了してください。</em></div>';
+$string['form:userinfo:setf2f'] = 'アプレイザルミーティングの日時を設定する';
+$string['leadersignoff'] = 'リーダーが承認';
+$string['modal:printconfirm:cancel'] = 'いいえ、大丈夫です';
+$string['modal:printconfirm:content'] = 'あなたはこの本当にこのファイルをプリントしますか？';
+$string['modal:printconfirm:continue'] = 'はい、進んでください';
+$string['modal:printconfirm:title'] = 'プリントした紙は大切に保管しましょう';
+$string['overview:content:appraisee:3'] = '{$a->styledappraisername}にアプレイザルのドラフトを提出しました。
+<br /><br /> <strong>手順の流れ：</strong> <ul class="m-b-20"> <li>アプレイザルミーティングを行います。事前に以下の資料をダウンロードすることをお勧めします。</li> <ul class="m-b-0"> <li><a class="oa-print-confirm" href="{$a->printappraisalurl}">アプレイザル</a></li> <li><a href="https://moodle.arup.com/appraisal/reference" target="_blank">クイックリファレンスガイド</a></li> </ul> <liミーティング後、評価者がアプレイザルをあなたに返却します。ミーティング中で合意した項目に応じて変更するか、最終コメントを入力するか、いずれかをお願いします。</li> </ul> <div class="alert alert-danger"role="alert"><strong>注意：</strong> 引き続きアプレイザルの変更は可能ですが、その際は変更した項目をアクティビティログに明記してください。</div>';
+$string['overview:content:appraisee:7:groupleadersummary'] = 'あなたのアプレイザルが完了し、リーダーがレビュー及びまとめを作成中です。完了次第、通知されます。';
+$string['overview:content:appraiser:3'] = '{$a->styledappraiseename} がアプレイザルミーティングに備えてアプレイザルのドラフトを提出しました。<br /><br /> </strong> <ul class="m-b-20"> <li> アプレイザルミーティングまでにアプレイザルをレビューしてください。内容の追加が必要な場合、アプレイザルを被評価者に返却してください</li> <li> 事前に以下の資料をダウンロードすることをお勧めします。</li> <ul class="m-b-0"> <li><a class="oa-print-confirm" href="{$a->printappraisalurl}">  アプレイザル</a></li> <li><a class="oa-print-confirm" href="{$a->printfeedbackurl}">フィードバック</a></li> <li>クイックリファレンスガイド<a href="https://moodle.arup.com/appraisal/reference" target="_blank"> </a></li> </ul> <li>ミーティング後、下記の通り進めてください。</li> <ul class="m-b-0"> <li>被評価者情報」のページでアプレイザルミーティングの終了を入力</li> <li>自分のコメントを各セクションに入力</li> <li>「要約」のセクションに自分の要約と合意されたアクションを入力
+（必要であれば、アプレイザルを被評価者に返却し、被評価者が変更した後にコメントを入力。）</ul> <li>被評価者に提出します。被評価者があなたのコメントをレビューし、フィードバックを読み、最終コメントを入力します。</li> </ul>';
+$string['overview:content:appraiser:7:groupleadersummary'] = 'あなたのアプレイザルが完了し、リーダーがレビュー及びまとめを作成中です。完了次第、通知されます。';
+$string['overview:content:groupleader:2'] = 'アプレイザルを進行中です';
+$string['overview:content:groupleader:3'] = 'アプレイザルを進行中です';
+$string['overview:content:groupleader:4'] = 'アプレイザルを進行中です';
+$string['overview:content:groupleader:6'] = 'アプレイザルを進行中です';
+$string['overview:content:groupleader:7'] = 'アプレイザルが承認され終了しました';
+$string['overview:content:groupleader:7:groupleadersummary'] = 'このアプレイザルは完了しています。レビュー及びまとめの入力をお願いします。<br /><br /> <strong> 手順の流れ：</strong> <ul class="m-b-20"> <li> Summariesセクションにまとめを追記し、保存してください。</li> <li>「承認する」ボタンをクリックします。</li> <li> あなたがコメントを追記次第、被評価者、評価者及び承認者に通知されます。</li> </ul>';
+$string['overview:content:groupleader:7:groupleadersummary:generic'] = 'アプレイザルが完了し、リーダーがレビュー及びまとめを作成中です。';
+$string['overview:content:signoff:7:groupleadersummary'] = 'アプレイザルが完了し、リーダーがレビュー及びまとめを作成中です。完了次第、通知されます。';
+$string['overview:content:special:archived:groupleader:2'] = '<div class="alert alert-danger" role="alert">このアプレイザルはアーカイブされました。<br /> あなたはそれ以上の操作権限がありません。</div>';
+$string['overview:lastsaved'] = '最終保存日：{$a}';
+$string['overview:lastsaved:never'] = '保存されたことがありません';
+$string['pdf:feedback:confidentialhelp:appraisee'] = '# フィードバックはまだあなたに開示されていません。';
+$string['pdf:feedback:notyetavailable'] = 'まだ閲覧できません。';
+$string['pdf:feedback:requestedfrom'] = 'レビュー担当者{$a->firstname} {$a->lastname}{$a->appraiserflag}{$a->confidentialflag}:';
+$string['pdf:feedback:requestedhelp'] = '* 評価者に依頼されたフィードバックはまだ閲覧できません。';
+$string['pdf:form:summaries:grpleader'] = 'リーダーによるまとめ';
+$string['pdf:header:warning'] = 'ダウンロードの記録：{$a->who}さんが{$a->when}<br>にダウンロードしました
+
+保管場所に気を付けて下さい。';
+$string['status:7:leadersignoff'] = 'リーダーが承認';
+$string['success:appraisalcycle:assign'] = '{$a} さんが現在のアプレイザルサイクルに設定されました。';
+$string['success:appraisalcycle:assign:reactivated'] = '{$a} さんが現在のアプレイザルサイクルに設定されました。
+以前に開始されたアプレイザルが再起動されました。';
+$string['success:appraisalcycle:lock'] = 'チェックしたユーザーがこのアプレイザルサイクルに設定されました。';
+$string['success:appraisalcycle:start'] = 'アプレイザルサイクルが開始されました。ユーザーの設定が可能です。';
+$string['success:appraisalcycle:unassign'] = '{$a} さんがこのアプレイザルサイクルから外されました。<br />アプレイザル不要とマークされました。';
+$string['success:appraisalcycle:unassign:suspended'] = '{$a}さんがこのアプレイザルサイクルから外されました。<br />アプレイザルは不要とされました。<br />このユーザーが退職者として設定され、未設定ユーザーリストに表示されません。';
+$string['success:appraisalcycle:update'] = '初期設定の期限を更新しました。';
+
+$string['overview:content:groupleader:8'] = $string['overview:content:groupleader:7']; // For legacy where there was a six month status.
+$string['overview:content:groupleader:9'] = $string['overview:content:groupleader:7'];

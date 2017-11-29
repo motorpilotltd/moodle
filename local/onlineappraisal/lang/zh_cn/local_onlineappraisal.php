@@ -44,12 +44,6 @@ $string['form:userinfo:setf2f'] = 'Set your face to face meeting time and date';
 
 // Introduction Page
 $string['appraisee_heading'] = '欢迎参加在线员工评议';
-$string['appraisee_welcome'] = '你的员工评议是次机会，让你和你的评议人关于你的工作绩效和发展有一次宝贵的谈话。<br /><br />
-在线评议工具的目的是帮助你记录谈话，并可以全年参阅。<br /><br />
-点击右边的图像看Gregory Hodkinson介绍的信息<br /><br />
-可以在<a href="https://moodle.arup.com/appraisal/essentials" target="_blank">此处</a>找到有关评议过程的进一步信息';
-
-$string['introduction:video'] = '<img src="https://moodle.arup.com/scorm/_assets/Gregory_Hodkinson.jpg" alt="Changes to Appraisal" onclick="window.open(\'https://moodle.arup.com/scorm/_assets/intro.pdf\', \'_blank\');"/>';
 
 // Last Year Review
 $string['form:lastyear:title'] = 'Section 1: Review of last year';
@@ -92,8 +86,6 @@ $string['form:lastyear:cardinfo:heading'] = 'Import from last year';
 $string['form:lastyear:cardinfo:competency'] = 'Competency';
 $string['form:lastyear:cardinfo:progress'] = 'Progress Required';
 $string['form:lastyear:cardinfo:action'] = 'Action Required';
-$string['form:lastyear:cardinfo:developmentlink'] = 'Last Year Development';
-$string['form:lastyear:cardinfo:performancelink'] = 'Last Year Performance';
 $string['form:lastyear:cardinfo:none'] = 'You do not have any information from last year available.';
 
 // Career Direction
@@ -205,9 +197,6 @@ $string['form:summaries:appraisee'] = '5.3 被评议人评语';
 $string['form:summaries:appraiseehelp'] = '<div class="well well-sm"><em>由被评议人完成</em></div>';
 $string['form:summaries:signoff'] = '5.4 总结签署';
 $string['form:summaries:signoffhelp'] = '<div class="well well-sm"><em>由团队负责人或指定人员完成签署</em></div>';
-$string['form:summaries:grpleader'] = '5.5 领导总结评语';
-$string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>由高层领导完成。</em></div>';
-$string['form:summaries:grpleadercaption'] = '由{$a->fullname}{$a->date}完成';
 
 //APPRAISEE EMAIL
 //$string['email:subject:summaries:groupleaderemail:appraisee'] = '领导的评语已添加到你的评议';
@@ -233,28 +222,18 @@ $string['checkin:delete:failed'] = 'Failed to delete check-in';
 $string['checkin:update'] = 'Update';
 
 // Feedback contribution
-$string['feedback_header'] = '给予被评议人你的反馈{$a->appraisee_fullname}';
 $string['confidential_label_text'] = '勾选此框可以保密您的意见。如果不勾选此框，您的意见将于被评议人共享。';
-
-$string['feedback_intro'] = '请选择三个或更多的同事，能够对你的评价反馈。在大多数地区这种反馈可以是内部或外部的。请参阅你所在地区的具体指导。<br/><br/>  对于内部反馈者，你应考虑从"360 度 反馈"的角度来收集反馈意见，即同级，级别比你高和比你低的同事。你必须选择混合人群。<br/><br/>其中有一个反馈者可以是外部客户或非常了解你的合作者。<div data-visible-regions="East Asia"><br />在东亚地区，我们希望反馈来自于公司内部。外部客户和合作者的评语应通过内部员工得以反馈。</div> <br /><br /> <div class="alert alert-danger"> 注：除非反馈者选择了保密，在面谈会议过后你，反馈信息会在这里公布。</div>';
 
 // Feedback email - Appraisee
 $string['email:subject:appraiseefeedback'] = '我的员工评议反馈意见请求';
-$string['email:body:appraiseefeedbackmsg'] = '<p>尊敬的 <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
-<p>我的员工评议即将开始。因为您和我在过去一年一直密切合作，我希望您能给予我在贡献和您觉得我可以更有效方面的反馈。如果您同意，请点击下面的链接提供您的反馈意见。</p> <p>我的评议面谈是在<span class="placeholder">{{held_date}}</span>，请在此日期之前回复。</p>
-<p>以下是<span class="placeholder">{{appraisee_fullname}}</span>的其他意见：<br /> <span>{{emailtext}}</span></p>
-<p>此致，<br />
-<span class="placeholder">{{appraisee_fullname}}</span></p>';
 
 // Feedback email - Appraiser
 $string['email:subject:appraiserfeedback'] = '{{appraisee_fullname}}的员工评议反馈意见请求';
-$string['email:body:appraiserfeedbackmsg'] = '<p>尊敬的<span class="placeholder bind_firstname">{{firstname}}</span>,</p> <p>我现正在为<span class="placeholder">{{appraisee_fullname}}</span>做员工评议。因为您和他们在过去一年一直密切合作，我希望您能给予他们在贡献和你觉得他们可以更有效方面的反馈。如果您同意，请点击下面的链接提供您的反馈意见。</p> <p>他们的评议是 <span class="placeholder">{{held_date}}</span>，请在此日期之前回复。</p> <p>在面谈会议后你的反馈会与<span class="placeholder">{{appraisee_fullname}}</span>分享，除非你在提交时勾选保密框。</p> <p>以下是<span class="placeholder">{{appraiser_fullname}}</span>的其他意见：<br /> <span>{{emailtext}}</span></p> <p>此致，<br /> <span class="placeholder">{{appraiser_fullname}}</span></p>';
 
 // PDF Strings
 $string['pdf:form:summaries:appraisee'] = '被评议人评语';
 $string['pdf:form:summaries:appraiser'] = '评议人总结工作绩效';
 $string['pdf:form:summaries:signoff'] = '总结签署';
-$string['pdf:form:summaries:grpleader'] = '领导总结评语';
 $string['pdf:form:summaries:recommendations'] = '议定的行动';
 
 // END FORM
@@ -281,18 +260,6 @@ $string['overview:content:appraisee:2:3'] = '评议人已要求对你的评议�
     <li>与{$a->styledappraisername}共享你的草稿</li>
 </ul>';
 
-$string['overview:content:appraisee:3'] = '你现在已经提交你的评议草稿到 {$a->styledappraisername} 审阅。<br /><br />
-<strong>下一步：</strong>
-<ul class="m-b-20">
-    <li>在面谈会议前你希望：</li>
-    <ul class="m-b-0">
-        <li><a href="{$a->printappraisalurl}" target="_blank">下载评议表</a></li>
-        <li><a href="https://moodle.arup.com/appraisal/reference" target="_blank">下载快速参考指南</a></li>
-    </ul>
-    <li>面谈会议后，评议人会返还评议表给你。你会要求按照面谈会议中商定的内容作修改，或填写你最终的评论。</li>
-</ul>
-<div class="alert alert-danger" role="alert"><strong>注：</strong>评议人在审阅你的评议时你可以继续修改，但是建议你在Activity Log上注明你所做的修改。</div>';
-
 $string['overview:content:appraisee:3:4'] = '你已经将评议回复给了 [评议人姓名]并让他们进行更改。<br /><br /> 当他们更新了评议，你将会收到做再次审阅的通知。<br /><br /> <div class="alert alert-danger" role="alert"><strong>注：</strong> 评议人在审阅你的评议时你可以继续修改，但是建议你在Activity Log上注明你所做的修改。</div>';
 
 $string['overview:content:appraisee:4'] = '{$a->styledappraisername}现已加注他们的评语并已回复给你。<br /><br />
@@ -315,7 +282,6 @@ $string['overview:content:appraisee:6'] = '你的评议已发送给{$a->styledsi
 <div class="alert alert-danger" role="alert"><strong>注：</strong>你的评议已锁定不能再修改。</div>';
 
 $string['overview:content:appraisee:7'] = '你的评议以完成。你可以任何时间通过点击“下载评议表”按键下载PDF格式的评议表。';
-$string['overview:content:appraisee:7:groupleadersummary'] = '你的评议已完成，等待领导的审阅和总结评语。你会收到相关通知。';
 $string['overview:content:appraisee:8'] = $string['overview:content:appraisee:7']; // For legacy where there was a six month status.
 $string['overview:content:appraisee:9'] = $string['overview:content:appraisee:7']; // When Groupleader added summary.
 
@@ -326,26 +292,6 @@ $string['overview:content:appraiser:2'] = '{$a->styledappraiseename}正在起草
 
 $string['overview:content:appraiser:2:3'] = '你已经将评议回复给了{$a->styledappraiseename}并让他们修改。当他们更新了评议，你将会收做再次审阅的通知。<br /><br />
 <div class="alert alert-danger" role="alert"><strong>注：</strong>你仍然可以修改你填写的部分。</div>';
-
-$string['overview:content:appraiser:3'] = '{$a->styledappraiseename}已经提交评议草稿准备面谈会议。<br /><br />
-<strong>下一步：</strong>
-<ul class="m-b-20">
-    <li>请审阅评议草稿准备会议。是否要回复评议草稿给评议人要求补充信息。</li>
-    <li>会议前你应该</li>
-    <ul class="m-b-0">
-        <li><a href="{$a->printappraisalurl}" target="_blank">下载评议表</a></li>
-        <li><a href="{$a->printfeedbackurl}" target="_blank">下载收到的反馈</a></li>
-        <li>也可以<a href="https://moodle.arup.com/appraisal/reference" target="_blank">下载快速参考指南</a></li>
-    </ul>
-    <li>面谈会议后请</li>
-    <ul class="m-b-0">
-        <li>在被评议人信息栏上标注面谈会议已进行</li>
-        <li>在每一栏填上你的评语</li>
-        <li>填写你的总结和在总结环节中商定的行动计划</li>
-        （如有需要可以在你写评语前，回复评议表让评议人做修改）
-    </ul>
-    <li>发送给被评议人，让他们查阅你的评语，反馈，并做最终评论。</li>
-</ul>';
 
 $string['overview:content:appraiser:3:4'] = '{$a->styledappraiseename}已要求修改他们的评议。<br /><br />
 <strong>下一步：</strong>
@@ -370,7 +316,6 @@ $string['overview:content:appraiser:6'] = '你现已提交完成评议给 {$a->s
     <div class="alert alert-danger" role="alert"><strong>注：</strong>你的评议已锁定不能再修改。</div>';
 
 $string['overview:content:appraiser:7'] = '评议表已完成并已签署。';
-$string['overview:content:appraiser:7:groupleadersummary'] = '你的评议已完成，等待领导的审阅和总结评语。你会收到相关通知。';
 
 $string['overview:content:appraiser:8'] = $string['overview:content:appraiser:7']; // For legacy where there was a six month status.
 $string['overview:content:appraiser:9'] = $string['overview:content:appraiser:7']; // When Groupleader added summary.
@@ -390,27 +335,12 @@ $string['overview:content:signoff:6'] = '{$a->styledappraiseename} 的评议已�
 </ul>';
 
 $string['overview:content:signoff:7'] = '评议表已完成并已签署。';
-$string['overview:content:signoff:7:groupleadersummary'] = '你的评议已完成，等待领导的审阅和总结评语。你会收到相关通知。';
 
 $string['overview:content:signoff:8'] = $string['overview:content:signoff:7']; // For legacy where there was a six month status.
 $string['overview:content:signoff:9'] = $string['overview:content:signoff:7']; // When groupleader added summary.
 
 // Overview page GROUP LEADER Content.
 $string['overview:content:groupleader:1'] = ''; // Never seen...
-$string['overview:content:groupleader:2'] = '评议在进行中。';
-$string['overview:content:groupleader:3'] = '评议在进行中。';
-$string['overview:content:groupleader:4'] = '评议在进行中。';
-$string['overview:content:groupleader:5'] = '评议在进行中。';
-$string['overview:content:groupleader:6'] = '评议在进行中。';
-$string['overview:content:groupleader:7'] = '评议表已完成并已签署。';
-$string['overview:content:groupleader:7:groupleadersummary'] = '评议已完成，等待你的审阅和总结评语。<br /><br />
-<strong>下一步:</strong>
-<ul class="m-b-20">
-    <li>请在Summaries处添加你的领导总结评语并保存。</li>
-    <li>被评议人，评议人和签署人都会收到相关通知。</li>
-</ul>';
-$string['overview:content:groupleader:8'] = $string['overview:content:groupleader:7']; // For legacy where there was a six month status.
-$string['overview:content:groupleader:9'] = $string['overview:content:groupleader:7'];
 
 // Overview page buttons.
 $string['overview:button:appraisee:2:extra'] = '开始完成你的员工评议。';
@@ -505,7 +435,6 @@ $string['form:addfeedback:sendemailbtn'] = '发送评议反馈';
 $string['form:addfeedback:title'] = 'Feedback Contribution';
 $string['form:addfeedback:closed'] = '提交您的反馈意见的窗口现已关闭';
 $string['form:addfeedback:submitted'] = '反馈意见已提交';
-$string['form:addfeedback:addfeedback'] = '请从三个方面评价被评议人在过去12个月内的贡献。再最多从三个方面提议你觉得可以做得更有效的。诚实，但要建设性的评批，因为这些反馈将帮助你的同事更有效地处理问题。';
 $string['form:feedback:alert:cancelled'] = '发送取消了，你的评议反馈意见请求未发送。';
 $string['form:feedback:alert:error'] = '对不起，发送你的评议反馈意见请求时发生错误。';
 $string['form:feedback:alert:saved'] = '你的评议反馈意见请求发送成功。';
@@ -517,7 +446,6 @@ $string['form:feedback:sendemailbtn'] = 'Send email to Contributor';
 $string['form:feedback:title'] = 'Feedback - Add a new Contributor';
 $string['form:lastyear:file'] = '被评议人已上传回顾文件：{文件}';
 $string['form:lastyear:cardinfo:developmentlink'] = '去年的发展计划';
-$string['form:lastyear:cardinfo:performancelink'] = '去年的绩效';
 $string['feedbackrequests:description'] = '此列表清单显示了您未回复的反馈请求，您可以访问您已经回复的反馈。';
 $string['feedbackrequests:outstanding'] = '未回复的反馈请求';
 $string['feedbackrequests:norequests'] = '没有未回复的反馈请求';
@@ -569,3 +497,164 @@ $string['comment:status:7_to_9'] = '领导的评语已 由{$a->relateduser}补�
 //$string['email:subject:status:6_to_7:groupleader'] = '({{appraiseefirstname}} {{appraiseelastname}})的评议可以审阅了';
 
 //$string['email:replacement:comment'] = '<p>我的评语：<br />{$a}</p>';
+
+// 2017 : Updates and additions.
+$string['addreceivedfeedback'] = '添加反馈意见';
+$string['admin:allstaff:assigned'] = '已指派加入本轮员工评议';
+$string['admin:allstaff:assigned:none'] = '未指派用户加入本轮员工评议';
+$string['admin:allstaff:button:lock'] = '指派用户加入员工评议';
+$string['admin:allstaff:button:start'] = '开始员工评议';
+$string['admin:allstaff:button:update'] = '更新默认到期日';
+$string['admin:allstaff:notassigned'] = '未指派加入本轮员工评议';
+$string['admin:allstaff:notassigned:none'] = '所有用户已指派加入本轮员工评议';
+$string['admin:allstaff:nousers'] = '本组没有动态用户';
+$string['admin:appraisalcycle:assign'] = '指派';
+$string['admin:appraisalcycle:assign:tooltip'] = '指派用户加入员工评议';
+$string['admin:appraisalcycle:closed'] = '本轮员工评议已结束，本轮所有评议表已存档。';
+$string['admin:appraisalcycle:unassign'] = '取消';
+$string['admin:appraisalcycle:unassign:tooltip'] = '取消用户的员工评议';
+$string['admin:appraisalnotrequired:noreason'] = '未设置理由';
+$string['admin:appraisalvip'] = 'VIP员工评议';
+$string['admin:confirm:lock'] = '你确定要指派已标记的用户并锁定员工评议用户列表吗？';
+$string['admin:confirm:start'] = '你确定要启动新一轮的员工评议吗？';
+$string['admin:duedate:default'] = '默认到期日';
+$string['admin:leaver'] = '用户不再是在职员工';
+$string['admin:lockingdots'] = '指派中';
+$string['admin:requiresappraisal'] = '需要员工评议';
+$string['admin:start'] = '启动员工评议';
+$string['admin:toptext:allstaff:closed'] = '<div class="alert alert-danger">{$a}年员工评议已关闭.</div>                                                                                                                                                                                                                                                                                                                                                                  本轮评议已关闭，不能再做任何变更。';
+$string['admin:toptext:allstaff:notclosed'] = '<div class="alert alert-success">{$a} 年员工评议已开放</div><p>
+此列表显示了在Moodle中与上述成本中心相对的所有用户。如果列表中有任何差异，请联系人力资源部门查看TAPS记录。</p><p>                                                                                                                                                                        使用下面已指派和未指派的列表来添加或删除本轮员工评议的用户。新进员工不会自动添加，需要指派才可以加入员工评议。                                                                                                                                                  离职员工的员工评议（已指派的）都将显示为灰色，除非你将其从本轮评议中删除。 要创建员工评议，请使用导航框中的“初始化”选项。</p>';
+$string['admin:toptext:allstaff:notlocked'] = '<div class="alert alert-warning">{$a}年新一轮的员工评议还未指派。</div><p>                                                                                                                                                                                                                                                                                                                                                                                     此列表显示了在Moodle中与上述成本中心相对的所有用户。如果列表中有任何差异，请联系人力资源部门查看TAPS记录。</p><p>                                                                                                                                                                                           在点击页面底部的“指派员工评议”按钮之前，请检查并标记用户是否需要加入新一轮员工评议，以便初始化员工评估。（注意：在选择本轮员工评议时，可以在全体员工页面随时调整）。</p>';
+$string['admin:toptext:allstaff:notstarted'] = '<div class="alert alert-warning"> {$a} 年新一轮的员工评议未开始。</div> 在开始新一轮的员工评议时，所有本组当前评议将存档。 一旦存档，你将可以指派本轮的员工评议，然后移至初始页面起始员工评议。请在点击“开始员工评议”按钮之前添加评议的默认截止日期。';
+$string['admin:updatingdots'] = '更新中';
+$string['admin:usercount:assigned'] = '({$a}用户)';
+$string['admin:usercount:notassigned'] = '({$a}用户)';
+$string['appraisee_feedback_savedraft_error'] = '尝试保存草稿时出现错误';
+$string['appraisee_feedback_savedraft_success'] = '反馈草稿已保存';
+$string['appraisee_feedback_viewrequest_text'] = '查看请求电子邮件';
+$string['appraisee_welcome'] = '你的员工评议是次机会让你和你的评议人关于你的工作绩效和发展有一次宝贵的谈话。<br /><br /> 在线评议工具的目的是帮助你记录谈话并可以全年参阅。<br /><br /> 可以在 <a href="https://moodle.arup.com/appraisal/essentials" target="_blank"> 此处 </a> 找到有关评议过程的进一步信息';
+$string['appraisee_welcome_info'] = '你今年的员工评议期限为 {$a}。';
+$string['cohort'] = '员工评议周期';
+$string['email:body:appraiseefeedback'] = '{{emailmsg}}
+<br>
+<hr>
+<p>请单击 {{link}} 提供您的反馈。</p>
+<p>
+的员工评议 {{appraisee_fullname}}<br>
+
+我的评估是在<span class="placeholder"> {{held_date}} 开始</span></p>
+<p>
+
+这是一个自动生成的电子邮件, 由 {{appraisee_fullname}} 发送到 {{firstname}} {{lastname}}。</p>
+如果以上的链接无法连接到反馈页面，请将以下链接复制到您的浏览器访问评议系统';
+$string['email:body:appraiseefeedbackmsg'] = '尊敬的<span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+<p> 我的评议面谈是在<span class="placeholder">{{held_date}}</span>。我的评议人<span class="placeholder">{{appraiser_fullname}}</span>.。因为您和我在过去一年一直密切合作，我希望您能给予我在贡献价值和您觉得我可以更有效方面的反馈。如果您同意，请点击下面的链接提供您的反馈意见。.</p> <p> 非常感激您能在我评议面谈之前回复。</p>
+<p class="ignoreoncopy"> 以下是 的其他意见
+<span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
+<p>
+此致,<br />
+<span class="placeholder">{{appraisee_fullname}}</span></p>';
+$string['email:body:appraiserfeedback'] = '{{emailmsg}} <br> <hr> <p>请单 {{link}} 提供您的反馈。</p>
+<p>{{appraisee_fullname}}的员工评议 <br> 他们的评估是在 <span class="placeholder">{{held_date}}</span></p> <p> 开始这是一个自动生成的电子邮件, 由 {{appraiser_fullname}} 发送到 {{firstname}} {{lastname}}.</p> <p> 如果以上的链接无法连接到反馈页面，请将以下链接复制到您的浏览器访问评议系统:<br />{{linkurl}}</p>';
+$string['email:body:appraiserfeedbackmsg'] = '<p>尊敬的<span class="placeholder bind_firstname">{{firstname}}</span>,</p> <p> <span class="placeholder">{{appraisee_fullname}}</span> 的员工评议面谈安排在<span class="placeholder">{{held_date}}</span>。因为你们在过去一年一直密切合作，我希望您能给予他们在贡献价值和您觉得他们可以更有效方面的反馈。如果您同意，请点击下面的链接提供您的反馈意见。</p> <p> 非常感激您能在评议面谈之前回复。</p>
+<p class="ignoreoncopy"> 以下是的其他意见：<span class="placeholder">{{appraiser_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
+<p>此致，<br /> <span class="placeholder">{{appraiser_fullname}}</span></p>';
+$string['email:body:myfeedback'] = '<p>尊敬的{{recipient}},</p> <p>你提交了{{confidential}} 反馈如下{{appraisee}}:</p> <div>{{feedback}}</div> <div>{{feedback_2}}</div>';
+$string['email:subject:myfeedback'] = '你为{{appraisee}}作的评议反馈';
+$string['error:appraisalcycle:alreadylocked'] = '本轮员工评议已经指派用户';
+$string['error:appraisalcycle:alreadystarted'] = '本轮员工评议已经指派用户';
+$string['error:appraisalcycle:closed'] = '本轮评议已关闭，你不能再对其进行修改。';
+$string['error:appraisalcycle:groupcohort'] = '提交的组或评估周期信息无效。';
+$string['error:cohortold'] = '选定的员工评议不存在，也从未为该组建立过。';
+$string['error:cohortuser'] = '被评议人不需要参加本轮员工评议。';
+$string['error:permission:appraisalcycle:lock'] = '你没有权限将用户指派加入员工评议。';
+$string['error:permission:appraisalcycle:start'] = '你没有权限开始新一轮的员工评议。';
+$string['error:permission:appraisalcycle:update'] = '你没有权限更新员工评议';
+$string['error:toggleassign:confirm:assign'] = '这将指派用户到本轮员工评议，并将其标记为需要参加员工评议。<br />                                                                                                                                                                                                                                                                                     如果用户在此轮评议中有一个以前存档的评议，它将被重新激活，否则可以在初始页面上进行初始化。<br />                                                                                                                                                                                                          你确定要继续吗？                                                                                                                                                                                                                                                                                                                                                                              <br />{$a->yes} {$a->no}';
+$string['error:toggleassign:confirm:unassign'] = '用户将从本轮员工评议中取消指派, 并标记为不需要进行评议, 这将需要提供一个理由作以下确认。<br />
+你确定要继续吗？<br />{$a->yes} {$a->no}';
+$string['error:toggleassign:confirm:unassign:appraisalexists'] = '警告：系统为用户初始化了一个当前的员工评议。<br />                                                                                                                                                                                                                                              你可以根据情况 （即他们将不能再编辑），不断进行存档（如果有内容）或删除（如果还未开始）员工评议。<br />                                                                                                             此用户将从本轮员工评议中取消指派, 并标记为不需要进行评议, 这将需要提供一个理由作以下确认。<br />
+你确定要继续吗？<br />{$a->yes} {$a->no}';
+$string['error:toggleassign:reason'] = '请你确认此用户不需要员工评议的理由。                                                                                                                                                                                                                                                                                                                 {$a->reasonfield} {$a->continue} {$a->cancel}';
+$string['error:toggleassign:reason:cancel'] = '取消';
+$string['error:toggleassign:reason:continue'] = '继续';
+$string['error:togglerequired:confirmnotrequired'] = '如果将此用户更改为不需要进行评议, 则将其从本轮员工评议中取消指派即使已经加入。<br />                                                                                                                                              此用户在本轮员工评议中没有进行有效评议。 <br />                                                                                                                                                                                                                                                你确定要继续吗？ <br />{$a->yes} {$a->no}';
+$string['error:togglerequired:confirmnotrequired:appraisalexists'] = '警告：系统为用户初始化了一个当前的员工评议。<br />                                                                                                                                                                                                你可以根据情况 （即他们将不能再编辑），不断进行存档或删除员工评议。<br />                                                                                                                                                                                                                   此用户也将从本轮员工评议中取消指派。<br />
+你确定要继续吗？<br />{$a->yes} {$a->no}';
+$string['error:togglerequired:confirmrequired'] = '如果将此用户更改为需要进行评议，将指派他们加入本轮评议。<br /> 如果本轮评议中已有存档的评议，它将被重新激活，否则可以在初始页面上进行初始化。<br />                                                                                                                                                                                                          你确定要继续吗？<br />{$a->yes} {$a->no}';
+$string['error:togglerequired:reason'] = '请你确认此用户不需要员工评议的理由。                                                                                                                                                                                                                                                                       {$a->reasonfield} {$a->continue} {$a->cancel}';
+$string['error:togglerequired:reason:cancel'] = '取消';
+$string['feedback_header'] = '你的反馈给 {$a->appraisee_fullname}(评议人: {$a->appraiser_fullname} -评议日期: {$a->facetofacedate})';
+$string['feedback_intro'] = '请选择三个或更多的同事，能够对你的评价反馈。在大多数地区这种反馈可以是内部或外部的。请参阅你所在地区的具体指导。<br/><br/>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       对于内部反馈者，你应考虑从"360 度 反馈"的角度来收集反馈意见，即同级，级别比你高和比你低的同事。你必须选择混合人群。<br/><br/><div data-visible-regions="UKMEA, EUROPE, AUSTRALASIA"> 其中有一个反馈者可以是外部客户或非常了解你的合作者。</div>
+<div data-visible-regions="East Asia"><br /><div class="alert alert-warning">                                                                                                                                                                                                                                                                            对于东亚地区, 我们希望反馈仅来自公司内部。外部客户或合作者的评论应该通过公司内部人员来反馈。</div></div> <br /><div class="alert alert-danger">
+注: 除非是由评议人要求提供的反馈，你所请求的反馈信息将在收到后立即发布。否则，你的评议人必须在最后阶段（阶段3），发送给你评议表要你最终评论时显现反馈信息。</div>';
+$string['feedbackrequests:paneltitle:requestmail'] = '反馈请求电子邮件';
+$string['form:addfeedback:addfeedback'] = '请你从三个方面评价被评议人在过去12个月的表现。';
+$string['form:addfeedback:addfeedback_2'] = '请通过详细说明，你觉得在这三方面哪些可以做得更有效些。要诚实，但要建设性的-评议，因为这些反馈会帮助你的同事更有效地解决问题。';
+$string['form:addfeedback:addfeedback_2help'] = '<div class="well well-sm">重要的是, 所有员工都要接受有价值的、公正的反馈, <br> 包括积极的鼓励和批评。 <br>For
+further guidance please click <a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf"
+target="_blank"> here </a></div>';
+$string['form:addfeedback:addfeedback_help'] = '请将你收到的反馈信息复制并粘贴到 "有价值的贡献" 框中, 除非您能够区分 "有价值" 和 "更有效"。';
+$string['form:addfeedback:addfeedbackhelp'] = '<div class="well well-sm">重要的是, 所有员工都要接受有价值的、公正的反馈, <br> 包括积极的鼓励和批评。<br>For
+further guidance please click <a href="https://moodle.arup.com/scorm/_assets/ArupAppraisalGuidanceFeedback.pdf"
+target="_blank"> here </a></div>';
+$string['form:addfeedback:firstname'] = '反馈者名字';
+$string['form:addfeedback:lastname'] = '反馈者姓氏';
+$string['form:addfeedback:saveddraft'] = '你已保存了你反馈的草稿。                                                                                                                                                                                                                                                                                                         在你发送评议反馈前, 评议人和被评议人看不到你的反馈。';
+$string['form:addfeedback:savedraftbtn'] = '保存为草稿';
+$string['form:addfeedback:savedraftbtntooltip'] = '保存到草稿以便以后完成。这不会将你的反馈文件发送给评议人/被评议人';
+$string['form:addfeedback:savefeedback'] = '保存反馈';
+$string['form:development:comments'] = '评议人评语';
+$string['form:development:commentshelp'] = '<div class="well well-sm"><em> 由评议人完成 </em></div>';
+$string['form:feedback:editemail'] = '编辑';
+$string['form:feedback:providefirstnamelastname'] = '请在单击 "编辑" 按钮之前输入收件人的名字和姓氏。';
+$string['form:lastyear:cardinfo:performancelink'] = '去年的影响计划';
+$string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">去年的员工评议表</a>可以查阅                                                                                                                                                                                                                                                              (PDF - opens in new window).';
+$string['form:summaries:grpleader'] = '5.5 领导总结评语';
+$string['form:summaries:grpleadercaption'] = '由{$a->fullname}完成于{$a->date}';
+$string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>由高层领导完成最后签署</em></div>';
+$string['introduction:video'] = '<img src="https://moodle.arup.com/scorm/_assets/ArupAppraisal.png" alt="Arup Appraisal logo"/>';
+$string['leadersignoff'] = '领导签署';
+$string['modal:printconfirm:cancel'] = '不，没关系';
+$string['modal:printconfirm:content'] = '你确实需要打印此文档？';
+$string['modal:printconfirm:continue'] = '是的, 继续';
+$string['modal:printconfirm:title'] = '打印之前要三思';
+$string['overview:content:appraisee:3'] = '你现在已经提交你的评议草稿到 {$a->styledappraisername}审阅。<br /><br /> <strong> 下一步:</strong> <ul class="m-b-20"> <li>在面谈会议前你希望：</li> <ul class="m-b-0"> <li><a class="oa-print-confirm" href="{$a->printappraisalurl}">下载评议表</a></li> <li><a href="https://moodle.arup.com/appraisal/reference" target="_blank">下载快速参考指南</a></li> </ul> <li>面谈会议后，评议人会返还评议表给你。你会要求按照面谈会议中商定的内容作修改，或填写你最终的评论</li> </ul> <div class="alert alert-danger" role="alert"><strong>注：</strong>评议人再审阅你的评议时你可以继续修改，但是建议你在活动日志上注明你所做的修改。</div>';
+$string['overview:content:appraisee:7:groupleadersummary'] = '你的评议已完成，等待领导的审阅和总结评语。你会收到相关通知。';
+$string['overview:content:appraiser:3'] = '{$a->styledappraiseename} 已经提交评议草稿准备面谈会议。<br /><br /> <strong>下一步：</strong> <ul class="m-b-20"> <li>请审阅评议草稿准备会议。是否要回复评议草稿给评议人要求补充信息。</li>
+<li> 会议前你应该 </li> <ul class="m-b-0"> <li><a class="oa-print-confirm" href="{$a->printappraisalurl}">下载评议表 </a></li> <li><a class="oa-print-confirm" href="{$a->printfeedbackurl}">下载收到的反馈 </a></li> <li> 也许你要 <a href="https://moodle.arup.com/appraisal/reference" target="_blank">下载快速参考指南</a></li> </ul> <li> 在被评议人信息栏上标注面谈会议已进行</li> <ul class="m-b-0"> <li> 在每一栏填上你的评语</li> <li> 填写你的总结和在总结环节中商定的行动计划</li>（如有需要可以在你写评语前，回复评议表让评议人做修改）</ul> <li> 发送给被评议人，让他们查阅你的评语，反馈，并做最终评论。</li> </ul>';
+$string['overview:content:appraiser:7:groupleadersummary'] = '你的评议已完成，等待领导的审阅和总结评语。你会收到相关通知。';
+$string['overview:content:groupleader:2'] = '评议在进行中';
+$string['overview:content:groupleader:3'] = '评议在进行中';
+$string['overview:content:groupleader:4'] = '评议在进行中';
+$string['overview:content:groupleader:5'] = '评议在进行中';
+$string['overview:content:groupleader:6'] = '评议在进行中';
+$string['overview:content:groupleader:7'] = '评议表已完成并已签署';
+$string['overview:content:groupleader:7:groupleadersummary'] = '评议已完成，等待你的审阅和总结评语。<br /><br />
+<strong>下一步：</strong> <ul class="m-b-20"> <li>请在Summaries处添加你的领导总结评语。 </li> <li> 点击“签署”按键。</li> <li>被评议人，评议人和签署人都会收到相关通知。</li> </ul>';
+$string['overview:content:groupleader:7:groupleadersummary:generic'] = '你的评议已完成，等待领导的审阅和总结评语';
+$string['overview:content:signoff:7:groupleadersummary'] = '你的评议已完成，等待领导的审阅和总结评语。你会收到相关通知。';
+$string['overview:content:special:archived'] = '<div class="alert alert-danger" role="alert">本次员工评议已存档。<br />现在只可能下载员工评议表 <a class="oa-print-confirm" href="{$a->printappraisalurl}"> </a>.</div>';
+$string['overview:content:special:archived:appraisee'] = '<div class="alert alert-danger" role="alert"> 本次员工评议已存档。<br /> 现在只可能下载你的员工评议表。<a class="oa-print-confirm" href="{$a->printappraisalurl}"> </a>.</div>';
+$string['overview:content:special:archived:groupleader:2'] = '<div class="alert alert-danger" role="alert">本次员工评议已存档。<br />                                                                                                                                                                                                                                                                                         你无法访问做任何进一步的操作。</div>';
+$string['overview:lastsaved'] = '上次保存: {$a}';
+$string['overview:lastsaved:never'] = '从不';
+$string['pdf:feedback:confidentialhelp:appraisee'] = '标识对你来说不可见的“机密反馈”';
+$string['pdf:feedback:notyetavailable'] = '尚不可见的';
+$string['pdf:feedback:requestedfrom'] = '审核人{$a->firstname} {$a->lastname}{$a->appraiserflag}{$a->confidentialflag}：';
+$string['pdf:feedback:requestedhelp'] = '标识你的评议人要求的反馈，你还不能看到';
+$string['pdf:form:summaries:grpleader'] = '领导总结评语';
+$string['pdf:header:warning'] = '下载者：{$a->who}在{$a->when}<br>：                                                                                                                                                                                                                                                                                                                                   请不要在不安全的地方存档或丢放。';
+$string['status:7:leadersignoff'] = '领导签署';
+$string['success:appraisalcycle:assign'] = '{$a}已指派加入本轮员工评议';
+$string['success:appraisalcycle:assign:reactivated'] = '{$a}已指派加入本轮员工评议。                                                                                                                                                                                                                                                                                                                                                                                     他们以前开始的员工评议已经重新开启。';
+$string['success:appraisalcycle:lock'] = '被标记的用户已被指派加入本轮员工评议。';
+$string['success:appraisalcycle:start'] = '员工评议已开始，你可以指派用户加入。';
+$string['success:appraisalcycle:unassign'] = '{$a}已从本轮员工评议中移除。<br /> 并标记为不需要员工评议。';
+$string['success:appraisalcycle:update'] = '本轮员工评议默认截至日期已更新';
+
+$string['overview:content:groupleader:8'] = $string['overview:content:groupleader:7']; // For legacy where there was a six month status.
+$string['overview:content:groupleader:9'] = $string['overview:content:groupleader:7'];
