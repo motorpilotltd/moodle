@@ -49,8 +49,6 @@ $string['form:userinfo:facetofaceheld'] = 'アプレイザルミーティング�
 // Introduction Page
 $string['appraisee_heading'] = 'オンラインアプレイザルへようこそ';
 
-$string['introduction:video'] = '<img src="https://moodle.arup.com/scorm/_assets/Gregory_Hodkinson.jpg" alt="Changes to Appraisal" onclick="window.open(\'https://moodle.arup.com/scorm/_assets/intro.pdf\', \'_blank\');"/>';
-
 //Request Feedback.
 
 $string['feedback_send_copy'] = 'Email me a copy';
@@ -635,8 +633,7 @@ $string['error:togglerequired:reason'] = 'このユーザーがアプレイザ�
 $string['error:togglerequired:reason:cancel'] = 'キャンセルする';
 $string['error:togglerequired:reason:continue'] = '継続する';
 $string['feedback_header'] = '{$a->appraisee_fullname}さんにフィードバックを記入する (評価者: {$a->appraiser_fullname}さん - アプレイザルミーティングの実施日: {$a->facetofacedate})';
-$string['feedback_intro'] = '情報提供者を3人以上選んでください。社内外いずれから選んでも可能な場合がほとんどですが、詳しくは各リージョンの指示に従ってください。<br/><br/> リージョン内の情報提供者については、「360度評価」という観点でフィードバックを得るようにしてください。すなわち、同期だけでなく自分より経験の長い同僚、短い同僚も情報提供者として選んでください。<br/><br/> </div> <div data-visible-regions="East Asia"><br /><div class="alert alert-warning">EAリージョンにおいては、社内にのみフィードバックを依頼するようお願いします。外部のクライアントもしくはパートナーからのコメントは社内関係者を通じてフィードバックされることが期待されます。</div></div>
- <br /><div class="alert alert-danger"> 注意：あなたが選んだ情報提供者からのフィードバックは、頂いた次第ここに公開されます。評価者から依頼されたフィードバックを開示されるには、アプレイザルミーティング後、あなたが最終コメントを入力できるよう評価者がアプレイザルをあなたに返却する（ステージ3）ことが必要です。</div>';
+$string['feedback_intro'] = '情報提供者を3人以上選んでください。社内外いずれから選んでも可能な場合がほとんどですが、詳しくは各リージョンの指示に従ってください。<br/><br/>リージョン内の情報提供者については、「360度評価」という観点でフィードバックを得るようにしてください。すなわち、同期だけでなく自分より経験の長い同僚、短い同僚も情報提供者として選んでください。<br/><br/> <div data-visible-regions="UKMEA, EUROPE, AUSTRALASIA">One of your contributors might be an external client or collaborator who knows you very well.</div> <div data-visible-regions="East Asia"><br /><div class="alert alert-warning">EAリージョンにおいては、社内にのみフィードバックを依頼するようお願いします。外部のクライアントもしくはパートナーからのコメントは社内関係者を通じてフィードバックされることが期待されます。</div></div> <div data-visible-regions="Americas"><br /><div class="alert alert-warning">For the Americas Region, comments from external clients or collaborators should be fed back through conversations gathered outside of this feedback tool.</div></div> <br /><div class="alert alert-danger">注意：あなたが選んだ情報提供者からのフィードバックは、頂いた次第ここに公開されます。評価者から依頼されたフィードバックを開示されるには、アプレイザルミーティング後、あなたが最終コメントを入力できるよう評価者がアプレイザルをあなたに返却する（ステージ3）ことが必要です。</div>';
 $string['feedbackrequests:paneltitle:requestmail'] = '依頼メールの内容';
 $string['form:addfeedback:addfeedback'] = '過去１２ヶ月間に、あなたが被評価者の貢献に対して評価する分野を３つ記述してください。';
 $string['form:addfeedback:addfeedback_2'] = 'あなたは被評価者がより効果的にこなすべきだと考えている分野を３つ記述してください。このフィードバックは被評価者が問題をより効果的に解決するのに役立つため、正直かつ建設的な評価をお願いします。';
@@ -662,6 +659,7 @@ $string['form:summaries:grpleader'] = '5.5  リーダーによるまとめ';
 $string['form:summaries:grpleadercaption'] = '{$a->fullname}さんが{$a->date}に記入しました';
 $string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>リーダーが入力し、アプレイザルの承認を終了してください。</em></div>';
 $string['form:userinfo:setf2f'] = 'アプレイザルミーティングの日時を設定する';
+$string['introduction:video'] = '<img src="https://moodle.arup.com/scorm/_assets/ArupAppraisal.png" alt="Arup Appraisal logo"/>';
 $string['leadersignoff'] = 'リーダーが承認';
 $string['modal:printconfirm:cancel'] = 'いいえ、大丈夫です';
 $string['modal:printconfirm:content'] = 'あなたはこの本当にこのファイルをプリントしますか？';
