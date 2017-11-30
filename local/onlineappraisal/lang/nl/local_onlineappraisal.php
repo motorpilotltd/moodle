@@ -503,7 +503,6 @@ $string['form:lastyear:cardinfo:performancelink'] = 'Impact plan afgelopen jaar'
 $string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">Het appraisal van afgelopen jaar</a> s beschikbaar om in te zien.
 (PDF - opent in een nieuw scherm).';
 $string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>In te vullen door de senior manager om te voltooien.</em></div>';
-$string['helppage:intro'] = 'Klik op onderstaande knop voor toegang tot de Online Appraisal helppagina';
 $string['leadersignoff'] = 'Afmelding manager';
 $string['modal:printconfirm:cancel'] = 'Nee, het is goed';
 $string['modal:printconfirm:content'] = 'Is het echt nodig om dit document te printen?';
