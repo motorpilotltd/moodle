@@ -69,7 +69,6 @@ class searchform extends moodleform {
                     'noselectstring' => 'select'                                                      
                 );   
                 $mform->addElement('autocomplete', $filter->field, $filter->name, $options, $params);
-
                 $mform->setDefault($filter->field, '');
             } else if ($filter->type == 'date') {
                 $mform->addElement('date_selector', $filter->field, $filter->name);
