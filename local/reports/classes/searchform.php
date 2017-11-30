@@ -31,6 +31,8 @@ use stdClass;
 
 class searchform extends moodleform {
     
+    private $setfilters;
+
     public function definition() {
         global $OUTPUT;
         $data = $this->_customdata;
@@ -38,6 +40,7 @@ class searchform extends moodleform {
         $mform->addElement('hidden', 'page', $data->reportname);
         $mform->setType('page', PARAM_RAW);
         $filters = $data->filteroptions;
+        $this->setfilters = $data->setfilters;
 
         $count = -1;
         foreach ($filters as $filter) {
@@ -66,10 +69,11 @@ class searchform extends moodleform {
                     'noselectstring' => 'select'                                                      
                 );   
                 $mform->addElement('autocomplete', $filter->field, $filter->name, $options, $params);
+
                 $mform->setDefault($filter->field, '');
             } else if ($filter->type == 'date') {
                 $mform->addElement('date_selector', $filter->field, $filter->name);
-                $mform->setDefault($filter->field, '');
+                $this->setfilterdefault($filter);
             } else {
                 $mform->addElement('text', $filter->field, $filter->name);
                 if ($filter->type == 'int') {
@@ -103,5 +107,15 @@ class searchform extends moodleform {
         return $errors;
     }
 
-
+    function setfilterdefault($filter) {
+        $mform = $this->_form;
+        if (isset($this->setfilters[$filter->field])) {
+            $setvalue = $this->setfilters[$filter->field];
+            if (count($setvalue->value) == 1) {
+                $mform->setDefault($filter->field, $setvalue->value[0]);
+                return true;
+            }
+        } 
+        $mform->setDefault($filter->field, '');
+    }
 }
