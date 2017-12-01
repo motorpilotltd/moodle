@@ -80,7 +80,7 @@ class printer {
         }
 
         $this->pdf = new \local_onlineappraisal\pdf();
-        $this->pdf->SetProtection(['modify', 'copy', 'annot-forms', 'fill-forms', 'extract', 'assemble']);
+        $this->pdf->SetProtection(['modify', 'annot-forms', 'fill-forms', 'extract', 'assemble']);
     }
 
     /**
