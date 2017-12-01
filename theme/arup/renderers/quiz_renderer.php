@@ -138,11 +138,11 @@ class theme_arup_mod_quiz_renderer extends mod_quiz_renderer {
      * @param int $page the current page
      * @param bool $lastpage if true current page is the last page
      */
-    public function review_next_navigation(quiz_attempt $attemptobj, $page, $lastpage) {
+    public function review_next_navigation(quiz_attempt $attemptobj, $page, $lastpage, $showall = null) {
         if ($lastpage) {
             $nav = $this->finish_review_link($attemptobj);
         } else {
-            $nav = link_arrow_right(get_string('next'), $attemptobj->review_url(null, $page + 1), false, 'btn btn-primary');
+            $nav = link_arrow_right(get_string('next'), $attemptobj->review_url(null, $page + 1, $showall), false, 'btn btn-primary');
         }
         return html_writer::tag('div', $nav, array('class' => 'submitbtns'));
     }

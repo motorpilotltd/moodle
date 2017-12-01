@@ -3009,6 +3009,8 @@ function feedback_print_numeric_option_list($startval, $endval, $selectval = '',
  * @param stdClass $completed record from feedback_completed if known
  * @return void
  */
+/* BEGIN CORE MOD */
+// Major overhaul to send to specified users.
 function feedback_send_email($cm, $feedback, $course, $user, $completed = null) {
     global $CFG, $DB;
 
@@ -3020,27 +3022,30 @@ function feedback_send_email($cm, $feedback, $course, $user, $completed = null) 
         $user = $DB->get_record('user', array('id' => $user));
     }
 
+    $strcompleted = ucfirst(get_string('completed', 'feedback'));
+
     if ($feedback->anonymous == FEEDBACK_ANONYMOUS_NO) {
-		$user = $DB->get_record('user', array('id' => $userid));
 		$printusername = fullname($user);
 	} else {
 		$printusername = get_string('anonymous_user', 'feedback');
 	}
 
-    if ($groupmode == SEPARATEGROUPS) {
-        $groups = $DB->get_records_sql_menu("SELECT g.name, g.id
-                                               FROM {groups} g, {groups_members} m
-                                              WHERE g.courseid = ?
-                                                    AND g.id = m.groupid
-                                                    AND m.userid = ?
-                                           ORDER BY name ASC", array($course->id, $user->id));
-        $groups = array_values($groups);
+	$info = new stdClass();
+	$info->username = $printusername;
+	$info->feedback = format_string($feedback->name, true);
 
 	if ($feedback->anonymous == FEEDBACK_ANONYMOUS_NO) {
 		$info->url = $CFG->wwwroot.'/mod/feedback/show_entries.php?'.
 			'id='.$cm->id.'&'.
 			'do_show=showoneentry&'.
-			'userid='.$userid;
+			'userid='.$user->id;
+        if ($completed) {
+            $info->url .= '&showcompleted=' . $completed->id;
+            if ($feedback->course == SITEID) {
+                // Course where feedback was completed (for site feedbacks only).
+                $info->url .= '&courseid=' . $completed->courseid;
+            }
+        }
 	} else {
 		$info->url = $CFG->wwwroot.'/mod/feedback/analysis.php?'.
 			'id='.$cm->id;
@@ -3050,76 +3055,15 @@ function feedback_send_email($cm, $feedback, $course, $user, $completed = null) 
 	$posttext = feedback_send_email_text($info, $course);
 	$posthtml = feedback_send_email_html($info, $course, $cm);
 
-        $strfeedbacks = get_string('modulenameplural', 'feedback');
-        $strfeedback  = get_string('modulename', 'feedback');
-
-        if ($feedback->anonymous == FEEDBACK_ANONYMOUS_NO) {
-            $printusername = fullname($user);
-        } else {
-            $printusername = get_string('anonymous_user', 'feedback');
-        }
-
-        foreach ($teachers as $teacher) {
-            $info = new stdClass();
-            $info->username = $printusername;
-            $info->feedback = format_string($feedback->name, true);
-            $info->url = $CFG->wwwroot.'/mod/feedback/show_entries.php?'.
-                            'id='.$cm->id.'&'.
-                            'userid=' . $user->id;
-            if ($completed) {
-                $info->url .= '&showcompleted=' . $completed->id;
-                if ($feedback->course == SITEID) {
-                    // Course where feedback was completed (for site feedbacks only).
-                    $info->url .= '&courseid=' . $completed->courseid;
-                }
-            }
-
-            $a = array('username' => $info->username, 'feedbackname' => $feedback->name);
-
-            $postsubject = get_string('feedbackcompleted', 'feedback', $a);
-            $posttext = feedback_send_email_text($info, $course);
-
-            if ($teacher->mailformat == 1) {
-                $posthtml = feedback_send_email_html($info, $course, $cm);
-            } else {
-                $posthtml = '';
-            }
-
-            if ($feedback->anonymous == FEEDBACK_ANONYMOUS_NO) {
-                $eventdata = new \core\message\message();
-                $eventdata->courseid         = $course->id;
-                $eventdata->name             = 'submission';
-                $eventdata->component        = 'mod_feedback';
-                $eventdata->userfrom         = $user;
-                $eventdata->userto           = $teacher;
-                $eventdata->subject          = $postsubject;
-                $eventdata->fullmessage      = $posttext;
-                $eventdata->fullmessageformat = FORMAT_PLAIN;
-                $eventdata->fullmessagehtml  = $posthtml;
-                $eventdata->smallmessage     = '';
-                $eventdata->courseid         = $course->id;
-                $eventdata->contexturl       = $info->url;
-                $eventdata->contexturlname   = $info->feedback;
-                message_send($eventdata);
-            } else {
-                $eventdata = new \core\message\message();
-                $eventdata->courseid         = $course->id;
-                $eventdata->name             = 'submission';
-                $eventdata->component        = 'mod_feedback';
-                $eventdata->userfrom         = $teacher;
-                $eventdata->userto           = $teacher;
-                $eventdata->subject          = $postsubject;
-                $eventdata->fullmessage      = $posttext;
-                $eventdata->fullmessageformat = FORMAT_PLAIN;
-                $eventdata->fullmessagehtml  = $posthtml;
-                $eventdata->smallmessage     = '';
-                $eventdata->courseid         = $course->id;
-                $eventdata->contexturl       = $info->url;
-                $eventdata->contexturlname   = $info->feedback;
-                message_send($eventdata);
-            }
-        }
-    }
+	$emailaddresses = preg_split('/,|;/', $feedback->email_addresses);
+    $userto = feedback_user::get_dummy_feedback_user();
+    $userfrom = feedback_user::get_noreply_user();
+	foreach ($emailaddresses as $email) {
+		$userto->email = trim($email);
+		if (validate_email($userto->email)) {
+			email_to_user($userto, $userfrom, $postsubject, $posttext, $posthtml);
+		}
+	}
 }
 /* END CORE MOD */
 
@@ -3134,7 +3078,7 @@ function feedback_send_email($cm, $feedback, $course, $user, $completed = null) 
  * @return void
  */
 /* BEGIN CORE MOD */
-// Major overhaul to send to specified users
+// Major overhaul to send to specified users.
 function feedback_send_email_anonym($cm, $feedback, $course) {
     global $CFG;
 
@@ -3148,47 +3092,21 @@ function feedback_send_email_anonym($cm, $feedback, $course) {
 	$info = new stdClass();
 	$info->username = $printusername;
 	$info->feedback = format_string($feedback->name, true);
-	$info->url = $CFG->wwwroot.'/mod/feedback/analysis.php?'.
-		'id='.$cm->id;
+	$info->url = $CFG->wwwroot.'/mod/feedback/analysis.php?id=' . $cm->id;
 
 	$postsubject = $course->fullname.' -> '.$feedback->name.'->'.$strcompleted.': '.$info->username;
 	$posttext = feedback_send_email_text($info, $course);
 	$posthtml = feedback_send_email_html($info, $course, $cm);
 
-        foreach ($teachers as $teacher) {
-            $info = new stdClass();
-            $info->username = $printusername;
-            $info->feedback = format_string($feedback->name, true);
-            $info->url = $CFG->wwwroot.'/mod/feedback/show_entries.php?id=' . $cm->id;
-
-            $a = array('username' => $info->username, 'feedbackname' => $feedback->name);
-
-            $postsubject = get_string('feedbackcompleted', 'feedback', $a);
-            $posttext = feedback_send_email_text($info, $course);
-
-            if ($teacher->mailformat == 1) {
-                $posthtml = feedback_send_email_html($info, $course, $cm);
-            } else {
-                $posthtml = '';
-            }
-
-            $eventdata = new \core\message\message();
-            $eventdata->courseid         = $course->id;
-            $eventdata->name             = 'submission';
-            $eventdata->component        = 'mod_feedback';
-            $eventdata->userfrom         = $teacher;
-            $eventdata->userto           = $teacher;
-            $eventdata->subject          = $postsubject;
-            $eventdata->fullmessage      = $posttext;
-            $eventdata->fullmessageformat = FORMAT_PLAIN;
-            $eventdata->fullmessagehtml  = $posthtml;
-            $eventdata->smallmessage     = '';
-            $eventdata->courseid         = $course->id;
-            $eventdata->contexturl       = $info->url;
-            $eventdata->contexturlname   = $info->feedback;
-            message_send($eventdata);
-        }
-    }
+	$emailaddresses = preg_split('/,|;/', $feedback->email_addresses);
+    $userto = feedback_user::get_dummy_feedback_user();
+    $userfrom = feedback_user::get_noreply_user();
+	foreach ($emailaddresses as $email) {
+		$userto->email = trim($email);
+		if (validate_email($userto->email)) {
+			email_to_user($userto, $userfrom, $postsubject, $posttext, $posthtml);
+		}
+	}
 }
 /* END CORE MOD */
 
@@ -3588,3 +3506,19 @@ function mod_feedback_get_completion_active_rule_descriptions($cm) {
     }
     return $descriptions;
 }
+
+/* BEGIN CORE MOD */
+class feedback_user extends \core_user {
+    public static function get_dummy_feedback_user($email = '', $firstname = '', $lastname = '') {
+        $user = self::get_dummy_user_record();
+        $user->maildisplay = true;
+        $user->mailformat = 1;
+        $user->email = $email;
+        $user->firstname = $firstname;
+        $user->lastname = $lastname;
+        $user->username = 'feedbackuser';
+        $user->timezone = date_default_timezone_get();
+        return $user;
+    }
+}
+/* END CORE MOD */
