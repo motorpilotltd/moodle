@@ -110,7 +110,7 @@ class feedback {
             $this->appraisal->failed_action('feedback_invalid');
             return false;
         }
-        if ($DB->get_records('local_appraisal_feedback', array('email' => $replaceaddress, 'requested_by' => $USER->id))) {
+        if ($DB->get_records('local_appraisal_feedback', array('email' => $replaceaddress, 'appraisalid' => $this->appraisal->appraisal->id))) {
             $this->appraisal->failed_action('feedback_inuse');
             return false;
         }
