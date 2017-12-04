@@ -57,6 +57,7 @@ class user_permission extends \moodleform {
         $costcentres->setMultiple(true);
         $mform->addRule('costcentre', $strrequired, 'required', null, 'client');
 
+
         // Permission lists.
         foreach ($this->permissions as $key => $val) {
             $this->permissions[$key] = get_string('label:' . $val, 'local_costcentre');

@@ -221,7 +221,6 @@ class edit extends \moodleform {
         foreach ($this->_customdata['costcentre']->permissions as $type) {
             $data->{$type} = is_array($_POST[$type]) ? optional_param_array($type, array(), PARAM_INT) : array();
         }
-
         return $data;
     }
 

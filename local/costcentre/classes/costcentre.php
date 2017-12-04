@@ -45,10 +45,14 @@ class costcentre {
     private $context;
     /** @var string The current cost centre. */
     private $costcentre = '';
+    /** @var string[] Array(user) The current selected user. */
+    private $currentuser = array();
     /** @var string[] Array (permissions) of permissions. */
     private $permissions;
     /** @var string[] Array (menu) of costcentres for current user. */
     private $costcentresmenu;
+    /** @var string[] Array (permissions) of userpermissionsdata */
+    private $userpermissionsdata = array();
     /** @var false|stdClass Settings for current cost centre. */
     private $settings;
     /** @var array Array of forms for (top of) page. */
@@ -63,7 +67,8 @@ class costcentre {
     /** @var string[] Valid actions by page. */
     private static $validaction = array(
         'index' => 'edit',
-        'view' => 'save'
+        'view' => 'save',
+        'usersettings' => 'load'
     );
 
     /**
@@ -102,7 +107,6 @@ class costcentre {
 
         if ($this->page == 'index') {
             $this->costcentresmenu = $this->get_costcentresmenu();
-
             $costcentre = optional_param('costcentre', '', PARAM_ALPHANUMEXT);
             if ($this->action == self::$validaction[$this->page] && empty($costcentre)) {
                 // Reset action as no cost centre selected.
@@ -117,6 +121,18 @@ class costcentre {
 
             if (!empty($this->costcentre)) {
                 $this->settings = $DB->get_record('local_costcentre', array('costcentre' => $this->costcentre));
+            }
+        } else if ($this->page == 'usersettings') {
+            $user = optional_param('user', '', PARAM_INT);
+            if (!empty($user) && $this->action == self::$validaction[$this->page]) {
+                // load user's cost centre permission
+                $this->userpermissionsdata = self::get_user_costcentres_permissions($user);
+                $params = array('id' => $user);
+                $usertextconcat = $DB->sql_concat('firstname', "' '", 'lastname', "' ('", 'email', "')'");
+                $this->currentuser = $DB->get_record('user', $params, $usertextconcat . ' as name, id', MUST_EXIST);
+                if (empty($this->userpermissionsdata)) {
+                    $this->alerts[] = new \local_costcentre\output\alert(get_string('alert:usernopermission', 'local_costcentre'), 'warning', false);
+                }
             }
         }
 
@@ -159,7 +175,6 @@ class costcentre {
         global $SESSION;
         $SESSION->localcostcentre->alerts[] = $this->alerts[] = $alert;
     }
-
     /**
      * Prepare the page for rendering.
      *
@@ -174,29 +189,75 @@ class costcentre {
         if ($this->page == 'index') {
             $this->forms[] = new \local_costcentre\local\form\select(null, array('costcentre' => $this));
         }
+
+        // Prepare user selection for usersettings page.
+        if ($this->page == 'usersettings') {
+            $this->forms[] = new \local_costcentre\local\form\user_select(null, array('costcentre' => $this));
+        }
         // Prepare specific page.
         $this->{$method}();
     }
 
+    /**
+     * Prepare view page
+     *
+     * @throws moodle_exception
+     */
     private function prepare_page_view() {
         $userpermissionform = new \local_costcentre\local\form\user_permission(null, array('costcentre' => $this));
         $this->forms[] = $userpermissionform;
 
         if ($userpermissionform->process()) {
             $this->set_alert(
-                    new \local_costcentre\output\alert(
-                            get_string('view:save:success', 'local_costcentre'),
-                            'success',
-                            false)
-                    );
+                new \local_costcentre\output\alert(
+                    get_string('view:save:success', 'local_costcentre'),
+                    'success',
+                    false)
+            );
             redirect(new moodle_url('/local/costcentre/view.php'));
         } else if ($userpermissionform->is_cancelled()) {
             $this->set_alert(
-                    new \local_costcentre\output\alert(
-                            get_string('view:save:cancelled', 'local_costcentre'),
-                            'warning',
-                            false)
-                    );
+                new \local_costcentre\output\alert(
+                    get_string('view:save:cancelled', 'local_costcentre'),
+                    'warning',
+                    false)
+            );
+
+        }
+
+        if (!$this->canaccessall) {
+            throw new moodle_exception('error:invalid:page', 'local_costcentre');
+        }
+    }
+
+
+    private function prepare_page_usersettings() {
+        $permissionsform = new \local_costcentre\local\form\user_permission_check(null, array('costcentre' => $this));
+        $this->forms[] = $permissionsform;
+
+        if ($permissionsform->process()) {
+            $this->set_alert(
+                new \local_costcentre\output\alert(
+                    get_string('view:save:success', 'local_costcentre'),
+                    'success',
+                    false)
+            );
+            // Redirect and reload the current user's permission
+            redirect(
+                new moodle_url('/local/costcentre/usersettings.php',
+                    array(
+                        'user' => $this->currentuser->id,
+                        'action' => $this->action
+                    )
+                )
+            );
+        } else if ($permissionsform->is_cancelled()) {
+            $this->set_alert(
+                new \local_costcentre\output\alert(
+                    get_string('view:save:cancelled', 'local_costcentre'),
+                    'warning',
+                    false)
+            );
         }
 
         if (!$this->canaccessall) {
@@ -213,29 +274,29 @@ class costcentre {
         $this->forms[] = $editform;
         if ($editform->process()) {
             $this->set_alert(
-                    new \local_costcentre\output\alert(
-                            get_string('edit:success', 'local_costcentre'),
-                            'success',
-                            false)
-                    );
+                new \local_costcentre\output\alert(
+                    get_string('edit:success', 'local_costcentre'),
+                    'success',
+                    false)
+            );
             redirect(new moodle_url('/local/costcentre/index.php', ['costcentre' => $this->costcentre, 'action' => 'edit']));
         } else if ($editform->is_cancelled()) {
             $this->set_alert(
-                    new \local_costcentre\output\alert(
-                            get_string('edit:cancelled', 'local_costcentre'),
-                            'warning',
-                            false)
-                    );
+                new \local_costcentre\output\alert(
+                    get_string('edit:cancelled', 'local_costcentre'),
+                    'warning',
+                    false)
+            );
         }
         if ($this->costcentre && !$this->canaccessall) {
             $a = (new moodle_url('/course/view.php', array('id' => get_config('local_costcentre', 'help_courseid'))))->out(false);
             $this->set_alert(
-                    new \local_costcentre\output\alert(
-                            get_string('alert:restrictedaccess',
-                                    'local_costcentre', $a),
-                            'info',
-                            false)
-                    );
+                new \local_costcentre\output\alert(
+                    get_string('alert:restrictedaccess',
+                            'local_costcentre', $a),
+                    'info',
+                    false)
+            );
         }
     }
 
@@ -246,7 +307,6 @@ class costcentre {
      */
     public function output_page() {
         global $SESSION;
-
         $output = '';
 
         // Alerts.
@@ -438,6 +498,78 @@ class costcentre {
             }
         }
         return $this->costcentresmenu;
+    }
+
+    /**
+     * Returns lists of users ready for select element
+     *
+     * @return mixed
+     */
+    public function get_userlist() {
+        global $DB;
+        $usertextconcat = $DB->sql_concat('firstname', "' '", 'lastname', "' ('", 'email', "')'");
+        $params = array();
+        $where = "auth = 'saml' AND deleted = 0 AND suspended = 0 AND confirmed = 1";
+        return $DB->get_records_select_menu('user', $where, $params, 'lastname ASC', "id, $usertextconcat");
+    }
+
+    /**
+     * Returns user's cost centre and permissions
+     *
+     * @param $userid
+     * @return array
+     */
+    public function get_user_costcentres_permissions($userid) {
+        global $DB;
+
+        $where = 'lcu.userid = :userid AND lcu.permissions > 0';
+        $params = array('userid' => $userid);
+
+        $concat = $DB->sql_concat('u.icq', "' - '", 'u.department');
+        $sql = <<<EOS
+            SELECT
+                u.icq, {$concat} as costcentre
+            FROM
+                {user} u
+            INNER JOIN
+                (SELECT
+                    MAX(id) maxid
+                FROM
+                    {user} inneru
+                INNER JOIN
+                    (SELECT
+                        icq, MAX(timemodified) as maxtimemodified
+                    FROM
+                        {user}
+                    GROUP BY
+                        icq) groupedicq
+                    ON inneru.icq = groupedicq.icq AND inneru.timemodified = groupedicq.maxtimemodified
+                GROUP BY
+                    groupedicq.icq) groupedid
+                ON u.id = groupedid.maxid
+            INNER JOIN
+                {local_costcentre_user} lcu ON lcu.costcentre = u.icq AND {$where}
+            ORDER BY
+                u.icq ASC
+EOS;
+        $costcentresuser = $DB->get_records_sql($sql, $params);
+        foreach ($costcentresuser as $key => $val) {
+            $permissions = new stdClass();
+
+            foreach ($this->permissions as $key => $value) {
+                $permission = $DB->get_records_select(
+                    'local_costcentre_user',
+                    'costcentre = :costcentre AND '.$DB->sql_bitand('permissions', $key).' = :permission AND userid = :userid AND permissions > 0',
+                    array('costcentre' => $val->icq, 'permission' => $key, 'userid' => $userid),
+                    '',
+                    'userid');
+                if ($permission ) {
+                    $permissions->{$value} = $key;
+                }
+            }
+            $val->permissions = $permissions;
+        }
+        return $costcentresuser;
     }
 
     /**

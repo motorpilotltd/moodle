@@ -28,7 +28,8 @@ $string['costcentre:administer'] = 'Administer cost centres';
 
 // Menu items.
 $string['menu:index'] = 'Cost centre setup';
-$string['menu:view'] = 'User permission setup';
+$string['menu:view'] = 'Bulk permission setup';
+$string['menu:usersettings'] = "User permission check";
 
 // Error strings.
 $string['error:invalid:action'] = 'Invalid action specified.';
@@ -37,6 +38,7 @@ $string['error:invalid:page'] = 'Invalid page requested.';
 // General strings.
 $string['choosecostcentre'] = 'Choose cost centre';
 $string['chooseuser'] = 'Choose one or more users';
+$string['chooseoneuser'] = 'Choose one user';
 $string['choospermission'] = 'Choose one or more permissions';
 
 $string['edit:cancelled'] = 'Editing cancelled, your changes were not saved.';
@@ -69,7 +71,9 @@ $string['label:reporter'] = 'Can run reports';
 $string['label:signatory'] = 'Can sign off appraisal (in addition to leader / primary sign off)';
 $string['label:userlist'] = 'User List';
 $string['label:permissions'] = 'Permissions';
+$string['label:removepermissions'] = 'Remove selected permissions';
 $string['loadcostcentre'] = 'Load cost centre';
+$string['loaduser'] = 'Load user';
 
 
 $string['select:appraiser'] = 'Additional appraisers (outside cost centre)';
@@ -87,8 +91,13 @@ $string['selectuser'] = 'Select user';
 $string['selectusers'] = 'Select users';
 
 $string['title:index'] = 'Cost centre setup';
-$string['title:view'] = 'Cost centre user permission setup';
+$string['title:view'] = 'Bulk permission setup';
+$string['title:usersettings'] = 'User permissions check';
 
 // Other alerts.
 $string['alert:restrictedaccess'] = 'Having trouble with this page? Complete the <a href="{$a}">Appraisal Admin Learning Burst</a> if you haven\'t already.';
 $string['alert:restrictedaccess:tooltip'] = 'Only the Moodle Team can edit this field.';
+$string['alert:usernopermission'] = 'This user currently has no permissions';
+
+// Elemets
+$string['button:removepermissions'] = 'Remove Permissions';

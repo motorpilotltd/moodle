@@ -50,14 +50,26 @@ if (get_config('local_costcentre', 'version')) {
                     $adminurl,
                     $fakecap)
             );
-
+    // View page for user costcentre permission select
     $viewurl = new moodle_url('/local/costcentre/view.php');
     $ADMIN->add(
-            'local_costcentre',
-            new admin_externalpage(
-                    'local_costcentre_view',
-                    get_string('menu:view', 'local_costcentre'),
-                    $viewurl,
-                    'local/costcentre:administer')
-            );
+        'local_costcentre',
+        new admin_externalpage(
+            'local_costcentre_view',
+            get_string('menu:view', 'local_costcentre'),
+            $viewurl,
+            'local/costcentre:administer'
+        )
+    );
+    // User permission settings page
+    $usersettingsurl = new moodle_url('/local/costcentre/usersettings.php');
+    $ADMIN->add(
+        'local_costcentre',
+        new admin_externalpage(
+            'local_costcentre_usersettings',
+            get_string('menu:usersettings', 'local_costcentre'),
+            $usersettingsurl,
+            'local/costcentre:administer'
+        )
+    );
 }
