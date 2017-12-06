@@ -105,6 +105,7 @@ class MoodleQuickForm_textarearup extends HTML_QuickForm_textarea {
         $this->locked = false;
         if (isset($this->_attributes["locked"])) {
             $this->locked = true;
+            $this->_value = nl2br($this->_value);
         }
         if (isset($this->_attributes["rows"])) {
             $this->rows = $this->_attributes["rows"];
