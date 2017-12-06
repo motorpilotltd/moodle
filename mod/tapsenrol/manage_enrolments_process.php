@@ -118,6 +118,25 @@ if ($type == 'future' || $type == 'past') {
                 $a .= "<br />FAILED: User (Moodle User ID: {$userid}) not found.";
                 continue;
             }
+            
+            $username = fullname($user);
+
+            // Does a not cancelled enrolment exist?.
+            list($in, $inparams) = $DB->get_in_or_equal(
+                $tapsenrol->taps->get_statuses('cancelled'),
+                SQL_PARAMS_NAMED, 'status', false
+            );
+            $compare = $DB->sql_compare_text('bookingstatus');
+            $params = array_merge(
+                array('staffid' => $user->idnumber, 'classid' => $fromform->classid),
+                $inparams
+            );
+            $select = "staffid = :staffid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND active = 1 AND {$compare} {$in}";
+            $existingenrolments = $DB->count_records_select('local_taps_enrolment', $select, $params);
+            if ($existingenrolments) {
+                $a .= "<br />FAILED: [{$username}] Could not enrol: ALREADY_ENROLLED.";
+                continue;
+            }
 
             // Here we need to find and reset any linked certifications.
             $completioncache = \cache::make('core', 'completion');
@@ -136,7 +155,6 @@ if ($type == 'future' || $type == 'past') {
             }
 
             $enrolresult = $tapsenrol->enrol_employee($fromform->classid, $user->idnumber);
-            $username = fullname($user);
             if ($enrolresult->success) {
                 $iwtrack = new stdClass();
                 $iwtrack->enrolmentid = $enrolresult->enrolment->enrolmentid;

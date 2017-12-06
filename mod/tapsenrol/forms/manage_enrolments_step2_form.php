@@ -302,8 +302,8 @@ EOF;
         return ob_get_clean();
     }
 
-    protected function _get_user_selector_html() {
-        $potentialuserselector = new tapsenrol_enrol_user_selector('users');
+    protected function _get_user_selector_html($options = []) {
+        $potentialuserselector = new tapsenrol_enrol_user_selector('users', $options);
 
         $html = $potentialuserselector->display(true);
 
@@ -314,6 +314,8 @@ EOF;
 class mod_tapsenrol_manage_enrolments_enrol_form extends mod_tapsenrol_manage_enrolments_step2_form {
 
     public function definition() {
+        global $DB;
+        
         parent::definition();
 
         $mform =& $this->_form;
@@ -345,7 +347,23 @@ class mod_tapsenrol_manage_enrolments_enrol_form extends mod_tapsenrol_manage_en
         $mform->setExpanded('header-enrol', true);
 
         // Select users.
-        $mform->addElement('html', $this->_get_user_selector_html());
+        $options = [];
+        // Exclude not cancelled users.
+        list($in, $inparams) = $DB->get_in_or_equal(
+            $this->_taps->get_statuses('cancelled'),
+            SQL_PARAMS_NAMED, 'status', false
+        );
+        $compare = $DB->sql_compare_text('bookingstatus');
+        $params = array_merge(
+            array('classid' => $this->_class->classid),
+            $inparams
+        );
+        $excludeuserssql = "SELECT DISTINCT u.id, u.id as uid
+                             FROM {user} u
+                             JOIN {local_taps_enrolment} lte ON lte.staffid = u.idnumber
+                            WHERE classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}";
+        $options['exclude'] = $DB->get_records_sql_menu($excludeuserssql, $params);
+        $mform->addElement('html', $this->_get_user_selector_html($options));
 
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('manageenrolments:enrol:button', 'tapsenrol'));
