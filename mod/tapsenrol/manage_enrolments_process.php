@@ -131,7 +131,7 @@ if ($type == 'future' || $type == 'past') {
                 array('staffid' => $user->idnumber, 'classid' => $fromform->classid),
                 $inparams
             );
-            $select = "staffid = :staffid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND active = 1 AND {$compare} {$in}";
+            $select = "staffid = :staffid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}";
             $existingenrolments = $DB->count_records_select('local_taps_enrolment', $select, $params);
             if ($existingenrolments) {
                 $a .= "<br />FAILED: [{$username}] Could not enrol: ALREADY_ENROLLED.";
