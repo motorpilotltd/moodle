@@ -374,8 +374,6 @@ $string['overview:button:submitit'] = 'Send';
 // START JP string translations - spreadsheet
 $string['startappraisal'] = 'オンラインアプレイザルを開始する';
 $string['continueappraisal'] = 'オンラインアプレイザルを続ける';
-$string['appraisee_feedback_edit_text'] = '編集する';
-$string['appraisee_feedback_resend_text'] = '再送する';
 $string['appraisee_feedback_view_text'] = '閲覧する';
 $string['feedback_setface2face'] = 'フィードバックを依頼する前に、アプレイザルミーティングの日付を設定してください。日付の設定はAppraisee Infoページで行えます。';
 $string['feedback_comments_none'] = '補足コメントはありません。';

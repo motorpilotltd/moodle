@@ -366,8 +366,6 @@ $string['overview:button:submitit'] = 'Send';
 // START CH string translations - spreadsheet
 $string['startappraisal'] = '开始在线评议';
 $string['continueappraisal'] = '继续在线评议';
-$string['appraisee_feedback_edit_text'] = '编辑修改';
-$string['appraisee_feedback_resend_text'] = '重新发送';
 $string['appraisee_feedback_view_text'] = '查阅';
 $string['feedback_setface2face'] = '你必须设置了面谈会议的日期，才能添加反馈请求。可以在评议人信息页面上找到。';
 $string['feedback_comments_none'] = '没有其他评论。';
@@ -548,7 +546,7 @@ $string['email:body:appraiseefeedback'] = '{{emailmsg}}
 
 这是一个自动生成的电子邮件, 由 {{appraisee_fullname}} 发送到 {{firstname}} {{lastname}}。</p>
 如果以上的链接无法连接到反馈页面，请将以下链接复制到您的浏览器访问评议系统';
-$string['email:body:appraiseefeedbackmsg'] = '尊敬的<span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+$string['email:body:appraiseefeedbackmsg'] = '<p>尊敬的<span class="placeholder bind_firstname">{{firstname}}</span>,</p>
 <p> 我的评议面谈是在<span class="placeholder">{{held_date}}</span>。我的评议人<span class="placeholder">{{appraiser_fullname}}</span>.。因为您和我在过去一年一直密切合作，我希望您能给予我在贡献价值和您觉得我可以更有效方面的反馈。如果您同意，请点击下面的链接提供您的反馈意见。.</p> <p> 非常感激您能在我评议面谈之前回复。</p>
 <p class="ignoreoncopy"> 以下是 的其他意见
 <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>

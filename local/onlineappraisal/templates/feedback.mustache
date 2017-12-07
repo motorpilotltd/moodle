@@ -53,19 +53,7 @@
     {{#requests}}
         <tr>
             <td>{{name}}</td>
-            <td>{{email}}
-            {{#emailform}}
-                <form action="{{{formurl}}}" method="post" class="mform">
-                <div class="input-group inline-edit">
-                    <input type="hidden" name="feedbackaction" value="edit">
-                   <input type="text" name="replaceaddress" class="form-control" value="{{emailplaceholder}}">
-                    <span class="input-group-btn">
-                    <input type="submit" class="btn btn-default" type="button" value="Save">
-                  </span>
-                </div>
-                </form>
-            {{/emailform}}
-            </td>
+            <td>{{email}}</td>
             <td>{{date}}</td>
             <td class="text-center w-1">{{#received}}<i class="fa fa-check {{^confidential}}text-success{{/confidential}}" title="{{#confidential}}{{#str}}feedbackrequests:received:confidential, local_onlineappraisal{{/str}}{{/confidential}}{{^confidential}}{{#str}}feedbackrequests:received:nonconfidential, local_onlineappraisal{{/str}}{{/confidential}}"></i>{{/received}}</td>
             <td class="w-1">

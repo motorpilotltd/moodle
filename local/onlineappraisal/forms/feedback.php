@@ -51,10 +51,11 @@ class apform_feedback extends moodleform {
         $mform->addElement('hidden', 'view', $data->appraisal->viewingas);
         $mform->setType('view', PARAM_TEXT);
 
-        $mform->addElement('hidden', 'hascustomemail', 0, array('id' => 'hascustomemail'));
+        $mform->addElement('hidden', 'hascustomemail', !empty($data->customemail), array('id' => 'hascustomemail'));
         $mform->setType('hascustomemail', PARAM_INT);
 
-        $mform->addElement('html', html_writer::tag('h2', $this->str('title')));
+        $title = $data->formid > 0 ? 'title:resend' : 'title';
+        $mform->addElement('html', html_writer::tag('h2', $this->str($title)));
 
         $mform->addElement('text', 'firstname', $this->str('firstname'));
         $mform->setType('firstname', PARAM_RAW);
@@ -68,37 +69,45 @@ class apform_feedback extends moodleform {
         $mform->setType('email', PARAM_RAW);
         $mform->addRule('email', $strrequired, 'required', null, 'client');
 
-        if ($data->appraisal->viewingas == 'appraiser') {
-            $languages = $this->get_translations('email:body:appraiserfeedbackmsg');
-            $mform->addElement('select', 'language', $this->str('language'), $languages);
-            $emailtext = $this->split_body(get_string('email:body:appraiserfeedbackmsg', 'local_onlineappraisal'));
+        $customemailclass = '';
+        if ($data->formid <= 0) {
+            if ($data->appraisal->viewingas == 'appraiser') {
+                $languages = $this->get_translations('email:body:appraiserfeedbackmsg');
+                $mform->addElement('select', 'language', $this->str('language'), $languages);
+                $emailtext = $this->split_body(get_string('email:body:appraiserfeedbackmsg', 'local_onlineappraisal'));
+            } else {
+                $languages = $this->get_translations('email:body:appraiseefeedbackmsg');
+                $mform->addElement('select', 'language', $this->str('language'), $languages);
+                $emailtext = $this->split_body(get_string('email:body:appraiseefeedbackmsg', 'local_onlineappraisal'));
+            }
+
+            if (array_key_exists(current_language(), $this->translations)) {
+                $mform->setDefault('language', current_language());
+            } else {
+                $mform->setDefault('language', 'en');
+            }
+
+            $mform->addElement('html', '<span id="editmsg" class="btn btn-default m-b-5" title="'.$this->str('providefirstnamelastname').'">' . $this->str('editemail') . '</span>');
+            $mform->addElement('html', '<div id="emailmsg" class="well emailmsg">
+                <span  id="emailtextstart">' . $emailtext->start . '</span>');
+
+            $mform->addElement('textarea', 'emailtext', '', 'rows="15" cols="70"');
+            $mform->setType('emailtext', PARAM_RAW);
+            $mform->addElement('html',  '<span id="emailtextend">' . $emailtext->end . '</span></div>');
+
+            $customemailclass = ' class="hidden"';
         } else {
-            $languages = $this->get_translations('email:body:appraiseefeedbackmsg');
-            $mform->addElement('select', 'language', $this->str('language'), $languages);
-            $emailtext = $this->split_body(get_string('email:body:appraiseefeedbackmsg', 'local_onlineappraisal'));
-        }
-        
-        if (array_key_exists(current_language(), $this->translations)) {
-            $mform->setDefault('language', current_language());
-        } else {
-            $mform->setDefault('language', 'en');
+            $mform->addElement('html', '<div class="alert alert-warning">'.$this->str('resendhelp').'</div>');
         }
 
-        $mform->addElement('html', '<span id="editmsg" class="btn btn-default m-b-5" title="'.$this->str('providefirstnamelastname').'">' . $this->str('editemail') . '</span>');
-        $mform->addElement('html', '<div id="emailmsg" class="well emailmsg">
-            <span  id="emailtextstart">' . $emailtext->start . '</span>');
-
-        $mform->addElement('textarea', 'emailtext', '', 'rows="15" cols="70"');
-        $mform->setType('emailtext', PARAM_RAW);
-        $mform->addElement('html',  '<span id="emailtextend">' . $emailtext->end . '</span></div>');
-
-        $mform->addElement('html', '<div id="customemailmsg" class="hidden">');
+        $mform->addElement('html', '<div id="customemailmsg"'.$customemailclass.'>');
         $mform->addElement('textarea', 'customemailmsg', '', 'rows="25" cols="70"');
         $mform->setType('textarea', PARAM_RAW);
         $mform->addElement('html', '</div>');
 
         $buttonarray = array();
-        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $this->str('sendemailbtn'));
+        $submitbutton = $data->formid > 0 ? 'resendemailbtn' : 'sendemailbtn';
+        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $this->str($submitbutton));
         $buttonarray[] = &$mform->createElement('cancel', 'cancelbutton', get_string('form:cancel', 'local_onlineappraisal'));
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         $mform->closeHeaderBefore('buttonar');
@@ -133,6 +142,38 @@ class apform_feedback extends moodleform {
             $emailtext->end .= html_writer::tag('div', $emailstring[1], array('class' => $class));
         }
         return $emailtext;
+    }
+
+    /**
+     * Stored data for this form. This method is called from \local_onlineappraisal\forms if
+     * it exists for a form after a form has been instantiated.
+     * @param \local_onlineappraisal\forms $forms. An instance of the \local_onlineappraisal\forms class.
+     */
+    public static function stored_form(\local_onlineappraisal\forms $forms) {
+        global $DB;
+
+        $feedbackid = optional_param('feedbackid', -1, PARAM_INT);
+
+        $params = array(
+            'appraisalid' => $forms->appraisal->appraisal->id,
+            'requested_by' => $forms->appraisal->user->id,
+            'id' => $feedbackid,
+        );
+        $feedback = $DB->get_record('local_appraisal_feedback', $params);
+        if (!$feedback) {
+            $feedback = new stdClass();
+            $feedback->formid = -1;
+        } else {
+            $feedback->formid = $feedback->id;
+            // Different naming conmvention DB <=> form.
+            $feedback->customemailmsg = html_to_text($feedback->customemail, 0, false);
+        }
+        $feedback->userid = $forms->appraisal->user->id;
+        $feedback->appraisalid = $forms->appraisal->appraisal->id;
+        $feedback->appraisal = $forms->appraisal->appraisal;
+        $feedback->viewingas = $forms->appraisal->appraisal->viewingas;
+        $feedback->nexturl = $forms->appraisal->get_nextpage();
+        return $feedback;
     }
 
     /**

@@ -35,12 +35,9 @@ use local_onlineappraisal\email as email;
 class feedback {
 
     private $appraisal;
-    private $called;
     private $feedbackactions;
     private $emailvars;
     private $viewfeedback;
-    private $count;
-    private $counta;
 
     /**
      * Constructor.
@@ -59,71 +56,7 @@ class feedback {
      * class is being declared in \local_onlineappraisal\appraisal->add_page();
      */
     public function hook() {
-        global $USER, $DB;
-        //Process the actions in the feedback table
-        $feedbackaction = optional_param('feedbackaction', '', PARAM_RAW);
-        $request = optional_param('request', 0, PARAM_INT);
-        $replaceaddress = optional_param('replaceaddress', '', PARAM_RAW);
-
-        $requestrecord = $DB->get_record('local_appraisal_feedback', array('id' => $request));
-
-        if ($feedbackaction && $request) {
-            $this->appraisal->set_action($feedbackaction, $request);
-
-            // Edit action
-            if ($requestrecord->requested_by == $USER->id) {
-                if ($this->appraisal->called->action == 'edit' && $replaceaddress) {
-                    $this->replaceaddress($replaceaddress);
-                }
-                // Resend email action
-                if ($this->appraisal->called->action == 'resend') {
-                    $this->resendrequest($request);
-                }
-            }
-        }
-
-        // Redirect following processing (to avoid refresh resubmissions).
-        if (!empty($this->appraisal->called->done)) {
-            $redirecturl = new moodle_url(
-                    '/local/onlineappraisal/view.php',
-                    array(
-                        'page' => 'feedback',
-                        'appraisalid' => $this->appraisal->appraisal->id,
-                        'view' => $this->appraisal->appraisal->viewingas
-                    ));
-            redirect($redirecturl);
-        }
-    }
-
-    /**
-     * Replace the email address in a feedback request.
-     */
-    private function replaceaddress($replaceaddress) {
-        global $DB, $USER;
-        // Make it lowercase for consistency.
-        $replaceaddress = \core_text::strtolower($replaceaddress);
-        // Check if the user can still add users. Just to be sure.
-        if (!$this->appraisal->check_permission('feedback:add')) {
-            return false;
-        }
-        if (!validate_email($replaceaddress)) {
-            $this->appraisal->failed_action('feedback_invalid');
-            return false;
-        }
-        if ($DB->get_records('local_appraisal_feedback', array('email' => $replaceaddress, 'appraisalid' => $this->appraisal->appraisal->id))) {
-            $this->appraisal->failed_action('feedback_inuse');
-            return false;
-        }
-        $fb = $DB->get_record('local_appraisal_feedback', array('id' => $this->appraisal->called->actionid));
-        if ($fb) {
-            $fb->email = $replaceaddress;
-            $fb->password = $this->get_random_string();
-            $DB->update_record('local_appraisal_feedback', $fb);
-            $this->resendrequest($this->appraisal->called->actionid);
-            $this->appraisal->complete_action('feedback');
-        } else {
-            $this->appraisal->failed_action('feedback');
-        }
+        // No hooks here.
     }
 
     /**
@@ -165,16 +98,7 @@ class feedback {
                     $fbuser->name .= ' *';
                 }
 
-                if ($action = $this->appraisal->check_action($request->id, 'edit')) {
-
-                    $fbuser->formurl = new moodle_url('/local/onlineappraisal/view.php',
-                    array('page' => 'feedback', 'appraisalid' => $this->appraisal->appraisal->id,
-                        'feedbackaction' => 'edit', 'request' => $request->id, 'view' => $this->appraisal->appraisal->viewingas));
-                    $fbuser->emailform = $request->id;
-                    $fbuser->emailplaceholder = $request->email;
-                } else {
-                    $fbuser->email = $request->email;
-                }
+                $fbuser->email = $request->email;
                 $fbuser->date = userdate($request->created_date, get_string('strftimedate'));
                 if (empty($request->received_date)) {
                     $fbuser->incomplete = true;
@@ -226,8 +150,7 @@ class feedback {
                 $USER->id == $request->requested_by) {
 
                 // Resend the request.
-                $this->feedback_action('resend', $request->id);
-                $this->feedback_action('edit', $request->id);
+                $this->feedback_action('editresend', $request->id);
             }
         } else if ($this->appraisal->check_permission('feedback:view')){
             if ($this->appraisal->appraisal->is_appraiser) {
@@ -262,10 +185,18 @@ class feedback {
         }
         // The base URL for all actions
         $actionurl = new moodle_url('/local/onlineappraisal/view.php',
-                    array('page' => 'feedback', 'appraisalid' => $this->appraisal->appraisal->id, 'feedbackaction' => '', 'request' => $requestid, 'view' => $this->appraisal->appraisal->viewingas));
+                    array('page' => 'feedback', 'appraisalid' => $this->appraisal->appraisal->id, 'feedbackaction' => $actionstring, 'request' => $requestid, 'view' => $this->appraisal->appraisal->viewingas));
+
+        if ($actionstring == 'editresend') {
+            // Special case, need to send user to form.
+            $actionurl->remove_params(['feedbackaction', 'request']);
+            $actionurl->params([
+                'addfeedback' => 1,
+                'feedbackid' => $requestid,
+            ]);
+        }
 
         $action = new stdClass();
-        $actionurl->param('feedbackaction', $actionstring);
         $action->url = $actionurl->out();
         $action->action = $action;
         $string = 'appraisee_feedback_' . $actionstring . '_text';
@@ -275,24 +206,36 @@ class feedback {
 
     /**
      * Store adding a feedback recipient from the form
-     * @param array $data. The name => value pair type of data
+     * @param array $data The name => value pair type of data
      */
     public function store_feedback_recipient($data) {
-        global $DB, $USER;
+        global $DB;
 
-        $fb = new stdClass();
+        if ($data->formid > 0) {
+            $params = array(
+                'appraisalid' => $this->appraisal->appraisal->id,
+                'requested_by' => $this->appraisal->user->id,
+                'id' => $data->formid,
+            );
+            $fb = $DB->get_record('local_appraisal_feedback', $params);
+        }
+
+        if (empty($fb)) {
+            $fb = new stdClass();
+            $fb->lang = $data->language; // Only available/set on creation.
+        }
+
         // Retrieved from appraisal.
         $fb->appraisalid = $this->appraisal->appraisal->id;
         $fb->requested_by = $this->appraisal->user->id;
         $fb->feedback_user_type = $this->appraisal->appraisal->viewingas;
 
         // Retreived from $data in form.
-        $fb->additional_message = $data->emailtext;
+        $fb->additional_message = !empty($data->emailtext) ? $data->emailtext : ''; // Only available/set on creation.
         $fb->firstname = $data->firstname;
         $fb->lastname = $data->lastname;
         // Make it lowercase for consistency.
         $fb->email = \core_text::strtolower($data->email);
-        $fb->lang = $data->language;
 
         // Defaults.
         $fb->created_date = time();
@@ -302,20 +245,38 @@ class feedback {
         $fb->received_date = null;
         $fb->password = $this->get_random_string();
         if ($data->hascustomemail) {
-            $fb->customemail = nl2br($data->customemailmsg);
+            // Don't user nl2br() as doesn't actually remove line breaks, resulting in extra whitespace.
+            $fb->customemail = str_replace(["\r\n", "\r", "\n"], '<br>', $data->customemailmsg);
         }
 
         $fb->recipient = \local_onlineappraisal\user::get_dummy_appraisal_user($fb->email, $fb->firstname, $fb->lastname);
 
-        // Feedback created, email contributor.
-        if ($fbexisting = $DB->get_record('local_appraisal_feedback',
-            array('email' => $fb->email, 'appraisalid' => $fb->appraisalid, 'requested_by' => $USER->id))) {
+        // Is the chosen email in use already (ignoring request being edited if applicable).
+        $fbexistingselect = 'email = :email AND appraisalid = :appraisalid AND requested_by = :requested_by';
+        $fbexistingparams = [
+            'email' => $fb->email,
+            'appraisalid' => $fb->appraisalid,
+            'requested_by' => $fb->requested_by,
+        ];
+        if (!empty($fb->id)) {
+            $fbexistingselect .= ' AND id <> :id';
+            $fbexistingparams['id'] = $fb->id;
+        }
+        $fbexisting = $DB->get_record_select('local_appraisal_feedback', $fbexistingselect, $fbexistingparams);
+        if ($fbexisting) {
             $this->appraisal->set_action('email', $fbexisting->id);
             $this->appraisal->failed_action('feedback_inuse');
-        } else if ($fb->id = $DB->insert_record('local_appraisal_feedback', $fb)) {
-            $this->appraisal->set_action('email', $fb->id);
-            $emailvars = $this->get_feedback_vars($fb);
-            
+            return;
+        }
+
+        // Get email variables in preparation.
+        $emailvars = $this->get_feedback_vars($fb);
+
+        // Update/create feedback.
+        if (!empty($fb->id)) {
+            $result = $DB->update_record('local_appraisal_feedback', $fb);
+        } else {
+            // Prep customemail field from default if not already customised.
             if (!$data->hascustomemail) {
                 // Load default feedback email message.
                 $email = $fb->feedback_user_type == 'appraiser' ? 'appraiserfeedbackmsg' : 'appraiseefeedbackmsg';
@@ -324,6 +285,13 @@ class feedback {
                 $baseemail->prepare();
                 $fb->customemail = $baseemail->body;
             }
+
+            $result = $fb->id = $DB->insert_record('local_appraisal_feedback', $fb);
+        }
+
+        // If OK, email contributor.
+        if ($result) {
+            $this->appraisal->set_action('email', $fb->id);
 
             $emailvars->emailmsg = $fb->customemail;
 
@@ -335,8 +303,6 @@ class feedback {
 
             $feedbackmail->prepare();
             $feedbackmail->send();
-
-            $DB->update_record('local_appraisal_feedback', $fb);
         }
     }
 
@@ -352,47 +318,6 @@ class feedback {
         $this->emailvars->link = \html_writer::link($url, get_string_manager()->get_string('email:body:appraiseefeedback_link_here', 'local_onlineappraisal', null, $fb->lang));
         $this->emailvars->linkurl = $url->out();
         return $this->emailvars;
-    }
-
-
-    /**
-     * Resend the email requesting feedback
-     * @param int $requestid. DB id of previously created request
-     */
-    private function resendrequest($requestid) {
-        global $DB;
-
-        if ($fb = $DB->get_record('local_appraisal_feedback', array('id' => $requestid))) {
-
-            $fb->recipient = \local_onlineappraisal\user::get_dummy_appraisal_user($fb->email, $fb->firstname, $fb->lastname);
-            $emailvars = $this->get_feedback_vars($fb);
-
-            if (!$fb->customemail) {
-                // Load default feedback email message.
-                $email = $fb->feedback_user_type == 'appraiser' ? 'appraiserfeedbackmsg' : 'appraiseefeedbackmsg';
-                $sender = $fb->feedback_user_type == 'appraiser' ? $this->appraisal->appraisal->appraiser : $this->appraisal->appraisal->appraisee;
-                $baseemail = new email($email, $emailvars, $fb->recipient, $sender, array(), $fb->lang);
-                $baseemail->prepare();
-                $fb->customemail = $baseemail->body;
-            }
-
-            $emailvars->emailmsg = $fb->customemail;
-
-            if ($fb->feedback_user_type == 'appraiser') {
-                $feedbackmail = new email('appraiserfeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraiser, array(), $fb->lang);
-            } else {
-                $feedbackmail = new email('appraiseefeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraisee, array(), $fb->lang);
-            }
-
-            $feedbackmail->prepare();
-
-            if ($feedbackmail->send()) {
-                $DB->set_field('local_appraisal_feedback','created_date', time(), array('id' => $requestid));
-                $this->appraisal->complete_action('feedback');
-            }
-        } else {
-            $this->appraisal->failed_action('feedback');
-        }
     }
 
     /**

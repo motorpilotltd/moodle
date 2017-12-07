@@ -341,8 +341,6 @@ $string['overview:button:submitit'] = 'Send';
 
 $string['startappraisal'] = 'Rozpocznij Ocenę Roczną Online';
 $string['continueappraisal'] = 'Kontynuuj Ocenę Roczną Online';
-$string['appraisee_feedback_edit_text'] = 'Edytuj';
-$string['appraisee_feedback_resend_text'] = 'Wyślij';
 $string['appraisee_feedback_view_text'] = 'Zobacz';
 $string['feedback_setface2face'] = 'Abyś był w stanie wysłać prośbę o ocenę zwrotną, musisz wyznaczyć wcześniej datę rozmowy oceniającej. Informację możesz znaleźć na stronie Info dla pracowników ocenianych.';
 $string['feedback_comments_none'] = 'Brak dodatkowych komentarzy';
@@ -487,7 +485,7 @@ $string['email:body:appraiseefeedback'] = '{{emailmsg}} <br> <hr> <p>Kliknij {{l
 <p>Appraisal Name {{appraisee_fullname}}<br>
  My appraisal is on <span class="placeholder">{{held_date}}</span></p>
 <p>This is an auto generated email sent by {{appraisee_fullname}} to {{firstname}} {{lastname}}.</p> <p>If the link above does not work, please copy the following link into your browser to access the appraisal:<br />{{linkurl}}</p>';
-$string['email:body:appraiseefeedbackmsg'] = 'Drogi <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+$string['email:body:appraiseefeedbackmsg'] = '<p>Drogi <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
 <p>
 Zbliża się termin mojego spotkania oceniającego<span class="placeholder">{{held_date}}</span>. Moim Oceniającym jest <span class="placeholder">{{appraiser_fullname}}</span>. Ponieważ pracowaliśmy razem w ciągu ubiegłego roku, bardzo ważne byłoby dla mnie gdybyś wyraził/a swoją opinię co bceniłeś/aś w moim  działaniu oraz co mógłbym/mogłabym zrobić inaczej. Jeśli wyrażasz zgodę kliknij poniższy link aby przesłać swoją opinię.</p> <p>
 Byłbym wdzięczny za odpowiedź przed moim spotkaniem. </p>

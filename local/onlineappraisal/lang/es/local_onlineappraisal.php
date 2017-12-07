@@ -348,8 +348,6 @@ $string['pdf:form:summaries:recommendations'] = 'Actuaciones acordadas';
 
 $string['startappraisal'] = 'Empezar Appraisal';
 $string['continueappraisal'] = 'Continuar Appraisal';
-$string['appraisee_feedback_edit_text'] = 'Editar';
-$string['appraisee_feedback_resend_text'] = 'Reenviar';
 $string['appraisee_feedback_view_text'] = 'Ver';
 $string['feedback_setface2face'] = 'Tienes que fijar una fecha para la reunión de appraisal antes de poder añadir a tus colaboradores de feedback. Puedes encontrar información adicional en la sección Appraisee Info';
 $string['feedback_comments_none'] = '<em>Sin comentarios adicionales</em>';
@@ -487,7 +485,7 @@ $string['email:body:appraiseefeedback'] = '{{emailmsg}}
 Fecha de appraisal <span class="placeholder">{{held_date}}</span></p>
 <p>Este es un correo generado automáticamente por {{appraisee_fullname}} to {{firstname}} {{lastname}}.</p>
 <p>Si el link de abajo no funciona, por favor copia el siguiente link en tu navegador para acceder al appraisal:<br />{{linkurl}}</p>';
-$string['email:body:appraiseefeedbackmsg'] = 'Estimado <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+$string['email:body:appraiseefeedbackmsg'] = '<p>Estimado <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
 <p>
 Mi reunión para el appraisal está fijada para el <span class="placeholder">{{held_date}}</span>. My appraiser is <span class="placeholder">{{appraiser_fullname}}</span>.Como hemos trabajado juntos durante el pasado año, agradecería tu feedback en aquellas areas en las que valores mi trabajo, así como aquellas en las que crees que debo mejorar.</p> <p>
 Te estaré muy agradecido si puedes enviar tu feedback antes de mi reunión de appraisal. </p>
