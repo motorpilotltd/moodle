@@ -19,10 +19,12 @@
  * @copyright  2017 Andrew Hancox <andrewdchancox@googlemail.com> On Behalf of Arup
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016080508;
-$plugin->requires  = 2015111600; // Moodle 3.0.
-$plugin->component = 'local_lynda';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.1 (Build: {$plugin->version})";
+$definitions = array(
+    'full_taxonomy' => array(
+        'mode' => cache_store::MODE_REQUEST,
+        'simplekeys' => true,
+        'simpledata' => false,
+        'staticacceleration' => true,
+    )
+);

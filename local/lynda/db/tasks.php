@@ -22,7 +22,7 @@
 
 $tasks = array(
     array(
-        'classname' => '\local_lynda\task\sync_course_list',
+        'classname' => 'local_lynda\task\sync_course_list',
         'blocking' => 0,
         'minute' => '0',
         'hour' => '0',

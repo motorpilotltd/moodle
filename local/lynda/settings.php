@@ -1,5 +1,5 @@
 <?php
-// This file is part of the Arup online appraisal system
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,7 +23,9 @@
 defined('MOODLE_INTERNAL') || die;
 
 if ($hassiteconfig) {
-    $settings = new admin_settingpage('local_lynda', get_string('pluginname', 'local_lynda'));
+    $ADMIN->add('localplugins', new admin_category('local_lynda', new lang_string('pluginname', 'local_lynda')));
+
+    $settings = new admin_settingpage('local_lynda_apisettings', get_string('apisettings', 'local_lynda'));
 
     $name = 'local_lynda/appkey';
     $title = get_string('setting:appkey','local_lynda');
@@ -37,5 +39,8 @@ if ($hassiteconfig) {
     $title = get_string('setting:apiurl','local_lynda');
     $settings->add(new admin_setting_configtext($name, $title, '', 'https://api-1.lynda.com'));
     
-    $ADMIN->add('localplugins', $settings);
+    $ADMIN->add('local_lynda', $settings);
+
+    $ADMIN->add('local_lynda', new admin_externalpage('managecourses', get_string('managecourses', 'local_lynda'),
+            new moodle_url('/local/lynda/manage.php'), 'local/lynda:manage'));
 }

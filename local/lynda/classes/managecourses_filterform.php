@@ -19,10 +19,34 @@
  * @copyright  2017 Andrew Hancox <andrewdchancox@googlemail.com> On Behalf of Arup
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace local_lynda;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016080508;
-$plugin->requires  = 2015111600; // Moodle 3.0.
-$plugin->component = 'local_lynda';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.1 (Build: {$plugin->version})";
+global $CFG;
+require_once($CFG->libdir . '/formslib.php');
+
+class managecourses_filterform extends \moodleform {
+    /**
+     * Form definition method.
+     */
+    public function definition() {
+        $mform = $this->_form;
+
+        $mform->addElement('header', 'filteroptions', get_string('filteroptions', 'local_lynda'));
+
+        $tags = lyndatagtype::fetch_full_taxonomy();
+
+        foreach ($tags as $tagcategory) {
+            $options = [];
+            foreach ($tagcategory->tags as $tag) {
+                $options[$tag->remotetagid] = $tag->name;
+            }
+            $tagtypeselectname = $tagcategory->gettagtypeselectname();
+            $mform->addElement('select', $tagtypeselectname, $tagcategory->name, $options, ['multiple' => true]);
+        }
+
+        $mform->addElement('submit', 'submit', get_string('update'));
+    }
+}

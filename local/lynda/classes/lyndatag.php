@@ -19,10 +19,39 @@
  * @copyright  2017 Andrew Hancox <andrewdchancox@googlemail.com> On Behalf of Arup
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016080508;
-$plugin->requires  = 2015111600; // Moodle 3.0.
-$plugin->component = 'local_lynda';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.1 (Build: {$plugin->version})";
+namespace local_lynda;
+
+defined('MOODLE_INTERNAL') || die();
+global $CFG;
+require_once($CFG->dirroot . '/completion/data_object.php');
+
+class lyndatag extends \data_object {
+    public $table = 'local_lynda_course';
+    public $required_fields = ['id', 'remotetagid', 'name', 'remotetypeid'];
+    public $optional_fields = [];
+
+    public $remotetagid;
+    public $name;
+    public $remotetypeid;
+
+    /**
+     * @param array $params
+     * @return self
+     */
+    public static function fetch($params) {
+        return self::fetch_helper('local_lynda_tags', __CLASS__, $params);
+    }
+
+    /**
+     * @param array $params
+     * @return self[]
+     */
+    public static function fetch_all($params) {
+        $ret = self::fetch_all_helper('local_lynda_tags', __CLASS__, $params);
+        if (!$ret) {
+            return [];
+        }
+        return $ret;
+    }
+}

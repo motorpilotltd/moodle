@@ -19,10 +19,13 @@
  * @copyright  2017 Andrew Hancox <andrewdchancox@googlemail.com> On Behalf of Arup
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016080508;
-$plugin->requires  = 2015111600; // Moodle 3.0.
-$plugin->component = 'local_lynda';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.1 (Build: {$plugin->version})";
+$capabilities = array(
+    'local/lynda:manage' => array(
+        'riskbitmask'  => RISK_CONFIG,
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+    ),
+);

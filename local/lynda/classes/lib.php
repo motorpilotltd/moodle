@@ -19,10 +19,29 @@
  * @copyright  2017 Andrew Hancox <andrewdchancox@googlemail.com> On Behalf of Arup
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016080508;
-$plugin->requires  = 2015111600; // Moodle 3.0.
-$plugin->component = 'local_lynda';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.1 (Build: {$plugin->version})";
+namespace local_lynda;
+
+class lib {
+    public static function appendurlparamswitharray($url, $params) {
+        $arr = [];
+        foreach ($params as $key => $val) {
+            if (is_array($val)) {
+                foreach ($val as $index => $value) {
+                    $arr[] = rawurlencode($key . '[' . $index . ']') . "=" . rawurlencode($value);
+                }
+            } else {
+                if (isset($val) && $val !== '') {
+                    $arr[] = rawurlencode($key) . "=" . rawurlencode($val);
+                } else {
+                    $arr[] = rawurlencode($key);
+                }
+            }
+        }
+        if (strpos($url, '?') === false) {
+            $url .= '?';
+        }
+
+        return $url . implode('&', $arr);
+    }
+}
