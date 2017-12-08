@@ -133,7 +133,13 @@ class feedback {
      */
     private function viewrequest($request) {
         global $DB;
-        if ($fb = $DB->get_record('local_appraisal_feedback', array('id' => $request))) {
+
+        if ($this->appraisal->appraisal->is_guest || !$this->appraisal->check_permission('feedback:view')){
+            return;
+        }
+
+        $fb = $DB->get_record('local_appraisal_feedback', ['id' => $request]);
+        if ($fb && (!$this->appraisal->appraisal->is_appraisee || $fb->confidential == 0)) {
             $this->viewfeedback = $fb;
         }
     }
@@ -230,9 +236,9 @@ class feedback {
                 $this->feedback_action('edit', $request->id);
             }
         } else if ($this->appraisal->check_permission('feedback:view')){
-            if ($this->appraisal->appraisal->is_appraiser) {
+            if ($this->appraisal->appraisal->is_appraisee && $request->confidential == 0) {
                 $this->feedback_action('view', $request->id);
-            } else if ($this->appraisal->appraisal->is_appraisee && $request->confidential == 0) {
+            } else if (!$this->appraisal->appraisal->is_guest) {
                 $this->feedback_action('view', $request->id);
             }
         } else if ($this->appraisal->check_permission('feedbackown:view') &&
