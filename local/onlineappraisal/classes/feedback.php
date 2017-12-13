@@ -134,7 +134,7 @@ class feedback {
     private function viewrequest($request) {
         global $DB;
 
-        if ($this->appraisal->appraisal->is_guest || !$this->appraisal->check_permission('feedback:view')){
+        if ($this->appraisal->appraisal->viewingas == 'guest' || !$this->appraisal->check_permission('feedback:view')){
             return;
         }
 
@@ -238,7 +238,7 @@ class feedback {
         } else if ($this->appraisal->check_permission('feedback:view')){
             if ($this->appraisal->appraisal->is_appraisee && $request->confidential == 0) {
                 $this->feedback_action('view', $request->id);
-            } else if (!$this->appraisal->appraisal->is_guest) {
+            } else if ($this->appraisal->appraisal->viewingas != 'guest') {
                 $this->feedback_action('view', $request->id);
             }
         } else if ($this->appraisal->check_permission('feedbackown:view') &&
