@@ -134,12 +134,25 @@ class feedback {
     private function viewrequest($request) {
         global $DB;
 
-        if ($this->appraisal->appraisal->viewingas == 'guest' || !$this->appraisal->check_permission('feedback:view')){
+        if ($this->appraisal->appraisal->viewingas == 'guest') {
+            return;
+        }
+
+        $viewperm = $this->appraisal->check_permission('feedback:view');
+        $viewownperm = $this->appraisal->check_permission('feedbackown:view');
+
+        if (!$viewperm && !$viewownperm){
             return;
         }
 
         $fb = $DB->get_record('local_appraisal_feedback', ['id' => $request]);
-        if ($fb && (!$this->appraisal->appraisal->is_appraisee || $fb->confidential == 0)) {
+        if (!$fb || empty($fb->received_date)) {
+            return;
+        }
+
+        $canview = ($this->appraisal->appraisal->is_appraisee && $fb->confidential == 0) || !$this->appraisal->appraisal->is_appraisee;
+        $canviewown = $fb->feedback_user_type != 'appraiser' && $fb->confidential == 0;
+        if (($viewperm && $canview) || ($viewownperm && $canviewown)) {
             $this->viewfeedback = $fb;
         }
     }
