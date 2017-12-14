@@ -146,7 +146,7 @@ class feedback {
         }
 
         $fb = $DB->get_record('local_appraisal_feedback', ['id' => $request]);
-        if (!$fb || empty($fb->received_date)) {
+        if (!$fb) {
             return;
         }
 
