@@ -100,6 +100,7 @@ if ($check_anonymously) {
                                     'feedback', '', '', 3);
 }
 echo '</div>';
+/* BEGIN CORE MOD */
 // Button "Export to excel".
 if (has_capability('mod/feedback:viewreports', $context) && $feedbackstructure->get_items()) {
     echo $OUTPUT->container_start('form-buttons');
@@ -107,6 +108,6 @@ if (has_capability('mod/feedback:viewreports', $context) && $feedbackstructure->
     echo $OUTPUT->single_button($aurl, get_string('export_to_excel', 'feedback'));
     echo $OUTPUT->container_end();
 }
-
+/* END CORE MOD */
 echo $OUTPUT->footer();
 

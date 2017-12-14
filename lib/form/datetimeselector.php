@@ -340,22 +340,22 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group {
                                                                  $valuearray['hour'],
                                                                  $valuearray['minute']);
 /* BEGIN CORE MOD */
-            $value = make_timestamp($gregoriandate['year'],
+            $timezone = isset($valuearray['timezone'])  ? $valuearray['timezone'] : $this->_options['timezone'];
+            $timestamp = make_timestamp($gregoriandate['year'],
                                                       $gregoriandate['month'],
                                                       $gregoriandate['day'],
                                                       $gregoriandate['hour'],
                                                       $gregoriandate['minute'],
                                                       0,
-                                                      isset($valuearray['timezone'])  ? $valuearray['timezone'] : $this->_options['timezone'],
+                                                      $timezone,
                                                       true);
-            if (isset($valuearray['timezone'])) {
-                $value['timezone'] = $valuearray['timezone'];
-            } else {
-                $value['timezone'] = $this->_options['timezone'];
+            $value = $this->_prepareValue($timestamp, $assoc);
+            if (isset($value[$this->getName()])) {
+                $value[$this->getName().'_timezone'] = $timezone;
             }
-/* END CORE MOD */
 
-            return $this->_prepareValue($value, $assoc);
+            return $value;
+/* END CORE MOD */
         } else {
             return null;
         }

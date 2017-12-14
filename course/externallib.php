@@ -3393,6 +3393,16 @@ class core_course_external extends external_api {
                 break;
             case 'delete':
                 require_capability('moodle/course:manageactivities', $modcontext);
+/* BEGIN CORE MOD */
+// Block deletion if part of course completion criteria.
+                $completion = new completion_info($course);
+                $activities = $completion->get_criteria(COMPLETION_CRITERIA_TYPE_ACTIVITY);
+                foreach ($activities as $activity) {
+                    if ($activity->moduleinstance == $cm->id) {
+                        break;
+                    }
+                }
+/* END CORE MOD */
                 course_delete_module($cm->id, true);
                 return '';
             default:

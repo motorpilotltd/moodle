@@ -251,7 +251,6 @@ if ($usernew = $userform->get_data()) {
 
     // Update user picture.
     if (empty($CFG->disableuserimages)) {
-        useredit_update_picture($usernew, $userform, $filemanageroptions);
 /* BEGIN CORE MOD */
         if ($DB->get_field('user', 'auth', array('id' => $usernew->id)) != 'saml') {
             core_user::update_picture($usernew, $filemanageroptions);

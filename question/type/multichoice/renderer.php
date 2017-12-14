@@ -193,15 +193,17 @@ abstract class qtype_multichoice_renderer_base extends qtype_with_combined_feedb
      */
     protected function correct_choices(array $right) {
         // Return appropriate string for single/multiple correct answer(s).
+/* BEGIN CORE MOD */
         if (count($right) == 1) {
                 return get_string('correctansweris', 'qtype_multichoice',
-                        implode(', ', $right));
+                        '<ul><li>'.implode('</li><li>', $right).'</li></ul>');
         } else if (count($right) > 1) {
                 return get_string('correctanswersare', 'qtype_multichoice',
-                        implode(', ', $right));
+                        '<ul><li>'.implode('</li><li>', $right).'</li></ul>');
         } else {
                 return "";
         }
+/* END CORE MOD */
     }
 }
 

@@ -163,6 +163,7 @@ class feedback_item_info extends feedback_item_base {
             if (strval($item->label) !== '') {
                 echo format_string($item->label) . ' ';
             }
+/* END CORE MOD */
             echo format_text($item->name, FORMAT_HTML, array('noclean' => true, 'para' => false));
             echo '</th></tr>';
             $sizeofdata = count($data);

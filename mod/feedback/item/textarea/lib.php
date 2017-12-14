@@ -137,7 +137,7 @@ class feedback_item_textarea extends feedback_item_base {
             echo "<table class=\"analysis itemtype_{$item->typ}\">";
             echo '<tr><th colspan="2" align="left">';
 /* BEGIN CORE MOD */
-            echo $itemnr . '&nbps;';
+            echo $itemnr . '&nbsp;';
             if (strval($item->label) !== '') {
                 echo format_string($item->label).' ';
             }
