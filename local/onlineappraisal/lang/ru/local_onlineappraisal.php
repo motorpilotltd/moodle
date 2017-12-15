@@ -113,8 +113,6 @@ $string['startappraisal'] = 'Начать онлайн аттестацию';
 $string['continueappraisal'] = 'Продолжить онлайн аттестацию';
 
 // Request Feedback.
-$string['appraisee_feedback_edit_text'] = 'Редактировать';
-$string['appraisee_feedback_resend_text'] = 'Отправить снова';
 $string['appraisee_feedback_view_text'] = 'Просмотр';
 $string['feedback_setface2face'] = 'Вам необходимо назначить дату аттестации перед тем, как добавлять запрос на отзывы. Это находится на странице информации Аттестуемого.';
 $string['feedback_comments_none'] = '<em>Дополнительных комментариев не предоставлено.</em>';
@@ -453,7 +451,7 @@ $string['email:body:appraiseefeedback'] = '{{emailmsg}}
 <hr>
 <p>Пожалуйста, пройдите по {{link}} ссылке ниже, чтобы оставить отзыв. </p><p>Аттестация  {{appraisee_fullname}}<br> Аттестация назначена на <span class="placeholder">{{held_date}}</span></p>
 <p> Это автоматическое письмо отправлено {{appraisee_fullname}} для {{firstname}} {{lastname}}.</p> <p> Если ссылка не работает, пожалуйста, скопируйте ее в браузер, чтобы посмотреть аттестацию:<br />{{linkurl}}</p>';
-$string['email:body:appraiseefeedbackmsg'] = 'Уважаемый <span class="placeholder bind_firstname">{{firstname}}</span>,
+$string['email:body:appraiseefeedbackmsg'] = '<p>Уважаемый <span class="placeholder bind_firstname">{{firstname}}</span>,
 </p> <p>Моя аттестация назначена на<span class="placeholder">{{held_date}}</span>. Аттестацию проводит <span class="placeholder">{{appraiser_fullname}}</span>. В прошлом году мы много работали вместе, я буду признателен получить Ваш отзыв по тем направлениям, где Вы особенно оценили мой вклад, и где Вы считаете, я мог бы быть продуктивнее. </p> <p>Если Вы желаете оставить отзыв, то пройдите по ссылке ниже.  Я буду очень благодарен, если Вы ответите до моей встречи с аттестующим.</p>
 <p class="ignoreoncopy">Дополнительные комментарии ниже <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
 <p> С уважением, <br />

@@ -357,8 +357,6 @@ $string['overview:button:submitit'] = 'Send';
 // START V string translations - spreadsheet
 $string['startappraisal'] = 'Bắt đầu làm Bản đánh giá online/ trực tuyến';
 $string['continueappraisal'] = 'Tiếp tục làm Bản đánh giá online/ trực tuyến';
-$string['appraisee_feedback_edit_text'] = 'Điền vào';
-$string['appraisee_feedback_resend_text'] = 'Gửi lại';
 $string['appraisee_feedback_view_text'] = 'Xem';
 $string['feedback_setface2face'] = 'Bạn phải đặt hẹn ngày gặp trực tiếp trước khi bạn bổ sung yêu cầu đưa ra phản hồi. Có thể tìm thấy điều này trên trang Thông Tin Của Người Được Đánh Giá';
 $string['feedback_comments_none'] = 'Không có nhận xét bổ sung nào';
@@ -531,7 +529,7 @@ Tên bản đánh giá  <span class="placeholder">{{held_date}}</span></p>
 Bản đánh giá của tôi vào ngày {{appraisee_fullname}} đến {{firstname}} {{lastname}}.</p>
 <p>
 Nếu đường dẫn bên trên không hoạt động, vui lòng chép đường dẫn sau vào trình duyệt của bạn để đăng nhập vào bản đánh giá:<br />{{linkurl}}</p>';
-$string['email:body:appraiseefeedbackmsg'] = '<span class="placeholder bind_firstname">{{firstname}}</span> thân mến,</p>
+$string['email:body:appraiseefeedbackmsg'] = '<p><span class="placeholder bind_firstname">{{firstname}}</span> thân mến,</p>
 <p>
 Buổi họp đánh giá của tôi sẽ được sắp xếp vào <span class="placeholder">{{held_date}}</span>. Người đánh giá của tôi là <span class="placeholder">{{appraiser_fullname}}</span>. Vì bạn và tôi đã làm việc mật thiết với nhau trong năm vừa qua, tôi rất mong nhận được phản hồi của bạn cho những mặt mà bạn đánh giá cao đóng góp của tôi cũng như những lĩnh vực mà bạn thấy tôi có thể làm hiệu quả hơn. Nếu bạn thấy muốn đóng góp, vui lòng nhấp vào đường dẫn sau đây để phản hồi. </p> <p>
 
