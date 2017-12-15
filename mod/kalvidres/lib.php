@@ -209,7 +209,12 @@ function kalvidres_cm_info_view(cm_info $cm) {
 
     $client = arup_local_kaltura_get_kaltura_client();
 
-    $entry = $client->baseEntry->get($kalvidres->entry_id);
+    try {
+        $entry = $client->baseEntry->get($kalvidres->entry_id);
+    } catch (Exception $e) {
+        error_log("kalvidres: entry object ({$kalvidres->entry_id}) not found/ready");
+        return '';
+    }
 
     if (!$entry || $entry->status != KalturaEntryStatus::READY) {
         error_log("kalvidres: entry object ({$kalvidres->entry_id}) not found/ready");
