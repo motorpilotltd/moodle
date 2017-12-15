@@ -416,7 +416,8 @@ $string['manageenrolments:footeralert:future'] = 'When you enrol a user on an up
     . '\'Approved Place\' or \'W:Wait Listed\', as appropriate, and you will be recorded as being their approver. The user will receive '
     . 'an approval email and, if they receive a status of \'Approved Place\', an invite. Any future cancellation will result in the '
     . 'user receiving a cancellation email and if they received an invite that will be cancelled. You, as their approver, will also receive '
-    . 'notification of the cancellation.<br><br>If applicable, any certifications (or just the Moodle module) will be reset prior to enrolling the user.';
+    . 'notification of the cancellation.<br><br>If applicable, any certifications (or just the Moodle module) will be reset prior to enrolling the user.<br>'
+    . '<br>NB. Users who already have active enrolments on the class will not appear in the user search list above.';
 $string['manageenrolments:footeralert:move'] = 'When you move users between classes their current status will be retained, unless moving between a \'Planned class\' and a \'Normal\' class. '
     . 'If the are waitlisted on a planned class they will be approved on a normal class and vice versa.<br /><br />'
     . 'You can choose whether to re-send applicable emails (i.e. approval request, invite) which will then be automatically be sent based on the status:<br />'
@@ -425,7 +426,8 @@ $string['manageenrolments:footeralert:move'] = 'When you move users between clas
     . '<li>If approval is/was required the approver will be notified of the class change.</li></ul><br />'
     . 'We would advise that you always send emails when moving users with requested or approved places as it will ensure approval requests are resent or current invites are cancelled and new invites sent.';
 $string['manageenrolments:footeralert:past'] = 'When you enrol a user on a past class they will be enrolled with a status of '
-    . '\'Full Attendance\' if classroom and \'Approved Place\' if elearning.<br>No emails will be sent.<br><br>If applicable, any certifications (or just the Moodle module) will be reset prior to enrolling the user.';
+    . '\'Full Attendance\' if classroom and \'Approved Place\' if elearning.<br>No emails will be sent.<br><br>If applicable, any certifications (or just the Moodle module) will be reset prior to enrolling the user.<br>'
+    . '<br>NB. Users who already have active enrolments on the class will not appear in the user search list above.';
 $string['manageenrolments:footeralert:update'] = 'Coming soon...';
 $string['manageenrolments:footeralert:waitlist'] = 'When you approve a waitlisted application the enrolment will be updated with a status of '
     . '\'Approved Place\'. A notification email and invitation will be sent.';
