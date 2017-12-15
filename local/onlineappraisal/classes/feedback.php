@@ -373,25 +373,36 @@ class feedback {
         global $DB, $USER;
 
         $template = new stdClass();
+        $template->filter = $DB->get_records_select_menu(
+                'local_appraisal_cohorts',
+                'availablefrom < :now',
+                ['now' => time()],
+                'availablefrom DESC',
+                'id, name');
 
         // Do a case insensitive comparison.
         $like = $DB->sql_like('af.email', ':email', false);
 
         // The global Join used by the 2 queries.
-        $join = "SELECT af.*, aa.held_date, aa.face_to_face_held, aa.permissionsid, aa.archived, aa.legacy, u.firstname as ufirstname, u.lastname as ulastname, u.id as appraiseeid
+        $join = "SELECT af.*,
+                        aa.held_date, aa.face_to_face_held, aa.permissionsid, aa.archived, aa.legacy,
+                        u.firstname as ufirstname, u.lastname as ulastname, u.id as appraiseeid,
+                        lac.id as cohortid, lac.name as cohortname, lac.availablefrom as cohortavailablefrom
                    FROM {local_appraisal_feedback} af
                    JOIN {local_appraisal_appraisal} aa
                      ON aa.id = af.appraisalid
+                   JOIN {local_appraisal_cohort_apps} laca ON aa.id = laca.appraisalid
+                   JOIN {local_appraisal_cohorts} lac ON lac.id = laca.cohortid
                    JOIN {user} u
                      ON u.id = aa.appraisee_userid
                   WHERE {$like}
-                    AND aa.archived = 0
                     AND aa.deleted = 0";
 
         // Get the outstanding Feedback requests from the DB.
         $outstanding = "{$join}
-                    AND (received_date IS NULL OR received_date = 0)
-               ORDER BY held_date DESC";
+                    AND aa.archived = 0
+                    AND (af.received_date IS NULL OR af.received_date = 0)
+               ORDER BY lac.availablefrom ASC, aa.held_date ASC";
 
         $outstandingrecords = $DB->get_records_sql($outstanding, array('email' => $USER->email));        
 
@@ -408,17 +419,28 @@ class feedback {
 
         // Get the completed Feedback feedback requests from the DB.
         $completed = "{$join}
-                    AND (received_date IS NOT NULL OR received_date > 0)
-               ORDER BY received_date DESC";
+                    AND af.received_date > 0
+               ORDER BY lac.availablefrom DESC, af.received_date DESC";
 
         $completedrecords = $DB->get_records_sql($completed, array('email' => $USER->email));
 
+        $template->filterselected = optional_param('filter', key($template->filter), PARAM_INT);
+        $cohortcount = array_fill_keys(array_keys($template->filter), 0);
         foreach ($completedrecords as $cr) {
+            $cohortcount[$cr->cohortid]++;
+            if ($cr->cohortid != $template->filterselected) {
+                continue;
+            }
             $cr->feedbacklink = new moodle_url('/local/onlineappraisal/feedback_requests.php',
                 array('id' => $cr->id, 'action' => 'resend'));
             $this->request_userdates($cr);
             $cr->requested = $this->get_requestedby($cr);
             $template->completed[] = $cr;
+        }
+
+        // Add count to filters.
+        foreach ($template->filter as $key => $value) {
+            $template->filter[$key] = $value . " ({$cohortcount[$key]})";
         }
 
         return $template;
