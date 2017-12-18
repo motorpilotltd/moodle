@@ -1174,7 +1174,12 @@ class certification_report {
                 /**
                  * Add user progress data
                  */
-                $progress = $compldata->lasttimecompleted > 0 && $compldata->timeexpires > time() ? 100 : $compldata->progress;
+                // Complete if not expired (or doesn't expire).
+                if ($compldata->lasttimecompleted > 0 && ($compldata->timeexpires > time() || $compldata->timeexpires == 0)) {
+                    $progress = 100;
+                } else {
+                    $progress = $compldata->progress;
+                }
                 // Binary progress used to calculate overall totals (either complete or not).
                 $binaryprogress = ($progress == 100 ? 100 : 0);
                 $data[$compldata->userid]['certifications'][$compldata->certifid] = [

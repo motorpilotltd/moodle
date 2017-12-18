@@ -23,6 +23,8 @@
  */
 
 class cmform_class extends moodleform {
+    protected $hasattendedenrolments;
+
     public function definition() {
         $data = $this->_customdata;
         $mform = $this->_form;
@@ -33,6 +35,8 @@ class cmform_class extends moodleform {
         $mform->setType('disabletrick', PARAM_INT);
         $mform->addElement('hidden', 'edit', 1);
         $mform->settype('edit', PARAM_INT);
+        $mform->addElement('hidden', 'duplicate', optional_param('duplicate', 0, PARAM_INT));
+        $mform->settype('duplicate', PARAM_INT);
 
         $this->add_element("start", "hidden", PARAM_INT);
         $this->add_element("cmcourse", "hidden", PARAM_INT);
@@ -75,19 +79,7 @@ class cmform_class extends moodleform {
         $this->add_element("trainingcenter", "text", PARAM_TEXT);
         $this->add_element("maximumattendees", "text", PARAM_INT);
 
-        // See variables in \local_taps\taps for options.
-        $currencycode = array(
-            '' => null,
-            'AUD' => 'Australian Dollars',
-            'CNY' => 'Chinese Yuan',
-            'EUR' => 'Euro',
-            'GBP' => 'Pounds Sterling',
-            'HKD' => 'Hong Kong Dollars',
-            'RON' => 'Romanian New Leu',
-            'SGD' => 'Singapore Dollars',
-            'USD' => 'US Dollars'
-        );
-        $this->add_element("currencycode", "select", null, $currencycode);
+        $this->add_element("currencycode", "select", null, $taps->get_classcostcurrency());
         // Float? Decimal(20,2) in DB.
         $this->add_element("price", "text", PARAM_TEXT);
         $this->add_element("jobnumber", "text", PARAM_TEXT);
@@ -161,7 +153,7 @@ class cmform_class extends moodleform {
                 $errors['price'] = $this->str('priceerror'); 
             }
         }
-        if ($data['classtype'] == "0") {
+        if (isset($data['classtype']) && $data['classtype'] == "0") {
             $errors['classtype'] = get_string('required', 'local_coursemanager');
         }
         if ($data['usedtimezone'] == "0") {
@@ -179,7 +171,22 @@ class cmform_class extends moodleform {
         if (count($dupes) > 0) {
             $errors['classname'] =  get_string('duplicateclassname', 'local_coursemanager');
         }
-
+        // Don't want to use empty() to check classendtime as need it to actually be set.
+        if (!empty($this->hasattendedenrolments)
+                && isset($this->_customdata->classendtime) && !$this->_customdata->classendtime
+                && $this->_customdata->classtype = 'Self Paced' && !empty($data['classendtimeenabled'])) {
+            // Need to offset UTC timestamps based on chosen timezone.
+            try {
+                $timezone = new DateTimeZone($data['usedtimezone']);
+            } catch (Exception $e) {
+                $timezone = new DateTimeZone(date_default_timezone_get());
+            }
+            $classendtimestring = gmdate('Y-m-d H:i', $data['classendtime']);
+            $classendtime = new DateTime($classendtimestring, $timezone);
+            if ($classendtime->getTimestamp() < time()) {
+                $errors['classendtimegroup'] =  get_string('classendtime:past', 'local_coursemanager');
+            }
+        }
         return $errors;
     }
 
@@ -254,7 +261,6 @@ class cmform_class extends moodleform {
         }
     }
 
-
     private function &createGroup($elements, $name=null, $groupLabel='', $separator=null, $appendName = true)
     {
         $mform = $this->_form;
@@ -266,5 +272,49 @@ class cmform_class extends moodleform {
         }
         $group =& $mform->createElement('group', $name, $groupLabel, $elements, $separator, $appendName);
         return $group;
-    } // end func addGroup
+    }
+
+    public function definition_after_data() {
+        global $DB;
+        $mform = $this->_form;
+        if ($this->_customdata->id > 0 && $this->_customdata->classid > 0) {
+            // Check for attended enrolments and unset duration/time fields so they are not updated.
+            $taps = new \local_taps\taps();
+            list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
+            $sql = "SELECT COUNT(id)
+                  FROM {local_taps_enrolment}
+                  WHERE
+                    classid = :classid
+                    AND (archived = 0 OR archived IS NULL)
+                    AND {$DB->sql_compare_text('bookingstatus')} {$insql}";
+
+            $params['classid'] = $this->_customdata->classid;
+            $this->hasattendedenrolments = $DB->count_records_sql($sql, $params);
+            if ($this->hasattendedenrolments) {
+                $elements = [
+                    'classstarttime',
+                    'classstarttimegroup',
+                    'classendtime',
+                    'classendtimegroup',
+                    'usedtimezone'
+                ];
+                if (isset($this->_customdata->classtype)
+                        && $this->_customdata->classtype == 'Self Paced'
+                        && empty($this->_customdata->classendtime)) {
+                    // Do not freeze class end time for self paced classes if not already set.
+                    $elements = array_diff($elements, ['classendtime', 'classendtimegroup']);
+                }
+                foreach ($elements as $element) {
+                    if ($mform->elementExists($element)) {
+                        $mform->freeze($element);
+                    }
+                }
+                if ($mform->elementExists('classstatus')) {
+                    // As can be in this form for self paced!
+                    // We disable for consistency with disabling single_select.
+                    $mform->getElement('classstatus')->updateAttributes('disabled="disabled"');
+                }
+            }
+        }
+    }
 }

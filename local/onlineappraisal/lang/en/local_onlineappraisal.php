@@ -101,9 +101,7 @@ $string['feedback_status'] = 'Status';
 $string['addfeedback'] = 'Add New Contributor';
 $string['addreceivedfeedback'] = 'Add Received Feedback';
 $string['appraisee_feedback_delete_text'] = 'Delete';
-$string['appraisee_feedback_edit_text'] = 'Edit';
-$string['appraisee_feedback_edit_success'] = 'Email address changed and request resend.';
-$string['appraisee_feedback_resend_text'] = 'Resend';
+$string['appraisee_feedback_editresend_text'] = 'Edit and Resend';
 $string['appraisee_feedback_view_text'] = 'View';
 $string['appraisee_feedback_viewrequest_text'] = 'View request email';
 $string['feedback_setface2face'] = 'You have to set a date for the face to face appraisal meeting before you can add feedback requests. This can be found on the Appraisee Info page.';
@@ -435,7 +433,7 @@ $string['email:subject:appraiserfeedbackmsg'] = '';
 $string['email:subject:appraiseefeedback'] = 'Request for feedback for my appraisal';
 $string['email:subject:appraiserfeedback'] = 'Request for feedback for {{appraisee_fullname}}\'s appraisal';
 // Messages (above the 'line').
-$string['email:body:appraiseefeedbackmsg'] = 'Dear <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+$string['email:body:appraiseefeedbackmsg'] = '<p>Dear <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
 <p>My appraisal meeting is arranged for the <span class="placeholder">{{held_date}}</span>. My appraiser is <span class="placeholder">{{appraiser_fullname}}</span>. As you and I have worked closely together over the past year, I would appreciate your feedback on areas in which you have valued my contribution, and where you feel I could have been more effective. If you are happy to contribute, please click on the link below to provide your feedback.</p> <p>I would be grateful if you could respond before my appraisal meeting.</p>
 <p class="ignoreoncopy">Below are any additional comments from <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
 <p>Yours sincerely,<br />
@@ -840,7 +838,10 @@ $string['form:feedback:firstname'] = 'First Name';
 $string['form:feedback:lastname'] = 'Last Name';
 $string['form:feedback:language'] = 'Select feedback email language';
 $string['form:feedback:sendemailbtn'] = 'Send email to Contributor';
+$string['form:feedback:resendemailbtn'] = 'Save and resend email to Contributor';
 $string['form:feedback:title'] = 'Feedback - Add a new Contributor';
+$string['form:feedback:title:resend'] = 'Feedback - Edit and resend request';
+$string['form:feedback:resendhelp'] = '<i class="fa fa-exclamation-triangle"></i> Please check names and dates in the email below are correct before resending, particularly if you are changing details above and/or your appraisal meeting date or appraiser has been changed.';
 $string['form:feedback:editemail'] = 'Edit';
 $string['form:feedback:providefirstnamelastname'] = 'Please enter the recipient firstname and lastname before clicking the edit button.';
 
@@ -1238,7 +1239,8 @@ $string['feedbackrequests:description'] = 'This dashboard shows any outstanding 
 $string['feedbackrequests:outstanding'] = 'Outstanding Requests';
 $string['feedbackrequests:norequests'] = 'No outstanding feedback requests';
 $string['feedbackrequests:completed'] = 'Completed Requests';
-$string['feedbackrequests:nocompleted'] = 'No completed feedback requests';
+$string['feedbackrequests:nocompleted'] = 'No completed feedback requests for the selected cycle';
+$string['feedbackrequests:filter:label'] = 'Appraisal Cycle';
 $string['feedbackrequests:th:requestby'] = 'Requested by';
 $string['feedbackrequests:th:requestfor'] = 'Requested for';
 $string['feedbackrequests:th:requestdate'] = 'Requested date';

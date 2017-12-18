@@ -328,8 +328,6 @@ $string['overview:button:submitit'] = 'Verzend';
 
 $string['startappraisal'] = 'Start Online Appraisal';
 $string['continueappraisal'] = 'Ga verder met Online Appraisal';
-$string['appraisee_feedback_edit_text'] = 'Wijzig';
-$string['appraisee_feedback_resend_text'] = 'Zend verzoek opnieuw';
 $string['appraisee_feedback_view_text'] = 'Bekijk';
 $string['feedback_setface2face'] = 'Voordat feedback verzoeken verzonden kunnen worden moet een datum voor een face tot face gesprek zijn gepland. Dit is terug te vinden op de Appraisee Info Pagina';
 $string['feedback_comments_none'] = '';
@@ -459,7 +457,7 @@ $string['email:body:appraiseefeedback'] = '{{emailmsg}}
    Mijn appraisal vindt plaats op <span class="placeholder">{{held_date}}</span></p>
 <p>Dit is een automatisch gegenereerde e-mail, verstuurd door {{appraisee_fullname}} aan {{firstname}} {{lastname}}.</p>
 <p>Als bovenstaande link niet werkt, kopieer de volgende link in je internet browser om toegang te krijgen tot het appraisal:<br />{{linkurl}}</p>';
-$string['email:body:appraiseefeedbackmsg'] = 'Beste <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+$string['email:body:appraiseefeedbackmsg'] = '<p>Beste <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
 <p>Mijn appraisal gesprek vindt plaats op <span class="placeholder">{{held_date}}</span>. Mijn beoordelaar is <span class="placeholder">{{appraiser_fullname}}</span>. Omdat wij het afgelopen jaar nauw hebben samengewerkt, zou ik het op prijs stellen als je feedback geeft op welke onderdelen je mijn bijdrage als waardevol hebt ervaren en op welke onderdelen ik effectiever kan zijn. Als je feedback wilt geven, klik dan op onderstaande link om dit te doen.</p><p>Het zou fijn zijn als je voor mijn appraisal gesprek kunt reageren.</p>
 <p class="ignoreoncopy">Onderstaand zijn een aantal opmerkingen van <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
 <p>Met vriendelijke groet,<br />

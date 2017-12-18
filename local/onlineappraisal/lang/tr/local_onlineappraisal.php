@@ -336,8 +336,6 @@ $string['overview:button:submitit'] = 'Gönder';
 
 $string['startappraisal'] = 'Çevrimiçi Değerlendirmeyi Başlat';
 $string['continueappraisal'] = 'Çevrimiçi Değerlendirmeye Devam Et';
-$string['appraisee_feedback_edit_text'] = 'Düzenle';
-$string['appraisee_feedback_resend_text'] = 'Tekrar Gönder';
 $string['appraisee_feedback_view_text'] = 'Görüntüle';
 $string['feedback_setface2face'] = 'Geri bildirim taleplerini eklemeden önce yüz yüze değerlendirme görüşmesi için bir tarih belirlemeniz şarttır. Bunu Değerlendirilen Kişi Bilgileri sayfasında bulabilirsiniz.';
 $string['feedback_comments_none'] = 'İlave yorum yapılmamıştır.';
@@ -484,7 +482,7 @@ $string['email:body:appraiseefeedback'] = '{{emailmsg}}
 <p>Appraisal Name {{appraisee_fullname}}<br>My appraisal is on <span class="placeholder">{{held_date}}</span></p>
 <p>This is an auto generated email sent by {{appraisee_fullname}} to {{firstname}} {{lastname}}.</p>
 <p>If the link above does not work, please copy the following link into your browser to access the appraisal:<br />{{linkurl}}</p>';
-$string['email:body:appraiseefeedbackmsg'] = 'Değerli <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+$string['email:body:appraiseefeedbackmsg'] = '<p>Değerli <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
 <p> Bu yılki performans değerlendirmesi görüşmem <span class="placeholder">{{held_date}}</span>. Değerlendirme görüşmemi<span class="placeholder">{{appraiser_fullname}} ile yapacağım</span>. Geçtiğimiz yıl boyunca sizinle birlikte çalıştığımız için, sizden bu yıl değer yaratıp, katkı sağladığım alanlar ve daha etkin olduğum ve olabileceğim, gelişime açık alanlar hakkındaki geri bildirimlerinizi rica ediyorum. Eğer geri bildirim vererek kişisel ve profesyonel gelişimime katkı sağlamak istiyorsanız aşağıdaki linke tıklamanızı rica ederim.</p> <p>
 Yüzyüze görüşmem öncesinde geri bildiriminizi gönderebilirseniz çok memnun olurum.</p>
 <p class="ignoreoncopy">Aşağıda \'a ait ek yorumları bulabilirsiniz. <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>

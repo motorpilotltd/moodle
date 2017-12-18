@@ -61,5 +61,6 @@ class cmform_class_scheduled_planned extends cmform_class {
         // Necessary as seem to hang on to previous values (when editing and changing type/status) for some reason.
         $mform->getElement('classtype')->setValue('Scheduled');
         $mform->getElement('classstatus')->setValue('Planned');
+        parent::definition_after_data();
     }
 }
