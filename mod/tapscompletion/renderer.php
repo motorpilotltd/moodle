@@ -56,7 +56,7 @@ class mod_tapscompletion_renderer extends plugin_renderer_base {
             $extra = empty($cm->extra) ? '' : $cm->extra;
             $icon = '';
             if (!empty($cm->icon)) {
-                $icon = '<img src="'.$OUTPUT->pix_url($cm->icon).'" class="activityicon" alt="'.get_string('modulename', $cm->modname).'" /> ';
+                $icon = '<img src="'.$OUTPUT->image_url($cm->icon).'" class="activityicon" alt="'.get_string('modulename', $cm->modname).'" /> ';
             }
 
             $class = $tapscompletion->visible ? '' : 'class="dimmed"'; // Hidden modules are dimmed.
@@ -176,7 +176,7 @@ class mod_tapscompletion_renderer extends plugin_renderer_base {
             $icon = '';
             switch ($criterion->criteriatype) {
                 case COMPLETION_CRITERIA_TYPE_ACTIVITY:
-                    $iconsrc = $OUTPUT->pix_url('icon', $criterion->module);
+                    $iconsrc = $OUTPUT->image_url('icon', $criterion->module);
                     $iconurl = new moodle_url('/mod/'.$criterion->module.'/view.php', array('id' => $criterion->moduleinstance));
                     $icontitle = $modinfo->cms[$criterion->moduleinstance]->name;
                     $iconalt = get_string('modulename', $criterion->module);
@@ -185,7 +185,7 @@ class mod_tapscompletion_renderer extends plugin_renderer_base {
                     break;
                 case COMPLETION_CRITERIA_TYPE_COURSE:
                     $crs = $DB->get_record('course', array('id' => $criterion->courseinstance));
-                    $iconsrc = $OUTPUT->pix_url('i/'.$COMPLETION_CRITERIA_TYPES[$criterion->criteriatype]);
+                    $iconsrc = $OUTPUT->image_url('i/'.$COMPLETION_CRITERIA_TYPES[$criterion->criteriatype]);
                     $iconurl = new moodle_url('/course/view.php', array('id' => $criterion->courseinstance));
                     $icontitle = format_string($crs->fullname, true, array('context' => get_context_instance(CONTEXT_COURSE, $crs->id, MUST_EXIST)));
                     $iconalt = format_string($crs->shortname, true, array('context' => get_context_instance(CONTEXT_COURSE, $crs->id)));
@@ -194,19 +194,19 @@ class mod_tapscompletion_renderer extends plugin_renderer_base {
                     break;
                 case COMPLETION_CRITERIA_TYPE_ROLE:
                     $role = $DB->get_record('role', array('id' => $criterion->role));
-                    $iconsrc = $OUTPUT->pix_url('i/'.$COMPLETION_CRITERIA_TYPES[$criterion->criteriatype]);
+                    $iconsrc = $OUTPUT->image_url('i/'.$COMPLETION_CRITERIA_TYPES[$criterion->criteriatype]);
                     $iconalt = $role->name;
                     $icon = html_writer::empty_tag('img', array('src' => $iconsrc, 'alt' => $iconalt));
                     break;
             }
             if (!$icon) {
-                $iconsrc = $OUTPUT->pix_url('i/'.$COMPLETION_CRITERIA_TYPES[$criterion->criteriatype]);
+                $iconsrc = $OUTPUT->image_url('i/'.$COMPLETION_CRITERIA_TYPES[$criterion->criteriatype]);
                 $icon = html_writer::empty_tag('img', array('src' => $iconsrc, 'alt' => ''));
             }
             $html .= html_writer::tag('th', $icon, array('class' => 'criteriaicon'));
         }
         $icon = html_writer::empty_tag('img', array(
-            'src' => $OUTPUT->pix_url('i/course'),
+            'src' => $OUTPUT->image_url('i/course'),
             'class' => 'icon',
             'alt' => get_string('course'),
             'title' => get_string('coursecomplete', 'completion')
@@ -276,7 +276,7 @@ class mod_tapscompletion_renderer extends plugin_renderer_base {
                         $fulldescribe = get_string('progress-title', 'completion', $a);
 
                         $img = html_writer::empty_tag('img', array(
-                            'src' => $OUTPUT->pix_url('i/'.$completionicon),
+                            'src' => $OUTPUT->image_url('i/'.$completionicon),
                             'alt' => $describe,
                             'class' => 'icon',
                             'title' => $fulldescribe
@@ -301,7 +301,7 @@ class mod_tapscompletion_renderer extends plugin_renderer_base {
                     $fulldescribe = get_string('progress-title', 'completion', $a);
 
                     $img = html_writer::empty_tag('img', array(
-                        'src' => $OUTPUT->pix_url('i/'.$completionicon),
+                        'src' => $OUTPUT->image_url('i/'.$completionicon),
                         'alt' => $describe,
                         'class' => 'icon',
                         'title' => $fulldescribe
@@ -327,7 +327,7 @@ class mod_tapscompletion_renderer extends plugin_renderer_base {
                 $fulldescribe = get_string('progress-title', 'completion', $a);
 
                 $img = html_writer::empty_tag('img', array(
-                    'src' => $OUTPUT->pix_url('i/completion-auto-'.$completiontype),
+                    'src' => $OUTPUT->image_url('i/completion-auto-'.$completiontype),
                     'alt' => $describe,
                     'class' => 'icon',
                     'title' => $fulldescribe

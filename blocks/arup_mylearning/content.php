@@ -399,7 +399,7 @@ class block_arup_mylearning_content {
                 $cell->text = html_writer::empty_tag(
                     'img',
                     array(
-                        'src' => $OUTPUT->pix_url($th->classtypegroup, 'local_taps'),
+                        'src' => $OUTPUT->image_url($th->classtypegroup, 'local_taps'),
                         'alt' => $alttitle,
                         'title' => $alttitle
                     )

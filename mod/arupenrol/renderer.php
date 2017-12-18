@@ -81,7 +81,7 @@ class mod_arupenrol_renderer extends plugin_renderer_base {
             $extra = empty($cm->extra) ? '' : $cm->extra;
             $icon = '';
             if (!empty($cm->icon)) {
-                $icon = '<img src="'.$OUTPUT->pix_url($cm->icon).'" class="activityicon" alt="'.get_string('modulename', $cm->modname).'" /> ';
+                $icon = '<img src="'.$OUTPUT->image_url($cm->icon).'" class="activityicon" alt="'.get_string('modulename', $cm->modname).'" /> ';
             }
 
             $class = $arupenrol->visible ? '' : 'class="dimmed"'; // Hidden modules are dimmed.

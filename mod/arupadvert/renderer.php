@@ -62,7 +62,7 @@ class mod_arupadvert_renderer extends plugin_renderer_base {
         $template->showheadings = $arupadvert->showheadings;
 
         if ($info->accredited) {
-            $logourl = $OUTPUT->pix_url('logo', 'arupadvertdatatype_'.$info->type);
+            $logourl = $OUTPUT->image_url('logo', 'arupadvertdatatype_'.$info->type);
         } else {
             $logourl = '';
         }
@@ -150,7 +150,7 @@ class mod_arupadvert_renderer extends plugin_renderer_base {
             $extra = empty($cm->extra) ? '' : $cm->extra;
             $icon = '';
             if (!empty($cm->icon)) {
-                $icon = '<img src="'.$OUTPUT->pix_url($cm->icon).'" class="activityicon" alt="'.get_string('modulename', $cm->modname).'" /> ';
+                $icon = '<img src="'.$OUTPUT->image_url($cm->icon).'" class="activityicon" alt="'.get_string('modulename', $cm->modname).'" /> ';
             }
 
             $class = $arupadvert->visible ? '' : 'class="dimmed"'; // Hidden modules are dimmed.

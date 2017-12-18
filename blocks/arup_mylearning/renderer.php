@@ -45,7 +45,7 @@ class block_arup_mylearning_renderer extends plugin_renderer_base {
         $output .= html_writer::tag('h3', '', array('id' => 'info-modal-label'));
         $output .= html_writer::end_tag('div'); // End div modal-header.
 
-        $imgsrc = $this->output->pix_url('loader', 'block_arup_mylearning');
+        $imgsrc = $this->output->image_url('loader', 'block_arup_mylearning');
         $img = html_writer::empty_tag('img', array('src' => $imgsrc));
         $output .= html_writer::tag('div', $img, array('class' => 'modal-body'));
 

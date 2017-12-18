@@ -75,7 +75,7 @@ class certification_assignments_form extends \moodleform
                 $individualstable .= \html_writer::tag('td', $actualduedate);
                 $individualstable .= \html_writer::start_tag('td', ['class' => 'action-img']);
 
-                $individualstable .= \html_writer::tag('img', '', ['src' => $OUTPUT->pix_url("/t/delete"), 'onclick' => "if(confirm('" . get_string('removeassignmentconfirmdialog', 'local_custom_certification') . "')) deleteAssignment(this);", 'class' => 'deletebtn', 'data-type' => 'individuals', 'data-id' => $certif->assignedusers[$assignment->assignmenttypeid]->id, 'data-certifid' => $certif->id]);
+                $individualstable .= \html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/delete"), 'onclick' => "if(confirm('" . get_string('removeassignmentconfirmdialog', 'local_custom_certification') . "')) deleteAssignment(this);", 'class' => 'deletebtn', 'data-type' => 'individuals', 'data-id' => $certif->assignedusers[$assignment->assignmenttypeid]->id, 'data-certifid' => $certif->id]);
                 $individualstable .= \html_writer::end_tag('td');
                 $individualstable .= \html_writer::end_tag('tr');
             }
@@ -140,7 +140,7 @@ class certification_assignments_form extends \moodleform
                 $cohortstable .= \html_writer::end_tag('td');
 
                 $cohortstable .= \html_writer::start_tag('td', ['class' => "action-img"]);
-                $cohortstable .= \html_writer::tag('img', '', ['src' => $OUTPUT->pix_url("/t/delete"), 'onclick' => "if(confirm('" . get_string('removeassignmentconfirmdialog', 'local_custom_certification') . "')) deleteAssignment(this);", 'class' => 'deletebtn', 'data-type' => 'cohorts', 'data-id' => $cohort->id, 'data-certifid' => $certif->id]);
+                $cohortstable .= \html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/delete"), 'onclick' => "if(confirm('" . get_string('removeassignmentconfirmdialog', 'local_custom_certification') . "')) deleteAssignment(this);", 'class' => 'deletebtn', 'data-type' => 'cohorts', 'data-id' => $cohort->id, 'data-certifid' => $certif->id]);
                 $cohortstable .= \html_writer::end_tag('td');
                 $cohortstable .= \html_writer::end_tag('tr');
             }

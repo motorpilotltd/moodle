@@ -118,15 +118,15 @@ if (count($competencies) > 0) {
     $editstr = get_string('edit', 'threesixty');
     for ($i = 0; $i < $numCompetencies ; $i++) {
         $competency = array_shift($competencies);
-        $links = '<a class="icon" href="editcompetency.php?a='.$threesixty->id.'&amp;c='.$competency->id."\" title=\"$editstr\"><img src=\"".$OUTPUT->pix_url('t/edit').'" /></a>';
-        $links .= ' <a class="icon" href="deletecompetency.php?a='.$threesixty->id.'&amp;c='.$competency->id."\" title=\"$deletestr\"><img src=\"".$OUTPUT->pix_url('t/delete').'" /></a>';
+        $links = '<a class="icon" href="editcompetency.php?a='.$threesixty->id.'&amp;c='.$competency->id."\" title=\"$editstr\"><img src=\"".$OUTPUT->image_url('t/edit').'" /></a>';
+        $links .= ' <a class="icon" href="deletecompetency.php?a='.$threesixty->id.'&amp;c='.$competency->id."\" title=\"$deletestr\"><img src=\"".$OUTPUT->image_url('t/delete').'" /></a>';
         if ($i != 0){
           $links .= ' <a class="icon" href="edit.php?a='.$threesixty->id.'&amp;c='.$competency->id.'&amp;move=-1" title="'.$strmoveup.'">
-                  <img src="'.$OUTPUT->pix_url('/t/up').'" alt="'.$strmoveup.'" /></a>';
+                  <img src="'.$OUTPUT->image_url('/t/up').'" alt="'.$strmoveup.'" /></a>';
         }
         if ($i < $numCompetencies - 1){
           $links .= ' <a class="icon" href="edit.php?a='.$threesixty->id.'&amp;c='.$competency->id.'&amp;move=1" title="'.$strmovedown.'">
-                  <img src="'.$OUTPUT->pix_url('/t/down').'" alt="'.$strmovedown.'" /></a>';
+                  <img src="'.$OUTPUT->image_url('/t/down').'" alt="'.$strmovedown.'" /></a>';
         }
         // Shorten the description field
         $shortdescription = substr($competency->description, 0, MAX_DESCRIPTION);

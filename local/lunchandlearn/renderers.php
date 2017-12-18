@@ -140,18 +140,18 @@ class theme_arup_core_calendar_renderer extends core_calendar_renderer {
         $content =  html_writer::start_div('eventfullactions');
         if (isset($editlink)) {
             $content .= html_writer::start_tag('a', array('href' => $editlink));
-            $content .= html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/edit'), 'alt' => get_string('tt_editevent', 'calendar'), 'title' => get_string('tt_editevent', 'calendar')));
+            $content .= html_writer::empty_tag('img', array('src' => $this->output->image_url('t/edit'), 'alt' => get_string('tt_editevent', 'calendar'), 'title' => get_string('tt_editevent', 'calendar')));
             $content .= html_writer::end_tag('a');
         }
         if (isset($deletelink)) {
             $content .= html_writer::start_tag('a', array('href' => $deletelink));
-            $content .= html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/delete'), 'alt' => get_string('tt_deleteevent', 'calendar'), 'title' => get_string('tt_deleteevent', 'calendar')));
+            $content .= html_writer::empty_tag('img', array('src' => $this->output->image_url('t/delete'), 'alt' => get_string('tt_deleteevent', 'calendar'), 'title' => get_string('tt_deleteevent', 'calendar')));
             $content .= html_writer::end_tag('a');
         }
         if (isset($attendeeslink)) {
             $content .= html_writer::tag('a',
                         html_writer::empty_tag('img', array(
-                            'src'  => $this->output->pix_url('t/groups'),
+                            'src'  => $this->output->image_url('t/groups'),
                             'alt'  => get_string('attendees', 'local_lunchandlearn'),
                             'title' => get_string('attendees', 'local_lunchandlearn')
                         )),
@@ -162,7 +162,7 @@ class theme_arup_core_calendar_renderer extends core_calendar_renderer {
         }
         if ($showinvite) {
             $content .= html_writer::start_tag('a', array('href' => $invitelink));
-            $content .= html_writer::empty_tag('img', array('width' => '12', 'src' => $this->output->pix_url('t/email'), 'alt' => get_string('invite', 'local_lunchandlearn'), 'title' => get_string('invite', 'local_lunchandlearn')));
+            $content .= html_writer::empty_tag('img', array('width' => '12', 'src' => $this->output->image_url('t/email'), 'alt' => get_string('invite', 'local_lunchandlearn'), 'title' => get_string('invite', 'local_lunchandlearn')));
             $content .= html_writer::end_tag('a');
         }
         $content .= html_writer::end_div();

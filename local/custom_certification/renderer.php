@@ -239,13 +239,13 @@ class local_custom_certification_renderer extends \plugin_renderer_base
                 foreach ($courseset->courses as $coursearraykey => $course) {
                     $output .= html_writer::start_div('course', ['data-courseid' => $course->courseid]);
                     $output .= html_writer::tag('span', $course->fullname, []);
-                    $output .= html_writer::tag('img', '', ['src' => $OUTPUT->pix_url("/t/delete"), 'onclick' => "deleteCourse('" . $courseset->id . "','" . $course->courseid . "','" . $courseset->certifpath . "','" . $certifid . "');"]);
+                    $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/delete"), 'onclick' => "deleteCourse('" . $courseset->id . "','" . $course->courseid . "','" . $courseset->certifpath . "','" . $certifid . "');"]);
 
                     if ($courseiterator < $coursescount) {
-                        $output .= html_writer::tag('img', '', ['src' => $OUTPUT->pix_url("/t/down"), 'onclick' => "coursesetControl('" . $courseset->id . "','" . $course->courseid . "','coursesort','movedown','" . $certifid . "','" . $certificationtype . "');"]);
+                        $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/down"), 'onclick' => "coursesetControl('" . $courseset->id . "','" . $course->courseid . "','coursesort','movedown','" . $certifid . "','" . $certificationtype . "');"]);
                     }
                     if ($courseiterator > 1) {
-                        $output .= html_writer::tag('img', '', ['src' => $OUTPUT->pix_url("/t/up"), 'onclick' => "coursesetControl('" . $courseset->id . "','" . $course->courseid . "','coursesort','moveup','" . $certifid . "','" . $certificationtype . "');"]);
+                        $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/up"), 'onclick' => "coursesetControl('" . $courseset->id . "','" . $course->courseid . "','coursesort','moveup','" . $certifid . "','" . $certificationtype . "');"]);
                     }
 
                     $output .= html_writer::end_div();
@@ -451,20 +451,20 @@ class local_custom_certification_renderer extends \plugin_renderer_base
             $output .= html_writer::tag('a', $certification->fullname, ['href' => new moodle_url('/local/custom_certification/overview.php', ['id' => $certification->id])]);
             $output .= html_writer::end_tag('td');
             $output .= html_writer::tag('td', $certification->categoryname);
-            $output .= html_writer::tag('td', ($certification->visible ? html_writer::tag('img', '', ['src' => $OUTPUT->pix_url("e/tick")]) : ''), ['class' => 'certif-actions']);
+            $output .= html_writer::tag('td', ($certification->visible ? html_writer::tag('img', '', ['src' => $OUTPUT->image_url("e/tick")]) : ''), ['class' => 'certif-actions']);
             $output .= html_writer::start_tag('td', ['class' => 'certif-actions']);
 
             $output .= html_writer::start_tag('a', ['href' => new moodle_url('/local/custom_certification/edit.php', ['action' => 'details', 'id' => $certification->id])]);
-            $output .= html_writer::tag('img', '', ['src' => $OUTPUT->pix_url("t/edit"), 'title' => get_string('edit', 'local_custom_certification')]);
+            $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("t/edit"), 'title' => get_string('edit', 'local_custom_certification')]);
             $output .= html_writer::end_tag('a');
 
             $output .= html_writer::start_tag('a', ['href' => new moodle_url('/local/custom_certification/index.php', ['delete' => $certification->id]),
                 'onclick' => "return confirm('" . get_string('deleteconfirm', 'local_custom_certification') . "')"]);
-            $output .= html_writer::tag('img', '', ['src' => $OUTPUT->pix_url("t/delete"), 'title' => get_string('delete', 'local_custom_certification')]);
+            $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("t/delete"), 'title' => get_string('delete', 'local_custom_certification')]);
             $output .= html_writer::end_tag('a');
 
             $output .= html_writer::start_tag('a', ['href' => new moodle_url('/local/custom_certification/index.php', ['copy' => $certification->id])]);
-            $output .= html_writer::tag('img', '', ['src' => $OUTPUT->pix_url("t/copy"), 'title' => get_string('copy', 'local_custom_certification')]);
+            $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("t/copy"), 'title' => get_string('copy', 'local_custom_certification')]);
             $output .= html_writer::end_tag('a');
 
             $output .= html_writer::end_tag('td');

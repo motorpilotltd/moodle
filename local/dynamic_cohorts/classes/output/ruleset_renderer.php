@@ -28,7 +28,7 @@ class ruleset_renderer extends \plugin_renderer_base
         $output .= \html_writer::tag('h3', get_string('rulesetheader', 'local_dynamic_cohorts') . ' ' . $counter);
 
         $output .= \html_writer::start_tag('a', ['class' => 'deleteruleset', 'href' => '#']);
-        $output .= \html_writer::tag('img', '', ['src' => $OUTPUT->pix_url("t/delete"), 'title' => get_string('delete', 'local_dynamic_cohorts')]);
+        $output .= \html_writer::tag('img', '', ['src' => $OUTPUT->image_url("t/delete"), 'title' => get_string('delete', 'local_dynamic_cohorts')]);
         $output .= \html_writer::end_tag('a');
 
         $output .= \html_writer::start_div('fitem fitem_fgroup');
@@ -236,11 +236,11 @@ class ruleset_renderer extends \plugin_renderer_base
         $output .= dynamic_cohorts::get_rule_fields()[$field] . ' ' . dynamic_cohorts::get_criteria_types('all')[$criteriatype] . ($showvalue ? " '" . $value . "' " : " ");
 
         $output .= \html_writer::start_tag('a', ['class' => 'deleterule', 'href' => '#']);
-        $output .= \html_writer::tag('img', '', ['src' => $OUTPUT->pix_url("t/delete"), 'title' => get_string('delete', 'local_dynamic_cohorts')]);
+        $output .= \html_writer::tag('img', '', ['src' => $OUTPUT->image_url("t/delete"), 'title' => get_string('delete', 'local_dynamic_cohorts')]);
         $output .= \html_writer::end_tag('a');
 
         $output .= \html_writer::start_tag('a', ['class' => 'editrule', 'href' => '#', 'data-rulesetid' => $rulesetid, 'data-ruleid' => $ruleid]);
-        $output .= \html_writer::tag('img', '', ['src' => $OUTPUT->pix_url('i/edit'), 'title' => get_string('edit', 'local_dynamic_cohorts')]);
+        $output .= \html_writer::tag('img', '', ['src' => $OUTPUT->image_url('i/edit'), 'title' => get_string('edit', 'local_dynamic_cohorts')]);
         $output .= \html_writer::end_tag('a');
 
         $output .= \html_writer::empty_tag('br');

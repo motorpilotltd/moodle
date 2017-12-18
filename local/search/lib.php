@@ -486,7 +486,7 @@ function local_search_print_course($course, $highlightterms = '') {
 
     echo html_writer::start_tag('div', array('class' => 'coursebox clearfix'));
 
-    $imgurl = $OUTPUT->pix_url('no_image', 'local_search');
+    $imgurl = $OUTPUT->image_url('no_image', 'local_search');
     if (!empty($course->aid)) {
         $sql = <<<EOS
 SELECT
@@ -755,7 +755,7 @@ function local_search_get_results_data($courses, $highlightterms = '', $total = 
         // Rewrite file URLs so that they are correct
         $course->summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary', NULL);
 
-        $imgurl = (string)$OUTPUT->pix_url('no_image', 'local_search');
+        $imgurl = (string)$OUTPUT->image_url('no_image', 'local_search');
 
         if (!empty($course->aid)) {
             $sql = <<<EOS

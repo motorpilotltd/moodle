@@ -99,9 +99,9 @@ class block_certification_renderer extends plugin_renderer_base {
                 $status = '';
                 $optionalorexempt = ($certification->optional || $certification->exempt);
                 if ($optionalorexempt && $certification->ragstatus == \local_custom_certification\completion::RAG_STATUS_GREEN) {
-                    $status = html_writer::img($OUTPUT->pix_url('/i/checked'), '', ['class' => 'status']);
+                    $status = html_writer::img($OUTPUT->image_url('/i/checked'), '', ['class' => 'status']);
                 } else if ($optionalorexempt && $certification->ragstatus == \local_custom_certification\completion::RAG_STATUS_AMBER) {
-                    $status = html_writer::img($OUTPUT->pix_url('/i/caution'), '', ['class' => 'status']);
+                    $status = html_writer::img($OUTPUT->image_url('/i/caution'), '', ['class' => 'status']);
                 } else {
                     $status =  html_writer::tag('span', '', ['class' => 'status status-'.$certification->ragstatus]);
                 }
@@ -137,7 +137,7 @@ class block_certification_renderer extends plugin_renderer_base {
                     }
                     $exemptoutput = get_string('exempt', 'block_certification');
                     $exemptoutput .= '&nbsp;';
-                    $exemptimg = html_writer::img($OUTPUT->pix_url('help'), get_string('helpwiththis'));
+                    $exemptimg = html_writer::img($OUTPUT->image_url('help'), get_string('helpwiththis'));
                     $exemptoutput .= html_writer::span($exemptimg, 'exempt-help', ['data-toggle' => 'tooltip', 'data-html' => true, 'title' => $exempttitle]);
                     $output .= html_writer::tag('td', $exemptoutput);
                 } else if ($certification->renewaldate > 0 && $certification->renewaldate < time()) {
