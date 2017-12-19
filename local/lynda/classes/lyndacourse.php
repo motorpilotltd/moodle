@@ -76,14 +76,25 @@ class lyndacourse extends \data_object {
         return $this->id;
     }
 
+    public function setregionstate($region, $state) {
+        global $DB;
+
+        if (!$state) {
+            $DB->delete_records('local_lynda_courseregions', ['lyndacourseid' => $this->id, 'regionid' => $region]);
+        } else {
+            $DB->insert_record('local_lynda_courseregions', (object)['lyndacourseid' => $this->id, 'regionid' => $region]);
+        }
+    }
+
     private function updatetags() {
         global $DB;
 
         $tagrecords = [];
         foreach ($this->lyndatags as $tag) {
-            $tagrecords[] = (object)['remotetagid' => $tag, 'remotecourseid' => $this->remotecourseid];
+            $tagrecords[] = (object) ['remotetagid' => $tag, 'remotecourseid' => $this->remotecourseid];
         }
-        $DB->delete_records_select('local_lynda_coursetags', 'remotecourseid = :remotecourseid', ['remotecourseid' => $this->remotecourseid]);
+        $DB->delete_records_select('local_lynda_coursetags', 'remotecourseid = :remotecourseid',
+                ['remotecourseid' => $this->remotecourseid]);
         $DB->insert_records('local_lynda_coursetags', $tagrecords);
     }
 }

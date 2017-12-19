@@ -29,7 +29,12 @@ require_once($CFG->dirroot . '/lib/tablelib.php');
 
 class managecourses_table extends \table_sql {
     public function __construct($filterparams, $sortcolumn) {
+        global $DB;
+        global $PAGE;
+
         parent::__construct('managecourses_table');
+
+        $PAGE->requires->js_call_amd('local_lynda/manage', 'initialise');
 
         $this->filterparams = $filterparams;
 
@@ -46,6 +51,8 @@ class managecourses_table extends \table_sql {
         $this->pageable(true);
         $this->is_downloadable(true);
         $this->sort_default_column = $sortcolumn;
+
+        $this->regions = $DB->get_records('local_regions_reg', ['userselectable' => true]);
     }
 
     /**
@@ -69,7 +76,8 @@ class managecourses_table extends \table_sql {
             }
 
             foreach ($this->filterparams->$selectname as $tag) {
-                $tagfilterjoins[] = "INNER JOIN {local_lynda_coursetags} lct_$tag ON lct_$tag.remotetagid = $tag AND lct_$tag.remotecourseid = lc.remotecourseid"; // Add tag filter
+                $tagfilterjoins[] =
+                        "INNER JOIN {local_lynda_coursetags} lct_$tag ON lct_$tag.remotetagid = $tag AND lct_$tag.remotecourseid = lc.remotecourseid"; // Add tag filter
             }
         }
         $tagfilterjoins = implode("\n", $tagfilterjoins);
@@ -86,8 +94,8 @@ class managecourses_table extends \table_sql {
         $total = $DB->count_records_sql("SELECT COUNT(DISTINCT lc.id) $sql", $params);
         $this->pagesize($pagesize, $total);
 
-        $remotetagidconcat = $this->sql_group_concat('lct.remotetagid');
-        $regionsconcat = $this->sql_group_concat('regionid');
+        $remotetagidconcat = $this->sql_group_concat('lct.remotetagid', ',', true);
+        $regionsconcat = $this->sql_group_concat('regionid', ',', true);
         $columns =
                 "lc.id, lc.remotecourseid as courseid, lc.title, lc.description, $remotetagidconcat as tags, $regionsconcat as regions";
         $groupby = "GROUP BY lc.id, lc.remotecourseid, lc.title, lc.description";
@@ -154,6 +162,15 @@ class managecourses_table extends \table_sql {
     }
 
     public function col_regions($event) {
-        return $event->regions;
+        $checkedregions = explode(',', $event->regions);
+
+        $checks = '';
+        foreach ($this->regions as $region) {
+            $chkname = "chk_region_$region->id";
+            $checked = !empty($checkedregions) && in_array($region->id, $checkedregions);
+            $checks .= \html_writer::span(\html_writer::checkbox($chkname, $chkname, $checked, $region->name,
+                    ['data-regionid' => $region->id, 'data-courseid' => $event->id, 'class' => 'regioncheck']));
+        }
+        return $checks;
     }
 }
