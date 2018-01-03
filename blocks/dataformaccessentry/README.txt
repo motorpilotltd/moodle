@@ -5,8 +5,8 @@ The entry access rules allow for controlling access to entries that have a speci
 
 Release:
 ------------
-2.9.0
+3.0.4
 
 Documentation:
 --------------
-http://docs.moodle.org/29/en/Dataform_entry_access_block
+http://docs.moodle.org/30/en/Dataform_entry_access_block

@@ -207,13 +207,17 @@ class checklist_class {
             }
         }
 
-        $groupmembersonly = !empty($CFG->enablegroupmembersonly);
+        $groupmembersonly = ((int)$CFG->branch < 28) && (!empty($CFG->enablegroupmembersonly));
 
         $numsections = 1;
         $courseformat = course_get_format($this->course);
-        $opts = $courseformat->get_format_options();
-        if (isset($opts['numsections'])) {
-            $numsections = $opts['numsections'];
+        if (method_exists($courseformat, 'get_last_section_number')) {
+            $numsections = $courseformat->get_last_section_number();
+        } else {
+            $opts = $courseformat->get_format_options();
+            if (isset($opts['numsections'])) {
+                $numsections = $opts['numsections'];
+            }
         }
         $sections = $mods->get_sections();
         while ($section <= $numsections || $section == $importsection) {
@@ -904,7 +908,7 @@ class checklist_class {
     }
 
     protected function view_report() {
-        global $DB, $OUTPUT;
+        global $DB, $OUTPUT, $CFG;
 
         $reportsettings = $this->get_report_settings();
 
@@ -997,13 +1001,20 @@ class checklist_class {
         $ausers = false;
         if ($activegroup == -1) {
             $users = array();
-        } else if ($users = get_users_by_capability($this->context, 'mod/checklist:updateown', 'u.id', $orderby, '', '',
-                                                    $activegroup, '', false)
-        ) {
-            $users = array_keys($users);
-            if ($this->only_view_mentee_reports()) {
-                // Filter to only show reports for users who this user mentors (ie they have been assigned to them in a context).
-                $users = $this->filter_mentee_users($users);
+        } else {
+            if (get_config('mod_checklist', 'onlyenrolled')) {
+                $users = get_enrolled_users($this->context, 'mod/checklist:updateown', $activegroup, 'u.id', $orderby, 0, 0, true);
+            } else {
+                $users = get_users_by_capability($this->context, 'mod/checklist:updateown', 'u.id', $orderby, '', '',
+                                                 $activegroup, '', false);
+            }
+            if ($users) {
+                $users = array_keys($users);
+                if ($this->only_view_mentee_reports()) {
+                    // Filter to only show reports for users who this user mentors
+                    // (ie they have been assigned to them in a context).
+                    $users = static::filter_mentee_users($users);
+                }
             }
         }
         if ($users && !empty($users)) {
@@ -1066,7 +1077,7 @@ class checklist_class {
                         $vslink = ' <a href="'.$thisurl->out(true, array('studentid' => $auser->id)).'" ';
                         $vslink .= 'alt="'.get_string('viewsinglereport', 'checklist').'" title="'.
                             get_string('viewsinglereport', 'checklist').'">';
-                        $vslink .= '<img src="'.$OUTPUT->pix_url('/t/preview').'" /></a>';
+                        $vslink .= $OUTPUT->pix_icon('t/preview', '').'</a>';
                     } else {
                         $vslink = '';
                     }
@@ -1075,8 +1086,7 @@ class checklist_class {
                     echo '<div style="float: left; width: 30%; text-align: right; margin-right: 8px; ">'.$userlink.$vslink.'</div>';
 
                     echo '<div class="checklist_progress_outer">';
-                    echo '<div class="checklist_progress_inner" style="width:'.$percentcomplete.'%; background-image: url('.
-                        $OUTPUT->pix_url('progress', 'checklist').');" >&nbsp;</div>';
+                    echo '<div class="checklist_progress_inner" style="width:'.$percentcomplete.'%;">&nbsp;</div>';
                     echo '</div>';
                     echo '<div class="checklist_percentcomplete" style="float:left; width: 3em;">&nbsp;'.
                         sprintf('%0d%%', $percentcomplete).'</div>';
@@ -1095,14 +1105,14 @@ class checklist_class {
             $lastarrow = '';
             if ($reportsettings->sortby == 'firstasc') {
                 $firstlink = 'firstdesc';
-                $firstarrow = '<img src="'.$OUTPUT->pix_url('/t/down').'" alt="'.get_string('asc').'" />';
+                $firstarrow = $OUTPUT->pix_icon('t/down', get_string('asc'));
             } else if ($reportsettings->sortby == 'lastasc') {
                 $lastlink = 'lastdesc';
-                $lastarrow = '<img src="'.$OUTPUT->pix_url('/t/down').'" alt="'.get_string('asc').'" />';
+                $lastarrow = $OUTPUT->pix_icon('t/down', get_string('asc'));
             } else if ($reportsettings->sortby == 'firstdesc') {
-                $firstarrow = '<img src="'.$OUTPUT->pix_url('/t/up').'" alt="'.get_string('desc').'" />';
+                $firstarrow = $OUTPUT->pix_icon('t/up', get_string('desc'));
             } else if ($reportsettings->sortby == 'lastdesc') {
-                $lastarrow = '<img src="'.$OUTPUT->pix_url('/t/up').'" alt="'.get_string('desc').'" />';
+                $lastarrow = $OUTPUT->pix_icon('t/up', get_string('desc'));
             }
             $firstlink = new moodle_url($thisurl, array('sortby' => $firstlink));
             $lastlink = new moodle_url($thisurl, array('sortby' => $lastlink));
@@ -1135,7 +1145,7 @@ class checklist_class {
                     $vslink = ' <a href="'.$thisurl->out(true, array('studentid' => $auser->id)).'" ';
                     $vslink .= 'alt="'.get_string('viewsinglereport', 'checklist').'" title="'.
                         get_string('viewsinglereport', 'checklist').'">';
-                    $vslink .= '<img src="'.$OUTPUT->pix_url('/t/preview').'" /></a>';
+                    $vslink .= $OUTPUT->pix_icon('t/preview', '').'</a>';
                     $userurl = new moodle_url('/user/view.php', array('id' => $auser->id, 'course' => $this->course->id));
                     $userlink = '<a href="'.$userurl.'">'.fullname($auser).'</a>';
 
@@ -1271,14 +1281,12 @@ class checklist_class {
             $output .= $this->report_add_toggle_button_row($table);
         }
         // Output the data.
-        $tickimg = '<img src="'.$OUTPUT->pix_url('i/grade_correct').'" alt="'.get_string('itemcomplete', 'checklist').'" />';
+        $tickimg = $OUTPUT->pix_icon('i/grade_correct', get_string('itemcomplete', 'checklist'));
         $teacherimg = array(
-            CHECKLIST_TEACHERMARK_UNDECIDED => '<img src="'.$OUTPUT->pix_url('empty_box', 'checklist').'" alt="'
-                .get_string('teachermarkundecided', 'checklist').'" />',
-            CHECKLIST_TEACHERMARK_YES => '<img src="'.$OUTPUT->pix_url('tick_box', 'checklist').'" alt="'
-                .get_string('teachermarkyes', 'checklist').'" />',
-            CHECKLIST_TEACHERMARK_NO => '<img src="'.$OUTPUT->pix_url('cross_box', 'checklist').'" alt="'
-                .get_string('teachermarkno', 'checklist').'" />'
+            CHECKLIST_TEACHERMARK_UNDECIDED => $OUTPUT->pix_icon('empty_box',
+                                                                 get_string('teachermarkundecided', 'checklist'), 'checklist'),
+            CHECKLIST_TEACHERMARK_YES => $OUTPUT->pix_icon('tick_box', get_string('teachermarkyes', 'checklist'), 'checklist'),
+            CHECKLIST_TEACHERMARK_NO => $OUTPUT->pix_icon('cross_box', get_string('teachermarkno', 'checklist'), 'checklist'),
         );
         $oddeven = 1;
         $keys = array_keys($table->data);
@@ -2418,7 +2426,11 @@ class checklist_class {
             throw new coding_exception('Must specify module update and/or course update');
         }
 
-        $users = get_users_by_capability($this->context, 'mod/checklist:updateown', 'u.id', '', '', '', '', '', false);
+        if (get_config('mod_checklist', 'onlyenrolled')) {
+            $users = get_enrolled_users($this->context, 'mod/checklist:updateown', 0, 'u.id', null, 0, 0, true);
+        } else {
+            $users = get_users_by_capability($this->context, 'mod/checklist:updateown', 'u.id', '', '', '', '', '', false);
+        }
         if (!$users) {
             return;
         }
@@ -2523,7 +2535,11 @@ class checklist_class {
 
         if ($userids === null) {
             // Userids not provided, so load them by capability.
-            $users = get_users_by_capability($this->context, 'mod/checklist:updateown', 'u.id', '', '', '', '', '', false);
+            if (get_config('mod_checklist', 'onlyenrolled')) {
+                $users = get_enrolled_users($this->context, 'mod/checklist:updateown', 0, 'u.id', null, 0, 0, true);
+            } else {
+                $users = get_users_by_capability($this->context, 'mod/checklist:updateown', 'u.id', '', '', '', '', '', false);
+            }
             if (!$users) {
                 return;
             }
@@ -2579,9 +2595,13 @@ class checklist_class {
         }
 
         $ausers = false;
-        if ($users = get_users_by_capability($this->context, 'mod/checklist:updateown', 'u.id', '', '', '',
-                                             $activegroup, '', false)
-        ) {
+        if (get_config('mod_checklist', 'onlyenrolled')) {
+            $users = get_enrolled_users($this->context, 'mod/checklist:updateown', $activegroup, 'u.id', null, 0, 0, true);
+        } else {
+            $users = get_users_by_capability($this->context, 'mod/checklist:updateown', 'u.id', '', '', '',
+                                             $activegroup, '', false);
+        }
+        if (!$users) {
             $users = array_keys($users);
             if ($this->only_view_mentee_reports()) {
                 $users = $this->filter_mentee_users($users);
@@ -2660,7 +2680,7 @@ class checklist_class {
 
     public static function get_user_groupings($userid, $courseid) {
         global $DB;
-        $sql = "SELECT gg.groupingid
+        $sql = "SELECT DISTINCT gg.groupingid
                   FROM ({groups} g JOIN {groups_members} gm ON g.id = gm.groupid)
                   JOIN {groupings_groups} gg ON gg.groupid = g.id
                   WHERE gm.userid = ? AND g.courseid = ? ";

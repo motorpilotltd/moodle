@@ -135,7 +135,7 @@ class behat_block_dataformnotification extends behat_base {
 
         // Set permissions.
         foreach ($datahash as $key => $value) {
-            if (strpos($key, 'permission') === 0) {
+            if (strpos($key, 'permission') === 0 and $value) {
                 list($role, $perm, $capability) = array_map('trim', explode(' ', trim($value)));
                 // Get the role id.
                 $roleid = $DB->get_field('role', 'id', array('shortname' => $role));

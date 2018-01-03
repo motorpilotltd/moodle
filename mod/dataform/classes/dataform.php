@@ -104,7 +104,6 @@ class mod_dataform_dataform {
         $data->intervalcount = 1;
         $data->grade = 0;
         $data->gradeitems = null;
-        $data->entrytypes = null;
         $data->maxentries = -1;
         $data->entriesrequired = 0;
         $data->grouped = 0;

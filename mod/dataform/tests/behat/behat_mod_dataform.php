@@ -535,10 +535,8 @@ class behat_mod_dataform extends behat_base {
     public function view_in_dataform_has_the_following_view_template($viewname, $dataformid, PyStringNode $content) {
         $df = mod_dataform_dataform::instance($dataformid);
         $view = $df->view_manager->get_view_by_name($viewname);
-        if ($view) {
-            $view->set_default_view_template((string) $content);
-            $view->update($view->data);
-        }
+        $view->set_default_view_template((string) $content);
+        $view->update($view->data);
     }
 
     /**
@@ -553,10 +551,8 @@ class behat_mod_dataform extends behat_base {
     public function view_in_dataform_has_the_following_entry_template($viewname, $dataformid, PyStringNode $content) {
         $df = mod_dataform_dataform::instance($dataformid);
         $view = $df->view_manager->get_view_by_name($viewname);
-        if ($view) {
-            $view->set_default_entry_template((string) $content);
-            $view->update($view->data);
-        }
+        $view->set_default_entry_template((string) $content);
+        $view->update($view->data);
     }
 
     /**
@@ -1567,9 +1563,7 @@ class behat_mod_dataform extends behat_base {
         $steps[] = new Given('I log in as "teacher1"');
         $steps[] = new Given('I follow "Course 1"');
         $steps[] = new Given('I follow "Test Dataform"');
-        $steps[] = new Given('I follow "Manage"');
-
-        $steps[] = new Given('I follow "Access"');
+        $steps[] = new Given('I go to manage dataform "access"');
 
         // Add a rule.
         $steps[] = new Given('I follow "id_add_'. $ruletype. '_access_rule"');
@@ -1607,9 +1601,7 @@ class behat_mod_dataform extends behat_base {
         $steps[] = new Given('I log in as "teacher1"');
         $steps[] = new Given('I follow "Course 1"');
         $steps[] = new Given('I follow "Test Dataform"');
-        $steps[] = new Given('I follow "Manage"');
-
-        $steps[] = new Given('I follow "Notifications"');
+        $steps[] = new Given('I navigate to "Notifications" node in "Dataform activity administration > Manage"');
 
         // Add a rule.
         $steps[] = new Given('I follow "id_add_'. $ruletype. '_notification_rule"');

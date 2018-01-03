@@ -26,10 +26,7 @@
  */
 
 $plugin->component = 'mod_dataform';
-$plugin->release  = '3.0dev';
-/* BEGIN CORE MOD */
-// To match version set in db/upgrade.php.
-$plugin->version = 2015061800.01;
-/* END CORE MOD */
-$plugin->requires = 2015061800;
-$plugin->maturity = MATURITY_ALPHA;
+$plugin->release  = '3.0.4';
+$plugin->version = 2015111604;
+$plugin->requires = 2015111600;
+$plugin->maturity = MATURITY_STABLE;
