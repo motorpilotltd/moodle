@@ -20,20 +20,19 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['tasksynccourselist'] = 'Sync course list';
-$string['pluginname'] = 'Lynda.com';
-$string['setting:appkey'] = 'App key';
-$string['setting:secretkey'] = 'Secret key';
-$string['setting:apiurl'] = 'API URL';
-$string['filteroptions'] = 'Filters';
-$string['managecourses'] = 'Manage Lynda courses';
-$string['apisettings'] = 'API Settings';
-$string['courseid'] = 'Lynda Course ID';
-$string['title'] = 'Title';
-$string['description'] = 'Description';
-$string['tags'] = 'Lynda Tags';
-$string['regions'] = 'Regions';
-$string['loadmore'] = 'Loading videos from Lynda.com';
-$string['loadfiltered'] = 'Ordering videos';
-$string['noresults'] = '<div class="alert alert-info" role="alert">No results found that match your search</div>';
-$string['enabledregions'] = 'Regions with access to Lynda.com';
+if (!defined('MOODLE_INTERNAL')) {
+    die('Direct access to this script is forbidden.');    ///  It must be included from a Moodle page
+}
+
+/**
+ *
+ */
+class local_lynda_renderer extends plugin_renderer_base
+{
+    public function search_results($results)
+    {
+        global $OUTPUT;
+
+        return $this->render_from_template('local_lynda/search', $results->export_for_template($OUTPUT));
+    }
+}

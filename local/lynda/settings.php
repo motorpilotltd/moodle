@@ -38,6 +38,17 @@ if ($hassiteconfig) {
     $name = 'local_lynda/apiurl';
     $title = get_string('setting:apiurl','local_lynda');
     $settings->add(new admin_setting_configtext($name, $title, '', 'https://api-1.lynda.com'));
+
+    $options = $DB->get_records_menu('local_regions_reg', ['userselectable' => true]);
+    $settings->add(
+            new admin_setting_configmultiselect(
+                    'local_lynda/enabledregions',
+                    get_string('enabledregions', 'local_lynda'),
+                    get_string('enabledregions', 'local_lynda'),
+                    array(),
+                    $options
+            )
+    );
     
     $ADMIN->add('local_lynda', $settings);
 

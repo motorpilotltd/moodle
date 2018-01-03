@@ -158,6 +158,7 @@ class lyndaapi {
      * @return lyndacourse
      */
     private function buildcourse($raw) {
+
         $lyndacourse = new lyndacourse();
         $lyndacourse->description = $raw->Description;
         $lyndacourse->remotecourseid = $raw->ID;
@@ -168,6 +169,16 @@ class lyndaapi {
         foreach ($raw->Tags as $tag) {
             $lyndacourse->lyndatags[] = $tag->ID;
         }
+
+        $lyndacourse->thumbnail = $raw->Thumbnails[0]->FullURL;
+
+        foreach ($raw->Thumbnails as $thumbnail) {
+            if ($thumbnail->Height == 130 && $thumbnail->Width == 230) {
+                $lyndacourse->thumbnail = $thumbnail->FullURL;
+                break;
+            }
+        }
+
         return $lyndacourse;
     }
 }

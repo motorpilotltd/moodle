@@ -44,4 +44,11 @@ class lib {
 
         return $url . implode('&', $arr);
     }
+
+    public static function enabledforregion($regionid) {
+        $enabledregions = get_config('local_lynda', 'enabledregions');
+        $enabledregions = explode(',', $enabledregions);
+
+        return in_array($regionid, $enabledregions);
+    }
 }

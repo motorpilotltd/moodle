@@ -20,20 +20,24 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['tasksynccourselist'] = 'Sync course list';
-$string['pluginname'] = 'Lynda.com';
-$string['setting:appkey'] = 'App key';
-$string['setting:secretkey'] = 'Secret key';
-$string['setting:apiurl'] = 'API URL';
-$string['filteroptions'] = 'Filters';
-$string['managecourses'] = 'Manage Lynda courses';
-$string['apisettings'] = 'API Settings';
-$string['courseid'] = 'Lynda Course ID';
-$string['title'] = 'Title';
-$string['description'] = 'Description';
-$string['tags'] = 'Lynda Tags';
-$string['regions'] = 'Regions';
-$string['loadmore'] = 'Loading videos from Lynda.com';
-$string['loadfiltered'] = 'Ordering videos';
-$string['noresults'] = '<div class="alert alert-info" role="alert">No results found that match your search</div>';
-$string['enabledregions'] = 'Regions with access to Lynda.com';
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once($CFG->dirroot . '/local/regions/lib.php');
+
+require_login(SITEID, false);
+
+$PAGE->set_url(new moodle_url('/local/lynda/search.php'));
+
+$PAGE->set_pagelayout('base');
+
+$renderer = $PAGE->get_renderer('local_lynda');
+
+$search = optional_param('search', '', PARAM_TEXT);
+$page = optional_param('page', 1, PARAM_INT) - 1; // courses run form zero-index
+$perpage = optional_param('perpage', 10, PARAM_INT);
+
+$userregion = local_regions_get_user_region($USER);
+
+$results = new \local_lynda\searchresults($search, $userregion->regionid, $page, $perpage);
+$results->dosearch();
+
+echo $renderer->search_results($results);

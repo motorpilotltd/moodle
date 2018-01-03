@@ -28,7 +28,7 @@ require_once($CFG->dirroot . '/completion/data_object.php');
 
 class lyndacourse extends \data_object {
     public $table = 'local_lynda_course';
-    public $required_fields = ['id', 'remotecourseid', 'title', 'description', 'lyndadatahash'];
+    public $required_fields = ['id', 'remotecourseid', 'title', 'description', 'lyndadatahash', 'thumbnail'];
     public $optional_fields = ['deletedbylynda' => false];
 
     public $remotecourseid;
@@ -37,6 +37,7 @@ class lyndacourse extends \data_object {
     public $lyndadatahash;
     public $lyndatags;
     public $deletedbylynda;
+    public $thumbnail;
 
     /**
      * @param array $params
@@ -56,6 +57,69 @@ class lyndacourse extends \data_object {
             return [];
         }
         return $ret;
+    }
+
+    /**
+     * @return self[]
+     */
+    public static function search($keyword, $regionid, $page, $perpage) {
+        return self::handlesearch(false, $keyword, $regionid, $page, $perpage);
+    }
+
+    /**
+     * @return int
+     */
+    public static function searchcount($keyword, $regionid) {
+        return self::handlesearch(true, $keyword, $regionid, 0, 0);
+    }
+
+    /**
+     * @return self[]|int
+     */
+    private static function handlesearch($countonly, $keyword, $regionid, $page, $perpage) {
+        if (empty($keyword)) {
+            return false;
+        }
+
+        global $DB;
+        $wheresql = '';
+        $params = [];
+
+        if ($keyword != ' ') {
+            $wheresql .= $DB->sql_like('title', ':keyword', false, false);
+            $params['keyword'] = '%' . $DB->sql_like_escape($keyword) . '%';
+        }
+
+        if (!empty($wheresql)) {
+            $wheresql = 'WHERE ' . $wheresql;
+        }
+
+        $sql = "FROM {local_lynda_course} llc
+            INNER JOIN {local_lynda_courseregions} llcr ON llcr.regionid = :regionid AND llcr.lyndacourseid = llc.id
+            $wheresql";
+
+        $params['regionid'] = $regionid;
+
+        if ($countonly) {
+            $fields = 'SELECT COUNT(1) ';
+            return $DB->count_records_sql($fields . $sql, $params);
+        } else {
+            $fields = 'SELECT * ';
+            if ($datas = $DB->get_records_sql($fields . $sql . ' ORDER BY title ASC', $params, $page * $perpage, $perpage)) {
+
+                $result = array();
+                foreach ($datas as $data) {
+                    $instance = new lyndacourse();
+                    self::set_properties($instance, $data);
+                    $result[$instance->id] = $instance;
+                }
+                return $result;
+
+            } else {
+
+                return [];
+            }
+        }
     }
 
     public function update() {
@@ -82,7 +146,7 @@ class lyndacourse extends \data_object {
         if (!$state) {
             $DB->delete_records('local_lynda_courseregions', ['lyndacourseid' => $this->id, 'regionid' => $region]);
         } else {
-            $DB->insert_record('local_lynda_courseregions', (object)['lyndacourseid' => $this->id, 'regionid' => $region]);
+            $DB->insert_record('local_lynda_courseregions', (object) ['lyndacourseid' => $this->id, 'regionid' => $region]);
         }
     }
 

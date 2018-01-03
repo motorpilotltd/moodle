@@ -1,5 +1,16 @@
 <div class="tab-container">
-    <ul class="nav nav-tabs"><li class="active"><a href="#" data-tab="#tab-content-courses">Courses <span class="count badge">{{ coursecount }}</span></a></li>{{#learningeventsenabled}}<li><a href="#" data-tab="#tab-content-learningevents">Learning Events <span class="count badge"><i class="fa fa-refresh fa-spin"></i></span></a></li>{{/learningeventsenabled}}{{#kalturaenabled}}<li><a href="#" data-tab="#tab-content-kaltura">Videos <span class="count badge"><i class="fa fa-refresh fa-spin"></i></span></a></li>{{/kalturaenabled}}</ul>
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#" data-tab="#tab-content-courses">Courses <span class="count badge">{{ coursecount }}</span></a></li>
+        {{#learningeventsenabled}}
+        <li><a href="#" data-tab="#tab-content-learningevents">Learning Events <span class="count badge"><i class="fa fa-refresh fa-spin"></i></span></a></li>
+        {{/learningeventsenabled}}
+        {{#kalturaenabled}}
+        <li><a href="#" data-tab="#tab-content-kaltura">Videos <span class="count badge"><i class="fa fa-refresh fa-spin"></i></span></a></li>
+        {{/kalturaenabled}}
+        {{#lyndaenabled}}
+        <li><a href="#" data-tab="#tab-content-lynda">Lynda.com <span class="count badge"><i class="fa fa-refresh fa-spin"></i></span></a></li>
+        {{/lyndaenabled}}
+    </ul>
     <div class="tab-content-wrapper">
         <div id="tab-content-courses" class="tab-content open" data-load="{{ courseloader }}" data-preloaded data-perpage="10" data-results-container=".course-results" data-result-element=".coursebox">{{{ preloadedcourses }}}</div>
         {{#learningeventsenabled}}
@@ -24,6 +35,17 @@
             </div>
         </div>
         {{/kalturaenabled}}
+        {{#lyndaenabled}}
+        <div id="tab-content-lynda" class="tab-content loading loading-append" data-load="{{ lyndaloader }}" data-perpage="10" data-default-sort="-weight" data-results-container=".lynda-search-results" data-result-element="article.search-result">
+            <div class="search-results">
+                <div class="loading-bar">
+                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                    <p class="append">{{# str }} loadmore, local_lynda {{/ str }}</p>
+                    <p class="replace">{{# str }} loadfiltered, local_lynda {{/ str }}</p>
+                </div>
+            </div>
+        </div>
+        {{/lyndaenabled}}
     </div>
     <div class="filter-block-container hide">
         <form>
