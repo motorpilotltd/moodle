@@ -506,7 +506,7 @@ class KalturaClientBase
 
 		if (isset($this->config->proxyHost)) {
 /* BEGIN CORE MOD */
-			curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, false);
+            	curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, false);
 /* END CORE MOD */
 			curl_setopt($ch, CURLOPT_PROXY, $this->config->proxyHost);
 			if (isset($this->config->proxyPort)) {

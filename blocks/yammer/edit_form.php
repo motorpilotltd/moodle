@@ -14,17 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
- * Course summary block caps.
+ * The form to edit block instance configuration.
  *
  * @package    block_yammer
  * @copyright  2014 Catalyst EU
  * @author     Chris Wharton <chris.wharton@catalyst-eu.net>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-/**
- * The form to edit block instance configuration.
  */
 class block_yammer_edit_form extends block_edit_form {
 
@@ -78,11 +76,6 @@ class block_yammer_edit_form extends block_edit_form {
         $mform->addHelpButton('config_defaulttocanonical', 'defaulttocanonical', 'block_yammer');
         $mform->setDefault('config_defaulttocanonical', 1);
         $mform->setType('config_defaulttocanonical', PARAM_BOOL);
-        // Enable single sign on (SSO).
-        $mform->addElement('advcheckbox', 'config_usesso', get_string('usesso', 'block_yammer'),
-            get_string('usesso_desc', 'block_yammer'));
-        $mform->addHelpButton('config_usesso', 'usesso', 'block_yammer');
-        $mform->setType('config_usesso', PARAM_BOOL);
         // Where to get the parameters from.
         $mform->addElement('static', 'description', '', get_string('config_help', 'block_yammer'));
 
@@ -96,18 +89,18 @@ class block_yammer_edit_form extends block_edit_form {
         $mform->setType('config_ogurl', PARAM_URL);
         // The opengraph object type.
         $ogtypes = array(
-            'page'  => 'Page',
-            'audio'  => 'Audio',
-            'department'  => 'Department',
-            'document'  => 'Document',
-            'file'  => 'File',
-            'folder'  => 'Folder',
-            'image'  => 'Image',
-            'person'  => 'Person',
-            'place'  => 'Place',
-            'project'  => 'Project',
-            'team'  => 'Team',
-            'video'  => 'Video',
+            'audio'  => new lang_string('og-audio', 'block_yammer'),
+            'department'  => new lang_string('og-department', 'block_yammer'),
+            'document'  => new lang_string('og-document', 'block_yammer'),
+            'file'  => new lang_string('og-file', 'block_yammer'),
+            'folder'  => new lang_string('og-file', 'block_yammer'),
+            'image'  => new lang_string('og-image', 'block_yammer'),
+            'page'  => new lang_string('og-page', 'block_yammer'),
+            'person'  => new lang_string('og-person', 'block_yammer'),
+            'place'  => new lang_string('og-place', 'block_yammer'),
+            'project'  => new lang_string('og-project', 'block_yammer'),
+            'team'  => new lang_string('og-team', 'block_yammer'),
+            'video'  => new lang_string('og-video', 'block_yammer'),
         );
         $mform->addElement('select', 'config_ogtype', get_string('ogtype', 'block_yammer'), $ogtypes);
         $mform->addHelpButton('config_ogtype', 'ogtype', 'block_yammer');

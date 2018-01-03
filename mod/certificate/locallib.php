@@ -159,7 +159,7 @@ function certificate_email_others($course, $certificate, $certrecord, $cm) {
                 $other = trim($other);
                 if (validate_email($other)) {
 /* BEGIN CORE MOD */
-                    $detsination = certificate_user::get_dummy_certificate_user($other);
+                    $destination = certificate_user::get_dummy_certificate_user($other);
 /* END CORE MOD */
                     $info = new stdClass;
                     $info->student = fullname($USER);
@@ -1293,3 +1293,4 @@ class certificate_user extends \core_user {
     }
 }
 /* END CORE MOD */
+

@@ -53,7 +53,7 @@ class mod_kalvidres_mod_form extends moodleform_mod {
 
         $params = array(
             'addvidbtnid' => 'id_'.$this->addvideobutton,
-            'ltilaunchurl' => $url->out(),
+            'ltilaunchurl' => $url->out(false),
             'height' => KALTURA_PANEL_HEIGHT,
             'width' => KALTURA_PANEL_WIDTH,
             'modulename' => 'kalvidres'
@@ -62,6 +62,7 @@ class mod_kalvidres_mod_form extends moodleform_mod {
         $PAGE->requires->yui_module('moodle-local_kaltura-ltipanel', 'M.local_kaltura.init', array($params), null, true);
         // Make replace media language string available to the YUI modules
         $PAGE->requires->string_for_js('replace_video', 'kalvidres');
+        $PAGE->requires->string_for_js('browse_and_embed', 'local_kaltura');
 
         // Require a YUI module to make the object tag be as large as possible.
         $params = array(
@@ -126,9 +127,7 @@ class mod_kalvidres_mod_form extends moodleform_mod {
 
         $mform->addRule('name', null, 'required', null, 'client');
 
-/* BEGIN CORE MOD */
         $this->standard_intro_elements();
-/* END CORE MOD */
 
         $mform->addElement('header', 'video', get_string('video_hdr', 'kalvidres'));
         $mform->setExpanded('video',true);
@@ -137,8 +136,6 @@ class mod_kalvidres_mod_form extends moodleform_mod {
         $this->standard_coursemodule_elements();
 
         $this->add_action_buttons();
-
-        $mform->addElement('html', html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'closeltipanel', 'value' => 0)));
     }
 
     /**
@@ -153,7 +150,7 @@ class mod_kalvidres_mod_form extends moodleform_mod {
         $videopreview = $this->get_iframe_video_preview_markup($addinstance);
 
         $mform->addElement('static', 'add_video_thumb', '&nbsp;', $thumbnail);
-        $mform->addElement('static', 'add_video_preview', '&nbsp;', $videopreview);
+        $mform->addElement('html', $videopreview);
 
         $videogroup = array();
         if ($addinstance) {
@@ -205,16 +202,15 @@ class mod_kalvidres_mod_form extends moodleform_mod {
 
         $params = array(
             'id' => 'contentframe',
+            'class' => 'kaltura-player-iframe',
             'src' => $source,
             'height' => $height,
             'width' => $width,
             'allowfullscreen' => 'true',
-            'webkitallowfullscreen' => 'true',
-            'mozallowfullscreen' => 'true'
         );
 
         if ($hide) {
-            $params['style'] = 'display:none';
+            $params['style'] = 'display: none';
         }
 
         // If the source attribute is not empty, initiate an LTI launch to avoid having ACL issues when another user with permissions edits the module.
@@ -232,7 +228,13 @@ class mod_kalvidres_mod_form extends moodleform_mod {
             $params['src'] = $url->out(false);
         }
 
-        return html_writer::tag('iframe', '', $params);
+        $iframe = html_writer::tag('iframe', '', $params);
+
+        $iframeContainer = html_writer::tag('div', $iframe, array(
+            'class' => 'kaltura-player-container'
+        ));
+
+        return $iframeContainer;
     }
 
     /**

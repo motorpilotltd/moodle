@@ -1,4 +1,6 @@
 <?php
+// This file is part of the Certificate module for Moodle - http://moodle.org/
+//
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -13,24 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Kaltura video resource version file.
+ * Certificate module capability definition
  *
- * @package    mod_kalvidres
- * @author     Remote-Learner.net Inc
+ * @package    mod_certificate
+ * @copyright  2016 Juan Leyva <juan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @copyright  (C) 2014 Remote Learner.net Inc http://www.remote-learner.net
  */
 
-if (!defined('MOODLE_INTERNAL')) {
-    die('Direct access to this script is forbidden.');
-}
-
-$plugin->version = 2017120634;
-$plugin->component  = 'mod_kalvidres';
-$plugin->release    = 'Kaltura release 4.1.1';
-$plugin->requires = 2014050800;
-$plugin->cron       = 0;
-$plugin->maturity = MATURITY_STABLE;
-$plugin->dependencies = array(
-    'local_kaltura' => 2017120634
+$addons = array(
+    "mod_certificate" => array()
 );

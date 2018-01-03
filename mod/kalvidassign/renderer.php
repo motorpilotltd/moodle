@@ -761,50 +761,99 @@ class mod_kalvidassign_renderer extends plugin_renderer_base {
         $groupscolumn = '';
         $groupsjoin   = '';
         $groups       = array();
+        $mergedgroups = array();
         $groupids     = '';
         $context      = context_course::instance($COURSE->id);
 
         // Get all groups that the user belongs to, check if the user has capability to access all groups
         if (!has_capability('moodle/site:accessallgroups', $context, $USER->id)) {
-            $groups = groups_get_all_groups($COURSE->id, $USER->id);
+            // It's very important we use the group limited user function here
+            $groups = groups_get_user_groups($COURSE->id, $USER->id);
 
             if (empty($groups)) {
                 $message = get_string('nosubmissions', 'kalvidassign');
                 echo html_writer::tag('center', $message);
                 return;
             }
+            // Collapse all the group ids into one array for use later.
+            // We have to do this here as the user groups function returns different data than the all groups function.
+            foreach ($groups as $group) {
+                foreach ($group as $value) {
+                    $value = trim($value);
+                    if (!in_array($value, (array)$mergedgroups)) {
+                        $mergedgroups[] = $value;
+                    }
+                }
+            }
         } else {
+            // Here we can use the all groups function as it ensures non-group-bound users can see/grade all groups.
             $groups = groups_get_all_groups($COURSE->id);
+            // Collapse all the group ids into one array for use later.
+            // We have to do this here (and differntly than above) as the all groups function returns different data than the user groups function.
+            foreach ($groups as $group) {
+                $mergedgroups[] = $group->id;
+            }
         }
 
         // Create a comma separated list of group ids
-        foreach ($groups as $group) {
-            $groupids .= $group->id.',';
-        }
+        $groupids .= implode(',', (array)$mergedgroups);
+        // If the user is not a member of any groups, set $groupids = 0 to avoid issues.
+        $groupids = $groupids ? $groupids : 0;
 
-        $groupids = rtrim($groupids, ',');
+        // Ignore all this if there are no course groups
+        if (groups_get_all_groups($COURSE->id)) {
+            switch (groups_get_activity_groupmode($cm)) {
+                case NOGROUPS:
+                    // No groups, do nothing if all groups selected.
+                    // If non-group limited, user can select and limit by group.
+                    if (0 != $groupfilter) {
+                        $groupscolumn = ', gm.groupid ';
+                        $groupsjoin   = ' RIGHT JOIN {groups_members} gm ON gm.userid = u.id RIGHT JOIN {groups} g ON g.id = gm.groupid ';
+                        $param['courseid'] = $cm->course;
+                        $groupswhere  .= ' AND g.courseid = :courseid ';
+                        $param['groupid'] = $groupfilter;
+                        $groupswhere .= ' AND gm.groupid = :groupid ';
+                    }
+                    break;
+                case SEPARATEGROUPS:
+                    // If separate groups, but displaying all users then we must display only users
+                    // who are in the same group as the current user. Otherwise, show only groupmembers
+                    // of the selected group. 
+                    if (0 == $groupfilter) {
+                        $groupscolumn = ', gm.groupid ';
+                        $groupsjoin   = ' INNER JOIN {groups_members} gm ON gm.userid = u.id INNER JOIN {groups} g ON g.id = gm.groupid ';
+                        $param['courseid'] = $cm->course;
+                        $groupswhere  .= ' AND g.courseid = :courseid ';
+                        $param['groupid'] = $groupfilter;
+                        $groupswhere .= ' AND g.id IN ('.$groupids.') ';
+                    } else {
+                        $groupscolumn = ', gm.groupid ';
+                        $groupsjoin   = ' INNER JOIN {groups_members} gm ON gm.userid = u.id INNER JOIN {groups} g ON g.id = gm.groupid ';
+                        $param['courseid'] = $cm->course;
+                        $groupswhere  .= ' AND g.courseid = :courseid ';
+                        $param['groupid'] = $groupfilter;
+                        $groupswhere .= ' AND g.id IN ('.$groupids.') AND g.id = :groupid ';
 
-        switch (groups_get_activity_groupmode($cm)) {
-            case NOGROUPS:
-                // No groups, do nothing
-                break;
-            case SEPARATEGROUPS:
-            case VISIBLEGROUPS:
-                // if visible groups but displaying a specific group then we must display users within
-                // that group, if displaying all groups then display all users in the course
-                if (0 != $groupfilter) {
+                    }
+                    break;
 
-                    $groupscolumn = ', gm.groupid ';
-                    $groupsjoin   = ' RIGHT JOIN {groups_members} gm ON gm.userid = u.id RIGHT JOIN {groups} g ON g.id = gm.groupid ';
+                case VISIBLEGROUPS:
+                    // if visible groups but displaying a specific group then we must display users within
+                    // that group, if displaying all groups then display all users in the course
+                    if (0 != $groupfilter) {
 
-                    $param['courseid'] = $cm->course;
-                    $groupswhere  .= ' AND g.courseid = :courseid ';
+                        $groupscolumn = ', gm.groupid ';
+                        $groupsjoin   = ' RIGHT JOIN {groups_members} gm ON gm.userid = u.id RIGHT JOIN {groups} g ON g.id = gm.groupid ';
 
-                    $param['groupid'] = $groupfilter;
-                    $groupswhere .= ' AND gm.groupid = :groupid ';
+                        $param['courseid'] = $cm->course;
+                        $groupswhere  .= ' AND g.courseid = :courseid ';
 
-                }
-                break;
+                        $param['groupid'] = $groupfilter;
+                        $groupswhere .= ' AND gm.groupid = :groupid ';
+
+                    }
+                    break;
+            }
         }
 
         $table = new submissions_table('kal_vid_submit_table', $cm, $gradinginfo, $quickgrade, $tifirst, $tilast, $page);
@@ -865,8 +914,6 @@ class mod_kalvidassign_renderer extends plugin_renderer_base {
         echo html_writer::end_tag('form');
 
         echo html_writer::end_tag('center');
-
-        echo html_writer::empty_tag('input', array('id' => 'closeltipanel', 'type' => 'hidden'));
     }
 
     /**
@@ -954,7 +1001,6 @@ class mod_kalvidassign_renderer extends plugin_renderer_base {
         $source = new moodle_url('/local/kaltura/pix/vidThumb.png');
         $alt    = get_string('video_thumbnail', 'mod_kalvidassign');
         $title  = get_string('video_thumbnail', 'mod_kalvidassign');
-        $iframe = '';
         $url = null;
 
         $attr = array(
@@ -966,7 +1012,7 @@ class mod_kalvidassign_renderer extends plugin_renderer_base {
 
         // If the submission object contains a source URL then display the video as part of an LTI launch.
         if (!empty($submission->source)) {
-            $attr['style'] = 'display:none';
+            $attr['style'] = 'display: none';
 
             $params = array(
                 'courseid' => $courseid,
@@ -983,22 +1029,23 @@ class mod_kalvidassign_renderer extends plugin_renderer_base {
 
         $params = array(
             'id' => 'contentframe',
+            'class' => 'kaltura-player-iframe',
             'src' => ($url instanceof moodle_url) ? $url->out(false) : '',
             'allowfullscreen' => "true",
-            'webkitallowfullscreen' => "true",
-            'mozallowfullscreen' => "true",
             'height' => '100%',
             'width' => !empty($submission->width) ? $submission->width : ''
         );
 
         if (empty($submission->source)) {
-            $params['style'] = 'display:none';
+            $params['style'] = 'display: none';
         }
 
         $iframe = html_writer::tag('iframe', '', $params);
+        $iframeContainer = html_writer::tag('div', $iframe, array(
+            'class' => 'kaltura-player-container'
+        ));
 
-        $output .= html_writer::tag('center', $iframe);
-        $output .= html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'closeltipanel', 'value' => 0));
+        $output .= $iframeContainer;
 
         return $output;
     }
