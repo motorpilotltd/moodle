@@ -51,7 +51,7 @@ class searchresults implements \templatable {
         foreach ($this->results as $resultobj) {
             $result = new \stdClass();
 
-            $result->uri = new \moodle_url('');
+            $result->uri = new \moodle_url('/local/lynda/launch.php', ['lyndacourseid' => $resultobj->remotecourseid]);
             $result->title = $resultobj->title;
             $result->description = $resultobj->description;
             $result->thumburi = new \moodle_url($resultobj->thumbnail);
