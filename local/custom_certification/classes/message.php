@@ -173,8 +173,7 @@ class message {
 				$user->lastname = '';
 			}
 
-			$message->body = nl2br($message->body);
-			email_to_user($user, $contact, $message->subject, strip_tags($message->body), $message->body);
+			email_to_user($user, $contact, $message->subject, html_to_text($message->body), $message->body);
 
 			$message->timesent = time();
 			$DB->update_record('certif_messages_log', $message);
