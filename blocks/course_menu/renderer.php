@@ -107,15 +107,15 @@ class block_course_menu_renderer extends plugin_renderer_base
         if ($config->expandableTree) {
 /* BEGIN CORE MOD */
             if (!empty($section['resources'])) {
-                foreach ($section['resources'] as $resource) {
-                    $visible_title = $resource['trimmed_name'];
-                    $attributes = array('title' => $resource['name'], 'class' => '');
-                    if (!$section['visible'] || (!$section['uservisible'] || $section['availableinfo'])) {
-                        $attributes['class'] .= 'dimmed_text';
-                    }
-                    $icon = $this->icon($resource['icon'], $resource['trimmed_name'], array('class' => 'smallicon navicon'));
-                    $html .= $this->render_leaf($visible_title, $icon, $attributes, $resource['url']);
-                }
+		    foreach ($section['resources'] as $resource) {
+		        $visible_title = $resource['trimmed_name'];
+		        $attributes = array('title' => $resource['name'], 'class' => '');
+		        if (!$section['visible'] || (!$section['uservisible'] || $section['availableinfo'])) {
+		            $attributes['class'] .= 'dimmed_text';
+		        }
+		        $icon = $this->icon($resource['icon'], $resource['trimmed_name'], array('class' => 'smallicon navicon'));
+		        $html .= $this->render_leaf($visible_title, $icon, $attributes, $resource['url']);
+		    }
             }
 /* END CORE MOD */
             $html = html_writer::tag('ul', $html);
@@ -151,8 +151,9 @@ class block_course_menu_renderer extends plugin_renderer_base
             if ($current) {
                 $attributes['class'] .= ' active_tree_node';
             }
-            $leafIcon = $this->icon($OUTPUT->pix_url('i/navigationitem'), $section['trimmed_name'], array('class' => 'smallicon'));
-
+/* BEGIN CORE MOD */
+            $leafIcon = $this->icon($OUTPUT->image_url('i/navigationitem'), $section['trimmed_name'], array('class' => 'smallicon'));
+/* END CORE MOD */
             $html = $this->render_leaf($section['trimmed_name'], $leafIcon, $attributes, $section['url'], $current);
         }
 
@@ -179,14 +180,16 @@ class block_course_menu_renderer extends plugin_renderer_base
         global $OUTPUT;
         if (strpos($src, 'pix_') === 0) {
             $modname = str_replace('pix_', '', $src);
-            $src = $OUTPUT->pix_url('icon', $modname);
+/* BEGIN CORE MOD */
+            $src = $OUTPUT->image_url('icon', $modname);
+/* END CORE MOD */
         }
 /* BEGIN CORE MOD */
         $p = '';
         foreach ($props as $prop => $val) {
             $p .= $prop . '=' . '"' . $val . '" ';
         }
-        return '<img src="' . $src . '"
+        return '<img src="' . $src . '" 
             title="' . $title . '"
             alt="' . $title . '" ' . $p . ' />';
 /* END CORE MOD */

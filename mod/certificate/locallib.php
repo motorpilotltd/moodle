@@ -334,9 +334,10 @@ function certificate_print_user_files($certificate, $userid, $contextid) {
     foreach ($files as $file) {
         $filename = $file->get_filename();
         $link = file_encode_url($CFG->wwwroot.'/pluginfile.php', '/'.$contextid.'/mod_certificate/issue/'.$certrecord->id.'/'.$filename);
-
-        $output = '<img src="'.$OUTPUT->pix_url(file_mimetype_icon($file->get_mimetype())).'" height="16" width="16" alt="'.$file->get_mimetype().'" />&nbsp;'.
+/* BEGIN CORE MOD */
+        $output = '<img src="'.$OUTPUT->image_url(file_mimetype_icon($file->get_mimetype())).'" height="16" width="16" alt="'.$file->get_mimetype().'" />&nbsp;'.
             '<a href="'.$link.'" >'.s($filename).'</a>';
+/* END CORE MOD */
 
     }
     $output .= '<br />';

@@ -204,12 +204,14 @@ if (!empty($queryparams)) {
 }
 
 if (has_capability('report/customsql:definequeries', $context)) {
-    $imgedit = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/edit'),
+/* BEGIN CORE MOD */
+    $imgedit = html_writer::tag('img', '', array('src' => $OUTPUT->image_url('t/edit'),
                                 'class' => 'iconsmall',
                                 'alt' => get_string('edit')));
-    $imgdelete = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/delete'),
+    $imgdelete = html_writer::tag('img', '', array('src' => $OUTPUT->image_url('t/delete'),
                                   'class' => 'iconsmall',
                                   'alt' => get_string('delete')));
+/* END CORE MOD */
     echo html_writer::start_tag('p').
          $OUTPUT->action_link(new moodle_url(report_customsql_url('edit.php'),
                                              array('id' => $id)), $imgedit.' '.
@@ -221,10 +223,11 @@ if (has_capability('report/customsql:definequeries', $context)) {
                                              get_string('deletethisreport', 'report_customsql')).
          html_writer::end_tag('p');
 }
-
-$imglarrow = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/collapsed_rtl'),
+/* BEGIN CORE MOD */
+$imglarrow = html_writer::tag('img', '', array('src' => $OUTPUT->image_url('t/collapsed_rtl'),
                               'class' => 'iconsmall',
                               'alt' => ''));
+/* END CORE MOD */
 echo html_writer::start_tag('p').
      $OUTPUT->action_link(new moodle_url(report_customsql_url('index.php')), $imglarrow.
                                          get_string('backtoreportlist', 'report_customsql')).

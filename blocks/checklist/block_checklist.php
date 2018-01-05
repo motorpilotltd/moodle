@@ -319,7 +319,9 @@ class block_checklist extends block_list {
         $width = '150px';
 
         $output = '<div class="checklist_progress_outer" style="width: '.$width.';" >';
-        $output .= '<div class="checklist_progress_inner" style="width:'.$percent.'%; background-image: url('.$OUTPUT->pix_url('progress','checklist').');" >&nbsp;</div>';
+/* BEGIN CORE MOD */
+        $output .= '<div class="checklist_progress_inner" style="width:'.$percent.'%; background-image: url('.$OUTPUT->image_url('progress','checklist').');" >&nbsp;</div>';
+/* END CORE MOD */
         $output .= '</div>';
         $output .= '<br style="clear:both;" />';
 

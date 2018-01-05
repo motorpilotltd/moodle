@@ -44,7 +44,9 @@ if (!isset ($this->config->elements)) {
                         <td width="24" style="width: 24px">
                             <?php if (!empty($element['canHide'])) : ?>
                             <a href="javascript:void(0)" class="e-hide-element" rel="e-visible">
-                                <img alt="" src="<?php echo $OUTPUT->pix_url($element['visible'] ? 'i/hide' : 'i/show') ?>" class="show-hide" />
+<!-- BEGIN CORE MOD -->
+                                <img alt="" src="<?php echo $OUTPUT->image_url($element['visible'] ? 'i/hide' : 'i/show') ?>" class="show-hide" />
+<!-- END CORE MOD -->
                                 <input type="hidden" name="visibles[]" value="<?php echo $element['visible'] ?>" class="e-visible" />
                             </a>
                             <?php else : ?>
@@ -61,12 +63,16 @@ if (!isset ($this->config->elements)) {
                         </td>
                         <td class="element-move-up" width="24" style="width:24px">
                             <a href="javascript:void(0)" <?php if ($index == 0) echo 'style="display: none"' ?>>
-                                <img src="<?php echo $OUTPUT->pix_url('t/up') ?>" alt="" />
+ <!-- BEGIN CORE MOD -->
+                                <img src="<?php echo $OUTPUT->image_url('t/up') ?>" alt="" />
+<!-- END CORE MOD -->
                             </a>
                         </td>
                         <td class="element-move-down" width="24" style="width: 24px">
                             <a href="javascript:void(0)" <?php if ($index > count($this->config->elements) - 2) echo 'style="display: none"' ?>>
-                                <img src="<?php echo $OUTPUT->pix_url('t/down') ?>" alt="" />
+<!-- BEGIN CORE MOD -->
+                                <img src="<?php echo $OUTPUT->image_url('t/down') ?>" alt="" />
+<!-- END CORE MOD -->
                             </a>
                         </td>
                     </tr>
@@ -92,12 +98,16 @@ if (!isset ($this->config->elements)) {
             </td>
             <td class="element-move-up" width="24" style="width:24px">
                 <a href="javascript:void(0)">
-                    <img src="<?php echo $OUTPUT->pix_url('t/up') ?>" alt="" />
+<!-- BEGIN CORE MOD -->
+                    <img src="<?php echo $OUTPUT->image_url('t/up') ?>" alt="" />
+<!-- END CORE MOD -->
                 </a>
             </td>
             <td class="element-move-down" width="24" style="width: 24px">
                 <a href="javascript:void(0)">
-                    <img src="<?php echo $OUTPUT->pix_url('t/down') ?>" alt="" />
+<!-- BEGIN CORE MOD -->
+                    <img src="<?php echo $OUTPUT->image_url('t/down') ?>" alt="" />
+<!-- END CORE MOD -->
                 </a>
             </td>
         </tr>

@@ -1808,7 +1808,7 @@ function calendar_add_event_metadata($event) {
         global $USER;
         require_once($CFG->dirroot . '/local/lunchandlearn/lib.php');
         $lal = lunchandlearn::get_instance_by_event($event);
-        $event->icon = '<img src="'.$OUTPUT->pix_url('lunchandlearnevent', 'local_lunchandlearn') . '" alt="'.get_string('lunchandlearnevent', 'local_lunchandlearn').'" class="icon" />';
+        $event->icon = '<img src="'.$OUTPUT->image_url('lunchandlearnevent', 'local_lunchandlearn') . '" alt="'.get_string('lunchandlearnevent', 'local_lunchandlearn').'" class="icon" />';
         $event->cssclass = 'calendar_event_lunchandlearn';
         if (!empty($lal) && $lal->is_user_signedup($USER->id)) {
             $event->cssclass .= ' signedup';

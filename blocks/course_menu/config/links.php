@@ -40,7 +40,9 @@ $linksShow = $this->config->linksEnable ? 'i/hide' : 'i/show';
     <div id="linksEnableContainer">
         <div class="">
             <a href="javascript:void(0)" rel="linksEnable">
-                <img src="<?php echo $OUTPUT->pix_url($linksShow) ?>" border="0" class="show-hide" alt="" />
+<!-- BEGIN CORE MOD -->
+                <img src="<?php echo $OUTPUT->image_url($linksShow) ?>" border="0" class="show-hide" alt="" />
+<!-- END CORE MOD -->
                 <?php echo get_string('activatecustomlinks', $this->blockname) ?>
                 <input type="hidden" name="linksEnable" class="linksEnable" value="<?php echo $this->config->linksEnable ?>" id="id_linksEnable" />
             </a>

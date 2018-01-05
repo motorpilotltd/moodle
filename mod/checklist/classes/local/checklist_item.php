@@ -162,7 +162,9 @@ class checklist_item extends data_object {
     private function image_url($imagename, $component) {
         global $CFG, $OUTPUT;
         if ($CFG->branch < 33) {
-            return $OUTPUT->pix_url($imagename, $component);
+/* BEGIN CORE MOD */
+            return $OUTPUT->image_url($imagename, $component);
+/* END CORE MOD */
         }
         return $OUTPUT->image_url($imagename, $component);
     }
