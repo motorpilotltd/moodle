@@ -62,9 +62,6 @@ class lyndacourseprogressiterator implements \Iterator {
     }
 
     public function valid() {
-        if ($this->position) {
-            return false;
-        }
         if(!isset($this->currentpage[$this->position - $this->positionoffset])) {
             $this->positionoffset = $this->position;
             $this->currentpage = $this->api->individualusagedetail($this->startdate, $this->enddate, $this->position)->ReportData;

@@ -22,28 +22,10 @@
 
 $tasks = array(
         array(
-                'classname' => 'local_lynda\task\sync_course_list',
+                'classname' => 'local_lynda\task\sync_lynda_data',
                 'blocking'  => 0,
-                'minute'    => '0',
-                'hour'      => '1',
-                'day'       => '*',
-                'dayofweek' => '*',
-                'month'     => '*'
-        ),
-        array(
-                'classname' => 'local_lynda\task\sync_course_progress',
-                'blocking'  => 0,
-                'minute'    => '0',
-                'hour'      => '3',
-                'day'       => '*',
-                'dayofweek' => '*',
-                'month'     => '*'
-        ),
-        array(
-                'classname' => 'local_lynda\task\sync_lyndadata',
-                'blocking'  => 0,
-                'minute'    => '0',
-                'hour'      => '3',
+                'minute'    => '*',
+                'hour'      => '*',
                 'day'       => '*',
                 'dayofweek' => '*',
                 'month'     => '*'

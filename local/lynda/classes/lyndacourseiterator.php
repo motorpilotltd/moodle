@@ -56,9 +56,6 @@ class lyndacourseiterator implements \Iterator {
     }
 
     public function valid() {
-        if ($this->position) {
-            return false;
-        }
         if(!isset($this->currentpage[$this->position - $this->positionoffset])) {
             $this->positionoffset = $this->position;
             $this->currentpage = $this->api->getcourses($this->position);

@@ -94,6 +94,7 @@ class lyndacourse_test extends advanced_testcase {
         $api->useupdatedcourses();
         $api->synccourses();
 
+        $this->assertEquals(5, $DB->count_records('local_lynda_course'));
         // Check a course has been correctly populated.
         $course = new \local_lynda\lyndacourse(['remotecourseid' => 180212]);
         $tags = $DB->get_records_menu('local_lynda_coursetags', ['remotecourseid' => 180212], 'remotetagid', 'id, remotetagid');

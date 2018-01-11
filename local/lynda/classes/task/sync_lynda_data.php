@@ -26,7 +26,7 @@ use local_lynda\lyndaapi;
 
 defined('MOODLE_INTERNAL') || die();
 
-class sync_lyndadata extends \core\task\scheduled_task {
+class sync_lynda_data extends \core\task\scheduled_task {
 
     /**
      * Get a descriptive name for this task (shown to admins).
