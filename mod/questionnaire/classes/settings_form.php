@@ -15,19 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * print the form to add or edit a questionnaire-instance
- *
- * @author Mike Churchward
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package questionnaire
+ * @package mod_questionnaire
+ * @copyright  2016 Mike Churchward (mike.churchward@poetgroup.org)
+ * @author     Mike Churchward
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
+defined('MOODLE_INTERNAL') || die();
 
-class questionnaire_settings_form extends moodleform {
+require_once($CFG->libdir . '/formslib.php');
+
+class mod_questionnaire_settings_form extends moodleform {
 
     public function definition() {
-        global $questionnaire, $questionnairerealms, $CFG;
+        global $questionnaire, $questionnairerealms;
 
         $mform    =& $this->_form;
 
@@ -195,8 +196,8 @@ class questionnaire_settings_form extends moodleform {
         $mform->setType('sid', PARAM_INT);
         $mform->addElement('hidden', 'name', '');
         $mform->setType('name', PARAM_TEXT);
-        $mform->addElement('hidden', 'owner', '');
-        $mform->setType('owner', PARAM_RAW);
+        $mform->addElement('hidden', 'courseid', '');
+        $mform->setType('courseid', PARAM_RAW);
 
         // Buttons.
 

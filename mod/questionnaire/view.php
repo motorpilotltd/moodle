@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once("../../config.php");
+require_once($CFG->dirroot.'/mod/questionnaire/locallib.php');
 require_once($CFG->libdir . '/completionlib.php');
 require_once($CFG->dirroot.'/mod/questionnaire/questionnaire.class.php');
 
@@ -28,30 +29,7 @@ $a = optional_param('a', null, PARAM_INT);      // Or questionnaire ID.
 
 $sid = optional_param('sid', null, PARAM_INT);  // Survey id.
 
-if ($id) {
-    if (! $cm = get_coursemodule_from_id('questionnaire', $id)) {
-        print_error('invalidcoursemodule');
-    }
-
-    if (! $course = $DB->get_record("course", array("id" => $cm->course))) {
-        print_error('coursemisconf');
-    }
-
-    if (! $questionnaire = $DB->get_record("questionnaire", array("id" => $cm->instance))) {
-        print_error('invalidcoursemodule');
-    }
-
-} else {
-    if (! $questionnaire = $DB->get_record("questionnaire", array("id" => $a))) {
-        print_error('invalidcoursemodule');
-    }
-    if (! $course = $DB->get_record("course", array("id" => $questionnaire->course))) {
-        print_error('coursemisconf');
-    }
-    if (! $cm = get_coursemodule_from_instance("questionnaire", $questionnaire->id, $course->id)) {
-        print_error('invalidcoursemodule');
-    }
-}
+list($cm, $course, $questionnaire) = questionnaire_get_standard_page_items($id, $a);
 
 // Check login and get context.
 require_course_login($course, true, $cm);
@@ -70,21 +48,20 @@ if (isset($sid)) {
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $questionnaire = new questionnaire(0, $questionnaire, $course, $cm);
+// Add renderer and page objects to the questionnaire object for display use.
+$questionnaire->add_renderer($PAGE->get_renderer('mod_questionnaire'));
+$questionnaire->add_page(new \mod_questionnaire\output\viewpage());
 
 $PAGE->set_title(format_string($questionnaire->name));
-
 $PAGE->set_heading(format_string($course->fullname));
 
-echo $OUTPUT->header();
-
-echo $OUTPUT->heading(format_text($questionnaire->name));
+echo $questionnaire->renderer->header();
+$questionnaire->page->add_to_page('questionnairename', format_string($questionnaire->name));
 
 // Print the main part of the page.
 if ($questionnaire->intro) {
-    echo $OUTPUT->box(format_module_intro('questionnaire', $questionnaire, $cm->id), 'generalbox', 'intro');
+    $questionnaire->page->add_to_page('intro', format_module_intro('questionnaire', $questionnaire, $cm->id));
 }
-
-echo $OUTPUT->box_start('generalbox boxaligncenter boxwidthwide');
 
 $cm = $questionnaire->cm;
 $currentgroupid = groups_get_activity_group($cm);
@@ -98,36 +75,32 @@ if (!$questionnaire->is_active()) {
     } else {
         $msg = 'notavail';
     }
-    echo '<div class="message">'
-    .get_string($msg, 'questionnaire')
-    .'</div>';
+    $questionnaire->page->add_to_page('message', get_string($msg, 'questionnaire'));
 /* BEGIN CORE MOD */
-    echo html_writer::link(new moodle_url('/course/view.php', array('id' => $course->id)), get_string("continue"));
-/* END CORE MOD */
-} else if (!$questionnaire->is_open()) {
-    echo '<div class="message">'
-    .get_string('notopen', 'questionnaire', userdate($questionnaire->opendate))
-    .'</div>';
-/* BEGIN CORE MOD */
-    echo html_writer::link(new moodle_url('/course/view.php', array('id' => $course->id)), get_string("continue"));
-/* END CORE MOD */
-} else if ($questionnaire->is_closed()) {
-    echo '<div class="message">'
-    .get_string('closed', 'questionnaire', userdate($questionnaire->closedate))
-    .'</div>';
-/* BEGIN CORE MOD */
-    echo html_writer::link(new moodle_url('/course/view.php', array('id' => $course->id)), get_string("continue"));
+    $questionnaire->page->add_to_page('continue', (new moodle_url('/course/view.php', array('id' => $course->id)))->out(false));
 /* END CORE MOD */
 } else if ($questionnaire->survey->realm == 'template') {
-    print_string('templatenotviewable', 'questionnaire');
-    echo $OUTPUT->box_end();
-    echo $OUTPUT->footer($questionnaire->course);
+    // If this is a template survey, notify and exit.
+    $questionnaire->page->add_to_page('message', get_string('templatenotviewable', 'questionnaire'));
+    echo $questionnaire->renderer->render($questionnaire->page);
+    echo $questionnaire->renderer->footer($questionnaire->course);
     exit();
+
+} else if (!$questionnaire->is_open()) {
+    $questionnaire->page->add_to_page('message', get_string('notopen', 'questionnaire', userdate($questionnaire->opendate)));
+/* BEGIN CORE MOD */
+    $questionnaire->page->add_to_page('continue', (new moodle_url('/course/view.php', array('id' => $course->id)))->out(false));
+/* END CORE MOD */
+} else if ($questionnaire->is_closed()) {
+    $questionnaire->page->add_to_page('message', get_string('closed', 'questionnaire', userdate($questionnaire->closedate)));
+/* BEGIN CORE MOD */
+    $questionnaire->page->add_to_page('continue', (new moodle_url('/course/view.php', array('id' => $course->id)))->out(false));
+/* END CORE MOD */
 } else if (!$questionnaire->user_is_eligible($USER->id)) {
     if ($questionnaire->questions) {
-        echo '<div class="message">'.get_string('noteligible', 'questionnaire').'</div>';
+        $questionnaire->page->add_to_page('message', get_string('noteligible', 'questionnaire'));
 /* BEGIN CORE MOD */
-        echo html_writer::link(new moodle_url('/course/view.php', array('id' => $course->id)), get_string("continue"));
+        $questionnaire->page->add_to_page('continue', (new moodle_url('/course/view.php', array('id' => $course->id)))->out(false));
 /* END CORE MOD */
     }
 } else if (!$questionnaire->user_can_take($USER->id)) {
@@ -145,38 +118,40 @@ if (!$questionnaire->is_active()) {
             $msgstring = '';
             break;
     }
-    echo ('<div class="message">'.get_string("alreadyfilled", "questionnaire", $msgstring).'</div>');
+    $questionnaire->page->add_to_page('message', get_string("alreadyfilled", "questionnaire", $msgstring));
 /* BEGIN CORE MOD */
-    echo html_writer::link(new moodle_url('/course/view.php', array('id' => $course->id)), get_string("continue"));
+    $questionnaire->page->add_to_page('continue', (new moodle_url('/course/view.php', array('id' => $course->id)))->out(false));
 /* END CORE MOD */
 } else if ($questionnaire->user_can_take($USER->id)) {
-    $select = 'survey_id = '.$questionnaire->survey->id.' AND username = \''.$USER->id.'\' AND complete = \'n\'';
-    $resume = $DB->get_record_select('questionnaire_response', $select, null) !== false;
-    if (!$resume) {
-        $complete = get_string('answerquestions', 'questionnaire');
-    } else {
-        $complete = get_string('resumesurvey', 'questionnaire');
-    }
     if ($questionnaire->questions) { // Sanity check.
-        echo '<a href="'.$CFG->wwwroot.htmlspecialchars('/mod/questionnaire/complete.php?'.
-        'id='.$questionnaire->cm->id.'&resume='.$resume).'">'.$complete.'</a>';
+        if (!$questionnaire->user_has_saved_response($USER->id)) {
+            $questionnaire->page->add_to_page('complete',
+                '<a href="'.$CFG->wwwroot.htmlspecialchars('/mod/questionnaire/complete.php?' .
+                'id='.$questionnaire->cm->id).'">'.get_string('answerquestions', 'questionnaire').'</a>');
+        } else {
+            $questionnaire->page->add_to_page('complete',
+                '<a href="'.$CFG->wwwroot.htmlspecialchars('/mod/questionnaire/complete.php?' .
+                'id='.$questionnaire->cm->id.'&resume=1').'">'.get_string('resumesurvey', 'questionnaire').'</a>');
+        }
+    } else {
+        $questionnaire->page->add_to_page('message', get_string('noneinuse', 'questionnaire'));
+/* BEGIN CORE MOD */
+        $questionnaire->page->add_to_page('continue', (new moodle_url('/course/view.php', array('id' => $course->id)))->out(false));
+/* END CORE MOD */
     }
 }
-if ($questionnaire->is_active() && !$questionnaire->questions) {
-    echo '<p>'.get_string('noneinuse', 'questionnaire').'</p>';
+
+if ($questionnaire->capabilities->editquestions && !$questionnaire->questions && $questionnaire->is_active()) {
+    $questionnaire->page->add_to_page('complete',
+        '<a href="'.$CFG->wwwroot.htmlspecialchars('/mod/questionnaire/questions.php?'.
+        'id='.$questionnaire->cm->id).'">'.'<strong>'.get_string('addquestions', 'questionnaire').'</strong></a>');
 }
-if ($questionnaire->is_active() && $questionnaire->capabilities->editquestions && !$questionnaire->questions) { // Sanity check.
-    echo '<a href="'.$CFG->wwwroot.htmlspecialchars('/mod/questionnaire/questions.php?'.
-                'id='.$questionnaire->cm->id).'">'.'<strong>'.get_string('addquestions', 'questionnaire').'</strong></a>';
-}
-echo $OUTPUT->box_end();
+
 if (isguestuser()) {
-    $output = '';
     $guestno = html_writer::tag('p', get_string('noteligible', 'questionnaire'));
     $liketologin = html_writer::tag('p', get_string('liketologin'));
-    $output .= $OUTPUT->confirm($guestno."\n\n".$liketologin."\n", get_login_url(),
-            get_local_referer(false));
-    echo $output;
+    $questionnaire->page->add_to_page('guestuser',
+        $questionnaire->renderer->confirm($guestno."\n\n".$liketologin."\n", get_login_url(), get_local_referer(false)));
 }
 
 // Log this course module view.
@@ -194,7 +169,6 @@ $event->trigger();
 $usernumresp = $questionnaire->count_submissions($USER->id);
 
 if ($questionnaire->capabilities->readownresponses && ($usernumresp > 0)) {
-    echo $OUTPUT->box_start('generalbox boxaligncenter boxwidthwide');
     $argstr = 'instance='.$questionnaire->id.'&user='.$USER->id;
     if ($usernumresp > 1) {
         $titletext = get_string('viewyourresponses', 'questionnaire', $usernumresp);
@@ -202,10 +176,8 @@ if ($questionnaire->capabilities->readownresponses && ($usernumresp > 0)) {
         $titletext = get_string('yourresponse', 'questionnaire');
         $argstr .= '&byresponse=1&action=vresp';
     }
-
-    echo '<a href="'.$CFG->wwwroot.htmlspecialchars('/mod/questionnaire/myreport.php?'.
-        $argstr).'">'.$titletext.'</a>';
-    echo $OUTPUT->box_end();
+    $questionnaire->page->add_to_page('yourresponse',
+        '<a href="'.$CFG->wwwroot.htmlspecialchars('/mod/questionnaire/myreport.php?'.$argstr).'">'.$titletext.'</a>');
 }
 
 /* BEGIN CORE MOD */
@@ -224,48 +196,12 @@ if ($questionnaire->qtype == QUESTIONNAIREONCE
 }
 /* END CORE MOD */
 
-if ($survey = $DB->get_record('questionnaire_survey', array('id' => $questionnaire->sid))) {
-    $owner = (trim($survey->owner) == trim($course->id));
-} else {
-    $survey = false;
-    $owner = true;
-}
-$numresp = $questionnaire->count_submissions();
-
-// Number of Responses in currently selected group (or all participants etc.).
-if (isset($SESSION->questionnaire->numselectedresps)) {
-    $numselectedresps = $SESSION->questionnaire->numselectedresps;
-} else {
-    $numselectedresps = $numresp;
-}
-
-// If questionnaire is set to separate groups, prevent user who is not member of any group
-// to view All responses.
-$canviewgroups = true;
-$groupmode = groups_get_activity_groupmode($cm, $course);
-if ($groupmode == 1) {
-    $canviewgroups = groups_has_membership($cm, $USER->id);;
-}
-
-$canviewallgroups = has_capability('moodle/site:accessallgroups', $context);
-if (( (
-            // Teacher or non-editing teacher (if can view all groups).
-            $canviewallgroups ||
-            // Non-editing teacher (with canviewallgroups capability removed), if member of a group.
-            ($canviewgroups && $questionnaire->capabilities->readallresponseanytime))
-            && $numresp > 0 && $owner && $numselectedresps > 0) ||
-            $questionnaire->capabilities->readallresponses && ($numresp > 0) && $canviewgroups &&
-            ($questionnaire->resp_view == QUESTIONNAIRE_STUDENTVIEWRESPONSES_ALWAYS ||
-                    ($questionnaire->resp_view == QUESTIONNAIRE_STUDENTVIEWRESPONSES_WHENCLOSED
-                            && $questionnaire->is_closed()) ||
-                    ($questionnaire->resp_view == QUESTIONNAIRE_STUDENTVIEWRESPONSES_WHENANSWERED
-                            && $usernumresp > 0)) &&
-            $questionnaire->is_survey_owner()) {
-    echo $OUTPUT->box_start('generalbox boxaligncenter boxwidthwide');
+if ($questionnaire->can_view_all_responses($usernumresp)) {
     $argstr = 'instance='.$questionnaire->id.'&group='.$currentgroupid;
-    echo '<a href="'.$CFG->wwwroot.htmlspecialchars('/mod/questionnaire/report.php?'.
-            $argstr).'">'.get_string('viewallresponses', 'questionnaire').'</a>';
-    echo $OUTPUT->box_end();
+    $questionnaire->page->add_to_page('allresponses',
+        '<a href="'.$CFG->wwwroot.htmlspecialchars('/mod/questionnaire/report.php?'.$argstr).'">'.
+        get_string('viewallresponses', 'questionnaire').'</a>');
 }
 
-echo $OUTPUT->footer();
+echo $questionnaire->renderer->render($questionnaire->page);
+echo $questionnaire->renderer->footer();

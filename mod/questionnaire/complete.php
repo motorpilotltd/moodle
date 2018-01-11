@@ -31,30 +31,7 @@ $a = optional_param('a', null, PARAM_INT);      // questionnaire ID.
 $sid = optional_param('sid', null, PARAM_INT);  // Survey id.
 $resume = optional_param('resume', null, PARAM_INT);    // Is this attempt a resume of a saved attempt?
 
-if ($id) {
-    if (! $cm = get_coursemodule_from_id('questionnaire', $id)) {
-        print_error('invalidcoursemodule');
-    }
-
-    if (! $course = $DB->get_record("course", array("id" => $cm->course))) {
-        print_error('coursemisconf');
-    }
-
-    if (! $questionnaire = $DB->get_record("questionnaire", array("id" => $cm->instance))) {
-        print_error('invalidcoursemodule');
-    }
-
-} else {
-    if (! $questionnaire = $DB->get_record("questionnaire", array("id" => $a))) {
-        print_error('invalidcoursemodule');
-    }
-    if (! $course = $DB->get_record("course", array("id" => $questionnaire->course))) {
-        print_error('coursemisconf');
-    }
-    if (! $cm = get_coursemodule_from_instance("questionnaire", $questionnaire->id, $course->id)) {
-        print_error('invalidcoursemodule');
-    }
-}
+list($cm, $course, $questionnaire) = questionnaire_get_standard_page_items($id, $a);
 
 // Check login and get context.
 require_course_login($course, true, $cm);
@@ -71,6 +48,9 @@ if (isset($id)) {
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $questionnaire = new questionnaire(0, $questionnaire, $course, $cm);
+// Add renderer and page objects to the questionnaire object for display use.
+$questionnaire->add_renderer($PAGE->get_renderer('mod_questionnaire'));
+$questionnaire->add_page(new \mod_questionnaire\output\completepage());
 
 $questionnaire->strquestionnaires = get_string("modulenameplural", "questionnaire");
 $questionnaire->strquestionnaire  = get_string("modulename", "questionnaire");
@@ -91,4 +71,10 @@ if ($resume) {
     $event->trigger();
 }
 
+// Generate the view HTML in the page.
 $questionnaire->view();
+
+// Output the page.
+echo $questionnaire->renderer->header();
+echo $questionnaire->renderer->render($questionnaire->page);
+echo $questionnaire->renderer->footer($course);

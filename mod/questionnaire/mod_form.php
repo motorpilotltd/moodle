@@ -22,6 +22,8 @@
  * @package questionnaire
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
 require_once($CFG->dirroot.'/mod/questionnaire/questionnaire.class.php');
 require_once($CFG->dirroot.'/mod/questionnaire/locallib.php');
@@ -30,6 +32,7 @@ class mod_questionnaire_mod_form extends moodleform_mod {
 
     protected function definition() {
         global $COURSE;
+        global $questionnairetypes, $questionnairerespondents, $questionnaireresponseviewers, $autonumbering;
 
         $questionnaire = new questionnaire($this->_instance, null, $COURSE, $this->_cm);
 
@@ -59,7 +62,6 @@ class mod_questionnaire_mod_form extends moodleform_mod {
         $mform->addHelpButton('enableclosegroup', 'closedate', 'questionnaire');
         $mform->disabledIf('enableclosegroup', 'useclosedate', 'notchecked');
 
-        global $questionnairetypes, $questionnairerespondents, $questionnaireresponseviewers, $questionnairerealms, $autonumbering;
         $mform->addElement('header', 'questionnairehdr', get_string('responseoptions', 'questionnaire'));
 
         $mform->addElement('select', 'qtype', get_string('qtype', 'questionnaire'), $questionnairetypes);
@@ -73,6 +75,9 @@ class mod_questionnaire_mod_form extends moodleform_mod {
 
         $mform->addElement('select', 'resp_view', get_string('responseview', 'questionnaire'), $questionnaireresponseviewers);
         $mform->addHelpButton('resp_view', 'responseview', 'questionnaire');
+
+        $mform->addElement('selectyesno', 'notifications', get_string('notifications', 'questionnaire'));
+        $mform->addHelpButton('notifications', 'notifications', 'questionnaire');
 
         $options = array('0' => get_string('no'), '1' => get_string('yes'));
         $mform->addElement('select', 'resume', get_string('resume', 'questionnaire'), $options);
@@ -93,7 +98,6 @@ class mod_questionnaire_mod_form extends moodleform_mod {
             $grades[$i] = $i;
         }
         $mform->addElement('select', 'grade', get_string('grade', 'questionnaire'), $grades);
-
 /* BEGIN CORE MOD */
         $options = array('0' => get_string('no'), '1' => get_string('yes'));
         $mform->addElement('select', 'sendsummary', get_string('sendsummary', 'questionnaire'), $options);
@@ -103,7 +107,6 @@ class mod_questionnaire_mod_form extends moodleform_mod {
         $mform->addElement('select', 'usercanreset', get_string('usercanreset', 'questionnaire'), $options);
         $mform->addHelpButton('usercanreset', 'usercanreset', 'questionnaire');
 /* END CORE MOD */
-
         if (empty($questionnaire->sid)) {
             if (!isset($questionnaire->id)) {
                 $questionnaire->id = 0;
@@ -115,7 +118,7 @@ class mod_questionnaire_mod_form extends moodleform_mod {
             $mform->addElement('radio', 'create', get_string('createnew', 'questionnaire'), '', 'new-0');
 
             // Retrieve existing private questionnaires from current course.
-            $surveys = questionnaire_get_survey_select($questionnaire->id, $COURSE->id, 0, 'private');
+            $surveys = questionnaire_get_survey_select($COURSE->id, 'private');
             if (!empty($surveys)) {
                 $prelabel = get_string('useprivate', 'questionnaire');
                 foreach ($surveys as $value => $label) {
@@ -124,7 +127,7 @@ class mod_questionnaire_mod_form extends moodleform_mod {
                 }
             }
             // Retrieve existing template questionnaires from this site.
-            $surveys = questionnaire_get_survey_select($questionnaire->id, $COURSE->id, 0, 'template');
+            $surveys = questionnaire_get_survey_select($COURSE->id, 'template');
             if (!empty($surveys)) {
                 $prelabel = get_string('usetemplate', 'questionnaire');
                 foreach ($surveys as $value => $label) {
@@ -137,7 +140,7 @@ class mod_questionnaire_mod_form extends moodleform_mod {
             }
 
             // Retrieve existing public questionnaires from this site.
-            $surveys = questionnaire_get_survey_select($questionnaire->id, $COURSE->id, 0, 'public');
+            $surveys = questionnaire_get_survey_select($COURSE->id, 'public');
             if (!empty($surveys)) {
                 $prelabel = get_string('usepublic', 'questionnaire');
                 foreach ($surveys as $value => $label) {

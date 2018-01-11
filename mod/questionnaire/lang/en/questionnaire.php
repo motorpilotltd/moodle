@@ -245,11 +245,20 @@ $string['managequestions'] = 'Manage questions';
 $string['managequestions_help'] = 'In the Manage questions section of the Edit Questions page, you can conduct a number of operations on a Questionnaire\'s questions.';
 $string['managequestions_link'] = 'mod/questionnaire/questions#Manage_questions';
 $string['maxdigitsallowed'] = 'Max. digits allowed';
-$string['maxdigitsallowed_help'] = 'By using the Max. digits allowed and Nb of decimal digits parameters you can specify
- the length and number of decimal places required.';
+$string['maxdigitsallowed_help'] = 'Use **Max. digits allowed** to set a limit to the number of characters entered for a Numeric question. Note that the
+decimal point also counts as one character!';
+$string['maxdigitsallowed_link'] = 'mod/questionnaire/questions#Numeric';
 $string['maxforcedresponses'] = 'Max. forced responses';
+$string['maxforcedresponses_help'] = 'Use these parameters to force respondent to tick a minimum of **Min.** boxes and a maximum of **Max.** check boxes. To
+force an exact number of check boxes to be ticked, set **Min.** and **Max.** to the same value. If only a min or a max value is desired, just leave the other
+value to its default **0** value. If you set **Min.** or **Max.** to values other than their default **0** value, a warning message will be displayed if
+respondent does not comply with your requirements. Obviously you should make any requirements clear to the respondent either in the general instructions of
+your Questionnaire or in the text of relevant questions.';
 $string['maxtextlength'] = 'Max. text length';
+$string['maxtextlength_help'] = 'For the Text Box question type, enter the Input Box length and the Maximum text length of text to be entered by respondent.
+Default values are 20 characters for the Input Box width and 25 characters for the maximum length of text entered.';
 $string['messageprovider:message'] = 'Questionnaire reminder';
+$string['messageprovider:notification'] = 'Questionnaire submission';
 $string['minforcedresponses'] = 'Min. forced responses';
 $string['minforcedresponses_help'] = 'Use these parameters to force respondent to tick a minimum of **Min.** boxes and a maximum of **Max.** check boxes. To
 force an exact number of check boxes to be ticked, set **Min.** and **Max.** to the same value. If only a min or a max value is desired, just leave the other
@@ -291,6 +300,9 @@ $string['notapplicablecolumn'] = 'N/A column';
 $string['notavail'] = 'This questionnaire is no longer available. Ask your teacher to delete it.';
 $string['noteligible'] = 'You are not eligible to take this questionnaire.';
 $string['notemplatesurveys'] = 'No template questionnaires.';
+$string['notifications'] = 'Send submission notifications';
+$string['notifications_help'] = 'Notify roles with the "mod/questionnaire:submissionnotification" capability when a submission is made.';
+$string['notifications_link'] = 'mod/questionnaire/mod#Submission_Notifications';
 $string['notopen'] = 'This questionnaire will not open until {$a}.';
 $string['notrequired'] = 'Response is not required';
 $string['not_started'] = 'not started';
@@ -299,6 +311,8 @@ $string['num'] = '#';
 $string['numattemptsmade'] = '{$a} attempts made on this questionnaire';
 $string['numberfloat'] = 'The number you entered <strong>{$a->number}</strong> has been reformatted/rounded with <strong>{$a->precision}</strong> decimal place(s).';
 $string['numberofdecimaldigits'] = 'Nb of decimal digits';
+$string['numberofdecimaldigits_help'] = 'Use **Nb of decimal digits** to specify the format of the Average value counted and displayed at the Questionnaire Report page.';
+$string['numberofdecimaldigits_link'] = 'mod/questionnaire/questions#Numeric';
 $string['numberscaleitems'] = 'Nb of scale items';
 $string['numberscaleitems_help'] = 'Nb of scale items is the *number of items* to be used in your rate scale. You would normally use a value of 3 to 5. Default value: **5**.';
 $string['numeric'] = 'Numeric';
@@ -380,6 +394,7 @@ $string['questionnaire:printblank'] = 'Print blank questionnaire';
 $string['questionnaire:readallresponseanytime'] = 'Read all responses any time';
 $string['questionnaire:readallresponses'] = 'Read response summaries, subject to open times';
 $string['questionnaire:readownresponses'] = 'Read own responses';
+$string['questionnaire:submissionnotification'] = 'Receive notification for each submission';
 $string['questionnaire:submit'] = 'Complete and submit a questionnaire';
 $string['questionnaire:view'] = 'View a questionnaire';
 $string['questionnaire:viewsingleresponse'] = 'View complete individual responses';
@@ -409,7 +424,7 @@ $string['realm_link'] = 'mod/questionnaire/qsettings#Questionnaire_Type';
 $string['redirecturl'] = 'The URL to which a user is redirected after completing this questionnaire.';
 $string['remove'] = 'Delete';
 $string['removenotinuse'] = 'This questionnaire used to depend on a Public questionnaire which has been deleted.
-                It can no longer be used and should be deleted.';
+It can no longer be used and should be deleted.';
 $string['required'] = 'Response is required';
 $string['required_help'] = 'If you select ***Yes***, response to this question will be required, i.e.
 the respondent will not be able to submit the questionnaire
@@ -455,6 +470,8 @@ $string['savedbutnotsubmitted'] = 'This questionnaire has been saved but not yet
 $string['savedprogress'] = 'Your progress has been saved.  You may return at any time to complete this questionnaire.';
 $string['saveeditedquestion'] = 'Save question {$a}';
 $string['savesettings'] = 'Save settings';
+$string['search:activity'] = 'Questionnaire - activity information';
+$string['search:question'] = 'Questionnaire - questions';
 $string['section'] = 'Description';
 $string['sectionbreak'] = '----- Page Break -----';
 $string['sectionbreak_help'] = '----- Page Break -----';
@@ -475,6 +492,11 @@ $string['show_nonrespondents'] = 'Non-respondents';
 $string['started'] = 'started';
 $string['strfdate'] = '%d/%m/%Y';
 $string['strfdateformatcsv'] = 'd/m/Y H:i:s';
+$string['submissionnotificationhtmlanon'] = 'There is a new <a href="{$a->submissionurl}">submission</a> to the "{$a->name}" questionnaire.';
+$string['submissionnotificationhtmluser'] = 'There is a new <a href="{$a->submissionurl}">submission</a> to the "{$a->name}" questionnaire from "<a href="{$a->profileurl}">{$a->username}</a>".';
+$string['submissionnotificationsubject'] = 'New questionnaire submission';
+$string['submissionnotificationtextanon'] = 'There is a new submission ({$a->submissionurl}) to the "{$a->name}" questionnaire.';
+$string['submissionnotificationtextuser'] = 'There is a new submission ({$a->submissionurl}) to the "{$a->name}" questionnaire from "{$a->username}" ({$a->profileurl}).';
 $string['submitoptions'] = 'Submission options';
 $string['submitpreview'] = 'Submit preview';
 $string['submitpreviewcorrect'] = 'This submission would be accepted as correctly filled in.';
@@ -567,3 +589,4 @@ $string['usercanreset'] = 'User can reset response';
 $string['usercanreset_help'] = 'Users are allowed to reset their response, to enable editing and re-submitting. '
     . 'NB. Responses can only be reset on questionnaires that can only be filled in once, are not anonymous and are open.';
 /* END CORE MOD */
+

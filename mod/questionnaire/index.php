@@ -102,8 +102,6 @@ foreach ($questionnaires as $questionnaire) {
     $cmid = $questionnaire->coursemodule;
     $data = array();
     $realm = $DB->get_field('questionnaire_survey', 'realm', array('id' => $questionnaire->sid));
-
-    $realm = $DB->get_field('questionnaire_survey', 'realm', array('id' => $questionnaire->sid));
     // Template surveys should NOT be displayed as an activity to students.
     if (!($realm == 'template' && !has_capability('mod/questionnaire:manage', context_module::instance($cmid)))) {
         // Section number if necessary.
@@ -146,14 +144,14 @@ foreach ($questionnaires as $questionnaire) {
                 // For a public questionnaire, look for the original public questionnaire that it is based on.
                 if ($survey->realm == 'public') {
                     $strpreview = get_string('preview_questionnaire', 'questionnaire');
-                    if ($survey->owner != $course->id) {
+                    if ($survey->courseid != $course->id) {
                         $publicoriginal = '';
-                        $originalcourse = $DB->get_record('course', array('id' => $survey->owner));
-                        $originalcoursecontext = context_course::instance($survey->owner);
+                        $originalcourse = $DB->get_record('course', ['id' => $survey->courseid]);
+                        $originalcoursecontext = context_course::instance($survey->courseid);
                         $originalquestionnaire = $DB->get_record('questionnaire',
-                                        array('sid' => $survey->id, 'course' => $survey->owner));
-                        $cm = get_coursemodule_from_instance("questionnaire", $originalquestionnaire->id, $survey->owner);
-                        $context = context_course::instance($survey->owner, MUST_EXIST);
+                            ['sid' => $survey->id, 'course' => $survey->courseid]);
+                        $cm = get_coursemodule_from_instance("questionnaire", $originalquestionnaire->id, $survey->courseid);
+                        $context = context_course::instance($survey->courseid, MUST_EXIST);
                         $canvieworiginal = has_capability('mod/questionnaire:preview', $context, $USER->id, true);
                         // If current user can view questionnaires in original course,
                         // provide a link to the original public questionnaire.
