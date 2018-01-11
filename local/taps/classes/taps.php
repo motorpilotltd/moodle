@@ -99,6 +99,7 @@ class taps {
             'EACPDT7' => 'EA CPD Type VII',
             'EACPDT8' => 'EA CPD Type VIII',
             'EC' => 'External Course',
+            'ECO' => 'External Course Online',
             'HS' => 'Health and Safety',
             'INF' => 'Informal',
             'IM' => 'Institute Meetings',
