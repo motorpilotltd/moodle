@@ -132,8 +132,6 @@ class lyndacourse_test extends advanced_testcase {
     }
 
     public function test_synccourseprogress() {
-        global $DB;
-
         require_once('fixtures/lyndaapimock.php');
         $api = new \local_lynda\lyndaapimock();
         $api->synccourses();
