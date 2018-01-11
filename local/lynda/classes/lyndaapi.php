@@ -28,43 +28,29 @@ class lyndaapi {
         $start = $start + 1; // The API isn't 0 based.
         // Max value for limit appears to be 41 (seems pretty random to me...) but it's really unreliable if we go over 25.
         // It's probably unreliable due to the MASSIVE json docs that come back being unparsable.
-        $url = "/courses?order=ByTitle&sort=asc&start=$start&limit=25";
-        $results = $this->callapi($url);
-        return $results;
-    }
-/*
-    // The search API cannot be used to just list out all courses, you have to provide a keyword.
-    public function search($keywords) {
-        $url = '/search/?order=ByDate&sort=desc&q=' . urlencode($keywords);
+        $url = "/courses?order=ByTitle&sort=asc&start=$start&limit=25&hasAccess=1";
         $results = $this->callapi($url);
         return $results;
     }
 
-    // Get a record for each course completed by each user - no way to do this for a specific user, could do this in batch and process?
-    public function certficateofcompletion($enddate) {
-        $url = '/reports/CertificateOfCompletion?startDate=2012-10-01&endDate=' . $enddate .
-                '&start=1&limit=50&order=LastName&sort=asc';
+    public function individualusagedetail($startdate, $enddate, $start) {
+        $start = $start + 1; // The API isn't 0 based.
+        $url =
+                "/reports/IndividualUsageDetail?startDate=$startdate&endDate=$enddate&start=$start&limit=100&order=LastViewed&sort=desc";
         $results = $this->callapi($url);
         return $results;
     }
 
-    // Get some high level stats for each user - probably not useful.
-    public function userlist($enddate) {
-        $url = '/reports/UserList?startDate=2012-10-01&endDate=' . $enddate .
-                '&start=1&limit=500&order=TotalMovieHours&sort=desc';
+    public function certficateofcompletion($startdate, $enddate, $start) {
+        $start = $start + 1; // The API isn't 0 based.
+        $url =
+                "/reports/CertificateOfCompletion?startDate=$startdate&endDate=$enddate&start=$start&limit=100&order=LastViewed&sort=desc";
         $results = $this->callapi($url);
         return $results;
     }
 
-    // Get a record for each course viewed by each user including completion level - no way to do this for a specific user, could do this in batch and process?
-    public function individualusagedetail($enddate) {
-        $url = '/reports/IndividualUsageDetail?startDate=2012-11-01&endDate=' . $enddate .
-                '&start=1&limit=20&order=LastViewed&sort=desc';
-        $results = $this->callapi($url);
-        return $results;
-    }
-*/
     private $config;
+
     public function __construct() {
         $this->config = get_config('local_lynda');
     }
@@ -92,6 +78,75 @@ class lyndaapi {
         return json_decode($curlresult);
     }
 
+    public function synccourseprogress($lastruntime, $thisruntime) {
+        $tz = new \DateTimeZone('UTC');
+        foreach ($this->getcourseprogressiterator($lastruntime, $thisruntime) as $raw) {
+            $datetime = \DateTime::createFromFormat('m/d/Y H:i:s', $raw->LastViewed, $tz);
+            $timestamp = $datetime->getTimestamp();
+
+            $progressrecord = lyndacourseprogress::fetch(['userid'          => $raw->Username,
+                                                          'remotecourseid'  => $raw->CourseID]);
+            if ($progressrecord) {
+                $progressrecord->lastviewed = $timestamp;
+                $progressrecord->percentcomplete = $raw->PercentComplete;
+                $progressrecord->update();
+            } else {
+                $progressrecord = new lyndacourseprogress();
+                $progressrecord->userid = $raw->Username;
+                $progressrecord->remotecourseid = $raw->CourseID;
+                $progressrecord->lastviewed = $timestamp;
+                $progressrecord->percentcomplete = $raw->PercentComplete;
+                $progressrecord->insert();
+            }
+        }
+    }
+
+    public function synccoursecompletion($lastruntime, $thisruntime) {
+        global $DB;
+
+        $tz = new \DateTimeZone('UTC');
+        $taps = new \local_taps\taps();
+
+        foreach ($this->getcoursecompletioniterator($lastruntime, $thisruntime) as $raw) {
+            $user = self::getcacheduser($raw->Username);
+            if ($user == null) {
+                continue;
+            }
+
+            $datetime = \DateTime::createFromFormat('m/d/Y H:i:s', $raw->CompleteDate, $tz);
+            $timestamp = $datetime->getTimestamp();
+            $lyndacourse = lyndacourse::fetchbyremotecourseid($raw->CourseID);
+
+            if (!$lyndacourse) {
+                throw new \moodle_exception('Unknown lynda course', 'local_lynda');
+            }
+
+            $classnamecompare = $DB->sql_compare_text('classname');
+            $providercompare = $DB->sql_compare_text('provider');
+            $sql = "SELECT * FROM {local_taps_enrolment} WHERE staffid = :staffid AND $classnamecompare = :classname AND $providercompare = :providername";
+            if ($DB->record_exists_sql($sql,
+                    ['staffid' => $user->idnumber, 'classname' => $raw->CourseName, 'providername' => 'Lynda.com'])
+            ) {
+                continue;
+            }
+
+            $taps->add_cpd_record(
+                    $user->idnumber,
+                    $raw->CourseName,
+                    'Lynda.com',
+                    $timestamp,
+                    $raw->CourseDuration,
+                    'MIN',
+                    ['p_learning_method' => 'ECO', 'p_subject_catetory' => 'PD', 'p_learning_desc' => $lyndacourse->description]
+            );
+
+        }
+
+        /*
+        avoid double counting in case where lynda course has been completed as a real LTI object
+        api keys per region
+        */
+    }
 
     public function synccourses() {
         global $DB;
@@ -128,7 +183,7 @@ class lyndaapi {
         $toinsert = [];
         foreach ($tagtypes as $remoteid => $typename) {
             if (!isset($existingtagtypes[$remoteid])) {
-                $toinsert[] = (object)['remotetypeid' => $remoteid, 'name' => $typename];
+                $toinsert[] = (object) ['remotetypeid' => $remoteid, 'name' => $typename];
             }
         }
         $DB->insert_records('local_lynda_tagtypes', $toinsert);
@@ -136,7 +191,7 @@ class lyndaapi {
         $toinsert = [];
         foreach ($tags as $remoteid => $tag) {
             if (!isset($existingtags[$remoteid])) {
-                $toinsert[] = (object)['remotetagid' => $remoteid, 'name' => $tag->Name, 'remotetypeid' => $tag->Type];
+                $toinsert[] = (object) ['remotetagid' => $remoteid, 'name' => $tag->Name, 'remotetypeid' => $tag->Type];
             }
         }
         $DB->insert_records('local_lynda_tags', $toinsert);
@@ -151,6 +206,25 @@ class lyndaapi {
 
     private function getcourseiterator() {
         return new lyndacourseiterator($this);
+    }
+
+    private function getcourseprogressiterator($lastruntime, $thisruntime) {
+        return new lyndacourseprogressiterator($lastruntime, $thisruntime, $this);
+    }
+
+    private function getcoursecompletioniterator($lastruntime, $thisruntime) {
+        return new lyndacoursecompletioniterator($lastruntime, $thisruntime, $this);
+    }
+
+    private static function getcacheduser($userid) {
+        $cache = \cache::make('local_lynda', 'users');
+        $user = $cache->get($userid);
+        if ($user === false) {
+            $user = \core_user::get_user($userid);
+            $cache->set($userid, $user);
+        }
+
+        return $user;
     }
 
     /**

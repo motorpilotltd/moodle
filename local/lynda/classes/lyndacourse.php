@@ -39,6 +39,43 @@ class lyndacourse extends \data_object {
     public $deletedbylynda;
     public $thumbnail;
 
+    /*
+     * @return self
+     */
+    public static function fetchbyremotecourseid($remotecourseid, $skipcache = false) {
+        if ($skipcache) {
+            return self::fetch(['remotecourseid' => $remotecourseid]);
+        }
+
+        $cache = \cache::make('local_lynda', 'lyndacourses');
+        $course = $cache->get($remotecourseid);
+        if ($course === false) {
+            $course = self::fetch(['remotecourseid' => $remotecourseid]);
+            $cache->set($remotecourseid, $course);
+        }
+
+        return $course;
+    }
+
+    /*
+     * @return self[]
+     */
+    public static function fetchbyremotecourseids($remotecourseids) {
+        global $DB;
+
+        list($sql, $params) = $DB->get_in_or_equal($remotecourseids);
+        $datas = $DB->get_records_sql("SELECT * FROM {local_lynda_course} WHERE remotecourseid $sql", $params);
+
+        $results = [];
+        foreach($datas as $data) {
+            $instance = new lyndacourse();
+            self::set_properties($instance, $data);
+            $results[$instance->remotecourseid] = $instance;
+        }
+
+        return $results;
+    }
+
     /**
      * @param array $params
      * @return self

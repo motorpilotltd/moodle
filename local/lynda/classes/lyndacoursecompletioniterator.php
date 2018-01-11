@@ -22,25 +22,31 @@
 
 namespace local_lynda;
 
-class lyndacourseiterator implements \Iterator {
+class lyndacoursecompletioniterator implements \Iterator {
     private $position;
     private $currentpage;
     private $positionoffset;
 
     private $api;
 
-    public function __construct($api = null) {
+    private $startdate;
+    private $enddate;
+
+    public function __construct($startdate, $enddate, $api = null) {
         if ($api == null) {
             $this->api = new lyndaapi();
         } else {
             $this->api = $api;
         }
+
+        $this->startdate = $startdate;
+        $this->enddate = $enddate;
     }
 
     public function rewind() {
         $this->position = 0;
         $this->positionoffset = 0;
-        $this->currentpage = $this->api->getcourses(0);
+        $this->currentpage = $this->api->certficateofcompletion($this->startdate, $this->enddate, 0)->ReportData;
     }
 
     public function current() {
@@ -61,7 +67,7 @@ class lyndacourseiterator implements \Iterator {
         }
         if(!isset($this->currentpage[$this->position - $this->positionoffset])) {
             $this->positionoffset = $this->position;
-            $this->currentpage = $this->api->getcourses($this->position);
+            $this->currentpage = $this->api->certficateofcompletion($this->startdate, $this->enddate, $this->position)->ReportData;
         }
 
         return isset($this->currentpage[$this->position - $this->positionoffset]);

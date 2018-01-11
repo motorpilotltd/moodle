@@ -21,13 +21,31 @@
  */
 
 $tasks = array(
-    array(
-        'classname' => 'local_lynda\task\sync_course_list',
-        'blocking' => 0,
-        'minute' => '0',
-        'hour' => '0',
-        'day' => '*',
-        'dayofweek' => '*',
-        'month' => '*'
-    )
+        array(
+                'classname' => 'local_lynda\task\sync_course_list',
+                'blocking'  => 0,
+                'minute'    => '0',
+                'hour'      => '1',
+                'day'       => '*',
+                'dayofweek' => '*',
+                'month'     => '*'
+        ),
+        array(
+                'classname' => 'local_lynda\task\sync_course_progress',
+                'blocking'  => 0,
+                'minute'    => '0',
+                'hour'      => '3',
+                'day'       => '*',
+                'dayofweek' => '*',
+                'month'     => '*'
+        ),
+        array(
+                'classname' => 'local_lynda\task\sync_lyndadata',
+                'blocking'  => 0,
+                'minute'    => '0',
+                'hour'      => '3',
+                'day'       => '*',
+                'dayofweek' => '*',
+                'month'     => '*'
+        )
 );

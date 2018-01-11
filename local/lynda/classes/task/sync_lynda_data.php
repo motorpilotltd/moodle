@@ -26,7 +26,7 @@ use local_lynda\lyndaapi;
 
 defined('MOODLE_INTERNAL') || die();
 
-class sync_course_list extends \core\task\scheduled_task {
+class sync_lyndadata extends \core\task\scheduled_task {
 
     /**
      * Get a descriptive name for this task (shown to admins).
@@ -34,7 +34,7 @@ class sync_course_list extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('tasksynccourselist', 'local_lynda');
+        return get_string('tasksynclyndadata', 'local_lynda');
     }
 
     /**
@@ -42,6 +42,16 @@ class sync_course_list extends \core\task\scheduled_task {
      */
     public function execute() {
         $api = new lyndaapi();
+
+        global $CFG;
+        require_once($CFG->dirroot . '/local/lynda/tests/fixtures/lyndaapimock.php');
+        $api = new \local_lynda\lyndaapimock();
+
         $api->synccourses();
+
+        $thisruntime = time();
+        $api->synccoursecompletion($this->get_last_run_time(), $thisruntime);
+        $api->synccourseprogress($this->get_last_run_time(), $thisruntime);
+        $this->set_last_run_time($thisruntime);
     }
 }

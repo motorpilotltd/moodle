@@ -20,7 +20,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['tasksynccourselist'] = 'Sync course list';
+$string['tasksynclyndadata'] = 'Sync Lynda.com data';
 $string['pluginname'] = 'Lynda.com';
 $string['setting:appkey'] = 'App key';
 $string['setting:secretkey'] = 'Secret key';
@@ -37,3 +37,5 @@ $string['loadmore'] = 'Loading videos from Lynda.com';
 $string['loadfiltered'] = 'Ordering videos';
 $string['noresults'] = '<div class="alert alert-info" role="alert">No results found that match your search</div>';
 $string['enabledregions'] = 'Regions with access to Lynda.com';
+$string['percentcomplete'] = 'Percentage complete';
+$string['lastviewed'] = 'Last viewed';

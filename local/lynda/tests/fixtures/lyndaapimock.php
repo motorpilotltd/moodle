@@ -22,27 +22,86 @@
 
 namespace local_lynda;
 
+
 class lyndaapimock extends lyndaapi {
-    public function getcourses($start) {
-        return array_slice($this->response, $start, 2);
+    public static function getDataGenerator() {
+        global $CFG;
+
+        require_once("$CFG->dirroot/lib/phpunit/classes/util.php");
+        return \phpunit_util::get_data_generator();
     }
 
-    private $response;
+    public function getcourses($start) {
+        return array_slice($this->getcoursesresponse, $start, 2);
+    }
+
+    private $users = [];
+    public function individualusagedetail($startdate, $enddate, $start) {
+        $retval = clone($this->individualusagedetailresponse);
+        $retval->ReportData = array_slice($retval->ReportData, $start, 2);
+
+        $i = 0;
+        foreach($retval->ReportData as $data) {
+            if (isset($this->users[$data->Username])) {
+                $data->Username = $this->users[$data->Username];
+            } else {
+                $user = self::getDataGenerator()->create_user(['idnumber' => "padded$i"]);
+                $this->users[$data->Username] = $user->id;
+                $data->Username = $user->id;
+            }
+            $i++;
+        }
+
+        return $retval;
+    }
+
+    public function certficateofcompletion($startdate, $enddate, $start) {
+        $retval = clone($this->certficateofcompletionresponse);
+        $retval->ReportData = array_slice($retval->ReportData, $start, 2);
+
+        $i = 0;
+        foreach($retval->ReportData as $data) {
+            $user = self::getDataGenerator()->create_user(['idnumber' => "padded$i"]);
+            $data->Username = $user->id;
+            $i++;
+        }
+
+        return $retval;
+    }
+
+    private $getcoursesresponse;
+    private $individualusagedetailresponse;
+    private $certficateofcompletionresponse;
+
     public function __construct() {
         global $CFG;
 
         parent::__construct();
 
-        $this->response = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockresponse.json"));
+        $this->getcoursesresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcoursesresponse.json"));
+        $this->individualusagedetailresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse.json"));
+        $this->certficateofcompletionresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcertficateofcompletionresponse.json"));
     }
 
     public function reset() {
         global $CFG;
         
-        $this->response = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockresponse.json"));
+        $this->getcoursesresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcoursesresponse.json"));
+        $this->individualusagedetailresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse.json"));
+        $this->certficateofcompletionresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcertficateofcompletionresponse.json"));
+    }
+
+    public function useupdatedcourses() {
+        global $CFG;
+        $this->getcoursesresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcoursesresponse_withupdate.json"));
+    }
+
+    public function useupdatedindividualusagedetailresponse() {
+        global $CFG;
+        $this->individualusagedetailresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse_withupdate.json"));
     }
 
     public function dropcoursefromresponse() {
-        array_shift($this->response);
+        array_shift($this->getcoursesresponse);
     }
 }

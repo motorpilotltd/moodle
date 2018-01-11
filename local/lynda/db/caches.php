@@ -26,5 +26,17 @@ $definitions = array(
         'simplekeys' => true,
         'simpledata' => false,
         'staticacceleration' => true,
-    )
+    ),
+    'lyndacourses' => array(
+            'mode' => cache_store::MODE_REQUEST,
+            'simplekeys' => true,
+            'simpledata' => false,
+            'staticacceleration' => true,
+    ),
+    'users' => array(
+            'mode' => cache_store::MODE_REQUEST,
+            'simplekeys' => true,
+            'simpledata' => false,
+            'staticacceleration' => true,
+    ),
 );
