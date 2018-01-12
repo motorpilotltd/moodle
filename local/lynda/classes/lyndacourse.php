@@ -115,24 +115,26 @@ class lyndacourse extends \data_object {
      */
     private static function handlesearch($countonly, $keyword, $regionid, $page, $perpage) {
         if (empty($keyword)) {
-            return false;
+            if ($countonly) {
+                return 0;
+            } else {
+                return [];
+            }
         }
 
         global $DB;
-        $wheresql = '';
+        $wheresql = 'WHERE lti.id IS NULL';
         $params = [];
 
         if ($keyword != ' ') {
-            $wheresql .= $DB->sql_like('title', ':keyword', false, false);
+            $wheresql .= " AND " . $DB->sql_like('title', ':keyword', false, false);
             $params['keyword'] = '%' . $DB->sql_like_escape($keyword) . '%';
         }
 
-        if (!empty($wheresql)) {
-            $wheresql = 'WHERE ' . $wheresql;
-        }
-
+        $url = $DB->sql_concat_join("''",["'https://www.lynda.com/portal/lti/course/'", 'remotecourseid']);
         $sql = "FROM {local_lynda_course} llc
             INNER JOIN {local_lynda_courseregions} llcr ON llcr.regionid = :regionid AND llcr.lyndacourseid = llc.id
+            LEFT JOIN {lti} lti ON lti.toolurl = $url
             $wheresql";
 
         $params['regionid'] = $regionid;
@@ -141,7 +143,7 @@ class lyndacourse extends \data_object {
             $fields = 'SELECT COUNT(1) ';
             return $DB->count_records_sql($fields . $sql, $params);
         } else {
-            $fields = 'SELECT * ';
+            $fields = 'SELECT llc.* ';
             if ($datas = $DB->get_records_sql($fields . $sql . ' ORDER BY title ASC', $params, $page * $perpage, $perpage)) {
 
                 $result = array();
