@@ -39,3 +39,4 @@ $string['noresults'] = '<div class="alert alert-info" role="alert">No results fo
 $string['enabledregions'] = 'Regions with access to Lynda.com';
 $string['percentcomplete'] = 'Percentage complete';
 $string['lastviewed'] = 'Last viewed';
+$string['redirectmessage'] = 'You are about to leave Moodle and head to Lynda.com. You’re Learning history will update within the next 24 hours to reflect any progress made.';

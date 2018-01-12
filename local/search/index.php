@@ -77,6 +77,11 @@ array_unshift($options, array('name'=>'All regions', 'value'=> '0',  0 == $regio
 
 $filteroutput = new \local_search\output\filter_output($filters);
 
+$enablelynda = false;
+if (isset($userregion->regionid)) {
+    $enablelynda = \local_lynda\lib::enabledforregion($region);
+}
+
 $resultsdata = array_merge(local_search_get_results_data($courses, $search, $totalcount), array(
     'searchterm'    => $search,
     'regionid'      => $region,
@@ -88,7 +93,7 @@ $resultsdata = array_merge(local_search_get_results_data($courses, $search, $tot
     'regions' => $options,
     'filtersdata' => $filteroutput->export_for_template($OUTPUT),
     'kalturaenabled' => $isinternaluser,
-    'lyndaenabled' => \local_lynda\lib::enabledforregion($region),
+    'lyndaenabled' => $enablelynda,
     'learningeventsenabled' => $isinternaluser
 ));
 

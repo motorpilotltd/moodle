@@ -48,14 +48,45 @@ $data = ["id"                            => -1,
          "instructorcustomparameters"    => "",
          "instructorchoiceacceptgrades"  => 1,
          "grade"                         => 100,
+         "name"                          => 'Dummy LTI',
          "launchcontainer"               => 1,
-         "debuglaunch"                   => 0,
+         "debuglaunch"                   => 1,
          "showtitlelaunch"               => 1,
          "showdescriptionlaunch"         => 0,
          "servicesalt"                   => "5a4ccaf9002253.88329128"
 ];
 $instance = (object) $data;
-list($endpoint, $parms) = lti_get_launch_data($instance);
-$content = lti_post_launch_html($parms, $endpoint, $instance->debuglaunch);
+list($endpoint, $newparms) = lti_get_launch_data($instance);
 
-echo $content;
+// The next chunk of code is taken from lti_post_launch_html in mod/lti/locallib.php
+$r = "<form action=\"" . $endpoint .
+        "\" name=\"ltiLaunchForm\" id=\"ltiLaunchForm\" method=\"post\" encType=\"application/x-www-form-urlencoded\">\n";
+
+// Contruct html for the launch parameters.
+foreach ($newparms as $key => $value) {
+    $key = htmlspecialchars($key);
+    $value = htmlspecialchars($value);
+    if ($key == "ext_submit") {
+        $r .= "<input type=\"submit\"";
+    } else {
+        $r .= "<input type=\"hidden\" name=\"{$key}\"";
+    }
+    $r .= " value=\"";
+    $r .= $value;
+    $r .= "\"/>\n";
+}
+$r .= "</form>\n";
+$r .= " <script type=\"text/javascript\"> \n" .
+        "  //<![CDATA[ \n" .
+        "    setTimeout(function(){ document.ltiLaunchForm.submit(); }, 3000); \n" .
+        "  //]]> \n" .
+        " </script> \n";
+// End chunk of copied code.
+
+echo $r;
+
+$PAGE->set_pagelayout('standard');
+$PAGE->set_url('/local/lynda/launch.php', ['lyndacourseid' => $lyndacourseid]);
+echo $OUTPUT->header();
+echo html_writer::div(get_string('redirectmessage', 'local_lynda'), "alert alert-success");
+echo $OUTPUT->footer();

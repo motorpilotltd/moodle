@@ -36,8 +36,9 @@ $page = optional_param('page', 1, PARAM_INT) - 1; // courses run form zero-index
 $perpage = optional_param('perpage', 10, PARAM_INT);
 
 $userregion = local_regions_get_user_region($USER);
+if (isset($userregion->regionid)) {
+    $results = new \local_lynda\searchresults($search, $userregion->regionid, $page, $perpage);
+    $results->dosearch();
 
-$results = new \local_lynda\searchresults($search, $userregion->regionid, $page, $perpage);
-$results->dosearch();
-
-echo $renderer->search_results($results);
+    echo $renderer->search_results($results);
+}
