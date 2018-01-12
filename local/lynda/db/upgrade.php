@@ -48,5 +48,17 @@ function xmldb_local_lynda_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080510, 'local', 'lynda');
     }
 
+    if ($oldversion < 2016080513) {
+        $table = new xmldb_table('local_lynda_course');
+        $field = new xmldb_field('thumbnail', XMLDB_TYPE_TEXT);
+
+        // Conditionally launch add field.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2016080513, 'local', 'lynda');
+    }
+
     return true;
 }

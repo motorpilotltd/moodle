@@ -21,7 +21,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016080511;
+$plugin->version   = 2016080513;
 $plugin->requires  = 2015111600; // Moodle 3.0.
 $plugin->component = 'local_lynda';
 $plugin->maturity  = MATURITY_STABLE;
