@@ -41,6 +41,11 @@ class lyndacourseiterator implements \Iterator {
         $this->position = 0;
         $this->positionoffset = 0;
         $this->currentpage = $this->api->getcourses(0);
+
+        if (isset($this->currentpage)) {
+            mtrace('Loaded page of course details.');
+            mtrace(count($this->currentpage) . ' records loaded');
+        }
     }
 
     public function current() {
@@ -59,6 +64,11 @@ class lyndacourseiterator implements \Iterator {
         if(!isset($this->currentpage[$this->position - $this->positionoffset])) {
             $this->positionoffset = $this->position;
             $this->currentpage = $this->api->getcourses($this->position);
+
+            if (isset($this->currentpage)) {
+                mtrace('Loaded page of course details.');
+                mtrace(count($this->currentpage) . ' records loaded');
+            }
         }
 
         return isset($this->currentpage[$this->position - $this->positionoffset]);

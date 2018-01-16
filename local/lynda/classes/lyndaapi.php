@@ -28,13 +28,17 @@ class lyndaapi {
         $start = $start + 1; // The API isn't 0 based.
         // Max value for limit appears to be 41 (seems pretty random to me...) but it's really unreliable if we go over 25.
         // It's probably unreliable due to the MASSIVE json docs that come back being unparsable.
-        $url = "/courses?order=ByTitle&sort=asc&start=$start&limit=25&hasAccess=1";
+        $url = "/courses?order=ByTitle&sort=asc&start=$start&limit=25";
         $results = $this->callapi($url);
         return $results;
     }
 
     public function individualusagedetail($startdate, $enddate, $start) {
         $start = $start + 1; // The API isn't 0 based.
+
+        $startdate = date('m-d-Y', $startdate);
+        $enddate = date('m-d-Y', $enddate);
+
         $url =
                 "/reports/IndividualUsageDetail?startDate=$startdate&endDate=$enddate&start=$start&limit=100&order=LastViewed&sort=desc";
         $results = $this->callapi($url);
@@ -43,6 +47,10 @@ class lyndaapi {
 
     public function certficateofcompletion($startdate, $enddate, $start) {
         $start = $start + 1; // The API isn't 0 based.
+
+        $startdate = date('m-d-Y', $startdate);
+        $enddate = date('m-d-Y', $enddate);
+
         $url =
                 "/reports/CertificateOfCompletion?startDate=$startdate&endDate=$enddate&start=$start&limit=100&order=LastViewed&sort=desc";
         $results = $this->callapi($url);
@@ -75,6 +83,9 @@ class lyndaapi {
         curl_setopt($curl, CURLOPT_URL, $this->config->apiurl . $url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $curl_headers);
         $curlresult = curl_exec($curl);
+
+        mtrace('Called Lynda API: ' . $url);
+
         return json_decode($curlresult);
     }
 
@@ -86,11 +97,13 @@ class lyndaapi {
 
             $progressrecord = lyndacourseprogress::fetch(['userid'          => $raw->Username,
                                                           'remotecourseid'  => $raw->CourseID]);
-            if ($progressrecord) {
+            if ($progressrecord) {;
+                mtrace('Updated course progress record for ' . $raw->Username);
                 $progressrecord->lastviewed = $timestamp;
                 $progressrecord->percentcomplete = $raw->PercentComplete;
                 $progressrecord->update();
             } else {
+                mtrace('Created course progress record for ' . $raw->Username);
                 $progressrecord = new lyndacourseprogress();
                 $progressrecord->userid = $raw->Username;
                 $progressrecord->remotecourseid = $raw->CourseID;
@@ -110,6 +123,7 @@ class lyndaapi {
         foreach ($this->getcoursecompletioniterator($lastruntime, $thisruntime) as $raw) {
             $user = self::getcacheduser($raw->Username);
             if ($user == null) {
+                mtrace('Unable to find user account for ' . $raw->Username);
                 continue;
             }
 
@@ -139,7 +153,7 @@ class lyndaapi {
                     'MIN',
                     ['p_learning_method' => 'ECO', 'p_subject_catetory' => 'PD', 'p_learning_desc' => $lyndacourse->description]
             );
-
+            mtrace('Created CPD record for ' . $raw->Username);
         }
 
         /*
