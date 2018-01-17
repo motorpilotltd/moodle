@@ -50,9 +50,9 @@ class lyndaapi {
 
         // GRIM HACK TO ALLOW FOR PAGINATION NOT WORKING. - Check to see if we have seen this exact response before.
         $resulthash = md5(json_encode($results));
-        if (!isset($this->previoushash)) {
-            $this->previoushash = $resulthash;
-        } else if ($this->previoushash == $resulthash) {
+        if (!isset($this->previoushash_ud) || $this->previoushash_ud !== $resulthash) {
+            $this->previoushash_ud = $resulthash;
+        } else {
             return [];
         }
         // END HACK
@@ -75,9 +75,9 @@ class lyndaapi {
 
         // GRIM HACK TO ALLOW FOR PAGINATION NOT WORKING. - Check to see if we have seen this exact response before.
         $resulthash = md5(json_encode($results));
-        if (!isset($this->previoushash)) {
-            $this->previoushash = $resulthash;
-        } else if ($this->previoushash == $resulthash) {
+        if (!isset($this->previoushash_coc) || $this->previoushash_coc !== $resulthash) {
+            $this->previoushash_coc = $resulthash;
+        } else {
             return [];
         }
         // END HACK
@@ -172,6 +172,7 @@ class lyndaapi {
 
             if (!$lyndacourse) {
                 mtrace('Unknown lynda course: ' . $raw->CourseID);
+                continue;
             }
 
             $classnamecompare = $DB->sql_compare_text('classname');
