@@ -689,6 +689,9 @@ class block_arup_mylearning_content {
 
         $progresses = \local_lynda\lyndacourseprogress::fetch_all(['userid' => $USER->id]);
         foreach ($progresses as $progress) {
+            if (!isset($progress->lyndacourse)) {
+                continue;
+            }
             $url = new \moodle_url('/local/lynda/launch.php', ['lyndacourseid' => $progress->lyndacourse->remotecourseid]);
             $linkedtitle = \html_writer::link($url, $progress->lyndacourse->title);
             $cells = [];

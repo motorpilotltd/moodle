@@ -22,7 +22,7 @@ class block_arup_mylearning extends block_base {
     protected $_currenttab;
     protected $_defaulttab = 'overview';
     protected $_allowedtabs = array(
-        'overview', 'myteaching', 'myhistory', 'halogen', 'lynda'
+        'overview', 'myteaching', 'lynda', 'myhistory', 'halogen'
     );
     protected $_maskedtabs = array(
         'halogen' => 'myhistory'

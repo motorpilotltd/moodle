@@ -74,6 +74,9 @@ class lyndacourseprogress extends \data_object {
         $courses = lyndacourse::fetchbyremotecourseids($remotecourseids);
 
         foreach ($courseprogresses as $courseprogress) {
+            if (!isset($courses[$courseprogress->remotecourseid])) {
+                continue;
+            }
             $courseprogress->lyndacourse = $courses[$courseprogress->remotecourseid];
         }
     }
