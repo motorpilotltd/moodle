@@ -171,7 +171,7 @@ class lyndaapi {
             $lyndacourse = lyndacourse::fetchbyremotecourseid($raw->CourseID);
 
             if (!$lyndacourse) {
-                throw new \moodle_exception('Unknown lynda course', 'local_lynda');
+                mtrace('Unknown lynda course: ' . $raw->CourseID);
             }
 
             $classnamecompare = $DB->sql_compare_text('classname');
