@@ -28,33 +28,65 @@ class lyndaapi {
         $start = $start + 1; // The API isn't 0 based.
         // Max value for limit appears to be 41 (seems pretty random to me...) but it's really unreliable if we go over 25.
         // It's probably unreliable due to the MASSIVE json docs that come back being unparsable.
-        $url = "/courses?order=ByTitle&sort=asc&start=$start&limit=25";
+        raise_memory_limit(MEMORY_HUGE);
+        $url = "/courses?order=ByTitle&sort=asc&start=$start&limit=250";
         $results = $this->callapi($url);
+
+        if ($results === null) {
+            mtrace('Failed to load or parse response');
+        }
+
         return $results;
     }
 
     public function individualusagedetail($startdate, $enddate, $start) {
         $start = $start + 1; // The API isn't 0 based.
-
-        $startdate = date('m-d-Y', $startdate);
-        $enddate = date('m-d-Y', $enddate);
+        $startdate = date('Y-m-d', $startdate);
+        $enddate = date('Y-m-d', $enddate);
 
         $url =
-                "/reports/IndividualUsageDetail?startDate=$startdate&endDate=$enddate&start=$start&limit=100&order=LastViewed&sort=desc";
+                "/reports/IndividualUsageDetail?startDate=$startdate&endDate=$enddate&start=$start&limit=250";
         $results = $this->callapi($url);
-        return $results;
+
+        // GRIM HACK TO ALLOW FOR PAGINATION NOT WORKING. - Check to see if we have seen this exact response before.
+        $resulthash = md5(json_encode($results));
+        if (!isset($this->previoushash)) {
+            $this->previoushash = $resulthash;
+        } else if ($this->previoushash == $resulthash) {
+            return [];
+        }
+        // END HACK
+
+        if (!isset($results->ReportData)) {
+            return [];
+        }
+
+        return $results->ReportData;
     }
 
     public function certficateofcompletion($startdate, $enddate, $start) {
         $start = $start + 1; // The API isn't 0 based.
-
-        $startdate = date('m-d-Y', $startdate);
-        $enddate = date('m-d-Y', $enddate);
+        $startdate = date('Y-m-d', $startdate);
+        $enddate = date('Y-m-d', $enddate);
 
         $url =
-                "/reports/CertificateOfCompletion?startDate=$startdate&endDate=$enddate&start=$start&limit=100&order=LastViewed&sort=desc";
+                "/reports/CertificateOfCompletion?startDate=$startdate&endDate=$enddate&start=$start&limit=250";
         $results = $this->callapi($url);
-        return $results;
+
+        // GRIM HACK TO ALLOW FOR PAGINATION NOT WORKING. - Check to see if we have seen this exact response before.
+        $resulthash = md5(json_encode($results));
+        if (!isset($this->previoushash)) {
+            $this->previoushash = $resulthash;
+        } else if ($this->previoushash == $resulthash) {
+            return [];
+        }
+        // END HACK
+
+        if (!isset($results->ReportData)) {
+            return [];
+        }
+
+        return $results->ReportData;
     }
 
     private $config;
@@ -64,6 +96,10 @@ class lyndaapi {
     }
 
     private function callapi($url) {
+        global $CFG;
+
+        require_once($CFG->libdir . '/filelib.php');
+
         $timestamp =
                 time(); // Note that the timestamp must be no more than 5 minutes off from the actual timestamp on the target host.
         $api_hash = md5($this->config->appkey . $this->config->secretkey . $this->config->apiurl . $url . $timestamp);
@@ -73,20 +109,23 @@ class lyndaapi {
                 "timestamp: " . $timestamp,
                 "hash: " . $api_hash
         );
-
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_USERAGENT, 'Moodle');
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
-        curl_setopt($curl, CURLOPT_URL, $this->config->apiurl . $url);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $curl_headers);
-        $curlresult = curl_exec($curl);
+        $curl = new \curl();
+        $url = $this->config->apiurl . $url;
+        $options = array(
+                'RETURNTRANSFER' => true,
+                'USERAGENT'   => 'Moodle',
+                'HTTPHEADER'     => $curl_headers,
+                'CONNECTTIMEOUT' => 0,
+                'TIMEOUT' => 240, // Fail if data not returned within 10 seconds.
+        );
+        $result = $curl->get($url, '', $options);
 
         mtrace('Called Lynda API: ' . $url);
+        if ($curl->info['http_code'] != 200) {
+            mtrace("Error calling web service: \n" . print_r($curl->get_raw_response(), true));
+        }
 
-        return json_decode($curlresult);
+        return json_decode($result);
     }
 
     public function synccourseprogress($lastruntime, $thisruntime) {
@@ -246,7 +285,6 @@ class lyndaapi {
      * @return lyndacourse
      */
     private function buildcourse($raw) {
-
         $lyndacourse = new lyndacourse();
         $lyndacourse->description = $raw->Description;
         $lyndacourse->remotecourseid = $raw->ID;

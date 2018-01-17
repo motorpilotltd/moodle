@@ -46,7 +46,7 @@ class lyndacourseprogressiterator implements \Iterator {
     public function rewind() {
         $this->position = 0;
         $this->positionoffset = 0;
-        $this->currentpage = $this->api->individualusagedetail($this->startdate, $this->enddate, 0)->ReportData;
+        $this->currentpage = $this->api->individualusagedetail($this->startdate, $this->enddate, 0);
 
         if (isset($this->currentpage)) {
             mtrace('Loaded page of course progress data.');
@@ -69,7 +69,7 @@ class lyndacourseprogressiterator implements \Iterator {
     public function valid() {
         if(!isset($this->currentpage[$this->position - $this->positionoffset])) {
             $this->positionoffset = $this->position;
-            $this->currentpage = $this->api->individualusagedetail($this->startdate, $this->enddate, $this->position)->ReportData;
+            $this->currentpage = $this->api->individualusagedetail($this->startdate, $this->enddate, $this->position);
 
             if (isset($this->currentpage)) {
                 mtrace('Loaded page of course progress data.');
