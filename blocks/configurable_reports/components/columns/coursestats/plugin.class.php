@@ -115,6 +115,7 @@ class plugin_coursestats extends plugin_base{
         }
 
         $sql .= $extrasql;
+
 /* BEGIN CORE MOD */
         if ($res = $DB->get_records_sql($sql, $params, $limit)) {
 /* END CORE MOD */

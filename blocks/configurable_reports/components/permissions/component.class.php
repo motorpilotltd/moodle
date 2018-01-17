@@ -86,7 +86,7 @@ class component_permissions extends component_base {
 /* BEGIN CORE MOD */
             $components['permissions'] = isset($components['permissions']) ? $components['permissions'] : array();
 /* END CORE MOD */
-            $conditionsconfig = (isset($components['permissions']['config'])) ? $components['permissions']['config'] : new \stdclass;
+			$conditionsconfig = (isset($components['permissions']['config'])) ? $components['permissions']['config'] : new \stdclass;
 
             if (!isset($conditionsconfig->conditionexpr)) {
                 $fdata->conditionexpr = '';

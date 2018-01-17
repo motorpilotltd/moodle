@@ -70,7 +70,6 @@ $PAGE->requires->jquery();
 /* BEGIN CORE MOD */
 $PAGE->add_body_class('page-block-configurable_reports-viewreport-'.$id);
 /* END CORE MOD */
-
 $reportclass->create_report();
 
 $download = ($download && $format && strpos($report->export, $format.',') !== false) ? true : false;

@@ -153,8 +153,8 @@ if ($reports) {
         $download = '';
         $export = explode(',', $r->export);
         if (!empty($export)) {
-            foreach($export as $e) {
-                if($e){
+            foreach ($export as $e) {
+                if ($e) {
 /* BEGIN CORE MOD */
                     $download .= '<a href="viewreport.php?id='.$r->id.'&amp;courseid='.$course->id.'&amp;download=1&amp;format='.$e.'">
                         <img src="'.$CFG->wwwroot.'/blocks/configurable_reports/export/'.$e.'/pix.gif" alt="'.$e.'">
@@ -219,6 +219,7 @@ if ($userandrepo = get_config('block_configurable_reports', 'crrepository')) {
 /* BEGIN CORE MOD */
     echo '&nbsp;';
 /* END CORE MOD */
+
     $attrs = [
         'onchange' => 'M.block_configurable_reports.onchange_crreportnames(this,"'.sesskey().'")',
         'id' => 'id_crreportnames'

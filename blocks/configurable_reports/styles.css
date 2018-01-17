@@ -5,7 +5,6 @@
 @import url("../blocks/configurable_reports/js/codemirror/addon/display/fullscreen.css");
 */
 /* END CORE MOD */
-
 .dir-rtl .CodeMirror {
     direction: ltr;
     text-align: left;
@@ -104,6 +103,7 @@
      position:relative;
      top:1px;
  }
+
 /* BEGIN CORE MOD */
 .block_configurable_reports.block .footer {
     font-size: 12px;

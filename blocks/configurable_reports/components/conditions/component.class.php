@@ -98,13 +98,11 @@ class component_conditions extends component_base{
             if (empty($components['conditions'])) {
                 $components['conditions'] = array();
             }
-
 /* BEGIN CORE MOD */
             if (!isset($components['conditions']['config'])) {
                 $components['conditions']['config'] = new \stdClass();
             }
 /* END CORE MOD */
-
             if (!empty($components['conditions']['config']->conditionexpr)) {
                 $components['conditions']['config']->conditionexpr = $fdata->conditionexpr;
             }
