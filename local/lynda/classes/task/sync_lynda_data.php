@@ -41,13 +41,7 @@ class sync_lynda_data extends \core\task\scheduled_task {
      * Run the tidy synccourses task.
      */
     public function execute() {
-        $api = new lyndaapi();
-/*
-        global $CFG;
-        require_once($CFG->dirroot . '/local/lynda/tests/fixtures/lyndaapimock.php');
-        $api = new \local_lynda\lyndaapimock();
-*/
-        $api->synccourses();
+        $api = new lyndaapi();;
 
         $thisruntime = time();
         $api->synccoursecompletion($this->get_last_run_time(), $thisruntime);

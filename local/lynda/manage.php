@@ -60,13 +60,15 @@ if ($formdata) {
 }
 
 $data             = new \stdClass();
-$data->status     = optional_param('status', -1, PARAM_INT);
 $data->tsort      = optional_param('tsort', 'title', PARAM_ALPHA);
 
-
+$atleastonefilter = false;
 foreach ($tagtypes as $tagtype) {
     $selectname = $tagtype->gettagtypeselectname();
     $data->$selectname = optional_param_array($selectname, [], PARAM_INT);
+    if (!empty($data->$selectname)) {
+        $atleastonefilter = true;
+    }
 }
 
 $form->set_data($data);
@@ -95,11 +97,16 @@ if ($showall) {
 } else {
     $pagesize = $defaultpagesize;
 }
+$table->configurecolumns();
 
-$table->out($pagesize, true);
-
-if (!$showall) {
-    echo \html_writer::div(\html_writer::link(new \moodle_url($table->baseurl, array('showall' => true)), 'Show all'), 'paging');
+if ($atleastonefilter) {
+    $table->out($pagesize, true);
+    if (!$showall) {
+        echo \html_writer::div(\html_writer::link(new \moodle_url($table->baseurl, array('showall' => true)), 'Show all'), 'paging');
+    }
+} else {
+    echo get_string('selectfilters', 'local_lynda');
 }
+
 
 echo $OUTPUT->footer();

@@ -62,6 +62,7 @@ class lyndacourse_test extends advanced_testcase {
         $this->assertEquals("100 Courses and Counting: David Rivers on Elearning", $course->title);
         $this->assertEquals("David Rivers has been recording elearning courses for lynda.com for over a decade. He's one of our star authors! In this interview (conducted from his home recording studio in Canada), he offers lessons from his 100-course journey with lynda.com. David shares his process for creating and recording course content, and provides inspiration for other authors who want to turn their knowledge into tutorials for the emerging elearning market.",
                 $course->description);
+        $this->assertEquals('502', $course->durationinseconds);
         $this->assertEquals(['33', '100', '330'], array_values($tags));
         // Check logo
 
@@ -125,11 +126,33 @@ class lyndacourse_test extends advanced_testcase {
         $this->assertEquals('External Course Online', $record1->classtype);
         $this->assertEquals('Professional Development', $record1->classcategory);
         $this->assertEquals("David Rivers has been recording elearning courses for lynda.com for over a decade. He's one of our star authors! In this interview (conducted from his home recording studio in Canada), he offers lessons from his 100-course journey with lynda.com. David shares his process for creating and recording course content, and provides inspiration for other authors who want to turn their knowledge into tutorials for the emerging elearning market.", $record1->learningdesc);
+        $this->assertEquals(180212, $record1->providerid);
         $this->assertEquals('padded0', $record1->staffid);
 
         $api->synccoursecompletion(time(), time());
         $cpdrecords = $DB->get_records('local_taps_enrolment');
         $this->assertEquals(6, count($cpdrecords));
+    }
+
+    public function test_synccoursecompletionwithoutcourses() {
+        global $DB;
+
+        require_once('fixtures/lyndaapimock.php');
+        $api = new \local_lynda\lyndaapimock();
+
+        $api->synccoursecompletion(time(), time());
+
+        $cpdrecords = $DB->get_records('local_taps_enrolment');
+        $record1 = reset($cpdrecords);
+        $this->assertEquals('', $record1->learningdesc);
+        $this->assertEquals(180212, $record1->providerid);
+
+        $api->synccourses();
+        $cpdrecords = $DB->get_records('local_taps_enrolment');
+        $this->assertEquals(6, count($cpdrecords));
+        $record1 = reset($cpdrecords);
+        $this->assertEquals("David Rivers has been recording elearning courses for lynda.com for over a decade. He's one of our star authors! In this interview (conducted from his home recording studio in Canada), he offers lessons from his 100-course journey with lynda.com. David shares his process for creating and recording course content, and provides inspiration for other authors who want to turn their knowledge into tutorials for the emerging elearning market.", $record1->learningdesc);
+        $this->assertEquals(180212, $record1->providerid);
     }
 
     public function test_synccourseprogress() {
@@ -161,5 +184,22 @@ class lyndacourse_test extends advanced_testcase {
         $this->assertEquals('1515409077', $record1->lastviewed);
         $user = core_user::get_user($record1->userid);
         $this->assertEquals('padded0', $user->idnumber);
+    }
+
+    public function test_synccourseprogresswithoutcourses() {
+        require_once('fixtures/lyndaapimock.php');
+        $api = new \local_lynda\lyndaapimock();
+        $api->synccourseprogress(time(), time());
+
+        $progressrecords = \local_lynda\lyndacourseprogress::fetch_all([]);
+        $this->assertEquals(6, count($progressrecords));
+        $record1 = reset($progressrecords);
+        $this->assertEquals(25, $record1->percentcomplete);
+
+        $api->synccourses();
+        $progressrecords = \local_lynda\lyndacourseprogress::fetch_all([]);
+        $this->assertEquals(6, count($progressrecords));
+        $record1 = reset($progressrecords);
+        $this->assertEquals(25, $record1->percentcomplete);
     }
 }

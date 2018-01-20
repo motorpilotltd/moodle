@@ -24,8 +24,17 @@ $tasks = array(
         array(
                 'classname' => 'local_lynda\task\sync_lynda_data',
                 'blocking'  => 0,
-                'minute'    => '*',
-                'hour'      => '*',
+                'minute'    => '0',
+                'hour'      => '2',
+                'day'       => '*',
+                'dayofweek' => '*',
+                'month'     => '*'
+        ),
+        array(
+                'classname' => 'local_lynda\task\sync_lynda_courses',
+                'blocking'  => 0,
+                'minute'    => '0',
+                'hour'      => '1',
                 'day'       => '*',
                 'dayofweek' => '*',
                 'month'     => '*'

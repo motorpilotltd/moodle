@@ -90,6 +90,15 @@ class lyndatagtype extends \data_object {
                 $full_tag_graph[$tag->remotetypeid]->tags[$tag->remotetagid] = $tag;
             }
 
+            foreach ($full_tag_graph as $tag) {
+                uasort($tag->tags, function($a, $b) use ($tag) {
+                    return strcmp($a->name, $b->name);
+                });
+            }
+            uasort($full_tag_graph, function($a, $b) use ($tag) {
+                return strcmp($tag->name, $tag->name);
+            });
+
             $cache->set(1, $full_tag_graph);
         }
 

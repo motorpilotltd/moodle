@@ -35,6 +35,17 @@ try {
             $course->setregionstate($regionid, $state);
             exit;
             break;
+        case 'setregions' :
+            $regionid = required_param('regionid', PARAM_INT);
+            $courseids = required_param('courseids', PARAM_TEXT);
+            $state = required_param('state', PARAM_BOOL);
+            $courseids = explode(',', $courseids);
+            $courses = \local_lynda\lyndacourse::fetchbyids($courseids);
+            foreach ($courses as $course) {
+                $course->setregionstate($regionid, $state);
+            }
+            exit;
+            break;
     }
 } catch (Exception $e) {
     echo $e->getMessage();

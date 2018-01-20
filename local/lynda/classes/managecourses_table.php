@@ -33,26 +33,18 @@ class managecourses_table extends \table_sql {
         global $PAGE;
 
         parent::__construct('managecourses_table');
+        $this->regions = $DB->get_records('local_regions_reg', ['userselectable' => true]);
 
         $PAGE->requires->js_call_amd('local_lynda/manage', 'initialise');
 
         $this->filterparams = $filterparams;
 
-        $this->define_columns(['courseid', 'title', 'description', 'tags', 'regions']);
-        $this->define_headers([
-                get_string('courseid', 'local_lynda'),
-                get_string('title', 'local_lynda'),
-                get_string('description', 'local_lynda'),
-                get_string('tags', 'local_lynda'),
-                get_string('regions', 'local_lynda')
-        ]);
         $this->collapsible(false);
         $this->sortable(true);
         $this->pageable(true);
         $this->is_downloadable(true);
         $this->sort_default_column = $sortcolumn;
 
-        $this->regions = $DB->get_records('local_regions_reg', ['userselectable' => true]);
     }
 
     /**
@@ -80,6 +72,7 @@ class managecourses_table extends \table_sql {
                         "INNER JOIN {local_lynda_coursetags} lct_$tag ON lct_$tag.remotetagid = $tag AND lct_$tag.remotecourseid = lc.remotecourseid"; // Add tag filter
             }
         }
+
         $tagfilterjoins = implode("\n", $tagfilterjoins);
 
         $sql = "FROM {local_lynda_course} lc
@@ -97,7 +90,7 @@ class managecourses_table extends \table_sql {
         $remotetagidconcat = $this->sql_group_concat('lct.remotetagid', ',', true);
         $regionsconcat = $this->sql_group_concat('regionid', ',', true);
         $columns =
-                "lc.id, lc.remotecourseid as courseid, lc.title, lc.description, $remotetagidconcat as tags, $regionsconcat as regions";
+                "lc.id, lc.remotecourseid as courseid, lc.title, lc.description, lc.durationinseconds, $remotetagidconcat as tags, $regionsconcat as regions";
         $groupby = "GROUP BY lc.id, lc.remotecourseid, lc.title, lc.description";
 
         $this->rawdata = $DB->get_records_sql("SELECT $columns $sql $groupby $orderby", $params, $this->get_page_start(),
@@ -136,6 +129,10 @@ class managecourses_table extends \table_sql {
         return $sql;
     }
 
+    public function col_durationinseconds($event) {
+        return format_time($event->durationinseconds);
+    }
+
     public function col_tags($event) {
         $tagsoncourse = explode(',', $event->tags);
 
@@ -143,8 +140,8 @@ class managecourses_table extends \table_sql {
         foreach (lyndatagtype::fetch_full_taxonomy() as $type) {
             $tagstoshow = [];
 
-            foreach ($type->tags as $key => $tag) {
-                if (!in_array($key, $tagsoncourse)) {
+            foreach ($type->tags as $tag) {
+                if (!in_array($tag->remotetagid, $tagsoncourse)) {
                     continue;
                 }
                 $tagstoshow[] = $tag->name;
@@ -155,10 +152,10 @@ class managecourses_table extends \table_sql {
                 continue;
             }
 
-            $tagstrings .= \html_writer::div($type->name . ': ' . implode(', ', $tagstoshow));
+            $tagstrings[] = \html_writer::div($type->name . ': ' . implode(', ', $tagstoshow));
         }
 
-        return $tagstrings;
+        return implode($tagstrings);
     }
 
     public function col_regions($event) {
@@ -166,11 +163,79 @@ class managecourses_table extends \table_sql {
 
         $checks = '';
         foreach ($this->regions as $region) {
-            $chkname = "chk_region_$region->id";
             $checked = !empty($checkedregions) && in_array($region->id, $checkedregions);
-            $checks .= \html_writer::span(\html_writer::checkbox($chkname, $chkname, $checked, $region->name,
-                    ['data-regionid' => $region->id, 'data-courseid' => $event->id, 'class' => 'regioncheck']));
         }
         return $checks;
+    }
+
+    public function other_cols($column, $event) {
+        $matches = [];
+        preg_match('/^taxonomytype([0-9]+)/', $column, $matches);
+
+        if (isset($matches[1])) {
+            $tagsoncourse = explode(',', $event->tags);
+            $taxonomy = lyndatagtype::fetch_full_taxonomy();
+            $type = $taxonomy[$matches[1]];
+            $tagstoshow = [];
+
+            foreach ($type->tags as $tag) {
+                if (!in_array($tag->remotetagid, $tagsoncourse)) {
+                    continue;
+                }
+                $tagstoshow[] = $tag->name;
+            }
+            return implode(', ', $tagstoshow);
+        }
+
+        preg_match('/^region([0-9]+)/', $column, $matches);
+        if (isset($matches[1])) {
+            $regionid = $matches[1];
+            $checkedregions = explode(',', $event->regions);
+            $checked = !empty($checkedregions) && in_array($regionid, $checkedregions);
+
+            if (!empty($this->download)) {
+                if ($checked) {
+                    return 'X';
+                } else {
+                    return '';
+                }
+            } else {
+                $region = $this->regions[$regionid];
+                $chkname = "chk_region_$region->id";
+                return \html_writer::span(\html_writer::checkbox($chkname, $chkname, $checked, '',
+                        ['data-regionid' => $region->id, 'data-courseid' => $event->id, 'class' => 'regioncheck']));
+            }
+        }
+    }
+
+    public function configurecolumns() {
+        $columns = ['courseid', 'title', 'description', 'durationinseconds'];
+        $headers = [
+                get_string('courseid', 'local_lynda'),
+                get_string('title', 'local_lynda'),
+                get_string('description', 'local_lynda'),
+                get_string('duration', 'local_lynda')
+        ];
+
+        if (empty($this->download)) {
+            $headers[] = get_string('tags', 'local_lynda');
+            $columns[] = 'tags';
+        } else {
+            foreach (lyndatagtype::fetch_full_taxonomy() as $type) {
+                $headers[] = $type->name;
+                $columns[] = 'taxonomytype' . $type->remotetypeid;
+            }
+        }
+        foreach ($this->regions as $region) {
+            $headers[] = $region->name .
+                    \html_writer::div(
+                            \html_writer::checkbox("selectall$region->id", "selectall$region->id", false, get_string('selectall')
+                                    , ['data-regionid' => $region->id, 'class' => 'regionselectall'])
+                    );
+            $columns[] = 'region' . $region->id;
+            $this->no_sorting('region' . $region->id);
+        }
+        $this->define_columns($columns);
+        $this->define_headers($headers);
     }
 }

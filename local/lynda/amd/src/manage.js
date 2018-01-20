@@ -40,6 +40,41 @@ define(['jquery', 'core/config'],
                 }
             });
         };
+        var selectall = function (regionid, state) {
+            var courseids = $('input.regioncheck').map(function() {
+                    return $(this).data('courseid');
+                });
+            $.unique(courseids);
+
+            var courseidscsv = '';
+            var first = true;
+            courseids.map(function() {
+                if (first) {
+                    courseidscsv += this;
+                    first = false;
+                } else {
+                    courseidscsv += ',' + this;
+                }
+            });
+
+            $.ajax({
+                url: config.wwwroot + '/local/lynda/ajax.php',
+                type: 'POST',
+                data: {
+                    sesskey: config.sesskey,
+                    action: 'setregions',
+                    regionid: regionid,
+                    courseids: courseidscsv,
+                    state: state
+                },
+                success: function () {
+                    var selector = 'input.regionselectall[data-regionid="' + regionid + '"]';
+                    $(selector).removeAttr('disabled', 'disabled');
+                    var selector = 'input[data-regionid="' + regionid + '"]';
+                    $(selector).prop('checked', state);
+                }
+            });
+        };
 
         return {
             initialise: function () {
@@ -49,6 +84,15 @@ define(['jquery', 'core/config'],
                     var courseid = $(this).data('courseid');
                     var state = $(this).is(':checked');
                     saveregion(regionid, courseid, state);
+                });
+
+                $('input.regionselectall').prop("indeterminate", true);
+
+                $(document).on('change', 'input.regionselectall', function () {
+                    $(this).attr('disabled', 'disabled');
+                    var regionid = $(this).data('regionid');
+                    var state = $(this).is(':checked');
+                    selectall(regionid, state);
                 });
             }
         };

@@ -52,7 +52,7 @@ class lyndaapimock extends lyndaapi {
             $i++;
         }
 
-        return $retval;
+        return $retval->ReportData;
     }
 
     public function certficateofcompletion($startdate, $enddate, $start) {
@@ -66,7 +66,7 @@ class lyndaapimock extends lyndaapi {
             $i++;
         }
 
-        return $retval;
+        return $retval->ReportData;
     }
 
     private $getcoursesresponse;

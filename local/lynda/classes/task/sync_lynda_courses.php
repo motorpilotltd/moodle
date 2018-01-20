@@ -19,10 +19,30 @@
  * @copyright  2017 Andrew Hancox <andrewdchancox@googlemail.com> On Behalf of Arup
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace local_lynda\task;
+
+use local_lynda\lyndaapi;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016080517;
-$plugin->requires  = 2015111600; // Moodle 3.0.
-$plugin->component = 'local_lynda';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.1 (Build: {$plugin->version})";
+class sync_lynda_courses extends \core\task\scheduled_task {
+
+    /**
+     * Get a descriptive name for this task (shown to admins).
+     *
+     * @return string
+     */
+    public function get_name() {
+        return get_string('tasksynclyndacourses', 'local_lynda');
+    }
+
+    /**
+     * Run the tidy synccourses task.
+     */
+    public function execute() {
+        $api = new lyndaapi();
+
+        $api->synccourses();
+    }
+}

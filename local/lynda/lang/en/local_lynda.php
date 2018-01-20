@@ -20,7 +20,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['tasksynclyndadata'] = 'Sync Lynda.com data';
+$string['tasksynclyndadata'] = 'Sync Lynda.com activity data';
+$string['tasksynclyndacourses'] = 'Syn Lynda.com courses';
 $string['pluginname'] = 'Lynda.com';
 $string['setting:appkey'] = 'App key';
 $string['setting:secretkey'] = 'Secret key';
@@ -39,4 +40,6 @@ $string['noresults'] = '<div class="alert alert-info" role="alert">No results fo
 $string['enabledregions'] = 'Regions with access to Lynda.com';
 $string['percentcomplete'] = 'Percentage complete';
 $string['lastviewed'] = 'Last viewed';
+$string['duration'] = 'Duration';
 $string['redirectmessage'] = 'You are about to leave Moodle and head to Lynda.com. You’re Learning history will update within the next 24 hours to reflect any progress made.';
+$string['selectfilters'] = 'Apply filters to see results';

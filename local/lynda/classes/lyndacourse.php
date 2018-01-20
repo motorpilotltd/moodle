@@ -28,7 +28,7 @@ require_once($CFG->dirroot . '/completion/data_object.php');
 
 class lyndacourse extends \data_object {
     public $table = 'local_lynda_course';
-    public $required_fields = ['id', 'remotecourseid', 'title', 'description', 'lyndadatahash', 'thumbnail'];
+    public $required_fields = ['id', 'remotecourseid', 'title', 'description', 'lyndadatahash', 'thumbnail', 'durationinseconds'];
     public $optional_fields = ['deletedbylynda' => false];
 
     public $remotecourseid;
@@ -38,6 +38,7 @@ class lyndacourse extends \data_object {
     public $lyndatags;
     public $deletedbylynda;
     public $thumbnail;
+    public $durationinseconds;
 
     /*
      * @return self
@@ -65,6 +66,25 @@ class lyndacourse extends \data_object {
 
         list($sql, $params) = $DB->get_in_or_equal($remotecourseids);
         $datas = $DB->get_records_sql("SELECT * FROM {local_lynda_course} WHERE remotecourseid $sql", $params);
+
+        $results = [];
+        foreach($datas as $data) {
+            $instance = new lyndacourse();
+            self::set_properties($instance, $data);
+            $results[$instance->remotecourseid] = $instance;
+        }
+
+        return $results;
+    }
+
+    /*
+     * @return self[]
+     */
+    public static function fetchbyids($ids) {
+        global $DB;
+
+        list($sql, $params) = $DB->get_in_or_equal($ids);
+        $datas = $DB->get_records_sql("SELECT * FROM {local_lynda_course} WHERE id $sql", $params);
 
         $results = [];
         foreach($datas as $data) {

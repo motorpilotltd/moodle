@@ -59,6 +59,7 @@ class searchresults implements \templatable {
             $result->title = $resultobj->title;
             $result->description = $resultobj->description;
             $result->thumburi = new \moodle_url($resultobj->thumbnail);
+            $result->duration = format_time($resultobj->durationinseconds);
 
             $searchresults->results[] = $result;
         }

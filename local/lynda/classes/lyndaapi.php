@@ -24,6 +24,10 @@ namespace local_lynda;
 
 class lyndaapi {
 
+    /**
+     * @param $start
+     * @return mixed
+     */
     public function getcourses($start) {
         $start = $start + 1; // The API isn't 0 based.
         // Max value for limit appears to be 41 (seems pretty random to me...) but it's really unreliable if we go over 25.
@@ -39,6 +43,13 @@ class lyndaapi {
         return $results;
     }
 
+    /**
+     * Runs from 00:00:00 on start date to 23:59:59 on enddate.
+     * @param $startdate
+     * @param $enddate
+     * @param $start
+     * @return array
+     */
     public function individualusagedetail($startdate, $enddate, $start) {
         $start = $start + 1; // The API isn't 0 based.
         $startdate = date('Y-m-d', $startdate);
@@ -64,6 +75,13 @@ class lyndaapi {
         return $results->ReportData;
     }
 
+    /**
+     * Runs from 00:00:00 on start date to 23:59:59 on enddate.
+     * @param $startdate
+     * @param $enddate
+     * @param $start
+     * @return array
+     */
     public function certficateofcompletion($startdate, $enddate, $start) {
         $start = $start + 1; // The API isn't 0 based.
         $startdate = date('Y-m-d', $startdate);
@@ -128,6 +146,12 @@ class lyndaapi {
         return json_decode($result);
     }
 
+    /**
+     * Runs from 00:00:00 on start date to 23:59:59 on enddate.
+     * Is idempotent so can be run multiple times over the same date range.
+     * @param $lastruntime
+     * @param $thisruntime
+     */
     public function synccourseprogress($lastruntime, $thisruntime) {
         $tz = new \DateTimeZone('UTC');
         foreach ($this->getcourseprogressiterator($lastruntime, $thisruntime) as $raw) {
@@ -153,6 +177,12 @@ class lyndaapi {
         }
     }
 
+    /**
+     * Runs from 00:00:00 on start date to 23:59:59 on enddate.
+     * Is idempotent so can be run multiple times over the same date range.
+     * @param $lastruntime
+     * @param $thisruntime
+     */
     public function synccoursecompletion($lastruntime, $thisruntime) {
         global $DB;
 
@@ -168,12 +198,6 @@ class lyndaapi {
 
             $datetime = \DateTime::createFromFormat('m/d/Y H:i:s', $raw->CompleteDate, $tz);
             $timestamp = $datetime->getTimestamp();
-            $lyndacourse = lyndacourse::fetchbyremotecourseid($raw->CourseID);
-
-            if (!$lyndacourse) {
-                mtrace('Unknown lynda course: ' . $raw->CourseID);
-                continue;
-            }
 
             $classnamecompare = $DB->sql_compare_text('classname');
             $providercompare = $DB->sql_compare_text('provider');
@@ -183,6 +207,13 @@ class lyndaapi {
             ) {
                 continue;
             }
+            $lyndacourse = lyndacourse::fetchbyremotecourseid($raw->CourseID);
+
+            if ($lyndacourse) {
+                $description = $lyndacourse->description;
+            } else {
+                $description = '';
+            }
 
             $taps->add_cpd_record(
                     $user->idnumber,
@@ -191,7 +222,7 @@ class lyndaapi {
                     $timestamp,
                     $raw->CourseDuration,
                     'MIN',
-                    ['p_learning_method' => 'ECO', 'p_subject_catetory' => 'PD', 'p_learning_desc' => $lyndacourse->description]
+                    ['p_learning_method' => 'ECO', 'p_subject_catetory' => 'PD', 'p_learning_desc' => $description, 'p_providerid' => $raw->CourseID]
             );
             mtrace('Created CPD record for ' . $raw->Username);
         }
@@ -218,6 +249,8 @@ class lyndaapi {
 
             if (!isset($coursehashes[$course->remotecourseid])) {
                 $course->insert();
+                $sql = "UPDATE {local_taps_enrolment} SET learningdesc = :coursedescription WHERE provider = 'Lynda.com' AND providerid = :remotecourseid";
+                $DB->execute($sql, ['coursedescription' => $course->description, 'remotecourseid' => $course->remotecourseid]);
             } else if (!empty($course->deletedbylynda) || $course->lyndadatahash != $coursehashes[$course->remotecourseid]) {
                 $course->deletedbylynda = false;
                 $course->update();
@@ -291,6 +324,7 @@ class lyndaapi {
         $lyndacourse->remotecourseid = $raw->ID;
         $lyndacourse->title = $raw->Title;
         $lyndacourse->lyndadatahash = md5(serialize($raw));
+        $lyndacourse->durationinseconds = $raw->DurationInSeconds;
 
         $lyndacourse->lyndatags = [];
         foreach ($raw->Tags as $tag) {
