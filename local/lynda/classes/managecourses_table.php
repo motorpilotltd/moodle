@@ -91,7 +91,7 @@ class managecourses_table extends \table_sql {
         $regionsconcat = $this->sql_group_concat('regionid', ',', true);
         $columns =
                 "lc.id, lc.remotecourseid as courseid, lc.title, lc.description, lc.durationinseconds, $remotetagidconcat as tags, $regionsconcat as regions";
-        $groupby = "GROUP BY lc.id, lc.remotecourseid, lc.title, lc.description";
+        $groupby = "GROUP BY lc.id, lc.remotecourseid, lc.title, lc.description, lc.durationinseconds";
 
         $this->rawdata = $DB->get_records_sql("SELECT $columns $sql $groupby $orderby", $params, $this->get_page_start(),
                 $this->get_page_size());
