@@ -42,6 +42,10 @@ class lyndaapimock extends lyndaapi {
 
         $i = 0;
         foreach($retval->ReportData as $data) {
+            if (in_array($data->Username, $this->users)) {
+                continue; // Already been mapped.
+            }
+
             if (isset($this->users[$data->Username])) {
                 $data->Username = $this->users[$data->Username];
             } else {
@@ -103,5 +107,12 @@ class lyndaapimock extends lyndaapi {
 
     public function dropcoursefromresponse() {
         array_shift($this->getcoursesresponse);
+    }
+    protected function setregion($regionid) {
+        return true;
+    }
+
+    protected function setanyregion() {
+        return true;
     }
 }

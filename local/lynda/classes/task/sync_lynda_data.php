@@ -41,7 +41,7 @@ class sync_lynda_data extends \core\task\scheduled_task {
      * Run the tidy synccourses task.
      */
     public function execute() {
-        $api = new lyndaapi();;
+        $api = new lyndaapi();
 
         $thisruntime = time();
         $api->synccoursecompletion($this->get_last_run_time(), $thisruntime);

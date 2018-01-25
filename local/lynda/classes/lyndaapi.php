@@ -45,6 +45,7 @@ class lyndaapi {
 
     /**
      * Runs from 00:00:00 on start date to 23:59:59 on enddate.
+     *
      * @param $startdate
      * @param $enddate
      * @param $start
@@ -77,6 +78,7 @@ class lyndaapi {
 
     /**
      * Runs from 00:00:00 on start date to 23:59:59 on enddate.
+     *
      * @param $startdate
      * @param $enddate
      * @param $start
@@ -108,9 +110,34 @@ class lyndaapi {
     }
 
     private $config;
+    private $appkey;
+    private $secretkey;
 
     public function __construct() {
         $this->config = get_config('local_lynda');
+    }
+
+    protected function setregion($regionid) {
+        if (empty($this->config->{"appkey_$regionid"}) || empty($this->config->{"secretkey_$regionid"})) {
+            return false;
+        }
+        $this->appkey = $this->config->{"appkey_$regionid"};
+        $this->secretkey = $this->config->{"secretkey_$regionid"};
+        return true;
+    }
+
+    protected function setanyregion() {
+        global $DB;
+        $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true]);
+
+        foreach ($regions as $id => $name) {
+            if ($this->setregion($id)) {
+                return true;
+            }
+        }
+
+        mtrace('Unable to load any API keys');
+        return false;
     }
 
     private function callapi($url) {
@@ -120,10 +147,10 @@ class lyndaapi {
 
         $timestamp =
                 time(); // Note that the timestamp must be no more than 5 minutes off from the actual timestamp on the target host.
-        $api_hash = md5($this->config->appkey . $this->config->secretkey . $this->config->apiurl . $url . $timestamp);
+        $api_hash = md5($this->appkey . $this->secretkey . $this->config->apiurl . $url . $timestamp);
 
         $curl_headers = array(
-                "appkey: " . $this->config->appkey,
+                "appkey: " . $this->appkey,
                 "timestamp: " . $timestamp,
                 "hash: " . $api_hash
         );
@@ -131,10 +158,10 @@ class lyndaapi {
         $url = $this->config->apiurl . $url;
         $options = array(
                 'RETURNTRANSFER' => true,
-                'USERAGENT'   => 'Moodle',
+                'USERAGENT'      => 'Moodle',
                 'HTTPHEADER'     => $curl_headers,
                 'CONNECTTIMEOUT' => 0,
-                'TIMEOUT' => 240, // Fail if data not returned within 10 seconds.
+                'TIMEOUT'        => 240, // Fail if data not returned within 10 seconds.
         );
         $result = $curl->get($url, '', $options);
 
@@ -149,92 +176,120 @@ class lyndaapi {
     /**
      * Runs from 00:00:00 on start date to 23:59:59 on enddate.
      * Is idempotent so can be run multiple times over the same date range.
+     *
      * @param $lastruntime
      * @param $thisruntime
      */
     public function synccourseprogress($lastruntime, $thisruntime) {
-        $tz = new \DateTimeZone('UTC');
-        foreach ($this->getcourseprogressiterator($lastruntime, $thisruntime) as $raw) {
-            $datetime = \DateTime::createFromFormat('m/d/Y H:i:s', $raw->LastViewed, $tz);
-            $timestamp = $datetime->getTimestamp();
+        global $DB;
+        $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true]);
 
-            $progressrecord = lyndacourseprogress::fetch(['userid'          => $raw->Username,
-                                                          'remotecourseid'  => $raw->CourseID]);
-            if ($progressrecord) {;
-                mtrace('Updated course progress record for ' . $raw->Username);
-                $progressrecord->lastviewed = $timestamp;
-                $progressrecord->percentcomplete = $raw->PercentComplete;
-                $progressrecord->update();
-            } else {
-                mtrace('Created course progress record for ' . $raw->Username);
-                $progressrecord = new lyndacourseprogress();
-                $progressrecord->userid = $raw->Username;
-                $progressrecord->remotecourseid = $raw->CourseID;
-                $progressrecord->lastviewed = $timestamp;
-                $progressrecord->percentcomplete = $raw->PercentComplete;
-                $progressrecord->insert();
+        foreach ($regions as $id => $name) {
+            if (!$this->setregion($id)) {
+                mtrace('No keys for ' . $name);
+                continue;
             }
+            mtrace('Started synccourseprogress for ' . $name);
+
+            $tz = new \DateTimeZone('UTC');
+            foreach ($this->getcourseprogressiterator($lastruntime, $thisruntime) as $raw) {
+                $datetime = \DateTime::createFromFormat('m/d/Y H:i:s', $raw->LastViewed, $tz);
+                $timestamp = $datetime->getTimestamp();
+
+                $progressrecord = lyndacourseprogress::fetch(['userid'         => $raw->Username,
+                                                              'remotecourseid' => $raw->CourseID]);
+                if ($progressrecord) {
+                    ;
+                    mtrace('Updated course progress record for ' . $raw->Username);
+                    $progressrecord->lastviewed = $timestamp;
+                    $progressrecord->percentcomplete = $raw->PercentComplete;
+                    $progressrecord->update();
+                } else {
+                    mtrace('Created course progress record for ' . $raw->Username);
+                    $progressrecord = new lyndacourseprogress();
+                    $progressrecord->userid = $raw->Username;
+                    $progressrecord->remotecourseid = $raw->CourseID;
+                    $progressrecord->lastviewed = $timestamp;
+                    $progressrecord->percentcomplete = $raw->PercentComplete;
+                    $progressrecord->insert();
+                }
+            }
+            mtrace('Finished synccourseprogress for ' . $name);
         }
     }
 
     /**
      * Runs from 00:00:00 on start date to 23:59:59 on enddate.
      * Is idempotent so can be run multiple times over the same date range.
+     *
      * @param $lastruntime
      * @param $thisruntime
      */
     public function synccoursecompletion($lastruntime, $thisruntime) {
         global $DB;
 
-        $tz = new \DateTimeZone('UTC');
-        $taps = new \local_taps\taps();
+        global $DB;
+        $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true]);
 
-        foreach ($this->getcoursecompletioniterator($lastruntime, $thisruntime) as $raw) {
-            $user = self::getcacheduser($raw->Username);
-            if ($user == null) {
-                mtrace('Unable to find user account for ' . $raw->Username);
+        foreach ($regions as $id => $name) {
+            if (!$this->setregion($id)) {
+                mtrace('No keys for ' . $name);
                 continue;
             }
+            mtrace('Started synccourseprogress for ' . $name);
 
-            $datetime = \DateTime::createFromFormat('m/d/Y H:i:s', $raw->CompleteDate, $tz);
-            $timestamp = $datetime->getTimestamp();
+            $tz = new \DateTimeZone('UTC');
+            $taps = new \local_taps\taps();
 
-            $classnamecompare = $DB->sql_compare_text('classname');
-            $providercompare = $DB->sql_compare_text('provider');
-            $sql = "SELECT * FROM {local_taps_enrolment} WHERE staffid = :staffid AND $classnamecompare = :classname AND $providercompare = :providername";
-            if ($DB->record_exists_sql($sql,
-                    ['staffid' => $user->idnumber, 'classname' => $raw->CourseName, 'providername' => 'Lynda.com'])
-            ) {
-                continue;
+            foreach ($this->getcoursecompletioniterator($lastruntime, $thisruntime) as $raw) {
+                $user = self::getcacheduser($raw->Username);
+                if ($user == null) {
+                    mtrace('Unable to find user account for ' . $raw->Username);
+                    continue;
+                }
+
+                $datetime = \DateTime::createFromFormat('m/d/Y H:i:s', $raw->CompleteDate, $tz);
+                $timestamp = $datetime->getTimestamp();
+
+                $classnamecompare = $DB->sql_compare_text('classname');
+                $providercompare = $DB->sql_compare_text('provider');
+                $sql =
+                        "SELECT * FROM {local_taps_enrolment} WHERE staffid = :staffid AND $classnamecompare = :classname AND $providercompare = :providername";
+                if ($DB->record_exists_sql($sql,
+                        ['staffid' => $user->idnumber, 'classname' => $raw->CourseName, 'providername' => 'Lynda.com'])
+                ) {
+                    continue;
+                }
+                $lyndacourse = lyndacourse::fetchbyremotecourseid($raw->CourseID);
+
+                if ($lyndacourse) {
+                    $description = $lyndacourse->description;
+                } else {
+                    $description = '';
+                }
+
+                $taps->add_cpd_record(
+                        $user->idnumber,
+                        $raw->CourseName,
+                        'Lynda.com',
+                        $timestamp,
+                        $raw->CourseDuration,
+                        'MIN',
+                        ['p_learning_method' => 'ECO', 'p_subject_catetory' => 'PD', 'p_learning_desc' => $description,
+                         'p_providerid'      => $raw->CourseID]
+                );
+                mtrace('Created CPD record for ' . $raw->Username);
             }
-            $lyndacourse = lyndacourse::fetchbyremotecourseid($raw->CourseID);
-
-            if ($lyndacourse) {
-                $description = $lyndacourse->description;
-            } else {
-                $description = '';
-            }
-
-            $taps->add_cpd_record(
-                    $user->idnumber,
-                    $raw->CourseName,
-                    'Lynda.com',
-                    $timestamp,
-                    $raw->CourseDuration,
-                    'MIN',
-                    ['p_learning_method' => 'ECO', 'p_subject_catetory' => 'PD', 'p_learning_desc' => $description, 'p_providerid' => $raw->CourseID]
-            );
-            mtrace('Created CPD record for ' . $raw->Username);
+            mtrace('Finished synccourseprogress for ' . $name);
         }
-
-        /*
-        avoid double counting in case where lynda course has been completed as a real LTI object
-        api keys per region
-        */
     }
 
     public function synccourses() {
         global $DB;
+
+        if (!$this->setanyregion()) {
+            return;
+        }
 
         $tags = [];
         $tagtypes = [];
@@ -249,7 +304,8 @@ class lyndaapi {
 
             if (!isset($coursehashes[$course->remotecourseid])) {
                 $course->insert();
-                $sql = "UPDATE {local_taps_enrolment} SET learningdesc = :coursedescription WHERE provider = 'Lynda.com' AND providerid = :remotecourseid";
+                $sql =
+                        "UPDATE {local_taps_enrolment} SET learningdesc = :coursedescription WHERE provider = 'Lynda.com' AND providerid = :remotecourseid";
                 $DB->execute($sql, ['coursedescription' => $course->description, 'remotecourseid' => $course->remotecourseid]);
             } else if (!empty($course->deletedbylynda) || $course->lyndadatahash != $coursehashes[$course->remotecourseid]) {
                 $course->deletedbylynda = false;

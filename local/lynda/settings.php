@@ -27,28 +27,40 @@ if ($hassiteconfig) {
 
     $settings = new admin_settingpage('local_lynda_apisettings', get_string('apisettings', 'local_lynda'));
 
-    $name = 'local_lynda/appkey';
-    $title = get_string('setting:appkey','local_lynda');
-    $settings->add(new admin_setting_configtext($name, $title, '', '0E15654C2D0046A686AE07888BA4F331'));
-
-    $name = 'local_lynda/secretkey';
-    $title = get_string('setting:secretkey','local_lynda');
-    $settings->add(new admin_setting_configtext($name, $title, '', '7D84911008F14BB79ECB7F6F7EF82603'));
-
     $name = 'local_lynda/apiurl';
     $title = get_string('setting:apiurl','local_lynda');
     $settings->add(new admin_setting_configtext($name, $title, '', 'https://api-1.lynda.com'));
 
-    $options = $DB->get_records_menu('local_regions_reg', ['userselectable' => true]);
+    $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true]);
     $settings->add(
             new admin_setting_configmultiselect(
                     'local_lynda/enabledregions',
                     get_string('enabledregions', 'local_lynda'),
                     get_string('enabledregions', 'local_lynda'),
                     array(),
-                    $options
+                    $regions
             )
     );
+
+    foreach ($regions as $id => $name) {
+        $settings->add(new admin_setting_heading('heading_' . $id, $name, ''));
+
+        $name = 'local_lynda/appkey_' . $id;
+        $title = get_string('setting:appkey','local_lynda');
+        $settings->add(new admin_setting_configtext($name, $title, '', ''));
+
+        $name = 'local_lynda/secretkey_' . $id;
+        $title = get_string('setting:secretkey','local_lynda');
+        $settings->add(new admin_setting_configtext($name, $title, '', ''));
+
+        $name = 'local_lynda/ltikey_' . $id;
+        $title = get_string('setting:ltikey','local_lynda');
+        $settings->add(new admin_setting_configtext($name, $title, '', ''));
+
+        $name = 'local_lynda/ltisecret_' . $id;
+        $title = get_string('setting:ltisecret','local_lynda');
+        $settings->add(new admin_setting_configtext($name, $title, '', ''));
+    }
     
     $ADMIN->add('local_lynda', $settings);
 

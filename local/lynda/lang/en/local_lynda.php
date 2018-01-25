@@ -21,11 +21,13 @@
  */
 
 $string['tasksynclyndadata'] = 'Sync Lynda.com activity data';
-$string['tasksynclyndacourses'] = 'Syn Lynda.com courses';
+$string['tasksynclyndacourses'] = 'Sync Lynda.com courses';
 $string['pluginname'] = 'Lynda.com';
-$string['setting:appkey'] = 'App key';
-$string['setting:secretkey'] = 'Secret key';
+$string['setting:appkey'] = 'API  key';
+$string['setting:secretkey'] = 'API Secret';
 $string['setting:apiurl'] = 'API URL';
+$string['setting:ltikey'] = 'LTI key';
+$string['setting:ltisecret'] = 'LTI Secret';
 $string['filteroptions'] = 'Filters';
 $string['managecourses'] = 'Manage Lynda courses';
 $string['apisettings'] = 'API Settings';
