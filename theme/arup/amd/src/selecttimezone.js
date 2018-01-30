@@ -14,8 +14,7 @@ define(['jquery', 'core/config', 'theme_bootstrap/bootstrap', 'core/log'], funct
                 });
 
                 $('#timezoneselector').change( function() {
-                    var selected = $(this).find(":selected").text();
-
+                    var selected = $(this).val();
                     $.ajax({
                         type: 'POST',
                         url: cfg.wwwroot + '/theme/arup/ajax.php?sesskey=' + cfg.sesskey,
