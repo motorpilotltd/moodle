@@ -44,7 +44,7 @@ class theme_arup_mod_quiz_renderer extends mod_quiz_renderer {
 
         if ($viewobj->buttontext) {
             $output .= $this->start_attempt_button($viewobj->buttontext,
-                    $viewobj->startattempturl, $viewobj->startattemptwarning,
+                    $viewobj->startattempturl, $viewobj->preflightcheckform,
                     $viewobj->popuprequired, $viewobj->popupoptions);
 
         }

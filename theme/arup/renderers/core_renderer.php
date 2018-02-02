@@ -145,7 +145,7 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
         $template->userid = $USER->id;
         $template->sesskey = sesskey();
         $template->countries =  array();
-        $template->checkmarkicon = $this->pix_url('t/check');
+        $template->checkmarkicon = $this->pix_icon('t/check', 'checkmark');
 
         $aruptimezones = $DB->get_records('local_timezones');
         if (count($aruptimezones) > 0) {
@@ -689,6 +689,21 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
      */
     protected static function span($attributes, $content) {
         return html_writer::tag('span', $content, $attributes);
+    }
+
+    public function user_picture(stdClass $user, array $options = null) {
+        global $PAGE;
+        if ($PAGE->bodyid == 'page-mod-forum-discuss' || $PAGE->bodyid == 'page-site-index' ) {
+            $options = array('size' => '100');
+        }
+
+        $userpicture = new user_picture($user);
+        foreach ((array)$options as $key=>$value) {
+            if (array_key_exists($key, $userpicture)) {
+                $userpicture->$key = $value;
+            }
+        }
+        return $this->render($userpicture);
     }
 
 }
