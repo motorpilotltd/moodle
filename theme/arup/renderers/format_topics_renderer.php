@@ -278,6 +278,7 @@ class theme_arup_format_topics_renderer extends format_topics_renderer {
 
         // Now the list of sections..
         echo $this->start_section_list();
+        $numsections = course_get_format($course)->get_last_section_number();
 
         foreach ($modinfo->get_section_info_all() as $section => $thissection) {
             if ($section == 0) {
@@ -290,7 +291,7 @@ class theme_arup_format_topics_renderer extends format_topics_renderer {
                 }
                 continue;
             }
-            if ($section > $course->numsections) {
+            if ($section > $numsections) {
                 // activities inside this section are 'orphaned', this section will be printed as 'stealth' below
                 continue;
             }
@@ -326,7 +327,7 @@ class theme_arup_format_topics_renderer extends format_topics_renderer {
         if ($PAGE->user_is_editing() and has_capability('moodle/course:update', $context)) {
             // Print stealth sections if present.
             foreach ($modinfo->get_section_info_all() as $section => $thissection) {
-                if ($section <= $course->numsections or empty($modinfo->sections[$section])) {
+                if ($section <= $numsections or empty($modinfo->sections[$section])) {
                     // this is not stealth section or it is empty
                     continue;
                 }
@@ -348,7 +349,7 @@ class theme_arup_format_topics_renderer extends format_topics_renderer {
             $icon = $this->output->pix_icon('t/switch_plus', $straddsection);
             echo html_writer::link($url, $icon.get_accesshide($straddsection), array('class' => 'increase-sections'));
 
-            if ($course->numsections > 0) {
+            if ($numsections > 0) {
                 // Reduce number of sections sections.
                 $strremovesection = get_string('reducesections', 'moodle');
                 $url = new moodle_url('/course/changenumsections.php',

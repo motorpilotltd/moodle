@@ -90,7 +90,7 @@ class theme_arup_html_renderer extends plugin_renderer_base {
      */
     public function page_logo() {
         return html_writer::empty_tag('img',
-            array('src' => $this->pix_url('Arup_logo', 'theme_arup'),
+            array('src' => $this->image_url('Arup_logo', 'theme_arup'),
                 'class' => 'img-responsive'));
     }
 
@@ -346,7 +346,7 @@ class theme_arup_html_renderer extends plugin_renderer_base {
             } 
         }
 
-        return $OUTPUT->pix_url('courseimage', 'theme_arup');
+        return $OUTPUT->image_url('courseimage', 'theme_arup');
     }
 
     /**

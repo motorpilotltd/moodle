@@ -23,6 +23,8 @@ $knownregionpost = $PAGE->blocks->is_known_region('side-post');
 
 $regions = bootstrap_grid($hassidepre, $hassidepost);
 $PAGE->set_popup_notification_allowed(false);
+$PAGE->requires->jquery();
+$PAGE->requires->js_call_amd('theme_bootstrap/optin', 'init');
 
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
@@ -43,7 +45,9 @@ echo $OUTPUT->doctype() ?>
         <?php echo $OUTPUT->navbar_brand(); ?>
     </div>
     <div class="navbar-header pull-right">
+        <?php echo $OUTPUT->navbar_plugin_output(); ?>
         <?php echo $OUTPUT->user_menu(); ?>
+
         <?php echo $OUTPUT->navbar_button(); ?>
     </div>
     <div id="moodle-navbar" class="navbar-collapse collapse navbar-right">
