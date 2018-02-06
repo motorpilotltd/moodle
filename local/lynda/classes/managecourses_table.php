@@ -63,14 +63,14 @@ class managecourses_table extends \table_sql {
         $tagtypes = \local_lynda\lyndatagtype::fetch_full_taxonomy();
         foreach ($tagtypes as $tagtype) {
             $selectname = $tagtype->gettagtypeselectname();
-            if (!isset($this->filterparams->$selectname)) {
+            if (empty($this->filterparams->$selectname)) {
                 continue;
             }
 
-            foreach ($this->filterparams->$selectname as $tag) {
-                $tagfilterjoins[] =
-                        "INNER JOIN {local_lynda_coursetags} lct_$tag ON lct_$tag.remotetagid = $tag AND lct_$tag.remotecourseid = lc.remotecourseid"; // Add tag filter
-            }
+            list($sqlfrag, $paramsfrag) = $DB->get_in_or_equal($this->filterparams->$selectname, SQL_PARAMS_NAMED);
+            $params += $paramsfrag;
+            $tagfilterjoins[] =
+                    "INNER JOIN {local_lynda_coursetags} lct_$selectname ON lct_$selectname.remotetagid $sqlfrag AND lct_$selectname.remotecourseid = lc.remotecourseid"; // Add tag filter
         }
 
         $tagfilterjoins = implode("\n", $tagfilterjoins);
