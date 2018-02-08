@@ -457,7 +457,9 @@ function arupadvert_pluginfile($course, $cm, $context, $filearea, $args, $forced
         return false;
     }
 
-    require_course_login($course, true, $cm);
+    if (!optional_param('og', 0, PARAM_BOOL)) {
+        require_course_login($course, true, $cm);
+    }
 
     if ($filearea !== 'blockimage') {
         return false;

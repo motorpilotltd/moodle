@@ -2,21 +2,34 @@
     <h2 class="arupav_title m-b-20">{{name}}{{#logo}}<img class="arupav_logo" src="{{{logo}}}">{{/logo}}
     </h2>
     {{#hassections}}
-    <div class="avblock {{#hassections}}to-right{{/hassections}} shadow-1 clearblock">
-        {{#courseimage}}
-        <div class="av_image_wrapper">
-            <img src="{{{courseimage}}}" class="img-responsive">
-        </div>
-        {{/courseimage}}
-        <div class="av_metadata">
-            {{#blockelements}}
-                <h4 class="avheading">{{heading}}</h4>
-                <p class="metatext">{{{text}}}</p>
-            {{/blockelements}}
-        </div>
-    </div>
+        <div class="avblock {{#hassections}}to-right{{/hassections}} shadow-1 clearblock">
+            {{#courseimage}}
+                <div class="av_image_wrapper">
+                    <img src="{{{courseimage}}}" class="img-responsive">
+                </div>
+            {{/courseimage}}
+            <div class="av_metadata">
+                {{#blockelements}}
+                    <h4 class="avheading">{{heading}}</h4>
+                    <p class="metatext">{{{text}}}</p>
+                {{/blockelements}}
+            </div>
+            <div class="av_sharelinks">
+                <span id="yj-share-button" class="sharebutton"></span>
+            </span>
 
-    
+                <script type="text/javascript" src="https://s0.assets-yammer.com/assets/platform_social_buttons.min.js"></script>
+                <script type="text/javascript">
+                    var options = {
+                        defaultMessage: "{{{description}}}", //optionally pass a message to prepopulate your post
+                        pageUrl: '{{{ogsharelink}}}' //current browser url is used by default. You can pass your own url if you want to generate the OG object from a different URL.
+                    };
+                    yam.platform.yammerShare(options);
+                </script>
+            </div>
+        </div>
+
+
     <div class="avtext">
         <div class="arupav_summary_wrapper">
             {{#sections}}
