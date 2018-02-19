@@ -42,18 +42,15 @@ class view_assets {
     protected $settings;
     protected $embedtype;
     protected $files;
-/* BEGIN CORE MOD */
-    public function __construct($cm, $course, $forceembedtype = null, $nocss = false, $nojs = false) {
-/* END CORE MOD */
+
+    public function __construct($cm, $course, $forceembedtype = null) {
         global $CFG;
 
         $this->cm          = $cm;
         $this->course      = $course;
         $this->core        = framework::instance();
         $this->content     = $this->core->loadContent($cm->instance);
-/* BEGIN CORE MOD */
-        $this->settings    = hvp_get_core_assets(\context_module::instance($cm->id), $nocss, $nojs);
-/* END CORE MOD */
+        $this->settings    = hvp_get_core_assets(\context_module::instance($cm->id));
         $this->jsrequires  = [];
         $this->cssrequires = [];
 
