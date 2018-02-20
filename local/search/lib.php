@@ -237,109 +237,138 @@ EOJ;
     $params     = array_merge($regionsparams, $filterparams);
     $i = 0;
 
-    if (!empty($searchterms) && !$showall) {
+    $dbfamily = $DB->get_dbfamily();
+    if ($dbfamily == 'mssql' && !empty($searchterms)) {
+        $query = implode(' ', $searchterms);
+        $rankingjoins = [];
+        $rankingjoins['rank_course'] = "LEFT JOIN FREETEXTTABLE({course}, *, '$query') AS rank_course ON rank_course.[KEY] = c.id";
 
-        // Thanks Oracle for your non-ansi concat and type limits in coalesce. MDL-29912
-        if ($DB->get_dbfamily() == 'oracle') {
-            if ($arupadvertinstalled) {
-                if ($arupadverttapsinstalled && $arupadvertcustominstalled) {
+        if ($arupadvertcustominstalled) {
+            $rankingjoins['rank_arupadvertdatatype_custom'] = "LEFT JOIN FREETEXTTABLE({arupadvertdatatype_custom}, *, '$query') AS rank_arupadvertdatatype_custom ON rank_arupadvertdatatype_custom.[KEY] = a.id";
+        }
+
+        if ($arupadverttapsinstalled) {
+            $rankingjoins['rank_local_taps_class'] =
+                    "LEFT JOIN FREETEXTTABLE({local_taps_class}, *, '$query') AS rank_local_taps_class ON rank_local_taps_class.[KEY] = c.id";
+            $rankingjoins['rank_local_taps_course'] =
+                    "LEFT JOIN FREETEXTTABLE({local_taps_course}, *, '$query') AS rank_local_taps_course ON rank_local_taps_course.[KEY] = c.id";
+        }
+        $rankingjoin = implode("\n", array_values($rankingjoins));
+
+        $rankingjoinscond = [];
+        $sortelems = [];
+        foreach ($rankingjoins as $rankingjoinname => $unused) {
+            $rankingjoinscond[] =  "$rankingjoinname.RANK IS NOT NULL";
+            $sortelems[] = "ISNULL($rankingjoinname.RANK, 0)";
+        }
+        $searchcond = " AND (" . implode(' OR ', $rankingjoinscond) . " ) ";
+        $sort = implode(' + ', $sortelems) . ' DESC ';
+    } else {
+        $rankingjoin = '';
+        if (!empty($searchterms) && !$showall) {
+
+            // Thanks Oracle for your non-ansi concat and type limits in coalesce. MDL-29912
+            if ($DB->get_dbfamily() == 'oracle') {
+                if ($arupadvertinstalled) {
+                    if ($arupadverttapsinstalled && $arupadvertcustominstalled) {
+                        $concat = $DB->sql_concat(
+                                'c.summary', "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
+                                "' '", 'ltc.coursecode', "' '", 'ltc.keywords', "' '", 'ltcc.classname',
+                                "' '", 'ac.keywords'
+                        );
+                    } elseif ($arupadverttapsinstalled) {
+                        $concat = $DB->sql_concat(
+                                'c.summary', "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
+                                "' '", 'ltc.coursecode', "' '", 'ltc.keywords', "' '", 'ltcc.classname'
+                        );
+                    } elseif ($arupadvertcustominstalled) {
+                        $concat = $DB->sql_concat(
+                                'c.summary', "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
+                                "' '", 'ac.keywords'
+                        );
+                    }
+                } else {
                     $concat = $DB->sql_concat(
-                        'c.summary', "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
-                        "' '", 'ltc.coursecode', "' '", 'ltc.keywords', "' '", 'ltcc.classname',
-                        "' '", 'ac.keywords'
-                    );
-                } elseif ($arupadverttapsinstalled) {
-                    $concat = $DB->sql_concat(
-                        'c.summary', "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
-                        "' '", 'ltc.coursecode', "' '", 'ltc.keywords', "' '", 'ltcc.classname'
-                    );
-                } elseif ($arupadvertcustominstalled) {
-                    $concat = $DB->sql_concat(
-                        'c.summary', "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
-                        "' '", 'ac.keywords'
+                            'c.summary', "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname'
                     );
                 }
             } else {
-                $concat = $DB->sql_concat(
-                    'c.summary', "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname'
-                );
-            }
-        } else {
-            if ($arupadvertinstalled) {
-                if ($arupadverttapsinstalled && $arupadvertcustominstalled) {
+                if ($arupadvertinstalled) {
+                    if ($arupadverttapsinstalled && $arupadvertcustominstalled) {
+                        $concat = $DB->sql_concat(
+                                "COALESCE(c.summary, '')",
+                                "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
+                                "' '", "COALESCE(ltc.coursecode, '')",
+                                "' '", "COALESCE(ltc.keywords, '')",
+                                "' '", "COALESCE(ltcc.classname, '')",
+                                "' '", "COALESCE(ac.keywords, '')"
+                        );
+                    } elseif ($arupadverttapsinstalled) {
+                        $concat = $DB->sql_concat(
+                                "COALESCE(c.summary, '')",
+                                "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
+                                "' '", "COALESCE(ltc.coursecode, '')",
+                                "' '", "COALESCE(ltc.keywords, '')",
+                                "' '", "COALESCE(ltcc.classname, '')"
+                        );
+                    } elseif ($arupadvertcustominstalled) {
+                        $concat = $DB->sql_concat(
+                                "COALESCE(c.summary, '')",
+                                "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
+                                "' '", "COALESCE(ac.keywords, '')"
+                        );
+                    }
+                } else {
                     $concat = $DB->sql_concat(
-                        "COALESCE(c.summary, '')",
-                        "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
-                        "' '", "COALESCE(ltc.coursecode, '')",
-                        "' '", "COALESCE(ltc.keywords, '')",
-                        "' '", "COALESCE(ltcc.classname, '')",
-                        "' '", "COALESCE(ac.keywords, '')"
-                    );
-                } elseif ($arupadverttapsinstalled) {
-                    $concat = $DB->sql_concat(
-                        "COALESCE(c.summary, '')",
-                        "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
-                        "' '", "COALESCE(ltc.coursecode, '')",
-                        "' '", "COALESCE(ltc.keywords, '')",
-                        "' '", "COALESCE(ltcc.classname, '')"
-                    );
-                } elseif ($arupadvertcustominstalled) {
-                    $concat = $DB->sql_concat(
-                        "COALESCE(c.summary, '')",
-                        "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
-                        "' '", "COALESCE(ac.keywords, '')"
+                            "COALESCE(c.summary, '')",
+                            "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname'
                     );
                 }
-            } else {
-                $concat = $DB->sql_concat(
-                    "COALESCE(c.summary, '')",
-                    "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname'
-                );
             }
-        }
 
-        foreach ($searchterms as $searchterm) {
-            $i++;
+            foreach ($searchterms as $searchterm) {
+                $i++;
 
-            $NOT = false; /// Initially we aren't going to perform NOT LIKE searches, only MSSQL and Oracle
-                       /// will use it to simulate the "-" operator with LIKE clause
+                $NOT = false; /// Initially we aren't going to perform NOT LIKE searches, only MSSQL and Oracle
+                /// will use it to simulate the "-" operator with LIKE clause
 
-        /// Under Oracle and MSSQL, trim the + and - operators and perform
-        /// simpler LIKE (or NOT LIKE) queries
-            if (!$DB->sql_regex_supported()) {
-                if (substr($searchterm, 0, 1) == '-') {
-                    $NOT = true;
+                /// Under Oracle and MSSQL, trim the + and - operators and perform
+                /// simpler LIKE (or NOT LIKE) queries
+                if (!$DB->sql_regex_supported()) {
+                    if (substr($searchterm, 0, 1) == '-') {
+                        $NOT = true;
+                    }
+                    $searchterm = trim($searchterm, '+-');
                 }
-                $searchterm = trim($searchterm, '+-');
+
+                // TODO: +- may not work for non latin languages
+
+                if (substr($searchterm, 0, 1) == '+') {
+                    $searchterm = trim($searchterm, '+-');
+                    $searchterm = preg_quote($searchterm, '|');
+                    $searchcond[] = "$concat $REGEXP :ss$i";
+                    $params['ss' . $i] = "(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)";
+
+                } else if (substr($searchterm, 0, 1) == "-") {
+                    $searchterm = trim($searchterm, '+-');
+                    $searchterm = preg_quote($searchterm, '|');
+                    $searchcond[] = "$concat $NOTREGEXP :ss$i";
+                    $params['ss' . $i] = "(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)";
+
+                } else {
+                    $searchcond[] = $DB->sql_like($concat, ":ss$i", false, true, $NOT);
+                    $params['ss' . $i] = "%$searchterm%";
+                }
             }
 
-            // TODO: +- may not work for non latin languages
-
-            if (substr($searchterm,0,1) == '+') {
-                $searchterm = trim($searchterm, '+-');
-                $searchterm = preg_quote($searchterm, '|');
-                $searchcond[] = "$concat $REGEXP :ss$i";
-                $params['ss'.$i] = "(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)";
-
-            } else if (substr($searchterm,0,1) == "-") {
-                $searchterm = trim($searchterm, '+-');
-                $searchterm = preg_quote($searchterm, '|');
-                $searchcond[] = "$concat $NOTREGEXP :ss$i";
-                $params['ss'.$i] = "(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)";
-
-            } else {
-                $searchcond[] = $DB->sql_like($concat,":ss$i", false, true, $NOT);
-                $params['ss'.$i] = "%$searchterm%";
+            if (empty($searchcond)) {
+                $totalcount = 0;
+                return array();
             }
         }
 
-        if (empty($searchcond)) {
-            $totalcount = 0;
-            return array();
-        }
+        $searchcond = empty($searchcond) ? '' : ' AND ' . implode(' AND ', $searchcond);
     }
-
-    $searchcond = empty($searchcond) ? '' : ' AND ' . implode(' AND ', $searchcond);
 
     $courses = array();
     $c = 0; // counts how many visible courses we've seen
@@ -363,6 +392,7 @@ FROM {course} c
    $regionsjoin
    $filterjoin
    $ccjoin
+   $rankingjoin
 WHERE
     c.id <> {$siteid}
     $searchcond

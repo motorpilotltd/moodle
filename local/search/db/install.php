@@ -15,17 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Disable the assignment module for new installs
  *
- * @package     local_searcg
- * @copyright   2016 Motorpilot Ltd
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package mod_assignment
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111601;
-$plugin->requires  = 2015111600; // Moodle 3.0.x.
-$plugin->component = 'local_search';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.0.0 (Build: 2015111600)';
+
+/**
+ * Code run after the mod_assignment module database tables have been created.
+ * Disables this plugin for new installs
+ * @return bool
+ */
+function xmldb_local_search_install() {
+    global $CFG;
+
+    require_once("$CFG->dirroot/local/search/db/upgradelib.php");
+    local_search_install_fulltextindexes();
+
+    return true;
+}
+
+

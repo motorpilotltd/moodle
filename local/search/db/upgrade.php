@@ -14,18 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Version details
- *
- * @package     local_searcg
- * @copyright   2016 Motorpilot Ltd
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111601;
-$plugin->requires  = 2015111600; // Moodle 3.0.x.
-$plugin->component = 'local_search';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.0.0 (Build: 2015111600)';
+function xmldb_local_search_upgrade($oldversion = 0) {
+    global $DB, $CFG;
+    $dbman = $DB->get_manager();
+
+    if ($oldversion < 2015111601) {
+
+        require_once("$CFG->dirroot/local/search/db/upgradelib.php");
+        local_search_install_fulltextindexes();
+
+        // Main savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111601, 'local', 'search');
+    }
+
+    return true;
+}
