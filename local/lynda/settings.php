@@ -27,6 +27,10 @@ if ($hassiteconfig) {
 
     $settings = new admin_settingpage('local_lynda_apisettings', get_string('apisettings', 'local_lynda'));
 
+    $settings->add(new admin_setting_configcheckbox('local_lynda/testmode',
+            get_string('testmode', 'local_lynda'),
+            get_string('testmode', 'local_lynda'), 0));
+
     $name = 'local_lynda/apiurl';
     $title = get_string('setting:apiurl','local_lynda');
     $settings->add(new admin_setting_configtext($name, $title, '', 'https://api-1.lynda.com'));
@@ -61,7 +65,7 @@ if ($hassiteconfig) {
         $title = get_string('setting:ltisecret','local_lynda');
         $settings->add(new admin_setting_configtext($name, $title, '', ''));
     }
-    
+
     $ADMIN->add('local_lynda', $settings);
 
     $ADMIN->add('local_lynda', new admin_externalpage('managecourses', get_string('managecourses', 'local_lynda'),

@@ -186,6 +186,24 @@ class lyndacourse_test extends advanced_testcase {
         $this->assertEquals('padded0', $user->idnumber);
     }
 
+    public function test_synccourseprogress_regions() {
+        require_once('fixtures/lyndaapimock.php');
+        $api = new \local_lynda\lyndaapimock();
+        $api->synccourses();
+
+        $api->mockregions = true;
+        $api->synccourseprogress(time(), time());
+
+        $progressrecords = \local_lynda\lyndacourseprogress::fetch_all([]);
+        $this->assertEquals(12, count($progressrecords));
+
+        $progressrecords_region3 = \local_lynda\lyndacourseprogress::fetch_all(['regionid' => 3]);
+        $this->assertEquals(6, count($progressrecords_region3));
+
+        $progressrecords_region4 = \local_lynda\lyndacourseprogress::fetch_all(['regionid' => 4]);
+        $this->assertEquals(6, count($progressrecords_region4));
+    }
+
     public function test_synccourseprogresswithoutcourses() {
         require_once('fixtures/lyndaapimock.php');
         $api = new \local_lynda\lyndaapimock();

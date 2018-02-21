@@ -28,13 +28,14 @@ require_once($CFG->dirroot . '/completion/data_object.php');
 
 class lyndacourseprogress extends \data_object {
     public $table = 'local_lynda_progress';
-    public $required_fields = ['id', 'userid', 'remotecourseid', 'lastviewed', 'percentcomplete', 'thumbnail'];
+    public $required_fields = ['id', 'userid', 'remotecourseid', 'lastviewed', 'percentcomplete', 'thumbnail', 'regionid'];
     public $optional_fields = ['deletedbylynda' => false];
 
     public $userid;
     public $remotecourseid;
     public $lastviewed;
     public $percentcomplete;
+    public $regionid;
 
     /**
      * @var lyndacourse

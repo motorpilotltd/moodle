@@ -27,6 +27,7 @@
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
                 <FIELD NAME="remotecourseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
                 <FIELD NAME="lastviewed" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="regionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="percentcomplete" TYPE="number" LENGTH="12" NOTNULL="true" SEQUENCE="false"/>
             </FIELDS>
             <KEYS>

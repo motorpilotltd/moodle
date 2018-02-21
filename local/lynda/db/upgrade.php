@@ -72,5 +72,17 @@ function xmldb_local_lynda_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080515, 'local', 'lynda');
     }
 
+    if ($oldversion < 2016080518) {
+        $table = new xmldb_table('local_lynda_progress');
+        $field = new xmldb_field('regionid', XMLDB_TYPE_INTEGER, 10);
+
+        // Conditionally launch add field.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2016080518, 'local', 'lynda');
+    }
+
     return true;
 }

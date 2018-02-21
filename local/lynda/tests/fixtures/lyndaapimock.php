@@ -24,6 +24,9 @@ namespace local_lynda;
 
 
 class lyndaapimock extends lyndaapi {
+    public $mockregions = false;
+    public $updatedresponse = false;
+
     public static function getDataGenerator() {
         global $CFG;
 
@@ -82,6 +85,7 @@ class lyndaapimock extends lyndaapi {
 
         parent::__construct();
 
+        $this->region = -1;
         $this->getcoursesresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcoursesresponse.json"));
         $this->individualusagedetailresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse.json"));
         $this->certficateofcompletionresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcertficateofcompletionresponse.json"));
@@ -102,13 +106,27 @@ class lyndaapimock extends lyndaapi {
 
     public function useupdatedindividualusagedetailresponse() {
         global $CFG;
+        $this->updatedresponse = true;
         $this->individualusagedetailresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse_withupdate.json"));
     }
 
     public function dropcoursefromresponse() {
         array_shift($this->getcoursesresponse);
     }
+
     protected function setregion($regionid) {
+        global $CFG;
+
+        $this->region = $regionid;
+        if ($this->updatedresponse) {
+            $this->getcoursesresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcoursesresponse_withupdate.json"));
+        } else if ($this->mockregions && ($regionid == 3 || $regionid ==4)) {
+            $this->individualusagedetailresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse_region$regionid.json"));
+        } else if ($this->mockregions) {
+            $this->individualusagedetailresponse = json_decode('{"Total": 0,"ReportData":[]}');
+        } else if (!$this->mockregions) {
+            $this->individualusagedetailresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse.json"));
+        }
         return true;
     }
 

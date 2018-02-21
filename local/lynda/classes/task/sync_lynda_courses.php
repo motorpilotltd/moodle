@@ -41,7 +41,14 @@ class sync_lynda_courses extends \core\task\scheduled_task {
      * Run the tidy synccourses task.
      */
     public function execute() {
-        $api = new lyndaapi();
+        global $CFG;
+
+        if (!empty(get_config('local_lynda', 'testmode'))) {
+            require_once("$CFG->dirroot/local/lynda/tests/fixtures/lyndaapimock.php");
+            $api = new \local_lynda\lyndaapimock();
+        } else {
+            $api = new lyndaapi();
+        }
 
         $api->synccourses();
     }

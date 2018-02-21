@@ -203,6 +203,7 @@ class lyndaapi {
                     mtrace('Updated course progress record for ' . $raw->Username);
                     $progressrecord->lastviewed = $timestamp;
                     $progressrecord->percentcomplete = $raw->PercentComplete;
+                    $progressrecord->regionid = $id;
                     $progressrecord->update();
                 } else {
                     mtrace('Created course progress record for ' . $raw->Username);
@@ -211,6 +212,7 @@ class lyndaapi {
                     $progressrecord->remotecourseid = $raw->CourseID;
                     $progressrecord->lastviewed = $timestamp;
                     $progressrecord->percentcomplete = $raw->PercentComplete;
+                    $progressrecord->regionid = $id;
                     $progressrecord->insert();
                 }
             }
