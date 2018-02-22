@@ -137,7 +137,8 @@ class daterangelearning extends base {
             'classstartdate',
             'classenddate',
             'bookingstatus',
-            'coursename');
+            'coursename',
+            'classcompletiondate');
 
         $this->textfilterfields = array(
             'startdate' => 'date',
@@ -580,7 +581,6 @@ class daterangelearning extends base {
             }
         }
 
-
         if ($key == 'classstartdate') {
             // e-Learning records use bookingplaceddate instead of classstartdate
             if ($row->classtype == 'Self Paced') {
@@ -622,6 +622,13 @@ class daterangelearning extends base {
             }
         }
 
+        if ($key == 'classcompletiondate') {
+            // Only display if 'attended' or CPD.
+            if (!empty($row->cpdid) || $this->taps->is_status($row->bookingstatus, ['attended'])) {
+                return $this->myuserdate($row->$key, $row);
+            }
+            return '';
+        }
     }
 
     public function get_dropdown($field) {
