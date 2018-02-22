@@ -124,6 +124,7 @@ class elearningstatus extends base {
             'provider',
             'expirydate',
             'location',
+            'region_name',
             'geo_region',
             'company_code',
             'centre_code',
