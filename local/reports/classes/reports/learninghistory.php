@@ -123,7 +123,8 @@ class learninghistory extends base {
             'region_name',
             'geo_region',
             'company_code',
-            'centre_code');
+            'centre_code',
+            'courseregion');
 
         $this->sortfields = array(
             'classname');
@@ -271,7 +272,7 @@ class learninghistory extends base {
         //echo $wherestring;
         //$wherestring = '';
 
-        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode
+        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode, ltco.courseregion
                   FROM {local_taps_enrolment} as lte
                   JOIN SQLHUB.ARUP_ALL_STAFF_V as staff 
                     ON lte.staffid = staff.EMPLOYEE_NUMBER

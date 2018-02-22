@@ -71,6 +71,7 @@ $string['learninghistory:bookingplaceddate'] = 'Date Booking Placed';
 $string['learninghistory:classcompletiondate'] = 'Completion Date';
 $string['learninghistory:coursecode'] = 'Course Code';
 $string['learninghistory:coursename'] = 'Course Name';
+$string['learninghistory:courseregion'] = 'Course Region';
 $string['learninghistory:provider'] = 'Provider';
 $string['learninghistory:classtype'] = 'Delivery Mode';
 $string['learninghistory:expirydate'] = 'Certificate Expiry Date';

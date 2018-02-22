@@ -128,7 +128,8 @@ class daterangelearning extends base {
             'company_code',
             'centre_code',
             'lastupdatedate',
-            'classcompletiondate');
+            'classcompletiondate',
+            'courseregion');
 
         $this->sortfields = array(
             'classname');
@@ -331,7 +332,7 @@ class daterangelearning extends base {
         // echo '<pre>' . print_r($params, true) . '</pre>';
         // $wherestring = '';
 
-        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode
+        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode, ltco.courseregion
                   FROM {local_taps_enrolment} as lte
                   JOIN SQLHUB.ARUP_ALL_STAFF_V as staff 
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
