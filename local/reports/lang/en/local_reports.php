@@ -66,6 +66,7 @@ $string['learninghistory:cpd'] = 'CPD';
 $string['learninghistory:lms'] = 'LMS';
 $string['learninghistory:cpdandlms'] = 'CPD and LMS';
 $string['learninghistory:learningdesc'] = 'Description';
+$string['learninghistory:classcategory'] = 'CPD Subject Category';
 $string['learninghistory:bookingplaceddate'] = 'Date Booking Placed';
 $string['learninghistory:classcompletiondate'] = 'Completion Date';
 $string['learninghistory:coursecode'] = 'Course Code';
