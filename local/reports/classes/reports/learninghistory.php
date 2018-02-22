@@ -187,7 +187,7 @@ class learninghistory extends base {
         global $DB;
 
         \core_php_time_limit::raise();
-        raise_memory_limit(MEMORY_EXTRA);
+        raise_memory_limit(MEMORY_HUGE);
 
         if (empty($this->sort)) {
             $this->sort = 'lte.staffid';
