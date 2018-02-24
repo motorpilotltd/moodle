@@ -1,7 +1,7 @@
 <div class="tab-container">
     <ul class="nav nav-tabs"><li class="active"><a href="#" data-tab="#tab-content-courses">Courses <span class="count badge">{{ coursecount }}</span></a></li>{{#learningeventsenabled}}<li><a href="#" data-tab="#tab-content-learningevents">Learning Events <span class="count badge"><i class="fa fa-refresh fa-spin"></i></span></a></li>{{/learningeventsenabled}}{{#kalturaenabled}}<li><a href="#" data-tab="#tab-content-kaltura">Videos <span class="count badge"><i class="fa fa-refresh fa-spin"></i></span></a></li>{{/kalturaenabled}}</ul>
     <div class="tab-content-wrapper">
-        <div id="tab-content-courses" class="tab-content open" data-load="{{ courseloader }}" data-preloaded data-perpage="10" data-results-container=".course-results" data-result-element=".coursebox">{{{ preloadedcourses }}}</div>
+        <div id="tab-content-courses" class="tab-content open" data-load="{{ courseloader }}" data-preloaded data-perpage="10" data-default-region="{{ regionid }}" data-results-container=".course-results" data-result-element=".coursebox">{{{ preloadedcourses }}}</div>
         {{#learningeventsenabled}}
         <div id="tab-content-learningevents" class="tab-content loading loading-append" data-load="{{ searchloader }}" data-perpage="10" data-results-container=".lunchandlearn-search-results" data-result-element=".search-result">
             <div class="search-results">
