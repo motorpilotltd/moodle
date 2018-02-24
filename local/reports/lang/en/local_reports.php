@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Arup Reports';
 $string['learninghistory'] = 'Learning History';
+$string['daterangelearning'] = 'Date Range Learning';
 $string['noaccess'] = 'You are not allowed to access this page.';
 $string['exportreport'] = 'Export Report';
 $string['csv_export_limit'] = 'Maximum records for CSV export';
@@ -65,10 +66,12 @@ $string['learninghistory:cpd'] = 'CPD';
 $string['learninghistory:lms'] = 'LMS';
 $string['learninghistory:cpdandlms'] = 'CPD and LMS';
 $string['learninghistory:learningdesc'] = 'Description';
+$string['learninghistory:classcategory'] = 'CPD Subject Category';
 $string['learninghistory:bookingplaceddate'] = 'Date Booking Placed';
 $string['learninghistory:classcompletiondate'] = 'Completion Date';
 $string['learninghistory:coursecode'] = 'Course Code';
 $string['learninghistory:coursename'] = 'Course Name';
+$string['learninghistory:courseregion'] = 'Course Region';
 $string['learninghistory:provider'] = 'Provider';
 $string['learninghistory:classtype'] = 'Delivery Mode';
 $string['learninghistory:expirydate'] = 'Certificate Expiry Date';
@@ -100,8 +103,19 @@ $string['learninghistory:leaver_flag_help'] = 'Active Users helptext';
 $string['learninghistory:region_help'] = 'Region Help';
 $string['learninghistory:exclusion_help'] = 'Exclusion Help';
 $string['learninghistory:employee_number_help'] = 'Employee number Help';
-
-
+$string['learninghistory:startdate'] = 'Start date';
+$string['learninghistory:startdate_help'] = 'Start date Help';
+$string['learninghistory:enddate'] = 'End date';
+$string['learninghistory:enddate_help'] = 'End date Help';
+$string['learninghistory:lastupdatedate'] = 'Last update date';
+$string['learninghistory:lastupdatedate_help'] = 'Last update date help';
+$string['learninghistory:bookingstatus_help'] = 'Booking Status help';
+$string['learninghistory:allbookingstatus'] = 'All booking statusus';
+$string['learninghistory:requested'] = 'Requested';
+$string['learninghistory:waitlisted'] = 'Waitlisted';
+$string['learninghistory:placed'] = 'Placed';
+$string['learninghistory:attended'] = 'Attended';
+$string['learninghistory:cancelled'] = 'Cancelled';
 
 $string['elearningstatus'] = 'Elearning Status';
 // Other UI elements

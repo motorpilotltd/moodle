@@ -32,7 +32,7 @@ use renderer_base;
 use html_writer;
 use dml_read_exception;
 
-class learninghistory extends base {
+class daterangelearning extends base {
 
     private $report;
 
@@ -59,7 +59,7 @@ class learninghistory extends base {
 
     public function __construct(\local_reports\report $report) {
         parent::__construct($report);
-        $this->reportname = 'learninghistory';
+        $this->reportname = 'daterangelearning';
         $this->report = $report;
         $this->reportfields();
 
@@ -69,8 +69,10 @@ class learninghistory extends base {
         $this->direction = optional_param('dir', 'ASC', PARAM_TEXT);
         $this->search = optional_param('search', '', PARAM_TEXT);
         $this->action = optional_param('action', '', PARAM_TEXT);
-        $this->exportxlsurl = new moodle_url('/local/reports/export.php', array('page' => 'learninghistory'));
+        $this->visiblesearchfields = 3;
+        $this->exportxlsurl = new moodle_url('/local/reports/export.php', array('page' => 'daterangelearning'));
         $this->showall = false;
+        $this->taps = new \local_taps\taps();
 
         if (!empty($this->action)) {
             $this->action($this->action);
@@ -80,9 +82,10 @@ class learninghistory extends base {
             $this->currentsearchkey = $this->search;
             $this->currentsearch = $this->mystr($this->search);
         }
-        
+
         $this->get_filters();
         $this->set_filter();
+
         // Fix array for usage in mustache.
         foreach ($this->setfilters as $filter) {
             $this->showfilters[] = $filter;
@@ -124,6 +127,8 @@ class learninghistory extends base {
             'geo_region',
             'company_code',
             'centre_code',
+            'lastupdatedate',
+            'classcompletiondate',
             'courseregion');
 
         $this->sortfields = array(
@@ -135,9 +140,13 @@ class learninghistory extends base {
             'classenddate',
             'bookingstatus',
             'coursename',
+            'classcompletiondate',
             'classcategory');
 
         $this->textfilterfields = array(
+            'startdate' => 'date',
+            'enddate' => 'date',
+            'bookingstatus' => 'dropdownmulti',
             'actualregion' => 'dropdown',
             'georegion' => 'dropdown',
             'cpd' => 'dropdown',
@@ -147,7 +156,7 @@ class learninghistory extends base {
             'staffid' => 'int',
             'costcentre' => 'costcentre',
             'groupname' => 'char',
-            'leaver_flag' => 'yn',
+            'leaver_flag' => 'yn'
             );
 
         $this->filtertodb = array(
@@ -162,14 +171,23 @@ class learninghistory extends base {
             'groupname' => 'staff.GROUP_NAME',
             'leaver_flag' => 'staff.LEAVER_FLAG',
             'company_code' => 'staff.COMPANY_CODE',
-            'centre_code' => 'staff.CENTRE_CODE');
+            'centre_code' => 'staff.CENTRE_CODE',
+            'lastupdatedate' => 'lte.lastupdatedate',
+            'classcompletiondate' => 'lte.classcompletiondate',
+            'classenddate' => 'lte.classenddate',
+            'classtype' => 'lte.classtype',
+            'bookingstatus' => 'lte.bookingstatus'
+        );
 
         $this->datefields = array(
             'classstartdate',
             'classenddate',
             'bookingplaceddate',
             'expirydate',
-            'classcompletiondate'
+            'classcompletiondate',
+            'startdate',
+            'lastupdatedate',
+            'enddate'
             );
 
         $this->numericfields = array(
@@ -246,9 +264,35 @@ class learninghistory extends base {
                     continue;
                 }
                 if (in_array($filter->field, $this->datefields)) {
-                    $minoneday = $filtervalue - (60 * 60 * 24);
-                    $plusoneday = $filtervalue + (60 * 60 * 24);
-                    $wherestring = " $filter->field > $minoneday AND $filter->field < $plusoneday ";
+                    
+                    $classcompletiondate = $this->filtertodb['classcompletiondate'];
+                    $classenddate = $this->filtertodb['classenddate'];
+                    $classtype = $this->filtertodb['classtype'];
+
+                    if ($filter->field == 'startdate') {
+                        
+                        $startdate = $filtervalue;
+                        
+                        $end = $this->setfilters['enddate'];
+                        $enddate = $end->value[0];
+                        $wherestring .= "
+                            (
+                                (
+                                    $classtype = 'Scheduled'
+                                    AND
+                                    ($classenddate > $startdate AND $classenddate < $enddate)
+                                ) 
+                                OR
+                                (
+                                    ($classtype = 'Self Paced' OR cpdid > '')
+                                    AND
+                                    ($classcompletiondate > $startdate AND $classcompletiondate < $enddate )
+                                )
+                            )";
+                    } else {
+                        $wherestring .= "1 = 1";
+                    }
+
                 } else if (in_array($filter->field, $this->numericfields)) { 
                     $value = intval($filtervalue);
                     $wherestring .= " $filter->field = $value ";
@@ -256,6 +300,21 @@ class learninghistory extends base {
                     // Looking for NULL or empty.
                     $fieldname = $this->filtertodb[$filter->field];
                     $wherestring .= "({$fieldname} IS NULL OR {$fieldname} = '')";
+                } else if ($filter->field == 'bookingstatus') {
+                    // Bookingstatusus are configured in TAPS
+                    $fieldname = $this->filtertodb[$filter->field];
+                    $statuses = $this->taps->get_statuses($filtervalue);
+                    $fieldnameparam = strtolower(str_replace('.', '', $fieldname));
+                    if (!empty($statuses)) {
+                        list($in, $inparams) = $DB->get_in_or_equal(
+                            $statuses,
+                            SQL_PARAMS_NAMED, 'status'
+                        );
+                        $compare = $DB->sql_compare_text($fieldname);
+                        $wherestring .= "{$compare} {$in}";
+                        $params = array_merge($params, $inparams);
+                    }
+
                 } else {
                     $fieldname = $this->filtertodb[$filter->field];
                     $fieldnameparam = strtolower(str_replace('.', '', $fieldname));
@@ -269,8 +328,9 @@ class learninghistory extends base {
             }
         }
 
-        //echo $wherestring;
-        //$wherestring = '';
+        // echo '<pre>' . $wherestring . '</pre>';
+        // echo '<pre>' . print_r($params, true) . '</pre>';
+        // $wherestring = '';
 
         $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode, ltco.courseregion
                   FROM {local_taps_enrolment} as lte
@@ -466,14 +526,14 @@ class learninghistory extends base {
         $record = array(
             'contextid' =>  $usercontext->id,
             'component' => 'local_reports',
-            'filearea'  => 'learninghistory',
+            'filearea'  => 'daterangelearning',
             'itemid'    => $USER->id,
             'filepath'  => '/',
             'filename'  => $filename
         );
         $fs->create_file_from_pathname($record, $tempfile);
         unlink($tempfile);
-        $returnfile->url = $CFG->wwwroot ."/pluginfile.php/" . $usercontext->id . "/local_reports/learninghistory/" . $USER->id . "/" . $filename;
+        $returnfile->url = $CFG->wwwroot ."/pluginfile.php/" . $usercontext->id . "/local_reports/daterangelearning/" . $USER->id . "/" . $filename;
         return $returnfile;
     }
 
@@ -524,7 +584,6 @@ class learninghistory extends base {
             }
         }
 
-
         if ($key == 'classstartdate') {
             // e-Learning records use bookingplaceddate instead of classstartdate
             if ($row->classtype == 'Self Paced') {
@@ -566,6 +625,14 @@ class learninghistory extends base {
             }
         }
 
+        if ($key == 'classcompletiondate') {
+            // Only display if 'attended' or CPD.
+            if (!empty($row->cpdid) || $this->taps->is_status($row->bookingstatus, ['attended'])) {
+                return $this->myuserdate($row->$key, $row);
+            }
+            return '';
+        }
+
         // Show classcategory for CPD records
         if ($key == 'classcategory') {
             if (!empty($row->cpdid)) {
@@ -585,6 +652,16 @@ class learninghistory extends base {
             $options[''] = $this->mystr('cpdandlms');
             $options['cpd'] = $this->mystr('cpd');
             $options['lms'] = $this->mystr('lms');
+            return $options;
+        }
+
+        if ($field == 'bookingstatus') {
+            $options = array();
+            $options['requested'] = $this->mystr('requested');
+            $options['waitlisted'] = $this->mystr('waitlisted');
+            $options['placed'] = $this->mystr('placed');
+            $options['attended'] = $this->mystr('attended');
+            $options['cancelled'] = $this->mystr('cancelled');
             return $options;
         }
     }

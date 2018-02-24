@@ -31,6 +31,8 @@ use stdClass;
 
 class searchform extends moodleform {
     
+    private $setfilters;
+
     public function definition() {
         global $OUTPUT;
         $data = $this->_customdata;
@@ -38,13 +40,12 @@ class searchform extends moodleform {
         $mform->addElement('hidden', 'page', $data->reportname);
         $mform->setType('page', PARAM_RAW);
         $filters = $data->filteroptions;
+        $this->setfilters = $data->setfilters;
 
-        //echo '<pre>' . print_r($filters, true) . '</pre>';
-
-        $count = 0;
+        $count = -1;
         foreach ($filters as $filter) {
             $count++;
-            if ($count == 2) {
+            if ($count == $data->visiblesearchfields) {
                 $mform->addelement('html', '<div id="extrafields" class="collapse">');
             }
             if ($filter->type == 'yn') {
@@ -57,6 +58,10 @@ class searchform extends moodleform {
             } else if ($filter->type == 'dropdown') {
                 $options = $data->get_dropdown($filter->field);
                 $mform->addElement('select', $filter->field, $filter->name, $options);
+            } else if ($filter->type == 'dropdownmulti') {
+                $options = $data->get_dropdown($filter->field);
+                $mform->addElement('select', $filter->field, $filter->name, $options);
+                $mform->getElement($filter->field)->setMultiple(true);
             } else if ($filter->type == 'autocomplete') {
                 $options = $data->get_dropdown($filter->field);
                 $params = array(                                                      
@@ -65,6 +70,9 @@ class searchform extends moodleform {
                 );   
                 $mform->addElement('autocomplete', $filter->field, $filter->name, $options, $params);
                 $mform->setDefault($filter->field, '');
+            } else if ($filter->type == 'date') {
+                $mform->addElement('date_selector', $filter->field, $filter->name);
+                $this->setfilterdefault($filter);
             } else {
                 $mform->addElement('text', $filter->field, $filter->name);
                 if ($filter->type == 'int') {
@@ -73,7 +81,6 @@ class searchform extends moodleform {
                     $mform->setType($filter->field, PARAM_RAW);
                 }
             }
-            
             $mform->addHelpButton($filter->field, 'learninghistory:' . $filter->field, 'local_reports');
         }
         $mform->addelement('html', '</div>');
@@ -99,5 +106,15 @@ class searchform extends moodleform {
         return $errors;
     }
 
-
+    function setfilterdefault($filter) {
+        $mform = $this->_form;
+        if (isset($this->setfilters[$filter->field])) {
+            $setvalue = $this->setfilters[$filter->field];
+            if (count($setvalue->value) == 1) {
+                $mform->setDefault($filter->field, $setvalue->value[0]);
+                return true;
+            }
+        } 
+        $mform->setDefault($filter->field, '');
+    }
 }
