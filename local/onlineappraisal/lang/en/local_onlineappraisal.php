@@ -1257,6 +1257,7 @@ $string['email:body:myfeedback'] = '<p>Dear {{recipient}},</p>
 $string['feedbackrequests:confidential'] = 'confidential';
 $string['feedbackrequests:nonconfidential'] = 'non confidential';
 $string['feedbackrequests:received:confidential'] = 'Received (confidential)';
+$string['feedbackrequests:received:draft'] = 'In draft';
 $string['feedbackrequests:received:nonconfidential'] = 'Received';
 $string['feedbackrequests:paneltitle:confidential'] = 'Feedback (confidential)';
 $string['feedbackrequests:paneltitle:nonconfidential'] = 'Feedback';

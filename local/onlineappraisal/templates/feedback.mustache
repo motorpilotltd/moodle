@@ -55,7 +55,20 @@
             <td>{{name}}</td>
             <td>{{email}}</td>
             <td>{{date}}</td>
-            <td class="text-center w-1">{{#received}}<i class="fa fa-check {{^confidential}}text-success{{/confidential}}" title="{{#confidential}}{{#str}}feedbackrequests:received:confidential, local_onlineappraisal{{/str}}{{/confidential}}{{^confidential}}{{#str}}feedbackrequests:received:nonconfidential, local_onlineappraisal{{/str}}{{/confidential}}"></i>{{/received}}</td>
+            <td class="text-center w-1">
+                {{#received}}
+                    <i class="fa fa-check {{^confidential}}text-success{{/confidential}}"
+                       data-toggle="tooltip"
+                       title="{{#confidential}}{{#str}}feedbackrequests:received:confidential, local_onlineappraisal{{/str}}{{/confidential}}{{^confidential}}{{#str}}feedbackrequests:received:nonconfidential, local_onlineappraisal{{/str}}{{/confidential}}">
+                    </i>
+                {{/received}}
+                {{#draft}}
+                    <i class="fa fa-pencil-square-o"
+                       data-toggle="tooltip"
+                       title="{{#str}}feedbackrequests:received:draft, local_onlineappraisal{{/str}}">
+                    </i>
+                {{/draft}}
+            </td>
             <td class="w-1">
                 {{#hasactions}}
                     <div class="dropdown">
