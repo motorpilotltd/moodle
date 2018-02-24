@@ -127,6 +127,11 @@ function arupadvert_update_instance($data, $mform) {
                 $datatype->edit_instance($data, $mform);
             } else {
                 // Tidy up any now unused.
+                // Update course's idnumber field
+                if (($course = $DB->get_record('course', array('id' => $data->course))) && $datatype->type == 'taps') {
+                    $course->idnumber = '';
+                    $DB->update_record('course', $course);
+                }
                 $datatype->delete_instance($data->id);
             }
         }
@@ -154,6 +159,12 @@ function arupadvert_delete_instance($id) {
 
     if (!$arupadvert = $DB->get_record('arupadvert', array('id' => $id))) {
         return false;
+    }
+
+    // Update course's idnumber field
+    if ($course = $DB->get_record('course', array('id' => $arupadvert->course))) {
+        $course->idnumber = '';
+        $DB->update_record('course', $course);
     }
 
     $DB->delete_records('arupadvert', array('id' => $arupadvert->id));
