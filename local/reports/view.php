@@ -32,7 +32,13 @@ echo html_writer::tag('h1', get_string('pluginname', 'local_reports'));
 echo html_writer::link(new moodle_url('/local/reports/index.php'),
     get_string('learninghistory', 'local_reports'),
     array('class' => 'btn btn-default m-r-5'));
+
 echo html_writer::link(new moodle_url('/local/reports/index.php', ['page' => 'elearningstatus']),
     get_string('elearningstatus', 'local_reports'),
     array('class' => 'btn btn-default m-r-5'));
+
+echo html_writer::link(new moodle_url('/local/reports/index.php', ['page' => 'daterangelearning']),
+    get_string('daterangelearning', 'local_reports'),
+    array('class' => 'btn btn-default m-r-5'));
+
 echo $OUTPUT->footer();

@@ -122,6 +122,7 @@ class feedback {
                 if (empty($request->received_date)) {
                     $fbuser->incomplete = true;
                     $fbuser->received = false;
+                    $fbuser->draft = !empty($request->feedback) || !empty($request->feedback_2);
                 } else {
                     $fbuser->incomplete = false;
                     $fbuser->received = userdate($request->received_date, get_string('strftimedate'));
@@ -143,7 +144,7 @@ class feedback {
                         array('page' => 'feedback', 'view' => $this->appraisal->appraisal->viewingas,
                             'appraisalid' => $this->appraisal->appraisal->id));
                 }
-                $return[] = $fbuser;
+                $return[$request->id] = $fbuser;
             }
         }
 
@@ -166,7 +167,9 @@ class feedback {
             if ($this->appraisal->appraisal->archived == 0 &&
                 $this->appraisal->appraisal->deleted == 0 &&
                 !empty($this->appraisal->appraisal->held_date) &&
-                $USER->id == $request->requested_by) {
+                $USER->id == $request->requested_by &&
+                empty($request->feedback) &&
+                empty($request->feedback_2)) {
 
                 // Resend the request.
                 $this->feedback_action('editresend', $request->id);

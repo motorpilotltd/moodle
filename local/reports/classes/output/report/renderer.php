@@ -42,4 +42,11 @@ class renderer extends \local_reports\output\renderer {
         return $this->render_from_template('local_reports/elearningstatus', $templatevars);
     }
 
+    public function render_daterangelearning(\local_reports\output\report\daterangelearning $daterangelearning) {
+        // Call the export_for_template function from class daterangelearning.
+        $templatevars = $daterangelearning->export_for_template($this);
+
+        return $this->render_from_template('local_reports/daterangelearning', $templatevars);
+    }
+
 }
