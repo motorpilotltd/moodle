@@ -70,14 +70,13 @@ class export_reports extends \core\task\scheduled_task {
         $csvdata = certification_report::export_to_csv($filters, $filteroptions, $certificationsreport['data'], $certificationsreport['view']);
 
         make_temp_directory('certificationreport/' . $USER->id);
-        $csvfile = $CFG->tempdir . '/certificationreport/' . $USER->id. '/moodle_ticket.csv';
+        $csvfile = $CFG->tempdir . '/certificationreport/' . $USER->id. '/moodle_ticker.csv';
         $csvhandle = fopen($csvfile, 'w+');
         fwrite($csvhandle, $csvdata);
         fclose($csvhandle);
 
         $user = dummy_user::get_dummy_block_certification_report_user('moodle.ticker@arup.com', 'Moodle', 'Ticker');
-        $server = filter_input(INPUT_SERVER, 'SERVER_NAME', FILTER_SANITIZE_URL);
-        email_to_user($user, get_admin(), "[{$server}] Moodle Ticker Report", 'Moodle Ticker Report', '', $csvfile, 'moodle_ticket.csv');
+        email_to_user($user, get_admin(), "[{$CFG->wwwroot}] Moodle Ticker Report", 'Moodle Ticker Report', '', $csvfile, 'moodle_ticket.csv');
 
         unlink($csvfile);
     }
