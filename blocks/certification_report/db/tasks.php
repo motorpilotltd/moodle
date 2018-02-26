@@ -15,17 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Definition of block_certification_report scheduled tasks.
  *
- * @package    block_certification_report
+ * @package   block_certification_report
+ * @category  task
+ * @copyright 2018 Motorpilot Ltd
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2017033104;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2015051104;        // Requires this Moodle version
-$plugin->component = 'block_certification_report'; // Full name of the plugin (used for diagnostics)
-$plugin->dependencies = array(
-    'local_custom_certification' => ANY_VERSION,
-    'local_costcentre' => ANY_VERSION,
-);
+$tasks = [
+    [
+        'classname' => 'block_certification_report\task\export_reports',
+        'blocking' => 0,
+        'minute' => '0',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ],
+];

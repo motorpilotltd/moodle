@@ -104,3 +104,6 @@ $string['resetcertification'] = 'Reset Certification';
 $string['nodata'] = 'There are no certification assignments for the filter options selected.';
 
 $string['modal:close'] = 'Close';
+
+// Tasks.
+$string['taskexportreports'] = 'Export reports';
