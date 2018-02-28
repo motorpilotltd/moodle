@@ -343,7 +343,7 @@ function hvp_upgrade_2017060900() {
 /**
  * Adds new field displaycontent to check if content should be displayed in course page
  */
-function hvp_upgrade_2017083102() {
+function hvp_upgrade_2018012201() {
     global $DB;
     $dbman = $DB->get_manager();
 
@@ -376,7 +376,7 @@ function xmldb_hvp_upgrade($oldversion) {
         2017040500,
         2017050900,
         2017060900,
-        2017083102
+        2018012201,
     ];
 
     foreach ($upgrades as $version) {
