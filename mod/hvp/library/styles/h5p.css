@@ -455,3 +455,6 @@ div.h5p-fullscreen {
 .h5p-dialog-ok-button:active {
   background: #eeffee;
 }
+.hvp .mod-indent-outer {
+  display: block;
+}

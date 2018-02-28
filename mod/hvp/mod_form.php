@@ -44,6 +44,8 @@ class mod_hvp_mod_form extends moodleform_mod {
         } else {
             $this->add_intro_editor(false, get_string('intro', 'hvp'));
         }
+        // Display content to course page.
+        $mform->addElement('checkbox', 'displaycontent', get_string('displayoncoursepage', 'hvp'));
 
         // Action.
         $h5paction = array();
@@ -316,6 +318,9 @@ class mod_hvp_mod_form extends moodleform_mod {
 
     public function get_data() {
         $data = parent::get_data();
+        if (isset($data->submitbutton2) && empty($data->displaycontent)) {
+            $data->displaycontent = 0;
+        }
         if (!$data) {
             return false;
         }

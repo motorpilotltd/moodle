@@ -341,6 +341,24 @@ function hvp_upgrade_2017060900() {
 }
 
 /**
+ * Adds new field displaycontent to check if content should be displayed in course page
+ */
+function hvp_upgrade_2017083102() {
+    global $DB;
+    $dbman = $DB->get_manager();
+
+    $table = new xmldb_table('hvp');
+
+    // Define field displaycontent to be added to hvp.
+    $displaycontent = new xmldb_field('displaycontent', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+
+    // Add field display_content if not defined already.
+    if (!$dbman->field_exists($table, $displaycontent)) {
+        $dbman->add_field($table, $displaycontent);
+    }
+}
+
+/**
  * Hvp module upgrade function.
  *
  * @param string $oldversion The version we are upgrading from
@@ -358,6 +376,7 @@ function xmldb_hvp_upgrade($oldversion) {
         2017040500,
         2017050900,
         2017060900,
+        2017083102
     ];
 
     foreach ($upgrades as $version) {
