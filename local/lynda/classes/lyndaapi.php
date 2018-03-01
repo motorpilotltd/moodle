@@ -253,10 +253,11 @@ class lyndaapi {
                 $datetime = \DateTime::createFromFormat('m/d/Y H:i:s', $raw->CompleteDate, $tz);
                 $timestamp = $datetime->getTimestamp();
 
-                $classnamecompare = $DB->sql_compare_text('classname');
+                $classnamecompare = $DB->sql_compare_text('classname', 64);
+                $classnamevaluecompare = $DB->sql_compare_text(':classname', 64);
                 $providercompare = $DB->sql_compare_text('provider');
                 $sql =
-                        "SELECT * FROM {local_taps_enrolment} WHERE staffid = :staffid AND $classnamecompare = :classname AND $providercompare = :providername";
+                        "SELECT * FROM {local_taps_enrolment} WHERE staffid = :staffid AND $classnamecompare = $classnamevaluecompare AND $providercompare = :providername";
                 if ($DB->record_exists_sql($sql,
                         ['staffid' => $user->idnumber, 'classname' => $raw->CourseName, 'providername' => 'Lynda.com'])
                 ) {
