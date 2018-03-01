@@ -33,7 +33,7 @@ $functions = array(
                 'description'   => 'Simulate the view.php web interface kalvidres: trigger events, completion, etc...',
                 'type'          => 'write',
                 'capabilities'  => 'mod/kalvidres:view',
-                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile')
         ),
 
         'mod_kalvidres_get_kalvidres_by_courses' => array(
@@ -43,7 +43,7 @@ $functions = array(
                             can view will be returned.',
                 'type'          => 'read',
                 'capabilities'  => 'mod/kalvidres:view',
-                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
+                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile'),
         ),
 
         'mod_kalvidres_get_ks' => array(
@@ -52,6 +52,6 @@ $functions = array(
                 'description'   => 'Returns a ks string to instantiate a Kaltura client.',
                 'type'          => 'read',
                 'capabilities'  => 'mod/kalvidres:view',
-                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE),
+                'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE, 'local_mobile'),
         ),
 );
