@@ -249,9 +249,9 @@ EOJ;
 
         if ($arupadverttapsinstalled) {
             $rankingjoins['rank_local_taps_class'] =
-                    "LEFT JOIN FREETEXTTABLE({local_taps_class}, *, '$query') AS rank_local_taps_class ON rank_local_taps_class.[KEY] = c.id";
+                    "LEFT JOIN FREETEXTTABLE({local_taps_class}, *, '$query') AS rank_local_taps_class ON rank_local_taps_class.[KEY] = ltcc.id";
             $rankingjoins['rank_local_taps_course'] =
-                    "LEFT JOIN FREETEXTTABLE({local_taps_course}, *, '$query') AS rank_local_taps_course ON rank_local_taps_course.[KEY] = c.id";
+                    "LEFT JOIN FREETEXTTABLE({local_taps_course}, *, '$query') AS rank_local_taps_course ON rank_local_taps_course.[KEY] = ltc.id";
         }
         $rankingjoin = implode("\n", array_values($rankingjoins));
 
