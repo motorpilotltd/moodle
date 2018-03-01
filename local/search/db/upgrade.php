@@ -29,5 +29,15 @@ function xmldb_local_search_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2015111601, 'local', 'search');
     }
 
+    if ($oldversion < 2015111602) {
+        $DB->execute('ALTER FULLTEXT INDEX ON {local_taps_course} ADD ([coursedescription])');
+        $DB->execute('ALTER FULLTEXT INDEX ON {local_taps_course} ADD ([courseobjectives])');
+        $DB->execute('ALTER FULLTEXT INDEX ON {arupadvertdatatype_custom} ADD ([objectives])');
+        $DB->execute('ALTER FULLTEXT INDEX ON {arupadvertdatatype_custom} ADD ([description])');
+
+        // Main savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111602, 'local', 'search');
+    }
+
     return true;
 }
