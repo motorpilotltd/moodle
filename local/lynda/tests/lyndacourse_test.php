@@ -112,7 +112,11 @@ class lyndacourse_test extends advanced_testcase {
         $api = new \local_lynda\lyndaapimock();
         $api->synccourses();
 
-        $api->synccoursecompletion(time(), time());
+        $this->assertEmpty(get_config('local_lynda', 'lastruntimecompletion_' . 3));
+
+        $api->synccoursecompletion();
+
+        $this->assertLessThanOrEqual(time(), get_config('local_lynda', 'lastruntimecompletion_' . 3));
 
         $cpdrecords = $DB->get_records('local_taps_enrolment');
         $this->assertEquals(6, count($cpdrecords));
@@ -120,7 +124,7 @@ class lyndacourse_test extends advanced_testcase {
         $record1 = reset($cpdrecords);
         $this->assertEquals('Navisworks Essential Training', $record1->classname);
         $this->assertEquals('Lynda.com', $record1->provider);
-        $this->assertEquals('1466575404', $record1->classcompletiontime);
+        $this->assertEquals('1466600604', $record1->classcompletiontime);
         $this->assertEquals('172.62', $record1->duration);
         $this->assertEquals('Minute(s)', $record1->durationunits);
         $this->assertEquals('External Course Online', $record1->classtype);
@@ -129,7 +133,7 @@ class lyndacourse_test extends advanced_testcase {
         $this->assertEquals(180212, $record1->providerid);
         $this->assertEquals('padded0', $record1->staffid);
 
-        $api->synccoursecompletion(time(), time());
+        $api->synccoursecompletion();
         $cpdrecords = $DB->get_records('local_taps_enrolment');
         $this->assertEquals(6, count($cpdrecords));
     }
@@ -160,7 +164,11 @@ class lyndacourse_test extends advanced_testcase {
         $api = new \local_lynda\lyndaapimock();
         $api->synccourses();
 
-        $api->synccourseprogress(time(), time());
+        $this->assertEmpty(get_config('local_lynda', 'lastruntimeprogress_' . 3));
+
+        $api->synccourseprogress();
+
+        $this->assertLessThanOrEqual(time(), get_config('local_lynda', 'lastruntimeprogress_' . 3));
 
         $progressrecords = \local_lynda\lyndacourseprogress::fetch_all([]);
         $this->assertEquals(6, count($progressrecords));
@@ -168,12 +176,12 @@ class lyndacourse_test extends advanced_testcase {
         $record1 = reset($progressrecords);
         $this->assertEquals('100 Courses and Counting: David Rivers on Elearning', $record1->lyndacourse->title);
         $this->assertEquals(25, $record1->percentcomplete);
-        $this->assertEquals('1515409077', $record1->lastviewed);
+        $this->assertEquals('1515437877', $record1->lastviewed);
         $user = core_user::get_user($record1->userid);
         $this->assertEquals('padded0', $user->idnumber);
 
         $api->useupdatedindividualusagedetailresponse();
-        $api->synccourseprogress(time(), time());
+        $api->synccourseprogress();
 
         $progressrecords = \local_lynda\lyndacourseprogress::fetch_all([]);
         $this->assertEquals(6, count($progressrecords));
@@ -181,7 +189,7 @@ class lyndacourse_test extends advanced_testcase {
         $record1 = reset($progressrecords);
         $this->assertEquals('100 Courses and Counting: David Rivers on Elearning', $record1->lyndacourse->title);
         $this->assertEquals(75, $record1->percentcomplete);
-        $this->assertEquals('1515409077', $record1->lastviewed);
+        $this->assertEquals('1515437877', $record1->lastviewed);
         $user = core_user::get_user($record1->userid);
         $this->assertEquals('padded0', $user->idnumber);
     }
@@ -192,7 +200,7 @@ class lyndacourse_test extends advanced_testcase {
         $api->synccourses();
 
         $api->mockregions = true;
-        $api->synccourseprogress(time(), time());
+        $api->synccourseprogress();
 
         $progressrecords = \local_lynda\lyndacourseprogress::fetch_all([]);
         $this->assertEquals(12, count($progressrecords));
@@ -207,7 +215,7 @@ class lyndacourse_test extends advanced_testcase {
     public function test_synccourseprogresswithoutcourses() {
         require_once('fixtures/lyndaapimock.php');
         $api = new \local_lynda\lyndaapimock();
-        $api->synccourseprogress(time(), time());
+        $api->synccourseprogress();
 
         $progressrecords = \local_lynda\lyndacourseprogress::fetch_all([]);
         $this->assertEquals(6, count($progressrecords));

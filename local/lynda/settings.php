@@ -47,7 +47,24 @@ if ($hassiteconfig) {
     );
 
     foreach ($regions as $id => $name) {
-        $settings->add(new admin_setting_heading('heading_' . $id, $name, ''));
+        $lastruntimecompletion = get_config('local_lynda', 'lastruntimecompletion_' . $id);
+        if (empty($lastruntimecompletion)) {
+            $lastruntimecompletion = get_string('never');
+        } else {
+            $lastruntimecompletion = userdate($lastruntimecompletion);
+        }
+        $lastruntimeprogress = get_config('local_lynda', 'lastruntimeprogress_' . $id);
+        if (empty($lastruntimeprogress)) {
+            $lastruntimeprogress = get_string('never');
+        } else {
+            $lastruntimeprogress = userdate($lastruntimeprogress);
+        }
+
+        $intro = '';
+        $intro .= html_writer::tag('p', get_string('setting:lastruntimeprogress', 'local_lynda') . $lastruntimeprogress);
+        $intro .= html_writer::tag('p', get_string('setting:lastruntimecompletion', 'local_lynda') . $lastruntimecompletion);
+
+        $settings->add(new admin_setting_heading('heading_' . $id, $name, $intro));
 
         $name = 'local_lynda/appkey_' . $id;
         $title = get_string('setting:appkey','local_lynda');

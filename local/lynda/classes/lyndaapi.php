@@ -177,22 +177,26 @@ class lyndaapi {
      * Runs from 00:00:00 on start date to 23:59:59 on enddate.
      * Is idempotent so can be run multiple times over the same date range.
      *
-     * @param $lastruntime
-     * @param $thisruntime
      */
-    public function synccourseprogress($lastruntime, $thisruntime) {
+    public function synccourseprogress() {
         global $DB;
         $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true]);
+        $thisruntime = time();
 
         foreach ($regions as $id => $name) {
+            $lastruntimeprogress = get_config('local_lynda', 'lastruntimeprogress_' . $id);
+            if (empty($lastruntimeprogress)) {
+                $lastruntimeprogress = 0;
+            }
+
             if (!$this->setregion($id)) {
                 mtrace('No keys for ' . $name);
                 continue;
             }
             mtrace('Started synccourseprogress for ' . $name);
 
-            $tz = new \DateTimeZone('UTC');
-            foreach ($this->getcourseprogressiterator($lastruntime, $thisruntime) as $raw) {
+            $tz = new \DateTimeZone('America/Los_Angeles');
+            foreach ($this->getcourseprogressiterator($lastruntimeprogress, $thisruntime) as $raw) {
                 $datetime = \DateTime::createFromFormat('m/d/Y H:i:s', $raw->LastViewed, $tz);
                 $timestamp = $datetime->getTimestamp();
 
@@ -216,6 +220,9 @@ class lyndaapi {
                     $progressrecord->insert();
                 }
             }
+
+            set_config('lastruntimeprogress_' . $id, $thisruntime, 'local_lynda');
+
             mtrace('Finished synccourseprogress for ' . $name);
         }
     }
@@ -227,11 +234,10 @@ class lyndaapi {
      * @param $lastruntime
      * @param $thisruntime
      */
-    public function synccoursecompletion($lastruntime, $thisruntime) {
-        global $DB;
-
+    public function synccoursecompletion() {
         global $DB;
         $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true]);
+        $thisruntime = time();
 
         foreach ($regions as $id => $name) {
             if (!$this->setregion($id)) {
@@ -240,10 +246,15 @@ class lyndaapi {
             }
             mtrace('Started synccourseprogress for ' . $name);
 
-            $tz = new \DateTimeZone('UTC');
+            $tz = new \DateTimeZone('America/Los_Angeles');
             $taps = new \local_taps\taps();
 
-            foreach ($this->getcoursecompletioniterator($lastruntime, $thisruntime) as $raw) {
+            $lastruntimecompletion = get_config('local_lynda', 'lastruntimecompletion_' . $id);
+            if (empty($lastruntimecompletion)) {
+                $lastruntimecompletion = 0;
+            }
+
+            foreach ($this->getcoursecompletioniterator($lastruntimecompletion, $thisruntime) as $raw) {
                 $user = self::getcacheduser($raw->Username);
                 if ($user == null) {
                     mtrace('Unable to find user account for ' . $raw->Username);
@@ -283,6 +294,9 @@ class lyndaapi {
                 );
                 mtrace('Created CPD record for ' . $raw->Username);
             }
+
+            set_config('lastruntimecompletion_' . $id, $thisruntime, 'local_lynda');
+
             mtrace('Finished synccourseprogress for ' . $name);
         }
     }

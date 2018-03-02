@@ -51,8 +51,8 @@ class sync_lynda_data extends \core\task\scheduled_task {
         }
 
         $thisruntime = time();
-        $api->synccoursecompletion($this->get_last_run_time(), $thisruntime);
-        $api->synccourseprogress($this->get_last_run_time(), $thisruntime);
+        $api->synccoursecompletion();
+        $api->synccourseprogress();
         $this->set_last_run_time($thisruntime);
     }
 }
