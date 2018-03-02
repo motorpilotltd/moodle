@@ -19,6 +19,8 @@ class dynamic_cohorts
     const CRITERIA_TYPE_IS_NOT_CHECKED = 8;
     const CRITERIA_TYPE_IS_AFTER = 9;
     const CRITERIA_TYPE_IS_BEFORE = 10;
+    const CRITERIA_TYPE_IS_MEMBER = 11;
+    const CRITERIA_TYPE_IS_NOT_MEMBER = 12;
 
     const OPERATOR_AND = 1;    
     const OPERATOR_OR = 0;
@@ -26,7 +28,8 @@ class dynamic_cohorts
     const FIELD_TYPE_USER = 1;
     const FIELD_TYPE_CUSTOM = 2;
     const FIELD_TYPE_HUB = 3;
-    
+    const FIELD_TYPE_COHORT = 4;
+
     /**
      * Get cohort types
      *
@@ -96,7 +99,18 @@ class dynamic_cohorts
             $cohort->operator = 1;
             $cohort->rulesets = [];
         }
-        $cohort->roles = $DB->get_records_menu('wa_cohort_roles', ['cohortid' => $cohort->id], '', 'roleid');
+
+        $query = "
+            SELECT    
+              wcr.id, 
+              wcr.roleid,
+              wcr.contextid
+            FROM {wa_cohort_roles} wcr
+            WHERE wcr.cohortid = :cohortid
+        ";
+
+        $cohort->roles = $DB->get_records_sql($query, ['cohortid' => $cohort->id]);
+
         return $cohort;
     }
 
@@ -153,14 +167,22 @@ class dynamic_cohorts
                             $rule = new \stdClass();
                             $rule->cohortid = $data->id;
                             $rule->rulesetid = $ruleset->id;
-                            if (preg_match('/^custom_/is', $field)) {
-                                $rule->fieldtype = self::FIELD_TYPE_CUSTOM;
-                            } else if (preg_match('/^hub_/is', $field)) {
-                                $rule->fieldtype = self::FIELD_TYPE_HUB;
-                            } else {
-                                $rule->fieldtype = self::FIELD_TYPE_USER;
+
+                            switch ($field){
+                                case 'cohort':
+                                    $rule->fieldtype = self::FIELD_TYPE_COHORT;
+                                    break;
+                                case (preg_match('/^custom_/is', $field) ? true : false) :
+                                    $rule->fieldtype = self::FIELD_TYPE_CUSTOM;
+                                    break;
+                                case (preg_match('/^hub_/is', $field) ? true : false) :
+                                    $rule->fieldtype = self::FIELD_TYPE_HUB;
+                                    break;
+                                default:
+                                    $rule->fieldtype = self::FIELD_TYPE_USER;
+                                    break;
                             }
-                            $rule->field = preg_replace('/^(custom|user|hub)_/is', '', $field);
+                            $rule->field = preg_replace('/^(custom_|user_)/is', '', $field);
                             $rule->criteriatype = $data->rulesetrules['criteriatype'][$rulesetid][$rulecounter];
                             /**
                              * If rule criteria type is date or datetime change date to timestamp
@@ -217,24 +239,17 @@ class dynamic_cohorts
                 $DB->delete_records('cohort_members', array('cohortid'=>$data->id));
             }
         }
-        
+
         /**
          * Add roles
          */
-        $roles = $DB->get_records('wa_cohort_roles', ['cohortid' => $data->id]);
-        $rolesids = [];
-        foreach ($roles as $role) {
-            if (!isset($data->systemrolesgroup[$role->roleid]) || $data->systemrolesgroup[$role->roleid] == 0) {
-                $DB->delete_records('wa_cohort_roles', ['id' => $role->id]);
-            } else {
-                $rolesids[] = $role->roleid;
-            }
-        }
-        foreach ($data->systemrolesgroup as $roleid => $checked) {
-            if ($checked == 1 && !in_array($roleid, $rolesids)) {
+        $DB->delete_records('wa_cohort_roles', ['cohortid' => $data->id]);
+        if(isset($data->roles) && is_array($data->roles)){
+            foreach ($data->roles as $role) {
                 $record = new \stdClass();
                 $record->cohortid = $data->id;
-                $record->roleid = $roleid;
+                $record->roleid = $role['roleid'];
+                $record->contextid = $role['contextid'];
                 $record->timecreated = time();
                 $DB->insert_record('wa_cohort_roles', $record);
             }
@@ -388,14 +403,13 @@ class dynamic_cohorts
         return $hubfields;
     }
 
-
     /**
      * Get all rule fields
      * @return array
      */
     public static function get_rule_fields()
     {
-        return self::get_user_fields() + self::get_user_custom_fields() + self::get_user_hub_fields();
+        return self::get_user_fields() + self::get_user_custom_fields() + self::get_user_hub_fields() + ['cohort' => get_string('cohort', 'local_dynamic_cohorts')];
     }
 
     /**
@@ -422,13 +436,21 @@ class dynamic_cohorts
             ];
         }
         if($fieldtype == 'all' || $fieldtype == ''){
-            $criteriatypes += [self::CRITERIA_TYPE_CONTAIN => get_string('contains', 'filters'),
+            $criteriatypes += [
+                self::CRITERIA_TYPE_CONTAIN => get_string('contains', 'filters'),
                 self::CRITERIA_TYPE_DOES_NOT_CONTAIN => get_string('doesnotcontain', 'filters'),
                 self::CRITERIA_TYPE_IS_EQUAL_TO => get_string('isequalto', 'filters'),
                 self::CRITERIA_TYPE_STARTS_WITH => get_string('startswith', 'filters'),
                 self::CRITERIA_TYPE_ENDS_WITH => get_string('endswith', 'filters'),
                 self::CRITERIA_TYPE_IS_EMPTY => get_string('isempty', 'filters'),
                 self::CRITERIA_TYPE_IS_NOT_EQUAL_TO => get_string('isnotequalto', 'filters')
+            ];
+        }
+
+        if($fieldtype == 'all' || $fieldtype == 'cohort'){
+            $criteriatypes += [
+                self::CRITERIA_TYPE_IS_MEMBER => get_string('ismember', 'local_dynamic_cohorts'),
+                self::CRITERIA_TYPE_IS_NOT_MEMBER => get_string('isnotmember', 'local_dynamic_cohorts')
             ];
         }
 
@@ -443,7 +465,9 @@ class dynamic_cohorts
      */
     public static function get_field_type($field){
         global $DB;
-        if(empty($field) || preg_match('/^(user|hub)_/is', $field)){
+        if($field == 'cohort'){
+            return 'cohort';
+        }elseif(empty($field) || preg_match('/^(user|hub)_/is', $field)){
             return 'text';
         }else{
             $infofield = $DB->get_record('user_info_field', ['shortname' => str_replace('custom_', '', $field)]);
@@ -469,25 +493,240 @@ class dynamic_cohorts
      * @param $field
      * @return array
      */
-    public static function get_criteria_types_by_field_type($field){
-        if(empty($field)){
-            return \local_dynamic_cohorts\dynamic_cohorts::get_criteria_types();
+    public static function get_criteria_types_by_field_type($field)
+    {
+        switch (self::get_field_type($field)) {
+            case 'cohort':
+                return \local_dynamic_cohorts\dynamic_cohorts::get_criteria_types('cohort');
+            case 'checkbox':
+                return \local_dynamic_cohorts\dynamic_cohorts::get_criteria_types('checkbox');
+                break;
+            case 'datetime':
+            case 'date':
+                return \local_dynamic_cohorts\dynamic_cohorts::get_criteria_types('datetime');
+                break;
+            default:
+                return \local_dynamic_cohorts\dynamic_cohorts::get_criteria_types();
+                break;
         }
-        if(preg_match('/^(user|hub)_/is', $field) ){
-            return \local_dynamic_cohorts\dynamic_cohorts::get_criteria_types();
-        }else{
-            switch (self::get_field_type($field)){
-                case 'checkbox':
-                    return \local_dynamic_cohorts\dynamic_cohorts::get_criteria_types('checkbox');
-                    break;
-                case 'datetime':
-                case 'date':
-                    return \local_dynamic_cohorts\dynamic_cohorts::get_criteria_types('datetime');
-                    break;
-                default:
-                    return \local_dynamic_cohorts\dynamic_cohorts::get_criteria_types();
-                    break;
+    }
+
+    /**
+     * Get field type prefix:
+     * - custom - user custom fields
+     * - user - user profile field
+     * - empty means other (i.e. cohort)
+     *
+     * @param $fieldtype
+     * @return string
+     */
+    public static function get_fieldtype_prefix($fieldtype){
+        switch($fieldtype){
+            case dynamic_cohorts::FIELD_TYPE_CUSTOM:
+                return 'custom_';
+            case dynamic_cohorts::FIELD_TYPE_USER:
+                return 'user_';
+            case dynamic_cohorts::FIELD_TYPE_HUB:
+                return 'hub_';
+            default:
+                return '';
+        }
+    }
+
+    /**
+     * Get list of cohorts
+     *
+     * @param $where - SQL where condition
+     * @return array
+     * @throws \dml_exception
+     */
+    public static function get_cohorts($where){
+        global $DB;
+        return $DB->get_records_select_menu('cohort', $where, null, 'name', 'id, name');
+    }
+
+    /**
+     * Export cohort members
+     *
+     * @param $cohortid
+     * @param $type - csv
+     * @return string
+     * @throws \coding_exception
+     */
+    public static function export_members($cohortid, $type){
+        raise_memory_limit(MEMORY_HUGE);
+        $members = self::get_members($cohortid, [], 0);
+        $fields = [
+                'idnumber' => get_string('staffid', 'local_dynamic_cohorts'),
+                'firstname' => get_string('firstname', 'local_dynamic_cohorts'),
+                'lastname' => get_string('lastname', 'local_dynamic_cohorts'),
+                'email' => get_string('email', 'local_dynamic_cohorts'),
+                'icq' => get_string('icq', 'local_dynamic_cohorts'),
+                'department' => get_string('department', 'local_dynamic_cohorts'),
+                'city' => get_string('city', 'local_dynamic_cohorts'),
+                'address' => get_string('address', 'local_dynamic_cohorts')
+            ];
+        $data = [array_values($fields)];
+        foreach($members as $member){
+            $record = [];
+            foreach($fields as $field => $fieldname){
+                $record[] = $member->$field;
+            }
+            $data[] = $record;
+        }
+        switch ($type){
+            case 'csv':
+                return self::print_csv($data);
+                break;
+        }
+
+    }
+
+    /**
+     * Print CSV
+     *
+     * @param $records
+     * @param string $delimiter
+     * @param string $enclosure
+     * @return string
+     */
+    public static function print_csv($records, $delimiter = 'comma', $enclosure = '"') {
+        global $CFG;
+        require_once($CFG->libdir . '/csvlib.class.php');
+        
+        $csvdata = new \csv_export_writer($delimiter, $enclosure);
+        foreach ($records as $row) {
+            $csvdata->add_data($row);
+        }
+        $data = $csvdata->print_csv_data(true);
+        return $data;
+    }
+
+    /**
+     * Get roles assignable for given context ID
+     *
+     * @param $contextid
+     * @return array
+     * @throws \coding_exception
+     */
+    public static function get_roles($contextid){
+        return get_assignable_roles(\context::instance_by_id($contextid), ROLENAME_BOTH);
+    }
+
+    /**
+     * Get role name
+     *
+     * @param $roleid
+     * @return string
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function get_role_name($roleid){
+        global $DB;
+        $role = $DB->get_record('role', ['id' => $roleid]);
+        return role_get_name($role);
+    }
+
+    /**
+     * Get context name
+     *
+     * @param $contextid
+     * @return string
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function get_context_name($contextid){
+        global $DB;
+        $query = "
+            SELECT 
+              CASE ctx.contextlevel WHEN :contextsystem THEN :systemcontextname ELSE cc.name END as contextname
+            FROM {context} ctx
+            LEFT JOIN {course_categories} cc ON cc.id=ctx.instanceid
+            WHERE ctx.id = :contextid
+        ";
+
+        $context = $DB->get_record_sql($query, ['contextid' => $contextid, 'contextsystem' => CONTEXT_SYSTEM, 'systemcontextname' => get_string('system_context', 'local_dynamic_cohorts')]);
+
+        return ($context ? $context->contextname : '');
+    }
+
+    /**
+     * Get context list (system and all categories)
+     *
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function get_context_list(){
+        global $DB, $CFG;
+        require_once($CFG->libdir . '/coursecatlib.php');
+        $contexts = [1 => get_string('system_context', 'local_dynamic_cohorts')] ;
+        $categories = \coursecat::make_categories_list();
+        list($sql, $params) = $DB->get_in_or_equal(array_keys($categories), SQL_PARAMS_NAMED, 'param', true, true);
+
+        $query = "
+            SELECT 
+              c.instanceid,
+              c.id
+            FROM {context} c
+            WHERE c.contextlevel = :contextlevel
+            AND c.instanceid ".$sql."
+        ";
+
+        $params['contextlevel'] = CONTEXT_COURSECAT;
+
+        $categoriescontext = $DB->get_records_sql($query, $params);
+        foreach($categories as $categoryid => $category){
+            $contexts[$categoriescontext[$categoryid]->id] = $category;
+        }
+        return $contexts;
+    }
+
+    /**
+     * Get list of contexts that I can view the cohorts in
+     *
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function get_viewable_context_list(){
+        $contexts = self::get_context_list();
+        $cohortlist = [];
+        foreach($contexts as $contextid => $context){
+            $instance = \context::instance_by_id($contextid);
+            if(has_any_capability(array('local/dynamic_cohorts:view', 'local/dynamic_cohorts:edit'), $instance)){
+                $cohortlist[] = $contextid;
             }
         }
+        return $cohortlist;
+    }
+
+    /**
+     * Get list of contexts that I can edit the cohorts in
+     *
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function get_editable_context_list(){
+        $contexts = self::get_context_list();
+        $cohortlist = [];
+        foreach($contexts as $contextid => $context){
+            $instance = \context::instance_by_id($contextid);
+            if(has_any_capability(array('local/dynamic_cohorts:edit'), $instance)){
+                $cohortlist[] = $contextid;
+            }
+        }
+        return $cohortlist;
+    }
+
+    /**
+     * Get cohort record
+     *
+     * @param $id
+     */
+    public static function get_cohort($id){
+        global $DB;
+        return $DB->get_record('cohort', ['id' => $id]);
     }
 }

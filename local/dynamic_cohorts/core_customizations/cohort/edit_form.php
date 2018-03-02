@@ -38,24 +38,30 @@ class cohort_edit_form extends moodleform
         $editoroptions = $this->_customdata['editoroptions'];
         $cohort = $this->_customdata['data'];
         $cohorttypes = $this->_customdata['cohorttypes'];
-        $roles = $this->_customdata['roles'];
+        $viewonly = $this->_customdata['viewonly'];
         $renderer = $this->_customdata['renderer'];
+        $rolerenderer = $this->_customdata['rolerenderer'];
+
+        $disabled = '';
+        if($viewonly){
+            $disabled = 'disabled="disabled"';
+        }
 
         $mform->addElement('html', get_string('cohort:heading', 'local_dynamic_cohorts'));
-        $mform->addElement('text', 'name', get_string('name', 'cohort'), 'maxlength="254" size="50"');
+        $mform->addElement('text', 'name', get_string('name', 'cohort'), 'maxlength="254" size="50" '.$disabled);
         $mform->addRule('name', get_string('required'), 'required', null, 'client');
         $mform->setType('name', PARAM_TEXT);
 
         $options = $this->get_category_options($cohort->contextid);
-        $mform->addElement('select', 'contextid', get_string('context', 'role'), $options);
+        $mform->addElement('select', 'contextid', get_string('context', 'role'), $options, $disabled);
 
-        $mform->addElement('text', 'idnumber', get_string('idnumber', 'cohort'), 'maxlength="254" size="50"');
+        $mform->addElement('text', 'idnumber', get_string('idnumber', 'cohort'), 'maxlength="254" size="50" '.$disabled);
         $mform->setType('idnumber', PARAM_RAW); // Idnumbers are plain text, must not be changed.
 
-        $mform->addElement('select', 'type', get_string('cohorttypes', 'local_dynamic_cohorts'), $cohorttypes);
+        $mform->addElement('select', 'type', get_string('cohorttypes', 'local_dynamic_cohorts'), $cohorttypes, $disabled);
         $mform->setDefault('type', $cohort->type);
 
-        $mform->addElement('advcheckbox', 'visible', get_string('visible', 'cohort'));
+        $mform->addElement('advcheckbox', 'visible', get_string('visible', 'cohort'), '', $disabled);
         $mform->setDefault('visible', 1);
         $mform->addHelpButton('visible', 'visible', 'cohort');
 
@@ -69,41 +75,42 @@ class cohort_edit_form extends moodleform
         $mform->addElement('html', html_writer::start_div('dynamic-cohort-rules', $attr));
         $mform->addElement('html', get_string('cohortrules:heading', 'local_dynamic_cohorts'));
 
-        $generalrules[] = $mform->createElement('advcheckbox', 'adduser', null, get_string('addusercheckboxlabel', 'local_dynamic_cohorts'), null, [0, 1]);
-        $generalrules[] = $mform->createElement('advcheckbox', 'removeuser', null, get_string('removeusercheckboxlabel', 'local_dynamic_cohorts'), null, [0, 1]);
+        $generalrules[] = $mform->createElement('advcheckbox', 'adduser', null, get_string('addusercheckboxlabel', 'local_dynamic_cohorts'), $disabled, [0, 1]);
+        $generalrules[] = $mform->createElement('advcheckbox', 'removeuser', null, get_string('removeusercheckboxlabel', 'local_dynamic_cohorts'), $disabled, [0, 1]);
         $mform->addGroup($generalrules, null, get_string('membersupdatelabel', 'local_dynamic_cohorts'), '<br />');
 
         $mform->setDefault('adduser', $cohort->memberadd);
         $mform->setDefault('removeuser', $cohort->memberremove);
 
-        $operatorsbetweenrulesets[] = $mform->createElement('radio', 'rulesetsoperator', '', get_string('rulesetandoperator', 'local_dynamic_cohorts'), 1);
-        $operatorsbetweenrulesets[] = $mform->createElement('radio', 'rulesetsoperator', '', get_string('rulesetoroperator', 'local_dynamic_cohorts'), 0);
+        $operatorsbetweenrulesets[] = $mform->createElement('radio', 'rulesetsoperator', '', get_string('rulesetandoperator', 'local_dynamic_cohorts'), 1, $disabled);
+        $operatorsbetweenrulesets[] = $mform->createElement('radio', 'rulesetsoperator', '', get_string('rulesetoroperator', 'local_dynamic_cohorts'), 0, $disabled);
         $mform->addGroup($operatorsbetweenrulesets, null, get_string('rulesetsoperatorgroup', 'local_dynamic_cohorts'), '<br />');
         $mform->setDefault('rulesetsoperator', $cohort->operator);
 
         $mform->addElement('html', \html_writer::start_div('', ['id' => 'rulesetscontainer']));
 
         foreach($cohort->rulesets as $counter => $ruleset){
-            $mform->addElement('html' , $renderer->display_ruleset($ruleset->id, ++$counter, $ruleset->operator, $ruleset->rules));
+            $mform->addElement('html' , $renderer->display_ruleset($ruleset->id, ++$counter, $ruleset->operator, $ruleset->rules, $viewonly));
         }
 
         $mform->addElement('html', \html_writer::end_div());
-
-        $mform->addElement('button', 'addruleset', get_string('addrulesetbtn', 'local_dynamic_cohorts'));
+        if(!$viewonly){
+            $mform->addElement('button', 'addruleset', get_string('addrulesetbtn', 'local_dynamic_cohorts'));
+        }
 
         $mform->addElement('html', html_writer::end_div());
 
         $mform->addElement('html', get_string('cohortroles:heading', 'local_dynamic_cohorts'));
-        $mform->addElement('html', get_string('cohortroles:instructions', 'local_dynamic_cohorts'));
-        foreach ($roles as $roleid => $rolename) {
-            $systemroles[] = $mform->createElement('advcheckbox', $roleid, null, $rolename, null, array(0, 1));
+        
+        $mform->addElement('html', \html_writer::start_div('', ['id' => 'rolescontainer']));
 
+        $mform->addElement('html' , $rolerenderer->display_roles($cohort->roles, $viewonly));
+        
+        $mform->addElement('html', \html_writer::end_div());
+        if(!$viewonly){
+            $mform->addElement('html', $rolerenderer->display_role_form());
         }
 
-        $mform->addGroup($systemroles, 'systemrolesgroup', get_string('systemrolesgrouplabel', 'local_dynamic_cohorts'), '<br />');
-        foreach($cohort->roles as $roleid => $tmp){
-            $mform->setDefault('systemrolesgroup['.$roleid.']', 1);
-        }
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
 
@@ -111,8 +118,9 @@ class cohort_edit_form extends moodleform
             $mform->addElement('hidden', 'returnurl', $this->_customdata['returnurl']->out_as_local_url());
             $mform->setType('returnurl', PARAM_LOCALURL);
         }
-
-        $this->add_action_buttons();
+        if(!$viewonly){
+            $this->add_action_buttons();
+        }
 
         $this->set_data($cohort);
     }
