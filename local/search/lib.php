@@ -244,7 +244,7 @@ EOJ;
         $rankingjoins['rank_course'] = "LEFT JOIN FREETEXTTABLE({course}, *, '$query') AS rank_course ON rank_course.[KEY] = c.id";
 
         if ($arupadvertcustominstalled) {
-            $rankingjoins['rank_arupadvertdatatype_custom'] = "LEFT JOIN FREETEXTTABLE({arupadvertdatatype_custom}, *, '$query') AS rank_arupadvertdatatype_custom ON rank_arupadvertdatatype_custom.[KEY] = a.id";
+            $rankingjoins['rank_arupadvertdatatype_custom'] = "LEFT JOIN FREETEXTTABLE({arupadvertdatatype_custom}, *, '$query') AS rank_arupadvertdatatype_custom ON rank_arupadvertdatatype_custom.[KEY] = acc.id";
         }
 
         if ($arupadverttapsinstalled) {
