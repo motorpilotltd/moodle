@@ -76,7 +76,9 @@ class export_reports extends \core\task\scheduled_task {
         fclose($csvhandle);
 
         $user = dummy_user::get_dummy_block_certification_report_user('moodle.ticker@arup.com', 'Moodle', 'Ticker');
-        email_to_user($user, get_admin(), "[{$CFG->wwwroot}] Moodle Ticker Report", 'Moodle Ticker Report', '', $csvfile, 'moodle_ticker.csv');
+        $admin = get_admin();
+        email_to_user($user, $admin, "[{$CFG->wwwroot}] Moodle Ticker Report", 'Moodle Ticker Report', '', $csvfile, 'moodle_ticker.csv',
+                      true, '', '', 79, [$admin]);
 
         unlink($csvfile);
     }
