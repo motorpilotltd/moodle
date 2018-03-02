@@ -77,7 +77,9 @@ $(document).on('click', '.saverule', function () {
     var field = $("select[name='field_" + rulesetid + "'] option:selected").val();
     var criteriatype = $("select[name='criteriatype_" + rulesetid + "'] option:selected").val();
     var value = $("input[name='value_" + rulesetid + "'].edit").val();
-
+    if(field == 'cohort'){
+        value = $("select[name='cohort_" + rulesetid + "']").val();
+    }
     if(value == undefined){
         var value = $("select[name='value_year_" + rulesetid + "']").val() + "-" +
             $("select[name='value_month_" + rulesetid + "']").val() + "-" +
@@ -125,6 +127,7 @@ $(document).on('change', '.field_select', function (e) {
     var field = $(this).val();
     var value = $('input[name="value_' + rulesetid + '"]').val();
 
+    var id = parseInt($("input[name='id']").val());
     $.ajax({
         type: "GET",
         url: M.cfg.wwwroot + '/local/dynamic_cohorts/ajax/dynamic_cohorts.php',
@@ -150,6 +153,7 @@ $(document).on('change', '.field_select', function (e) {
             rulesetid: rulesetid,
             value: value,
             edit: edit,
+            id: id,
             field: field
         },
         success: function (response) {
@@ -193,6 +197,9 @@ $(document).on('click', '.addrule', function (e) {
     var nextruleid = parseInt($("input[name='ruleid_" + rulesetid + "']").val()) + 1;
 
     var value = $("input[name='value_" + rulesetid + "'].add").val();
+    if(field == 'cohort'){
+        value = $("select[name='cohort_" + rulesetid + "']").val();
+    }
     if(value == undefined){
         var value = $("select[name='value_year_" + rulesetid + "']").val() + "-" +
             $("select[name='value_month_" + rulesetid + "']").val() + "-" +
@@ -220,7 +227,66 @@ $(document).on('click', '.addrule', function (e) {
     }
 });
 
+
+
+/**
+ * Change cirtiera types and value field type basing on selected field type
+ */
+$(document).on('change', '.context_select', function (e) {
+    var context = $(this).val();
+    
+    $.ajax({
+        type: "GET",
+        url: M.cfg.wwwroot + '/local/dynamic_cohorts/ajax/dynamic_cohorts.php',
+        data: {
+            action: 'getroles',
+            context: context
+        },
+        success: function (response) {
+            json = jQuery.parseJSON(response);
+            var $el = $("#menurole");
+            $el.empty(); // remove old options
+            $.each(json, function(key, value) {
+                $el.append($("<option></option>")
+                    .attr("value", key).text(value));
+            });
+        }
+    });
+});
+
+
+/**
+ * Add role
+ */
+$(document).on('click', '.addrole', function (e) {
+
+    var roleid = $("select[name='role'] option:selected").val();
+    var contextid = $("select[name='context'] option:selected").val();
+    
+    $.when(get_role(contextid, roleid)).done(function (response) {
+        $('.rolelist').append(response);
+    });
+
+});
+
+
+/**
+ * Remove role
+ */
+$(document).on('click', '.deleterole', function (e) {
+    e.preventDefault();
+    var deleteroleconfirm = confirm(M.util.get_string('deleterole', 'local_dynamic_cohorts'));
+
+    if (deleteroleconfirm) {
+        $(this).parent().remove();
+    }
+
+});
+
 function get_rule(rulesetid, ruleid, field, criteriatype, value) {
+
+    var id = parseInt($("input[name='id']").val());
+
     return $.ajax({
         type: "GET",
         url: M.cfg.wwwroot + '/local/dynamic_cohorts/ajax/dynamic_cohorts.php',
@@ -230,7 +296,28 @@ function get_rule(rulesetid, ruleid, field, criteriatype, value) {
             field: field,
             criteriatype: criteriatype,
             value: value,
+            id: id,
             ruleid: ruleid
+        },
+        dataType: "HTML",
+        success: function (response) {
+            return response;
+        }
+    });
+}
+
+function get_role(contextid, roleid) {
+
+    var id = parseInt($("input[name='id']").val());
+
+    return $.ajax({
+        type: "GET",
+        url: M.cfg.wwwroot + '/local/dynamic_cohorts/ajax/dynamic_cohorts.php',
+        data: {
+            action: 'addrole',
+            contextid: contextid,
+            roleid: roleid,
+            id: id
         },
         dataType: "HTML",
         success: function (response) {

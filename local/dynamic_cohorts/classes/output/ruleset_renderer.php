@@ -17,7 +17,7 @@ class ruleset_renderer extends \plugin_renderer_base
      * @param array $rules
      * @return string
      */
-    public function display_ruleset($rulesetid, $rulesetcount, $operator = dynamic_cohorts::OPERATOR_AND, $rules = [])
+    public function display_ruleset($rulesetid, $rulesetcount, $operator = dynamic_cohorts::OPERATOR_AND, $rules = [], $viewonly = false)
     {
         global $OUTPUT;
 
@@ -26,10 +26,11 @@ class ruleset_renderer extends \plugin_renderer_base
         $output .= \html_writer::tag('input', '', ['value' => count($rules), 'type' => 'hidden', 'name' => 'ruleid_' . $rulesetid]);
         $counter = \html_writer::span($rulesetcount, 'counter');
         $output .= \html_writer::tag('h3', get_string('rulesetheader', 'local_dynamic_cohorts') . ' ' . $counter);
-
-        $output .= \html_writer::start_tag('a', ['class' => 'deleteruleset', 'href' => '#']);
-        $output .= \html_writer::tag('img', '', ['src' => $OUTPUT->image_url("t/delete"), 'title' => get_string('delete', 'local_dynamic_cohorts')]);
-        $output .= \html_writer::end_tag('a');
+        if(!$viewonly){
+            $output .= \html_writer::start_tag('a', ['class' => 'deleteruleset', 'href' => '#']);
+            $OUTPUT->pix_icon("t/delete", get_string('delete', 'local_dynamic_cohorts'));
+            $output .= \html_writer::end_tag('a');
+        }
 
         $output .= \html_writer::start_div('fitem fitem_fgroup');
         $output .= \html_writer::start_div('fitemtitle');
@@ -43,6 +44,9 @@ class ruleset_renderer extends \plugin_renderer_base
         if($operator == dynamic_cohorts::OPERATOR_AND){
             $input['checked'] = 'checked';
         }
+        if($viewonly){
+            $input['disabled'] = 'disabled';
+        }
         $output .= \html_writer::tag('input', '', $input);
         $output .= \html_writer::tag('label', get_string('ruleoperatorandlabel', 'local_dynamic_cohorts'), ['for' => 'ruleoperator_' . $rulesetid]);
 
@@ -52,14 +56,19 @@ class ruleset_renderer extends \plugin_renderer_base
         if($operator == dynamic_cohorts::OPERATOR_OR){
             $input['checked'] = 'checked';
         }
+        if($viewonly){
+            $input['disabled'] = 'disabled';
+        }
         $output .= \html_writer::tag('input', '', $input);
         $output .= \html_writer::tag('label', get_string('ruleoperatororlabel', 'local_dynamic_cohorts'), ['for' => 'ruleoperator_' . $rulesetid]);
 
         $output .= \html_writer::end_tag('fieldset');
         $output .= \html_writer::end_div();
 
-        $output .= $this->display_rule_fieldset($rulesetid, $rules);
-        $output .= $this->display_rule_form($rulesetid);
+        $output .= $this->display_rule_fieldset($rulesetid, $rules, $viewonly);
+        if(!$viewonly){
+            $output .= $this->display_rule_form($rulesetid);
+        }
 
         $output .= \html_writer::end_div();
         return $output;
@@ -71,7 +80,7 @@ class ruleset_renderer extends \plugin_renderer_base
      * @param array $rules
      * @return string
      */
-    public function display_rule_fieldset($rulesetid, $rules = []){
+    public function display_rule_fieldset($rulesetid, $rules = [], $viewonly = false){
         $output = '';
         $output .= \html_writer::start_div('fitem fitem_fgroup');
         $output .= \html_writer::start_div('fitemtitle');
@@ -81,18 +90,9 @@ class ruleset_renderer extends \plugin_renderer_base
         $output .= \html_writer::end_div();
         $output .= \html_writer::start_tag('fieldset', ['class' => 'felement fgroup rules_' . $rulesetid]);
         foreach($rules as $counter => $rule){
-            switch ($rule->fieldtype) {
-                case dynamic_cohorts::FIELD_TYPE_CUSTOM:
-                    $prefix = 'custom_';
-                    break;
-                case dynamic_cohorts::FIELD_TYPE_HUB:
-                    $prefix = 'hub_';
-                    break;
-                default:
-                    $prefix = 'user_';
-                    break;
-            }
+
             $output .= $this->display_rule($rulesetid, ++$counter, $prefix.$rule->field, $rule->criteriatype, $rule->value);
+            $output .= $this->display_rule($rulesetid, ++$counter, dynamic_cohorts::get_fieldtype_prefix($rule->fieldtype).$rule->field, $rule->criteriatype, $rule->value, $viewonly);
         }
         $output .= \html_writer::end_tag('fieldset');
         $output .= \html_writer::end_div();
@@ -162,6 +162,9 @@ class ruleset_renderer extends \plugin_renderer_base
     public function value_field($rulesetid, $field, $value, $edit = false){
         $output = '';
         switch (dynamic_cohorts::get_field_type($field)){
+            case 'cohort':
+                $output .= $this->cohort_select($rulesetid, $value);
+                break;
             case 'date':
                 $output .= $this->date_select($rulesetid, $value, false);
                 break;
@@ -215,12 +218,17 @@ class ruleset_renderer extends \plugin_renderer_base
      * @param $value
      * @return string
      */
-    public function display_rule($rulesetid, $ruleid, $field, $criteriatype, $value)
+    public function display_rule($rulesetid, $ruleid, $field, $criteriatype, $value, $viewonly = false)
     {
-        global $OUTPUT;
+        global $OUTPUT, $DB;
         $showvalue = true;
         if(in_array($criteriatype, [dynamic_cohorts::CRITERIA_TYPE_IS_NOT_CHECKED, dynamic_cohorts::CRITERIA_TYPE_IS_CHECKED, dynamic_cohorts::CRITERIA_TYPE_IS_EMPTY])){
             $showvalue = false;
+        }
+        $displayvalue = $value;
+        if(dynamic_cohorts::get_field_type($field) == 'cohort' && is_numeric($value)){
+            $cohort = dynamic_cohorts::get_cohort($value);
+            $displayvalue = $cohort->name;
         }
         if(dynamic_cohorts::get_field_type($field) == 'date' && is_numeric($value)){
             $value = date('Y-m-d', $value);
@@ -233,19 +241,35 @@ class ruleset_renderer extends \plugin_renderer_base
         $output .= \html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'field[' . $rulesetid . '][' . $ruleid . ']', 'value' => $field]);
         $output .= \html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'criteriatype[' . $rulesetid . '][' . $ruleid . ']', 'value' => $criteriatype]);
         $output .= \html_writer::tag('input', '', ['type' => 'hidden', 'name' => 'value[' . $rulesetid . '][' . $ruleid . ']', 'value' => ($showvalue ? $value : '') ]);
-        $output .= dynamic_cohorts::get_rule_fields()[$field] . ' ' . dynamic_cohorts::get_criteria_types('all')[$criteriatype] . ($showvalue ? " '" . $value . "' " : " ");
+        $output .= dynamic_cohorts::get_rule_fields()[$field] . ' ' . dynamic_cohorts::get_criteria_types('all')[$criteriatype] . ($showvalue ? " '" . $displayvalue . "' " : " ");
+        if(!$viewonly){
+            $output .= \html_writer::start_tag('a', ['class' => 'deleterule', 'href' => '#']);
+            $output .= $OUTPUT->pix_icon("t/delete", get_string('delete', 'local_dynamic_cohorts'));
+            $output .= \html_writer::end_tag('a');
 
-        $output .= \html_writer::start_tag('a', ['class' => 'deleterule', 'href' => '#']);
-        $output .= \html_writer::tag('img', '', ['src' => $OUTPUT->image_url("t/delete"), 'title' => get_string('delete', 'local_dynamic_cohorts')]);
-        $output .= \html_writer::end_tag('a');
-
-        $output .= \html_writer::start_tag('a', ['class' => 'editrule', 'href' => '#', 'data-rulesetid' => $rulesetid, 'data-ruleid' => $ruleid]);
-        $output .= \html_writer::tag('img', '', ['src' => $OUTPUT->image_url('i/edit'), 'title' => get_string('edit', 'local_dynamic_cohorts')]);
-        $output .= \html_writer::end_tag('a');
+            $output .= \html_writer::start_tag('a', ['class' => 'editrule', 'href' => '#', 'data-rulesetid' => $rulesetid, 'data-ruleid' => $ruleid]);
+            $output .= $OUTPUT->pix_icon('i/edit', get_string('edit', 'local_dynamic_cohorts'));
+            $output .= \html_writer::end_tag('a');
+        }
 
         $output .= \html_writer::empty_tag('br');
         $output .= \html_writer::end_span();
 
         return $output;
+    }
+
+    /**
+     * Create dropdown for cohort rule
+     *
+     * @param $rulesetid
+     * @param int $cohortid
+     * @return string
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function cohort_select($rulesetid, $cohortid = 0){
+        $currentcohortid = optional_param('id', 0, PARAM_INT);
+        $cohorts = dynamic_cohorts::get_cohorts(' id != '.$currentcohortid);
+        return \html_writer::select($cohorts, 'cohort_'.$rulesetid, $cohortid, []);
     }
 }
