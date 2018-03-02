@@ -182,7 +182,7 @@ class dynamic_cohorts
                                     $rule->fieldtype = self::FIELD_TYPE_USER;
                                     break;
                             }
-                            $rule->field = preg_replace('/^(custom_|user_)/is', '', $field);
+                            $rule->field = preg_replace('/^(custom|user|hub)_/is', '', $field);
                             $rule->criteriatype = $data->rulesetrules['criteriatype'][$rulesetid][$rulecounter];
                             /**
                              * If rule criteria type is date or datetime change date to timestamp
