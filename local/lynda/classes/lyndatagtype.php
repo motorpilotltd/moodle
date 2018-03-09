@@ -95,9 +95,12 @@ class lyndatagtype extends \data_object {
                     return strcmp($a->name, $b->name);
                 });
             }
-            uasort($full_tag_graph, function($a, $b) use ($tag) {
-                return strcmp($tag->name, $tag->name);
-            });
+
+            if (isset($tag)) {
+                uasort($full_tag_graph, function($a, $b) use ($tag) {
+                    return strcmp($tag->name, $tag->name);
+                });
+            }
 
             $cache->set(1, $full_tag_graph);
         }

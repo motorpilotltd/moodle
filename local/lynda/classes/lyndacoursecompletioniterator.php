@@ -48,6 +48,10 @@ class lyndacoursecompletioniterator implements \Iterator {
         $this->positionoffset = 0;
         $this->currentpage = $this->api->certficateofcompletion($this->startdate, $this->enddate, 0);
 
+        if (isset($this->currentpage->Status) && $this->currentpage->Status == 'error') {
+            print_error('Error communicating with Lynda: ' . $this->currentpage->message);
+        }
+
         if (isset($this->currentpage)) {
             mtrace('Loaded page of course completion data.');
             mtrace(count($this->currentpage) . ' records loaded');
