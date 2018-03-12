@@ -114,6 +114,7 @@ class daterangelearning extends base {
             'bookingstatus',
             'classcost',
             'classcostcurrency',
+            'jobnumber',
             'cpd',
             'learningdesc',
             'classcategory',
@@ -332,7 +333,7 @@ class daterangelearning extends base {
         // echo '<pre>' . print_r($params, true) . '</pre>';
         // $wherestring = '';
 
-        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode, ltco.courseregion
+        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltc.jobnumber, ltco.coursecode, ltco.courseregion
                   FROM {local_taps_enrolment} as lte
                   JOIN SQLHUB.ARUP_ALL_STAFF_V as staff 
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
