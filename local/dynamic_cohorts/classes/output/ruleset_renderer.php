@@ -28,7 +28,7 @@ class ruleset_renderer extends \plugin_renderer_base
         $output .= \html_writer::tag('h3', get_string('rulesetheader', 'local_dynamic_cohorts') . ' ' . $counter);
         if(!$viewonly){
             $output .= \html_writer::start_tag('a', ['class' => 'deleteruleset', 'href' => '#']);
-            $OUTPUT->pix_icon("t/delete", get_string('delete', 'local_dynamic_cohorts'));
+            $output .= $OUTPUT->pix_icon("t/delete", get_string('delete', 'local_dynamic_cohorts'));
             $output .= \html_writer::end_tag('a');
         }
 
@@ -90,6 +90,8 @@ class ruleset_renderer extends \plugin_renderer_base
         $output .= \html_writer::end_div();
         $output .= \html_writer::start_tag('fieldset', ['class' => 'felement fgroup rules_' . $rulesetid]);
         foreach($rules as $counter => $rule){
+
+            $output .= $this->display_rule($rulesetid, ++$counter, $prefix.$rule->field, $rule->criteriatype, $rule->value);
             $output .= $this->display_rule($rulesetid, ++$counter, dynamic_cohorts::get_fieldtype_prefix($rule->fieldtype).$rule->field, $rule->criteriatype, $rule->value, $viewonly);
         }
         $output .= \html_writer::end_tag('fieldset');

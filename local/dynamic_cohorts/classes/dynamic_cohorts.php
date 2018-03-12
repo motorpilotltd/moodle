@@ -182,7 +182,7 @@ class dynamic_cohorts
                                     $rule->fieldtype = self::FIELD_TYPE_USER;
                                     break;
                             }
-                            $rule->field = preg_replace('/^(custom|user|hub)_/is', '', $field);
+                            $rule->field = preg_replace('/^(custom_|user_)/is', '', $field);
                             $rule->criteriatype = $data->rulesetrules['criteriatype'][$rulesetid][$rulecounter];
                             /**
                              * If rule criteria type is date or datetime change date to timestamp
@@ -657,11 +657,14 @@ class dynamic_cohorts
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function get_context_list(){
+    public static function get_context_list($requiredcapability = ''){
         global $DB, $CFG;
         require_once($CFG->libdir . '/coursecatlib.php');
-        $contexts = [1 => get_string('system_context', 'local_dynamic_cohorts')] ;
-        $categories = \coursecat::make_categories_list();
+        $contexts = [];
+        if($requiredcapability == '' || has_capability($requiredcapability, \context_system::instance())){
+            $contexts[1] = get_string('system_context', 'local_dynamic_cohorts');
+        }
+        $categories = \coursecat::make_categories_list($requiredcapability);
         list($sql, $params) = $DB->get_in_or_equal(array_keys($categories), SQL_PARAMS_NAMED, 'param', true, true);
 
         $query = "

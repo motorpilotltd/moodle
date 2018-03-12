@@ -79,6 +79,7 @@ $PAGE->set_pagelayout('admin');
 $stringmanager = get_string_manager();
 $strings = $stringmanager->load_component_strings('local_dynamic_cohorts', 'en');
 
+$PAGE->requires->css(new moodle_url('/local/dynamic_cohorts/styles/style.css'));
 $PAGE->requires->js(new moodle_url('/local/dynamic_cohorts/js/dynamic_cohorts.js'));
 $PAGE->requires->strings_for_js(array_keys($strings), 'local_dynamic_cohorts');
 
