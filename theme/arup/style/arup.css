@@ -22503,6 +22503,14 @@ body.editing .section .activity .actions {
 .inplaceeditable.inplaceeditingon input {
   height: 3rem;
 }
+.path-course-view li.activity form.togglecompletion .btn-link {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+.path-course-view li.activity form.togglecompletion .btn-link img {
+  margin: 0;
+}
 #page-site-index .forumheaderlist tr th,
 .path-news .forumheaderlist tr th,
 .path-mod-forum .forumheaderlist tr th {
