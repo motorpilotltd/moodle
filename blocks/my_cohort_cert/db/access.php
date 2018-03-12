@@ -15,10 +15,32 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author Artur Rietz <artur.rietz@webanywhere.co.uk>
+ * @package    block_my_cohort_cert
  */
 
-$plugin->version   = 2018022801;
-$plugin->release   = '1.8.5';
-$plugin->requires = 2015051104;
-$plugin->component = 'local_custom_certification';
+defined('MOODLE_INTERNAL') || die();
+
+$capabilities = array(
+
+    'block/my_cohort_cert:myaddinstance' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'user' => CAP_ALLOW
+        ),
+
+        'clonepermissionsfrom' => 'moodle/my:manageblocks'
+    ),
+
+    'block/my_cohort_cert:addinstance' => array(
+        'riskbitmask' => RISK_SPAM | RISK_XSS,
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        ),
+
+        'clonepermissionsfrom' => 'moodle/site:manageblocks'
+    )
+);

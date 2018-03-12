@@ -8,7 +8,8 @@ $PAGE->requires->js(new moodle_url('/local/custom_certification/js/assignments.j
 $currenturl = qualified_me();
 
 $detailsform = new \local_custom_certification\form\certification_assignments_form($currenturl, [
-    'certif' => $certif
+    'certif' => $certif,
+    'canmanage' => $canmanage
 ]);
 
 if ($assignmentid != null) {
@@ -16,7 +17,7 @@ if ($assignmentid != null) {
 
     $duedatesform = new local_custom_certification\form\certification_duedates_form($currenturl, [
         'assignment' => $assignment
-    ]);
+    ], 'post', '', null, $canmanage);
 
 
     if ($formdata = $duedatesform->get_data()) {

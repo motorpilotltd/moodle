@@ -28,7 +28,7 @@ class ruleset_renderer extends \plugin_renderer_base
         $output .= \html_writer::tag('h3', get_string('rulesetheader', 'local_dynamic_cohorts') . ' ' . $counter);
         if(!$viewonly){
             $output .= \html_writer::start_tag('a', ['class' => 'deleteruleset', 'href' => '#']);
-            $OUTPUT->pix_icon("t/delete", get_string('delete', 'local_dynamic_cohorts'));
+            $output .= $OUTPUT->pix_icon("t/delete", get_string('delete', 'local_dynamic_cohorts'));
             $output .= \html_writer::end_tag('a');
         }
 

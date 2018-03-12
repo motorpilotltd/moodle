@@ -14,6 +14,7 @@ class certification_content_form extends \moodleform
         $certif = $this->_customdata['certif'];
         $certifications = $this->_customdata['certifications'];
         $recertifications = $this->_customdata['recertifications'];
+        $canmanage = $this->_customdata['canmanage'];
         $renderer = $PAGE->get_renderer('local_custom_certification');
 
         $mform->addElement('hidden', 'certifid', $certif->id);
@@ -31,8 +32,10 @@ class certification_content_form extends \moodleform
         $html .= \html_writer::tag('p', get_string('instructions:certificationcourseset', 'local_custom_certification'), ['class' => 'instructions']);
         $html .= \html_writer::tag('p', get_string('error:certifpathcontent', 'local_custom_certification'), ['class' => 'certifpathcontenterror custom-error']);
         $html .= \html_writer::start_tag('div', ['class' => 'coursesets-container certification-coursesets']);
-        $html .= $renderer->display_coursesetbox($certifications, $certif->id, 'certification');
-        $html .= \html_writer::tag('input', '', ['data-certiftype' => 'certification', 'data-id' => $certif->id, 'value' => get_string('coursesetbtn', 'local_custom_certification'), 'type' => 'button', 'class' => 'form-submit coursesetbtn']);
+        $html .= $renderer->display_coursesetbox($certifications, $certif->id, 'certification', $canmanage);
+        if($canmanage){
+            $html .= \html_writer::tag('input', '', ['data-certiftype' => 'certification', 'data-id' => $certif->id, 'value' => get_string('coursesetbtn', 'local_custom_certification'), 'type' => 'button', 'class' => 'form-submit coursesetbtn']);
+        }
 
         $html .= \html_writer::end_tag('div');
         $mform->addElement('html', $html);
@@ -61,7 +64,7 @@ class certification_content_form extends \moodleform
         $html .= \html_writer::start_div('content-wrapper');
         $mform->addElement('html', $html);
 
-        $mform->addElement('checkbox', 'userecertif', get_string('userecertif', 'local_custom_certification'));
+        $mform->addElement('checkbox', 'userecertif', get_string('userecertif', 'local_custom_certification'),'', ($canmanage ? '' : 'disabled="disabled"'));
         $mform->setType('userecertif', PARAM_INT);
         if (empty($recertifications)) {
             $class = 'disable-recertification recertification';
@@ -89,9 +92,10 @@ class certification_content_form extends \moodleform
 
 //        $mform->addElement('html', $html);
         $html .= \html_writer::start_tag('div', ['class' => 'coursesets-container recertification-coursesets']);
-        $html .= $renderer->display_coursesetbox($recertifications, $certif->id, 'recertification');
-        $html .= \html_writer::tag('input', '', ['data-certiftype' => 'recertification', 'data-id' => $certif->id, 'value' => get_string('coursesetbtn', 'local_custom_certification'), 'type' => 'button', 'class' => 'form-submit coursesetbtn']);
-
+        $html .= $renderer->display_coursesetbox($recertifications, $certif->id, 'recertification', $canmanage);
+        if($canmanage){
+            $html .= \html_writer::tag('input', '', ['data-certiftype' => 'recertification', 'data-id' => $certif->id, 'value' => get_string('coursesetbtn', 'local_custom_certification'), 'type' => 'button', 'class' => 'form-submit coursesetbtn']);
+        }
 
         $html .= \html_writer::end_tag('div');
         $mform->addElement('html', $html);
@@ -114,10 +118,11 @@ class certification_content_form extends \moodleform
         $html = \html_writer::end_tag('div');
         $html .= \html_writer::end_tag('div');
         $mform->addElement('html', $html);
-
-        $generalbtngroup[] = $mform->createElement('button', 'savedatabtn', get_string('savedatabtn', 'local_custom_certification'), ['data-id' => $certif->id, 'class' => 'form-submit savedatabtn']);
-        $generalbtngroup[] = $mform->createElement('button', 'cancelbtn', get_string('cancelbtn', 'local_custom_certification'), ['data-id' => $certif->id, 'class' => 'cancelbtn']);
-        $mform->addGroup($generalbtngroup, 'generalbtngroup', '', [' '], false);
+        if($canmanage){
+            $generalbtngroup[] = $mform->createElement('button', 'savedatabtn', get_string('savedatabtn', 'local_custom_certification'), ['data-id' => $certif->id, 'class' => 'form-submit savedatabtn']);
+            $generalbtngroup[] = $mform->createElement('button', 'cancelbtn', get_string('cancelbtn', 'local_custom_certification'), ['data-id' => $certif->id, 'class' => 'cancelbtn']);
+            $mform->addGroup($generalbtngroup, 'generalbtngroup', '', [' '], false);
+        }
         $mform->closeHeaderBefore('generalbtngroup');
     }
 }

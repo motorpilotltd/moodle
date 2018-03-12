@@ -6,7 +6,12 @@ require_once($CFG->dirroot . '/lib/formslib.php');
 require_login();
 
 $systemcontext = context_system::instance();
-require_capability('local/custom_certification:view', $systemcontext);
+$canmanage = false;
+if (count(\local_custom_certification\certification::get_editable_categories()) > 0) {
+    $canmanage = true;
+}else{
+    throw new required_capability_exception($systemcontext, 'local/custom_certification:manage', 'nopermissions', '');
+}
 
 global $TEXTAREA_OPTIONS, $CFG;
 $TEXTAREA_OPTIONS = [

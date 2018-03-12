@@ -525,7 +525,7 @@ FROM
 WHERE
     staffid = :staffid
     AND courseid {$insql1}
-    AND {$DB->sql_compare_text('bookingstatus')} {$insql2}
+    AND {$DB->sql_compare_text('bookingstatus')} {$insql2}}
     AND archived = 0
 EOS;
         $params = array_merge($params1, $params2);

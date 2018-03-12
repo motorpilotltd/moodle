@@ -9,8 +9,9 @@ $detailsform = new local_custom_certification\form\certification_details_form($c
     'overviewfilesoptions' => $overviewfilesoptions,
     'params' => $certif,
     'action' => $action,
-    'categories' => \local_custom_certification\certification::get_categories()
-]);
+    'canmanage' => $canmanage,
+    'categories' => \local_custom_certification\certification::get_categories(0, ['category' => \local_custom_certification\certification::get_editable_categories()])
+], 'post', '', null, $canmanage);
 
 $entry = new \stdClass();
 

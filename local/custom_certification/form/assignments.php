@@ -15,6 +15,7 @@ class certification_assignments_form extends \moodleform
         global $OUTPUT;
         $mform =& $this->_form;
         $certif = $this->_customdata['certif'];
+        $canmanage = $this->_customdata['canmanage'];
 
         $duration = certification::get_time_periods();
 
@@ -68,14 +69,20 @@ class certification_assignments_form extends \moodleform
                     $duedatelabel = get_string('enrolmentduedate', 'local_custom_certification', $duedateperiod);
 
                 }
-                $url = \html_writer::link('#', $duedatelabel, ['onclick' => 'return;','class' => 'setduedate', 'data-assignmentid' => $assignmentid, 'data-certifid' => $certif->id]);
+                if($canmanage){
+                    $url = \html_writer::link('#', $duedatelabel, ['onclick' => 'return;','class' => 'setduedate', 'data-assignmentid' => $assignmentid, 'data-certifid' => $certif->id]);
+                }else{
+                    $url = '';
+                }
+
                 $individualstable .= \html_writer::tag('td', $url);
 
 
                 $individualstable .= \html_writer::tag('td', $actualduedate);
                 $individualstable .= \html_writer::start_tag('td', ['class' => 'action-img']);
-
-                $individualstable .= \html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/delete"), 'onclick' => "if(confirm('" . get_string('removeassignmentconfirmdialog', 'local_custom_certification') . "')) deleteAssignment(this);", 'class' => 'deletebtn', 'data-type' => 'individuals', 'data-id' => $certif->assignedusers[$assignment->assignmenttypeid]->id, 'data-certifid' => $certif->id]);
+                if($canmanage){
+                    $individualstable .= \html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/delete"), 'onclick' => "if(confirm('" . get_string('removeassignmentconfirmdialog', 'local_custom_certification') . "')) deleteAssignment(this);", 'class' => 'deletebtn', 'data-type' => 'individuals', 'data-id' => $certif->assignedusers[$assignment->assignmenttypeid]->id, 'data-certifid' => $certif->id]);
+                }
                 $individualstable .= \html_writer::end_tag('td');
                 $individualstable .= \html_writer::end_tag('tr');
             }
@@ -83,9 +90,11 @@ class certification_assignments_form extends \moodleform
 
         $individualstable .= \html_writer::end_tag('table');
         $mform->addElement('html', $individualstable);
-        $individualbtn = [];
-        $individualbtn[] = $mform->createElement('button', 'individualsbtn', get_string('individualsbtn', 'local_custom_certification'), ['class' => 'form-submit assignmentbtn', 'data-certifid' => $certif->id, 'data-type' => 'individuals']);
-        $mform->addGroup($individualbtn, 'individualbtngroup');
+        if($canmanage){
+            $individualbtn = [];
+            $individualbtn[] = $mform->createElement('button', 'individualsbtn', get_string('individualsbtn', 'local_custom_certification'), ['class' => 'form-submit assignmentbtn', 'data-certifid' => $certif->id, 'data-type' => 'individuals']);
+            $mform->addGroup($individualbtn, 'individualbtngroup');
+        }
 
         $mform->addElement('header', 'programdetails', get_string('cohortassignments', 'local_custom_certification'));
         $mform->addElement('html', \html_writer::tag('p', get_string('instructions:programassignmentscohort', 'local_custom_certification'), ['class' => 'instructions']));
@@ -129,7 +138,12 @@ class certification_assignments_form extends \moodleform
                     $duedate = get_string('enrolmentduedate', 'local_custom_certification', $duedateperiod);
 
                 }
-                $url = \html_writer::link('#', $duedate, ['onclick' => 'return;', 'class' => 'setduedate', 'data-assignmentid' => $cohort->assignmentid, 'data-certifid' => $certif->id]);
+                if($canmanage){
+                    $url = \html_writer::link('#', $duedate, ['onclick' => 'return;', 'class' => 'setduedate', 'data-assignmentid' => $cohort->assignmentid, 'data-certifid' => $certif->id]);
+                }else{
+                    $url = $duedate;
+                }
+
                 $cohortstable .= \html_writer::tag('td', $url);
                 $url = \html_writer::link('#', get_string('cohortviewdates', 'local_custom_certification'), ['class' => 'view-dates', "onclick" => "showCohortDueDates('" . $assignment->id . "','" . $certif->id . "');return;"]);
 
@@ -140,15 +154,19 @@ class certification_assignments_form extends \moodleform
                 $cohortstable .= \html_writer::end_tag('td');
 
                 $cohortstable .= \html_writer::start_tag('td', ['class' => "action-img"]);
-                $cohortstable .= \html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/delete"), 'onclick' => "if(confirm('" . get_string('removeassignmentconfirmdialog', 'local_custom_certification') . "')) deleteAssignment(this);", 'class' => 'deletebtn', 'data-type' => 'cohorts', 'data-id' => $cohort->id, 'data-certifid' => $certif->id]);
+                if($canmanage){
+                    $cohortstable .= \html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/delete"), 'onclick' => "if(confirm('" . get_string('removeassignmentconfirmdialog', 'local_custom_certification') . "')) deleteAssignment(this);", 'class' => 'deletebtn', 'data-type' => 'cohorts', 'data-id' => $cohort->id, 'data-certifid' => $certif->id]);
+                }
                 $cohortstable .= \html_writer::end_tag('td');
                 $cohortstable .= \html_writer::end_tag('tr');
             }
         }
         $cohortstable .= \html_writer::end_tag('table');
         $mform->addElement('html', $cohortstable);
-        $cohortbtn[] = $mform->createElement('button', 'cohortbtn', get_string('cohortbtn', 'local_custom_certification'), ['class' => 'form-submit assignmentbtn', 'data-certifid' => $certif->id, 'data-type' => 'cohorts']);
-        $mform->addGroup($cohortbtn, 'cohortbtngroup');
+        if($canmanage){
+            $cohortbtn[] = $mform->createElement('button', 'cohortbtn', get_string('cohortbtn', 'local_custom_certification'), ['class' => 'form-submit assignmentbtn', 'data-certifid' => $certif->id, 'data-type' => 'cohorts']);
+            $mform->addGroup($cohortbtn, 'cohortbtngroup');
+        }
         $mform->disable_form_change_checker();
     }
 

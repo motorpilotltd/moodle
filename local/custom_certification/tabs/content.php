@@ -15,5 +15,6 @@ if (!isset($SESSION->certifcontent[$certif->id]->certification) || !isset($SESSI
 $detailsform = new local_custom_certification\form\certification_content_form($currenturl, [
     'certif' => $certif,
     'certifications' => $SESSION->certifcontent[$certif->id]->certification,
-    'recertifications' => $SESSION->certifcontent[$certif->id]->recertification
+    'recertifications' => $SESSION->certifcontent[$certif->id]->recertification,
+    'canmanage' => $canmanage
 ]);

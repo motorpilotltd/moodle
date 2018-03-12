@@ -15,10 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @author Artur Rietz <artur.rietz@webanywhere.co.uk>
+ * Version details
+ *
+ * @package    block_my_cohort_cert
  */
 
-$plugin->version   = 2018022801;
-$plugin->release   = '1.8.5';
-$plugin->requires = 2015051104;
-$plugin->component = 'local_custom_certification';
+defined('MOODLE_INTERNAL') || die();
+
+$plugin->version   = 2018021400;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->requires  = 2015051104;        // Requires this Moodle version
+$plugin->component = 'block_my_cohort_cert'; // Full name of the plugin (used for diagnostics)
+$plugin->dependencies = array(
+    'local_custom_certification' => 2018022801,
+    'local_dynamic_cohorts' => 2018022601,
+);
+
