@@ -4,9 +4,17 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once('form/certification_filter.php');
 
-$url = new moodle_url('/local/custom_certification/index.php', []);
+require_login();
 
-$context = context_system::instance();
+$url = new moodle_url('/local/custom_certification/index.php', []);
+$contextid = optional_param('contextid', 0, PARAM_INT);
+$categoryid = optional_param('categoryid', 0, PARAM_INT);
+
+if($contextid != 0){
+    $context = context::instance_by_id($contextid);
+}else{
+    $context = context_system::instance();
+}
 
 $currenturl = qualified_me();
 $PAGE->set_url($url);
@@ -16,24 +24,36 @@ $PAGE->set_pagelayout('admin');
 
 $PAGE->set_context($context);
 $PAGE->set_title(get_string('certifications', 'local_custom_certification'));
-require_capability('local/custom_certification:view', $context);
+
+if (count(\local_custom_certification\certification::get_viewable_categories()) == 0) {
+    throw new required_capability_exception($context, 'local/custom_certification:view', 'nopermissions', '');
+}
 
 $renderer = $PAGE->get_renderer('local_custom_certification');
 $copy = optional_param('copy', 0, PARAM_INT);
 if($copy > 0){
-    $copiedcertification = \local_custom_certification\certification::copy($copy);
-    redirect(new moodle_url('/local/custom_certification/edit.php', ['action' => 'details', 'id' => $copiedcertification->id]));
+    $certification = new \local_custom_certification\certification($copy);
+    if($certification->canmange){
+        $copiedcertification = \local_custom_certification\certification::copy($copy);
+        redirect(new moodle_url('/local/custom_certification/edit.php', ['action' => 'details', 'id' => $copiedcertification->id]));
+    }else{
+        throw new required_capability_exception($context, 'local/custom_certification:manage', 'nopermissions', '');
+    }
 }
 $delete = optional_param('delete', 0, PARAM_INT);
 if($delete > 0){
     $certification = new \local_custom_certification\certification($delete, false);
-    $certification->delete();
-    redirect(new moodle_url('/local/custom_certification/index.php'));
+    if($certification->canmange){
+        $certification->delete();
+        redirect(new moodle_url('/local/custom_certification/index.php'));
+    }else{
+        throw new required_capability_exception($context, 'local/custom_certification:manage', 'nopermissions', '');
+    }
 }
 
 
 $filterform = new \local_custom_certification\form\certification_certification_filter_form($currenturl, [
-    'categories' => \local_custom_certification\certification::get_categories()
+    'categories' => \local_custom_certification\certification::get_categories(0, ['category' => \local_custom_certification\certification::get_viewable_categories()])
 ]);
 $filters = [];
 if ($data = $filterform->get_data()) {
@@ -45,6 +65,10 @@ if ($data = $filterform->get_data()) {
         $filters['category'] = $data->category;
     }
 }
+if($categoryid > 0){
+    $filters['category'][] = $categoryid;
+}
+
 $certifications = \local_custom_certification\certification::get_all($filters);
 
 echo $OUTPUT->header();

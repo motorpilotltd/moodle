@@ -183,7 +183,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
         return $output;
     }
 
-    public function display_coursesetbox($coursesets, $certifid, $certificationtype)
+    public function display_coursesetbox($coursesets, $certifid, $certificationtype, $canmanage = false)
     {
         global $OUTPUT;
         $output = "";
@@ -197,14 +197,15 @@ class local_custom_certification_renderer extends \plugin_renderer_base
             $output .= html_writer::start_div('coursesetbox', ['data-coursesetid' => $courseset->id, 'data-certificationtype' => $courseset->certifpath]);
             $output .= html_writer::tag('p', $courseset->label, ['class' => 'headerinfo']);
             $output .= html_writer::start_div('coursesetoptions');
-            if ($coursesetiterator > 1) {
-                $output .= html_writer::tag('input', '', ['class' => 'moveupcourseset', 'type' => 'button', 'value' => get_string('moveupbtn', 'local_custom_certification'), 'onclick' => "coursesetControl('" . $courseset->id . "','0','coursesetsort','moveup','" . $certifid . "','" . $certificationtype . "');"]);
+            if($canmanage){
+                if ($coursesetiterator > 1) {
+                    $output .= html_writer::tag('input', '', ['class' => 'moveupcourseset', 'type' => 'button', 'value' => get_string('moveupbtn', 'local_custom_certification'), 'onclick' => "coursesetControl('" . $courseset->id . "','0','coursesetsort','moveup','" . $certifid . "','" . $certificationtype . "');"]);
+                }
+                if ($coursesetiterator < $allcoursesetscount) {
+                    $output .= html_writer::tag('input', '', ['class' => 'movedowncourseset', 'type' => 'button', 'value' => get_string('movedownbtn', 'local_custom_certification'), 'onclick' => "coursesetControl('" . $courseset->id . "','0','coursesetsort','movedown','" . $certifid . "','" . $certificationtype . "');"]);
+                }
+                $output .= html_writer::tag('input', '', ['class' => 'deletecourseset', 'type' => 'button', 'value' => get_string('deletebtn', 'local_custom_certification'), 'onclick' => "deleteCourseset('" . $courseset->id . "','" . $courseset->certifpath . "','" . $certifid . "');"]);
             }
-            if ($coursesetiterator < $allcoursesetscount) {
-                $output .= html_writer::tag('input', '', ['class' => 'movedowncourseset', 'type' => 'button', 'value' => get_string('movedownbtn', 'local_custom_certification'), 'onclick' => "coursesetControl('" . $courseset->id . "','0','coursesetsort','movedown','" . $certifid . "','" . $certificationtype . "');"]);
-            }
-            $output .= html_writer::tag('input', '', ['class' => 'deletecourseset', 'type' => 'button', 'value' => get_string('deletebtn', 'local_custom_certification'), 'onclick' => "deleteCourseset('" . $courseset->id . "','" . $courseset->certifpath . "','" . $certifid . "');"]);
-
             $output .= html_writer::end_div();
             $output .= html_writer::start_div('content');
             $output .= html_writer::start_div('labels');
@@ -216,19 +217,19 @@ class local_custom_certification_renderer extends \plugin_renderer_base
             $output .= html_writer::end_div();
 
             $output .= html_writer::start_div('inputs');
-            $output .= html_writer::tag('input', '', ['value' => $courseset->label, 'class' => 'coursesetname', 'data-coursesetid' => $courseset->id]);
+            $output .= html_writer::tag('input', '', ['value' => $courseset->label, 'class' => 'coursesetname', 'data-coursesetid' => $courseset->id, 'disabled' => ($canmanage ? '' : 'disabled')]);
 
 
             $selectoptions[certification::COMPLETION_TYPE_ALL] = get_string('allcoursesoption', 'local_custom_certification');
             $selectoptions[certification::COMPLETION_TYPE_ANY] = get_string('onecoursesoption', 'local_custom_certification');
             $selectoptions[certification::COMPLETION_TYPE_SOME] = get_string('somecoursesoption', 'local_custom_certification');
 
-            $output .= html_writer::select($selectoptions, '', $courseset->completiontype, []);
+            $output .= html_writer::select($selectoptions, '', $courseset->completiontype,[], ['disabled' => ($canmanage ? '' : 'disabled')]);
 
             if ($courseset->completiontype == certification::COMPLETION_TYPE_SOME) {
-                $output .= html_writer::tag('input', '', ['id' => 'completioncount', 'value' => $courseset->mincourses == 0 ? '' : $courseset->mincourses, 'class' => 'completioncount', 'data-count' => count($courseset->courses)]);
+                $output .= html_writer::tag('input', '', ['id' => 'completioncount', 'value' => $courseset->mincourses == 0 ? '' : $courseset->mincourses, 'class' => 'completioncount', 'data-count' => count($courseset->courses), 'disabled' => ($canmanage ? '' : 'disabled')]);
             } else {
-                $output .= html_writer::tag('input', '', ['id' => 'completioncount', 'value' => $courseset->mincourses == 0 ? '' : $courseset->mincourses, 'disabled' => '', 'class' => 'completioncount', 'data-count' => count($courseset->courses)]);
+                $output .= html_writer::tag('input', '', ['id' => 'completioncount', 'value' => $courseset->mincourses == 0 ? '' : $courseset->mincourses, 'disabled' => ($canmanage ? '' : 'disabled'), 'class' => 'completioncount', 'data-count' => count($courseset->courses)]);
             }
             $output .= html_writer::tag('p', get_string('completioncounterror', 'local_custom_certification'), ['class' => 'custom-error']);
 
@@ -239,13 +240,14 @@ class local_custom_certification_renderer extends \plugin_renderer_base
                 foreach ($courseset->courses as $coursearraykey => $course) {
                     $output .= html_writer::start_div('course', ['data-courseid' => $course->courseid]);
                     $output .= html_writer::tag('span', $course->fullname, []);
-                    $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/delete"), 'onclick' => "deleteCourse('" . $courseset->id . "','" . $course->courseid . "','" . $courseset->certifpath . "','" . $certifid . "');"]);
-
-                    if ($courseiterator < $coursescount) {
-                        $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/down"), 'onclick' => "coursesetControl('" . $courseset->id . "','" . $course->courseid . "','coursesort','movedown','" . $certifid . "','" . $certificationtype . "');"]);
-                    }
-                    if ($courseiterator > 1) {
-                        $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/up"), 'onclick' => "coursesetControl('" . $courseset->id . "','" . $course->courseid . "','coursesort','moveup','" . $certifid . "','" . $certificationtype . "');"]);
+                    if($canmanage){
+                        $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/delete"), 'onclick' => "deleteCourse('" . $courseset->id . "','" . $course->courseid . "','" . $courseset->certifpath . "','" . $certifid . "');"]);
+                        if ($courseiterator < $coursescount) {
+                            $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/down"), 'onclick' => "coursesetControl('" . $courseset->id . "','" . $course->courseid . "','coursesort','movedown','" . $certifid . "','" . $certificationtype . "');"]);
+                        }
+                        if ($courseiterator > 1) {
+                            $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("/t/up"), 'onclick' => "coursesetControl('" . $courseset->id . "','" . $course->courseid . "','coursesort','moveup','" . $certifid . "','" . $certificationtype . "');"]);
+                        }
                     }
 
                     $output .= html_writer::end_div();
@@ -254,8 +256,11 @@ class local_custom_certification_renderer extends \plugin_renderer_base
             }
 
             $output .= html_writer::end_div();
-            $output .= html_writer::tag('input', '', ['id' => 'addcoursebtn', 'class' => 'form-submit', 'type' => 'button', 'value' => get_string('addcourse', 'local_custom_certification'), 'onclick' => "search('coursesets','" . $certifid . "','append','" . $courseset->id . "','" . $certificationtype . "');"]);
+            if($canmanage){
+                $output .= html_writer::tag('input', '', ['id' => 'addcoursebtn', 'class' => 'form-submit', 'type' => 'button', 'value' => get_string('addcourse', 'local_custom_certification'), 'onclick' => "search('coursesets','" . $certifid . "','append','" . $courseset->id . "','" . $certificationtype . "');"]);
+            }
             $output .= html_writer::end_div();
+
 
             $output .= html_writer::end_div();
             $output .= html_writer::end_div();
@@ -359,14 +364,16 @@ class local_custom_certification_renderer extends \plugin_renderer_base
         return $output;
     }
 
-    public function display_message_box($messageid, $messagename, $messagetype, $recipient = 0, $recipientemail = null, $messagesubject = null, $messagebody = null, $messagetriggertime = null)
+    public function display_message_box($messageid, $messagename, $messagetype, $recipient = 0, $recipientemail = null, $messagesubject = null, $messagebody = null, $messagetriggertime = null, $canmanage = true)
     {
         global $OUTPUT;
         $output = '';
         !empty($messageid) && $messageid > 0 ? $id = $messageid : $id = 0;
         $output .= html_writer::start_div('message-box', ['data-messagetype' => $messagetype, 'data-id' => $id]);
         $output .= html_writer::tag('p', strtoupper($messagename), ['class' => 'headerinfo']);
-        $output .= html_writer::start_tag('input', ['onclick' => "if(confirm('" . get_string('removemessageconfirmdialog', 'local_custom_certification') . "')) deleteMessage(this);", 'class' => 'delete-message', 'type' => 'button', 'value' => get_string('deletebtn', 'local_custom_certification'), 'data-id' => $messageid]);
+        if($canmanage){
+            $output .= html_writer::start_tag('input', ['onclick' => "if(confirm('" . get_string('removemessageconfirmdialog', 'local_custom_certification') . "')) deleteMessage(this);", 'class' => 'delete-message', 'type' => 'button', 'value' => get_string('deletebtn', 'local_custom_certification'), 'data-id' => $messageid]);
+        }
 
         $output .= html_writer::start_div('message-content');
         $output .= html_writer::start_div('helpbox');
@@ -375,13 +382,23 @@ class local_custom_certification_renderer extends \plugin_renderer_base
         $output .= html_writer::end_div();
         $output .= html_writer::tag('p', get_string('error:subjectemptyfield', 'local_custom_certification'), ['class' => 'emptysubject custom-error']);
         !empty($messagesubject) ? $subjectvalue = $messagesubject : $subjectvalue = '';
-        $output .= html_writer::tag('input', '', ['name' => 'messagesubject', 'class' => 'messagesubject', 'type' => 'text', 'value' => $subjectvalue]);
+
+        $attr = ['name' => 'messagesubject', 'class' => 'messagesubject', 'type' => 'text', 'value' => $subjectvalue];
+        if(!$canmanage){
+            $attr['disabled'] = 'disabled';
+        }
+        $output .= html_writer::tag('input', '', $attr);
         $output .= html_writer::start_div('helpbox');
         $output .= html_writer::tag('span', get_string('messagelabel', 'local_custom_certification'), ['class' => 'message-label']);
         $output .= $OUTPUT->help_icon('message', 'local_custom_certification');
         $output .= html_writer::end_div();
         !empty($messagebody) ? $bodyvalue = $messagebody : $bodyvalue = '';
-        $output .= html_writer::tag('textarea', $bodyvalue, ['rows' => '4', 'cols' => '50', 'class' => 'messagetext']);
+
+        $attr = ['rows' => '4', 'cols' => '50', 'class' => 'messagetext'];
+        if(!$canmanage){
+            $attr['disabled'] = 'disabled';
+        }
+        $output .= html_writer::tag('textarea', $bodyvalue, $attr);
 
         if (($messagetype == message::TYPE_RECERTIFICATION_WINDOW_OPEN) || ($messagetype == message::TYPE_CERTIFICATION_BEFORE_EXPIRATION)) {
             $output .= html_writer::start_div('helpbox');
@@ -389,7 +406,11 @@ class local_custom_certification_renderer extends \plugin_renderer_base
             $output .= $OUTPUT->help_icon('before', 'local_custom_certification');
             $output .= html_writer::end_div();
             !empty($messagetriggertime) ? $daysvalue = date('z', $messagetriggertime) : $daysvalue = 0;
-            $output .= html_writer::tag('input', '', ['class' => 'messagetriggertime', 'type' => 'text', 'value' => $daysvalue]);
+            $attr = ['class' => 'messagetriggertime', 'type' => 'text', 'value' => $daysvalue];
+            if(!$canmanage){
+                $attr['disabled'] = 'disabled';
+            }
+            $output .= html_writer::tag('input', '', $attr);
         }
 
         $output .= html_writer::start_div('helpbox');
@@ -404,7 +425,11 @@ class local_custom_certification_renderer extends \plugin_renderer_base
             $displaynoneclass = 'notconfirmed';
             $recipientvalue = false;
         }
-        $output .= html_writer::checkbox('additionalcheck', '', $recipientvalue, false, ['class' => 'additionalcheck']);
+        $attr = ['class' => 'additionalcheck'];
+        if(!$canmanage){
+            $attr['disabled'] = 'disabled';
+        }
+        $output .= html_writer::checkbox('additionalcheck', '', $recipientvalue, false, $attr);
 
         $output .= html_writer::start_div('additionalrecipientbox ' . $displaynoneclass);
         $output .= html_writer::start_div('helpbox additional');
@@ -414,7 +439,12 @@ class local_custom_certification_renderer extends \plugin_renderer_base
         !empty($recipientemail) ? $recipientemailvalue = $recipientemail : $recipientemailvalue = '';
         $output .= html_writer::tag('p', get_string('error:emailemptyfield', 'local_custom_certification'), ['class' => 'emptyemail custom-error']);
         $output .= html_writer::tag('p', get_string('error:emailinvalid', 'local_custom_certification'), ['class' => 'invalidemail custom-error']);
-        $output .= html_writer::tag('input', '', ['name' => 'additionalinput', 'class' => 'additionalinput', 'type' => 'text', 'value' => $recipientemailvalue]);
+
+        $attr = ['name' => 'additionalinput', 'class' => 'additionalinput', 'type' => 'text', 'value' => $recipientemailvalue];
+        if(!$canmanage){
+            $attr['disabled'] = 'disabled';
+        }
+        $output .= html_writer::tag('input', '', $attr);
         $output .= html_writer::end_div();
         $output .= html_writer::end_div();
 
@@ -423,7 +453,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
         return $output;
     }
 
-    public function display_certifications($certifications)
+    public function display_certifications($certifications, $canmanage = false)
     {
         global $OUTPUT;
 
@@ -457,15 +487,16 @@ class local_custom_certification_renderer extends \plugin_renderer_base
             $output .= html_writer::start_tag('a', ['href' => new moodle_url('/local/custom_certification/edit.php', ['action' => 'details', 'id' => $certification->id])]);
             $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("t/edit"), 'title' => get_string('edit', 'local_custom_certification')]);
             $output .= html_writer::end_tag('a');
+            if($certification->canmanage){
+                $output .= html_writer::start_tag('a', ['href' => new moodle_url('/local/custom_certification/index.php', ['delete' => $certification->id]),
+                    'onclick' => "return confirm('" . get_string('deleteconfirm', 'local_custom_certification') . "')"]);
+                $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("t/delete"), 'title' => get_string('delete', 'local_custom_certification')]);
+                $output .= html_writer::end_tag('a');
 
-            $output .= html_writer::start_tag('a', ['href' => new moodle_url('/local/custom_certification/index.php', ['delete' => $certification->id]),
-                'onclick' => "return confirm('" . get_string('deleteconfirm', 'local_custom_certification') . "')"]);
-            $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("t/delete"), 'title' => get_string('delete', 'local_custom_certification')]);
-            $output .= html_writer::end_tag('a');
-
-            $output .= html_writer::start_tag('a', ['href' => new moodle_url('/local/custom_certification/index.php', ['copy' => $certification->id])]);
-            $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("t/copy"), 'title' => get_string('copy', 'local_custom_certification')]);
-            $output .= html_writer::end_tag('a');
+                $output .= html_writer::start_tag('a', ['href' => new moodle_url('/local/custom_certification/index.php', ['copy' => $certification->id])]);
+                $output .= html_writer::tag('img', '', ['src' => $OUTPUT->image_url("t/copy"), 'title' => get_string('copy', 'local_custom_certification')]);
+                $output .= html_writer::end_tag('a');
+            }
 
             $output .= html_writer::end_tag('td');
             $output .= html_writer::end_tag('tr');
@@ -473,12 +504,13 @@ class local_custom_certification_renderer extends \plugin_renderer_base
 
         $output .= html_writer::end_tag('table');
 
-
-        $output .= html_writer::start_div('certifications-footer', []);
-        $output .= html_writer::start_tag('form', ['action' => new moodle_url('/local/custom_certification/add.php')]);
-        $output .= html_writer::tag('input', '', ['id' => 'addcertif', 'type' => 'submit', 'value' => get_string('addcertification', 'local_custom_certification')]);
-        $output .= html_writer::end_tag('form');
-        $output .= html_writer::end_div();
+        if(count(\local_custom_certification\certification::get_editable_categories()) > 0){
+            $output .= html_writer::start_div('certifications-footer', []);
+            $output .= html_writer::start_tag('form', ['action' => new moodle_url('/local/custom_certification/add.php')]);
+            $output .= html_writer::tag('input', '', ['id' => 'addcertif', 'type' => 'submit', 'value' => get_string('addcertification', 'local_custom_certification')]);
+            $output .= html_writer::end_tag('form');
+            $output .= html_writer::end_div();
+        }
 
 
         $output .= html_writer::end_div();
@@ -486,23 +518,23 @@ class local_custom_certification_renderer extends \plugin_renderer_base
     }
 
     public function display_overview($certif, $urlcertifid, $viewinguser, $userfullname, $assignmentdata,
-                                     $capability, $enrolleduser, $isrecertif, $progress, $usercertificationdetails, $ragstatus)
+                                     $canview, $enrolleduser, $isrecertif, $progress, $usercertificationdetails, $ragstatus, $canmanage = false)
     {
-        if ($certif->id == null || ($certif->visible == 0 && !$capability) || $certif->deleted == 1) {
+        if ($certif->id == null || ($certif->visible == 0 && !$canview) || $certif->deleted == 1) {
             return html_writer::tag('h2', get_string('nocertification', 'local_custom_certification', $urlcertifid), ['class' => 'no-information']);
         }
 
         $output = html_writer::start_div('certification-overview', []);
-        if ($capability) {
+        if ($canmanage) {
             $url = new moodle_url('/local/custom_certification/edit.php', ['action' => 'details', 'id' => $certif->id]);
             $output .= html_writer::tag('button', get_string('editcertificationbtn', 'local_custom_certification'), ['onclick' => 'window.location=\''.$url->out(false).'\'', 'class' => 'btn-primary edit-cert-btn']);
         }
 
-        if (!$enrolleduser && !$capability) {
+        if (!$enrolleduser && !$canview) {
             $output .= html_writer::tag('h5', get_string('notenrolleduser', 'local_custom_certification'), ['class' => 'not-enrolled']);
         }
 
-        if ($capability && $viewinguser) {
+        if ($canview && $viewinguser) {
             if ($enrolleduser) {
                 $output .= html_writer::tag('p', get_string('viewinguser', 'local_custom_certification', $userfullname), ['class' => 'viewing-user']);
             } else {
@@ -582,7 +614,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
                     if(count($certif->certificationcoursesets) > 1){
                         $output .= $this->display_coursesetbox_summary($certif->certificationcoursesets);
                     }
-                    $output .= $this->overview_courseset($certif, $certif->certificationcoursesets, $capability, $enrolleduser, $isrecertif, $progress, $ragstatus);
+                    $output .= $this->overview_courseset($certif, $certif->certificationcoursesets, $canview, $enrolleduser, $isrecertif, $progress, $ragstatus);
                 } else {
                     $output .= html_writer::tag('p', get_string('certificationnotset', 'local_custom_certification'), ['class' => 'certif-label  not-set']);
                 }
@@ -591,7 +623,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
                     if(count($certif->recertificationcoursesets) > 1){
                         $output .= $this->display_coursesetbox_summary($certif->recertificationcoursesets);
                     }
-                    $output .= $this->overview_courseset($certif, $certif->recertificationcoursesets, $capability, $enrolleduser, $isrecertif, $progress, $ragstatus);
+                    $output .= $this->overview_courseset($certif, $certif->recertificationcoursesets, $canview, $enrolleduser, $isrecertif, $progress, $ragstatus);
                 } else {
                     $output .= html_writer::tag('p', get_string('recertificationnotset', 'local_custom_certification'), ['class' => 'certif-label  not-set']);
                 }
@@ -601,7 +633,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
                 if(count($certif->certificationcoursesets) > 1){
                     $output .= $this->display_coursesetbox_summary($certif->certificationcoursesets);
                 }
-                $output .= $this->overview_courseset($certif, $certif->certificationcoursesets, $capability, $enrolleduser, $isrecertif, $progress, $ragstatus);
+                $output .= $this->overview_courseset($certif, $certif->certificationcoursesets, $canview, $enrolleduser, $isrecertif, $progress, $ragstatus);
             } else {
                 $output .= html_writer::tag('p', get_string('certificationnotset', 'local_custom_certification'), ['class' => 'certif-label  not-set']);
             }
@@ -610,7 +642,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
                 if(count($certif->recertificationcoursesets) > 1){
                     $output .= $this->display_coursesetbox_summary($certif->recertificationcoursesets);
                 }
-                $output .= $this->overview_courseset($certif, $certif->recertificationcoursesets, $capability, $enrolleduser, $isrecertif, $progress, $ragstatus);
+                $output .= $this->overview_courseset($certif, $certif->recertificationcoursesets, $canview, $enrolleduser, $isrecertif, $progress, $ragstatus);
             } else {
                 $output .= html_writer::tag('p', get_string('recertificationnotset', 'local_custom_certification'), ['class' => 'certif-label  not-set']);
             }
@@ -621,7 +653,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
         return $output;
     }
 
-    private function overview_courseset($certif, $coursesets, $capability, $enrolleduser, $isrecertif, $progress, $ragstatus)
+    private function overview_courseset($certif, $coursesets, $canview, $enrolleduser, $isrecertif, $progress, $ragstatus)
     {
         $output = '';
         foreach ($coursesets as $courseset) {
@@ -677,7 +709,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
 
                 $output .= html_writer::tag('td', $progressoutput);
 
-                if ($capability || $enrolleduser) {
+                if ($canview || $enrolleduser) {
                     $output .= html_writer::start_tag('td', ['class' => 'certification-overview-actions']);
                     $urlparams = [];
                     $urlparams['id'] = $course->courseid;
