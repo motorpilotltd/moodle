@@ -90,8 +90,6 @@ class ruleset_renderer extends \plugin_renderer_base
         $output .= \html_writer::end_div();
         $output .= \html_writer::start_tag('fieldset', ['class' => 'felement fgroup rules_' . $rulesetid]);
         foreach($rules as $counter => $rule){
-
-            $output .= $this->display_rule($rulesetid, ++$counter, $prefix.$rule->field, $rule->criteriatype, $rule->value);
             $output .= $this->display_rule($rulesetid, ++$counter, dynamic_cohorts::get_fieldtype_prefix($rule->fieldtype).$rule->field, $rule->criteriatype, $rule->value, $viewonly);
         }
         $output .= \html_writer::end_tag('fieldset');
