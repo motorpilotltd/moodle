@@ -1,21 +1,24 @@
-span.sharebutton {
+div.yj-share-button {
+    padding: 10px;
     float: right;
-    padding-right: 5px;
+    cursor: pointer;
 }
-
-span#yj-share-button {
-    padding-bottom: 5px;
+div.yj-share-button img {
+    max-width: 20px;
 }
 
 a.yj-default-share-button {
     padding: 6px;
 }
 
-span.yj-yam-spittle {
+.yj-yam-spittle {
     width: 25px !important;
     height: 21px;
 }
 
-span.yj-share-copy {
+.yj-share-copy {
     font-size: 14px !important;
+}
+div.av_metadata {
+    float:left;
 }
