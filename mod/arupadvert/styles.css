@@ -1,9 +1,9 @@
-div.yj-share-button {
+span.yammerbutton {
     padding: 10px;
     float: right;
     cursor: pointer;
 }
-div.yj-share-button img {
+span.yammerbutton img {
     max-width: 20px;
 }
 

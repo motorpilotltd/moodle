@@ -14,19 +14,20 @@
                     <p class="metatext">{{{text}}}</p>
                 {{/blockelements}}
             </div>
-            <div class="yj-share-button" class="yammerbutton">{{#pix}}yammer, mod_arupadvert{{/pix}}
+            <span class="yammerbutton">
+                {{#pix}}yammer, mod_arupadvert{{/pix}}
+            </span>
 
-                <script type="text/javascript" src="https://s0.assets-yammer.com/assets/platform_social_buttons.min.js"></script>
-                <script type="text/javascript">
-                    var options = {
-                        customButton : true,
-                        classSelector: 'yammerbutton',
-                        defaultMessage: {{{description}}}, //optionally pass a message to prepopulate your post
-                        pageUrl: '{{{ogsharelink}}}' //current browser url is used by default. You can pass your own url if you want to generate the OG object from a different URL.
-                    };
-                    yam.platform.yammerShare(options);
-                </script>
-            </div>
+            <script type="text/javascript" src="https://s0.assets-yammer.com/assets/platform_social_buttons.min.js"></script>
+            <script type="text/javascript">
+                var options = {
+                    customButton : true,
+                    classSelector: 'yammerbutton',
+                    defaultMessage: {{{description}}}, //optionally pass a message to prepopulate your post
+                    pageUrl: '{{{ogsharelink}}}' //current browser url is used by default. You can pass your own url if you want to generate the OG object from a different URL.
+                };
+                yam.platform.yammerShare(options);
+            </script>
         </div>
 
 
