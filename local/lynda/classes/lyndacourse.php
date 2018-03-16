@@ -159,18 +159,18 @@ class lyndacourse extends \data_object {
 
         $params['regionid'] = $regionid;
 
+        $obj = new self();
+        $allfields = $obj->required_fields + array_keys($obj->optional_fields);
+        $fieldlist = [];
+        foreach ($allfields as $field) {
+            $fieldlist[] = "llc.$field";
+        }
+        $fieldlist = implode(',', $fieldlist);
+
         if ($countonly) {
             $fields = 'SELECT COUNT(1) ';
-            return $DB->count_records_sql($fields . $sql, $params);
+            return $DB->count_records_sql($fields . $sql . 'GROUP BY ' . $fieldlist, $params);
         } else {
-            $obj = new self();
-            $allfields = $obj->required_fields + array_keys($obj->optional_fields);
-
-            $fieldlist = [];
-            foreach ($allfields as $field) {
-                $fieldlist[] = "llc.$field";
-            }
-            $fieldlist = implode(',', $fieldlist);
             $fields = 'SELECT ' . $fieldlist . ' ';
             if ($datas = $DB->get_records_sql($fields . $sql . 'GROUP BY ' . $fieldlist . ' ORDER BY title ASC', $params, $page * $perpage, $perpage)) {
 
