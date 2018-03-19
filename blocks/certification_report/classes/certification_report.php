@@ -469,6 +469,9 @@ class certification_report {
         // Do we need to flip view?
         if (defined('BLOCK_CERTIFICATION_REPORT_EXPORT') && BLOCK_CERTIFICATION_REPORT_EXPORT && optional_param('exportview', '', PARAM_ALPHA) === 'users') {
             $view = 'users';
+            // Raise limits as could be big...
+            \core_php_time_limit::raise();
+            raise_memory_limit(MEMORY_HUGE);
         }
 
         /**
@@ -863,7 +866,7 @@ class certification_report {
                   SUM(u.exemptusers) as exemptusers,
                   SUM(u.exemptcompliant) as exemptcompliant,
                   SUM(u.users) + SUM(u.optionalusers) + SUM(u.exemptusers) as allusers,
-				  SUM(u.compliant) + SUM(u.optionalcompliant) + SUM(u.exemptcompliant) as allcompliant
+                  SUM(u.compliant) + SUM(u.optionalcompliant) + SUM(u.exemptcompliant) as allcompliant
                 FROM
                 (   
                     SELECT
