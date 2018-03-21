@@ -2212,7 +2212,7 @@ function calendar_time_representation($time) {
         $timeformat = get_config(null, 'calendar_site_timeformat');
     }
 /* BEGIN CORE MOD */
-    global $USER;
+    global $CFG, $USER;
     require_once ($CFG->dirroot . '/local/lunchandlearn/lib.php');
     $userdatetime = new DateTime(null, lunchandlearn_get_moodle_user_timezone($USER));
     $userdatetime->setTimestamp($time);
