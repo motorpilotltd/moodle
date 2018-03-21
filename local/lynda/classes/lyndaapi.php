@@ -196,7 +196,7 @@ class lyndaapi {
             mtrace('Started synccourseprogress for ' . $name);
 
             $tz = new \DateTimeZone('America/Los_Angeles');
-            foreach ($this->getcourseprogressiterator($lastruntimeprogress, $thisruntime) as $raw) {
+            foreach ($this->getcourseprogressiterator($lastruntimeprogress - DAYSECS, $thisruntime) as $raw) {
                 $datetime = \DateTime::createFromFormat('m/d/Y H:i:s', $raw->LastViewed, $tz);
                 $timestamp = $datetime->getTimestamp();
 
@@ -254,7 +254,7 @@ class lyndaapi {
                 $lastruntimecompletion = 0;
             }
 
-            foreach ($this->getcoursecompletioniterator($lastruntimecompletion, $thisruntime) as $raw) {
+            foreach ($this->getcoursecompletioniterator($lastruntimecompletion - DAYSECS, $thisruntime) as $raw) {
                 $user = self::getcacheduser($raw->Username);
                 if ($user == null) {
                     mtrace('Unable to find user account for ' . $raw->Username);
