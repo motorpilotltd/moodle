@@ -33,7 +33,7 @@ class lyndaapi {
         // Max value for limit appears to be 41 (seems pretty random to me...) but it's really unreliable if we go over 25.
         // It's probably unreliable due to the MASSIVE json docs that come back being unparsable.
         raise_memory_limit(MEMORY_HUGE);
-        $url = "/courses?order=ByTitle&sort=asc&start=$start&limit=250";
+        $url = "/courses?order=ByTitle&sort=asc&start=$start&limit=250&filter.includes=ID,Title,Description,DurationInSeconds,Tags.ID,Tags.Name,Tags.Type,Tags.TypeName,Thumbnails.FullURL";
         $results = $this->callapi($url);
 
         if ($results === null) {
@@ -407,7 +407,7 @@ class lyndaapi {
         $lyndacourse->thumbnail = $raw->Thumbnails[0]->FullURL;
 
         foreach ($raw->Thumbnails as $thumbnail) {
-            if ($thumbnail->Height == 130 && $thumbnail->Width == 230) {
+            if (stristr($thumbnail->FullURL, '130x230') !== false) {
                 $lyndacourse->thumbnail = $thumbnail->FullURL;
                 break;
             }

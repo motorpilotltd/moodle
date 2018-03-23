@@ -136,7 +136,7 @@ class managecourses_table extends \table_sql {
     public function col_tags($event) {
         $tagsoncourse = explode(',', $event->tags);
 
-        $tagstrings = '';
+        $tagstrings = [];
         foreach (lyndatagtype::fetch_full_taxonomy() as $type) {
             $tagstoshow = [];
 
