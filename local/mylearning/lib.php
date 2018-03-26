@@ -19,11 +19,14 @@ defined('MOODLE_INTERNAL') || die();
 function local_mylearning_extend_navigation($navigation) {
     global $CFG, $USER;
 
+    // Temporary fix to avoid double node addition in boost based themes...
+    return;
+
     if (!isloggedin() || !get_config('local_mylearning', 'version')) {
         return;
     }
 
-    $node = $navigation->get('home');
+    $node = $navigation->find('home', navigation_node::TYPE_SETTING);
     $node->action = null;
     $node->type = navigation_node::NODETYPE_BRANCH;
     /*
