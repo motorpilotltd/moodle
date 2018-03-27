@@ -135,7 +135,9 @@ class learninghistory extends base {
             'classenddate',
             'bookingstatus',
             'coursename',
-            'classcategory');
+            'classcategory',
+            'classcost',
+            'classcostcurrency');
 
         $this->textfilterfields = array(
             'actualregion' => 'dropdown',
@@ -569,6 +571,24 @@ class learninghistory extends base {
         // Show classcategory for CPD records
         if ($key == 'classcategory') {
             if (!empty($row->cpdid)) {
+                return $row->$key;
+            } else {
+                return '';
+            }
+        }
+
+        if ($key == 'classcost') {
+            if (!empty($row->price)) {
+                return $row->price;
+            } else {
+                return $row->$key;
+            }
+        }
+
+        if ($key == 'classcostcurrency') {
+            if (!empty($row->price)) {
+                return $row->currencycode;
+            } else if (!empty($row->classcost)) {
                 return $row->$key;
             } else {
                 return '';
