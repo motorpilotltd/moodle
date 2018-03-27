@@ -646,7 +646,9 @@ class daterangelearning extends base {
         }
 
         if ($key == 'classcost') {
-            if (!empty($row->price)) {
+            if ($row->pricebasis == 'No Charge') {
+                return '';
+            } else if (!empty($row->price)) {
                 return $row->price;
             } else {
                 return $row->$key;
@@ -654,7 +656,9 @@ class daterangelearning extends base {
         }
 
         if ($key == 'classcostcurrency') {
-            if (!empty($row->price)) {
+            if ($row->pricebasis == 'No Charge') {
+                return '';
+            } else if (!empty($row->price)) {
                 return $row->currencycode;
             } else if (!empty($row->classcost)) {
                 return $row->$key;
