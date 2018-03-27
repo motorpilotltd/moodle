@@ -22,9 +22,9 @@ class role_renderer extends \plugin_renderer_base
         $output .= \html_writer::tag('label', get_string('addrole', 'local_dynamic_cohorts'));
         $output .= \html_writer::end_div();
         $output .= \html_writer::end_div();
-        
-        $output .= \html_writer::select(dynamic_cohorts::get_context_list('local/dynamic_cohorts:edit'), 'context', 0, [], [ 'class' => 'context_select']);
-        $output .= \html_writer::select(dynamic_cohorts::get_roles(1), 'role', 0, []);
+        $contextlist = dynamic_cohorts::get_context_list('local/dynamic_cohorts:edit');
+        $output .= \html_writer::select($contextlist, 'context', 0, [], [ 'class' => 'context_select']);
+        $output .= \html_writer::select(dynamic_cohorts::get_roles(key($contextlist)), 'role', 0, []);
 
         $output .= \html_writer::tag('input', '', ['type' => 'button', 'name' => 'addrole', 'class' => 'addrole', 'value' => get_string('addrule', 'local_dynamic_cohorts')]);
         $output .= \html_writer::end_div();

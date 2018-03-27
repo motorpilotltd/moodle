@@ -145,6 +145,7 @@ $(document).on('change', '.field_select', function (e) {
             });
         }
     });
+    $('#value_field_' + rulesetid).html('<img src="' + M.cfg.wwwroot +'/pix/y/loading.gif"/>');
     $.ajax({
         type: "GET",
         url: M.cfg.wwwroot + '/local/dynamic_cohorts/ajax/dynamic_cohorts.php',
@@ -262,10 +263,11 @@ $(document).on('click', '.addrole', function (e) {
 
     var roleid = $("select[name='role'] option:selected").val();
     var contextid = $("select[name='context'] option:selected").val();
-    
-    $.when(get_role(contextid, roleid)).done(function (response) {
-        $('.rolelist').append(response);
-    });
+    if(parseInt(roleid) > 0 && parseInt(contextid) > 0){
+        $.when(get_role(contextid, roleid)).done(function (response) {
+            $('.rolelist').append(response);
+        });
+    }
 
 });
 
