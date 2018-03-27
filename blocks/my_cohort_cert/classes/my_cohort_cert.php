@@ -53,6 +53,9 @@ class my_cohort_cert {
         }
         $categories = self::prepare_cohort_urls($categories);
 
+        foreach($categories as &$category){
+            $category->is_root_node = self::is_root_node($category->parent, $categories);
+        }
         return self::build_tree($categories, $parent);
     }
 
@@ -83,6 +86,9 @@ class my_cohort_cert {
         $categories = $DB->get_records_sql($sql, $params);
         $categories = self::prepare_certification_urls($categories);
 
+        foreach($categories as &$category){
+            $category->is_root_node = self::is_root_node($category->parent, $categories);
+        }
         return self::build_tree($categories, 0);
     }
 
@@ -209,17 +215,34 @@ class my_cohort_cert {
      * @param int $parentid
      * @return array
      */
-    public static function build_tree(array &$elements, $parentid = -1) {
+    public static function build_tree(array &$elements, $parentid = -1, $root = true) {
         $branch = array();
         foreach ($elements as &$element) {
             $element = (array)$element;
-            if ($element['parent'] == $parentid) {
-                $children = self::build_tree($elements, $element['id']);
+            if ($element['parent'] == $parentid || ($root && $element['is_root_node'] == true)) {
+                $children = self::build_tree($elements, $element['id'], false);
                 $element['children'] = $children;
                 $branch[$element['id']] = $element;
                 unset($element);
             }
         }
         return $branch;
+    }
+
+    /**
+     * Check if given element is root node
+     *
+     * @param $id
+     * @param $elements
+     * @return bool
+     */
+    public static function is_root_node($id, $elements){
+        foreach($elements as $element){
+            $element = (array)$element;
+            if($element['id'] == $id){
+                return false;
+            }
+        }
+        return true;
     }
 }
