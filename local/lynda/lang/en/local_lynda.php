@@ -39,7 +39,7 @@ $string['description'] = 'Description';
 $string['tags'] = 'Lynda Tags';
 $string['regions'] = 'Regions';
 $string['loadmore'] = 'Loading videos from Lynda.com';
-$string['loadfiltered'] = 'Ordering videos';
+$string['loadfiltered'] = 'Loading videos';
 $string['noresults'] = '<div class="alert alert-info" role="alert">No results found that match your search</div>';
 $string['enabledregions'] = 'Regions with access to Lynda.com';
 $string['percentcomplete'] = 'Percentage complete';

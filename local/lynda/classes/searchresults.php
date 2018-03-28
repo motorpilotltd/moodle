@@ -48,10 +48,6 @@ class searchresults implements \templatable {
         $searchresults->resultcount = $this->count;
         $searchresults->results = [];
 
-        if (empty($this->results)) {
-            return [];
-        }
-
         foreach ($this->results as $resultobj) {
             $result = new \stdClass();
 

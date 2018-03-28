@@ -168,8 +168,8 @@ class lyndacourse extends \data_object {
         $fieldlist = implode(',', $fieldlist);
 
         if ($countonly) {
-            $fields = 'SELECT COUNT(1) ';
-            return $DB->count_records_sql($fields . $sql . 'GROUP BY ' . $fieldlist, $params);
+            $fields = 'SELECT COUNT(DISTINCT llc.id) ';
+            return $DB->count_records_sql($fields . $sql , $params);
         } else {
             $fields = 'SELECT ' . $fieldlist . ' ';
             if ($datas = $DB->get_records_sql($fields . $sql . 'GROUP BY ' . $fieldlist . ' ORDER BY title ASC', $params, $page * $perpage, $perpage)) {
