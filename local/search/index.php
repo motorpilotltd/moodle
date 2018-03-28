@@ -102,8 +102,8 @@ $resultsdata = array_merge(local_search_get_results_data($courses, $search, $tot
     'learningeventsenabled' => $isinternaluser
 ));
 
-if($DB->get_dbfamily() == 'mssql') {
-    echo $OUTPUT->notification('Search will not function correctly without MS SQL so results below may be inacurate.');
+if($DB->get_dbfamily() != 'mssql') {
+    echo $OUTPUT->notification('Search will not function correctly without MS SQL so results below may be inaccurate.');
 }
 
 echo $renderer->search_results($resultsdata, $search);
