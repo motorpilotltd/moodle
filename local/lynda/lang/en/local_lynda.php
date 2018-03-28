@@ -45,6 +45,6 @@ $string['enabledregions'] = 'Regions with access to Lynda.com';
 $string['percentcomplete'] = 'Percentage complete';
 $string['lastviewed'] = 'Last viewed';
 $string['duration'] = 'Duration';
-$string['redirectmessage'] = 'You are about to leave Moodle and head to Lynda.com. You’re Learning history will update within the next 24 hours to reflect any progress made.';
+$string['redirectmessage'] = 'You are about to leave Moodle and head to Lynda.com. Your learning history will update within the next 24 hours to reflect any progress made.';
 $string['selectfilters'] = 'Apply filters to see results';
 $string['testmode'] = 'Fake API calls';
