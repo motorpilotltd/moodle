@@ -156,10 +156,10 @@ class cohort_edit_form extends moodleform
     {
         global $CFG;
         require_once($CFG->libdir . '/coursecatlib.php');
-        $displaylist = coursecat::make_categories_list('moodle/cohort:manage');
+        $displaylist = coursecat::make_categories_list('local/dynamic_cohorts:edit');
         $options = array();
         $syscontext = context_system::instance();
-        if (has_capability('moodle/cohort:manage', $syscontext)) {
+        if (has_capability('local/dynamic_cohorts:edit', $syscontext)) {
             $options[$syscontext->id] = $syscontext->get_context_name();
         }
         foreach ($displaylist as $cid => $name) {
