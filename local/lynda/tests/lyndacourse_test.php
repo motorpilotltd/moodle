@@ -228,4 +228,101 @@ class lyndacourse_test extends advanced_testcase {
         $record1 = reset($progressrecords);
         $this->assertEquals(25, $record1->percentcomplete);
     }
+
+    public function test_synccoursecompletionwithoutcourses_matchonemail() {
+        global $DB;
+        $sink = $this->redirectEvents();
+
+        require_once('fixtures/lyndaapimockuserresolution.php');
+        $api = new \local_lynda\lyndaapimockuserresolution();
+        $api->mode = \local_lynda\lyndaapimockuserresolution::MATCHONLYONEMAIL;
+        $api->synccoursecompletion();
+
+        $cpdrecords = $DB->get_records('local_taps_enrolment');
+        $this->assertEquals(1, count($cpdrecords));
+
+        $events = $sink->get_events();
+        $this->assertEquals(0, count($events));
+    }
+
+    public function test_synccoursecompletionwithoutcourses_matchonnothing() {
+        global $DB;
+        $sink = $this->redirectEvents();
+
+        require_once('fixtures/lyndaapimockuserresolution.php');
+        $api = new \local_lynda\lyndaapimockuserresolution();
+        $api->mode = \local_lynda\lyndaapimockuserresolution::MATCHONNOTHING;
+        $api->synccoursecompletion();
+
+        $cpdrecords = $DB->get_records('local_taps_enrolment');
+        $this->assertEquals(0, count($cpdrecords));
+
+        $events = $sink->get_events();
+        $this->assertEquals(1, count($events));
+        $event = reset($events);
+        $data = $event->get_data();
+        $this->assertContains('180212', $data['other']['rawrecord']); // Check the raw record from the API is in there.
+    }
+
+    public function test_synccoursecompletionwithoutcourses_matchuseridfirstname() {
+        global $DB;
+        $sink = $this->redirectEvents();
+        require_once('fixtures/lyndaapimockuserresolution.php');
+        $api = new \local_lynda\lyndaapimockuserresolution();
+        $api->mode = \local_lynda\lyndaapimockuserresolution::MATCHUSERIDANDFIRSTNAME;
+        $api->synccoursecompletion();
+
+        $cpdrecords = $DB->get_records('local_taps_enrolment');
+        $this->assertEquals(1, count($cpdrecords));
+
+        $events = $sink->get_events();
+        $this->assertEquals(0, count($events));
+    }
+
+    public function test_synccourseprogresswithoutcourses_matchonemail() {
+        $sink = $this->redirectEvents();
+
+        require_once('fixtures/lyndaapimockuserresolution.php');
+        $api = new \local_lynda\lyndaapimockuserresolution();
+        $api->mode = \local_lynda\lyndaapimockuserresolution::MATCHONLYONEMAIL;
+        $api->synccourseprogress();
+
+        $progressrecords = \local_lynda\lyndacourseprogress::fetch_all([]);
+        $this->assertEquals(1, count($progressrecords));
+
+        $events = $sink->get_events();
+        $this->assertEquals(0, count($events));
+    }
+
+    public function test_synccourseprogresswithoutcourses_matchonnothing() {
+        $sink = $this->redirectEvents();
+
+        require_once('fixtures/lyndaapimockuserresolution.php');
+        $api = new \local_lynda\lyndaapimockuserresolution();
+        $api->mode = \local_lynda\lyndaapimockuserresolution::MATCHONNOTHING;
+        $api->synccourseprogress();
+
+        $progressrecords = \local_lynda\lyndacourseprogress::fetch_all([]);
+        $this->assertEquals(0, count($progressrecords));
+
+        $events = $sink->get_events();
+        $this->assertEquals(1, count($events));
+        $event = reset($events);
+        $data = $event->get_data();
+        $this->assertContains('180212', $data['other']['rawrecord']); // Check the raw record from the API is in there.
+    }
+
+    public function test_synccourseprogresswithoutcourses_matchuseridfirstname() {
+        $sink = $this->redirectEvents();
+        require_once('fixtures/lyndaapimockuserresolution.php');
+        $api = new \local_lynda\lyndaapimockuserresolution();
+        $api->mode = \local_lynda\lyndaapimockuserresolution::MATCHUSERIDANDFIRSTNAME;
+        $api->synccourseprogress();
+
+        $progressrecords = \local_lynda\lyndacourseprogress::fetch_all([]);
+        $this->assertEquals(1, count($progressrecords));
+
+        $events = $sink->get_events();
+        $this->assertEquals(0, count($events));
+    }
 }

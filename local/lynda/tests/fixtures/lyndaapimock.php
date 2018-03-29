@@ -22,7 +22,6 @@
 
 namespace local_lynda;
 
-
 class lyndaapimock extends lyndaapi {
     public $mockregions = false;
     public $updatedresponse = false;
@@ -39,12 +38,13 @@ class lyndaapimock extends lyndaapi {
     }
 
     private $users = [];
+
     public function individualusagedetail($startdate, $enddate, $start) {
         $retval = clone($this->individualusagedetailresponse);
         $retval->ReportData = array_slice($retval->ReportData, $start, 2);
 
         $i = 0;
-        foreach($retval->ReportData as $data) {
+        foreach ($retval->ReportData as $data) {
             if (in_array($data->Username, $this->users)) {
                 continue; // Already been mapped.
             }
@@ -52,7 +52,12 @@ class lyndaapimock extends lyndaapi {
             if (isset($this->users[$data->Username])) {
                 $data->Username = $this->users[$data->Username];
             } else {
-                $user = self::getDataGenerator()->create_user(['idnumber' => "padded$i"]);
+                $user = self::getDataGenerator()->create_user([
+                        'idnumber'  => "padded$i",
+                        'firstname' => $data->FirstName,
+                        'lastname'  => $data->LastName,
+                        'email'     => $data->Email
+                ]);
                 $this->users[$data->Username] = $user->id;
                 $data->Username = $user->id;
             }
@@ -67,9 +72,18 @@ class lyndaapimock extends lyndaapi {
         $retval->ReportData = array_slice($retval->ReportData, $start, 2);
 
         $i = 0;
-        foreach($retval->ReportData as $data) {
-            $user = self::getDataGenerator()->create_user(['idnumber' => "padded$i"]);
+        foreach ($retval->ReportData as $data) {
+            $user = self::getDataGenerator()->create_user([
+                    'idnumber'  => "padded$i",
+                    'firstname' => $data->FirstName,
+                    'lastname'  => $data->LastName,
+                    'email'     => $data->Email
+            ]);
             $data->Username = $user->id;
+            $data->email = $user->email;
+            $data->FirstName = $user->firstname;
+            $data->LastName = $user->lastname;
+            $data->UserID = $user->id;
             $i++;
         }
 
@@ -86,28 +100,36 @@ class lyndaapimock extends lyndaapi {
         parent::__construct();
 
         $this->region = -1;
-        $this->getcoursesresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcoursesresponse.json"));
-        $this->individualusagedetailresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse.json"));
-        $this->certficateofcompletionresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcertficateofcompletionresponse.json"));
+        $this->getcoursesresponse =
+                json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcoursesresponse.json"));
+        $this->individualusagedetailresponse =
+                json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse.json"));
+        $this->certficateofcompletionresponse =
+                json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcertficateofcompletionresponse.json"));
     }
 
     public function reset() {
         global $CFG;
-        
-        $this->getcoursesresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcoursesresponse.json"));
-        $this->individualusagedetailresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse.json"));
-        $this->certficateofcompletionresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcertficateofcompletionresponse.json"));
+
+        $this->getcoursesresponse =
+                json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcoursesresponse.json"));
+        $this->individualusagedetailresponse =
+                json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse.json"));
+        $this->certficateofcompletionresponse =
+                json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcertficateofcompletionresponse.json"));
     }
 
     public function useupdatedcourses() {
         global $CFG;
-        $this->getcoursesresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcoursesresponse_withupdate.json"));
+        $this->getcoursesresponse =
+                json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcoursesresponse_withupdate.json"));
     }
 
     public function useupdatedindividualusagedetailresponse() {
         global $CFG;
         $this->updatedresponse = true;
-        $this->individualusagedetailresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse_withupdate.json"));
+        $this->individualusagedetailresponse =
+                json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse_withupdate.json"));
     }
 
     public function dropcoursefromresponse() {
@@ -119,13 +141,16 @@ class lyndaapimock extends lyndaapi {
 
         $this->region = $regionid;
         if ($this->updatedresponse) {
-            $this->getcoursesresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcoursesresponse_withupdate.json"));
-        } else if ($this->mockregions && ($regionid == 3 || $regionid ==4)) {
-            $this->individualusagedetailresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse_region$regionid.json"));
+            $this->getcoursesresponse =
+                    json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockcoursesresponse_withupdate.json"));
+        } else if ($this->mockregions && ($regionid == 3 || $regionid == 4)) {
+            $this->individualusagedetailresponse =
+                    json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse_region$regionid.json"));
         } else if ($this->mockregions) {
             $this->individualusagedetailresponse = json_decode('{"Total": 0,"ReportData":[]}');
         } else if (!$this->mockregions) {
-            $this->individualusagedetailresponse = json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse.json"));
+            $this->individualusagedetailresponse =
+                    json_decode(file_get_contents("$CFG->dirroot/local/lynda/tests/fixtures/mockindividualusagedetailresponse.json"));
         }
         return true;
     }
