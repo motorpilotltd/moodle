@@ -22,18 +22,27 @@ function xmldb_local_search_upgrade($oldversion = 0) {
 
     if ($oldversion < 2015111601) {
 
-        require_once("$CFG->dirroot/local/search/db/upgradelib.php");
-        local_search_install_fulltextindexes();
+        $dbfamily = $DB->get_dbfamily();
+        if ($dbfamily == 'mssql') {
+            $DB->execute('CREATE FULLTEXT CATALOG moodlecoursesearch');
+            $DB->execute('CREATE FULLTEXT INDEX ON {course} (fullname, shortname, summary) KEY INDEX mdl_cour_id_pk ON moodlecoursesearch');
+            $DB->execute('CREATE FULLTEXT INDEX ON {arupadvertdatatype_custom} (keywords) KEY INDEX mdl_arupcust_id_pk ON moodlecoursesearch');
+            $DB->execute('CREATE FULLTEXT INDEX ON {local_taps_course} (keywords, coursecode) KEY INDEX mdl_locatapscour_id_pk ON moodlecoursesearch');
+            $DB->execute('CREATE FULLTEXT INDEX ON {local_taps_class} (classname) KEY INDEX mdl_locatapsclas_id_pk ON moodlecoursesearch');
+        }
 
         // Main savepoint reached.
         upgrade_plugin_savepoint(true, 2015111601, 'local', 'search');
     }
 
     if ($oldversion < 2015111603) {
-        $DB->execute('ALTER FULLTEXT INDEX ON {local_taps_course} ADD ([coursedescription])');
-        $DB->execute('ALTER FULLTEXT INDEX ON {local_taps_course} ADD ([courseobjectives])');
-        $DB->execute('ALTER FULLTEXT INDEX ON {arupadvertdatatype_custom} ADD ([objectives])');
-        $DB->execute('ALTER FULLTEXT INDEX ON {arupadvertdatatype_custom} ADD ([description])');
+        $dbfamily = $DB->get_dbfamily();
+        if ($dbfamily == 'mssql') {
+            $DB->execute('ALTER FULLTEXT INDEX ON {local_taps_course} ADD ([coursedescription])');
+            $DB->execute('ALTER FULLTEXT INDEX ON {local_taps_course} ADD ([courseobjectives])');
+            $DB->execute('ALTER FULLTEXT INDEX ON {arupadvertdatatype_custom} ADD ([objectives])');
+            $DB->execute('ALTER FULLTEXT INDEX ON {arupadvertdatatype_custom} ADD ([description])');
+        }
 
         // Main savepoint reached.
         upgrade_plugin_savepoint(true, 2015111603, 'local', 'search');
