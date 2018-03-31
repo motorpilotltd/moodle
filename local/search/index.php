@@ -2,21 +2,9 @@
 require_once("../../config.php");
 require_once($CFG->dirroot.'/lib/coursecatlib.php');
 require_once($CFG->dirroot.'/local/search/lib.php');
+require_once($CFG->dirroot . '/local/regions/lib.php');
 
-$sql = <<<EOS
-SELECT
-    lru.userid,
-    lru.regionid,
-    lrr.name
-FROM
-    {local_regions_use} lru
-JOIN
-    {local_regions_reg} lrr
-    ON lrr.id = lru.regionid
-WHERE
-    lru.userid = :userid
-EOS;
-$userregion = $DB->get_record_sql($sql, array('userid' => $USER->id));
+$userregion = local_regions_get_user_region($USER);
 
 $search    = optional_param('search', '', PARAM_RAW);  // search words
 $page      = optional_param('page', 0, PARAM_INT);     // which page to show
@@ -89,6 +77,11 @@ array_unshift($options, array('name'=>'All regions', 'value'=> '0',  0 == $regio
 
 $filteroutput = new \local_search\output\filter_output($filters);
 
+$enablelynda = false;
+if (isset($userregion->regionid)) {
+    $enablelynda = \local_lynda\lib::enabledforregion($region);
+}
+
 $resultsdata = array_merge(local_search_get_results_data($courses, $search, $totalcount), array(
     'searchterm'    => $search,
     'regionid'      => $region,
@@ -96,9 +89,11 @@ $resultsdata = array_merge(local_search_get_results_data($courses, $search, $tot
     'courseloader'  => new moodle_url('/local/search/search.php'),
     'searchloader'  => new moodle_url('/local/lunchandlearn/search.php'),
     'kalturaloader' => new moodle_url('/local/kalturaview/search.php'),
+    'lyndaloader' => new moodle_url('/local/lynda/search.php'),
     'regions' => $options,
     'filtersdata' => $filteroutput->export_for_template($OUTPUT),
     'kalturaenabled' => $isinternaluser,
+    'lyndaenabled' => $enablelynda,
     'learningeventsenabled' => $isinternaluser
 ));
 

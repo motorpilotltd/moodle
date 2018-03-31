@@ -15,19 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
- *
- * @package     local_taps
- * @copyright   2016 Motorpilot Ltd
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    local_lynda
+ * @copyright  2017 Andrew Hancox <andrewdchancox@googlemail.com> On Behalf of Arup
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111613;
-$plugin->requires  = 2015111600; // Moodle 3.0.x.
-$plugin->component = 'local_taps';
+$plugin->version   = 2016080519;
+$plugin->requires  = 2015111600; // Moodle 3.0.
+$plugin->component = 'local_lynda';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.11 (Build: {$plugin->version})";
-
-$plugin->dependencies = array();
+$plugin->release   = "3.0.1 (Build: {$plugin->version})";

@@ -152,6 +152,8 @@ $string['status:waitlisted'] = 'Waiting list';
 
 $string['worksheet:history'] = 'Learning history';
 
+$string['lynda'] = 'Lynda.com';
+
 // Errors.
 $string['exportfailed'] = 'Sorry, the export failed.';
 
