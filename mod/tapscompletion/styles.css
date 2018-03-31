@@ -2,23 +2,43 @@
 .tapscompletion h2, .tapscompletion h3, .tapscompletion h4 {
     color: #7030A0;
 }
-.path-mod-tapscompletion table,
-.tapscompletion table {
-    font-size: 11px;
-    margin-bottom: 10px !important;
+
+#page-mod-tapscompletion-view table#completion-progress {
+    margin-top: 20px;
+    margin-bottom: 30px;
 }
-.path-mod-tapscompletion table th, .path-mod-tapscompletion table td
-.tapscompletion table th, .tapscompletion table td {
-    border-color: #000000 !important;
+
+#page-mod-tapscompletion-view table img.icon {
+    margin-right: 0;
 }
-.path-mod-tapscompletion table th.header,
-.tapscompletion table th.header {
-    background-color: #7030A0;
-    color: #FFFFFF;
-    font-weight: normal;
-    text-align: left;
-}
-.path-mod-tapscompletion .completion-progresscell,
-.tapscompletion .completion-progresscell{
+
+#page-mod-tapscompletion-view .criteriagroup,
+#page-mod-tapscompletion-view .aggheader,
+#page-mod-tapscompletion-view .criterianame,
+#page-mod-tapscompletion-view .criteriaicon,
+#page-mod-tapscompletion-view .completion-progresscell {
     text-align: center;
 }
+
+/* Custom CSS for rotated header.. */
+#page-mod-tapscompletion-view .rotated-text-container {
+    display: inline-block;
+    width: 16px;
+}
+
+/*rtl:begin:ignore*/
+#page-mod-tapscompletion-view .rotated-text {
+    display: inline-block;
+    white-space: nowrap;
+
+    transform: translate(0, 100%) rotate(-90deg);
+    transform-origin: 0 0;
+    vertical-align: middle;
+}
+
+#page-mod-tapscompletion-view .rotated-text:after {
+    content: "";
+    float: left;
+    margin-top: 100%;
+}
+/*rtl:end:ignore*/

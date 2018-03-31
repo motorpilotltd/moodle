@@ -94,12 +94,13 @@ class mod_tapscompletion_renderer extends plugin_renderer_base {
 
         $html .= html_writer::start_tag('table', array(
             'id' => 'completion-progress',
-            'class' => 'generaltable flexible boxalignleft completionreport',
+            'class' => 'table table-bordered generaltable flexible boxaligncenter completionreport',
             'style' => 'text-align: left',
             'cellpadding' => '5',
             'border' => '1'
         ));
 
+        $html .= html_writer::start_tag('thead');
         $html .= html_writer::start_tag('tr', array('style' => 'vertical-align: top'));
         $html .= html_writer::tag('th', get_string('criteriagroup', 'completion'), array('colspan' => 2, 'scope' => 'row', 'class' => 'rowheader'));
         $currentgroup = false;
@@ -113,7 +114,7 @@ class mod_tapscompletion_renderer extends plugin_renderer_base {
                 }
             }
             if ($colcount) {
-                $html .= html_writer::tag('th', $currentgroup->get_type_title(), array('scope' => 'col', 'colspan' => $colcount));
+                $html .= html_writer::tag('th', $currentgroup->get_type_title(), array('scope' => 'col', 'colspan' => $colcount, 'class' => 'colheader criteriagroup'));
             }
             if (isset($criteria[$i])) {
                 $currentgroup = $criterion;
@@ -162,58 +163,58 @@ class mod_tapscompletion_renderer extends plugin_renderer_base {
         $html .= html_writer::tag('th', get_string('criteria', 'completion'), array('colspan' => 2, 'scope' => 'row', 'class' => 'rowheader'));
         foreach ($criteria as $criterion) {
             $details = $criterion->get_title_detailed();
-            $span = html_writer::tag('span', $details, array('class' => 'completion-criterianame'));
-            $html .= html_writer::tag('th', $span, array('scope' => 'col', 'class' => 'colheader criterianame'));
+            $html .= html_writer::tag('th', '<div class="rotated-text-container"><span class="rotated-text">'.$details.'</span></div>', array('scope' => 'col', 'class' => 'colheader criterianame'));
         }
-        $span = html_writer::tag('span', get_string('coursecomplete', 'completion'), array('class' => 'completion-criterianame'));
-        $html .= html_writer::tag('th', $span, array('scope' => 'col', 'class' => 'colheader criterianame'));
+        $html .= html_writer::tag('th', '<div class="rotated-text-container"><span class="rotated-text">'.get_string('coursecomplete', 'completion').'</span></div>', array('scope' => 'col', 'class' => 'colheader criterianame'));
         $html .= html_writer::end_tag('tr');
 
         $html .= html_writer::start_tag('tr');
-        $html .= html_writer::tag('th', get_string('name'), array('scope' => 'col'));
-        $html .= html_writer::tag('th', get_string('staffid', 'tapscompletion'), array('scope' => 'col'));
+        $html .= html_writer::tag('th', get_string('name'), array('scope' => 'col', 'class' => 'completion-identifyfield'));
+        $html .= html_writer::tag('th', get_string('staffid', 'tapscompletion'), array('scope' => 'col', 'class' => 'completion-identifyfield'));
         foreach ($criteria as $criterion) {
-            $icon = '';
+            // Generate icon details.
+            $iconlink = '';
+            $iconalt = ''; // Required.
+            $iconattributes = array('class' => 'icon');
             switch ($criterion->criteriatype) {
                 case COMPLETION_CRITERIA_TYPE_ACTIVITY:
-                    $iconsrc = $OUTPUT->image_url('icon', $criterion->module);
-                    $iconurl = new moodle_url('/mod/'.$criterion->module.'/view.php', array('id' => $criterion->moduleinstance));
-                    $icontitle = $modinfo->cms[$criterion->moduleinstance]->name;
+                    // Display icon.
+                    $iconlink = $CFG->wwwroot.'/mod/'.$criterion->module.'/view.php?id='.$criterion->moduleinstance;
+                    $iconattributes['title'] = $modinfo->cms[$criterion->moduleinstance]->get_formatted_name();
                     $iconalt = get_string('modulename', $criterion->module);
-                    $iconimg = html_writer::empty_tag('img', array('src' => $iconsrc, 'alt' => $iconalt));
-                    $icon = html_writer::link($iconurl, $iconimg, array('title' => $icontitle));
                     break;
                 case COMPLETION_CRITERIA_TYPE_COURSE:
+                    // Load course.
                     $crs = $DB->get_record('course', array('id' => $criterion->courseinstance));
-                    $iconsrc = $OUTPUT->image_url('i/'.$COMPLETION_CRITERIA_TYPES[$criterion->criteriatype]);
-                    $iconurl = new moodle_url('/course/view.php', array('id' => $criterion->courseinstance));
-                    $icontitle = format_string($crs->fullname, true, array('context' => get_context_instance(CONTEXT_COURSE, $crs->id, MUST_EXIST)));
-                    $iconalt = format_string($crs->shortname, true, array('context' => get_context_instance(CONTEXT_COURSE, $crs->id)));
-                    $iconimg = html_writer::empty_tag('img', array('src' => $iconsrc, 'alt' => $iconalt));
-                    $icon = html_writer::link($iconurl, $iconimg, array('title' => $icontitle));
+
+                    // Display icon.
+                    $iconlink = $CFG->wwwroot.'/course/view.php?id='.$criterion->courseinstance;
+                    $iconattributes['title'] = format_string($crs->fullname, true, array('context' => context_course::instance($crs->id, MUST_EXIST)));
+                    $iconalt = format_string($crs->shortname, true, array('context' => context_course::instance($crs->id)));
                     break;
                 case COMPLETION_CRITERIA_TYPE_ROLE:
+                    // Load role.
                     $role = $DB->get_record('role', array('id' => $criterion->role));
-                    $iconsrc = $OUTPUT->image_url('i/'.$COMPLETION_CRITERIA_TYPES[$criterion->criteriatype]);
+
+                    // Display icon.
                     $iconalt = $role->name;
-                    $icon = html_writer::empty_tag('img', array('src' => $iconsrc, 'alt' => $iconalt));
                     break;
             }
-            if (!$icon) {
-                $iconsrc = $OUTPUT->image_url('i/'.$COMPLETION_CRITERIA_TYPES[$criterion->criteriatype]);
-                $icon = html_writer::empty_tag('img', array('src' => $iconsrc, 'alt' => ''));
+            // Create icon alt if not supplied.
+            if (!$iconalt) {
+                $iconalt = $criterion->get_title();
             }
+            $icon = ($iconlink ? '<a href="'.$iconlink.'" title="'.$iconattributes['title'].'">' : '');
+            $icon .= $OUTPUT->render($criterion->get_icon($iconalt, $iconattributes));
+            $icon .= ($iconlink ? '</a>' : '');
             $html .= html_writer::tag('th', $icon, array('class' => 'criteriaicon'));
         }
-        $icon = html_writer::empty_tag('img', array(
-            'src' => $OUTPUT->image_url('i/course'),
-            'class' => 'icon',
-            'alt' => get_string('course'),
-            'title' => get_string('coursecomplete', 'completion')
-        ));
-        $html .= html_writer::tag('th', $icon, array('class' => 'criteriaicon'));
-        $html .= html_writer::end_tag('tr');
 
+        $html .= html_writer::tag('th', $OUTPUT->pix_icon('i/course', get_string('coursecomplete', 'completion')), array('class' => 'criteriaicon'));
+        $html .= html_writer::end_tag('tr');
+        $html .= html_writer::end_tag('thead');
+
+        $html .= html_writer::start_tag('tbody');
         $classid = 0;
         foreach ($users as $user) {
             if ($user->classid != $classid) {
@@ -222,7 +223,7 @@ class mod_tapscompletion_renderer extends plugin_renderer_base {
                 $cells = '';
                 $cellcontent = get_string('classwithname', 'tapscompletion', $user->classname) .
                         html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'class['.$user->classid.']', 'value' => $user->classname));
-                $cells .= html_writer::tag('th', $cellcontent, array('colspan' => count($criteria) + 3));
+                $cells .= html_writer::tag('th', $cellcontent, array('colspan' => count($criteria) + 3, 'style' => 'text-align: center;'));
                 $input = html_writer::empty_tag('input', array(
                     'class' => 'tapscompletion-checkbox tapscompletion-checkbox-all',
                     'type' => 'checkbox',
@@ -350,6 +351,7 @@ class mod_tapscompletion_renderer extends plugin_renderer_base {
             $html .= html_writer::end_tag('tr');
         }
 
+        $html .= html_writer::end_tag('tbody');
         $html .= html_writer::end_tag('table');
         $html .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'submit', 'value' => get_string('updateusers', 'tapscompletion')));
         $html .= html_writer::end_tag('form');
