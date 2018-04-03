@@ -24764,6 +24764,9 @@ ol {
   padding: 0;
   text-align: right;
 }
+.block.block_course_menu ul.block_tree {
+  margin: 0;
+}
 .block.block_course_menu .block_navigation .hasicon img {
   height: 16px;
   width: 16px;
@@ -24773,11 +24776,25 @@ ol {
   margin: -4px 3px 0 -4px;
   position: static;
 }
+.block.block_course_menu .block_navigation .block_tree [aria-expanded="false"],
+.block.block_course_menu .block_navigation .block_tree [aria-expanded="true"] {
+  background-image: none;
+}
+.block.block_course_menu .block_navigation .tree_item.branch {
+  cursor: pointer;
+  background-image: url([[pix:t/expanded]]);
+  background-position: 14px 6px !important;
+}
 .block.block_course_menu .block_navigation a {
   color: #3c3c3b;
 }
 .block.block_course_menu .block_navigation a:hover {
   color: #3c3c3b;
+}
+.jsenabled .block.block_course_menu .block_navigation .block_tree li.collapsed .tree_item.branch {
+  cursor: pointer;
+  background-position: 14px 6px !important;
+  background-image: url([[pix:t/collapsed]]);
 }
 .block_configurable_reports .content {
   padding-left: 0;
