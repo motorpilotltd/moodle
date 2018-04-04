@@ -665,11 +665,11 @@ class block_arup_mylearning_content {
         require_once($CFG->dirroot . '/local/regions/lib.php');
 
         $userregion = local_regions_get_user_region($USER);
-        if (!isset($userregion) || !isset($userregion->regionid)) {
+        if (!isset($userregion) || !isset($userregion->geotapsregionid)) {
             return false;
         }
 
-        if (!\local_lynda\lib::enabledforregion($userregion->regionid)) {
+        if (!\local_lynda\lib::enabledforregion($userregion->geotapsregionid)) {
             return false;
         }
 

@@ -30,7 +30,7 @@ $userregion = local_regions_get_user_region($USER);
 $lyndacourseid = required_param('lyndacourseid', PARAM_INT);
 
 require_login();
-if (!$userregion || !\local_lynda\lib::enabledforregion($userregion->regionid)) {
+if (!$userregion || !\local_lynda\lib::enabledforregion($userregion->geotapsregionid)) {
     print_error('Lynda.com is not available in your region');
 }
 
@@ -57,12 +57,12 @@ $data = ["id"                            => -1,
 ];
 
 $config = get_config('local_lynda');
-if (empty($config->{'ltikey_' . $userregion->regionid}) || empty($config->{'ltisecret_' . $userregion->regionid})) {
+if (empty($config->{'ltikey_' . $userregion->geotapsregionid}) || empty($config->{'ltisecret_' . $userregion->geotapsregionid})) {
     print_error('LTI keys are not configured for your region');
 }
 
-$data['resourcekey'] = $config->{'ltikey_' . $userregion->regionid};
-$data['password'] = $config->{'ltisecret_' . $userregion->regionid};
+$data['resourcekey'] = $config->{'ltikey_' . $userregion->geotapsregionid};
+$data['password'] = $config->{'ltisecret_' . $userregion->geotapsregionid};
 
 $instance = (object) $data;
 list($endpoint, $newparms) = lti_get_launch_data($instance);

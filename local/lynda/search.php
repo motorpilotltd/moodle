@@ -37,7 +37,7 @@ $perpage = optional_param('perpage', 10, PARAM_INT);
 
 $userregion = local_regions_get_user_region($USER);
 if (isset($userregion->regionid)) {
-    $results = new \local_lynda\searchresults($search, $userregion->regionid, $page, $perpage);
+    $results = new \local_lynda\searchresults($search, $userregion->geotapsregionid, $page, $perpage);
     $results->dosearch();
 
     echo $renderer->search_results($results);

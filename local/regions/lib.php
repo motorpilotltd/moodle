@@ -518,7 +518,8 @@ function local_regions_get_user_region($user) {
 SELECT
     lru.userid,
     lru.regionid,
-    lrr.name
+    lrr.name,
+    lru.geotapsregionid
 FROM
     {local_regions_use} lru
 JOIN
