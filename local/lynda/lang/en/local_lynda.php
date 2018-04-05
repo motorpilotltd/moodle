@@ -48,3 +48,4 @@ $string['duration'] = 'Duration';
 $string['redirectmessage'] = 'You are about to leave Moodle and head to Lynda.com. Your learning history will update within the next 24 hours to reflect any progress made.';
 $string['selectfilters'] = 'Apply filters to see results';
 $string['testmode'] = 'Fake API calls';
+$string['unmatchedrecord_received'] = 'Unmatched lynda learning record received';

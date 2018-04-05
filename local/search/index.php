@@ -78,8 +78,8 @@ array_unshift($options, array('name'=>'All regions', 'value'=> '0',  0 == $regio
 $filteroutput = new \local_search\output\filter_output($filters);
 
 $enablelynda = false;
-if (isset($userregion->regionid)) {
-    $enablelynda = \local_lynda\lib::enabledforregion($region);
+if (isset($userregion->geotapsregionid)) {
+    $enablelynda = \local_lynda\lib::enabledforregion($userregion->geotapsregionid);
 }
 
 $resultsdata = array_merge(local_search_get_results_data($courses, $search, $totalcount), array(

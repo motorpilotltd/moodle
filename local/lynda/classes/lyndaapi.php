@@ -22,6 +22,8 @@
 
 namespace local_lynda;
 
+use local_lynda\event\unmatchedrecord_received;
+
 class lyndaapi {
 
     /**
@@ -33,7 +35,8 @@ class lyndaapi {
         // Max value for limit appears to be 41 (seems pretty random to me...) but it's really unreliable if we go over 25.
         // It's probably unreliable due to the MASSIVE json docs that come back being unparsable.
         raise_memory_limit(MEMORY_HUGE);
-        $url = "/courses?order=ByTitle&sort=asc&start=$start&limit=250&filter.includes=ID,Title,Description,DurationInSeconds,Tags.ID,Tags.Name,Tags.Type,Tags.TypeName,Thumbnails.FullURL";
+        $url =
+                "/courses?order=ByTitle&sort=asc&start=$start&limit=250&filter.includes=ID,Title,Description,DurationInSeconds,Tags.ID,Tags.Name,Tags.Type,Tags.TypeName,Thumbnails.FullURL";
         $results = $this->callapi($url);
 
         if ($results === null) {
@@ -200,19 +203,27 @@ class lyndaapi {
                 $datetime = \DateTime::createFromFormat('m/d/Y H:i:s', $raw->LastViewed, $tz);
                 $timestamp = $datetime->getTimestamp();
 
-                $progressrecord = lyndacourseprogress::fetch(['userid'         => $raw->Username,
+                $user = self::getcacheduser($raw->Username, $raw->FirstName, $raw->LastName, $raw->Email);
+                if (!$user) {
+                    $event = unmatchedrecord_received::create(['other' => ['rawrecord' => json_encode($raw)]]);
+                    $event->trigger();
+                    mtrace('Unable to find user account for ' . $raw->Username);
+                    continue;
+                }
+
+                $progressrecord = lyndacourseprogress::fetch(['userid'         => $user->id,
                                                               'remotecourseid' => $raw->CourseID]);
                 if ($progressrecord) {
                     ;
-                    mtrace('Updated course progress record for ' . $raw->Username);
+                    mtrace('Updated course progress record for ' . $user->id);
                     $progressrecord->lastviewed = $timestamp;
                     $progressrecord->percentcomplete = $raw->PercentComplete;
                     $progressrecord->regionid = $id;
                     $progressrecord->update();
                 } else {
-                    mtrace('Created course progress record for ' . $raw->Username);
+                    mtrace('Created course progress record for ' . $user->id);
                     $progressrecord = new lyndacourseprogress();
-                    $progressrecord->userid = $raw->Username;
+                    $progressrecord->userid = $user->id;
                     $progressrecord->remotecourseid = $raw->CourseID;
                     $progressrecord->lastviewed = $timestamp;
                     $progressrecord->percentcomplete = $raw->PercentComplete;
@@ -255,8 +266,10 @@ class lyndaapi {
             }
 
             foreach ($this->getcoursecompletioniterator($lastruntimecompletion - DAYSECS, $thisruntime) as $raw) {
-                $user = self::getcacheduser($raw->Username);
-                if ($user == null) {
+                $user = self::getcacheduser($raw->Username, $raw->FirstName, $raw->LastName, $raw->Email);
+                if (!$user) {
+                    $event = unmatchedrecord_received::create(['other' => ['rawrecord' => json_encode($raw)]]);
+                    $event->trigger();
                     mtrace('Unable to find user account for ' . $raw->Username);
                     continue;
                 }
@@ -376,12 +389,30 @@ class lyndaapi {
         return new lyndacoursecompletioniterator($lastruntime, $thisruntime, $this);
     }
 
-    private static function getcacheduser($userid) {
+    private static function getcacheduser($userid, $firstname, $lastname, $email) {
+        global $DB;
+
+        $email = strtolower($email);
+
         $cache = \cache::make('local_lynda', 'users');
         $user = $cache->get($userid);
         if ($user === false) {
             $user = \core_user::get_user($userid);
-            $cache->set($userid, $user);
+
+            // If the user id is found and we match on any of the firstname/lastname/email then we use that one.
+            if (!empty($user) && ($user->firstname == $firstname || $user->lastname == $lastname || $user->email == $email)) {
+                $cache->set($userid, $user);
+                return $user;
+            }
+
+            // If the user has not been found but we find one with a matching email then use that one.
+            $user = $DB->get_record('user', ['email' => $email]);
+            if ($user) {
+                $cache->set($userid, $user);
+                return $user;
+            }
+
+            return false;
         }
 
         return $user;

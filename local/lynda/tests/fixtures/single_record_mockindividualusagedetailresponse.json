@@ -1,0 +1,22 @@
+{
+  "Total": 48,
+  "ReportData": [
+    {
+      "UserID": 12877110,
+      "CourseID": 180212,
+      "PercentComplete": 75,
+      "TotalMovieHours": 0.06,
+      "TotalMovieHoursNew": 0,
+      "Username": "12877110",
+      "Email": "maryam.asghari@arup.com",
+      "FirstName": "Maryam",
+      "LastName": "Asghari Mooneghi",
+      "FullName": "Maryam Asghari Mooneghi",
+      "CourseName": "Learning Grasshopper",
+      "Culture": "en-US",
+      "LastViewed": "01\/08\/2018 10:57:57",
+      "CustomFields": [],
+      "Groups": null
+    }
+  ]
+}
