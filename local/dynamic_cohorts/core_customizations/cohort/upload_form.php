@@ -47,6 +47,7 @@ class cohort_upload_form extends moodleform {
     public function definition() {
         $mform = $this->_form;
         $data  = (object)$this->_customdata;
+        $viewonly = $this->_customdata['viewonly'];
 
         $mform->addElement('hidden', 'returnurl');
         $mform->setType('returnurl', PARAM_URL);
@@ -56,10 +57,12 @@ class cohort_upload_form extends moodleform {
         $filepickeroptions = array();
         $filepickeroptions['filetypes'] = '*';
         $filepickeroptions['maxbytes'] = get_max_upload_file_size();
-        $mform->addElement('filepicker', 'cohortfile', get_string('file'), null, $filepickeroptions);
+        if(!$viewonly){
+            $mform->addElement('filepicker', 'cohortfile', get_string('file'), null, $filepickeroptions);
+        }
 
         $choices = csv_import_reader::get_delimiter_list();
-        $mform->addElement('select', 'delimiter', get_string('csvdelimiter', 'tool_uploadcourse'), $choices);
+        $mform->addElement('select', 'delimiter', get_string('csvdelimiter', 'tool_uploadcourse'), $choices, ($viewonly ? 'disabled="disabled"' : ''));
         if (array_key_exists('cfg', $choices)) {
             $mform->setDefault('delimiter', 'cfg');
         } else if (get_string('listsep', 'langconfig') == ';') {
@@ -70,14 +73,15 @@ class cohort_upload_form extends moodleform {
         $mform->addHelpButton('delimiter', 'csvdelimiter', 'tool_uploadcourse');
 
         $choices = core_text::get_encodings();
-        $mform->addElement('select', 'encoding', get_string('encoding', 'tool_uploadcourse'), $choices);
+        $mform->addElement('select', 'encoding', get_string('encoding', 'tool_uploadcourse'), $choices, ($viewonly ? 'disabled="disabled"' : ''));
         $mform->setDefault('encoding', 'UTF-8');
         $mform->addHelpButton('encoding', 'encoding', 'tool_uploadcourse');
 
         $options = $this->get_context_options();
-        $mform->addElement('select', 'contextid', get_string('defaultcontext', 'cohort'), $options);
-
-        $this->add_cohort_upload_buttons(true);
+        $mform->addElement('select', 'contextid', get_string('defaultcontext', 'cohort'), $options, ($viewonly ? 'disabled="disabled"' : ''));
+        if(!$viewonly){
+            $this->add_cohort_upload_buttons(true);
+        }
         $this->set_data($data);
     }
 
@@ -106,28 +110,31 @@ class cohort_upload_form extends moodleform {
      * Process the uploaded file and allow the submit button only if it doest not have errors.
      */
     public function definition_after_data() {
-        $mform = $this->_form;
-        $cohortfile = $mform->getElementValue('cohortfile');
-        $allowsubmitform = false;
-        if ($cohortfile && ($file = $this->get_cohort_file($cohortfile))) {
-            // File was uploaded. Parse it.
-            $encoding = $mform->getElementValue('encoding')[0];
-            $delimiter = $mform->getElementValue('delimiter')[0];
-            $contextid = $mform->getElementValue('contextid')[0];
-            if (!empty($contextid) && ($context = context::instance_by_id($contextid, IGNORE_MISSING))) {
-                $this->processeddata = $this->process_upload_file($file, $encoding, $delimiter, $context);
-                if ($this->processeddata && count($this->processeddata) > 1 && !$this->processeddata[0]['errors']) {
-                    $allowsubmitform = true;
+        $viewonly = $this->_customdata['viewonly'];
+        if(!$viewonly){
+            $mform = $this->_form;
+            $cohortfile = $mform->getElementValue('cohortfile');
+            $allowsubmitform = false;
+            if ($cohortfile && ($file = $this->get_cohort_file($cohortfile))) {
+                // File was uploaded. Parse it.
+                $encoding = $mform->getElementValue('encoding')[0];
+                $delimiter = $mform->getElementValue('delimiter')[0];
+                $contextid = $mform->getElementValue('contextid')[0];
+                if (!empty($contextid) && ($context = context::instance_by_id($contextid, IGNORE_MISSING))) {
+                    $this->processeddata = $this->process_upload_file($file, $encoding, $delimiter, $context);
+                    if ($this->processeddata && count($this->processeddata) > 1 && !$this->processeddata[0]['errors']) {
+                        $allowsubmitform = true;
+                    }
                 }
             }
-        }
-        if (!$allowsubmitform) {
-            // Hide submit button.
-            $el = $mform->getElement('buttonar')->getElements()[0];
-            $el->setValue('');
-            $el->freeze();
-        } else {
-            $mform->setExpanded('cohortfileuploadform', false);
+            if (!$allowsubmitform) {
+                // Hide submit button.
+                $el = $mform->getElement('buttonar')->getElements()[0];
+                $el->setValue('');
+                $el->freeze();
+            } else {
+                $mform->setExpanded('cohortfileuploadform', false);
+            }
         }
 
     }
