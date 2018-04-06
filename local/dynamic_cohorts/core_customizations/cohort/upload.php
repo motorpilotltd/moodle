@@ -58,7 +58,8 @@ if ($context->contextlevel == CONTEXT_COURSECAT) {
 
 $uploadform = new cohort_upload_form(null, array(
         'contextid' => $context->id,
-        'returnurl' => $returnurl), 'post', '', null, in_array($context->id, \local_dynamic_cohorts\dynamic_cohorts::get_editable_context_list()));
+        'viewonly' => !in_array($context->id, \local_dynamic_cohorts\dynamic_cohorts::get_editable_context_list()),
+        'returnurl' => $returnurl));
 
 if ($returnurl) {
     $returnurl = new moodle_url($returnurl);
