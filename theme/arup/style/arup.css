@@ -24431,6 +24431,9 @@ a.coursemini {
   color: #FFF;
   display: block;
 }
+.activity.hidecompletion .availabilityinfo {
+  display: none;
+}
 /*
  * Font Face
  */
