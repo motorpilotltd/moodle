@@ -42,7 +42,7 @@ class mod_tapsenrol_manage_enrolments_form extends moodleform {
                 $mform->addElement('select', "{$type}classid", get_string('manageenrolments:class', 'tapsenrol'), $classes, array('class' => 'class-select'));
                 $mform->setDefault("{$type}classid", $this->_customdata['classid']);
                 $mform->addElement('html', $this->_get_class_placeholder($this->_customdata['classid']));
-                $mform->addElement('submit', "submit-$type", get_string("manageenrolments:button:{$type}", 'tapsenrol'), array('class' => 'btn-primary'));
+                $mform->addElement('submit', "submit-$type", get_string("manageenrolments:button:{$type}", 'tapsenrol'), array('class' => 'input-btn-primary'));
             }
         }
     }

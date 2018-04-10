@@ -24533,6 +24533,63 @@ ol {
 .pagelayout-popup .purgecaches {
   display: none;
 }
+input.input-btn-primary {
+  color: #ffffff;
+  background-color: #0f95ff;
+  border-color: #0089f5;
+}
+input.input-btn-primary:focus,
+input.input-btn-primary.focus {
+  color: #ffffff;
+  background-color: #007adb;
+  border-color: #004175;
+}
+input.input-btn-primary:hover {
+  color: #ffffff;
+  background-color: #007adb;
+  border-color: #0066b7;
+}
+input.input-btn-primary:active,
+input.input-btn-primary.active,
+.open > .dropdown-toggleinput.input-btn-primary {
+  color: #ffffff;
+  background-color: #007adb;
+  border-color: #0066b7;
+}
+input.input-btn-primary:active:hover,
+input.input-btn-primary.active:hover,
+.open > .dropdown-toggleinput.input-btn-primary:hover,
+input.input-btn-primary:active:focus,
+input.input-btn-primary.active:focus,
+.open > .dropdown-toggleinput.input-btn-primary:focus,
+input.input-btn-primary:active.focus,
+input.input-btn-primary.active.focus,
+.open > .dropdown-toggleinput.input-btn-primary.focus {
+  color: #ffffff;
+  background-color: #0066b7;
+  border-color: #004175;
+}
+input.input-btn-primary:active,
+input.input-btn-primary.active,
+.open > .dropdown-toggleinput.input-btn-primary {
+  background-image: none;
+}
+input.input-btn-primary.disabled:hover,
+input.input-btn-primary[disabled]:hover,
+fieldset[disabled] input.input-btn-primary:hover,
+input.input-btn-primary.disabled:focus,
+input.input-btn-primary[disabled]:focus,
+fieldset[disabled] input.input-btn-primary:focus,
+input.input-btn-primary.disabled.focus,
+input.input-btn-primary[disabled].focus,
+fieldset[disabled] input.input-btn-primary.focus {
+  background-color: #0f95ff;
+  border-color: #0089f5;
+}
+input.input-btn-primary .badge {
+  color: #0f95ff;
+  background-color: #ffffff;
+}
 .block {
   box-shadow: 0px 0px 1px #bbb;
   background-color: #FFF;
