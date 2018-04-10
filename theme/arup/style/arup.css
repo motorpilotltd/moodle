@@ -27574,10 +27574,9 @@ div.maincalendar table.calendarmonth td li.cancelled a {
   padding-right: 6px;
 }
 .path-calendar .maincalendar .eventlist .event .location {
-  position: absolute;
-  right: 6px;
+  float: right;
+  margin-right: 6px;
   /* match padding in tabs */
-  margin-top: 28px;
 }
 .path-calendar .maincalendar .event.calendar_event_lunchandlearn .description {
   padding: 0;
