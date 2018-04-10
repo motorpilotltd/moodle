@@ -24733,9 +24733,6 @@ input.input-btn-primary .badge {
 .block_online_users .content .user {
   margin-right: 5px;
 }
-.block_online_users .content .user a {
-  display: block;
-}
 .block_online_users .content .user a .userpicture {
   height: 30px;
   margin: 2px 3px 2px 0;
@@ -24751,6 +24748,9 @@ input.input-btn-primary .badge {
 }
 .block_online_users .content ul.list {
   margin: 0;
+}
+.block_online_users .content ul.list li.listentry .user .userpicture {
+  vertical-align: middle;
 }
 .block_arup_mylearning .content {
   font-family: Arial, Helvetica, sans-serif;
