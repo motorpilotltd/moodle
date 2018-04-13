@@ -654,8 +654,10 @@ EOS;
         $cpd->classstartdate = $cpd->classstarttime;
         $cpd->classenddate = $cpd->classendtime = ($cpd->classcompletiondate + (24 * 60 * 60) - 1); // End of completion day
 
-        $cpd->timemodified = time();
+        // Is it locked?
+        $cpd->locked = (!empty($optional['locked']) ? 1 : 0);
 
+        $cpd->timemodified = time();
 
         $maxcpdid = $DB->get_field_sql('SELECT MAX(cpdid) FROM {local_taps_enrolment}');
 
@@ -691,7 +693,8 @@ EOS;
     public function edit_cpd_record($cpdid, $classtitle, $providername, $completiontime, $duration, $durationunitscode, $optional = array()) {
         global $DB;
 
-        $cpd = $DB->get_record('local_taps_enrolment', array('cpdid' => $cpdid));
+        // Must be unlocked.
+        $cpd = $DB->get_record('local_taps_enrolment', array('cpdid' => $cpdid, 'locked' => 0));
 
         if (!$cpd) {
             return false;
@@ -737,6 +740,14 @@ EOS;
      */
     public function delete_cpd_record($cpdid) {
         global $DB;
+
+        // Must be unlocked.
+        $cpd = $DB->get_record('local_taps_enrolment', array('cpdid' => $cpdid, 'locked' => 0));
+
+        if (!$cpd) {
+            return false;
+        }
+
         return $DB->delete_records('local_taps_enrolment', array('cpdid' => $cpdid));
     }
 

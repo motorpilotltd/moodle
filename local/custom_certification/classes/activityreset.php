@@ -419,4 +419,27 @@ class activityreset {
             }
         }
     }
+
+    /**
+     * Reset arupevidence activity.
+     *
+     * @param int $userid User ID
+     * @param int $courseid Course ID
+     * @global \moodle_database $DB
+     */
+    public function arupevidence_archive_completion($userid, $courseid) {
+        global $DB;
+
+        $activities = $DB->get_records('arupevidence', ['course' => $courseid]);
+        foreach ($activities as $activity) {
+            // Archive completion records.
+            $updatesql = "UPDATE {arupevidence_users} SET archived = 1, timemodified = :timemodified WHERE arupevidenceid = :arupevidenceid AND userid = :userid";
+            $updateparams = [
+                'arupevidenceid' => $activity->id,
+                'userid' => $userid,
+                'timemodified' => time(),
+            ];
+            $DB->execute_sql($updatesql, $updateparams);
+        }
+    }
 }

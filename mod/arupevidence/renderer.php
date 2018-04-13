@@ -15,40 +15,51 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot.'/mod/arupevidence/lib.php');
 
-class mod_aruphonestybox_renderer extends plugin_renderer_base {
+class mod_arupevidence_renderer extends plugin_renderer_base {
     /**
      * Genate table of lists of ahb users' completions
      * @param $usercompletions
      * @param $context
-     * @param $cmid
      * @return string
      */
-    public function completion_approval_list($usercompletions, $context, $cmid) {
-        global $USER;
+    protected $arupevidence;
+    protected $context;
+
+    public function completion_approval_list($usercompletions, $context) {
+        global $USER, $DB;
 
         $ahb_users = null;
-
+        $cm = get_coursemodule_from_id('arupevidence',  $context->instanceid);
         $html = '';
+
+        if (empty($this->context)) {
+            $this->context = $context;
+        }
+
+        if (empty($this->arupevidence)) {
+            $this->arupevidence = $DB->get_record('arupevidence',  array('id' => $cm->instance));
+        }
 
         $table = new html_table();
         $table->attributes['class'] = 'generaltable mod_index';
 
         $table->head = array();
-        $table->head[] = get_string('approve:name', 'mod_aruphonestybox');
-        $table->head[] = get_string('approve:email', 'mod_aruphonestybox');
-        $table->head[] = get_string('approve:datecompleted', 'mod_aruphonestybox');
-        $table->head[] = get_string('approve:certificatelink', 'mod_aruphonestybox');
-        $table->head[] = get_string('approve:dateapproved', 'mod_aruphonestybox');
-        $table->head[] = get_string('approve:approvedby', 'mod_aruphonestybox');
-        $table->head[] = get_string('approve:actions', 'mod_aruphonestybox');
+        $table->head[] = get_string('approve:name', 'mod_arupevidence');
+        $table->head[] = get_string('approve:email', 'mod_arupevidence');
+        $table->head[] = get_string('approve:datecompleted', 'mod_arupevidence');
+        $table->head[] = get_string('approve:certificatelink', 'mod_arupevidence');
+        $table->head[] = get_string('approve:dateapproved', 'mod_arupevidence');
+        $table->head[] = get_string('approve:approvedby', 'mod_arupevidence');
+        $table->head[] = get_string('approve:actions', 'mod_arupevidence');
 
         if(empty($usercompletions)) {
             $cells = array();
             $cell = new html_table_cell();
             $cell->colspan = count($table->head);
             $cell->attributes['class'] = 'text-center';
-            $cell->text = get_string('approve:nocompletions', 'mod_aruphonestybox');
+            $cell->text = get_string('approve:nocompletions', 'mod_arupevidence');
             $cells[] = clone($cell);
 
             $table->data[] = new html_table_row($cells);
@@ -73,7 +84,7 @@ class mod_aruphonestybox_renderer extends plugin_renderer_base {
                 $cells[] = clone($cell);
 
                 // Certificate File Link
-                $cell->text = $this->format_user_certificatelink($context, $usercompletion->userid);
+                $cell->text = $this->format_user_certificatelink($usercompletion);
                 $cell->attributes['class'] = 'text-left';
                 $cells[] = clone($cell);
 
@@ -89,17 +100,29 @@ class mod_aruphonestybox_renderer extends plugin_renderer_base {
 
                 // Actions Link
                 $actions = array();
-                $approvelink = new moodle_url('/mod/aruphonestybox/approve.php', array('id' => $cmid, 'action' => 'approve', 'ahbuserid' => $usercompletion->id));
-                $editlink = new moodle_url('/mod/aruphonestybox/view.php', array('id' => $cmid, 'action' => 'edit', 'ahbuserid' => $usercompletion->id));
+                $editlink = new moodle_url('/mod/arupevidence/view.php', array('id' =>  $context->instanceid, 'action' => 'edit', 'ahbuserid' => $usercompletion->id));
 
-                $actions['approve'] = (empty($usercompletion->approved))? html_writer::link($approvelink , get_string('approve:approve', 'mod_aruphonestybox')) : get_string('approve:approved', 'mod_aruphonestybox') ;
+                if($usercompletion->userid != $USER->id) {
+                    $attrs = array(
+                        'data-ahbuserid' => $usercompletion->id,
+                        'data-cmid' =>  $context->instanceid,
+                    );
 
-                if($usercompletion->userid == $USER->id) {
-                    unset($actions['approve']);
+                    if (empty($usercompletion->approved)) {
+                        $attrs['class'] = 'approve-evidence action-evidence';
+                        $attrs['data-actiontype'] = 'approve';
+                        $actions['approve'] = html_writer::link('#' , get_string('approve:approve', 'mod_arupevidence'), $attrs);
+                    }
+
+                    if (!$usercompletion->rejected && !$usercompletion->approved) {
+                        $attrs['class'] = 'reject-evidence action-evidence';
+                        $attrs['data-actiontype'] = 'reject';
+                        $actions['reject']  = html_writer::link('#' , get_string('approve:reject', 'mod_arupevidence'), $attrs);
+                    }
                 }
 
                 if(empty($usercompletion->approved)) {
-                    $actions['edit'] = html_writer::link($editlink , get_string('approve:edit', 'mod_aruphonestybox'));
+                    $actions['edit'] = html_writer::link($editlink , get_string('approve:edit', 'mod_arupevidence'));
                 }  else {
                     unset($actions['edit']);
                 }
@@ -134,23 +157,21 @@ class mod_aruphonestybox_renderer extends plugin_renderer_base {
     /**
      * Format user certificate file link
      *
-     * @param $context
-     * @param $userid
+     * @param $arupevidenceuser
      * @return moodle_url|null
      */
-    public function format_user_certificatelink($context, $userid) {
-        // Show link to the uploaded certificate file
-        $fs = get_file_storage();
-        $files = $fs->get_area_files($context->id, 'mod_aruphonestybox', 'certificate');
-        if ($files) {
+    public function format_user_certificatelink($arupevidenceuser) {
 
-            foreach ($files as $file) {
-                if(($userid == $file->get_itemid() && $file->get_source() != null)) {
-                    $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename(), false);
-                    return html_writer::link($url, $file->get_filename());
-                    break;
-                }
-            }
+        // Show link to the uploaded certificate file
+        $filearea = arupevidence_fileareaname($this->arupevidence->cpdlms);
+        $file = '';
+        if (!empty($arupevidenceuser->itemid)) {
+            $file = arupevidence_fileinfo($this->context, null, $filearea, $arupevidenceuser->itemid);
+        } else {
+            $file = arupevidence_fileinfo($this->context, $arupevidenceuser->userid);
+        }
+        if (!empty($file) && !empty($file->fileevidencelink)) {
+            return html_writer::link($file->fileevidencelink, $file->get_filename());
         }
         return null;
     }

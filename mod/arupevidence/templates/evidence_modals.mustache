@@ -1,0 +1,47 @@
+<!-- Reject modal -->
+<div class="modal fade hd-modal" id="reject-evidence-modal" tabindex="-1" role="dialog" aria-labelledby="reject-modal-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{#str}}modal:evidence:reject, mod_arupevidence{{/str}}"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="cancel-modal-label">{{#str}}modal:rejectevidence:title, mod_arupevidence{{/str}}</h4>
+            </div>
+            <div class="modal-body">
+                <p>{{#str}}modal:rejectevidence:content, mod_arupevidence{{/str}}</p>
+
+                <div class="form-inline m-t-20">
+                    <div class="form-row m-b-10">
+                        <label class="media-middle m-b-0" for="select2-user">{{#str}}modal:typemessage, mod_arupevidence{{/str}}</label>
+
+                            <textarea id="reject-message"></textarea>
+                            <div class="form-defaultinfo">{{#str}}modal:rejectevidence:forminfo, mod_arupevidence{{/str}}</div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{#str}}modal:no, mod_arupevidence{{/str}}</button>
+                <a id="reject-evidence-btn" href="#" class="btn btn-primary modal-submit-btn">{{#str}}modal:yes, mod_arupevidence{{/str}}</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Approve modal -->
+<div class="modal fade hd-modal" id="approve-evidence-modal" tabindex="-1" role="dialog" aria-labelledby="approve-modal-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="{{#str}}modal:evidence:approve, mod_arupevidence{{/str}}"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="cancel-modal-label">{{#str}}modal:approveevidence:title, mod_arupevidence{{/str}}</h4>
+            </div>
+            <div class="modal-body">
+                <p>{{#str}}modal:approveevidence:content, mod_arupevidence{{/str}}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{#str}}modal:no, mod_arupevidence{{/str}}</button>
+                <a id="approve-evidence-btn" href="#" class="btn btn-primary modal-submit-btn">{{#str}}modal:yes, mod_arupevidence{{/str}}</a>
+            </div>
+        </div>
+    </div>
+</div>

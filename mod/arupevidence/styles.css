@@ -1,0 +1,82 @@
+.disabledrow label {
+    color: #BBB;
+}
+
+.arupevidence .evidence-box .box-icon {
+    color: black;
+    width: 148px;
+    float: left;
+    text-align: center;
+    margin-right: 10px;
+    padding-top: 5px;
+}
+
+.arupevidence .submitted-evidence {
+    border: 1px solid #e5e5e5;
+}
+
+.arupevidence .submitted-evidence .btn {
+    border-color: #41719c;
+}
+
+.arupevidence .evidence-box .btn {
+    text-transform: uppercase;
+    margin: 5px;
+}
+
+.arupevidence .evidence-box.alert {
+    padding: 0 10px 0 0 !important;
+}
+
+.arupevidence .evidence-box .box-msg {
+    padding-top: 3px;
+}
+
+.arupevidence .evidence-box {
+    color: black;
+}
+
+.arupevidence .evidencestatus {
+    float: left;
+    margin-top: 15px;
+}
+
+.arupevidence .autocompletion,
+.arupevidence .togglecompletion {
+    visibility: hidden;
+}
+
+.arupevidence .lock-icon {
+        visibility: hidden;
+}
+
+.arupevidence .lock-icon {
+        visibility: hidden;
+}
+.arupevidence .lockedrow .lock-icon {
+        visibility: visible;
+}
+
+.arupevidence .no-overflow {
+    overflow: visible;
+}
+
+.arupevidence-table {
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+}
+
+.arupevidence-table td, .arupevidence-table tr {
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.arupevidence-table td.c0 {
+    text-align: right;
+}
+
+#reject-message {
+    width: 100%;
+    height: 100px;
+}

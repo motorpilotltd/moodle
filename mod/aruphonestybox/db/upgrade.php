@@ -104,72 +104,42 @@ function xmldb_aruphonestybox_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111602, 'mod', 'aruphonestybox');
     }
 
-    if ($oldversion < 2015111604) {
+    if ($oldversion < 2015111614) {
+        // Tidy up DB as code/requirements removed.
         $table = new xmldb_table('aruphonestybox');
         // Update fields to match local_taps_enrolment table.
         $fields = array(
-            new xmldb_field('showcompletiondate', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0'),
-            new xmldb_field('showcertificateupload', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0'),
+            new xmldb_field('showcompletiondate'),
+            new xmldb_field('showcertificateupload'),
+            new xmldb_field('approvalrequired'),
+            new xmldb_field('firstname'),
+            new xmldb_field('lastname'),
+            new xmldb_field('email'),
         );
 
-        // Conditionally launch add field
+        // Conditionally launch drop field
         foreach ($fields as $field) {
-            if (!$dbman->field_exists($table, $field)) {
-                $dbman->add_field($table, $field);
+            if ($dbman->field_exists($table, $field)) {
+                $dbman->drop_field($table, $field);
             }
         }
-        // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2015111604, 'mod', 'aruphonestybox');
-    }
 
-    if ($oldversion < 2015111609) {
-        $table = new xmldb_table('aruphonestybox');
-        $field = new xmldb_field('approvalrequired', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
-
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2015111609, 'mod', 'aruphonestybox');
-    }
-
-    if ($oldversion < 2015111611) {
-        $table = new xmldb_table('aruphonestybox_users');
-        $field = new xmldb_field('approved', XMLDB_TYPE_INTEGER, '1', null, null, null, '0');
-        $fields = array(
-            new xmldb_field('approved', XMLDB_TYPE_INTEGER, '10', null, null, null, '0'),
-            new xmldb_field('approverid', XMLDB_TYPE_INTEGER, '1', null, null, null),
-            new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null),
-            new xmldb_field('completiondate', XMLDB_TYPE_INTEGER, '10', null, null, null),
+        $table2 = new xmldb_table('aruphonestybox_users');
+        $fields2 = array(
+            new xmldb_field('approved'),
+            new xmldb_field('approverid'),
+            new xmldb_field('timemodified'),
+            new xmldb_field('completiondate'),
         );
-        // Conditionally launch add field
-        foreach ($fields as $field) {
-            if (!$dbman->field_exists($table, $field)) {
-                $dbman->add_field($table, $field);
+        // Conditionally launch drop field
+        foreach ($fields2 as $field2) {
+            if ($dbman->field_exists($table2, $field2)) {
+                $dbman->drop_field($table2, $field2);
             }
         }
-        // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2015111611, 'mod', 'aruphonestybox');
-    }
 
-    if ($oldversion < 2015111613) {
-        $table = new xmldb_table('aruphonestybox');
-        // Update fields to match local_taps_enrolment table.
-        $fields = array(
-            new xmldb_field('firstname', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'approvalrequired'),
-            new xmldb_field('lastname', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'firstname'),
-            new xmldb_field('email', XMLDB_TYPE_CHAR, '64', null, null, null, null, 'lastname')
-        );
-
-        // Conditionally launch add field
-        foreach ($fields as $field) {
-            if (!$dbman->field_exists($table, $field)) {
-                $dbman->add_field($table, $field);
-            }
-        }
         // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2015111613, 'mod', 'aruphonestybox');
+        upgrade_plugin_savepoint(true, 2015111614, 'mod', 'aruphonestybox');
     }
 
     return true;

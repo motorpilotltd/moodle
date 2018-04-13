@@ -15,22 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file definies capabilities needed by mod_aruphonestybox.
+ * This file defines observers needed by mod_arupevidence.
  *
- * @package    mod_aruphonestybox
- * @copyright  2016 Motorpilot Ltd
+ * @package    mod_arupevidence
+ * @copyright  2017 Xantico Ltd 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$capabilities = array(
-        'mod/aruphonestybox:addinstance' => array(
-            'riskbitmask' => RISK_XSS,
-            'captype' => 'write',
-            'contextlevel' => CONTEXT_COURSE,
-            'archetypes' => array(
-                'editingteacher' => CAP_ALLOW,
-                'manager' => CAP_ALLOW
-            ),
-            'clonepermissionsfrom' => 'moodle/course:manageactivities'
-        ),
+// List of observers.
+$observers = array(
+    array(
+        'eventname'   => '\core\event\course_completed',
+        'priority'    => 1,
+        'callback'    => '\mod_arupevidence\eventobservers::course_completed',
+    ),
+    array(
+        'eventname'   => '\local_certification_completion\event\certification_completed',
+        'priority'    => 1,
+        'callback'    => '\mod_arupevidence\eventobservers::certification_completed',
+    ),
 );

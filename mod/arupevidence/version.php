@@ -15,22 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file definies capabilities needed by mod_aruphonestybox.
+ * Version details
  *
- * @package    mod_aruphonestybox
- * @copyright  2016 Motorpilot Ltd
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     mod_arupevidence
+ * @copyright   2017 Xantico Ltd 
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$capabilities = array(
-        'mod/aruphonestybox:addinstance' => array(
-            'riskbitmask' => RISK_XSS,
-            'captype' => 'write',
-            'contextlevel' => CONTEXT_COURSE,
-            'archetypes' => array(
-                'editingteacher' => CAP_ALLOW,
-                'manager' => CAP_ALLOW
-            ),
-            'clonepermissionsfrom' => 'moodle/course:manageactivities'
-        ),
+defined('MOODLE_INTERNAL') || die();
+
+$plugin->version      = 2015111615;
+$plugin->requires     = 2015111600; // Moodle 3.0.
+$plugin->component    = 'mod_arupevidence';
+$plugin->maturity     = MATURITY_STABLE;
+$plugin->release      = "3.0.15 (Build: {$plugin->version})";
+
+$plugin->dependencies = array(
+    'block_arup_mylearning' => 2015111601
 );

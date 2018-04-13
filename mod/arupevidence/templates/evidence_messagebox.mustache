@@ -1,0 +1,16 @@
+<div class="evidence-box col-md-10 row alert {{boxclasses}}">
+    <div class="box-icon col-md-3">
+        <i class="fa {{boxicon}} fa-5x"></i>
+    </div>
+    <div class="col-md-9">
+        <div role="alert" class="box-msg">
+            {{boxmsg}}
+        </div>
+        {{#boxstatus}}
+            <div class="evidencestatus">Status: {{{boxstatus}}}</div>
+        {{/boxstatus}}
+        <a href="{{{boxlink}}}">
+            <button class="btn pull-right {{boxbtntype}}">{{boxbtn}}</button>
+        </a>
+    </div>
+</div>

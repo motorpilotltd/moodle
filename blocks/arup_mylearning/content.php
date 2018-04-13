@@ -476,7 +476,7 @@ class block_arup_mylearning_content {
                 )
             );
             if (!is_null($th->cpdid)) {
-                if ($hascapabilities['editcpd']) {
+                if ($hascapabilities['editcpd'] && !$th->locked) {
                     $editcpdurl = new moodle_url(
                             '/blocks/arup_mylearning/editcpd.php',
                             array('cpdid' => $th->cpdid, 'tab' => 'myhistory', 'instance' => $this->_block->instance->id)
@@ -492,7 +492,7 @@ class block_arup_mylearning_content {
                     );
                 }
 
-                if ($hascapabilities['deletecpd']) {
+                if ($hascapabilities['deletecpd'] && !$th->locked) {
                     $deletecpdurl = new moodle_url(
                             '/blocks/arup_mylearning/deletecpd.php',
                             array('cpdid' => $th->cpdid, 'tab' => 'myhistory', 'instance' => $this->_block->instance->id)
@@ -871,7 +871,7 @@ EOS;
 
     /* HISTORY FUNCTIONS - START */
     protected function _get_taps_history() {
-        global $CFG, $DB, $USER;
+        global $DB, $USER;
 
         if (!$USER->idnumber
             || !$this->_is_taps_installed()
@@ -887,7 +887,7 @@ EOS;
 SELECT
     lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.classcompletiondate, lte.duration, lte.durationunits,
         lte.expirydate, lte.cpdid, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
-        lte.learningdesccont1, lte.learningdesccont2, lte.healthandsafetycategory, lte.usedtimezone,
+        lte.learningdesccont1, lte.learningdesccont2, lte.healthandsafetycategory, lte.usedtimezone, lte.locked,
     ltcc.categoryhierarchy,
     a.course,
     cat.id as categoryid, cat.name as categoryname

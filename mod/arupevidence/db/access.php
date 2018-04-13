@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file definies capabilities needed by mod_aruphonestybox.
+ * This file definies capabilities needed by mod_arupevidence.
  *
- * @package    mod_aruphonestybox
- * @copyright  2016 Motorpilot Ltd
+ * @package    mod_arupevidence
+ * @copyright  2017 Xantico Ltd 
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $capabilities = array(
-        'mod/aruphonestybox:addinstance' => array(
+        'mod/arupevidence:addinstance' => array(
             'riskbitmask' => RISK_XSS,
             'captype' => 'write',
             'contextlevel' => CONTEXT_COURSE,
@@ -33,4 +33,14 @@ $capabilities = array(
             ),
             'clonepermissionsfrom' => 'moodle/course:manageactivities'
         ),
+        'mod/arupevidence:approvecompletion' => array(
+            'riskbitmask' => RISK_XSS,
+            'captype' => 'write',
+            'contextlevel' => CONTEXT_COURSE,
+            'archetypes' => array(
+                'editingteacher' => CAP_ALLOW,
+                'manager' => CAP_ALLOW,
+                'teacher' => CAP_ALLOW
+            ),
+        )
 );
