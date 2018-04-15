@@ -21,8 +21,9 @@
  * @since      3.0
  */
 
-define(['jquery', 'core/config', 'core/str', 'core/notification', 'block_certification_report/select2'],
-       function($, cfg, str, notification) {
+define(['jquery', 'core/config', 'core/str', 'core/notification', 'core/log',
+       'block_certification_report/clipboard', 'block_certification_report/select2', 'theme_bootstrap/bootstrap'],
+       function($, cfg, str, notification, log, Clipboard) {
     return /** @alias module:block_certification_report/enhance */ {
         // Public variables and functions.
         /**
@@ -189,6 +190,53 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'block_certifi
                     success: function () {
                         location.reload();
                     }
+                });
+            });
+
+            var modalloader;
+            $(document).on('click', 'a[data-toggle=modal]', function() {
+                /* Extra functionality, normal event will still trigger and load data, etc. */
+                var datatarget = $(this).data('target');
+                var datalabel = $(this).data('label');
+                modalloader = $(datatarget + ' .modal-body').html();
+                $(datatarget + '-label').text(datalabel);
+                $(datatarget + ' .modal-body').load($(this).data('url'));
+            });
+
+            $(document).on('hidden.bs.modal', '.modal', function () {
+                /* Revert on close */
+                $(this).data('modal', null);
+                $('#info-modal-label').empty();
+                $(this).find('.modal-body').html(modalloader);
+            });
+
+            /**
+             * Copy report URL to clipboard.
+             */
+            // Initiate cop to clipboard.
+            var clipboard = new Clipboard('.copy-to-clipboard');
+            // Success callback.
+            clipboard.on('success', function(e){
+                var trigger = $(e.trigger);
+                trigger.tooltip({
+                    container: 'body',
+                    trigger: 'manual',
+                    title: trigger.data('title-success')
+                }).tooltip('show');
+                trigger.on('mouseout', function(){
+                    trigger.tooltip('destroy');
+                });
+            });
+            // Error callback.
+            clipboard.on('error', function(e){
+                var trigger = $(e.trigger);
+                trigger.tooltip({
+                    container: 'body',
+                    trigger: 'manual',
+                    title: trigger.data('title-error')
+                }).tooltip('show');
+                trigger.on('mouseout', function(){
+                    trigger.tooltip('destroy');
                 });
             });
         }

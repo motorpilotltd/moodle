@@ -228,20 +228,16 @@ EOF;
         }
         switch ($type) {
             case 'cancel':
-                $columns[] = 'cancel';
-                $headers[] = get_string('manageenrolments:table:cancel', 'tapsenrol');
-                break;
             case 'waitlist':
-                $columns[] = 'waitlist';
-                $headers[] = get_string('manageenrolments:table:waitlist', 'tapsenrol');
-                break;
             case 'move':
-                $columns[] = 'move';
-                $headers[] = get_string('manageenrolments:table:move', 'tapsenrol');
-                break;
             case 'delete':
-                $columns[] = 'delete';
-                $headers[] = get_string('manageenrolments:table:delete', 'tapsenrol');
+                $columns[] = $type;
+                $attributes = array(
+                    'id' => 'tapsenrol-checkbox-selectall',
+                    'type' => 'checkbox'
+                );
+                $checkbox = html_writer::empty_tag('input', $attributes);
+                $headers[] = get_string("manageenrolments:table:{$type}", 'tapsenrol') . '<br>' . $checkbox;
                 break;
         }
         $table->define_columns($columns);
@@ -306,8 +302,8 @@ EOF;
         return ob_get_clean();
     }
 
-    protected function _get_user_selector_html() {
-        $potentialuserselector = new tapsenrol_enrol_user_selector('users');
+    protected function _get_user_selector_html($options = []) {
+        $potentialuserselector = new tapsenrol_enrol_user_selector('users', $options);
 
         $html = $potentialuserselector->display(true);
 
@@ -318,6 +314,8 @@ EOF;
 class mod_tapsenrol_manage_enrolments_enrol_form extends mod_tapsenrol_manage_enrolments_step2_form {
 
     public function definition() {
+        global $DB;
+        
         parent::definition();
 
         $mform =& $this->_form;
@@ -349,7 +347,23 @@ class mod_tapsenrol_manage_enrolments_enrol_form extends mod_tapsenrol_manage_en
         $mform->setExpanded('header-enrol', true);
 
         // Select users.
-        $mform->addElement('html', $this->_get_user_selector_html());
+        $options = [];
+        // Exclude not cancelled users.
+        list($in, $inparams) = $DB->get_in_or_equal(
+            $this->_taps->get_statuses('cancelled'),
+            SQL_PARAMS_NAMED, 'status', false
+        );
+        $compare = $DB->sql_compare_text('bookingstatus');
+        $params = array_merge(
+            array('classid' => $this->_class->classid),
+            $inparams
+        );
+        $excludeuserssql = "SELECT DISTINCT u.id, u.id as uid
+                             FROM {user} u
+                             JOIN {local_taps_enrolment} lte ON lte.staffid = u.idnumber
+                            WHERE classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}";
+        $options['exclude'] = $DB->get_records_sql_menu($excludeuserssql, $params);
+        $mform->addElement('html', $this->_get_user_selector_html($options));
 
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('manageenrolments:enrol:button', 'tapsenrol'));
@@ -429,11 +443,12 @@ class mod_tapsenrol_manage_enrolments_waitlist_form extends mod_tapsenrol_manage
         $a = new stdClass();
         $a->value = $seatsremaining;
         $a->text = ($seatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $seatsremaining);
+        $alerttype = ($seatsremaining === 0) ? 'alert-danger' : (($seatsremaining > 0 && $seatsremaining < 3) ? 'alert-warning' : 'alert-info');
         $mform->addElement(
                 'html',
                 $this->_renderer->alert(
                         get_string('manageenrolments:waitlist:seatsremaining', 'tapsenrol', $a),
-                        'alert-info',
+                        $alerttype,
                         false
                         )
                 );

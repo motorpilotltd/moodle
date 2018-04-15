@@ -36,9 +36,10 @@ class send_messages extends \core\task\scheduled_task
         /**
          * Add messages related with recertification window open
          */
-
+        $concat = $DB->sql_concat_join("'-'", ['cc.userid', 'cm.id']);
         $query = "
             SELECT
+              {$concat} as uniqueid,
               cm.*,
               cc.userid
             FROM {certif_messages} cm
@@ -47,16 +48,18 @@ class send_messages extends \core\task\scheduled_task
             JOIN {certif_user_assignments} cua ON cua.userid = cc.userid AND cua.certifid = cc.certifid
             JOIN {certif_assignments} ca ON ca.id = cua.assignmentid
             LEFT JOIN {certif_messages_log} cml ON cml.messageid = cm.id AND cml.userid = cc.userid
+            LEFT JOIN {certif_exemptions} ce ON ce.certifid = c.id AND ce.userid = cua.userid AND ce.archived = 0 AND (ce.timeexpires = 0 OR ce.timeexpires > :now2)
             WHERE cm.messagetype = :messagetype
             AND c.visible = :visible
             AND c.deleted = :deleted
             AND cm.triggertime > 0
             AND cml.id IS NULL
+            AND ce.id IS NULL
             AND cc.timeexpires > 0
         ";
         $params = [];
         $params['messagetype'] = message::TYPE_RECERTIFICATION_WINDOW_OPEN;
-        $params['now'] = time();
+        $params['now2'] = $params['now'] = time();
         $params['visible'] = 1;
         $params['deleted'] = 0;
 
@@ -73,24 +76,29 @@ class send_messages extends \core\task\scheduled_task
     public function prepare_due_messages(){
         global $DB;
 
-        $query = "SELECT
+        $concat = $DB->sql_concat_join("'-'", ['cua.userid', 'cm.id']);
+        $query = "
+            SELECT
+              {$concat} as uniqueid,
               cm.*,
               cua.userid
-            FROM {certif_user_assignments} cua 
+            FROM {certif_user_assignments} cua
             JOIN {certif_assignments} ca ON ca.id = cua.assignmentid
             JOIN {certif_completions} comp ON comp.certifid = cua.certifid AND comp.userid = cua.userid
             JOIN {certif_messages} cm ON cm.certifid = cua.certifid AND (comp.duedate - cm.triggertime) < :now
             JOIN {certif} c ON c.id = cm.certifid
+            LEFT JOIN {certif_exemptions} ce ON ce.certifid = c.id AND ce.userid = cua.userid AND ce.archived = 0 AND (ce.timeexpires = 0 OR ce.timeexpires > :now2)
             LEFT JOIN {certif_messages_log} cml ON cml.messageid = cm.id AND cml.userid = cua.userid
             WHERE cm.messagetype = :messagetype
             AND comp.duedate > 0
             AND c.visible = :visible
             AND c.deleted = :deleted
             AND cml.id IS NULL
+            AND ce.id IS NULL
         ";
         $params = [];
         $params['messagetype'] = message::TYPE_CERTIFICATION_BEFORE_EXPIRATION;
-        $params['now'] = time();
+        $params['now2'] = $params['now'] = time();
         $params['visible'] = 1;
         $params['deleted'] = 0;
 
@@ -106,14 +114,18 @@ class send_messages extends \core\task\scheduled_task
     public function prepare_overdue_messages(){
         global $DB;
 
-        $query = "SELECT
+        $concat = $DB->sql_concat_join("'-'", ['cua.userid', 'cm.id']);
+        $query = "
+            SELECT
+              {$concat} as uniqueid,
               cm.*,
               cua.userid
-            FROM {certif_user_assignments} cua 
+            FROM {certif_user_assignments} cua
             JOIN {certif_assignments} ca ON ca.id = cua.assignmentid
             JOIN {certif_completions} comp ON comp.certifid = cua.certifid AND comp.userid = cua.userid
             JOIN {certif_messages} cm ON cm.certifid = cua.certifid
             JOIN {certif} c ON c.id = cm.certifid
+            LEFT JOIN {certif_exemptions} ce ON ce.certifid = c.id AND ce.userid = cua.userid AND ce.archived = 0 AND (ce.timeexpires = 0 OR ce.timeexpires > :now2)
             LEFT JOIN {certif_messages_log} cml ON cml.messageid = cm.id AND cml.userid = cua.userid
             WHERE cm.messagetype = :messagetype
             AND comp.duedate < :now
@@ -121,12 +133,14 @@ class send_messages extends \core\task\scheduled_task
             AND c.visible = :visible
             AND c.deleted = :deleted
             AND cml.id IS NULL
+            AND ce.id IS NULL
         ";
         $params = [];
         $params['messagetype'] = message::TYPE_CERTIFICATION_EXPIRED;
         $date = new \DateTime('now');
         $date->sub(new \DateInterval('P1D'));
         $params['now'] = $date->getTimestamp();
+        $params['now2'] = time();
         $params['visible'] = 1;
         $params['deleted'] = 0;
 
@@ -141,9 +155,10 @@ class send_messages extends \core\task\scheduled_task
      */
     public function prepare_enrolment_messages(){
         global $DB;
+        $concat = $DB->sql_concat_join("'-'", ['cua.id', 'cm.id']);
         $query = "
             SELECT
-              CONCAT(cua.id, '#', cm.id) as uniqueid,
+              {$concat} as uniqueid,
               cm.*,
               cua.userid
             FROM {certif_user_assignments} cua

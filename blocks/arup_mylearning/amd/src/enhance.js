@@ -71,7 +71,7 @@ define(['jquery', 'core/config', 'block_arup_mylearning/purl'],
                 $(datatarget + ' .modal-body').load($(this).data('url'));
             });
 
-            $(document).on('hidden', '.modal', function () {
+            $(document).on('hidden.bs.modal', '.modal', function () {
                 /* Revert on close */
                 $(this).data('modal', null);
                 $('#info-modal-label').empty();

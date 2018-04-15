@@ -27,9 +27,7 @@ namespace local_onlineappraisal\output\dashboard;
 
 defined('MOODLE_INTERNAL') || die();
 
-use stdClass;
 use renderer_base;
-use moodle_url;
 
 class feedbackrequests extends base {
     private $feedback;
@@ -42,6 +40,16 @@ class feedbackrequests extends base {
      */
     public function export_for_template(renderer_base $output) {
         $data = $this->feedback->request_data();
+
+        if (!empty($data->filter)) {
+            $url = new \moodle_url('/local/onlineappraisal/feedback_requests.php');
+            $s = new \single_select($url, 'filter', $data->filter, $data->filterselected, null);
+            $s->label = get_string('feedbackrequests:filter:label', 'local_onlineappraisal');
+            $s->labelattributes = ['class' => 'm-t-5 m-r-5'];
+            $s->class = 'pull-right';
+            $data->filterselect = $output->render($s);
+        }
+
         return $data;
     }
 }

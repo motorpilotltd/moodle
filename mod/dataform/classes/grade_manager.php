@@ -475,8 +475,9 @@ class mod_dataform_grade_manager {
         if (empty($CFG->gradebookroles)) {
             return null;
         }
-
-        $gradebookroles = explode(", ", $CFG->gradebookroles);
+/* BEGIN CORE MOD */
+        $gradebookroles = explode(',', $CFG->gradebookroles);
+/* END CORE MOD */
 
         if (!$df = $this->df) {
             return;

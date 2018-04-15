@@ -37,5 +37,8 @@ class window_open extends \core\task\scheduled_task
         foreach($completionrecords as $completionrecord){
             completion::open_window($completionrecord);
         }
+
+        // Just purge the whole thing as potnetially lots of users and lots of courses.
+        \cache::make('core', 'completion')->purge();
     }
 }

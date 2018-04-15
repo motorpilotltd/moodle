@@ -78,7 +78,7 @@ class index {
      * @param string page the page requested
      */
     public function __construct($page) {
-        global $PAGE, $USER;
+        global $DB, $PAGE, $USER;
 
         $this->user = $USER;
         $this->page = $page;
@@ -87,7 +87,23 @@ class index {
         
         // Check if this user is allowed to view index page.
         if (!$this->can_view_index()) {
-            print_error('error:noaccess', 'local_onlineappraisal');
+            // Get BAs for user's cost centre.
+            $bas = costcentre::get_cost_centre_users($USER->icq, costcentre::BUSINESS_ADMINISTRATOR);
+            $badetails = [];
+            foreach (array_keys($bas) as $id) {
+                $ba = $DB->get_record('user', ['id' => $id]);
+                if ($ba) {
+                    $ba->fullname = fullname($ba);
+                    $badetails[] = get_string('error:noappraisal:ba:details', 'local_onlineappraisal', $ba);
+                }
+            }
+            if (!empty($badetails)) {
+                $separator = get_string('error:noappraisal:ba:separator', 'local_onlineappraisal');
+                $badetail = get_string('error:noappraisal:ba', 'local_onlineappraisal', implode($separator, $badetails));
+            } else {
+                $badetail = '';
+            }
+            print_error('error:noappraisal', 'local_onlineappraisal', '', $badetail);
         }
 
         // Set up pages for navigation.

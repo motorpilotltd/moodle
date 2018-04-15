@@ -146,7 +146,7 @@ if (isset($_POST['submit'])) {
                 break;
             case 'Full Attendance':
                 if ($tapscompletion->tapscompletion->completiontimetype == \mod_tapscompletion\tapscompletion::$completiontimetypes['classendtime']) {
-                    $completiontime = !empty($class->classendtime) ? $class->classendtime : time();
+                    $completiontime = !empty($classes[$classid]->classendtime) ? $classes[$classid]->classendtime : time();
                 } else {
                     // Everyone completes now.
                     $completiontime = time();

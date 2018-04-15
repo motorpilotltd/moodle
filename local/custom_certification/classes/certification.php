@@ -421,7 +421,7 @@ class certification
                 WHERE cm.cohortid = c.id
                 ) as memberscount
             FROM {certif_assignments} ca
-            LEFT JOIN {cohort} c ON c.id = ca.assignmenttypeid 
+            JOIN {cohort} c ON c.id = ca.assignmenttypeid 
             WHERE 
               ca.assignmenttype = :typecohort AND
               ca.certifid = :certifid

@@ -22,6 +22,7 @@ $string['pluginversiontoolow'] = 'Plugin "{$a->name}" could not be upgraded to v
 $string['setting:help_courseid'] = 'Help {$a} ID';
 $string['setting:help_courseid_desc'] = 'The "Appraisal Admin Learning Burst" {$a} ID.';
 $string['settings'] = 'Configuration';
+$string['tasktidyusers'] = 'Tidy users';
 
 // Capabilities.
 $string['costcentre:administer'] = 'Administer cost centres';

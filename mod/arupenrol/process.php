@@ -122,6 +122,9 @@ if (!$complete) {
     $DB->update_record('arupenrol_completion', $complete);
 }
 
+// Clear completion cache.
+\cache::make('core', 'completion')->delete("{$USER->id}_{$course->id}");
+
 $completion = new completion_info($course);
 $completion->update_state($cm, COMPLETION_COMPLETE, $USER->id);
 

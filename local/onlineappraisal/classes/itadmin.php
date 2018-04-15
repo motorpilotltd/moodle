@@ -157,6 +157,7 @@ class itadmin {
 
                     // New appraisal_appraisal values
                     $appraisal->statusid = $data->newstatusid;
+                    $appraisal->permissionsid = $data->newstatusid;
                     $appraisal->status_history .= '|' . $data->newstatusid;
                     if ($DB->update_record('local_appraisal_appraisal', $appraisal)) {
                         // Set up flash alert in session.

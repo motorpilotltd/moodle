@@ -99,6 +99,7 @@ class taps {
             'EACPDT7' => 'EA CPD Type VII',
             'EACPDT8' => 'EA CPD Type VIII',
             'EC' => 'External Course',
+            'ECO' => 'External Course Online',
             'HS' => 'Health and Safety',
             'INF' => 'Informal',
             'IM' => 'Institute Meetings',
@@ -160,14 +161,38 @@ class taps {
     /** @var array class cost currency. */
     private $_classcostcurrency = array(
         '' => null,
-        'AUD' => 'Australian Dollars',
-        'CNY' => 'Chinese Yuan',
-        'EUR' => 'Euro',
-        'HKD' => 'Hong Kong Dollars',
-        'GBP' => 'Pounds Sterling',
-        'RON' => 'Romanian New Leu',
-        'SGD' => 'Singapore Dollars',
-        'USD' => 'US Dollars'
+        'AED' => 'United Arab Emirates Dirham',
+        'AUD' => 'AUD	Australia Dollar',
+        'BND' => 'Brunei Darussalam Dollar',
+        'BWP' => 'Botswana Pula',
+        'CAD' => 'Canada Dollar',
+        'CNY' => 'China Yuan Renminbi',
+        'COP' => 'Colombia Peso',
+        'DKK' => 'Denmark Krone',
+        'EUR' => 'Euro Member Countries',
+        'GBP' => 'United Kingdom Pound',
+        'HKD' => 'Hong Kong Dollar',
+        'IDR' => 'Indonesia Rupiah',
+        'INR' => 'India Rupee',
+        'JPY' => 'Japan Yen',
+        'KHR' => 'Cambodia Riel',
+        'KRW' => 'Korea (South) Won',
+        'MUR' => 'Mauritius Rupee',
+        'MYR' => 'Malaysia Ringgit',
+        'NGN' => 'Nigeria Naira',
+        'NZD' => 'New Zealand Dollar',
+        'PHP' => 'Philippines Peso',
+        'PLN' => 'Poland Zloty',
+        'QAR' => 'Qatar Riyal',
+        'RSD' => 'Serbia Dinar',
+        'RUB' => 'Russia Ruble',
+        'SGD' => 'Singapore Dollar',
+        'THB' => 'Thailand Baht',
+        'TRY' => 'Turkey Lira',
+        'USD' => 'US Dollar',
+        'VND' => 'Viet Nam Dong',
+        'ZAR' => 'South Africa Rand',
+        'ZWD' => 'Zimbabwe Dollar',
     );
 
     /** @var array health and safety category. */
@@ -618,6 +643,7 @@ EOS;
         $cpd->certificateno = (isset($optional['p_certificate_number']) ? $optional['p_certificate_number'] : null);
         $cpd->expirydate = (isset($optional['p_certificate_expiry_date']) ? $optional['p_certificate_expiry_date'] : 0);
         $cpd->learningdesc = (isset($optional['p_learning_desc']) ? $optional['p_learning_desc'] : null);
+        $cpd->providerid = (isset($optional['p_providerid']) ? $optional['p_providerid'] : null);
         // Use of learningdesccont1 and learningdesccont2 has been deprecated.
         $cpd->learningdesccont1 = null;
         $cpd->learningdesccont2 = null;
@@ -766,7 +792,7 @@ EOS;
             array('staffid' => $enrolment->staffid, 'classid' => $enrolment->classid),
             $inparams
         );
-        $select = "staffid = :staffid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}";
+        $select = "staffid = :staffid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND active = 1 AND {$compare} {$in}";
         $existingenrolments = $DB->count_records_select('local_taps_enrolment', $select, $params);
         if ($existingenrolments) {
             $result->success = false;

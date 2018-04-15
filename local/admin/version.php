@@ -24,10 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111604;
+$plugin->version   = 2015111605;
 $plugin->requires  = 2015111600; // Moodle 3.0.
 $plugin->component = 'local_admin';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.4 (Build: {$plugin->version})";
+$plugin->release   = "3.0.5 (Build: {$plugin->version})";
 
 $plugin->dependencies = array();

@@ -219,8 +219,8 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                 }).fail(notification.exception);
 
                 // Get group and cohort.
-                var groupid = $('input[name=currentgroupid]').val();
-                var cohortid = $('input[name=currentcohortid]').val();
+                var groupid = $('select[name=groupid]').val();
+                var cohortid = $('select[name=cohortid]').val();
 
                 // Get users.
                 var appraiseeid = self.data('id');
@@ -1128,6 +1128,17 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                 tr.slideUp(function(){
                     $(this).remove();
                 });
+            });
+
+            // Expand initialise table.
+            $('.oa-expand-table').on('click', '.oa-expand-link', function(){
+                $('.oa-initialise-table').find('select').css('width', 'auto');
+                $(this).addClass('hidden');
+                $(this).siblings('.oa-compress-link').removeClass('hidden');
+            }).on('click', '.oa-compress-link', function(){
+                $('.oa-initialise-table').find('select').css('width', '100%');
+                $(this).addClass('hidden');
+                $(this).siblings('.oa-expand-link').removeClass('hidden');
             });
         }
     };

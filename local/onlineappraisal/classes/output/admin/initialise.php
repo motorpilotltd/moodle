@@ -148,7 +148,7 @@ class initialise extends base {
         // Used to check for actively in use appraisers from outside cost centre.
         $requiredsql = <<<EOS
 SELECT
-    aa.appraiser_userid as id, aa.appraiser_userid as auid
+    DISTINCT aa.appraiser_userid as id, aa.appraiser_userid as auid
 FROM
     {local_appraisal_appraisal} aa
 JOIN

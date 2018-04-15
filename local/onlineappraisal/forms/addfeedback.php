@@ -90,11 +90,13 @@ class apform_addfeedback extends moodleform {
                 // $mform->setDefault('confidential', $data->confidential);
                 $buttonarray=array();
                 if ($this->pw == 'self') {
-                    $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $this->str('savefeedback'));
+                    $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $this->str('savefeedback'),
+                    'class="sendfeedbackbtn"');
                 } else {
-                    $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $this->str('sendemailbtn'));
+                    $buttonarray[] = &$mform->createElement('submit', 'submitbutton', $this->str('sendemailbtn'),
+                    'class="sendfeedbackbtn"');
                     $buttonarray[] = &$mform->createElement('submit', 'savedraft', $this->str('savedraftbtn'),
-                    'data-toggle="tooltip" data-placement="top" title="' . $this->str('savedraftbtntooltip') . '"');
+                    'class="savedraftbtn" data-toggle="tooltip" data-placement="top" title="' . $this->str('savedraftbtntooltip') . '"');
                 }
 
                 $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);

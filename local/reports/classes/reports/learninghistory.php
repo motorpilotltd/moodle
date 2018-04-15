@@ -32,7 +32,7 @@ use renderer_base;
 use html_writer;
 use dml_read_exception;
 
-class learninghistory {
+class learninghistory extends base {
 
     private $report;
 
@@ -58,6 +58,7 @@ class learninghistory {
     private $strings;
 
     public function __construct(\local_reports\report $report) {
+        parent::__construct($report);
         $this->reportname = 'learninghistory';
         $this->report = $report;
         $this->reportfields();
@@ -110,8 +111,9 @@ class learninghistory {
             'bookingstatus',
             'classcost',
             'classcostcurrency',
-            'cpd',  
+            'cpd',
             'learningdesc',
+            'classcategory',
             'classtype',
             'bookingplaceddate',
             'coursecode',
@@ -121,7 +123,8 @@ class learninghistory {
             'region_name',
             'geo_region',
             'company_code',
-            'centre_code');
+            'centre_code',
+            'courseregion');
 
         $this->sortfields = array(
             'classname');
@@ -131,7 +134,8 @@ class learninghistory {
             'classstartdate',
             'classenddate',
             'bookingstatus',
-            'coursename');
+            'coursename',
+            'classcategory');
 
         $this->textfilterfields = array(
             'actualregion' => 'dropdown',
@@ -182,161 +186,11 @@ class learninghistory {
         }
     }
 
-    private function removefilter() {
-        global $SESSION;
-        $filter = optional_param('filter', '', PARAM_TEXT);
-        if (!empty($filter)) {
-            if (array_key_exists($filter, $this->textfilterfields)) {
-
-                $sessionfilters = unserialize($SESSION->lhfilters);
-                if (is_array($sessionfilters)) {
-                    if (array_key_exists($filter, $sessionfilters)) {
-                        unset($sessionfilters[$filter]);
-                    }
-                }
-                $SESSION->lhfilters = serialize($sessionfilters);
-            }
-        }
-    }
-
-    /**
-     * Get the filters in use and set the available filter options.
-     */
-    private function get_filters() {
-        global $SESSION;
-
-        $used = array();
-        $this->setfilters = array();
-        // Get the set filters from session
-        if (isset($SESSION->lhfilters)) {
-            $hassessiondata = true;
-            $filters = unserialize($SESSION->lhfilters);
-            if (is_array($filters)) {
-                foreach ($filters as $key => $value) {
-                    if (!array_key_exists($key, $this->textfilterfields)) {
-                        continue;
-                    }
-                    $used[] = $key;
-                    $this->make_filter($key, $value);
-                    $this->hassearch = true;
-                }
-            }
-        }
-        if (isset($SESSION->showall)) {
-            $this->showall = true;
-        }
-
-        // Get the available filter options for usage in search form.
-        $this->filteroptions = array();
-        foreach ($this->textfilterfields as $key => $type) {
-            $this->filteroptions[] = $this->make_filter($key, 'none');
-        }
-
-        $this->searchform = new \local_reports\searchform(null, $this);
-        // Are we doing a text search?
-        $this->textsearch = true;
-        
-    }
-
-    /**
-     * Add a new filter for this report. This function is used when getting and setting
-     * filters stored in our session. 
-     *
-     * @param string $key the field to filter on
-     * @param string $value the contents of the filter
-     * @return object $filter if value = none, else void and sets $this->setfilters
-     * and $this->showfilters (for mustache)
-     */
-    private function make_filter($key, $value) {
-        $filter = new stdClass();
-        $filter->field = $key;
-        $filter->name = $this->mystr($key);
-        $filter->type = $this->textfilterfields[$key];
-        // $value will be array when make_filter is called from
-        // function get_filters
-        if (is_array($value)) {
-            $filter->displayvalue = implode(", ", $value);
-            $filter->value = $value;
-        } else {
-            $filter->value = array($value);
-        }
-        $params = array('action' => 'removefilter', 'filter' => $key);
-        $filter->urlremove = new moodle_url($this->report->baseurl, $params);
-        $params= array('report' => 'learninghistory', 'search' => $key);
-        $filter->url = new moodle_url($this->report->baseurl, $params);
-        // We can fill setfilters when make_filter is called from
-        // function get_filters, these filters were stored in session
-        if (is_array($value)) {
-            $this->setfilters[$key] = $filter;
-        } elseif ($value == 'none') {
-            return $filter;
-        } else {
-            // If filters are added from form we need to combine
-            // the filter->values into an array.
-            // If the filter was not set yet it we can just add the filter to setfilters
-            if (!array_key_exists($key, $this->setfilters)) {
-                $filter->displayvalue = $value;
-                $this->setfilters[$key] = $filter;
-            } else {
-                $oldfilter = $this->setfilters[$key];
-                if (!in_array($value, $oldfilter->value)) {
-                    array_push($oldfilter->value, $value);
-                    $filter->value = $oldfilter->value;
-                    $filter->displayvalue = implode(", ", $filter->value);
-                    $this->setfilters[$key] = $filter;
-                }
-            }
-        }
-    }
-
-    /**
-     * Set a filter
-     */
-    private function set_filter() {
-        global $SESSION;
-
-        // Get new search fields from form.
-        $data = false;
-        if ($this->searchform->is_submitted() && ($data = $this->searchform->get_data())) {
-            // Learver flags will not be shown in the filter list
-            if ($data->leaver_flag == 0) {
-                $SESSION->showall = true;
-                $this->showall = true;
-            } else if ($data->leaver_flag == 1) {
-                $this->showall = false;
-                unset($SESSION->showall);
-            }
-            unset($data->leaver_flag);
-
-            foreach ($data as $search => $value) {
-                if (array_key_exists($search, $this->textfilterfields) && !empty($value)) {
-                    $this->make_filter($search, $value);
-                } 
-            }
-        }
-
-        // Check if search for validated okay, if not it needs to be displayed without collapse
-        $this->searchformokay = true;
-        if ($this->searchform->is_submitted() && !$this->searchform->is_validated()) {
-            $this->searchformokay = false;
-        } 
-        $this->searchformhtml = $this->report->get_form_html($this->searchform);
-
-        // Add all setfilters to sessions
-        $sfilters = array();
-        foreach ($this->setfilters as $filter) {
-            $sfilters[$filter->field] = $filter->value;
-        }
-        $this->hassearch = true;
-        $SESSION->lhfilters = serialize($sfilters);
-        
-    }
-
     public function querydata($limited = true) {
         global $DB;
 
         \core_php_time_limit::raise();
-        raise_memory_limit(MEMORY_EXTRA);
+        raise_memory_limit(MEMORY_HUGE);
 
         if (empty($this->sort)) {
             $this->sort = 'lte.staffid';
@@ -345,11 +199,11 @@ class learninghistory {
         $params = array();
         $wherestring = '';
 
-        $wherestring .= "WHERE ( lte.archived = '' OR lte.archived IS NULL )";
         if (!$this->showall) {
-            $wherestring .= ' AND ';
+            $wherestring = 'WHERE ';
             $wherestring .= $DB->sql_like('staff.LEAVER_FLAG', ':' . 'staffleaver_flag', false);
             $params['staffleaver_flag'] = 'n';
+            $wherestring .= " AND ( lte.archived = '' OR lte.archived IS NULL )";
         }
 
         foreach ($this->setfilters as $filter) {
@@ -415,10 +269,10 @@ class learninghistory {
             }
         }
 
-        // echo $wherestring;
-        // $wherestring = '';
+        //echo $wherestring;
+        //$wherestring = '';
 
-        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode
+        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode, ltco.courseregion
                   FROM {local_taps_enrolment} as lte
                   JOIN SQLHUB.ARUP_ALL_STAFF_V as staff 
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
@@ -641,18 +495,6 @@ class learninghistory {
         }
     }
 
-    /**
-     * get the language string from language file
-     * @param $string simple string without learninghistory: prefix
-     * @param $vars string variables
-     * @return language string
-     */
-    private function mystr($string, $vars =  null) {
-        if (empty($string)) {
-            return 'nostring';
-        }
-        return get_string('learninghistory:' . $string, 'local_reports', $vars);
-    }
 
     /**
      * Get values for fields that are not really in the DB results and are derived from
@@ -695,7 +537,8 @@ class learninghistory {
         if ($key == 'classenddate') {
             // CPD records use classcompletiondate instead of classenddate
             if ($row->classtype == 'Self Paced') {
-                return $this->myuserdate($row->classcompletiondate, $row);
+                $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->classcompletiondate);
+                return $this->myuserdate($date, $row);
             }
             if (!empty($row->cpdid)) {
                 return $this->myuserdate($row->classcompletiondate, $row);
@@ -723,6 +566,14 @@ class learninghistory {
             }
         }
 
+        // Show classcategory for CPD records
+        if ($key == 'classcategory') {
+            if (!empty($row->cpdid)) {
+                return $row->$key;
+            } else {
+                return '';
+            }
+        }
     }
 
     public function get_dropdown($field) {

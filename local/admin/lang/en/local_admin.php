@@ -36,6 +36,7 @@ $string['enrolmentcheck:stats:enrolled'] = '{$a->stat} user{$a->s} enrolled or a
 $string['enrolmentcheck:stats:nonmoodle'] = '{$a->stat} non-Moodle user{$a->s}.';
 $string['enrolmentcheck:stats:notenrolled'] = '{$a->stat} user{$a->s} un-enrolled or already not enrolled.';
 
+$string['taskupdatesupervisors'] = 'Update supervisors (profile flag)';
 $string['taskupdateusers'] = 'Update users';
 $string['testemail'] = 'Test email';
 $string['testemails'] = 'Test emails';

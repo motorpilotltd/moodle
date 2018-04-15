@@ -78,13 +78,18 @@ class block_certification_report_renderer extends plugin_renderer_base {
                         default:
                             $param = $view;
                     }
+                    $url->remove_params('regionview');
                     $url->param($param, $itemid);
                     $line[] = html_writer::link($url, $item['fullname']);
+                    /* Temporarily hide
                     if (count($header) > 2) {
                         $line[0] .= ' ';
                         $extraclass = $item['users'] == 0 ? 'optional' : 'status-text-'.certification_report::get_rag_status($item['progress']);
-                        $line[0] .= html_writer::span($item['progress'].'%', "user-progress {$extraclass}");
+                        // $line[0] .= html_writer::span($item['progress'].'%', "user-progress {$extraclass}");
+                        $userscomplete = round(($item['progress']/100) * $item['users']);
+                        $line[0] .= html_writer::span($userscomplete.' / '.$item['users'], "user-progress {$extraclass}");
                     }
+                    */
                 }else{
                     $line[] = $item['name'];
                 }
@@ -93,7 +98,9 @@ class block_certification_report_renderer extends plugin_renderer_base {
                         if ($certification['progress'] === null) {
                             $cell = new html_table_cell(get_string('na', 'block_certification_report'));
                         } else {
-                            $cell = new html_table_cell($certification['progress'].'%');
+                            // $cell = new html_table_cell($certification['progress'].'%');
+                            $userscomplete = round(($certification['progress']/100) * $certification['userscounter']);
+                            $cell = new html_table_cell($userscomplete.' / '.$certification['userscounter']);
                         }
                         if ($certification['progress'] === null) {
                             $cell->attributes['class'] = 'status-na';
@@ -137,6 +144,18 @@ class block_certification_report_renderer extends plugin_renderer_base {
             $output .= html_writer::tag('button', get_string('exportdatacsv', 'block_certification_report'), ['onclick' => 'window.open("'.$url->out(false).'");']);
         }
 
+        $filterurl = new moodle_url($urlbase);
+        $templatevars = new stdClass();
+        $templatevars->url = rawurldecode($filterurl);
+        $attributes = [
+            'id' => 'copy-to-clipboard-popover',
+            'data-toggle' => 'popover',
+            'data-content' => $this->render_from_template('block_certification_report/url_popover', $templatevars),
+            'data-placement' => 'top',
+            'data-html' => true,
+        ];
+        $output .= html_writer::tag('button', get_string('url', 'block_certification_report'), $attributes);
+
         $output .= html_writer::end_div();
         $output .= html_writer::end_div();
 
@@ -153,7 +172,18 @@ class block_certification_report_renderer extends plugin_renderer_base {
      */
     public function prepare_user_row($user, $data){
         $line = [];
-        $line[] = $user['userdata']->firstname.' '.$user['userdata']->lastname;
+        $modalurl = new moodle_url(
+                '/blocks/certification_report/ajax/user_info.php',
+                ['userid' => $user['userdata']->userid, 'sesskey' => sesskey()]);
+        $modallink = html_writer::link(
+                '#',
+                $user['userdata']->firstname.' '.$user['userdata']->lastname,
+                ['data-toggle' => 'modal',
+                    'data-target' => '#info-modal',
+                    'data-label' => $user['userdata']->firstname.' '.$user['userdata']->lastname,
+                    'data-url' => $modalurl]
+                );
+        $line[] = $modallink;
         foreach($user['certifications'] as $certificationid => $certification){
             if(isset($data['viewtotal']['certifications'][$certificationid]) && $data['viewtotal']['certifications'][$certificationid]['progress'] !== null) {
                 if ($certification['exemptionid'] > 0) {

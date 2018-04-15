@@ -481,7 +481,6 @@ class admin {
                 AND u.confirmed = 1
                 AND u.deleted = 0
                 {$suspendedwhere}
-                AND h.LEAVER_FLAG = 'N'
             ORDER BY
                 u.lastname ASC, u.firstname ASC
             ";

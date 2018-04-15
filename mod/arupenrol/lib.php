@@ -68,7 +68,6 @@ function arupenrol_update_instance($data, $mform) {
 
     if ($data->action != 2) {
         unset($data->keytransform);
-        unset($data->enroluser);
     }
     if ($data->action == 1) {
         unset($data->enroluser);

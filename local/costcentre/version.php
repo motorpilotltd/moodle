@@ -25,10 +25,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016080302;
+$plugin->version   = 2016080303;
 $plugin->requires  = 2015111600; // Moodle 3.0.
 $plugin->component = 'local_costcentre';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.2 (Build: {$plugin->version})";
+$plugin->release   = "3.0.3 (Build: {$plugin->version})";
 
 $plugin->dependencies = array();

@@ -32,7 +32,7 @@ $renderer = $PAGE->get_renderer('block_certification_report');
 /**
  * Verify capabilities
  */
-if(!has_capability('block/certification_report:view', context_system::instance())){
+if(!certification_report::can_view_report()){
     echo get_string('nopermissions', 'block_certification_report');
     exit;
 }
@@ -41,25 +41,24 @@ if(!has_capability('block/certification_report:view', context_system::instance()
 $filters = new stdClass();
 $filteroptions = certification_report::get_filter_options();
 $useurlparams = true;
-if (has_capability('block/certification_report:filter', context_system::instance())) {
-    $reporturl = new moodle_url('/blocks/certification_report/report.php');
-    $form = new certification_report_filter_form(
-        $reporturl,
-        $filteroptions,
-        'post',
-        '',
-        ['id' => 'certification_report_form']
-    );
-    
-    // Has data been submitted/form been cancelled?
-    if ($form->is_cancelled()) {
+
+$reporturl = new moodle_url('/blocks/certification_report/report.php');
+$form = new certification_report_filter_form(
+    $reporturl,
+    $filteroptions,
+    'post',
+    '',
+    ['id' => 'certification_report_form']
+);
+
+// Has data been submitted/form been cancelled?
+if ($form->is_cancelled()) {
+    $useurlparams = false;
+} else {
+    $data = $form->get_data();
+    if ($data) {
+        $filters = certification_report::get_filter_data($filteroptions, $data);
         $useurlparams = false;
-    } else {
-        $data = $form->get_data();
-        if ($data) {
-            $filters = certification_report::get_filter_data($filteroptions, $data);
-            $useurlparams = false;
-        }
     }
 }
 
@@ -79,16 +78,19 @@ if (!empty($form)) {
     $form->display();
 }
 
-echo $renderer->show_active_filters($filters, $filteroptions);
-
-/**
- * Get report data
- */
+// Get report data.
 $certificationsreport = certification_report::get_data($filters);
+
+$currenturl = certification_report::get_base_url($filters, $certificationsreport['view'], 'report');
+
+echo $renderer->show_active_filters($filters, $filteroptions, true, $currenturl);
+
 if (count($certificationsreport['data']) == 0) {
     echo html_writer::div(get_string('nodatafound', 'block_certification_report'));
 } else {
-    echo $renderer->show_table($filteroptions['certificationsdata'], $certificationsreport['data'], $certificationsreport['view'], certification_report::get_base_url($filters, 'report'));
+    echo $renderer->show_table($filteroptions['certificationsdata'], $certificationsreport['data'], $certificationsreport['view'], $currenturl);
 }
+
+echo $renderer->render_from_template('block_certification_report/modal', ['imgsrc' => $OUTPUT->pix_url('loader', 'block_certification_report')]);
 
 echo $OUTPUT->footer();
