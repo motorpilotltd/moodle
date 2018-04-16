@@ -439,7 +439,7 @@ class activityreset {
                 'userid' => $userid,
                 'timemodified' => time(),
             ];
-            $DB->execute_sql($updatesql, $updateparams);
+            $DB->execute($updatesql, $updateparams);
         }
     }
 }
