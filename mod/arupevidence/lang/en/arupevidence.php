@@ -115,7 +115,6 @@ $string['button:check'] = 'Check';
 $string['approve:name'] = 'Name';
 $string['approve:email'] = 'Email';
 $string['approve:datecompleted'] = 'Date Completed';
-$string['approve:instruction'] = 'Please use the below to add a PDF / JPEG copy of your certification for validation by the Certification Manager.';
 $string['approve:certificatelink'] = 'Certificate Link';
 $string['approve:actions'] = 'Actions';
 $string['approve:dateapproved'] = 'Date Approved';

@@ -254,7 +254,9 @@ echo $OUTPUT->header();
 
 echo html_writer::tag('h2', get_string('modulename', 'mod_arupevidence') . ': '. $ahb->name);
 
-echo html_writer::tag('div', get_string('approve:instruction', 'mod_arupevidence'), array('style' => 'margin-bottom: 15px;'));
+if ($ahb->intro) {
+    echo html_writer::tag('div', format_module_intro('arupevidence', $ahb, $cm->id), array('style' => 'margin-bottom: 15px;'));
+}
 
 echo $content;
 
