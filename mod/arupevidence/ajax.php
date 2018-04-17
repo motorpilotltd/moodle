@@ -136,18 +136,7 @@ if (!empty($action)) {
                     }
 
                 } else if ($arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
-                    $taps = new \local_taps\taps();
-
-                    $enrolments = $taps->get_enroled_classes($user->idnumber, $course->idnumber, true, false);
-
-                    // TODO: handle multiple enrolments
-                    foreach ($enrolments as $enrolment) {
-                        if ($taps->is_status($enrolment, 'placed')) {
-                            $itemid = $enrolment->enrolmentid;
-                            break;
-                        }
-                    }
-                    $ae_user->itemid = $itemid;
+                    $itemid = $ae_user->itemid;
                     $filearea = ARUPEVIDENCE_LMS;
                 }
                 $filearea = arupevidence_fileareaname($filearea);

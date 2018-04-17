@@ -30,11 +30,37 @@ class mod_arupevidence_completion_form extends moodleform
 
     public function definition()
     {
-        global $COURSE, $PAGE;
+        global $COURSE, $PAGE, $USER;
         $mform = $this->_form;
 
         $this->_arupevidenceuser = $this->_customdata['arupevidenceuser'] ? $this->_customdata['arupevidenceuser'] : null;
         $this->_arupevidence = $this->_customdata['arupevidence'] ? $this->_customdata['arupevidence'] : null;
+
+        if ($this->_arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
+            $defaultenrolment = '';
+
+            $taps = new \local_taps\taps();
+
+            $classchoices = array();
+            $hasplacedenrolment = false;
+            if ($enrolments = $taps->get_enroled_classes($USER->idnumber, $COURSE->idnumber, true, false)) {
+                foreach ($enrolments as $enrolment) {
+                    if ($taps->is_status($enrolment->bookingstatus, 'placed')) {
+                        $classchoices[$enrolment->enrolmentid] = $enrolment->classname;
+                        $hasplacedenrolment = true;
+                    }
+                }
+
+                if (count($classchoices) > 1) {
+                    $classchoices = array(''=>get_string('chooseclass', 'mod_arupevidence')) + $classchoices;
+                }
+
+            }
+
+            if (!$hasplacedenrolment) {
+                $mform->addElement('html', \html_writer::tag('div', get_string('noenrolments', 'mod_arupevidence'), ['class' => 'alert alert-danger']));
+            }
+        }
 
         $mform->addElement('date_selector', 'completiondate',  get_string('completiondate', 'mod_arupevidence'));
         $defaultdate = isset($this->_arupevidenceuser->completiondate) ? $this->_arupevidenceuser->completiondate : time();
@@ -92,7 +118,16 @@ class mod_arupevidence_completion_form extends moodleform
             $mform->addRule('validityperiodunit', null, 'required', null, 'client');
             $mform->setDefault('validityperiodunit', isset($this->_arupevidenceuser->validityperiodunit)? $this->_arupevidenceuser->validityperiodunit : '');
         }
-
+        if ($this->_arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
+            $mform->addElement(
+                'select',
+                'enrolmentid',
+                get_string('label:enrolment', 'mod_arupevidence'),
+                $classchoices, array('style'=>'width:140px')
+            );
+            $mform->addRule('enrolmentid', null, 'required', null, 'client');
+            $mform->setDefault('enrolmentid', $defaultenrolment);
+        }
 
         $fileoptions = array(
             'subdirs' => 0,
@@ -156,7 +191,6 @@ class mod_arupevidence_completion_form extends moodleform
         $mform->setType('requirevalidityperiod', PARAM_INT);
 
         $this->add_action_buttons(true, get_string('upload'));
-
     }
 
     public function add_taps_fields(MoodleQuickForm $mform) {
@@ -218,7 +252,7 @@ class mod_arupevidence_completion_form extends moodleform
             $data->expirydate = strtotime($data->expiryyear . $data->expirymonth . $lastday);
         }
 
-        return $data;
+    return $data;
     }
 
     public function validation($data, $files)
@@ -238,7 +272,7 @@ class mod_arupevidence_completion_form extends moodleform
             $expirydate = 0;
 
             if (!empty($data['expirydate'])) {
-                $expirydate = ['expirydate'];
+                $expirydate = $data['expirydate'];
             } else {
                 $lastday = date('t',strtotime($data['expiryyear'] . $data['expirymonth'] . '01'));
                 $expirydate = strtotime($data['expiryyear'] . $data['expirymonth'] . $lastday);

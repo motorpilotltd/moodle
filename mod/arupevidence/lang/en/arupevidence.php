@@ -103,6 +103,7 @@ $string['status:uploadcomplete'] = 'Upload Complete';
 $string['status:awaiting'] = 'Awaiting evidence to be uploaded';
 
 $string['label:expirydate'] = 'Expiry Date';
+$string['label:enrolment'] = 'Select Enrolment';
 $string['instructions'] = 'Instructions';
 
 $string['button:uploadevidence'] = 'Upload Evidence';
@@ -150,6 +151,9 @@ $string['selectmonth'] = 'Select a month';
 $string['chooseusers'] = 'Choose one or more users';
 $string['validityperiod:m'] = 'month(s)';
 $string['validityperiod:y'] = 'year(s)';
+$string['chooseclass'] = 'Choose a class';
+
+$string['noenrolments'] = 'You do not have any current enrolments on this course, please ensure you are enrolled and try again.';
 
 $string['form:modal:validityconfirm:dismiss'] = 'Dismiss';
 $string['form:modal:validityconfirm:title'] = 'Check your evidence validity period';
