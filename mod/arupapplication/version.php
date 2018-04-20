@@ -17,7 +17,7 @@
 /**
  * Version details
  *
- * @package     mod_arupadvert
+ * @package     mod_arupapplication
  * @copyright   2016 Motorpilot Ltd
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
