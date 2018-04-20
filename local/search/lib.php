@@ -2,7 +2,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->libdir.'/formslib.php');
+require_once($CFG->libdir . '/formslib.php');
 
 if (!defined('REGIONS_INSTALLED')) {
     define('REGIONS_INSTALLED', get_config('local_regions', 'version'));
@@ -15,7 +15,7 @@ if (!defined('COURSEMETADATA_INSTALLED')) {
 }
 
 if (REGIONS_INSTALLED) {
-    require_once($CFG->dirroot.'/local/regions/lib.php');
+    require_once($CFG->dirroot . '/local/regions/lib.php');
     if (!defined('REGIONS_REGION_EUROPE')) {
         $like = $DB->sql_like('name', ':name', false);
         $region = $DB->get_field_select('local_regions_reg', 'id', $like, array('name' => '%europe%'));
@@ -29,7 +29,7 @@ if (REGIONS_INSTALLED) {
     unset($like, $region);
 }
 if (COURSEMETADATA_INSTALLED) {
-    require_once($CFG->dirroot.'/local/coursemetadata/lib.php');
+    require_once($CFG->dirroot . '/local/coursemetadata/lib.php');
 }
 
 function local_search_get_course_search($value = '', $return = false) {
@@ -45,11 +45,11 @@ function local_search_get_course_search($value = '', $return = false) {
     }
 
     return array(
-        'id' => $id,
-        'action' => $CFG->wwwroot.'/local/search/index.php',
-        'method' => 'get',
-        'value' => $value,
-        'placeholder' => get_string('search'));
+            'id'          => $id,
+            'action'      => $CFG->wwwroot . '/local/search/index.php',
+            'method'      => 'get',
+            'value'       => $value,
+            'placeholder' => get_string('search'));
 
 }
 
@@ -61,8 +61,7 @@ function local_search_get_course_search($value = '', $return = false) {
  *
  * @return array
  */
-function local_search_parse_search_string($search)
-{
+function local_search_parse_search_string($search) {
     $search = trim(strip_tags($search)); // trim & clean raw searched string
     $searchterms = array();
     if (!empty($search)) {
@@ -77,8 +76,7 @@ function local_search_parse_search_string($search)
     return array($search, $searchterms);
 }
 
-function local_search_get_url($search, $page, $perpage, $showall, $allregions)
-{
+function local_search_get_url($search, $page, $perpage, $showall, $allregions) {
     $urlparams = array();
     foreach (array('search', 'page') as $param) {
         if (!empty($$param)) {
@@ -97,7 +95,6 @@ function local_search_get_url($search, $page, $perpage, $showall, $allregions)
 
     return new moodle_url('/local/search/index.php', $urlparams);
 }
-
 
 /**
  * A list of courses that match a search
@@ -118,51 +115,17 @@ function local_search_get_url($search, $page, $perpage, $showall, $allregions)
 function local_search_get_courses_search($searchterms, &$totalcount, &$region, \local_search\local\filters $filters, $sort = 'fullname ASC', $page = 0, $recordsperpage = 50, $showall = false, $allregions = false) {
     global $DB, $SESSION, $OUTPUT;
 
-    $arupadvertinstalled = $DB->count_records('modules', array('name' => 'arupadvert'));
-    $arupadvertselect = '';
-    $arupadvertjoin = '';
-    if ($arupadvertinstalled) {
-        $arupadvertselect = ", a.id as aid";
-        $arupadvertjoin = <<<EOJ
-LEFT JOIN
-    {arupadvert} a
-    ON a.course = c.id
-EOJ;
-    }
+    $arupmetadataselect = ", a.id as aid";
+    $arupmetadatajoin = "LEFT JOIN
+        {coursemetadata_arup} a
+        ON a.course = c.id";
 
-    $arupadverttapsinstalled = get_config('arupadvertdatatype_taps', 'version');
-    $arupadvertcustominstalled = get_config('arupadvertdatatype_custom', 'version');
-    $arupadverttapsselect = '';
-    $arupadverttapsjoin = '';
-    $arupadverttapswhere = '';
-    $arupadvertcustomselect = '';
-    $arupadvertcustomjoin = '';
-    $arupadvertcustomwhere = '';
-    if ($arupadvertinstalled) {
-        if ($arupadverttapsinstalled) {
-            $duration = $DB->sql_concat($DB->sql_cast_char2real('ltc.duration'), "' '", 'ltc.durationunits');
-            $arupadverttapsselect = ", at.id as atid, {$duration} as duration";
-            $arupadverttapsjoin = <<<EOJ
-LEFT JOIN
-    {arupadvertdatatype_taps} at
-    ON at.arupadvertid = a.id
-LEFT JOIN
-    {local_taps_course} ltc
-    ON ltc.courseid = at.tapscourseid
+    $duration = $DB->sql_concat($DB->sql_cast_char2real('a.duration'), "' '", 'a.durationunits');
+    $metadatadurationselect = ", $duration as duration";
+    $tapsclassjoin = "
 LEFT JOIN
     {local_taps_class} ltcc
-    ON ltcc.courseid = ltc.courseid AND (ltcc.classhidden = 0 OR ltcc.classhidden IS NULL) AND (ltcc.archived = 0 OR ltcc.archived IS NULL)
-EOJ;
-        }
-        if ($arupadvertcustominstalled) {
-            $arupadvertcustomselect = ", ac.id as acid";
-            $arupadvertcustomjoin = <<<EOJ
-LEFT JOIN
-    {arupadvertdatatype_custom} ac
-    ON ac.arupadvertid = a.id
-EOJ;
-        }
-    }
+    ON ltcc.courseid = c.id AND (ltcc.classhidden = 0 OR ltcc.classhidden IS NULL) AND (ltcc.archived = 0 OR ltcc.archived IS NULL)";
 
     $regionsinstalled = get_config('local_regions', 'version');
     $regionsjoin = '';
@@ -170,7 +133,7 @@ EOJ;
     $regionsparams = array();
     if ($regionsinstalled) {
         if ($region != 0) {
-                $regionsjoin = <<<EOJ
+            $regionsjoin = <<<EOJ
 LEFT JOIN
     {local_regions_reg_cou} lrrc
     ON lrrc.courseid = c.id
@@ -185,8 +148,8 @@ EOJ;
 EOW;
             } else {
                 $regionsextrasql = (!empty($SESSION->showukmea) && (int) $region === REGIONS_REGION_EUROPE)
-                    ? ' OR lrrc.regionid = :regionextra'
-                    : '';
+                        ? ' OR lrrc.regionid = :regionextra'
+                        : '';
 
                 $regionswhere = <<<EOW
     AND (lrrc.regionid = :regionid $regionsextrasql OR lrrc.regionid IS NULL)
@@ -238,27 +201,12 @@ EOJ;
         $rankingjoins['rank_course'] = "LEFT JOIN FREETEXTTABLE({course}, *, :keywords) AS rank_course ON rank_course.[KEY] = c.id";
         $params['keywords'] = $query;
 
-        if ($arupadvertcustominstalled) {
-            $rankingjoins['rank_arupadvertdatatype_custom'] = "LEFT JOIN FREETEXTTABLE({arupadvertdatatype_custom}, *, :keywords2) AS rank_arupadvertdatatype_custom ON rank_arupadvertdatatype_custom.[KEY] = ac.id";
-            $params['keywords2'] = $query;
-        }
-
-        if ($arupadverttapsinstalled) {
-            $rankingjoins['rank_local_taps_class'] =
-                    "LEFT JOIN FREETEXTTABLE({local_taps_class}, *, :keywords3) AS rank_local_taps_class ON rank_local_taps_class.[KEY] = ltcc.id";
-            $params['keywords3'] = $query;
-            $rankingjoins['rank_local_taps_course'] =
-                    "LEFT JOIN FREETEXTTABLE({local_taps_course}, *, :keywords4) AS rank_local_taps_course ON rank_local_taps_course.[KEY] = ltc.id";
-            $params['keywords4'] = $query;
-        }
+        $rankingjoins['rank_local_taps_class'] =
+                "LEFT JOIN FREETEXTTABLE({local_taps_class}, *, :keywords3) AS rank_local_taps_class ON rank_local_taps_class.[KEY] = ltcc.id";
+        $params['keywords3'] = $query;
 
         $rankingjoins['rank_course_fullname'] = "LEFT JOIN FREETEXTTABLE({course}, fullname, :keywords5) AS rank_course_fullname ON rank_course_fullname.[KEY] = c.id";
         $params['keywords5'] = $query;
-        $rankingjoins['rank_arupadvertdatatype_custom_keywords'] = "LEFT JOIN FREETEXTTABLE({arupadvertdatatype_custom}, keywords, :keywords6) AS rank_arupadvertdatatype_custom_keywords ON rank_arupadvertdatatype_custom_keywords.[KEY] = ac.id";
-        $params['keywords6'] = $query;
-        $rankingjoins['rank_local_taps_course_keywords'] =
-                "LEFT JOIN FREETEXTTABLE({local_taps_course}, keywords, :keywords7) AS rank_local_taps_course_keywords ON rank_local_taps_course_keywords.[KEY] = ltc.id";
-        $params['keywords7'] = $query;
 
         $rankingjoin = implode("\n", array_values($rankingjoins));
 
@@ -267,7 +215,7 @@ EOJ;
         foreach ($rankingjoins as $rankingjoinname => $unused) {
             $rankingjoinscond[] =  "$rankingjoinname.RANK IS NOT NULL";
 
-            if (in_array($rankingjoinname, ['rank_course_fullname', 'rank_arupadvertdatatype_custom_keywords', 'rank_local_taps_course_keywords'])) {
+            if (in_array($rankingjoinname, ['rank_course_fullname'])) {
                 $sortelems[] = "(ISNULL($rankingjoinname.RANK, 0) * ISNULL($rankingjoinname.RANK, 0))";
             } else {
                 $sortelems[] = "ISNULL($rankingjoinname.RANK, 0)";
@@ -283,7 +231,7 @@ EOJ;
 
     // Tiki pagination
     $limitfrom = $page * $recordsperpage;
-    $limitto   = $limitfrom + $recordsperpage;
+    $limitto = $limitfrom + $recordsperpage;
 
     $ccselect = ', ' . context_helper::get_preload_record_columns_sql('ctx');
     $ccjoin = "LEFT JOIN {context} ctx ON (ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel)";
@@ -292,11 +240,10 @@ EOJ;
     $siteid = SITEID;
     $sql = <<<EOS
 SELECT
-    c.*{$ccselect}{$arupadvertselect}{$arupadverttapsselect}{$arupadvertcustomselect}
+    c.*{$ccselect}{$arupmetadataselect}{$metadatadurationselect}
 FROM {course} c
-   $arupadvertjoin
-   $arupadverttapsjoin
-   $arupadvertcustomjoin
+   $arupmetadatajoin
+   $tapsclassjoin
    $regionsjoin
    $filterjoin
    $ccjoin
@@ -304,8 +251,6 @@ FROM {course} c
 WHERE
     c.id <> {$siteid}
     $searchcond
-    $arupadverttapswhere
-    $arupadvertcustomwhere
     $regionswhere
     $filterwhere
 ORDER BY
@@ -335,7 +280,7 @@ EOS;
         $allcourseregions = $DB->get_records_sql($sql);
     }
     $prevcourseid = 0;
-    foreach($rs as $course) {
+    foreach ($rs as $course) {
         if ($course->id === $prevcourseid) {
             continue;
         }
@@ -375,8 +320,8 @@ EOS;
                 $course->regions = '';
                 if ($allcourseregions) {
                     $courseregions = array_filter(
-                        $allcourseregions,
-                        local_search_course_match($course->id)
+                            $allcourseregions,
+                            local_search_course_match($course->id)
                     );
                     if ($courseregions) {
                         $tmparr = array();
@@ -405,7 +350,9 @@ EOS;
 }
 
 function local_search_course_match($courseid) {
-    return function($courseregion) use ($courseid) { return $courseregion->courseid == $courseid; };
+    return function($courseregion) use ($courseid) {
+        return $courseregion->courseid == $courseid;
+    };
 }
 
 /**
@@ -420,7 +367,7 @@ function local_search_print_course($course, $highlightterms = '') {
     $context = context_course::instance($course->id);
 
     // Rewrite file URLs so that they are correct
-    $course->summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary', NULL);
+    $course->summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary', null);
 
     echo html_writer::start_tag('div', array('class' => 'coursebox clearfix'));
 
@@ -438,17 +385,9 @@ JOIN
 WHERE
     cm.course = :courseid
 EOS;
-        $arupadvert = $DB->get_field_sql($sql, array('courseid' => $course->id, 'modulename' => 'arupadvert'));
-        if ($arupadvert) {
-            $arupadvertcontext = context_module::instance($arupadvert);
-            if ($arupadvertcontext) {
-                $fs = get_file_storage();
-                $files = $fs->get_area_files($arupadvertcontext->id, 'mod_arupadvert', 'blockimage');
-                if ($files) {
-                    $file = array_pop($files);
-                    $imgurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), NULL, $file->get_filepath(), $file->get_filename(), false);
-                }
-            }
+        $arupmetadata = \coursemetadatafield_arup\arupmetadata::fetch(['courseid' => $course->id]);
+        if ($arupmetadata && $arupmetadata->display) {
+            $imgurl = $arupmetadata->get_image_url();
         }
     }
 
@@ -463,7 +402,7 @@ EOS;
 
     $coursename = get_course_display_name_for_list($course);
     $linktext = highlight($highlightterms, format_string($coursename));
-    $linkparams = array('title'=>get_string('entercourse'));
+    $linkparams = array('title' => get_string('entercourse'));
     if (empty($course->visible)) {
         $linkparams['class'] = 'dimmed';
     }
@@ -482,7 +421,7 @@ EOS;
     if (!isset($course->summaryformat)) {
         $course->summaryformat = FORMAT_MOODLE;
     }
-    echo highlight($highlightterms, format_text($course->summary, $course->summaryformat, $options,  $course->id));
+    echo highlight($highlightterms, format_text($course->summary, $course->summaryformat, $options, $course->id));
 
     echo html_writer::end_tag('div'); // End of summary div
 
@@ -506,14 +445,14 @@ EOS;
         $regions = $DB->get_records_sql_menu($regionssql);
         $course->regions = implode(', ', $regions);
         if ($course->regions) {
-            $regiondata .= html_writer::tag('span', get_string('regions', 'local_regions').':');
+            $regiondata .= html_writer::tag('span', get_string('regions', 'local_regions') . ':');
             $regiondata .= $course->regions;
         }
     }
 
     $durationdata = '';
     if (TAPS_INSTALLED && !empty($config->duration_info) && $course->duration) {
-        $durationdata .= html_writer::tag('span', get_string('duration', 'local_search').':');
+        $durationdata .= html_writer::tag('span', get_string('duration', 'local_search') . ':');
         $durationdata .= $course->duration;
     }
 
@@ -553,7 +492,7 @@ EOS;
             $metadata .= $regiondata;
         }
         if (!empty($data->data)) {
-            $metadata .= html_writer::tag('span', $data->name.':');
+            $metadata .= html_writer::tag('span', $data->name . ':');
             $metadata .= str_ireplace(',', ', ', $data->data);
         }
         $metadatacount++;
@@ -566,7 +505,7 @@ EOS;
     }
 
     if ($metadata) {
-        echo html_writer::tag('div', $metadata, array('class'=>'arup_course_metadata'));
+        echo html_writer::tag('div', $metadata, array('class' => 'arup_course_metadata'));
     }
 
     echo html_writer::end_tag('div'); // End of info div
@@ -576,6 +515,7 @@ EOS;
 /**
  * Print a list navigation bar
  * Display page numbers, and a link for displaying all entries
+ *
  * @param int $totalcount number of entry to display
  * @param int $page page number
  * @param int $perpage number of entry per page
@@ -612,15 +552,15 @@ function local_search_print_navigation_bar($totalcount, $page, $perpage, $search
  *
  * @param string $parent The parent category if any
  * @param string $sort the sortorder
- * @param bool   $shallow - set to false to get the children too
+ * @param bool $shallow - set to false to get the children too
  * @return array of categories
  */
-function local_search_get_categories($parent='none', $sort=NULL, $shallow=true) {
+function local_search_get_categories($parent = 'none', $sort = null, $shallow = true) {
     global $DB;
 
-    if ($sort === NULL) {
+    if ($sort === null) {
         $sort = 'ORDER BY cc.sortorder ASC';
-    } elseif ($sort ==='') {
+    } elseif ($sort === '') {
         // leave it as empty
     } else {
         $sort = "ORDER BY $sort";
@@ -650,7 +590,7 @@ function local_search_get_categories($parent='none', $sort=NULL, $shallow=true) 
                   FROM {course_categories} cc
                $ccjoin
                   JOIN {course_categories} ccp
-                       ON ((cc.parent = ccp.id) OR (cc.path LIKE ".$DB->sql_concat('ccp.path',"'/%'")."))
+                       ON ((cc.parent = ccp.id) OR (cc.path LIKE " . $DB->sql_concat('ccp.path', "'/%'") . "))
                  WHERE ccp.id = :parent
                 $sort";
         $params['parent'] = $parent;
@@ -658,7 +598,7 @@ function local_search_get_categories($parent='none', $sort=NULL, $shallow=true) 
     $categories = array();
 
     $rs = $DB->get_recordset_sql($sql, $params);
-    foreach($rs as $cat) {
+    foreach ($rs as $cat) {
         $catcontext = context_coursecat::instance($cat->id);
         if ($cat->visible || has_capability('moodle/category:viewhiddencategories', $catcontext)) {
             $categories[$cat->id] = $cat;
@@ -674,8 +614,8 @@ function local_search_get_results_data($courses, $highlightterms = '', $total = 
     $displaylist = local_search_get_categories();
 
     $resultdata = array(
-        'coursecount' => $total,
-        'courses' => array());
+            'coursecount' => $total,
+            'courses'     => array());
 
     foreach ($courses as $course) {
 
@@ -691,9 +631,10 @@ function local_search_get_results_data($courses, $highlightterms = '', $total = 
         $context = context_course::instance($course->id);
 
         // Rewrite file URLs so that they are correct
-        $course->summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary', NULL);
+        $course->summary =
+                file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary', null);
 
-        $imgurl = (string)$OUTPUT->image_url('no_image', 'local_search');
+        $imgurl = (string) $OUTPUT->image_url('no_image', 'local_search');
 
         if (!empty($course->aid)) {
             $sql = <<<EOS
@@ -708,16 +649,14 @@ JOIN
 WHERE
     cm.course = :courseid
 EOS;
-            $arupadvert = $DB->get_field_sql($sql, array('courseid' => $course->id, 'modulename' => 'arupadvert'));
-            if ($arupadvert) {
-                $arupadvertcontext = context_module::instance($arupadvert);
-                if ($arupadvertcontext) {
-                    $fs = get_file_storage();
-                    $files = $fs->get_area_files($arupadvertcontext->id, 'mod_arupadvert', 'blockimage');
-                    if ($files) {
-                        $file = array_pop($files);
-                        $imgurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(), NULL, $file->get_filepath(), $file->get_filename(), false);
-                    }
+            $arupmetadata = \coursemetadatafield_arup\arupmetadata::fetch(['courseid' => $course->id]);
+            if ($arupmetadata && $arupmetadata->display) {
+                $fs = get_file_storage();
+                $files = $fs->get_area_files($context->id, 'coursemetadatafield_arup', 'blockimage');
+                if ($files) {
+                    $file = array_pop($files);
+                    $imgurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
+                            $file->get_filearea(), null, $file->get_filepath(), $file->get_filename(), false);
                 }
             }
         }
@@ -730,12 +669,12 @@ EOS;
 
         if (isset($course->categorylink) && !empty($course->categorylink)) {
             $category = $displaylist[$course->category];
-            $resultrow['category'] = array (
-                'stringby' => get_string('by', 'local_search'),
-                'link' => $course->categorylink,
-                'title' => $category->name,
-                'url'  => new moodle_url('/course/index.php', ['categoryid' => $course->category]),
-                'categoryclass' => $category->visible ? '' : 'category-hidden'
+            $resultrow['category'] = array(
+                    'stringby'      => get_string('by', 'local_search'),
+                    'link'          => $course->categorylink,
+                    'title'         => $category->name,
+                    'url'           => new moodle_url('/course/index.php', ['categoryid' => $course->category]),
+                    'categoryclass' => $category->visible ? '' : 'category-hidden'
             );
         }
 
@@ -746,8 +685,8 @@ EOS;
         if (!isset($course->summaryformat)) {
             $course->summaryformat = FORMAT_MOODLE;
         }
-        $resultrow['summary'] = highlight($highlightterms, format_text($course->summary, $course->summaryformat, $options, $course->id));
-
+        $resultrow['summary'] =
+                highlight($highlightterms, format_text($course->summary, $course->summaryformat, $options, $course->id));
 
         $config = get_config('local_search');
         $durationpos = empty($config->duration_position) ? 1 : $config->duration_position;
