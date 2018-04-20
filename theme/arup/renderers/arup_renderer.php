@@ -72,10 +72,6 @@ class theme_arup_html_renderer extends plugin_renderer_base {
      * before the main content.
      */
     public function pre_content() {
-        // if ($this->page->bodyid == 'page-site-index') {
-        //     $catid = optional_param('catid', 0, PARAM_INT);
-        //     return $this->availablecategories($catid);
-        // }
     }
 
     /**
@@ -323,13 +319,13 @@ class theme_arup_html_renderer extends plugin_renderer_base {
      * Get the course image from the course settings page.
      */
     public function courseimage($course) {
-        global $DB, $CFG, $OUTPUT;
+        global $CFG, $OUTPUT;
+        $coursemetadata = \coursemetadatafield_arup\arupmetadata::fetch(['course' => $course->id]);
 
-        if ($advert = $DB->get_record('arupadvert', array('course' => $course->id))) {
-            $advertobj = \mod_arupadvert\arupadvertdatatype::factory($advert->datatype, $advert);
-            $advertobj->get_advert_block();
-            if (!empty($advertobj) && !empty($advertobj->imgurl)) {
-                return $advertobj->imgurl;
+        if (isset($coursemetadata)) {
+            $imgurl = $coursemetadata->get_image_url();
+            if (!empty($imgurl)) {
+                return $imgurl;
             }
         }
 
@@ -337,7 +333,6 @@ class theme_arup_html_renderer extends plugin_renderer_base {
             require_once($CFG->libdir. '/coursecatlib.php');
             $course = new course_in_list($course);
         }
-        $content = '';
 
         foreach ($course->get_course_overviewfiles() as $file) {
             $isimage = $file->is_valid_image();

@@ -21742,41 +21742,41 @@ span[data-flexitour="container"][x-placement="right-start"] div[data-role="arrow
   content: "\f20c";
 }
 /** Arup av **/
-.course-content li.arupadvert .mod-indent-outer,
-.course-content li.arupadvert .contentwithoutlink {
+.course-content div.arupavcminfo .mod-indent-outer,
+.course-content div.arupavcminfo .contentwithoutlink {
   display: block;
 }
-.course-content li.arupadvert .avblock.to-right {
+.course-content div.arupavcminfo .avblock.to-right {
   float: right;
   width: 33%;
   margin: 0 0 10px 10px;
 }
-.course-content li.arupadvert .av_metadata {
+.course-content div.arupavcminfo .av_metadata {
   padding: 10px;
 }
-.course-content li.arupadvert .av_metadata .avheading {
+.course-content div.arupavcminfo .av_metadata .avheading {
   margin-bottom: 0;
   margin-top: 0;
   padding-top: 5px;
 }
-.course-content li.arupadvert .av_metadata .metatext {
+.course-content div.arupavcminfo .av_metadata .metatext {
   margin-bottom: 5px;
   font-size: 12px;
 }
 @media (max-width: 768px) {
-  .course-content li.arupadvert .avblock {
+  .course-content div.arupavcminfo .avblock {
     box-shadow: none;
   }
-  .course-content li.arupadvert .avblock.to-right {
+  .course-content div.arupavcminfo .avblock.to-right {
     float: none;
     width: 100%;
     margin: 0;
   }
-  .course-content li.arupadvert .av_image_wrapper {
+  .course-content div.arupavcminfo .av_image_wrapper {
     width: 40%;
     float: left;
   }
-  .course-content li.arupadvert .av_metadata {
+  .course-content div.arupavcminfo .av_metadata {
     width: 60%;
     float: right;
     padding-top: 0 !important;
@@ -21786,7 +21786,7 @@ span[data-flexitour="container"][x-placement="right-start"] div[data-role="arrow
     display: table;
     content: " ";
   }
-  .course-content li.arupadvert .clearblock:after {
+  .course-content div.arupavcminfo .clearblock:after {
     clear: both;
   }
   .course-content li.arupadvert .clearblock:before,
@@ -21794,16 +21794,16 @@ span[data-flexitour="container"][x-placement="right-start"] div[data-role="arrow
     display: table;
     content: " ";
   }
-  .course-content li.arupadvert .clearblock:after {
+  .course-content div.arupavcminfo .clearblock:after {
     clear: both;
   }
 }
 @media (max-width: 480px) {
-  .course-content li.arupadvert .av_image_wrapper {
+  .course-content div.arupavcminfo .av_image_wrapper {
     width: 100%;
     float: none;
   }
-  .course-content li.arupadvert .av_metadata {
+  .course-content div.arupavcminfo .av_metadata {
     width: 100%;
     float: none;
     padding-left: 0;
@@ -21811,33 +21811,33 @@ span[data-flexitour="container"][x-placement="right-start"] div[data-role="arrow
     border-bottom: 1px solid #777777;
   }
 }
-.course-content li.arupadvert .arupav_summary_wrapper > h3:first-child {
+.course-content div.arupavcminfo .arupav_summary_wrapper > h3:first-child {
   padding-top: 0;
 }
-.course-content li.arupadvert div.no-overflow {
+.course-content div.arupavcminfo div.no-overflow {
   overflow: visible;
 }
-.course-content li.arupadvert h2.arupav_title {
+.course-content div.arupavcminfo h2.arupav_title {
   margin-top: 0;
 }
-.course-content li.arupadvert h2 {
+.course-content div.arupavcminfo h2 {
   color: #000;
 }
-.course-content li.arupadvert h2 > img {
+.course-content div.arupavcminfo h2 > img {
   margin-bottom: 6px;
 }
-.course-content li.arupadvert .avheading {
+.course-content div.arupavcminfo .avheading {
   margin-bottom: 0;
   margin-top: 0;
   padding-top: 10px;
 }
-.course-content li.arupadvert ul {
+.course-content div.arupavcminfo ul {
   margin-bottom: 10px;
 }
-.course-content li.arupadvert span.autocompletion {
+.course-content div.arupavcminfo span.autocompletion {
   display: none;
 }
-.course-content li.arupadvert form.togglecompletion {
+.course-content div.arupavcminfo form.togglecompletion {
   bottom: 0;
   top: auto;
 }
@@ -22334,7 +22334,7 @@ span[data-flexitour="container"][x-placement="right-start"] div[data-role="arrow
   width: 100%;
   padding-left: 24px;
 }
-.course-content ul.section > li.activity.arupadvert {
+.course-content ul.section > div.arupavcminfo {
   padding-left: 0;
 }
 .course-content .section .activity.modtype_label.label {
