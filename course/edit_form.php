@@ -164,6 +164,10 @@ class course_edit_form extends moodleform {
             $mform->hardFreeze($summaryfields);
         }
 
+        /* BEGIN CORE MOD - /local/coursemetadata */
+        coursemetadata_definition($mform, $course->id);
+        /* END CORE MOD - /local/coursemetadata */
+
         // Course format.
         $mform->addElement('header', 'courseformathdr', get_string('type_format', 'plugin'));
 
@@ -291,9 +295,6 @@ class course_edit_form extends moodleform {
 /* BEGIN CORE MOD - /local/regions */
         local_regions_definition_course($mform);
 /* END CORE MOD - /local/regions */
-/* BEGIN CORE MOD - /local/coursemetadata */
-        coursemetadata_definition($mform);
-/* END CORE MOD - /local/coursemetadata */
 
         enrol_course_edit_form($mform, $course, $context);
 
