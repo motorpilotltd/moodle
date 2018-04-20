@@ -57,15 +57,6 @@ $PAGE->set_heading($title);
 
 $PAGE->blocks->show_only_fake_blocks();
 
-if ($catalogue == 'card') {
-    $PAGE->set_pagelayout('frontpage');
-    $renderer = $PAGE->get_renderer('theme_arup', 'html');
-    echo $OUTPUT->header();
-    echo $renderer->availablecategories(LOCAL_ACCORDION_ID);
-    echo $OUTPUT->footer();
-    exit(0);
-}
-
 $PAGE->set_pagelayout('standard');
 
 $PAGE->requires->jquery();
