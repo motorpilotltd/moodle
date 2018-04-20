@@ -51,7 +51,7 @@ function coursemetadata_load_data($course) {
  * @param moodleform $mform
  * @return void
  */
-function coursemetadata_definition($mform) {
+function coursemetadata_definition($mform, $courseid) {
     global $CFG, $DB;
 
     $update = has_capability('moodle/course:update', context_system::instance());
@@ -76,7 +76,7 @@ function coursemetadata_definition($mform) {
                     foreach ($fields as $field) {
                         require_once($CFG->dirroot.'/local/coursemetadata/field/'.$field->datatype.'/field.class.php');
                         $newfield = 'coursemetadata_field_'.$field->datatype;
-                        $formfield = new $newfield($field->id);
+                        $formfield = new $newfield($field->id, $courseid);
                         $formfield->edit_field($mform);
                     }
                 }
