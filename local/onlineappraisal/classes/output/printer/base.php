@@ -102,9 +102,8 @@ abstract class base implements renderable, templatable {
 
         $mylearninginstalled = get_config('block_arup_mylearning', 'version');
         $tapsinstalled = get_config('local_taps', 'version');
-        $arupadvertinstalled = get_config('arupadvertdatatype_taps', 'version');
         
-        if (empty($staffid) || !$mylearninginstalled || !$tapsinstalled || !$arupadvertinstalled) {
+        if (empty($staffid) || !$mylearninginstalled || !$tapsinstalled) {
             return;
         }
 
@@ -117,7 +116,7 @@ SELECT
         lte.expirydate, lte.cpdid, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
         lte.learningdesccont1, lte.learningdesccont2, lte.healthandsafetycategory, lte.usedtimezone,
     ltcc.categoryhierarchy,
-    a.course,
+    lte.course,
     cat.id as categoryid, cat.name as categoryname
 FROM
     {local_taps_enrolment} lte
@@ -126,14 +125,8 @@ LEFT JOIN
     ON ltcc.courseid = lte.courseid
         AND {$DB->sql_compare_text('ltcc.primaryflag', 1)} = :primaryflag
 LEFT JOIN
-    {arupadvertdatatype_taps} at
-    ON at.tapscourseid = lte.courseid
-LEFT JOIN
-    {arupadvert} a
-    ON a.id = at.arupadvertid
-LEFT JOIN
     {course} c
-    ON c.id = a.course
+    ON c.id = lte.course
 LEFT JOIN
     {course_categories} cat
     ON cat.id = c.category
