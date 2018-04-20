@@ -18,7 +18,6 @@ require_once($CFG->dirroot . '/course/lib.php');
 
 class block_arup_recent_courses extends block_base {
     protected $_tapsinstalled;
-    protected $_arupadvertinstalled;
     protected $_methodologyfield;
     protected $_taps;
 
@@ -259,7 +258,6 @@ EOS;
 
         if (empty($USER->idnumber)
             || !$this->_is_taps_installed()
-            || !$this->_is_arupadvert_installed()
         ) {
             return array();
         }
@@ -273,18 +271,12 @@ EOS;
         $sql = <<<EOS
 SELECT
     lte.id, lte.coursename, lte.classtype, lte.bookingstatus,
-    a.course,
+    c.id,
     c.fullname, c.shortname, c.visible
 FROM
     {local_taps_enrolment} lte
 JOIN
-    {arupadvertdatatype_taps} at
-    ON at.tapscourseid = lte.courseid
-JOIN
-    {arupadvert} a
-    ON a.id = at.arupadvertid
-JOIN
-    {course} c ON c.id = a.course
+    {course} c ON c.id = lte.course
 WHERE
     lte.staffid = :staffid
     AND lte.active = 1
@@ -394,12 +386,5 @@ EOS;
             $this->_tapsinstalled = get_config('local_taps', 'version');
         }
         return $this->_tapsinstalled;
-    }
-
-    protected function _is_arupadvert_installed() {
-        if (!isset($this->_arupadvertinstalled)) {
-            $this->_arupadvertinstalled = get_config('arupadvertdatatype_taps', 'version');
-        }
-        return $this->_arupadvertinstalled;
     }
 }
