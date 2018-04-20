@@ -22,7 +22,6 @@ class block_arup_mylearning_content {
     protected $_worksheets;
 
     protected $_tapsinstalled;
-    protected $_arupadvertinstalled;
     protected $_methodologyfield;
 
     public $renderer;
@@ -337,7 +336,6 @@ class block_arup_mylearning_content {
         global $USER;
         return ($USER->idnumber
             && $this->_is_taps_installed()
-            && $this->_is_arupadvert_installed()
         );
     }
 
@@ -839,7 +837,6 @@ class block_arup_mylearning_content {
 
         if (!$USER->idnumber
             || !$this->_is_taps_installed()
-            || !$this->_is_arupadvert_installed()
         ) {
             return $return;
         }
@@ -849,15 +846,9 @@ class block_arup_mylearning_content {
         list($usql, $params) = $DB->get_in_or_equal($taps->get_statuses('cancelled'), SQL_PARAMS_NAMED, 'status', false);
         $sql = <<<EOS
 SELECT
-    lte.id, lte.bookingstatus, lte.classcompletiontime, a.course
+    lte.id, lte.bookingstatus, lte.classcompletiontime, lte.course
 FROM
     {local_taps_enrolment} lte
-JOIN
-    {arupadvertdatatype_taps} at
-    ON at.tapscourseid = lte.courseid
-JOIN
-    {arupadvert} a
-    ON a.id = at.arupadvertid
 WHERE
     lte.staffid = :staffid
     AND lte.active = 1
@@ -879,7 +870,6 @@ EOS;
 
         if (!$USER->idnumber
             || !$this->_is_taps_installed()
-            || !$this->_is_arupadvert_installed()
         ) {
             return array();
         }
@@ -893,7 +883,7 @@ SELECT
         lte.expirydate, lte.cpdid, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
         lte.learningdesccont1, lte.learningdesccont2, lte.healthandsafetycategory, lte.usedtimezone, lte.locked,
     ltcc.categoryhierarchy,
-    a.course,
+    lte.course,
     cat.id as categoryid, cat.name as categoryname
 FROM
     {local_taps_enrolment} lte
@@ -902,14 +892,8 @@ LEFT JOIN
     ON ltcc.courseid = lte.courseid
         AND {$DB->sql_compare_text('ltcc.primaryflag', 1)} = :primaryflag
 LEFT JOIN
-    {arupadvertdatatype_taps} at
-    ON at.tapscourseid = lte.courseid
-LEFT JOIN
-    {arupadvert} a
-    ON a.id = at.arupadvertid
-LEFT JOIN
     {course} c
-    ON c.id = a.course
+    ON c.id = lte.course
 LEFT JOIN
     {course_categories} cat
     ON cat.id = c.category
@@ -947,13 +931,6 @@ EOS;
             $this->_tapsinstalled = get_config('local_taps', 'version');
         }
         return $this->_tapsinstalled;
-    }
-
-    protected function _is_arupadvert_installed() {
-        if (!isset($this->_arupadvertinstalled)) {
-            $this->_arupadvertinstalled = get_config('arupadvertdatatype_taps', 'version');
-        }
-        return $this->_arupadvertinstalled;
     }
 
     protected function _get_export_button($tab) {
