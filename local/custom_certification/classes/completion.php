@@ -880,10 +880,10 @@ EOS;
             $coursesprogress[$courseprogress->courseid] = 0;
             if($courseprogress->method == COMPLETION_AGGREGATION_ANY && $courseprogress->completedcriterianumber > 0){
                 /**
-                 * Set progress to 100% if any acitivity is completed and completion aggreation method is "ANY"
+                 * Set progress to 100% if any activity is completed and completion aggregation method is "ANY"
                  */
                 $coursesprogress[$courseprogress->courseid] = 100;
-            }elseif($courseprogress->method == COMPLETION_AGGREGATION_ALL){
+            } else if ($courseprogress->method == COMPLETION_AGGREGATION_ALL || empty($courseprogress->method)) {
                 /**
                  * Calculate progress: divide completed activities by number of all activities which need to be completed
                  */
