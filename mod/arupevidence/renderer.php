@@ -165,7 +165,8 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
         // Show link to the uploaded certificate file
         $filearea = arupevidence_fileareaname($this->arupevidence->cpdlms);
         $file = '';
-        if (!empty($arupevidenceuser->itemid)) {
+
+        if (!empty($arupevidenceuser->itemid) && $arupevidenceuser->completion) {
             $file = arupevidence_fileinfo($this->context, null, $filearea, $arupevidenceuser->itemid);
         } else {
             $file = arupevidence_fileinfo($this->context, $arupevidenceuser->userid);

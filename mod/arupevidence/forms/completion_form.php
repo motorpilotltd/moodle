@@ -37,13 +37,15 @@ class mod_arupevidence_completion_form extends moodleform
         $this->_arupevidence = $this->_customdata['arupevidence'] ? $this->_customdata['arupevidence'] : null;
 
         if ($this->_arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
-            $defaultenrolment = '';
+            $defaultenrolment = !empty($this->_arupevidenceuser->itemid)? $this->_arupevidenceuser->itemid : '';
 
             $taps = new \local_taps\taps();
-
+            $user = !empty($this->_arupevidenceuser->userid) ?
+                core_user::get_user($this->_arupevidenceuser->userid, '*', MUST_EXIST) : $USER;
             $classchoices = array();
             $hasplacedenrolment = false;
-            if ($enrolments = $taps->get_enroled_classes($USER->idnumber, $COURSE->idnumber, true, false)) {
+            if ($enrolments = $taps->get_enroled_classes($user->idnumber, $COURSE->idnumber, true, false)) {
+
                 foreach ($enrolments as $enrolment) {
                     if ($taps->is_status($enrolment->bookingstatus, 'placed')) {
                         $classchoices[$enrolment->enrolmentid] = $enrolment->classname;
@@ -139,11 +141,18 @@ class mod_arupevidence_completion_form extends moodleform
             null, $fileoptions);
 
         $aeuserid = isset($this->_arupevidenceuser->userid) ? $this->_arupevidenceuser->userid : null ;
-        $entryid = !empty($this->_arupevidenceuser->itemid) ? $this->_arupevidenceuser->itemid: $aeuserid ;
-        $draftitemid = file_get_submitted_draft_itemid("completioncertificate");
-        $farea = !empty($this->_arupevidenceuser->itemid)? $this->_arupevidence->cpdlms : null ;
-        $filearea = arupevidence_fileareaname($farea);
 
+        $entryid = $aeuserid;
+        $farea = null;
+        if (isset($this->_arupevidenceuser->itemid) && isset($this->_arupevidenceuser->completion)
+            && $this->_arupevidenceuser->completion) {
+
+            $entryid = $this->_arupevidenceuser->itemid;
+            $farea =  $this->_arupevidence->cpdlms;
+
+        }
+        $draftitemid = file_get_submitted_draft_itemid("completioncertificate");
+        $filearea = arupevidence_fileareaname($farea);
         file_prepare_draft_area($draftitemid, $this->_customdata['contextid'], 'mod_arupevidence', $filearea, $entryid,
             $fileoptions);
         $mform->setDefault("completioncertificate", $draftitemid);

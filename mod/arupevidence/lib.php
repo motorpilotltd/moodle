@@ -387,9 +387,7 @@ function arupevidence_get_user_approvers($arupevidence, $contextcourse) {
  * @return bool
  */
 function arupevidence_isapprover($ahb, $user) {
-    global $COURSE;
-    $contextcourse = context_course::instance($COURSE->id);
-
+    $contextcourse = context_course::instance($ahb->course);
     if ($approverlists = arupevidence_get_user_approvers($ahb, $contextcourse)) {
        foreach ($approverlists as $approver) {
            if ($approver->id == $user->id) {
@@ -536,10 +534,10 @@ function arupevidence_move_filearea($context, $file, $filearea, $itemid) {
 function arupevidence_fileareaname($data) {
     switch ($data) {
         case ARUPEVIDENCE_CPD:
-            $filearea = get_string('cpdevidence', 'mod_arupevidence');
+            $filearea = 'cpd_evidence';
             break;
         case ARUPEVIDENCE_LMS:
-            $filearea = get_string('lmsevidence', 'mod_arupevidence');
+            $filearea = 'lms_evidence';
             break;
         default:
             $filearea = 'certificate';

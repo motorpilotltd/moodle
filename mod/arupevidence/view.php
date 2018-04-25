@@ -148,7 +148,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
                 $ahbuser->{$key} = $value;
             }
             $ahbuser->timemodified = time();
-            $ahbuser->itemid = null;
+            $ahbuser->itemid = !empty($data->enrolmentid) ? $data->enrolmentid : '';
             $ahbuser->rejected = null; // set to null since use re-submitting the rejected evidence
             $DB->update_record('arupevidence_users', $ahbuser);
         } else {

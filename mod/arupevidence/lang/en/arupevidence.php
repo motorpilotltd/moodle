@@ -173,8 +173,6 @@ $string['label:processing'] = 'Processing...';
 $string['modal:no'] = 'No';
 $string['modal:yes'] = 'Yes';
 $string['modal:rejectevidence:forminfo'] = 'The message will be sent to the user via email';
-$string['cpdevidence'] = 'cpd_evidence';
-$string['lmsevidence'] = 'lms_evidence';
 
 $string['email:subject'] = 'New Completion Request for Approval';
 $string['email:reject:subject'] = 'Submitted evidence has been rejected';
