@@ -7530,6 +7530,9 @@ img.iconsmall.iconsize-big {
   width: 64px;
   height: 64px;
 }
+.btn-link.help:hover {
+  text-decoration: none;
+}
 img.iconhelp,
 .helplink img {
   height: 16px;
