@@ -137,7 +137,7 @@ function arupevidence_cm_info_dynamic(cm_info $cm) {
 
 function arupevidence_cm_info_view(cm_info $cm) {
     global $DB, $USER, $OUTPUT;
-
+    $contextcourse = context_course::instance($cm->course);
     $ahb = $DB->get_record('arupevidence',  array('id' => $cm->instance));
 
     $params = array('arupevidenceid' => $cm->instance, 'userid' => $USER->id, 'archived' => 0);
@@ -380,7 +380,7 @@ function arupevidence_get_user_approvers($arupevidence, $contextcourse) {
 }
 
 /**
- * Checks if user was evidence approver
+ * Checks if user was evidence approver or has capability
  *
  * @param arupevidence $ahb
  * @param USER $user
@@ -396,6 +396,11 @@ function arupevidence_isapprover($ahb, $user) {
                 return true;
            }
        }
+    }
+
+    // user has capability
+    if (has_capability('mod/arupevidence:admin', $contextcourse, $user)) {
+        return true;
     }
 
     return false;

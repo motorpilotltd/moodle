@@ -74,7 +74,7 @@ function xmldb_arupevidence_upgrade($oldversion) {
         $fields3 = array(
             new xmldb_field('validityperiod', XMLDB_TYPE_INTEGER, '2', null, false, 0, 0),
             new xmldb_field('validityperiodunit', XMLDB_TYPE_CHAR, '10', null, false, 0, 0),
-            new xmldb_field('expirydate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'completiondate'),
+            new xmldb_field('expirydate', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'completiondate'),
             new xmldb_field('provider', XMLDB_TYPE_TEXT, 'medium', null, null, null, null, 'expirydate'),
             new xmldb_field('duration', XMLDB_TYPE_FLOAT, '20, 2', null, null, null, 0, 'provider'),
             new xmldb_field('durationunitscode', XMLDB_TYPE_TEXT, 10, null, null, null, null, 'duration'),
@@ -174,6 +174,19 @@ function xmldb_arupevidence_upgrade($oldversion) {
 
         // Savepoint reached.
         upgrade_plugin_savepoint(true, 2015111615, 'mod', 'arupevidence');
+    }
+
+    // updating cpdlms field
+    if ($oldversion < 2015111616) {
+        $table = new xmldb_table('arupevidence_users');
+        $field = new xmldb_field('expirydate', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'completiondate');
+
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        $dbman->add_field($table, $field);
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111616, 'mod', 'arupevidence');
     }
 
     return true;

@@ -152,6 +152,8 @@ $string['validityperiod:m'] = 'month(s)';
 $string['validityperiod:y'] = 'year(s)';
 $string['chooseclass'] = 'Choose a class';
 
+$string['returntocourse'] = 'Return to {$a}';
+
 $string['noenrolments'] = 'You do not have any current enrolments on this course, please ensure you are enrolled and try again.';
 
 $string['form:modal:validityconfirm:dismiss'] = 'Dismiss';

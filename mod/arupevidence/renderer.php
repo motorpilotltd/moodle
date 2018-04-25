@@ -175,4 +175,11 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
         }
         return null;
     }
+
+    public function return_to_course($id) {
+        $url = new moodle_url('/course/view.php', array('id' => $id));
+        $strcourse = core_text::strtolower(get_string('course'));
+        $link = html_writer::link($url, get_string('returntocourse', 'mod_arupevidence', $strcourse));
+        return html_writer::tag('p', $link, array('class' => 'course-return'));
+    }
 }

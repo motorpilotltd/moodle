@@ -50,6 +50,7 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         // Required CSS and JS.
         $PAGE->requires->css(new moodle_url('/mod/arupevidence/css/select2.min.css'));
         $PAGE->requires->css(new moodle_url('/mod/arupevidence/css/select2-bootstrap.min.css'));
+        $PAGE->requires->css('/mod/arupevidence/styles.css');
         $PAGE->requires->string_for_js('alert:restrictedaccess:tooltip', 'mod_arupevidence');
 
         $arguments = array(
@@ -88,11 +89,9 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         $mform->addElement('select', 'expectedvalidityperiodunit', '', array('m' => 'Month(s)', 'y' => 'Year(s)', '' => get_string('none')));
         $mform->setDefault('expectedvalidityperiodunit', '');
 
-        $mform->addElement('checkbox', 'approvalrequired', get_string('approvalrequired', 'mod_arupevidence'));
-        $mform->setDefault('approvalrequired', 0);
+        $mform->addElement('advcheckbox', 'approvalrequired', get_string('approvalrequired', 'mod_arupevidence'));
 
-        $context = context_course::instance($this->current->course);
-        $roles = get_roles_used_in_context($context);
+        $roles = get_all_roles();
         $userroles = array();
         foreach ($roles as $r) {
             $userroles[$r->id] = $r->shortname;
@@ -113,7 +112,7 @@ class mod_arupevidence_mod_form extends moodleform_mod {
             array('' => ''),
             array('class' => 'select2 select2-user', 'data-placeholder' => get_string('chooseusers', 'mod_arupevidence'))
         );
-        $mform->disabledIf('approvalrole', 'approvalrequired', 'unchecked');
+        $mform->disabledIf('approvalusers', 'approvalrequired', 'unchecked');
         $users->setMultiple(true);
 
         $choices = array(ARUPEVIDENCE_CPD => get_string('arupevidence_cpd', 'mod_arupevidence'), ARUPEVIDENCE_LMS => get_string('arupevidence_lms', 'mod_arupevidence'));
@@ -169,8 +168,8 @@ class mod_arupevidence_mod_form extends moodleform_mod {
 
 
         $mform->addElement('editor', 'learningdesc', get_string('cpd:learningdesc', 'block_arup_mylearning'));
+        $mform->disabledIf('learningdesc', 'cpdlms', 'neq', ARUPEVIDENCE_CPD);
         $mform->setType('learningdesc', PARAM_RAW);
-
     }
 
     public function add_completion_rules() {

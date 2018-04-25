@@ -109,5 +109,5 @@ if (!empty($SESSION->arupevidence->alert)) {
 
 echo $OUTPUT->render_from_template('mod_arupevidence/print_evidenceapproval_tab',$evidencetable);
 echo $OUTPUT->render_from_template('mod_arupevidence/evidence_modals', array());
-
+echo $output->return_to_course($course->id);
 echo $OUTPUT->footer();

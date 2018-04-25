@@ -42,5 +42,13 @@ $capabilities = array(
                 'manager' => CAP_ALLOW,
                 'teacher' => CAP_ALLOW
             ),
-        )
+        ),
+        'mod/arupevidence:admin' => array(
+            'riskbitmask' => RISK_XSS,
+            'captype' => 'write',
+            'contextlevel' => CONTEXT_COURSE,
+            'archetypes' => array(
+                'manager' => CAP_ALLOW,
+            ),
+        ),
 );

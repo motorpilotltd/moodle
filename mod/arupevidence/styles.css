@@ -80,3 +80,13 @@
     width: 100%;
     height: 100px;
 }
+
+.disabledesc {
+    background-color: #eee;
+    cursor: not-allowed;
+}
+
+.course-return {
+    padding-top: 10px;
+    text-align: center;
+}

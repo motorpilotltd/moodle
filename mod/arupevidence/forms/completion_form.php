@@ -245,14 +245,14 @@ class mod_arupevidence_completion_form extends moodleform
         if (!$data) {
             return false;
         }
-        $data->expirydate = 0;
-        if (!empty($data->expirymonth) && !empty($data->expiryyear)) {
+
+        if ($this->_arupevidence->mustendmonth && !empty($data->expirymonth) && !empty($data->expiryyear)) {
             // Getting end of month
             $lastday = date('t',strtotime($data->expiryyear . $data->expirymonth . '01'));
             $data->expirydate = strtotime($data->expiryyear . $data->expirymonth . $lastday);
         }
 
-    return $data;
+        return $data;
     }
 
     public function validation($data, $files)

@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version      = 2015111615;
+$plugin->version      = 2015111617;
 $plugin->requires     = 2015111600; // Moodle 3.0.
 $plugin->component    = 'mod_arupevidence';
 $plugin->maturity     = MATURITY_STABLE;

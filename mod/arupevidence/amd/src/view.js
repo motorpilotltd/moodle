@@ -29,7 +29,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
         init: function (validityperiod, validityperiodunit) {
             if (validityperiod != '0' && validityperiod.length != 0) {
                 $('input[type="submit"]').click(function(e){
-                    // Preparing validy, value is counted as months
+                    // Preparing validity, value is counted as months
                     var vpnum = parseInt(validityperiod);
                     var vpunit = (validityperiodunit == 'y') ? 12 : 1;
                     var validity = vpnum * vpunit;
@@ -53,10 +53,14 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
                     var mustendmonth = $('input[name="mustendmonth"]').val();
                     var requirevalidityperiod = $('input[name="requirevalidityperiod"]').val();
+                    var isvalid = true;
                     if (typeof requirevalidityperiod != 'undefined' && requirevalidityperiod == 1) {
                         var uservalidityperiod = parseInt($('#id_validityperiod').val());
                         var uservalidityperiodunit = ($('#id_validityperiodunit').val() == 'y') ? 12 : 1;
                         uservalidity = uservalidityperiod * uservalidityperiodunit;
+                        if (uservalidity < validity) {
+                            isvalid = false;
+                        }
                     } else {
                         // Defining expiry_date
                         if (typeof mustendmonth != 'undefined' && mustendmonth == 1) {
@@ -74,11 +78,17 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
                         var expiry_date = new Date(expiry_year, expiry_month, expiry_day);
 
-                        uservalidity = computedatemonthdiff(expiry_date, completion_date);
+                        var expectedexpiry = validitydateinfo(completion_date, vpnum, validityperiodunit);
+
+                        if (expiry_date > expectedexpiry['minexpiry'] && expiry_date < expectedexpiry['maxexpiry'] ) {
+                            isvalid = true;
+                        } else {
+                            isvalid = false;
+                        }
+
                     }
 
-                    // Checks if expiry date is still covered by validity
-                    if (uservalidity < validity) {
+                    if (!isvalid && expiry_date > completion_date ) {
                         e.preventDefault(); // stop form submission
                         $('#validity-confirm-modal').modal('show');
 
@@ -94,6 +104,80 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
         },
 
     };
+
+    /**
+     * Get the validity dates
+     *
+     * @param completionDate
+     * @param validitynum
+     * @param validtyunit
+     * @param min bool
+     * @returns
+     */
+    function validitydateinfo(completionDate, validitynum, validtyunit, minmax) {
+        // Return undefiend if first argument isn't a Date object
+        if (!(completionDate instanceof Date)) {
+            return(undefined);
+        }
+        var validityinfo = [];
+        var newDate = '';
+        switch(validtyunit) {
+            case 'm':
+                // Get current date
+                var oldDate = completionDate.getDate();
+
+                // Increment months (handles year rollover)
+                var newDate = new Date(completionDate);
+
+                if (typeof minmax !== 'undefined' && minmax == true) {
+                    // getting the min validity
+                    newDate.setMonth(completionDate.getMonth() - validitynum);
+                } else {
+                    newDate.setMonth(completionDate.getMonth() + validitynum);
+                }
+
+                if (newDate.getDate() != oldDate) {
+                    newDate.setDate(0);
+                }
+
+                // Handle Leap year
+                if (completionDate.getDate() == 29 && !isLeapYear(newDate.getFullYear())) {
+                    newDate.setMonth(1);
+                    newDate.setDate(28);
+                }
+                validityinfo['expirydate'] = newDate;
+                break;
+            case 'y':
+                // Increment years
+                var newDate = new Date(completionDate);
+                newDate.setFullYear(completionDate.getFullYear() + validitynum);
+
+                // Handle Leap year
+                if (completionDate.getDate() == 29 && !isLeapYear(newDate.getFullYear())) {
+                    newDate.setMonth(1);
+                    newDate.setDate(28);
+                }
+                validityinfo['expirydate'] = newDate;
+                break;
+            default:
+                var newDate = new Date(completionDate);
+                newDate.setTime(completionDate.getTime() + validitynum);
+                validityinfo['expirydate'] = newDate;
+        }
+
+        if (typeof validityinfo['expirydate'] !== "undefined" && typeof minmax == "undefined") {
+            validityinfo['minexpiry'] = validitydateinfo(validityinfo['expirydate'], 1, 'm', true);
+            validityinfo['maxexpiry'] = validitydateinfo(validityinfo['expirydate'], 1, 'm', false);
+
+            return validityinfo;
+        } else {
+            return newDate;
+        }
+    }
+
+    function isLeapYear(year) {
+        return (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0));
+    }
 
     function  computedatemonthdiff (date1, date2) {
         var diff =(date1.getTime() - date2.getTime()) / 1000;

@@ -31,8 +31,26 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
              * @method initialise
              */
             initialise: function(args) {
+                // NOTE: temporary fix for disabling learningdesc(an atto editor)
+                var selectcpdlms = $('#id_cpdlms');
+
+
+                if (selectcpdlms.val() != 0) {
+                    // NOTE: should disabled when editing the instance with cms selected
+                    $('#id_learningdesceditable').attr('contenteditable', false);
+                }
+                selectcpdlms.on('change', function (e) {
+                    if ($(this).val() == 0 && $(this).val().length !== 0) { // cms selected
+                        $('#id_learningdesceditable').attr('contenteditable', true);
+                        $('#id_learningdesceditable').removeClass('disabledesc');
+                    } else {
+                        $('#id_learningdesceditable').addClass('disabledesc');
+                        $('#id_learningdesceditable').attr('contenteditable', false);
+
+                    }
+                });
+
                 var courseid = args;
-                console.log(courseid);
                 $('.select2').select2({
                     width: '75%'
                 });
