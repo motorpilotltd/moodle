@@ -14,7 +14,7 @@ $PAGE->set_pagelayout('standard');
 $PAGE->requires->jquery();
 $PAGE->requires->js(new moodle_url('/local/learningpath/js/select2.min.js'));
 $PAGE->requires->css(new moodle_url('/local/learningpath/css/select2.css'));
-$PAGE->requires->js_init_code(js_writer::function_call("jQuery('.select2').select2", array(array('width'=>'75%'))), true);
+$PAGE->requires->js_init_code(js_writer::function_call("jQuery('select.select2').select2", array(array('width'=>'75%'))), true);
 
 $title = get_string('title:add', 'local_learningpath');
 
