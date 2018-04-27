@@ -28,7 +28,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
     return /** @alias module:mod_arupevidence/view */ {
         init: function (validityperiod, validityperiodunit) {
             if (validityperiod != '0' && validityperiod.length != 0) {
-                $('input[type="submit"]').click(function(e){
+                $('input[type="submit"][name="submitbutton"]').click(function(e){
                     // Preparing validity, value is counted as months
                     var vpnum = parseInt(validityperiod);
                     var vpunit = (validityperiodunit == 'y') ? 12 : 1;

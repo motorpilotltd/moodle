@@ -70,7 +70,7 @@ echo $outputcache;
 $usernamefields = get_all_user_name_fields(true, 'u');
 
 $ahbusersql = <<<EOS
-    SELECT 
+    SELECT
         au.*,
         {$usernamefields},
         {$DB->sql_fullname('ur.firstname', 'ur.lastname')} as rejectedby,
@@ -78,17 +78,17 @@ $ahbusersql = <<<EOS
         u.email
     FROM
         {arupevidence_users} au
-    JOIN 
+    JOIN
         {arupevidence}  a
         ON a.id = au.arupevidenceid
-    LEFT JOIN {user} ur 
-        ON ur.id = au.rejectedbyid  
-    LEFT JOIN {user} ua 
-        ON ua.id = au.approverid           
-    JOIN 
+    LEFT JOIN {user} ur
+        ON ur.id = au.rejectedbyid
+    LEFT JOIN {user} ua
+        ON ua.id = au.approverid
+    JOIN
         {user} u
         ON u.id = au.userid
-    WHERE 
+    WHERE
         au.arupevidenceid = {$ahb->id}
         AND au.archived <> 1
     ;
@@ -111,7 +111,7 @@ foreach ($ahbuserlists as $ahbuserlist) {
 }
 
 $evidencetable->approvaltable = $output->completion_approval_list($approvallist, $context);
-$evidencetable->approvedtable = $output->completion_approval_list($approvedlist, $context);
+$evidencetable->approvedtable = $output->completion_approval_list($approvedlist, $context, false, true);
 $evidencetable->rejectedtable = $output->completion_approval_list($rejectedlist, $context, true);
 
 if (!empty($SESSION->arupevidence->alert)) {

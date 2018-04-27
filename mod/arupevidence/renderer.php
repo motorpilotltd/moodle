@@ -27,7 +27,7 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
     protected $arupevidence;
     protected $context;
 
-    public function completion_approval_list($usercompletions, $context, $isreject = false) {
+    public function completion_approval_list($usercompletions, $context, $isreject = false, $isapproved = false) {
         global $USER, $DB;
 
         $ahb_users = null;
@@ -53,7 +53,7 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
         if ($isreject) {
             $table->head[] = get_string('reject:daterejected', 'mod_arupevidence');
             $table->head[] = get_string('reject:rejectedby', 'mod_arupevidence');
-        } else {
+        } else if ($isapproved) {
             $table->head[] = get_string('approve:dateapproved', 'mod_arupevidence');
             $table->head[] = get_string('approve:approvedby', 'mod_arupevidence');
         }
@@ -102,7 +102,7 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
                     $cell->text = $usercompletion->rejectedby;
                     $cell->attributes['class'] = 'text-left';
                     $cells[] = clone($cell);
-                } else {
+                } else if ($isapproved) {
                     // Date Approved
                     $cell->text = (!empty($usercompletion->approved))? userdate($usercompletion->approved,'%A, %d %B %Y') : '';
                     $cell->attributes['class'] = 'text-left';
