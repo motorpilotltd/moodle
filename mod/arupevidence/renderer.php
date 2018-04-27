@@ -27,7 +27,7 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
     protected $arupevidence;
     protected $context;
 
-    public function completion_approval_list($usercompletions, $context) {
+    public function completion_approval_list($usercompletions, $context, $isreject = false) {
         global $USER, $DB;
 
         $ahb_users = null;
@@ -50,8 +50,13 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
         $table->head[] = get_string('approve:email', 'mod_arupevidence');
         $table->head[] = get_string('approve:datecompleted', 'mod_arupevidence');
         $table->head[] = get_string('approve:certificatelink', 'mod_arupevidence');
-        $table->head[] = get_string('approve:dateapproved', 'mod_arupevidence');
-        $table->head[] = get_string('approve:approvedby', 'mod_arupevidence');
+        if ($isreject) {
+            $table->head[] = get_string('reject:daterejected', 'mod_arupevidence');
+            $table->head[] = get_string('reject:rejectedby', 'mod_arupevidence');
+        } else {
+            $table->head[] = get_string('approve:dateapproved', 'mod_arupevidence');
+            $table->head[] = get_string('approve:approvedby', 'mod_arupevidence');
+        }
         $table->head[] = get_string('approve:actions', 'mod_arupevidence');
 
         if(empty($usercompletions)) {
@@ -88,15 +93,27 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
                 $cell->attributes['class'] = 'text-left';
                 $cells[] = clone($cell);
 
-                // Date Approved
-                $cell->text = (!empty($usercompletion->approved))? userdate($usercompletion->approved,'%A, %d %B %Y') : '';
-                $cell->attributes['class'] = 'text-left';
-                $cells[] = clone($cell);
+                if ($isreject) {
+                    // Date Approved
+                    $cell->text = (!empty($usercompletion->rejected))? userdate($usercompletion->rejected,'%A, %d %B %Y') : '';
+                    $cell->attributes['class'] = 'text-left';
+                    $cells[] = clone($cell);
+                    // Approved By
+                    $cell->text = $usercompletion->rejectedby;
+                    $cell->attributes['class'] = 'text-left';
+                    $cells[] = clone($cell);
+                } else {
+                    // Date Approved
+                    $cell->text = (!empty($usercompletion->approved))? userdate($usercompletion->approved,'%A, %d %B %Y') : '';
+                    $cell->attributes['class'] = 'text-left';
+                    $cells[] = clone($cell);
+                    // Approved By
+                    $cell->text = $usercompletion->approvedby;
+                    $cell->attributes['class'] = 'text-left';
+                    $cells[] = clone($cell);
+                }
 
-                // Approved By
-                $cell->text = $usercompletion->approverid;
-                $cell->attributes['class'] = 'text-left';
-                $cells[] = clone($cell);
+
 
                 // Actions Link
                 $actions = array();

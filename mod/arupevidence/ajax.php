@@ -36,7 +36,7 @@ $action = optional_param('action', '', PARAM_ALPHA);
 
 $arupevidence_userid = optional_param('ae_userid', '', PARAM_INT);
 $id = optional_param('id', '', PARAM_INT);
-$reject_message = optional_param('reject_message', '', PARAM_ALPHA);
+$reject_message = optional_param('reject_message', '', PARAM_RAW);
 
 if (!empty($action)) {
     $result = new stdClass();
@@ -54,8 +54,9 @@ if (!empty($action)) {
 
     $context = context_module::instance($cm->id);
     $arupevidence = $DB->get_record('arupevidence',  array('id' => $cm->instance));
-
     $isuserapprover = arupevidence_isapprover($arupevidence, $USER);
+    $alertmessage = null;
+    $alerttype = null;
 
     try {
         $params = array('arupevidenceid' => $cm->instance, 'id' => $arupevidence_userid, 'archived' => 0);
@@ -63,8 +64,23 @@ if (!empty($action)) {
         $user = $DB->get_record('user',  array('id' => $ae_user->userid));
         if ($action == 'reject' && $isuserapprover) {
             if(!$ae_user->rejected) {
-                $ae_user->rejected = time();
-                $ae_user->rejectmessage = $reject_message;
+                $rejectinfo = array(
+                    'rejected' => time(),
+                    'rejectedbyid' => $USER->id,
+                    'rejectmessage' => $reject_message
+                );
+                $ae_user->rejected = $rejectinfo['rejected'];
+                $ae_user->rejectedbyid = $rejectinfo['rejectedbyid'];
+                $ae_user->rejectmessage = $rejectinfo['rejectmessage'];
+
+                // saving rejection history
+                if (!empty($ae_user->rejectedhistory)) {
+                    $rejecthistory = json_decode($ae_user->rejectedhistory);
+                } else {
+                    $rejecthistory = array();
+                }
+                $rejecthistory[] = $rejectinfo;
+                $ae_user->rejectedhistory = json_encode($rejecthistory);
 
                 $DB->update_record('arupevidence_users', $ae_user);
 
@@ -92,74 +108,86 @@ if (!empty($action)) {
             $result->success = true;
         } else if ($action == 'approve' && $isuserapprover) {
             if(!$ae_user->approved) {
-                // Update arupevidence_user completion status
-                $ae_user->approved = time();
-                $ae_user->approverid = $USER->id;
-                $ae_user->rejected = null;
-                $ae_user->completion = 1 ;
                 // get uploader fileinfo
                 $file = arupevidence_fileinfo($context, $ae_user->userid);
+                // Ensure that an evidence has a file uploaded
+                if (!empty($file)) {
+                    // Update arupevidence_user completion status
+                    $ae_user->approved = time();
+                    $ae_user->approverid = $USER->id;
+                    $ae_user->completion = 1 ;
+                    //remove current rejection info
+                    $ae_user->rejected = null;
+                    $ae_user->rejectedbyid = null;
+                    $ae_user->rejectmessage = null;
 
-                $itemid = 0;
-                $filearea = null;
-                if ($arupevidence->cpdlms == ARUPEVIDENCE_CPD) {
+                    $itemid = 0;
+                    $filearea = null;
+                    if ($arupevidence->cpdlms == ARUPEVIDENCE_CPD) {
 
-                    $user = core_user::get_user($ae_user->userid, '*', MUST_EXIST);
-                    $cpd = arupevidence_sendtotaps($cm->instance, $user, $debug);
-                    $return = arupevidence_process_result($cpd, $debug);
+                        $user = core_user::get_user($ae_user->userid, '*', MUST_EXIST);
+                        $cpd = arupevidence_sendtotaps($cm->instance, $user, $debug);
+                        $return = arupevidence_process_result($cpd, $debug);
 
-                    if ($return->success == true) {
-                        $ae_user->taps = 1 ;
-                        $ae_user->itemid = $cpd;
-                        $params = array(
-                            'context' => $context,
-                            'courseid' => $course->id,
-                            'objectid' => $cm->instance,
-                            'relateduserid' => $user->id,
-                            'other' => array(
-                                'automatic' => false,
-                            )
-                        );
+                        if ($return->success == true) {
+                            $ae_user->taps = 1 ;
+                            $ae_user->itemid = $cpd;
+                            $params = array(
+                                'context' => $context,
+                                'courseid' => $course->id,
+                                'objectid' => $cm->instance,
+                                'relateduserid' => $user->id,
+                                'other' => array(
+                                    'automatic' => false,
+                                )
+                            );
 
-                        $logevent = \mod_arupevidence\event\cpd_request_sent::create($params);
-                        $logevent->trigger();
+                            $logevent = \mod_arupevidence\event\cpd_request_sent::create($params);
+                            $logevent->trigger();
 
-                        $completion = new completion_info($course);
+                            $completion = new completion_info($course);
 
-                        if ($completion->is_enabled($cm)) {
-                            $completion->update_state($cm, COMPLETION_COMPLETE);
-                            $debug[] = 'Updated the completion state';
+                            if ($completion->is_enabled($cm)) {
+                                $completion->update_state($cm, COMPLETION_COMPLETE);
+                                $debug[] = 'Updated the completion state';
+                            }
+
+                            $itemid = $cpd;
+                            $filearea = ARUPEVIDENCE_CPD;
                         }
 
-                        $itemid = $cpd;
-                        $filearea = ARUPEVIDENCE_CPD;
+                    } else if ($arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
+                        $itemid = $ae_user->itemid;
+                        $filearea = ARUPEVIDENCE_LMS;
                     }
+                    $filearea = arupevidence_fileareaname($filearea);
+                    arupevidence_move_filearea($context, $file, $filearea, $itemid);
+                    // Update user's record
+                    $DB->update_record('arupevidence_users', $ae_user);
 
-                } else if ($arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
-                    $itemid = $ae_user->itemid;
-                    $filearea = ARUPEVIDENCE_LMS;
+                    $alertmessage = get_string('approve:successapproved', 'mod_arupevidence');
+                    $alerttype = 'alert-success';
+                } else {
+                    $alertmessage = get_string('error:noevidenceupload', 'mod_arupevidence');
+                    $alerttype = 'alert-warning';
                 }
-                $filearea = arupevidence_fileareaname($filearea);
-                arupevidence_move_filearea($context, $file, $filearea, $itemid);
-                // Update user's record
-                $DB->update_record('arupevidence_users', $ae_user);
-
-                $SESSION->arupevidence->alert = new stdClass();
-                $SESSION->arupevidence->alert->message = get_string('approve:successapproved', 'mod_arupevidence');
-                $SESSION->arupevidence->alert->type = 'alert-success';
             } else { // already approved by the other approver
-                $SESSION->arupevidence->alert = new stdClass();
-                $SESSION->arupevidence->alert->message = get_string('approve:alreadyapproved', 'mod_arupevidence');
-                $SESSION->arupevidence->alert->type = 'alert-warning';
+                $alertmessage = get_string('approve:alreadyapproved', 'mod_arupevidence');
+                $alerttype = 'alert-warning';
             }
             $result->success = true;
         }
     } catch (Exception $e) {
-        $SESSION->arupevidence->alert = new stdClass();
-        $SESSION->arupevidence->alert->message = $e->getMessage();
-        $SESSION->arupevidence->alert->type = 'alert-warning';
+        $alertmessage = $e->getMessage();
+        $alerttype = 'alert-warning';
     }
 
+    // Display alert message
+    if (!empty($alertmessage) && !empty($alerttype)) {
+        $SESSION->arupevidence->alert = new stdClass();
+        $SESSION->arupevidence->alert->message = $alertmessage;
+        $SESSION->arupevidence->alert->type = $alerttype;
+    }
     header('Content-Type: application/json');
     echo json_encode($result);
     exit;

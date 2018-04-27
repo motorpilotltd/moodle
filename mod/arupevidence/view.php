@@ -142,6 +142,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
             $arupevidencedata = array_merge($arupevidencedata, $cpddetails);
         }
 
+        $neworrejected = false;
         if(isset($data->action) && $data->action == 'edit') {
             // Modify existing completion information
             foreach($arupevidencedata as $key => $value) {
@@ -149,7 +150,15 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
             }
             $ahbuser->timemodified = time();
             $ahbuser->itemid = !empty($data->enrolmentid) ? $data->enrolmentid : '';
-            $ahbuser->rejected = null; // set to null since use re-submitting the rejected evidence
+
+            if (!empty($ahbuser->rejected)) {
+                $neworrejected = true;
+            }
+            //removing current rejection info
+            $ahbuser->rejected = null;
+            $ahbuser->rejectedbyid = null;
+            $ahbuser->rejectmessage = null;
+
             $DB->update_record('arupevidence_users', $ahbuser);
         } else {
             // New completion information arupevidence_users
@@ -176,23 +185,24 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
             }
 
             $DB->insert_record('arupevidence_users', $ahbuser);
+            $neworrejected = true;
+        }
 
-            // Send mail to the approvers
-            if($ahb->approvalrequired) {
+        // Send mail to the approvers
+        if($ahb->approvalrequired && $neworrejected = true) {
 
-                $approverlists = arupevidence_get_user_approvers($ahb, $contextcourse);
+            $approverlists = arupevidence_get_user_approvers($ahb, $contextcourse);
 
-                $user = clone($USER);
-                foreach ($approverlists as $approverto) {
-                    $subject = get_string('email:subject', 'mod_arupevidence');
-                    $messagebody = get_string('email:body', 'mod_arupevidence', array(
-                        'approverfirstname' => $approverto->firstname,
-                        'approvalurl' => $approveurl->out(),
-                        'userfirstname' => $user->firstname,
-                        'userlastname' => $user->lastname
-                    ));
-                    $sendnotification = arupevidence_send_email($approverto, $user, $subject, $messagebody);
-                }
+            $user = clone($USER);
+            foreach ($approverlists as $approverto) {
+                $subject = get_string('email:subject', 'mod_arupevidence');
+                $messagebody = get_string('email:body', 'mod_arupevidence', array(
+                    'approverfirstname' => $approverto->firstname,
+                    'approvalurl' => $approveurl->out(),
+                    'userfirstname' => $user->firstname,
+                    'userlastname' => $user->lastname
+                ));
+                $sendnotification = arupevidence_send_email($approverto, $user, $subject, $messagebody);
             }
         }
 

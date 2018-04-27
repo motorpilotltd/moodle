@@ -189,5 +189,24 @@ function xmldb_arupevidence_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111616, 'mod', 'arupevidence');
     }
 
+    // add new field rejectedhistory
+    if ($oldversion < 2015111618) {
+        $table = new xmldb_table('arupevidence_users');
+        $fields = array(
+            new xmldb_field('rejectedhistory', XMLDB_TYPE_TEXT, 'big', null, null, null, null),
+            new xmldb_field('rejectedbyid', XMLDB_TYPE_INTEGER, 10, null, null, null, null)
+        );
+
+        foreach ($fields as $field) {
+            // Conditionally launch add field
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111618, 'mod', 'arupevidence');
+    }
+
     return true;
 }

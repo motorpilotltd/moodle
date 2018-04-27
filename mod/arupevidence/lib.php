@@ -515,15 +515,16 @@ function arupevidence_move_filearea($context, $file, $filearea, $itemid) {
 
     $fs = get_file_storage();
 
-    $file_record =  array('contextid'=>$context->id, 'component'=>'mod_arupevidence', 'filearea'=>$filearea,
-        'itemid'=>$itemid, 'filepath'=>'/', 'filename'=>$file->get_filename(),
-        'timecreated'=>time(), 'timemodified'=>time());
-
-    $fileevidencepath = $file->copy_content_to_temp();
-
     try {
-        $fs->create_file_from_pathname($file_record, $fileevidencepath);
-        $file->delete(); // delete the old filearea
+        $file_record =  array('contextid'=>$context->id, 'component'=>'mod_arupevidence', 'filearea'=>$filearea,
+            'itemid'=>$itemid, 'filepath'=>'/', 'filename'=>$file->get_filename(),
+            'timecreated'=>time(), 'timemodified'=>time());
+
+        $fileevidencepath = $file->copy_content_to_temp();
+
+
+            $fs->create_file_from_pathname($file_record, $fileevidencepath);
+            $file->delete(); // delete the old filearea
     } catch (Exception $e) {
         return false;
     }

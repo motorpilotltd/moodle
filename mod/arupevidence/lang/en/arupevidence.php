@@ -131,6 +131,8 @@ $string['approve:nocompletions'] = 'No applicable completion requests found';
 $string['approve:cannotapproveown'] = 'You cannot approve your own request.';
 $string['approve:cannotrejectown'] = 'You cannot reject your own request.';
 
+$string['reject:daterejected'] = 'Date Rejected';
+$string['reject:rejectedby'] = 'Rejected By';
 $string['reject:evidencerejected'] = 'Evidence has been rejected and an email was sent to the user.';
 $string['reject:evidencerejectedalready'] = 'Evidence has already been rejected by the other approver.';
 
@@ -140,6 +142,7 @@ $string['error:emptymonth'] = 'Month must not be empty';
 $string['error:mustlinkedcourse'] = 'Must be Linked Course';
 $string['error:cpdrequired'] = 'Must not be empty when <i>CPD</i> is selected';
 $string['error:expirydate'] = 'Invalid <i>Expiry Date</i>, should be ahead of <i>Completion Date</i>.';
+$string['error:noevidenceupload'] = 'Failed to approve as evidence file upload not found.';
 
 $string['alert:restrictedaccess:tooltip'] = 'Only the Moodle Team can edit this field.';
 $string['alert:approveronly'] = 'You are not allowed to make this action. You are not an approver.';

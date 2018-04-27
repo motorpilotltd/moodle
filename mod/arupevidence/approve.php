@@ -68,16 +68,23 @@ $ahbuser = $DB->get_record('arupevidence_users', $params, '*', IGNORE_MULTIPLE);
 echo $outputcache;
 
 $usernamefields = get_all_user_name_fields(true, 'u');
+
 $ahbusersql = <<<EOS
     SELECT 
         au.*,
         {$usernamefields},
+        {$DB->sql_fullname('ur.firstname', 'ur.lastname')} as rejectedby,
+        {$DB->sql_fullname('ua.firstname', 'ua.lastname')} as approvedby,
         u.email
     FROM
         {arupevidence_users} au
     JOIN 
         {arupevidence}  a
         ON a.id = au.arupevidenceid
+    LEFT JOIN {user} ur 
+        ON ur.id = au.rejectedbyid  
+    LEFT JOIN {user} ua 
+        ON ua.id = au.approverid           
     JOIN 
         {user} u
         ON u.id = au.userid
@@ -87,20 +94,25 @@ $ahbusersql = <<<EOS
     ;
 EOS;
 $ahbuserlists = $DB->get_records_sql($ahbusersql);
-
 //echo ;
 $evidencetable = new stdClass();
+$rejectedlist = array();
 $approvedlist = array();
 $approvallist = array();
+
 foreach ($ahbuserlists as $ahbuserlist) {
     if ($ahbuserlist->completion) {
         $approvedlist[] = $ahbuserlist;
+    } else if ($ahbuserlist->rejected) {
+        $rejectedlist[] = $ahbuserlist;
     } else {
         $approvallist[] = $ahbuserlist;
     }
 }
+
 $evidencetable->approvaltable = $output->completion_approval_list($approvallist, $context);
 $evidencetable->approvedtable = $output->completion_approval_list($approvedlist, $context);
+$evidencetable->rejectedtable = $output->completion_approval_list($rejectedlist, $context, true);
 
 if (!empty($SESSION->arupevidence->alert)) {
     echo $output->alert($SESSION->arupevidence->alert->message, $SESSION->arupevidence->alert->type);
