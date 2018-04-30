@@ -130,9 +130,6 @@
         <FIELD NAME="complete" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="n" SEQUENCE="false"/>
         <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Grade awarded"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-<!-- BEGIN CORE MOD -->
-        <FIELD NAME="username" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false"/>
-<!-- END CORE MOD -->
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

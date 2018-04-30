@@ -67,7 +67,7 @@ $valid = $questionnaire->qtype == QUESTIONNAIREONCE
     && !$questionnaire->is_closed();
 
 if ($valid && $rid && $self) {
-    $response = $DB->get_record('questionnaire_response', array('id' => $rid, 'survey_id' => $questionnaire->survey->id, 'username' => $USER->id, 'complete' => 'y'));
+    $response = $DB->get_record('questionnaire_response', array('id' => $rid, 'survey_id' => $questionnaire->survey->id, 'userid' => $USER->id, 'complete' => 'y'));
     if ($response) {
         $response = $DB->get_record('questionnaire_response', array('id' => $rid));
         $response->complete = 'n';
@@ -76,7 +76,7 @@ if ($valid && $rid && $self) {
         // Update completion state.
         $completion = new completion_info($course);
         if ($completion->is_enabled($cm) == COMPLETION_TRACKING_AUTOMATIC && $questionnaire->completionsubmit) {
-            $completion->update_state($cm, COMPLETION_INCOMPLETE, $response->username);
+            $completion->update_state($cm, COMPLETION_INCOMPLETE, $response->userid);
         }
         $redirecturl = new moodle_url($CFG->wwwroot.'/mod/questionnaire/complete.php', array('id' => $cm->id));
         redirect($redirecturl);
@@ -122,10 +122,10 @@ FROM
     {questionnaire_response} r
 JOIN
     {user} u
-    ON u.id = r.username
+    ON u.id = r.userid
 LEFT JOIN
     {questionnaire_response} r2
-    ON r2.survey_id = r.survey_id AND r2.username = r.username AND r2.id != r.id AND r2.complete = 'n'
+    ON r2.survey_id = r.survey_id AND r2.userid = r.userid AND r2.id != r.id AND r2.complete = 'n'
 WHERE
     r.survey_id = ?
     AND r.complete='y'
@@ -151,7 +151,7 @@ if ($rid && array_key_exists($rid, $responses)) {
     // Update completion state.
     $completion = new completion_info($course);
     if ($completion->is_enabled($cm) == COMPLETION_TRACKING_AUTOMATIC && $questionnaire->completionsubmit) {
-        $completion->update_state($cm, COMPLETION_INCOMPLETE, $response->username);
+        $completion->update_state($cm, COMPLETION_INCOMPLETE, $response->userid);
     }
     unset($responses[$rid]);
     echo questionnaire_alert(get_string('resetresponses:success', 'questionnaire'), 'alert-success');

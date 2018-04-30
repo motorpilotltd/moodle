@@ -181,8 +181,8 @@ if ($questionnaire->capabilities->readownresponses && ($usernumresp > 0)) {
 }
 
 /* BEGIN CORE MOD */
-$incompleteresponses = $DB->get_records('questionnaire_response', array('survey_id' => $questionnaire->survey->id, 'username' => $USER->id, 'complete' => 'n'));
-$completeresponses = $DB->get_records('questionnaire_response', array('survey_id' => $questionnaire->survey->id, 'username' => $USER->id, 'complete' => 'y'));
+$incompleteresponses = $DB->get_records('questionnaire_response', array('survey_id' => $questionnaire->survey->id, 'userid' => $USER->id, 'complete' => 'n'));
+$completeresponses = $DB->get_records('questionnaire_response', array('survey_id' => $questionnaire->survey->id, 'userid' => $USER->id, 'complete' => 'y'));
 if ($questionnaire->qtype == QUESTIONNAIREONCE
     && $questionnaire->respondenttype != 'anonymous'
     && $questionnaire->is_open()
