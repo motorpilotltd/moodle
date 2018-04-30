@@ -142,7 +142,9 @@ class daterangelearning extends base {
             'bookingstatus',
             'coursename',
             'classcompletiondate',
-            'classcategory');
+            'classcategory',
+            'classcost',
+            'classcostcurrency');
 
         $this->textfilterfields = array(
             'startdate' => 'date',
@@ -637,6 +639,28 @@ class daterangelearning extends base {
         // Show classcategory for CPD records
         if ($key == 'classcategory') {
             if (!empty($row->cpdid)) {
+                return $row->$key;
+            } else {
+                return '';
+            }
+        }
+
+        if ($key == 'classcost') {
+            if ($row->pricebasis == 'No Charge') {
+                return '';
+            } else if (!empty($row->price)) {
+                return $row->price;
+            } else {
+                return $row->$key;
+            }
+        }
+
+        if ($key == 'classcostcurrency') {
+            if ($row->pricebasis == 'No Charge') {
+                return '';
+            } else if (!empty($row->price)) {
+                return $row->currencycode;
+            } else if (!empty($row->classcost)) {
                 return $row->$key;
             } else {
                 return '';
