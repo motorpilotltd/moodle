@@ -1,0 +1,57 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @package    local_lynda
+ * @copyright  2017 Andrew Hancox <andrewdchancox@googlemail.com> On Behalf of Arup
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace local_lynda;
+
+defined('MOODLE_INTERNAL') || die();
+global $CFG;
+require_once($CFG->dirroot . '/completion/data_object.php');
+
+class lyndatag extends \data_object {
+    public $table = 'local_lynda_course';
+    public $required_fields = ['id', 'remotetagid', 'name', 'remotetypeid'];
+    public $optional_fields = [];
+
+    public $remotetagid;
+    public $name;
+    public $remotetypeid;
+
+    /**
+     * @param array $params
+     * @return self
+     */
+    public static function fetch($params) {
+        return self::fetch_helper('local_lynda_tags', __CLASS__, $params);
+    }
+
+    /**
+     * @param array $params
+     * @return self[]
+     */
+    public static function fetch_all($params) {
+        $ret = self::fetch_all_helper('local_lynda_tags', __CLASS__, $params);
+        if (!$ret) {
+            return [];
+        }
+        return $ret;
+    }
+}

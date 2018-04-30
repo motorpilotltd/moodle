@@ -99,6 +99,7 @@ class taps {
             'EACPDT7' => 'EA CPD Type VII',
             'EACPDT8' => 'EA CPD Type VIII',
             'EC' => 'External Course',
+            'ECO' => 'External Course Online',
             'HS' => 'Health and Safety',
             'INF' => 'Informal',
             'IM' => 'Institute Meetings',
@@ -642,6 +643,7 @@ EOS;
         $cpd->certificateno = (isset($optional['p_certificate_number']) ? $optional['p_certificate_number'] : null);
         $cpd->expirydate = (isset($optional['p_certificate_expiry_date']) ? $optional['p_certificate_expiry_date'] : 0);
         $cpd->learningdesc = (isset($optional['p_learning_desc']) ? $optional['p_learning_desc'] : null);
+        $cpd->providerid = (isset($optional['p_providerid']) ? $optional['p_providerid'] : null);
         // Use of learningdesccont1 and learningdesccont2 has been deprecated.
         $cpd->learningdesccont1 = null;
         $cpd->learningdesccont2 = null;
