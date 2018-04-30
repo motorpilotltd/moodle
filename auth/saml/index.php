@@ -96,7 +96,7 @@ try {
     $validsamlsession = $as->isAuthenticated();
     $samlattributes = $as->getAttributes();
 } catch (Exception $e) {
-    session_write_close();
+    session_destroy();
     require_once('../../config.php');
     require_once('error.php');
 
@@ -113,7 +113,7 @@ try {
 }
 
 // Now we close simpleSAMLphp session.
-session_write_close();
+session_destroy();
 
 // We load all moodle config and libs.
 require_once('../../config.php');
