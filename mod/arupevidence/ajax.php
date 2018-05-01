@@ -149,13 +149,6 @@ if (!empty($action)) {
                             $logevent = \mod_arupevidence\event\cpd_request_sent::create($params);
                             $logevent->trigger();
 
-                            $completion = new completion_info($course);
-
-                            if ($completion->is_enabled($cm)) {
-                                $completion->update_state($cm, COMPLETION_COMPLETE);
-                                $debug[] = 'Updated the completion state';
-                            }
-
                             $itemid = $cpd;
                             $filearea = ARUPEVIDENCE_CPD;
                         }
@@ -168,6 +161,12 @@ if (!empty($action)) {
                     arupevidence_move_filearea($context, $file, $filearea, $itemid);
                     // Update user's record
                     $DB->update_record('arupevidence_users', $ae_user);
+
+                    $completion = new completion_info($course);
+
+                    if ($completion->is_enabled($cm)) {
+                        $completion->update_state($cm, COMPLETION_COMPLETE);
+                    }
 
                     $alertmessage = get_string('approve:successapproved', 'mod_arupevidence');
                     $alerttype = 'alert-success';
