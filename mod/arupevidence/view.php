@@ -151,7 +151,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
             $ahbuser->timemodified = time();
             $ahbuser->itemid = !empty($data->enrolmentid) ? $data->enrolmentid : '';
 
-            if (!empty($ahbuser->rejected)) {
+            if (!empty($ahbuser->rejected) && $ahbuser->userid == $USER->id) {
                 $neworrejected = true;
             }
             //removing current rejection info
@@ -189,7 +189,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
         }
 
         // Send mail to the approvers
-        if($ahb->approvalrequired && $neworrejected = true) {
+        if($ahb->approvalrequired && $neworrejected == true) {
 
             $approverlists = arupevidence_get_user_approvers($ahb, $contextcourse);
 
