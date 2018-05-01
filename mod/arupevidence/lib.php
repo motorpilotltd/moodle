@@ -219,7 +219,7 @@ function arupevidence_cm_info_view(cm_info $cm) {
         $messagebox->boxicon = 'fa fa-check-square-o';
         $messagebox->boxmsg = get_string('completionevidence', 'mod_arupevidence');
         $messagebox->boxstatus = get_string('status:uploadcomplete','mod_arupevidence');
-        $messagebox->boxbtn = get_string('button:validate', 'mod_arupevidence');
+        $messagebox->boxbtn = get_string('button:view', 'mod_arupevidence');
         $messagebox->boxbtntype = 'btn-default';
         $messagebox->boxlink = $boxlink->out();
         $evidenceboxes[] = $messagebox;

@@ -224,12 +224,30 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
         $table = new html_table();
         $table->data = array();
 
+        // Completion date
         $label = html_writer::label(get_string('completiondate', 'mod_arupevidence'), 'completiondatedisplay');
         $value = html_writer::div(userdate($ahbuser->completiondate,'%A, %d %B %Y') ,'completiondatedisplay');
         $table->data[] = array($label, $value);
 
+        // Expiry date
+        $label = html_writer::label(get_string('label:expirydate', 'mod_arupevidence'), 'expirydatedisplay');
+        $value = html_writer::div(userdate($ahbuser->expirydate,'%A, %d %B %Y') ,'expirydatedisplay');
+        $table->data[] = array($label, $value);
+
+        // Date Approved date
+        $label = html_writer::label(get_string('approve:dateapproved', 'mod_arupevidence'), 'approveddatedisplay');
+        $value = html_writer::div(userdate($ahbuser->approved,'%A, %d %B %Y') ,'approveddatedisplay');
+        $table->data[] = array($label, $value);
+
+        // Approved By
+        $user = $DB->get_record('user', array('id' => $ahbuser->approverid), 'firstname, lastname, email');
+        $label = html_writer::label(get_string('approve:approvedby', 'mod_arupevidence'), 'approvedbylabel');
+        $fullname = $user->firstname . ' ' . $user->lastname . '(' . $user->email . ')';
+        $value = html_writer::div($fullname ,'approvedbylabel');
+        $table->data[] = array($label, $value);
+
         // Show link to the uploaded certificate file
-        $certificatelink = $output->format_user_certificatelink($context, $USER->id);
+        $certificatelink = $output->format_user_certificatelink($ahbuser, $context);
         $label = html_writer::label(get_string('viewcertificatefile', 'mod_arupevidence'), 'certificatelinkdisplay');
         $linkfile = html_writer::link($certificatelink,'');
         $value = html_writer::div($certificatelink ,'completiondatedisplay');

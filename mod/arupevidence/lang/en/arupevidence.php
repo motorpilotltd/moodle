@@ -111,6 +111,7 @@ $string['button:amendsubmission'] = 'Amend Submission';
 $string['button:validate'] = 'Validate';
 $string['button:viewsubmission'] = 'View Submission';
 $string['button:check'] = 'Check';
+$string['button:view'] = 'View';
 
 $string['approve:name'] = 'Name';
 $string['approve:email'] = 'Email';

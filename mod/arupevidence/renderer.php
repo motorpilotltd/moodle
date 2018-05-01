@@ -175,18 +175,25 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
      * Format user certificate file link
      *
      * @param $arupevidenceuser
+     * @param $context
      * @return moodle_url|null
      */
-    public function format_user_certificatelink($arupevidenceuser) {
+    public function format_user_certificatelink($arupevidenceuser, $context = null) {
+        global $DB;
+
+        if ($context == null) {
+            $context = $this->context;
+        }
 
         // Show link to the uploaded certificate file
-        $filearea = arupevidence_fileareaname($this->arupevidence->cpdlms);
+        $arupevidence = $DB->get_record('arupevidence',  array('id' => $arupevidenceuser->arupevidenceid));
+        $filearea = arupevidence_fileareaname($arupevidence->cpdlms);
         $file = '';
 
         if (!empty($arupevidenceuser->itemid) && $arupevidenceuser->completion) {
-            $file = arupevidence_fileinfo($this->context, null, $filearea, $arupevidenceuser->itemid);
+            $file = arupevidence_fileinfo($context, null, $filearea, $arupevidenceuser->itemid);
         } else {
-            $file = arupevidence_fileinfo($this->context, $arupevidenceuser->userid);
+            $file = arupevidence_fileinfo($context, $arupevidenceuser->userid);
         }
         if (!empty($file) && !empty($file->fileevidencelink)) {
             return html_writer::link($file->fileevidencelink, $file->get_filename());
