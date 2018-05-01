@@ -61,7 +61,11 @@ if (!empty($action)) {
     try {
         $params = array('arupevidenceid' => $cm->instance, 'id' => $arupevidence_userid, 'archived' => 0);
         $ae_user = $DB->get_record('arupevidence_users', $params, '*', IGNORE_MULTIPLE);
+
         $user = $DB->get_record('user',  array('id' => $ae_user->userid));
+        $from_user = clone($USER);
+        $sendemail = false;
+
         if ($action == 'reject' && $isuserapprover) {
             if(!$ae_user->rejected) {
                 $rejectinfo = array(
@@ -85,15 +89,15 @@ if (!empty($action)) {
                 $DB->update_record('arupevidence_users', $ae_user);
 
                 $editlink = new moodle_url('/mod/arupevidence/view.php', array('id' => $cm->id, 'action' => 'edit', 'ahbuserid' => $ae_user->id));
-                $to = clone($USER);
 
-                // send email notification
-                $messagecontent = get_string('email:reject:content', 'mod_arupevidence', array(
+                // set email subject and content
+                $emailcontent = get_string('email:reject:content', 'mod_arupevidence', array(
                     'firstname' => $user->firstname,
                     'evidenceeditlink' => $editlink->out(),
                     'approvercomment' => $reject_message,
                 ));
-                arupevidence_send_email($user, $to, get_string('email:reject:subject', 'mod_arupevidence'), $messagecontent);
+                $subject = get_string('email:reject:subject', 'mod_arupevidence');
+                $sendemail = true;
 
                 $SESSION->arupevidence->alert = new stdClass();
                 $SESSION->arupevidence->alert->message = get_string('reject:evidencerejected', 'mod_arupevidence');
@@ -167,6 +171,12 @@ if (!empty($action)) {
 
                     $alertmessage = get_string('approve:successapproved', 'mod_arupevidence');
                     $alerttype = 'alert-success';
+
+                    // Setting email content and subject
+                    $subject = get_string('email:approve:subject', 'mod_arupevidence');
+                    $emailcontent = get_string('email:approve:content', 'mod_arupevidence');
+                    $sendemail = true;
+
                 } else {
                     $alertmessage = get_string('error:noevidenceupload', 'mod_arupevidence');
                     $alerttype = 'alert-warning';
@@ -177,6 +187,13 @@ if (!empty($action)) {
             }
             $result->success = true;
         }
+
+        if ($sendemail) {
+            // Sends email to user
+            arupevidence_send_email($user, $from_user, $subject, $emailcontent);
+        }
+
+
     } catch (Exception $e) {
         $alertmessage = $e->getMessage();
         $alerttype = 'alert-warning';

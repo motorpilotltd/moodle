@@ -177,18 +177,19 @@ $string['modal:no'] = 'No';
 $string['modal:yes'] = 'Yes';
 $string['modal:rejectevidence:forminfo'] = 'The message will be sent to the user via email';
 
+$string['email:approve:content'] = 'Your evidence has been approved';
+$string['email:approve:subject'] = '<p>Hi {$a->firstname},</p>
+<p>Your submitted evidence has been <b>approved</b>.</p>';
+
 $string['email:subject'] = 'New Completion Request for Approval';
 $string['email:reject:subject'] = 'Submitted evidence has been rejected';
 $string['email:reject:content'] = '<p>Hi {$a->firstname},</p>
-<p>You\'re submitted evidence has been <b>rejected</b>.<br />
+<p>Your submitted evidence has been <b>rejected</b>.<br />
 Kindly review and update your evidence again.<br /></p>
 <p><i>Your evidence link:</i> {$a->evidenceeditlink}</p>
 <p><i>Approver comment:</i><br />
 {$a->approvercomment}
-</p>
-<p>Thank you,<br />
-Arup   
-</p> ';
+</p>';
 
 $string['email:body'] = '<p>Dear {$a->approverfirstname},</p>
 <p>I have requested approval of my Evidence Upload.</p>
