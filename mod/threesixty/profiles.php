@@ -71,7 +71,7 @@ if ($view_all_users) {
     $PAGE->requires->js(new moodle_url('/mod/threesixty/js/chosen.jquery.min.js'));
     $PAGE->requires->css(new moodle_url('/mod/threesixty/css/chosen.min.css'));
     $PAGE->requires->css(new moodle_url('/mod/threesixty/css/chosen.threesixty.css'));
-    $PAGE->requires->js_init_code(js_writer::function_call("jQuery('.chosen-select').chosen"), true);
+    $PAGE->requires->js_init_code(js_writer::function_call("jQuery('select.chosen-select').chosen"), true);
 }
 
 $url = $CFG->wwwroot."/mod/threesixty/profiles.php?a=$threesixty->id";
