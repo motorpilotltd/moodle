@@ -99,7 +99,9 @@ td.selected {
 #page-mod-questionnaire-preview .message,
 #page-mod-questionnaire-complete .thankbody,
 #page-mod-questionnaire-complete .thankhead {
-    border-color: blue;
+/* BEGIN CORE MOD */
+    border-color: transparent;
+/* END CORE MOD */
 }
 
 #page-mod-questionnaire-complete .surveyTitle,
