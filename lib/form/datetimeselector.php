@@ -166,7 +166,7 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group {
                     $this->_options['timezones'][$tz] = $tz;
                 }
             }
-            $this->_elements[] = @MoodleQuickForm::createElement('select', 'timezone', get_string('timezone', 'local_lunchandlearn'), $this->_options['timezones'], $this->getAttributes(), true);
+            $this->_elements[] = $this->createFormElement('select', 'timezone', get_string('timezone', 'local_lunchandlearn'), $this->_options['timezones'], $this->getAttributes(), true);
         }
 /* END CORE MOD */
         // The YUI2 calendar only supports the gregorian calendar type so only display the calendar image if this is being used.
