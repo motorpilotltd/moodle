@@ -39,6 +39,11 @@ $arupevidence_userid = optional_param('ae_userid', '', PARAM_INT);
 $id = optional_param('id', '', PARAM_INT);
 $reject_message = optional_param('reject_message', '', PARAM_RAW);
 
+// Set up session variable for alert if not already set.
+if (!isset($SESSION->arupevidence)) {
+    $SESSION->arupevidence = new stdClass();
+}
+
 if (!empty($action)) {
     $result = new stdClass();
     $result->success = false;
