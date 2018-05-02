@@ -257,9 +257,8 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
 
         $content .= $output->alert(get_string('approve:requestapproved', 'mod_arupevidence'), 'alert alert-warning', false);
 
-        $content .= html_writer::start_div('container col-md-8 arupevidence-table');
+        $content .= html_writer::start_div('container col-md-12 arupevidence-table');
         $content .= html_writer::table($table);
-        $content .= $OUTPUT->continue_button('/course/view.php?id='.$course->id);  // Back to course page
         $content .= html_writer::end_div();
 
     } else {
