@@ -208,5 +208,18 @@ function xmldb_arupevidence_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111618, 'mod', 'arupevidence');
     }
 
+    // additional field validityexpirydate date - computed date for validity period.
+    if ($oldversion < 2015111619) {
+        $table = new xmldb_table('arupevidence_users');
+        $field = new xmldb_field('validityexpirydate', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'validityperiodunit');
+
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        $dbman->add_field($table, $field);
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111619, 'mod', 'arupevidence');
+    }
+
     return true;
 }

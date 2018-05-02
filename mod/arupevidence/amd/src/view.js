@@ -57,7 +57,12 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     if (typeof requirevalidityperiod != 'undefined' && requirevalidityperiod == 1) {
                         var uservalidityperiod = parseInt($('#id_validityperiod').val());
                         var uservalidityperiodunit = ($('#id_validityperiodunit').val() == 'y') ? 12 : 1;
+                        // in months
                         uservalidity = uservalidityperiod * uservalidityperiodunit;
+
+                        var validityexpirydate = validitydateinfo(completion_date, uservalidity, 'm', false);
+                        validityexpirydate = validityexpirydate.getTime()/1000|0;
+                        $('input[name="validityexpirydate"]').val(validityexpirydate)
 
                         if (uservalidity < validity) {
                             isvalid = false;

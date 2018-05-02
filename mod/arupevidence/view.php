@@ -124,6 +124,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
 
         $arupevidencedata = array(
             'completiondate' => $data->completiondate,
+            'validityexpirydate' => $data->validityexpirydate,
             'expirydate' => !empty($data->expirydate) ? $data->expirydate : 0,
             'validityperiod' => !empty($data->validityperiod) ? $data->validityperiod : '',
             'validityperiodunit' => !empty($data->validityperiodunit) ? $data->validityperiodunit : ''
@@ -230,8 +231,9 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
         $table->data[] = array($label, $value);
 
         // Expiry date
+        $expirydatedisplay = ($ahbuser->expirydate != 0) ? $ahbuser->expirydate : $ahbuser->validityexpirydate ;
         $label = html_writer::label(get_string('label:expirydate', 'mod_arupevidence'), 'expirydatedisplay');
-        $value = html_writer::div(userdate($ahbuser->expirydate,'%A, %d %B %Y') ,'expirydatedisplay');
+        $value = html_writer::div(userdate($expirydatedisplay,'%A, %d %B %Y') ,'expirydatedisplay');
         $table->data[] = array($label, $value);
 
         // Date Approved date

@@ -199,6 +199,10 @@ class mod_arupevidence_completion_form extends moodleform
         $mform->addElement('hidden', 'requirevalidityperiod', $this->_arupevidence->requirevalidityperiod);
         $mform->setType('requirevalidityperiod', PARAM_INT);
 
+        $defaultvalue = !empty($this->_arupevidenceuser->validityexpirydate) ? $this->_arupevidenceuser->validityexpirydate : 0;
+        $mform->addElement('hidden', 'validityexpirydate', $defaultvalue);
+        $mform->setType('validityexpirydate', PARAM_INT);
+
         $this->add_action_buttons(true, get_string('upload'));
     }
 
