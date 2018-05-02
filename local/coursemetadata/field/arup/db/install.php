@@ -29,7 +29,4 @@ defined('MOODLE_INTERNAL') || die();
  */
 function xmldb_coursemetadatafield_arup_install() {
     global $CFG;
-
-    require_once("$CFG->dirroot/local/coursemetadata/field/arup/db/upgradelib.php");
-    \upgradelib::deprecate_arupadvert_tap();
 }

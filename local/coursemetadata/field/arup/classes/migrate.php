@@ -1,36 +1,24 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
- * coursemetadatafield_arup field.
- *
- * @package    coursemetadatafield_arup
- * @copyright  Andrew Hancox <andrewdchancox@googlemail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Created by PhpStorm.
+ * User: andrewhancox
+ * Date: 02/05/2018
+ * Time: 15:05
  */
 
-class upgradelib {
+namespace coursemetadatafield_arup;
+
+class migrate {
+
     public static function deprecate_arupadvert_tap() {
         global $DB;
 
         $archivecategory = $DB->get_record('course_categories', ['idnumber' => 'archivecourses']);
-        $archivecategoryid = $archivecategory->id;
-        if (empty($archivecategoryid)) {
+        if (empty($archivecategory)) {
             $coursecat = coursecat::create(['idnumber' => 'archivecourses', 'name' => 'Archive Courses', 'visible' => false]);
             $archivecategoryid = $coursecat->id;
+        } else {
+            $archivecategoryid = $archivecategory->id;
         }
 
         // Handle tapsadverts.
@@ -298,8 +286,7 @@ class upgradelib {
         }
     }
 
-    private
-    static function find_course_field_suffix($field, $value) {
+    private static function find_course_field_suffix($field, $value) {
         global $DB;
 
         $found = false;
