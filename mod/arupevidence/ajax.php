@@ -165,7 +165,7 @@ if (!empty($action)) {
                     $completion = new completion_info($course);
 
                     if ($completion->is_enabled($cm)) {
-                        $completion->update_state($cm, COMPLETION_COMPLETE);
+                        $completion->update_state($cm, COMPLETION_COMPLETE, $ae_user->userid);
                     }
 
                     $alertmessage = get_string('approve:successapproved', 'mod_arupevidence');
