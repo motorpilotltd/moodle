@@ -58,6 +58,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         var uservalidityperiod = parseInt($('#id_validityperiod').val());
                         var uservalidityperiodunit = ($('#id_validityperiodunit').val() == 'y') ? 12 : 1;
                         uservalidity = uservalidityperiod * uservalidityperiodunit;
+
                         if (uservalidity < validity) {
                             isvalid = false;
                         }
@@ -88,7 +89,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
                     }
 
-                    if (!isvalid && expiry_date > completion_date ) {
+                    if (!isvalid || (!isvalid && typeof expiry_date != 'undefined' && expiry_date > completion_date)) {
                         e.preventDefault(); // stop form submission
                         $('#validity-confirm-modal').modal('show');
 
