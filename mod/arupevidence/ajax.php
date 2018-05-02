@@ -25,6 +25,7 @@
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot.'/mod/arupevidence/lib.php');
+require_once($CFG->dirroot.'/lib/completionlib.php');
 
 require_login();
 
