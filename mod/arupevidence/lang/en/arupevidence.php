@@ -178,8 +178,8 @@ $string['modal:no'] = 'No';
 $string['modal:yes'] = 'Yes';
 $string['modal:rejectevidence:forminfo'] = 'The message will be sent to the user via email';
 
-$string['email:approve:content'] = 'Your evidence has been approved';
-$string['email:approve:subject'] = '<p>Hi {$a->firstname},</p>
+$string['email:approve:subject'] = 'Your evidence has been approved';
+$string['email:approve:content'] = '<p>Hi {$a->firstname},</p>
 <p>Your submitted evidence has been <b>approved</b>.</p>';
 
 $string['email:subject'] = 'New Completion Request for Approval';
