@@ -25,17 +25,29 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
 
         $mform =& $this->_form;
 
-        // Check for arupadvert activity (suite driver) presence.
-        $this->_arupadvert_exists();
+        $runchecks = true;
+        // Check edge case of being called from defaults editing form...
+        // In this case we don't need to worry about what does/doesn't exist.
+        $frames = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 0);
+        foreach ($frames as $frame) {
+            if ($frame['class'] === 'core_completion_defaultedit_form') {
+                $runchecks = false;
+                break;
+            }
+        }
+        if ($runchecks) {
+            // Check for arupadvert activity (suite driver) presence.
+            $this->_arupadvert_exists();
 
-        // Check enrolment plugins are as required.
-        $this->_check_enrolment_plugins();
+            // Check enrolment plugins are as required.
+            $this->_check_enrolment_plugins();
 
-        // Check groups are setup as required.
-        $this->_check_groups();
+            // Check groups are setup as required.
+            $this->_check_groups();
 
-        // Check in case there are multiple instances.
-        $this->_instances_exist();
+            // Check in case there are multiple instances.
+            $this->_instances_exist();
+        }
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
