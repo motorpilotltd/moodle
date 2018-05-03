@@ -179,7 +179,9 @@ if (!empty($action)) {
 
                     // Setting email content and subject
                     $subject = get_string('email:approve:subject', 'mod_arupevidence');
-                    $emailcontent = get_string('email:approve:content', 'mod_arupevidence');
+                    $emailcontent = get_string('email:approve:content', 'mod_arupevidence', array(
+                        'firstname' => $user->firstname,
+                    ));
                     $sendemail = true;
 
                 } else {
