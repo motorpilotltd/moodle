@@ -18,7 +18,7 @@
  * Observer class containing methods monitoring various events.
  *
  * @package    mod_arupevidence
- * @copyright  2017 Xantico Ltd 
+ * @copyright  2017 Xantico Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @since      Moodle 3.0
  * @package    mod_arupevidence
- * @copyright  2017 Xantico Ltd 
+ * @copyright  2017 Xantico Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class eventobservers {
@@ -151,7 +151,7 @@ class eventobservers {
             ],
         ];
 
-        // Udate values
+        // Update values.
         $windowopentimediff = $completion->timeexpires - $completion->timewindowsopens;
         $completion->timecompleted = $au->completiondate;
         $completion->timeexpires = $completion->duedate = $au->expirydate;

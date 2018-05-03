@@ -18,7 +18,7 @@
  * This file defines observers needed by mod_arupevidence.
  *
  * @package    mod_arupevidence
- * @copyright  2017 Xantico Ltd 
+ * @copyright  2017 Xantico Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,7 +30,7 @@ $observers = array(
         'callback'    => '\mod_arupevidence\eventobservers::course_completed',
     ),
     array(
-        'eventname'   => '\local_certification_completion\event\certification_completed',
+        'eventname'   => '\local_custom_certification\event\certification_completed',
         'priority'    => 1,
         'callback'    => '\mod_arupevidence\eventobservers::certification_completed',
     ),

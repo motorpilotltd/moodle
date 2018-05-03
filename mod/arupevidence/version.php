@@ -18,17 +18,17 @@
  * Version details
  *
  * @package     mod_arupevidence
- * @copyright   2017 Xantico Ltd 
+ * @copyright   2017 Xantico Ltd
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version      = 2015111619;
+$plugin->version      = 2015111620;
 $plugin->requires     = 2015111600; // Moodle 3.0.
 $plugin->component    = 'mod_arupevidence';
 $plugin->maturity     = MATURITY_STABLE;
-$plugin->release      = "3.0.15 (Build: {$plugin->version})";
+$plugin->release      = "3.0.20 (Build: {$plugin->version})";
 
 $plugin->dependencies = array(
     'block_arup_mylearning' => 2015111601
