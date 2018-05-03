@@ -81,7 +81,13 @@ $PAGE->requires->yui_module('moodle-core-formchangechecker',
 );
 $PAGE->requires->string_for_js('changesmadereallygoaway', 'moodle');
 
-
-echo $renderer->bulkcompletion($bulkcompletiondata);
+/* BEGIN CORE MOD */
+$completion = new completion_info($course);
+if ($completion->is_course_locked()) {
+    echo html_writer::tag('p', get_string('err_settingslocked', 'completion'));
+} else {
+    echo $renderer->bulkcompletion($bulkcompletiondata);
+}
+/* END CORE MOD */
 
 echo $OUTPUT->footer();
