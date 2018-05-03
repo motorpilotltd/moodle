@@ -127,7 +127,7 @@ class eventobservers {
                        JOIN {arupevidence_users} au ON au.arupevidenceid = a.id
                       WHERE {$courseselect}
                             AND m.name = :module
-                            AND a.setcertificationcompletion <> 1
+                            AND a.setcertificationcompletion = 1
                             AND au.userid = :userid2
                             AND au.completiondate > 0
                             AND au.archived <> 1
