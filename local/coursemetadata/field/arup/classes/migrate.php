@@ -11,11 +11,14 @@ namespace coursemetadatafield_arup;
 class migrate {
 
     public static function deprecate_arupadvert_tap() {
-        global $DB;
+        global $DB, $CFG;
+
+        require_once("$CFG->dirroot/lib/coursecatlib.php");
+        require_once("$CFG->dirroot/course/lib.php");
 
         $archivecategory = $DB->get_record('course_categories', ['idnumber' => 'archivecourses']);
         if (empty($archivecategory)) {
-            $coursecat = coursecat::create(['idnumber' => 'archivecourses', 'name' => 'Archive Courses', 'visible' => false]);
+            $coursecat = \coursecat::create(['idnumber' => 'archivecourses', 'name' => 'Archive Courses', 'visible' => false]);
             $archivecategoryid = $coursecat->id;
         } else {
             $archivecategoryid = $archivecategory->id;
@@ -60,7 +63,7 @@ class migrate {
                     $arupmetadata->audienceformat = FORMAT_HTML;
                     $arupmetadata->keywords = $tapscourse->keywords;
                     $arupmetadata->keywordsformat = FORMAT_HTML;
-                    $arupmetadata->timecreated = isset($tapscourse->timecreated) ? $tapscourse->timecreated : $course->timecreated;
+                    $arupmetadata->timecreated = isset($advert->timecreated) ? $advert->timecreated : $course->timecreated;
                     $arupmetadata->timemodified =
                             isset($tapscourse->timemodified) ? $tapscourse->timemodified : $course->timemodified;
                     $arupmetadata->accredited = $tapscourse->globallearningstandards == 'Meets Global Learning Standards';
@@ -175,7 +178,7 @@ class migrate {
         }
 
         // Handle un-linked taps courses.
-        $sql = "select ltc.*
+        $sql = "select ltc.*, aadtt.timecreated
                         from {local_taps_course} ltc
                         left join {arupadvertdatatype_taps} aadtt on ltc.courseid = aadtt.tapscourseid
                         where aadtt.id is null";
@@ -183,7 +186,7 @@ class migrate {
         foreach ($rs as $tapscourse) {
             $transaction = $DB->start_delegated_transaction();
             try {
-                $course = new stdClass();
+                $course = new \stdClass();
                 $course->fullname = $tapscourse->coursename;
                 $course->startdate = $tapscourse->startdate;
                 $course->enddate = $tapscourse->enddate;
@@ -268,15 +271,15 @@ class migrate {
     private static function handle_files($cmid, $courseid) {
         $fs = get_file_storage();
 
-        $advertcontext = context_module::instance($cmid);
-        $coursecontext = context_course::instance($courseid);
+        $advertcontext = \context_module::instance($cmid);
+        $coursecontext = \context_course::instance($courseid);
 
         $fileareas = ['blockimage', 'originalblockimage'];
 
         foreach ($fileareas as $filearea) {
             $oldfiles = $fs->get_area_files($advertcontext->id, 'mod_arupadvert', $filearea);
             foreach ($oldfiles as $oldfile) {
-                $filerecord = new stdClass();
+                $filerecord = new \stdClass();
                 $filerecord->contextid = $coursecontext->id;
                 $filerecord->component = 'coursemetadatafield_arup';
                 $filerecord->filearea = $filearea;
