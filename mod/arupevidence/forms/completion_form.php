@@ -64,7 +64,7 @@ class mod_arupevidence_completion_form extends moodleform
             }
         }
 
-        $mform->addElement('date_selector', 'completiondate',  get_string('completiondate', 'mod_arupevidence'));
+        $mform->addElement('date_selector', 'completiondate',  get_string('completiondate', 'mod_arupevidence'), array('timezone' => 0));
         $defaultdate = isset($this->_arupevidenceuser->completiondate) ? $this->_arupevidenceuser->completiondate : time();
         $mform->setDefault('completiondate', $defaultdate);
         if (isset($this->_arupevidence->requireexpirydate) && $this->_arupevidence->requireexpirydate) {
@@ -105,7 +105,7 @@ class mod_arupevidence_completion_form extends moodleform
                 );
                 $mform->setDefault('expiryyear', $defaultvalue);
             } else {
-                $mform->addElement('date_selector', 'expirydate',  get_string('label:expirydate', 'mod_arupevidence'));
+                $mform->addElement('date_selector', 'expirydate',  get_string('label:expirydate', 'mod_arupevidence'), array('timezone' => 0));
                 $mform->setDefault('expirydate', isset($this->_arupevidenceuser->expirydate)? $this->_arupevidenceuser->expirydate : '');
 
             }

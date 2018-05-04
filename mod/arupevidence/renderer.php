@@ -84,7 +84,7 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
                 $cells[] = clone($cell);
 
                 // Date Completed
-                $cell->text = (!empty($usercompletion->completiondate))? userdate($usercompletion->completiondate,'%A, %d %B %Y') : '';
+                $cell->text = (!empty($usercompletion->completiondate))? userdate($usercompletion->completiondate,'%A, %d %B %Y', 0) : '';
                 $cell->attributes['class'] = 'text-left';
                 $cells[] = clone($cell);
 
@@ -95,7 +95,7 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
 
                 if ($isreject) {
                     // Date Approved
-                    $cell->text = (!empty($usercompletion->rejected))? userdate($usercompletion->rejected,'%A, %d %B %Y') : '';
+                    $cell->text = (!empty($usercompletion->rejected))? userdate($usercompletion->rejected,'%A, %d %B %Y', 0) : '';
                     $cell->attributes['class'] = 'text-left';
                     $cells[] = clone($cell);
                     // Approved By
@@ -104,7 +104,7 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
                     $cells[] = clone($cell);
                 } else if ($isapproved) {
                     // Date Approved
-                    $cell->text = (!empty($usercompletion->approved))? userdate($usercompletion->approved,'%A, %d %B %Y') : '';
+                    $cell->text = (!empty($usercompletion->approved))? userdate($usercompletion->approved,'%A, %d %B %Y', 0) : '';
                     $cell->attributes['class'] = 'text-left';
                     $cells[] = clone($cell);
                     // Approved By

@@ -227,18 +227,18 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
 
         // Completion date
         $label = html_writer::label(get_string('completiondate', 'mod_arupevidence'), 'completiondatedisplay');
-        $value = html_writer::div(userdate($ahbuser->completiondate,'%A, %d %B %Y') ,'completiondatedisplay');
+        $value = html_writer::div(userdate($ahbuser->completiondate,'%A, %d %B %Y', 0) ,'completiondatedisplay');
         $table->data[] = array($label, $value);
 
         // Expiry date
         $expirydatedisplay = ($ahbuser->expirydate != 0) ? $ahbuser->expirydate : $ahbuser->validityexpirydate ;
         $label = html_writer::label(get_string('label:expirydate', 'mod_arupevidence'), 'expirydatedisplay');
-        $value = html_writer::div(userdate($expirydatedisplay,'%A, %d %B %Y') ,'expirydatedisplay');
+        $value = html_writer::div(userdate($expirydatedisplay,'%A, %d %B %Y', 0) ,'expirydatedisplay');
         $table->data[] = array($label, $value);
 
         // Date Approved date
         $label = html_writer::label(get_string('approve:dateapproved', 'mod_arupevidence'), 'approveddatedisplay');
-        $value = html_writer::div(userdate($ahbuser->approved,'%A, %d %B %Y') ,'approveddatedisplay');
+        $value = html_writer::div(userdate($ahbuser->approved,'%A, %d %B %Y', 0) ,'approveddatedisplay');
         $table->data[] = array($label, $value);
 
         // Approved By
