@@ -26796,6 +26796,7 @@ fieldset[disabled] .path-mod-questionnaire #phpesp_response input[type="submit"]
 #page-mod-scorm-player #scorm_layout {
   background: transparent;
   text-align: center;
+  margin: 0;
 }
 #page-mod-scorm-player #scorm_layout .yui-layout-hd {
   background-color: transparent;
