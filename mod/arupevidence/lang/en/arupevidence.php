@@ -180,7 +180,7 @@ $string['modal:rejectevidence:forminfo'] = 'The message will be sent to the user
 
 $string['email:approve:subject'] = '{$a->coursename} Evidence Upload approved';
 $string['email:approve:content'] = '<p>Dear {$a->userfirstname},</p>
-<p>Your {course name} Evidence Upload has been approved. Your completion will be reflected in your learning history shortly.</p>
+<p>Your {$a->coursename} Evidence Upload has been approved. Your completion will be reflected in your learning history shortly.</p>
 <p>Kind regards,<br>{$a->approverfirstname}</p>';
 
 $string['email:subject'] = 'New {$a->coursename} Evidence Upload for approval';
