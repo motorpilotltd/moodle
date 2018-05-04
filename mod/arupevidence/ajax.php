@@ -98,11 +98,15 @@ if (!empty($action)) {
 
                 // set email subject and content
                 $emailcontent = get_string('email:reject:content', 'mod_arupevidence', array(
-                    'firstname' => $user->firstname,
+                    'coursename' => $course->fullname,
+                    'userfirstname' => $user->firstname,
                     'evidenceeditlink' => $editlink->out(),
                     'approvercomment' => $reject_message,
+                    'approverfirstname' => $from_user->firstname,
                 ));
-                $subject = get_string('email:reject:subject', 'mod_arupevidence');
+                $subject = get_string('email:reject:subject', 'mod_arupevidence', array(
+                    'coursename' => $course->fullname,
+                ));
                 $sendemail = true;
 
                 $SESSION->arupevidence->alert = new stdClass();
@@ -178,9 +182,13 @@ if (!empty($action)) {
                     $alerttype = 'alert-success';
 
                     // Setting email content and subject
-                    $subject = get_string('email:approve:subject', 'mod_arupevidence');
+                    $subject = get_string('email:approve:subject', 'mod_arupevidence', array(
+                        'coursename' => $course->fullname,
+                    ));
                     $emailcontent = get_string('email:approve:content', 'mod_arupevidence', array(
-                        'firstname' => $user->firstname,
+                        'coursename' => $course->fullname,
+                        'userfirstname' => $user->firstname,
+                        'approverfirstname' => $from_user->firstname,
                     ));
                     $sendemail = true;
 

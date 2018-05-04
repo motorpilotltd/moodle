@@ -196,12 +196,14 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
 
             $user = clone($USER);
             foreach ($approverlists as $approverto) {
-                $subject = get_string('email:subject', 'mod_arupevidence');
+                $subject = get_string('email:subject', 'mod_arupevidence', array(
+                    'coursename' => $course->fullname,
+                ));
                 $messagebody = get_string('email:body', 'mod_arupevidence', array(
+                    'coursename' => $course->fullname,
                     'approverfirstname' => $approverto->firstname,
                     'approvalurl' => $approveurl->out(),
                     'userfirstname' => $user->firstname,
-                    'userlastname' => $user->lastname
                 ));
                 $sendnotification = arupevidence_send_email($approverto, $user, $subject, $messagebody);
             }

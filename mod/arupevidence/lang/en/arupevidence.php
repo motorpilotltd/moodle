@@ -36,7 +36,7 @@ $string['cpdrequestsent'] = 'CPD request sent';
 
 $string['ihavecompleted'] = 'I confirm that I have fully participated in this module and that I would like to add this learning burst to my Personal Learning History';
 
-$string['pleaseconfirm'] = 'Please confirm you would like to add this module to your my Learning History';
+$string['pleaseconfirm'] = 'Please confirm you would like to add this module to your Learning History';
 $string['modal_title']   = 'Confirm';
 
 $string['viewnotimplemented'] = 'The Arup Evidence Upload does not implement a view';
@@ -47,8 +47,8 @@ $string['msgincomplete'] = 'In order to complete this module and add the learnin
 $string['msgpending:editlink'] = 'Your completion information has been submitted for <i>approval</i>.<br> While in <i>pending</i> status you can still modify your completion information <a href="{$a}">here</a>.';
 
 $string['msgsuccess'] = 'Congratulations, you have confirmed that you fully participated in this module; it has been added to your Learning History';
-$string['msgerror'] = 'We were unable to add the learning burst to your personal history. Please contact the Univeristy team for assistance.';
-$string['tapserror'] = 'We were unable to set attendance for all participants. Please contact the Univeristy team for assistance.';
+$string['msgerror'] = 'We were unable to add the learning burst to your personal history. Please contact the Moodle team for assistance.';
+$string['tapserror'] = 'We were unable to set attendance for all participants. Please contact the Moodle team for assistance.';
 
 $string['msgauto'] = 'Your CPD record will be updated once you complete this module.';
 $string['msgautocomplete'] = 'Your learning history has been updated';
@@ -83,17 +83,17 @@ $string['viewcertificatefile'] = 'View Certificate File';
 $string['uploadcertificate'] = 'Upload certificate of completion';
 $string['approvalrequired'] = 'Approval Required';
 $string['approveahbcompletion'] = 'Approve Arup Evidence Upload Completion';
-$string['approvallink'] = 'You have completion requests pending approval. Please visit <a href="{$a}">the approval page</a> to action these requests.';
+$string['approvallink'] = 'You have Evidence Upload requests pending approval. Please visit <a href="{$a}">the approval page</a> to action these requests.';
 
 $string['reviewchanges'] = 'Review Changes';
 $string['datamodified'] = 'Another user has updated the completion information since this page was loaded.<br>Please review the changes before editing.';
 
-$string['pending:submittedforvalidation'] = 'Thank you for uploading your training completion evidence this has now be submitted for validation. (Please allow 7 working days)';
-$string['pending:completionrequests'] = 'You have completion requests pending validation. Please visit the validation page to action these requests.';
+$string['pending:submittedforvalidation'] = 'Thank you for uploading your training completion evidence. This has now been submitted for validation.';
+$string['pending:completionrequests'] = 'You have Evidence Upload requests pending validation. Please visit the validation page to action these requests.';
 
 $string['completionevidence'] = 'Thank you for uploading your training completion evidence this has now been accepted and your training record updated.';
 $string['provideevidence'] = 'Once you have competed your training you will need to provide evidence of completion using the Upload Evidence button.';
-$string['allrequestapproved'] = "All the completion requests has been approved. You may visit the page to see the approved requests.";
+$string['allrequestapproved'] = 'All the Evidence Upload requests have been approved. You may visit the page to see the approved requests.';
 
 $string['status:evidencesubmitteed'] = 'Evidence submitted pending validation';
 $string['status:pendingvalidation'] = '{$a->numberofpending} pending validation';
@@ -124,18 +124,18 @@ $string['approve:approved'] = 'Approved';
 $string['approve:approve'] = 'Approve';
 $string['approve:reject'] = 'Reject';
 $string['approve:edit'] = 'Edit';
-$string['approve:alreadyapproved'] = 'Already approved the by the other approver.';
+$string['approve:alreadyapproved'] = 'Already approved by another approver.';
 $string['approve:alreadyrejected'] = 'Evidence was already rejected';
 $string['approve:requestapproved'] = 'This request has already been approved and completion information can no longer be updated.';
 $string['approve:successapproved'] = 'Successfully approved!';
-$string['approve:nocompletions'] = 'No applicable completion requests found';
+$string['approve:nocompletions'] = 'No applicable Evidence Upload requests found';
 $string['approve:cannotapproveown'] = 'You cannot approve your own request.';
 $string['approve:cannotrejectown'] = 'You cannot reject your own request.';
 
 $string['reject:daterejected'] = 'Date Rejected';
 $string['reject:rejectedby'] = 'Rejected By';
 $string['reject:evidencerejected'] = 'Evidence has been rejected and an email was sent to the user.';
-$string['reject:evidencerejectedalready'] = 'Evidence has already been rejected by the other approver.';
+$string['reject:evidencerejectedalready'] = 'Evidence has already been rejected by another approver.';
 
 $string['error:required'] = 'Must not be empty when <i>Approval Required</i> is on';
 $string['error:emptyyear'] = 'Year must not be empty';
@@ -172,27 +172,27 @@ $string['modal:approveevidence:title'] = 'Approve evidence';
 $string['modal:rejectevidence:title'] = 'Rejecting the submitted evidence';
 $string['modal:typemessage'] = 'Type your message:';
 $string['modal:rejectevidence:content'] = 'Are you sure you want to reject this evidence?';
-$string['modal:approveevidence:content'] = 'Approving the evidence means the student has completed the course and this will update his/her <i>Learning History</i>.';
+$string['modal:approveevidence:content'] = 'Approving the evidence means the student has completed the course. This will update their Learning History.';
 $string['label:processing'] = 'Processing...';
 $string['modal:no'] = 'No';
 $string['modal:yes'] = 'Yes';
 $string['modal:rejectevidence:forminfo'] = 'The message will be sent to the user via email';
 
-$string['email:approve:subject'] = 'Your evidence has been approved';
-$string['email:approve:content'] = '<p>Hi {$a->firstname},</p>
-<p>Your submitted evidence has been <b>approved</b>.</p>';
+$string['email:approve:subject'] = '{$a->coursename} Evidence Upload approved';
+$string['email:approve:content'] = '<p>Dear {$a->userfirstname},</p>
+<p>Your {course name} Evidence Upload has been approved. Your completion will be reflected in your learning history shortly.</p>
+<p>Kind regards,<br>{$a->approverfirstname}</p>';
 
-$string['email:subject'] = 'New Completion Request for Approval';
-$string['email:reject:subject'] = 'Submitted evidence has been rejected';
-$string['email:reject:content'] = '<p>Hi {$a->firstname},</p>
-<p>Your submitted evidence has been <b>rejected</b>.<br />
-Kindly review and update your evidence again.<br /></p>
-<p><i>Your evidence link:</i> {$a->evidenceeditlink}</p>
-<p><i>Approver comment:</i><br />
-{$a->approvercomment}
-</p>';
-
+$string['email:subject'] = 'New {$a->coursename} Evidence Upload for approval';
 $string['email:body'] = '<p>Dear {$a->approverfirstname},</p>
-<p>I have requested approval of my Evidence Upload.</p>
+<p>I have requested approval of my {$a->coursename} Evidence Upload.</p>
 <p>Please visit your <a href="{$a->approvalurl}">approvals page</a> to review my request.</p>
-<p>Kind regards,<br>{$a->userfirstname} {$a->userlastname}</p>';
+<p>Kind regards,<br>{$a->userfirstname}</p>';
+
+$string['email:reject:subject'] = '{$a->coursename} Evidence Upload not approved';
+$string['email:reject:content'] = 'Dear {$a->userfirstname},
+<p>Your {$a->coursename} Evidence Upload has not been approved. Please see comments below for more information.</p>
+<p>Approver comments:<br>{$a->approvercomment}</p>
+<p>Kindly review and update your evidence.</p>
+<p>Your evidence link: <a href="{$a->evidenceeditlink}">{$a->evidenceeditlink}</a></p>
+<p>Kind Regards,<br>{$a->approverfirstname}</p>';
