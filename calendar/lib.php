@@ -1118,7 +1118,7 @@ function calendar_get_events($tstart, $tend, $users, $groups, $courses, $withdur
         if(!empty($whereclause)) $whereclause .= ' OR';
         list($insqlusers, $inparamsusers) = $DB->get_in_or_equal($users, SQL_PARAMS_NAMED);
 /* BEGIN CORE MOD */
-        $whereclause .= " (eeventtype <> 'lunchandlearn' AND e.userid $insqlusers AND e.courseid = 0 AND e.groupid = 0)";
+        $whereclause .= " (e.eventtype <> 'lunchandlearn' AND e.userid $insqlusers AND e.courseid = 0 AND e.groupid = 0)";
 /* END CORE MOD */
         $params = array_merge($params, $inparamsusers);
     } else if($users === true) {
