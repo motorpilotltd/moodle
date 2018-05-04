@@ -1100,16 +1100,16 @@ function calendar_get_events($tstart, $tend, $users, $groups, $courses, $withdur
         global $CFG;
         require_once ($CFG->dirroot . '/local/lunchandlearn/lib.php');
         $regionid = lunchandlearn_get_region();
-        $whereclause = "eventtype = 'lunchandlearn'";
+        $whereclause = "e.eventtype = 'lunchandlearn'";
         if ($regionid>-1) {
-            $whereclause .= " AND id IN ("
+            $whereclause .= " AND e.id IN ("
                 . "SELECT eventid "
                 . "FROM {local_lunchandlearn} l "
                 . "WHERE regionid = 0 OR "
                 . "regionid = $regionid)";
         }
     } else {
-        $whereclause = "eventtype <> 'lunchandlearn'";
+        $whereclause = "e.eventtype <> 'lunchandlearn'";
     }
 /* END CORE MOD */
 
