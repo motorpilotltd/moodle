@@ -92,3 +92,7 @@ body#page-local-delegatelist-print .resettable {
     display: none;
     visibility: hidden;
 }
+
+body#page-local-delegatelist-index form.dataformatselector div.mdl-align {
+    text-align: right;
+}
