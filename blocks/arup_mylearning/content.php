@@ -416,7 +416,7 @@ class block_arup_mylearning_content {
             if (!empty($th->course)) {
                 $courseurl = new moodle_url('/course/view.php', array('id' => $th->course));
             }
-            $coursename = format_string($th->coursename ? $th->coursename : $th->classname);
+            $coursename = format_string($th->coursename ? $th->coursename : $th->classname, true, ['escape' => false]);
             $courselink = '';
             if ($courseurl) {
                 $courselink = html_writer::link($courseurl, $coursename);
