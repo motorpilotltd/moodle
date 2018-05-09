@@ -38,39 +38,54 @@ class mod_kalvidres_mod_form extends moodleform_mod {
     public function definition() {
         global $CFG, $COURSE, $PAGE;
 
-        $PAGE->requires->css('/mod/kalvidres/styles.css');
-        $pageclass = 'kaltura-kalvidres-body';
-        $PAGE->add_body_class($pageclass);
+/* BEGIN CORE MOD */
+        $loadcssjs = true;
+        // Check edge case of being called from defaults editing form...
+        // In this case we don't need to worry about what does/doesn't exist.
+        $frames = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 0);
+        foreach ($frames as $frame) {
+            if (in_array($frame['class'], ['core_completion_defaultedit_form', 'core_completion_bulkedit_form'], true)) {
+                $loadcssjs = false;
+                break;
+            }
+        }
 
-        $params = array(
-            'withblocks' => 0,
-            'courseid' => $COURSE->id,
-            'width' => KALTURA_PANEL_WIDTH,
-            'height' => KALTURA_PANEL_HEIGHT
-        );
+        if ($loadcssjs) {
+            $PAGE->requires->css('/mod/kalvidres/styles.css');
+            $pageclass = 'kaltura-kalvidres-body';
+            $PAGE->add_body_class($pageclass);
 
-        $url = new moodle_url('/mod/kalvidres/lti_launch.php', $params);
+            $params = array(
+                'withblocks' => 0,
+                'courseid' => $COURSE->id,
+                'width' => KALTURA_PANEL_WIDTH,
+                'height' => KALTURA_PANEL_HEIGHT
+            );
 
-        $params = array(
-            'addvidbtnid' => 'id_'.$this->addvideobutton,
-            'ltilaunchurl' => $url->out(false),
-            'height' => KALTURA_PANEL_HEIGHT,
-            'width' => KALTURA_PANEL_WIDTH,
-            'modulename' => 'kalvidres'
-        );
+            $url = new moodle_url('/mod/kalvidres/lti_launch.php', $params);
 
-        $PAGE->requires->yui_module('moodle-local_kaltura-ltipanel', 'M.local_kaltura.init', array($params), null, true);
-        // Make replace media language string available to the YUI modules
-        $PAGE->requires->string_for_js('replace_video', 'kalvidres');
-        $PAGE->requires->string_for_js('browse_and_embed', 'local_kaltura');
+            $params = array(
+                'addvidbtnid' => 'id_'.$this->addvideobutton,
+                'ltilaunchurl' => $url->out(false),
+                'height' => KALTURA_PANEL_HEIGHT,
+                'width' => KALTURA_PANEL_WIDTH,
+                'modulename' => 'kalvidres'
+            );
 
-        // Require a YUI module to make the object tag be as large as possible.
-        $params = array(
-            'bodyclass' => $pageclass,
-            'lastheight' => null,
-            'padding' => 15
-        );
-        $PAGE->requires->yui_module('moodle-local_kaltura-lticontainer', 'M.local_kaltura.init', array($params), null, true);
+            $PAGE->requires->yui_module('moodle-local_kaltura-ltipanel', 'M.local_kaltura.init', array($params), null, true);
+            // Make replace media language string available to the YUI modules
+            $PAGE->requires->string_for_js('replace_video', 'kalvidres');
+            $PAGE->requires->string_for_js('browse_and_embed', 'local_kaltura');
+
+            // Require a YUI module to make the object tag be as large as possible.
+            $params = array(
+                'bodyclass' => $pageclass,
+                'lastheight' => null,
+                'padding' => 15
+            );
+            $PAGE->requires->yui_module('moodle-local_kaltura-lticontainer', 'M.local_kaltura.init', array($params), null, true);
+        }
+/* END CORE MOD */
 
         $mform =& $this->_form;
 
