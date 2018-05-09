@@ -472,7 +472,7 @@ class block_arup_mylearning_content {
                     'data-toggle' => 'modal',
                     'data-target' => '#info-modal',
                     'data-label' => $coursename,
-                    'data-url' => $modalurl,
+                    'data-url' => $modalurl->out(false),
                 )
             );
             if (!is_null($th->cpdid)) {
