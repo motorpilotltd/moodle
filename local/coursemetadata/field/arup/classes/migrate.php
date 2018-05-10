@@ -252,11 +252,11 @@ class migrate {
 
                 // Link local_taps_class to the moodle course.
                 $DB->execute('UPDATE {local_taps_class} SET courseid = :moodlecourseid WHERE courseid = :tapscourseid',
-                        ['moodlecourseid' => $course->id, 'tapscourseid' => $tapscourse->id]);
+                        ['moodlecourseid' => $course->id, 'tapscourseid' => $tapscourse->courseid]);
 
                 // Link local_taps_enrolment to the moodle course.
                 $DB->execute('UPDATE {local_taps_enrolment} SET courseid = :moodlecourseid WHERE courseid = :tapscourseid',
-                        ['moodlecourseid' => $course->id, 'tapscourseid' => $tapscourse->id]);
+                        ['moodlecourseid' => $course->id, 'tapscourseid' => $tapscourse->courseid]);
 
                 $DB->delete_records_select('local_taps_course', 'id = :tapscourseid', ['tapscourseid' => $tapscourse->id]);
                 $DB->delete_records_select('local_taps_course_category', 'courseid = :courseid',
