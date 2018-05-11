@@ -41,7 +41,7 @@ $string['form:name:subregions_all'] = 'All locations for chosen region(s)';
 $string['form:name:tapsname'] = 'TAPS name';
 $string['form:name:userselectable'] = 'User selectable';
 
-$string['form:hint:details:region'] = 'One region entry per line, comma separated fields \"name,tapsname,userselectable\" where userselectable is 1 or 0, e.g. \"UKMEA,UK-MEA Region,1\"';
+$string['form:hint:details:region'] = 'One region entry per line, comma separated fields \"name,tapsname,userselectable\" where userselectable is 1 or 0, e.g. \"UKIMEA,UKIMEA Region,1\"';
 $string['form:hint:region_preferred'] = 'You can change your regional view of Arup University here to see content targetting other regions.';
 $string['form:hint:region_preferred_set'] = 'Your selected region for viewing Arup University is currently different to your HR defined region ({$a}), please update if necessary.';
 $string['form:hint:region_update_location_1'] = 'Unfortunately, we could not determine your location automatically, please update it here.<br/>Providing your region enables us to provide information relevant to your location.';
