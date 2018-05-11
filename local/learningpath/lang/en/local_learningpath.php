@@ -35,7 +35,7 @@ $string['add:added'] = 'Your new learning path has been sucessfully created.';
 $string['add:cancelled'] = 'Learning path creation cancelled.';
 $string['addcolumn'] = 'Add column';
 $string['addrow'] = 'Add row';
-$string['andukmea'] = '&nbsp;&amp;&nbsp;UKMEA';
+$string['andukmea'] = '&nbsp;&amp;&nbsp;UKIMEA';
 
 $string['backtolearningpath'] = 'Return to learning path';
 $string['button:create'] = 'Create';
@@ -137,4 +137,4 @@ $string['region'] = 'Region';
 
 $string['subregion'] = 'Location';
 
-$string['ukmea:show'] = 'Show <strong>UKMEA</strong> modules';
+$string['ukmea:show'] = 'Show <strong>UKIMEA</strong> modules';
