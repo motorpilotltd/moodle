@@ -1,7 +1,7 @@
 <?php
 
 $string['allregions'] = 'All regions';
-$string['andukmea'] = '&nbsp;&amp;&nbsp;UKMEA';
+$string['andukmea'] = '&nbsp;&amp;&nbsp;UKIMEA';
 
 $string['by'] = 'By';
 
@@ -43,4 +43,4 @@ $string['searchyourregion'] = 'Show results from your region';
 
 $string['tryallregions'] = 'Try searching across all regions';
 
-$string['ukmea:show'] = 'Show <strong>UKMEA</strong> modules';
+$string['ukmea:show'] = 'Show <strong>UKIMEA</strong> modules';
