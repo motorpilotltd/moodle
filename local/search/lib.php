@@ -23,7 +23,7 @@ if (REGIONS_INSTALLED) {
     }
     if (!defined('REGIONS_REGION_UKMEA')) {
         $like = $DB->sql_like('name', ':name', false);
-        $region = $DB->get_field_select('local_regions_reg', 'id', $like, array('name' => '%ukmea%'));
+        $region = $DB->get_field_select('local_regions_reg', 'id', $like, array('name' => '%ukimea%'));
         define('REGIONS_REGION_UKMEA', $region === false ? false : (int) $region);
     }
     unset($like, $region);

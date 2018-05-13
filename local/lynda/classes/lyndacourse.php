@@ -143,7 +143,7 @@ class lyndacourse extends \data_object {
         }
 
         global $DB;
-        $wheresql = 'WHERE lti.id IS NULL';
+        $wheresql = 'WHERE lrrc.id IS NULL';
         $params = [];
 
         if ($keyword != ' ') {
@@ -155,9 +155,11 @@ class lyndacourse extends \data_object {
         $sql = "FROM {local_lynda_course} llc
             INNER JOIN {local_lynda_courseregions} llcr ON llcr.regionid = :regionid AND llcr.lyndacourseid = llc.id
             LEFT JOIN {lti} lti ON lti.toolurl = $url
+            LEFT JOIN {local_regions_reg_cou} lrrc ON lrrc.courseid = lti.course AND lrrc.regionid = :regionid2
             $wheresql";
 
         $params['regionid'] = $regionid;
+        $params['regionid2'] = $regionid;
 
         $obj = new self();
         $allfields = $obj->required_fields + array_keys($obj->optional_fields);

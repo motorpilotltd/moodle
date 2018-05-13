@@ -24,10 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111602;
+$plugin->version   = 2015111603;
 $plugin->requires  = 2015111600; // Moodle 3.0.x.
 $plugin->component = 'local_regions';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.2 (Build: {$plugin->version})";
+$plugin->release   = "3.0.3 (Build: {$plugin->version})";
 
 $plugin->dependencies = array();

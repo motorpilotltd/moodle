@@ -21,7 +21,7 @@ if (REGIONS_INSTALLED) {
     }
     if (!defined('REGIONS_REGION_UKMEA')) {
         $like = $DB->sql_like('name', ':name', false);
-        $region = $DB->get_field_select('local_regions_reg', 'id', $like, array('name' => '%ukmea%'));
+        $region = $DB->get_field_select('local_regions_reg', 'id', $like, array('name' => '%ukimea%'));
         define('REGIONS_REGION_UKMEA', $region === false ? false : (int) $region);
     }
     unset($like, $region);
@@ -29,7 +29,7 @@ if (REGIONS_INSTALLED) {
 
 function learningpath_get_categories_list(coursecat $category = null, $choose = false) {
     global $DB;
-    
+
     $rootcategory = (int) get_config('local_learningpath', 'category');
     if ($rootcategory !== 0 && !$DB->get_record('course_categories', array('id' => $rootcategory))) {
         $rootcategory = 0;
@@ -72,7 +72,7 @@ function learningpath_get_courses($cellid, $coursetype = null, $filters = null) 
         $params['coursetype'] = $coursetype;
     }
     $wherestatement = "WHERE c.id IN (SELECT DISTINCT courseid FROM {local_learningpath_courses} WHERE cellid = :cellid {$subwherestatement})";
-    
+
     $orderby = $DB->sql_order_by_text('c.fullname');
     $sortstatement = "ORDER BY {$orderby} ASC";
 

@@ -389,6 +389,8 @@ function local_regions_save_data_user($usernew) {
 
 function local_regions_map_taps_region($tapsregion) {
     global $DB;
+    // Strip out hyphens.
+    $tapsregion = str_ireplace('-', '', $tapsregion);
     $region = $DB->get_record_select(
             'local_regions_reg',
             'name = :name OR tapsname = :tapsname',
