@@ -248,7 +248,7 @@ class completion
         global $DB;
 
         $query = "
-            SELECT 
+            SELECT
               cua.duedate,
               cc.timecompleted,
               cc.timeexpires,
@@ -274,7 +274,7 @@ class completion
                 FROM {certif_completions_archive} cca
                 WHERE cca.certifid = :certifid
                 AND cca.userid = :userid
-                ORDER by cca.timearchived DESC 
+                ORDER by cca.timearchived DESC
             ";
                 $params = [];
                 $params['userid'] = $userid;
@@ -313,7 +313,7 @@ class completion
         }
 
         $query = "
-            SELECT 
+            SELECT
                 MAX(c.timecompleted) as timecompleted
             FROM {certif_courseset_courses} ccc
             JOIN {certif_coursesets} cc ON cc.id = ccc.coursesetid
@@ -330,7 +330,7 @@ class completion
         if($timecompleted = $DB->get_record_sql($query, $params, IGNORE_MULTIPLE)){
             return $timecompleted->timecompleted;
         }
-        
+
         return 0;
     }
 
@@ -348,7 +348,7 @@ class completion
 
         $params = [];
         $query = "
-            SELECT 
+            SELECT
               cc.*
             FROM {certif_completions} as cc
             WHERE cc.timewindowsopens > :now
@@ -474,7 +474,7 @@ class completion
          * Actualize due date
          */
         self::calculate_duedate($completionrecord->certifid, $completionrecord->userid);
-        
+
         /**
          * Trigger certification_completed event if status is changed to completed
          */
@@ -525,7 +525,7 @@ FROM
 WHERE
     staffid = :staffid
     AND courseid {$insql1}
-    AND {$DB->sql_compare_text('bookingstatus')} {$insql2}}
+    AND {$DB->sql_compare_text('bookingstatus')} {$insql2}
     AND archived = 0
 EOS;
         $params = array_merge($params1, $params2);
@@ -753,7 +753,7 @@ EOS;
         global $DB;
 
         $query = "
-            SELECT 
+            SELECT
                 cc.*
             FROM {certif_completions} cc
             WHERE cc.certifid = :certifid
@@ -784,7 +784,7 @@ EOS;
               cua.duedate as assignmentduedate,
               cca.timeexpires as lasttimeexpires,
               cca.timewindowsopens as lasttimewindowsopens
-            FROM {certif_user_assignments} cua 
+            FROM {certif_user_assignments} cua
             LEFT JOIN {certif_completions} comp ON comp.certifid = cua.certifid AND comp.userid = cua.userid
             LEFT JOIN (
               SELECT
@@ -847,7 +847,7 @@ EOS;
 
         $query = "
             SELECT
-              c.id, 
+              c.id,
               c.courseid,
               c.coursesetid,
               COUNT(criteria.id) as criterianumber,
@@ -980,7 +980,7 @@ EOS;
 
     /**
      * Get RAG status basing on completion date and duedate
-     * 
+     *
      * @param $timecompleted Completion date
      * @param $duedate Duedate
      * @return string RAG status
