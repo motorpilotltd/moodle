@@ -61,7 +61,7 @@ class export_reports extends \core\task\scheduled_task {
         $filteroptions = certification_report::get_filter_options();
         $data = new stdClass();
         $data->fullname = ''; // A value is normally expected from the filter form.
-        $data->georegions = ['UKIMEA'];
+        $data->georegions = ['UKIMEA', 'Europe'];
         $data->certifications = [1, 2, 3];
         $filters = certification_report::get_filter_data($filteroptions, $data);
 
