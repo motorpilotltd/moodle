@@ -639,7 +639,9 @@ function questionnaire_extend_settings_navigation(settings_navigation $settings,
             if ($questionnaire->capabilities->downloadresponses) {
                 $urlargs = array('instance' => $questionnaire->id, 'user' => $USER->id,
                     'action' => 'dwnpg', 'group' => $currentgroupid);
-                $myreportnode->add(get_string('downloadtext'), new moodle_url('/mod/questionnaire/report.php', $urlargs));
+/* BEGIN CORE MOD */
+                $myreportnode->add(get_string('downloadtextformat'), new moodle_url('/mod/questionnaire/report.php', $urlargs));
+/* END CORE MOD */
             }
         } else {
             $urlargs = array('instance' => $questionnaire->id, 'userid' => $USER->id,
@@ -684,12 +686,9 @@ function questionnaire_extend_settings_navigation(settings_navigation $settings,
         }
 
         if ($questionnaire->capabilities->downloadresponses) {
-/* BEGIN CORE MOD */
-            $downloadmyresponsesnode = $myreportnode->add(get_string('downloadtextformat', 'questionnaire'),
-/* END CORE MOD */
             $summarynode->add(get_string('downloadtextformat', 'questionnaire'),
                 new moodle_url('/mod/questionnaire/report.php',
-                    array('instance' => $questionnaire->id, 'action' => 'dwnpg', 'group' => $currentgroupid))));
+                    array('instance' => $questionnaire->id, 'action' => 'dwnpg', 'group' => $currentgroupid)));
         }
         if ($questionnaire->capabilities->viewsingleresponse) {
             $byresponsenode = $reportnode->add(get_string('viewbyresponse', 'questionnaire'),

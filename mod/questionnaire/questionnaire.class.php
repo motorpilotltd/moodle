@@ -1622,7 +1622,7 @@ class questionnaire {
         }
         return $notifiableusers;
     }
-	
+
 /* BEGIN CORE MOD */
     private function response_send_email($rid, $userid = false) {
         global $CFG, $DB, $USER;

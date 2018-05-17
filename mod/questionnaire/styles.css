@@ -95,14 +95,25 @@ td.selected {
     padding: 0;
 }
 
+/* BEGIN CORE MOD */
 #page-mod-questionnaire-complete .message,
 #page-mod-questionnaire-preview .message,
 #page-mod-questionnaire-complete .thankbody,
 #page-mod-questionnaire-complete .thankhead {
-/* BEGIN CORE MOD */
-    border-color: transparent;
-/* END CORE MOD */
+    border-color: transparent; /* Was blue. */
 }
+
+#page-mod-questionnaire-complete .message .error,
+#page-mod-questionnaire-preview .message .error,
+#page-mod-questionnaire-complete .thankbody .error,
+#page-mod-questionnaire-complete .thankhead .error {
+    background-color: #fff;
+    border-color: red;
+    border-style: solid;
+    border-width: 2px;
+    padding: 5px;
+}
+/* END CORE MOD */
 
 #page-mod-questionnaire-complete .surveyTitle,
 #page-mod-questionnaire-complete .surveySubtitle,
