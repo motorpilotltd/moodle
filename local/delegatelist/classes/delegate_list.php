@@ -47,15 +47,15 @@ class delegate_list {
         'print',
         'download'
     );
-    
+
     public function __construct($course, $context, $classid = 0, $function = 'display') {
         global $DB;
-        
+
         $this->_course = $course;
         $this->_context = $context;
 
         $tapsenrol = $DB->get_record('tapsenrol', array('course' => $this->_course->id));
-        
+
         if (empty($tapsenrol)) {
             throw new moodle_exception('error:nottapscourse', 'local_delegatelist');
         }
@@ -68,7 +68,7 @@ class delegate_list {
         $this->_set_capabilities();
 
         $this->_set_classes();
-        
+
         if (array_key_exists($classid, $this->_classes)) {
             $this->set_active_class($classid);
         } else {
@@ -139,7 +139,7 @@ class delegate_list {
                 $where .= " AND {$compare} {$in}";
                 $params = array_merge($params, $inparams);
             }
-            
+
             $activeclasses = array();
         } else {
             $activewhere = "{$where} AND (classhidden = 0 OR classhidden IS NULL) AND (archived = 0 OR archived IS NULL)";
@@ -192,7 +192,7 @@ EOS;
             throw new moodle_exception('error:noclasses', 'local_delegatelist');
         }
     }
-    
+
     public function find_active_class() {
         global $USER, $DB;
 
@@ -204,9 +204,8 @@ EOS;
             array_keys($this->_classes),
             SQL_PARAMS_NAMED, 'classid'
         );
-        $compare = $DB->sql_compare_text('classid');
 
-        $where = "active = 1 AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}";
+        $where = "active = 1 AND (archived = 0 OR archived IS NULL) AND classid {$in}";
 
         if (isset($staffid)) {
             $where .= ' AND staffid = :staffid';
@@ -232,10 +231,10 @@ EOS;
                 $return = $classid;
             }
         }
-        
+
         return $return;
     }
-    
+
     public function set_active_class($classid) {
         global $DB;
 
@@ -257,11 +256,11 @@ EOS;
     public function get_active_class() {
         return $this->_activeclass;
     }
-    
+
     public function get_course_name() {
         return $this->_course->fullname;
     }
-    
+
     public function get_class_menu() {
         $options = array();
         foreach ($this->_classes as $classid => $class) {
@@ -269,12 +268,12 @@ EOS;
         }
         return $options;
     }
-    
+
     public function get_class_dates() {
         if (!isset($this->_activeclass) || !isset($this->_activeclass->classstarttime)) {
             return;
         }
-        
+
         if (empty($this->_activeclass->classstarttime)) {
             return get_string('tbc', 'local_delegatelist');
         }
@@ -324,7 +323,7 @@ EOS;
         // Show UTC as GMT for clarity
         return str_replace('UTC', 'GMT', $date);
     }
-    
+
     public function get_class_duration() {
         if (!isset($this->_activeclass) || !isset($this->_activeclass->classduration)) {
             return;
@@ -355,7 +354,7 @@ EOS;
         }
         return $options;
     }
-    
+
     public function get_url($ignore='') {
         $params = array('contextid'=>$this->_context->id);
         if (!empty($this->_activeclass) && $ignore !== 'classid') {
@@ -370,14 +369,14 @@ EOS;
         $baseurl = $this->_function === 'print' ? str_replace('index.php', 'print.php', self::BASE_URL) : self::BASE_URL;
         return new moodle_url($baseurl, $params);
     }
-    
+
     public function get_list_table() {
         if (empty($this->_activeclass)) {
             return;
         }
-        
+
         require_once dirname(__FILE__) . '/delegatetable.php';
-        
+
         $table = new delegatetable('delegate_list', $this, $this->_function);
         $usernamefields = get_all_user_name_fields(true, 'u');
         $fields = "lte.*, u.id as userid, {$usernamefields}, u.picture,"
@@ -409,7 +408,7 @@ EOF;
         $table->set_sql($fields, $from, $where, $params);
         $table->text_sorting('lastname');
         $table->initialise();
-        
+
         $table->sortable(true, 'lastname', SORT_ASC);
 
         $table->is_collapsible = false;
@@ -434,7 +433,7 @@ EOF;
         }
         return $this->_filters;
     }
-    
+
     protected function _process_filters(&$where, &$params) {
         global $DB;
 
@@ -450,7 +449,7 @@ EOF;
             } else {
                 $actualvalue = $value;
             }
-            
+
             if (empty($actualvalue)) {
                 continue;
             }
@@ -473,11 +472,11 @@ EOF;
         }
         return array();
     }
-    
+
     public function get_completion_url() {
         return new moodle_url('/report/progress/index.php', array('course'=>$this->_course->id));
     }
-    
+
     public function get_attendance_url($tapscompletion) {
         return new moodle_url('/mod/tapscompletion/view.php', array('id' => $tapscompletion->id));
     }
