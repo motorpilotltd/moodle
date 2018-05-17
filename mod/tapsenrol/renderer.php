@@ -1203,6 +1203,14 @@ EOF;
             );
         }
 
+        if ($tapsenrol->tapsenrol->internalworkflowid && has_capability('mod/tapsenrol:updatecompletion', $tapsenrol->context->cm)) {
+            $updatecompletionurl = new moodle_url('/mod/tapsenrol/updatecompletion.php', array('id' => $tapsenrol->cm->id));
+            $links[] = array(
+                'url' => $updatecompletionurl,
+                'title' => get_string('updatecompletion', 'tapsenrol')
+            );
+        }
+
         if (has_capability('local/coursemanagercourse:add', $tapsenrol->context->course)) {
             $editcourseurl = new moodle_url('/local/coursemanager/index.php', array('page' => 'course', 'cmcourse' => $tapsenrol->get_tapscourse()->id));
             $links[] = array(
@@ -1227,5 +1235,296 @@ EOF;
                 false
             );
         }
+    }
+
+    public function user_table($course, $completion, $criteria, $progress, $modinfo, $users, $id) {
+        global $CFG, $DB, $OUTPUT;
+
+        $html = html_writer::tag('h3', get_string('userstocomplete', 'tapsenrol'));
+
+        if (!$users) {
+            $html .= html_writer::tag('p', get_string('nousers', 'tapsenrol'));
+            return $html;
+        }
+
+        $html .= html_writer::start_tag('div', array('id' => 'completion-progress-wrapper', 'class' => 'no-overflow'));
+
+        $html .= html_writer::start_tag(
+                'form',
+                array(
+                        'id' => 'completion-form',
+                        'accept-charset' => 'utf-8',
+                        'method' => 'post',
+                        'action' => $CFG->wwwroot.'/mod/tapsenrol/updatecompletion.php',
+                        'autocomplete' => 'off'
+                ));
+        $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'id', 'value' => $id));
+        $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
+
+        $html .= html_writer::start_tag('table', array(
+                'id' => 'completion-progress',
+                'class' => 'table table-bordered generaltable flexible boxaligncenter completionreport',
+                'style' => 'text-align: left',
+                'cellpadding' => '5',
+                'border' => '1'
+        ));
+
+        $html .= html_writer::start_tag('thead');
+        $html .= html_writer::start_tag('tr', array('style' => 'vertical-align: top'));
+        $html .= html_writer::tag('th', get_string('criteriagroup', 'completion'), array('colspan' => 2, 'scope' => 'row', 'class' => 'rowheader'));
+        $currentgroup = false;
+        $colcount = 0;
+        for ($i = 0; $i <= count($criteria); $i++) {
+            if (isset($criteria[$i])) {
+                $criterion = $criteria[$i];
+                if ($currentgroup && $criterion->criteriatype === $currentgroup->criteriatype) {
+                    ++$colcount;
+                    continue;
+                }
+            }
+            if ($colcount) {
+                $html .= html_writer::tag('th', $currentgroup->get_type_title(), array('scope' => 'col', 'colspan' => $colcount, 'class' => 'colheader criteriagroup'));
+            }
+            if (isset($criteria[$i])) {
+                $currentgroup = $criterion;
+                $colcount = 1;
+            }
+        }
+        $html .= html_writer::tag('th', get_string('course'), array('style' => 'text-align: center;'));
+        $html .= html_writer::tag('th', get_string('markattendance', 'tapsenrol'), array('rowspan' => 4, 'style' => 'vertical-align: bottom;'));
+        $html .= html_writer::end_tag('tr');
+
+        $html .= html_writer::start_tag('tr', array('style' => 'vertical-align: top'));
+        $html .= html_writer::tag('th', get_string('aggregationmethod', 'completion'), array('colspan' => 2, 'scope' => 'row', 'class' => 'rowheader'));
+        $currentgroup = false;
+        $colcount = 0;
+        for ($i = 0; $i <= count($criteria); $i++) {
+            if (isset($criteria[$i])) {
+                $criterion = $criteria[$i];
+                if ($currentgroup && $criterion->criteriatype === $currentgroup->criteriatype) {
+                    ++$colcount;
+                    continue;
+                }
+            }
+            if ($colcount) {
+                $hasagg = array(
+                        COMPLETION_CRITERIA_TYPE_COURSE,
+                        COMPLETION_CRITERIA_TYPE_ACTIVITY,
+                        COMPLETION_CRITERIA_TYPE_ROLE,
+                );
+                if (in_array($currentgroup->criteriatype, $hasagg)) {
+                    $method = $completion->get_aggregation_method($currentgroup->criteriatype) ? get_string('all') : get_string('any');
+                } else {
+                    $method = '-';
+                }
+                $html .= html_writer::tag('th', $method, array('scope' => 'col', 'colspan' => $colcount, 'class' => 'colheader aggheader'));
+            }
+            if (isset($criteria[$i])) {
+                $currentgroup = $criterion;
+                $colcount = 1;
+            }
+        }
+        $method = $completion->get_aggregation_method() ? get_string('all') : get_string('any');
+        $html .= html_writer::tag('th', $method, array('scope' => 'col', 'class' => 'colheader aggheader aggcriteriacourse'));
+        $html .= html_writer::end_tag('tr');
+
+        $html .= html_writer::start_tag('tr');
+        $html .= html_writer::tag('th', get_string('criteria', 'completion'), array('colspan' => 2, 'scope' => 'row', 'class' => 'rowheader'));
+        foreach ($criteria as $criterion) {
+            $details = $criterion->get_title_detailed();
+            $html .= html_writer::tag('th', '<div class="rotated-text-container"><span class="rotated-text">'.$details.'</span></div>', array('scope' => 'col', 'class' => 'colheader criterianame'));
+        }
+        $html .= html_writer::tag('th', '<div class="rotated-text-container"><span class="rotated-text">'.get_string('coursecomplete', 'completion').'</span></div>', array('scope' => 'col', 'class' => 'colheader criterianame'));
+        $html .= html_writer::end_tag('tr');
+
+        $html .= html_writer::start_tag('tr');
+        $html .= html_writer::tag('th', get_string('name'), array('scope' => 'col', 'class' => 'completion-identifyfield'));
+        $html .= html_writer::tag('th', get_string('staffid', 'tapsenrol'), array('scope' => 'col', 'class' => 'completion-identifyfield'));
+        foreach ($criteria as $criterion) {
+            // Generate icon details.
+            $iconlink = '';
+            $iconalt = ''; // Required.
+            $iconattributes = array('class' => 'icon');
+            switch ($criterion->criteriatype) {
+                case COMPLETION_CRITERIA_TYPE_ACTIVITY:
+                    // Display icon.
+                    $iconlink = $CFG->wwwroot.'/mod/'.$criterion->module.'/view.php?id='.$criterion->moduleinstance;
+                    $iconattributes['title'] = $modinfo->cms[$criterion->moduleinstance]->get_formatted_name();
+                    $iconalt = get_string('modulename', $criterion->module);
+                    break;
+                case COMPLETION_CRITERIA_TYPE_COURSE:
+                    // Load course.
+                    $crs = $DB->get_record('course', array('id' => $criterion->courseinstance));
+
+                    // Display icon.
+                    $iconlink = $CFG->wwwroot.'/course/view.php?id='.$criterion->courseinstance;
+                    $iconattributes['title'] = format_string($crs->fullname, true, array('context' => context_course::instance($crs->id, MUST_EXIST)));
+                    $iconalt = format_string($crs->shortname, true, array('context' => context_course::instance($crs->id)));
+                    break;
+                case COMPLETION_CRITERIA_TYPE_ROLE:
+                    // Load role.
+                    $role = $DB->get_record('role', array('id' => $criterion->role));
+
+                    // Display icon.
+                    $iconalt = $role->name;
+                    break;
+            }
+            // Create icon alt if not supplied.
+            if (!$iconalt) {
+                $iconalt = $criterion->get_title();
+            }
+            $icon = ($iconlink ? '<a href="'.$iconlink.'" title="'.$iconattributes['title'].'">' : '');
+            $icon .= $OUTPUT->render($criterion->get_icon($iconalt, $iconattributes));
+            $icon .= ($iconlink ? '</a>' : '');
+            $html .= html_writer::tag('th', $icon, array('class' => 'criteriaicon'));
+        }
+
+        $html .= html_writer::tag('th', $OUTPUT->pix_icon('i/course', get_string('coursecomplete', 'completion')), array('class' => 'criteriaicon'));
+        $html .= html_writer::end_tag('tr');
+        $html .= html_writer::end_tag('thead');
+
+        $html .= html_writer::start_tag('tbody');
+        $classid = 0;
+        foreach ($users as $user) {
+            if ($user->classid != $classid) {
+                $classid = $user->classid;
+
+                $cells = '';
+                $cellcontent = get_string('classwithname', 'tapsenrol', $user->classname) .
+                        html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'class['.$user->classid.']', 'value' => $user->classname));
+                $cells .= html_writer::tag('th', $cellcontent, array('colspan' => count($criteria) + 3, 'style' => 'text-align: center;'));
+                $input = html_writer::empty_tag('input', array(
+                        'class' => 'tapsenrol-checkbox tapsenrol-checkbox-all',
+                        'type' => 'checkbox',
+                        'name' => 'class-'.$user->classid,
+                        'value' => $user->classid));
+                $label = html_writer::label(get_string('selectallforclass', 'tapsenrol'), 'class-'.$user->classid, false);
+                $cells .= html_writer::tag('th', $input.$label);
+                $html .= html_writer::tag('tr', $cells);
+            }
+
+            $html .= html_writer::start_tag('tr');
+            $html .= html_writer::tag('th', fullname($user), array('scope' => 'row'));
+            $html .= html_writer::tag('td', $user->idnumber);
+            if (isset($progress[$user->id])) {
+                foreach ($criteria as $criterion) {
+                    if ($criterion->criteriatype == COMPLETION_CRITERIA_TYPE_ACTIVITY) {
+                        $activity = $modinfo->cms[$criterion->moduleinstance];
+                        if (array_key_exists($activity->id, $progress[$user->id]->progress)) {
+                            $thisprogress = $progress[$user->id]->progress[$activity->id];
+                            $state = $thisprogress->completionstate;
+                            $date = userdate($thisprogress->timemodified);
+                        } else {
+                            $state = COMPLETION_INCOMPLETE;
+                            $date = '';
+                        }
+                        switch($state) {
+                            case COMPLETION_INCOMPLETE:
+                                $completiontype = 'n';
+                                break;
+                            case COMPLETION_COMPLETE:
+                                $completiontype = 'y';
+                                break;
+                            case COMPLETION_COMPLETE_PASS:
+                                $completiontype = 'pass';
+                                break;
+                            case COMPLETION_COMPLETE_FAIL:
+                                $completiontype = 'fail';
+                                break;
+                        }
+
+                        $completionicon = 'completion-' .
+                                ($activity->completion == COMPLETION_TRACKING_AUTOMATIC ? 'auto' : 'manual') .
+                                '-' . $completiontype;
+                        $describe = get_string('completion-' . $completiontype, 'completion');
+                        $a = new StdClass;
+                        $a->state = $describe;
+                        $a->date = $date;
+                        $a->user = fullname($user);
+                        $a->activity = strip_tags($activity->name);
+                        $fulldescribe = get_string('progress-title', 'completion', $a);
+
+                        $img = html_writer::empty_tag('img', array(
+                                'src' => $OUTPUT->image_url('i/'.$completionicon),
+                                'alt' => $describe,
+                                'class' => 'icon',
+                                'title' => $fulldescribe
+                        ));
+                        $html .= html_writer::tag('td', $img, array('class' => 'completion-progresscell'));
+                        continue;
+                    }
+
+                    $criteriacompletion = $completion->get_user_completion($user->id, $criterion);
+                    $iscomplete = $criteriacompletion->is_complete();
+
+                    $completiontype = $iscomplete ? 'y' : 'n';
+                    $completionicon = 'completion-auto-'.$completiontype;
+
+                    $describe = get_string('completion-' . $completiontype, 'completion');
+
+                    $a = new stdClass();
+                    $a->state = $describe;
+                    $a->date = $iscomplete ? userdate($criteriacompletion->timecompleted) : '';
+                    $a->user = fullname($user);
+                    $a->activity = strip_tags($criterion->get_title());
+                    $fulldescribe = get_string('progress-title', 'completion', $a);
+
+                    $img = html_writer::empty_tag('img', array(
+                            'src' => $OUTPUT->image_url('i/'.$completionicon),
+                            'alt' => $describe,
+                            'class' => 'icon',
+                            'title' => $fulldescribe
+                    ));
+                    $html .= html_writer::tag('td', $img, array('class' => 'completion-progresscell'));
+                }
+
+                $params = array(
+                        'userid'    => $user->id,
+                        'course'    => $course->id
+                );
+
+                $ccompletion = new completion_completion($params);
+                $completiontype = $ccompletion->is_complete() ? 'y' : 'n';
+
+                $describe = get_string('completion-' . $completiontype, 'completion');
+
+                $a = new stdClass;
+                $a->state = $describe;
+                $a->date = !empty($ccompletion->timecompleted) ? userdate($ccompletion->timecompleted) : '';
+                $a->user = fullname($user);
+                $a->activity = strip_tags(get_string('coursecomplete', 'completion'));
+                $fulldescribe = get_string('progress-title', 'completion', $a);
+
+                $img = html_writer::empty_tag('img', array(
+                        'src' => $OUTPUT->image_url('i/completion-auto-'.$completiontype),
+                        'alt' => $describe,
+                        'class' => 'icon',
+                        'title' => $fulldescribe
+                ));
+                $html .= html_writer::tag('td', $img, array('class' => 'completion-progresscell'));
+            } else {
+                $html .= html_writer::tag('td', get_string('na', 'tapsenrol'), array('colspan' => (count($criteria) + 1), 'style' => 'text-align:center;'));
+            }
+            $input = html_writer::empty_tag('input', array(
+                    'class' => 'tapsenrol-checkbox',
+                    'type' => 'checkbox',
+                    'name' => 'staffid['.$user->idnumber.']',
+                    'value' => $user->enrolmentid . '_' . $user->classid
+            ));
+            $select = html_writer::start_tag('select', ['name' => $user->enrolmentid . '_' . $user->classid, 'class' => 'hiddenifjs']);
+            $select .= html_writer::tag('option', 'Full Attendance', ['value' => 'Full Attendance']);
+            $select .= html_writer::tag('option', 'No Show', ['value' => 'No Show']);
+            $select .= html_writer::end_tag('select');
+            $html .= html_writer::tag('td', $input.$select);
+            $html .= html_writer::end_tag('tr');
+        }
+
+        $html .= html_writer::end_tag('tbody');
+        $html .= html_writer::end_tag('table');
+        $html .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'submit', 'value' => get_string('updateusers', 'tapsenrol')));
+        $html .= html_writer::end_tag('form');
+        $html .= html_writer::end_tag('div');
+
+        return $html;
     }
 }

@@ -42,6 +42,11 @@ class tapsenrol {
     protected $_tapscourse;
     protected $_tapsclasses = array();
 
+    public static $completiontimetypes = [
+            'currenttime' => 0,
+            'classendtime' => 1,
+    ];
+
     public function __construct($id, $type = 'cm', $courseid = 0) {
         global $SESSION;
 
@@ -118,22 +123,6 @@ class tapsenrol {
 
     public function check_installation() {
         global $DB;
-
-        // Check for arupadvert.
-
-        if (!$DB->get_record('modules', array('name' => 'arupadvert'))) {
-            // Arup advert not installed.
-            return $this->_mark_broken_instance();
-        } else {
-            $arupadvert = $DB->get_record('arupadvert', array('course' => $this->course->id));
-            if (!$arupadvert) {
-                // No Arup advert in this course.
-                return $this->_mark_broken_instance();
-            } else if ($arupadvert->datatype != 'taps') {
-                // Arup advert is not a TAPS one.
-                return $this->_mark_broken_instance();
-            }
-        }
 
         // Check enrolment plugins.
 
@@ -1753,6 +1742,68 @@ EOS;
         }
 
         return $return;
+    }
+
+    public function get_classes_and_users($classid = 0) {
+        global $DB;
+
+        $users = get_enrolled_users(\context_course::instance($this->cm->course), '', 0, 'u.id', null, 0, 0, true);
+
+        if (empty($users)) {
+            return;
+        }
+
+        list($userin, $userinparams) = $DB->get_in_or_equal(
+                array_keys($users),
+                SQL_PARAMS_NAMED, 'user'
+        );
+        list($statusin, $statusinparams) = $DB->get_in_or_equal(
+                $this->taps->get_statuses('placed'),
+                SQL_PARAMS_NAMED, 'status'
+        );
+        $statuscompare = $DB->sql_compare_text('lte.bookingstatus');
+
+        $params = array(
+                'tapscourse' => $this->tapsenrol->tapscourse,
+                'courseid' => $this->cm->course
+        );
+
+        $distinctclassname = $DB->sql_compare_text('lte.classname');
+        $classlistsql = "SELECT DISTINCT lte.classid, {$distinctclassname} as classname
+            FROM {local_taps_enrolment} lte
+            JOIN {user} u ON u.idnumber = lte.staffid
+            WHERE
+                lte.courseid = :tapscourse
+                AND (lte.archived = 0 OR lte.archived IS NULL)
+                AND lte.active = 1
+                AND {$statuscompare} {$statusin}
+                AND u.id {$userin}
+            ORDER BY
+                lte.classid
+            ";
+        $this->classes = array(0 => get_string('allclasses', 'tapsenrol')) + $DB->get_records_sql_menu($classlistsql, array_merge($params, $statusinparams, $userinparams));
+
+        $classidwhere = '';
+        if ($classid) {
+            $this->classid = $classid;
+            $classidwhere = 'AND lte.classid = :classid';
+            $params['classid'] = $this->classid;
+        }
+
+        $sql = "SELECT lte.enrolmentid, lte.classid, lte.classname, u.*
+            FROM {local_taps_enrolment} lte
+            JOIN {user} u ON u.idnumber = lte.staffid
+            WHERE
+                lte.courseid = :tapscourse
+                AND (lte.archived = 0 OR lte.archived IS NULL)
+                AND lte.active = 1
+                AND {$statuscompare} {$statusin}
+                AND u.id {$userin}
+                {$classidwhere}
+            ORDER BY
+                lte.classid
+            ";
+        $this->users = $DB->get_records_sql($sql, array_merge($params, $statusinparams, $userinparams));
     }
 }
 

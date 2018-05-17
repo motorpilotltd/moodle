@@ -141,3 +141,48 @@ a.delegate-button i {
 .path-mod-tapsenrol table.flexible > tbody > tr.tapsenrol-user-suspended > td {
     opacity: 0.65;
 }
+
+.path-mod-tapsenrol h2, .path-mod-tapsenrol h3, .path-mod-tapsenrol h4,
+.tapsenrol h2, .tapsenrol h3, .tapsenrol h4 {
+    color: #7030A0;
+}
+
+#page-mod-tapsenrol-view table#completion-progress {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+#page-mod-tapsenrol-view table img.icon {
+    margin-right: 0;
+}
+
+#page-mod-tapsenrol-view .criteriagroup,
+#page-mod-tapsenrol-view .aggheader,
+#page-mod-tapsenrol-view .criterianame,
+#page-mod-tapsenrol-view .criteriaicon,
+#page-mod-tapsenrol-view .completion-progresscell {
+    text-align: center;
+}
+
+/* Custom CSS for rotated header.. */
+#page-mod-tapsenrol-view .rotated-text-container {
+    display: inline-block;
+    width: 16px;
+}
+
+/*rtl:begin:ignore*/
+#page-mod-tapsenrol-view .rotated-text {
+    display: inline-block;
+    white-space: nowrap;
+
+    transform: translate(0, 100%) rotate(-90deg);
+    transform-origin: 0 0;
+    vertical-align: middle;
+}
+
+#page-mod-tapsenrol-view .rotated-text:after {
+    content: "";
+    float: left;
+    margin-top: 100%;
+}
+/*rtl:end:ignore*/

@@ -1,0 +1,18 @@
+Remove concept of linked course
+Namespaces
+
+
+
+
+
+There's only one course where there is an enrol but no completion, I'm going to not worry.
+
+out of 162155 completions of a mod_tapsenrol activity there are 672 where they haven't also completed the associated taps compeltion module so am ignoring this as an edge case:
+
+select cm_enrol.id, cm_tapcompletion.id from mdl_tapsenrol te
+inner join mdl_course_modules cm_enrol on cm_enrol.instance = te.id and cm_enrol.module = 31
+inner join mdl_course_modules cm_tapcompletion on cm_enrol.course = cm_tapcompletion.course and cm_tapcompletion.module = 30
+inner join mdl_tapscompletion tc on tc.id = cm_tapcompletion.instance
+inner join mdl_course_modules_completion cmc_enrol on cm_enrol.id = cmc_enrol.coursemoduleid
+left join mdl_course_modules_completion cmc_tapcompletion on cm_tapcompletion.id = cmc_tapcompletion.coursemoduleid and cmc_enrol.userid = cmc_tapcompletion.userid
+where cmc_enrol.completionstate <> cmc_tapcompletion.completionstate;

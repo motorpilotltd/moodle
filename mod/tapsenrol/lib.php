@@ -246,6 +246,8 @@ function tapsenrol_cm_info_view(cm_info $cm) {
 
 function tapsenrol_supports($feature) {
     switch($feature) {
+        case FEATURE_GRADE_HAS_GRADE:
+            return false;
         case FEATURE_GRADE_OUTCOMES:
             return false;
         case FEATURE_ADVANCED_GRADING:
@@ -257,7 +259,7 @@ function tapsenrol_supports($feature) {
         case FEATURE_COMPLETION_HAS_RULES:
             return true;
         case FEATURE_NO_VIEW_LINK:
-            return false; // Determined in tapsenrol_cm_info_dynamic().
+            return false;
         case FEATURE_IDNUMBER:
             return false;
         case FEATURE_GROUPS:
@@ -297,27 +299,4 @@ function tapsenrol_get_completion_state($course, $cm, $userid, $type) {
     }
 
     return $result;
-}
-
-/**
- * Trigger the course_module_viewed event.
- *
- * @param  stdClass $tapsenrol tapsenrol object
- * @param  stdClass $course course object
- * @param  stdClass $cm course module object
- * @param  stdClass $context context object
- * @since Moodle 3.0
- */
-function tapsenrol_view($tapsenrol, $course, $cm, $context) {
-    // Trigger course_module_viewed event.
-    $params = array(
-        'context' => $context,
-        'objectid' => $tapsenrol->id
-    );
-
-    $event = \mod_tapsenrol\event\course_module_viewed::create($params);
-    $event->add_record_snapshot('course_modules', $cm);
-    $event->add_record_snapshot('course', $course);
-    $event->add_record_snapshot('tapsenrol', $tapsenrol);
-    $event->trigger();
 }

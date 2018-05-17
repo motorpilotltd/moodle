@@ -15,13 +15,13 @@
 /**
  * Utility JS for activity.
  *
- * @package    mod_tapscompletion
+ * @package    mod_tapsenrol
  * @copyright  2016 Motorpilot Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.0
  */
 define(['jquery'], function($) {
-    return /** @alias module:mod_tapscompletion/enhance */ {
+    return /** @alias module:mod_tapsenrol/enhance */ {
         // Public variables and functions.
         /**
          * Add event handlers for check boxes.
@@ -29,17 +29,17 @@ define(['jquery'], function($) {
          * @method initialise
          */
         initialise: function() {
-            $('.tapscompletion-checkbox-all').change(function(){
+            $('.tapsenrol-checkbox-all').change(function(){
                 var that = $(this);
                 var classid = that.val();
-                var checkboxes = $('.tapscompletion-checkbox[value$="_' + classid + '"]');
+                var checkboxes = $('.tapsenrol-checkbox[value$="_' + classid + '"]');
                 if (that.is(':checked')) {
                     checkboxes.prop('checked', true).change();
                 } else {
                     checkboxes.prop('checked', false).change();
                 }
             });
-            $('.tapscompletion-checkbox[name^="staffid["').change(function(){
+            $('.tapsenrol-checkbox[name^="staffid["').change(function(){
                 var that = $(this);
                 if (that.is(':checked')) {
                     that.siblings('select').removeClass('hiddenifjs').show();

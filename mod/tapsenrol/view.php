@@ -29,7 +29,7 @@ if ($id) {
 require_login($tapsenrol->course, false, $tapsenrol->cm);
 
 // Trigger module viewed event.
-tapsenrol_view($tapsenrol->tapsenrol, $tapsenrol->course, $tapsenrol->cm, context_module::instance($tapsenrol->cm->id));
+\mod_tapsenrol\event\course_module_viewed::initfromobjects($tapsenrol->tapsenrol, $tapsenrol->course, $tapsenrol->cm, context_module::instance($tapsenrol->cm->id));
 
 $PAGE->set_url('/mod/tapsenrol/view.php', array('id' => $tapsenrol->cm->id));
 
@@ -47,7 +47,7 @@ if (!$tapsenrol->check_installation()) {
     echo $output->alert(html_writer::tag('p', get_string('installationissue', 'tapsenrol')), 'alert-danger', false);
 } else {
     $canview = $canviewclasses = $PAGE->user_is_editing();
-    if ($USER->auth == 'saml' && $USER->idnumber != '') {
+    if (($USER->auth == 'saml' && $USER->idnumber != '') || is_siteadmin()) {
         $canview = true;
 
         echo $tapsenrol->enrolment_check($USER->idnumber, true);

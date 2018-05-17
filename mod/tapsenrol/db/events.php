@@ -30,15 +30,16 @@ $observers = array(
         'callback'    => '\mod_tapsenrol\eventobservers::user_enrolment_deleted',
     ),
     array(
-        'eventname'   => '\core\event\course_module_deleted',
-        'callback'    => '\mod_tapsenrol\eventobservers::course_module_deleted',
-    ),
-    array(
         'eventname'   => '\local_coursemanager\event\class_updated',
         'callback'    => '\mod_tapsenrol\eventobservers::class_updated',
     ),
     array(
         'eventname'   => '\local_custom_certification\event\certification_course_reset',
         'callback'    => '\mod_tapsenrol\eventobservers::certification_course_reset',
+    ),
+    array(
+        'eventname'   => '\core\event\course_completed',
+        'priority'    => 9999, // High priority to run first.
+        'callback'    => '\mod_tapscompletion\eventobservers::course_completed',
     ),
 );

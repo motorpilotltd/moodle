@@ -38,42 +38,27 @@ class eventobservers {
     /**
      * Triggered via user_enrolment_deleted event.
      *
-     * @param stdClass $event
+     * @param \stdClass $event
      * @return void
      */
     public static function user_enrolment_deleted(\core\event\user_enrolment_deleted $event) {
         global $DB;
 
-        $ue = (object)$event->other['userenrolment'];
+        $ue = (object) $event->other['userenrolment'];
         if ($ue->lastenrol) {
-            $tapsenrols = $DB->get_records('tapsenrol', array('course' => $event->courseid));
-            foreach ($tapsenrols as $tapsenrol) {
-                $DB->delete_records('tapsenrol_completion', array('tapsenrolid' => $tapsenrol->id, 'userid' => $ue->userid));
-            }
-        }
-    }
-
-    /**
-     * Triggered via course_module_deleted event.
-     *
-     * @param stdClass $event
-     * @return void
-     */
-    public static function course_module_deleted(\core\event\course_module_deleted $event) {
-        global $DB;
-
-        if ($event->other['modulename'] == 'arupadvert') {
-            $instances = $DB->get_records('tapsenrol', array('course' => $event->courseid));
-            foreach ($instances as $instance) {
-                $cm = get_coursemodule_from_instance('tapsenrol', $instance->id, $instance->course, false, MUST_EXIST);
-                course_delete_module($cm->id);
+            $course = $DB->get_record('course', array('id' => $event->courseid));
+            $completion = new \completion_info($course);
+            $cms = get_fast_modinfo($event->courseid, -1)->get_instances_of('tapscompletion');
+            foreach ($cms as $cm) {
+                $DB->delete_records('tapsenrol_completion', array('tapsenrolid' => $cm->instance, 'userid' => $ue->userid));
+                $completion->update_state($cm, COMPLETION_INCOMPLETE, $ue->userid);
             }
         }
     }
 
     /** Triggered via \local\coursemanager\class_updated event
      *
-     * @param stdClass $event
+     * @param \stdClass $event
      * @return void
      */
     public static function class_updated(\local_coursemanager\event\class_updated $event) {
@@ -101,7 +86,7 @@ class eventobservers {
         }
 
         require_once($CFG->dirroot . '/group/lib.php');
-        
+
         $oldgroupid = groups_get_group_by_name($moodlecourse->id, trim($event->other['oldfields']['classname']));
 
         if ($oldgroupid) {
@@ -138,12 +123,12 @@ class eventobservers {
             $currentmembers = groups_get_members($group->id, 'u.id');
 
             list($in, $inparams) = $DB->get_in_or_equal(
-                array_merge($taps->get_statuses('placed'), $taps->get_statuses('waitlisted'), $taps->get_statuses('attended')),
-                SQL_PARAMS_NAMED, 'status'
+                    array_merge($taps->get_statuses('placed'), $taps->get_statuses('waitlisted'), $taps->get_statuses('attended')),
+                    SQL_PARAMS_NAMED, 'status'
             );
             $compare = $DB->sql_compare_text('lte.bookingstatus');
             $params = array(
-                'classid' => $class->classid,
+                    'classid' => $class->classid,
             );
             $sql = <<<EOS
 SELECT
@@ -160,8 +145,8 @@ WHERE
     AND {$compare} {$in}
 EOS;
             $shouldbemembers = $DB->get_records_sql(
-                $sql,
-                array_merge($params, $inparams)
+                    $sql,
+                    array_merge($params, $inparams)
             );
 
             // Remove any current memebrs who shouldn't be members.
@@ -180,7 +165,7 @@ EOS;
     /**
      * Triggered via \local_custom_certification\event\certification_course_reset event.
      *
-     * @param stdClass $event
+     * @param \stdClass $event
      * @return void
      */
     public static function certification_course_reset(\local_custom_certification\event\certification_course_reset $event) {
@@ -192,12 +177,93 @@ EOS;
             return;
         }
 
-        require_once($CFG->dirroot.'/mod/tapsenrol/classes/tapsenrol.php');
+        require_once($CFG->dirroot . '/mod/tapsenrol/classes/tapsenrol.php');
 
         $instances = $DB->get_records('tapsenrol', array('course' => $event->courseid));
         foreach ($instances as $instance) {
             $tapsenrol = new \tapsenrol($instance->id, 'instance');
             $tapsenrol->enrolment_check($user->idnumber);
         }
+    }
+
+    /**
+     * Triggered via course_completed event.
+     *
+     * @param \stdClass $event
+     * @return void
+     */
+    public static function course_completed(\core\event\course_completed $event) {
+        global $CFG, $DB;
+
+        $cms = get_fast_modinfo($event->courseid, -1)->get_instances_of('tapsenrol');
+
+        if (empty($cms)) {
+            // Not applicable to this course.
+            return;
+        }
+
+        require_once($CFG->libdir . '/completionlib.php');
+
+        if (count($cms) > 1) {
+            print_error('Multiple instances of mod_tapsenrol are not currently supported');
+        }
+
+        $cm = reset($cms);
+
+        if ($cm->get_course()->enablecompletion != COMPLETION_ENABLED || $cm->completion != COMPLETION_TRACKING_AUTOMATIC) {
+            return;
+        }
+
+        $tapsenrol = new \tapsenrol($cm->instance, 'cm', $event->courseid);
+
+        list($instatement, $inparams) = $DB->get_in_or_equal(
+                $tapsenrol->taps->get_statuses('placed'),
+                SQL_PARAMS_NAMED, 'status'
+        );
+        $compare = $DB->sql_compare_text('lte.bookingstatus');
+        $sql = "SELECT
+                    lte.*
+                FROM {local_taps_enrolment} lte
+                JOIN {user} u
+                    ON u.idnumber = lte.staffid
+                WHERE
+                    u.id = :userid
+                    AND lte.courseid = :courseid
+                    AND lte.active = 1
+                    AND (lte.archived = 0 OR lte.archived IS NULL)
+                    AND {$compare} {$instatement}";
+        $params = array('userid' => $event->relateduserid, 'courseid' => $event->courseid);
+        $enrolment = $DB->get_record_sql($sql, array_merge($params, $inparams));
+
+        $tccompletion = $DB->get_record('tapsenrol_completion', ['tapsenrolid' => $cm->instance, 'userid' => $event->relateduserid]);
+
+        if (!$tccompletion) {
+            $record = new \stdClass();
+            $record->tapsenrolid = $tapsenrol->tapsenrol->id;
+            $record->userid = $event->relateduserid;
+            $record->completed = $enrolment->enrolmentid;
+            $record->timemodified = time();
+            $DB->insert_record('tapscompletion_completion', $record);
+        } else if (!$tccompletion->completed) {
+            $tccompletion->completed = $enrolment->enrolmentid;
+            $tccompletion->timemodified = time();
+            $DB->update_record('tapscompletion_completion', $tccompletion);
+        }
+
+        $ccompletion = new \completion_completion(['course' => $event->courseid, 'userid' => $event->relateduserid]);
+
+        // We need to update course completion time if applicable.
+        // Use completed field (stores enrolmentid), ignore if 1 for legacy (actual enrolmentid 1 is historic).
+        if (!empty($enrolment->classendtime) && $tapsenrol->tapsenrol->completiontimetype  == \tapsenrol::$completiontimetypes['classendtime'] ) {
+            $completiontime = $enrolment->classendtime;
+            // Update Moodle course completion date.
+            // Record should exist as we're observing course completion.
+            $ccompletion->timecompleted = $completiontime;
+            $ccompletion->update();
+        } else {
+            $completiontime = time();
+        }
+
+        $tapsenrol->taps->set_status($enrolment->enrolmentid, 'Full Attendance', $completiontime);
     }
 }

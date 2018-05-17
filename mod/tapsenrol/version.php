@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version      = 2015111611;
+$plugin->version      = 2015111613;
 $plugin->requires     = 2015111600; // Moodle 3.0.
 $plugin->component    = 'mod_tapsenrol';
 $plugin->maturity     = MATURITY_STABLE;
@@ -32,7 +32,6 @@ $plugin->release      = "3.0.11 (Build: {$plugin->version})";
 
 $plugin->dependencies = array(
     'local_taps' => 2015111601,
-    'arupadvertdatatype_taps' => 2015111601,
     'local_regions' => 2015111601,
     'local_custom_certification' => 2017032908,
 );

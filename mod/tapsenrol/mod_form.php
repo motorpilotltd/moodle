@@ -17,6 +17,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot.'/mod/tapsenrol/classes/tapsenrol.php');
 
 class mod_tapsenrol_mod_form extends moodleform_mod {
 
@@ -81,6 +82,16 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
             $mform->addElement('html', html_writer::tag('div', $hint, array('class' => 'fitem')));
         }
 
+        $mform->addElement('checkbox', 'autocompletion', get_string('autocompletion', 'tapsenrol'));
+        $mform->setDefault('autocompletion', 0);
+        $mform->addElement('static', 'autocompletionhint', '', get_string('autocompletionhint', 'tapsenrol'));
+
+        $options = [];
+        foreach (tapsenrol::$completiontimetypes as $name => $value) {
+            $options[$value] = get_string("completiontimetype:{$name}", 'tapsenrol');
+        }
+        $mform->addElement('select', 'completiontimetype', get_string('completiontimetype', 'tapsenrol'), $options);
+
         $this->standard_coursemodule_elements();
 
         $this->add_action_buttons();
@@ -101,6 +112,8 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
     }
 
     public function definition_after_data() {
+        global $DB;
+
         parent::definition_after_data();
 
         $mform =& $this->_form;
@@ -120,6 +133,21 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
         $changecaps = array('mod/tapsenrol:internalworkflow_change', 'mod/tapsenrol:internalworkflow_edit', 'mod/tapsenrol:internalworkflow');
         if (!empty($this->_instance) && !has_any_capability($changecaps, $this->context)) {
             $mform->freeze('internalworkflowid');
+        }
+
+        $canupdateautocompletion = has_capability('moodle/site:config', context_system::instance());
+
+        if (!$canupdateautocompletion) {
+            $mform->hardFreeze('autocompletion');
+        } else {
+            $mform->removeElement('autocompletionhint');
+        }
+
+        if (!$canupdateautocompletion && $mform->getElementValue('update')) {
+            $instance = $DB->get_record('tapsenrol', array('id' => $mform->getElementValue('instance')));
+            if ($instance) {
+                $mform->setConstant('autocompletion', $instance->autocompletion);
+            }
         }
     }
 
@@ -141,6 +169,9 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
         if (empty($data->completionenrolment) || !$autocompletion) {
             $data->completionenrolment = 0;
         }
+        if (empty($data->completionattended) || !$autocompletion) {
+            $data->completionattended = 0;
+        }
         return $data;
     }
 
@@ -152,11 +183,14 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
         $mform->addElement('checkbox', 'completionenrolment', '', get_string('completionenrolment', 'tapsenrol'));
         $mform->setDefault('completionenrolment', true);
 
-        return array('completionenrolment');
+        $mform->addElement('checkbox', 'completionattended', '', get_string('completionattended', 'tapsenrol'));
+        $mform->setDefault('completionattended', true);
+
+        return array('completionenrolment', 'completionattended');
     }
 
     public function completion_rule_enabled($data) {
-        return !empty($data['completionenrolment']);
+        return !empty($data['completionenrolment']) || !empty($data['completionattended']);
     }
 
     protected function _arupadvert_exists() {

@@ -113,14 +113,17 @@ if (!$tapsenrol->tapsenrol->internalworkflowid) {
     } else {
         $html .= html_writer::tag('p', get_string('manageenrolments:help', 'tapsenrol'));
         $dbman = $DB->get_manager();
-        if ($dbman->table_exists('tapscompletion')) {
-            $tapscompletion = $DB->get_record('tapscompletion', array('course' => $tapsenrol->course->id));
-            if ($tapscompletion) {
-                $tapscompletionurl = new moodle_url('/mod/tapscompletion/view.php', array('t' => $tapscompletion->id));
-                $tapscompletionlink = html_writer::link($tapscompletionurl, get_string('manageenrolments:markattendance', 'tapsenrol'));
-                $html .= html_writer::tag('p', $tapscompletionlink);
-            }
+
+        if (has_capability('mod/tapsenrol:updatecompletion', $tapsenrol->context->cm)) {
+            $updatecompletionurl = new moodle_url('/mod/tapsenrol/updatecompletion.php', array('id' => $tapsenrol->cm->id));
+            $links[] = array(
+                    'url' => $updatecompletionurl,
+                    'title' => get_string('updatecompletion', 'tapsenrol')
+            );
+            $tapscompletionlink = html_writer::link($updatecompletionurl, get_string('manageenrolments:markattendance', 'tapsenrol'));
+            $html .= html_writer::tag('p', $tapscompletionlink);
         }
+
         $displayform = true;
     }
 }

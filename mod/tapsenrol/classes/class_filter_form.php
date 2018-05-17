@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_tapscompletion;
+namespace mod_tapsenrol;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -24,8 +24,8 @@ class class_filter_form extends \moodleform {
 
         $mform->addElement('hidden', 'id', $this->_customdata['id']);
         $mform->setType('id', PARAM_INT);
-        $mform->addElement('select', 'classid', get_string('chooseclass', 'tapscompletion'), $this->_customdata['classes']);
+        $mform->addElement('select', 'classid', get_string('chooseclass', 'tapsenrol'), $this->_customdata['classes']);
 
-        $this->add_action_buttons(false, get_string('filter', 'tapscompletion'));
+        $this->add_action_buttons(false, get_string('filter', 'tapsenrol'));
     }
 }

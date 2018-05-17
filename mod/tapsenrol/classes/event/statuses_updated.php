@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_tapscompletion statuses updated event.
+ * The mod_tapsenrol statuses updated event.
  *
- * @package    mod_tapscompletion
+ * @package    mod_tapsenrol
  * @copyright  2016 Motorpilot Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_tapscompletion\event;
+namespace mod_tapsenrol\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_tapscompletion statuses updated event class.
+ * The mod_tapsenrol statuses updated event class.
  *
  * @property-read array $other {
  *      Extra information about event.
@@ -37,7 +37,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - int usercount: the number of users proessed.
  * }
  *
- * @package    mod_tapscompletion
+ * @package    mod_tapsenrol
  * @since      Moodle 3.0
  * @copyright  2016 Motorpilot Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -50,7 +50,7 @@ class statuses_updated extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_OTHER;
-        $this->data['objecttable'] = 'tapscompletion';
+        $this->data['objecttable'] = 'tapsenrol';
     }
 
     /**
@@ -59,7 +59,7 @@ class statuses_updated extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventstatusesupdated', 'mod_tapscompletion');
+        return get_string('eventstatusesupdated', 'mod_tapsenrol');
     }
 
     /**

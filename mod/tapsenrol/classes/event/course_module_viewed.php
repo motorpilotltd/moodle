@@ -47,5 +47,20 @@ class course_module_viewed extends \core\event\course_module_viewed {
     public static function get_objectid_mapping() {
         return array('db' => 'tapsenrol', 'restore' => 'tapsenrol');
     }
+
+    public static function initfromobjects($tapsenrol, $course, $cm, $context) {
+
+        // Trigger course_module_viewed event.
+        $params = array(
+                'context' => $context,
+                'objectid' => $tapsenrol->id
+        );
+
+        $event = self::create($params);
+        $event->add_record_snapshot('course_modules', $cm);
+        $event->add_record_snapshot('course', $course);
+        $event->add_record_snapshot('tapsenrol', $tapsenrol);
+        $event->trigger();
+    }
 }
 

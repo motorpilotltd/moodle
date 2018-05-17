@@ -88,6 +88,8 @@ $string['arupadvertmissing'] = 'The Arup advert activity is not installed.<br />
 $string['arupadvertnotinstalled'] = 'No Arup advert activity was found in this {$a}.<br />Please add an Arup advert activity before proceeding.';
 $string['arupadvertnottaps'] = 'The Arup advert activity in this {$a} is not using the linked course datatype.<br />Please update the Arup advert activity before proceeding.';
 $string['arupadverttoomany'] = 'There is more than one Arup advert activity in this {$a}.<br />Please ensure only one Arup advert activity is present before proceeding.';
+$string['autocompletion'] = 'Automatically update learning history on course completion';
+$string['autocompletionhint'] = 'This setting can only be changed by administrators.';
 
 $string['backtocoursemanager'] = 'Back to course manager';
 $string['backtomanageenrolments'] = 'Back to manage enrolments';
@@ -111,13 +113,24 @@ $string['cancelenrolment'] = 'Cancel Enrolment';
 $string['cancelenrolment:areyousure'] = 'Are you sure you want to cancel your enrolment on:';
 $string['cannotenrol'] = 'Sorry, you are not able to enrol on classes in this {$a->course}.{$a->reason}';
 $string['cannotenrol:regions'] = '<br />Enrolment is only allowed from the following regions: {$a}.';
+$string['chooseclass'] = 'Choose class';
 $string['classes:classroom'] = 'To enrol onto an available class or express your interest please select from the table below:';
 $string['classes:elearning'] = 'To enrol onto the e-learning module please select from the table below:';
 $string['classes:mixed'] = 'To enrol please select from the table below:';
 $string['classfull'] = 'Full';
 $string['classname'] = 'Class Code';
+$string['classwithname'] = 'Class : {$a}';
 $string['close'] = 'Close';
+$string['completionattended'] = 'Mark as complete when user has been marked as attended';
 $string['completionenrolment'] = 'Show as complete when user has had their request approved';
+$string['completionfailed'] = '{$a->user} : Failed to set as \'{$a->status}\' on {$a->classname} [{$a->errormessage}]';
+$string['completionfailed:invalidclass'] = 'Invalid class';
+$string['completionfailed:invalidenrolment'] = 'Invalid enrolment';
+$string['completionfailed:invalidstatus'] = 'Invalid status';
+$string['completionsucceeded'] = '{$a->user} : Successfully set as \'{$a->status}\' on {$a->classname}';
+$string['completiontimetype'] = 'Course completion time to use';
+$string['completiontimetype:classendtime'] = 'Class end time';
+$string['completiontimetype:currenttime'] = 'Current time at moment of completion';
 $string['cost'] = 'Cost';
 $string['couldnotloadcourse'] = 'Sorry, the {$a} details could not be loaded.';
 
@@ -173,6 +186,8 @@ $string['eventenrolmentrequestrejected'] = 'Enrolment request rejected.';
 $string['eventenrolmentrequestviewed'] = 'Enrolment request viewed.';
 $string['exit:locked'] = 'Exit (Will not save)';
 $string['exit:viewonly'] = 'Exit (Will not save)';
+
+$string['filter'] = 'Filter';
 
 $string['groups:requirements'] = 'Groups need to be enabled within the {$a} to use this activity. The following settings are required.<br />Group mode: Visible groups<br />Default grouping: None';
 
@@ -474,16 +489,19 @@ $string['manageenrolments:waitlist:header'] = 'Approve applications';
 $string['manageenrolments:waitlist:results'] = 'Application approval results:{$a}';
 $string['manageenrolments:waitlist:seatsremaining'] = 'Seats currently remaining: <span id="tapsenrol-waitlist-seatsremaining" data-seatsremaining="{$a->value}">{$a->text}</span> (Including those selected below)';
 $string['manageenrolments:waitlist:users'] = 'Applications to approve';
+$string['markattendance'] = 'Mark attendance';
 $string['modulename'] = 'Arup linked course enrolment';
 $string['modulename_help'] = 'Adds an Arup linked course enrolment activity';
 $string['modulename_link'] = 'mod/tapsenrol/view';
 $string['modulenameplural'] = 'Arup linked course enrolments';
 
+$string['na'] = 'N/A';
 $string['name'] = 'Name';
 $string['newwindow'] = '[Opens in new window]';
 $string['noapplicablecourses'] = 'No applicable linked courses available';
 $string['noclasses'] = 'Unfortunately there are no upcoming classes nor the option to express your interest in this module at this time.';
 $string['nopermission'] = 'Sorry, you do not have permission to perform the requested action.';
+$string['nousers'] = 'No applicable users';
 
 $string['online'] = 'Online';
 
@@ -512,8 +530,10 @@ $string['reviewenrolment:pre:iw'] = '';
 
 $string['seatsremaining'] = 'Seats Remaining';
 $string['separator'] = ' - ';
+$string['selectallforclass'] = 'All for class';
 $string['settings:forceemailsending'] = 'Override $CFG email settings';
 $string['settings:forceemailsending_desc'] = 'Will ignore $CFG->noemailever, $CFG->divertallemailsto and $CFG->divertccemailsto email settings and attempt to send emails.';
+$string['staffid'] = 'Staff ID';
 $string['status:elearning:attended'] = 'Completed';
 $string['status:elearning:cancelled'] = 'Cancelled';
 $string['status:elearning:placed'] = 'Enrolled, in progress';
@@ -546,11 +566,13 @@ $string['tapsenrol:internalworkflow_edit_activity'] = 'Edit internal workflow em
 $string['tapsenrol:internalworkflow_lock'] = 'Lock/unlock internal workflows';
 $string['tapsenrol:manageenrolments'] = 'Manage linked course enrolments';
 $string['tapsenrol:resendinvites'] = 'Resend invites';
+$string['tapsenrol:updatecompletion'] = 'Update class completion';
 $string['tapsenrol:viewallapprovals'] = 'View all approvals';
 $string['tapsenrolment'] = 'Arup linked course enrolment';
 $string['taskactivitycleanup'] = 'Activity cleanup.';
 $string['taskautomaticcancellation'] = 'Automatic cancellation.';
 $string['taskinternalworkflowcleanup'] = 'Internal workflow cleanup.';
+$string['taskrecalccompletion'] = 'Recalculate completion.';
 $string['tasksendreminders'] = 'Send reminders.';
 $string['tbc'] = 'TBC';
 $string['time'] = 'Time';
@@ -558,6 +580,10 @@ $string['to'] = 'to';
 $string['trainingcenter'] = 'Room';
 
 $string['unlimited'] = 'Unlimited';
+$string['updatecompletion'] = 'Arup linked course completion';
+$string['updatecompletionheader'] = 'Arup linked course completion';
+$string['updateusers'] = 'Update users';
+$string['userstocomplete'] = 'Users to complete';
 
 $string['waitinglist:classroom'] = 'Waiting List';
 $string['waitinglist:elearning'] = 'Waiting List';

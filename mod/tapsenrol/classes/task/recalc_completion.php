@@ -15,23 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_tapscompletion recalculate completion task.
+ * The mod_tapsenrol recalculate completion task.
  *
- * @package    mod_tapscompletion
+ * @package    mod_tapsenrol
  * @copyright  2016 Motorpilot Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_tapscompletion\task;
+namespace mod_tapsenrol\task;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/completionlib.php');
 
 /**
- * The mod_tapscompletion recalculate completion task class.
+ * The mod_tapsenrol recalculate completion task class.
  *
- * @package    mod_tapscompletion
+ * @package    mod_tapsenrol
  * @since      Moodle 3.0
  * @copyright  2017 Motorpilot Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -50,7 +50,7 @@ class recalc_completion extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('taskrecalccompletion', 'mod_tapscompletion');
+        return get_string('taskrecalccompletion', 'mod_tapsenrol');
     }
 
     /**
@@ -60,8 +60,8 @@ class recalc_completion extends \core\task\scheduled_task {
         global $CFG, $DB;
 
         list($instatement, $inparams) = $DB->get_in_or_equal(
-            array_merge($this->get_taps()->get_statuses('attended')),
-            SQL_PARAMS_NAMED, 'status'
+                array_merge($this->get_taps()->get_statuses('attended')),
+                SQL_PARAMS_NAMED, 'status'
         );
         $compare = $DB->sql_compare_text('lte.bookingstatus');
         $sql = <<<EOS
@@ -77,7 +77,7 @@ SELECT
 FROM {local_taps_enrolment} lte
 JOIN {user} u
     ON u.idnumber = lte.staffid
-JOIN {tapscompletion} t
+JOIN {tapsenrol} t
     ON t.tapscourse = lte.courseid
 JOIN {course_modules} cm
     ON cm.instance = t.id
@@ -91,8 +91,8 @@ JOIN {user_enrolments} ue
 JOIN {enrol} e
     ON e.id = ue.enrolid AND e.courseid = c.id
 
-LEFT JOIN {tapscompletion_completion} tc
-    ON tc.tapscompletionid = t.id
+LEFT JOIN {tapsenrol_completion} tc
+    ON tc.tapsenrolid = t.id
     AND tc.userid = u.id
 LEFT JOIN {course_modules_completion} cmc
     ON cmc.coursemoduleid = cm.id
@@ -118,15 +118,15 @@ ORDER BY
 EOS;
         $now = time();
         $params = [
-            'guestid' => $CFG->siteguest,
-            'active' => ENROL_USER_ACTIVE,
-            'enabled' => ENROL_INSTANCE_ENABLED,
-            'now1' => $now,
-            'now2' => $now,
-            'now3' => $now,
-            'modulename' => 'tapscompletion',
-            'enablecompletion' => COMPLETION_ENABLED,
-            'completion' => COMPLETION_TRACKING_AUTOMATIC,
+                'guestid'          => $CFG->siteguest,
+                'active'           => ENROL_USER_ACTIVE,
+                'enabled'          => ENROL_INSTANCE_ENABLED,
+                'now1'             => $now,
+                'now2'             => $now,
+                'now3'             => $now,
+                'modulename'       => 'tapsenrol',
+                'enablecompletion' => COMPLETION_ENABLED,
+                'completion'       => COMPLETION_TRACKING_AUTOMATIC,
         ];
 
         // Enrolled users with 'attended' TAPS enrolments and not completed.
@@ -141,20 +141,21 @@ EOS;
             // Mark as complete.
             if (is_null($validenrolment->tcid)) {
                 $record = new \stdClass();
-                $record->tapscompletionid = $validenrolment->tid;
+                $record->tapsenrolid = $validenrolment->tid;
                 $record->userid = $validenrolment->uid;
                 $record->completed = $validenrolment->enrolmentid;
                 $record->timemodified = time();
-                $DB->insert_record('tapscompletion_completion', $record);
+                $DB->insert_record('tapsenrol_completion', $record);
             } else if (!$validenrolment->tccompleted) {
                 $record = new \stdClass();
                 $record->id = $validenrolment->tcid;
                 $record->completed = $validenrolment->enrolmentid;
                 $record->timemodified = time();
-                $DB->update_record('tapscompletion_completion', $record);
+                $DB->update_record('tapsenrol_completion', $record);
             }
             if ($validenrolment->cmccompletionstate != COMPLETION_COMPLETE) {
-                $this->get_completion($validenrolment->cid)->update_state($this->get_cm($validenrolment->cmid), COMPLETION_COMPLETE, $validenrolment->uid);
+                $this->get_completion($validenrolment->cid)
+                        ->update_state($this->get_cm($validenrolment->cmid), COMPLETION_COMPLETE, $validenrolment->uid);
             }
         }
     }

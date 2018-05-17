@@ -126,4 +126,13 @@ $capabilities = array(
         ),
     ),
 
+    'mod/tapsenrol:updatecompletion' => array(
+            'riskbitmask' => RISK_PERSONAL,
+            'captype' => 'write',
+            'contextlevel' => CONTEXT_COURSE,
+            'archetypes' => array(
+                    'manager' => CAP_ALLOW
+            )
+    ),
+
 );
