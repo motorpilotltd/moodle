@@ -35,7 +35,7 @@ class plugin_userregionfield extends plugin_base {
         $this->fullname = get_string('userregionfield', 'block_configurable_reports');
         $this->type = 'undefined';
         $this->form = true;
-        $this->reporttypes = $this->_regionsinstalled ? array('completion', 'tapscompletion', 'halogencompletion', 'users') : array();
+        $this->reporttypes = $this->_regionsinstalled ? array('completion', 'arupcompletion', 'halogencompletion', 'users') : array();
     }
 
     function summary($data) {
@@ -62,7 +62,7 @@ class plugin_userregionfield extends plugin_base {
 
         switch ($this->report->type) {
             case 'completion' :
-            case 'tapscompletion' :
+            case 'arupcompletion' :
             case 'halogencompletion' :
                 $idfield = $row->compuserid;
                 break;

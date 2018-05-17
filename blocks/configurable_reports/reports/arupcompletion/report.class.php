@@ -22,7 +22,7 @@
  * @date: 2009
  */
 
-class report_tapscompletion extends report_base {
+class report_arupcompletion extends report_base {
 
     protected $_regionsinstalled = false;
 

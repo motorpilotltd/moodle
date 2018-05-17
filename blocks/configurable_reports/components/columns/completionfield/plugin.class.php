@@ -30,7 +30,7 @@ class plugin_completionfield extends plugin_base{
         $this->fullname = get_string('completionfield', 'block_configurable_reports');
         $this->type = 'undefined';
         $this->form = true;
-        $this->reporttypes = array('completion', 'tapscompletion', 'halogencompletion');
+        $this->reporttypes = array('completion', 'arupcompletion', 'halogencompletion');
     }
 
     public function summary($data) {
@@ -66,7 +66,7 @@ class plugin_completionfield extends plugin_base{
                 case 'ctimemodified' :
                 case 'cctimemodified' :
                     switch ($this->report->type) {
-                        case 'tapscompletion' :
+                        case 'arupcompletion' :
                         case 'halogencompletion' :
                             $row->{$datacolumn} = ($row->{$datacolumn}) ? userdate($row->{$datacolumn}, '%d-%b-%Y', 99, false) : '';
                             break;
@@ -77,7 +77,7 @@ class plugin_completionfield extends plugin_base{
                     break;
                 case 'uidnumber' :
                     switch ($this->report->type) {
-                        case 'tapscompletion' :
+                        case 'arupcompletion' :
                             $row->{$datacolumn} = ltrim($row->{$datacolumn}, '0');
                             break;
                     }

@@ -14,9 +14,9 @@ class local_delegatelist_renderer extends plugin_renderer_base {
         }
         $items = array();
         $items[] = $this->activitycompletion_button($dl->get_completion_url());
-        $tapscompletion = $dl->get_taps_completion_mod();
-        if ($tapscompletion) {
-            $items[] = $this->markattendance_button($dl->get_attendance_url($tapscompletion));
+        $tapsenrol = $dl->get_taps_enrol_mod();
+        if ($tapsenrol) {
+            $items[] = $this->markattendance_button($dl->get_attendance_url($tapsenrol));
         }
         $items[] = $this->printregister_button($dl->get_print_url(), $dl->get_active_class());
         return html_writer::alist($items, array('class'=>'navigationbuttons'));

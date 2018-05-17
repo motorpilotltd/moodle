@@ -465,8 +465,8 @@ EOF;
         }
     }
 
-    public function get_taps_completion_mod() {
-        $tapscomp = get_coursemodules_in_course('tapscompletion', $this->_course->id);
+    public function get_taps_enrol_mod() {
+        $tapscomp = get_coursemodules_in_course('tapsenrol', $this->_course->id);
         if (!empty($tapscomp)) {
             return array_shift($tapscomp);
         }
@@ -476,9 +476,9 @@ EOF;
     public function get_completion_url() {
         return new moodle_url('/report/progress/index.php', array('course'=>$this->_course->id));
     }
-
-    public function get_attendance_url($tapscompletion) {
-        return new moodle_url('/mod/tapscompletion/view.php', array('id' => $tapscompletion->id));
+    
+    public function get_attendance_url($tapsenrol) {
+        return new moodle_url('/mod/tapsenrol/view.php', array('id' => $tapsenrol->id));
     }
 
     public function get_print_url() {

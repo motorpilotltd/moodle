@@ -75,8 +75,7 @@ class local_taps_addcourse_form extends moodleform {
 
         $arupadvertalreadyused = $DB->get_records_menu('arupadvertdatatype_taps', array(), '', 'tapscourseid as id, tapscourseid');
         $tapsenrolalreadyused = $DB->get_records_menu('tapsenrol', array(), '', 'tapscourse as id, tapscourse');
-        $tapscompletionalreadyused = $DB->get_records_menu('tapscompletion', array(), '', 'tapscourse as id, tapscourse');
-        $alreadyused = $arupadvertalreadyused + $tapsenrolalreadyused + $tapscompletionalreadyused;
+        $alreadyused = $arupadvertalreadyused + $tapsenrolalreadyused;
 
         $select = '';
         $params = array();

@@ -73,5 +73,10 @@ function xmldb_block_configurable_reports_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2011040115, 'block', 'configurable_reports');
     }
 
+    if ($oldversion < 2016020104) {
+        $DB->execute("UPDATE {block_configurable_reports} SET type = 'arupcompletion' WHERE type = 'tapscompletion'");
+        upgrade_plugin_savepoint(true, 2016020104, 'block', 'configurable_reports');
+    }
+
     return true;
 }

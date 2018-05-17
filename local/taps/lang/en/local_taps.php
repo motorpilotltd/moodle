@@ -72,9 +72,7 @@ $string['listcourses'] = 'List linked courses';
 $string['modsnotinstalled'] = 'The following activities need to be installed:
     <br />mod/arupadvert (with arupadvertdatatype_taps sub-plugin)
     <br />mod/tapsenrol
-    <br />mod/tapscompletion
     <br /><br />The following local plugin needs be installed:
-    <br />local/coursemetadata
     <br />local/regions';
 $string['missing'] = 'missing.';
 
@@ -92,7 +90,6 @@ $string['showissues'] = 'Filter only issues';
 $string['showissues:reset'] = 'Remove issue filter';
 $string['statuses'] = 'Status';
 
-$string['tapscompletion'] = $string['tc'] = 'Completion';
 $string['tapscourse'] = 'Linked course';
 $string['tapscoursedetails'] = 'Linked course details<br />ID | Code | Name';
 $string['tapsenrol'] = $string['te'] = 'Enrolment';

@@ -34,14 +34,12 @@ $regionsinstalled = get_config('local_regions', 'version');
 $coursemetadatainstalled = get_config('local_coursemetadata', 'version');
 $arupadvertinstalled = $DB->get_record('modules', array('name' => 'arupadvert'));
 $tapsenrolinstalled = $DB->get_record('modules', array('name' => 'tapsenrol'));
-$tapscompletioninstalled = $DB->get_record('modules', array('name' => 'tapscompletion'));
 
 $output = '';
 
-if ($regionsinstalled && $coursemetadatainstalled && $arupadvertinstalled && $tapsenrolinstalled && $tapscompletioninstalled) {
+if ($regionsinstalled && $coursemetadatainstalled && $arupadvertinstalled && $tapsenrolinstalled) {
     require_once($CFG->dirroot.'/mod/arupadvert/lib.php');
     require_once($CFG->dirroot.'/mod/tapsenrol/lib.php');
-    require_once($CFG->dirroot.'/mod/tapscompletion/lib.php');
     require_once($CFG->dirroot.'/local/regions/lib.php');
     require_once($CFG->dirroot.'/local/coursemetadata/lib.php');
 

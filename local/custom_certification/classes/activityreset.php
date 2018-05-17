@@ -341,47 +341,6 @@ class activityreset {
     }
 
     /**
-     * Reset tapscompletion activity.
-     *
-     * @param int $userid User ID
-     * @param int $courseid Course ID
-     * @global \moodle_database $DB
-     */
-    public function tapscompletion_archive_completion($userid, $courseid) {
-        global $DB;
-        
-        $now = time();
-
-        $taps = new \local_taps\taps();
-        
-        $tcs = $DB->get_records('tapscompletion', ['course' => $courseid]);
-        $staffid = $DB->get_field('user', 'idnumber', ['id' => $userid]);
-        foreach ($tcs as $tc) {
-            // Delete completion records.
-            $DB->delete_records('tapscompletion_completion', ['tapscompletionid' => $tc->id, 'userid' => $userid]);
-
-            // Mark associated active (cancelled/completed) enrolments as not active.
-            list($in, $inparams) = $DB->get_in_or_equal(
-                array_merge($taps->get_statuses('cancelled'), $taps->get_statuses('attended')),
-                SQL_PARAMS_NAMED, 'status'
-            );
-            $compare = $DB->sql_compare_text('bookingstatus');
-            $params = [
-                'staffid' => $staffid,
-                'courseid' => $tc->tapscourse,
-                'active' => 1
-            ];
-            $enrolments = $DB->get_records_select('local_taps_enrolment', "staffid = :staffid AND courseid = :courseid AND active = :active AND {$compare} {$in}", array_merge($params, $inparams));
-            
-            foreach ($enrolments as $enrolment) {
-                $enrolment->active = 0;
-                $enrolment->timemodified = $now;
-                $DB->update_record('local_taps_enrolment', $enrolment);
-            }
-        }
-    }
-
-    /**
      * Reset tapsenrol activity.
      *
      * @param int $userid User ID

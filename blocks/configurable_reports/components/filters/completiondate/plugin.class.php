@@ -35,7 +35,7 @@ class plugin_completiondate extends plugin_base{
         $this->form = false;
         $this->unique = true;
         $this->fullname = get_string('filtercompletiondate', 'block_configurable_reports');
-        $this->reporttypes = array('tapscompletion', 'halogencompletion');
+        $this->reporttypes = array('arupcompletion', 'halogencompletion');
 
         $monthsago3 = strtotime('midnight 3 months ago');
 

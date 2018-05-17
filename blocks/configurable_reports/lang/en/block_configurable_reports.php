@@ -516,7 +516,7 @@ $string['completion'] = 'Completion';
 $string['report_completion'] = 'Completion report';
 $string['completionfield'] = 'Completion field';
 
-$string['report_tapscompletion'] = 'TAPS completion report';
+$string['report_arupcompletion'] = 'TAPS enrol report';
 $string['completiondate'] = 'Completion date';
 $string['completiondatefrom'] = 'Completion date from (inc.)';
 $string['completiondateto'] = 'Completion date to (inc.)';

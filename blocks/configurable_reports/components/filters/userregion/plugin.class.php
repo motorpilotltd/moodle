@@ -35,7 +35,7 @@ class plugin_userregion extends plugin_base {
         $this->form = true;
         $this->unique = false;
         $this->fullname = get_string('filteruserregion', 'block_configurable_reports');
-        $this->reporttypes = $this->_regionsinstalled ? array('completion', 'tapscompletion', 'halogencompletion', 'users') : array();
+        $this->reporttypes = $this->_regionsinstalled ? array('completion', 'arupcompletion', 'halogencompletion', 'users') : array();
     }
 
     public function summary($data){

@@ -31,7 +31,7 @@ class plugin_roleincourse extends plugin_base {
         $this->unique = false;
         $this->fullname = get_string('roleincourse', 'block_configurable_reports');
 /* BEGIN CORE MOD */
-        $this->reporttypes = array('courses', 'sql', 'users', 'timeline', 'categories', 'tapscompletion', 'halogencompletion');
+        $this->reporttypes = array('courses', 'sql', 'users', 'timeline', 'categories', 'arupcompletion', 'halogencompletion');
 /* END CORE MOD */
     }
 

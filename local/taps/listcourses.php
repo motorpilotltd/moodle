@@ -35,11 +35,10 @@ $regionsinstalled = get_config('local_regions', 'version');
 $coursemetadatainstalled = get_config('local_coursemetadata', 'version');
 $arupadvertinstalled = get_config('arupadvertdatatype_taps', 'version');
 $tapsenrolinstalled = get_config('mod_tapsenrol', 'version');
-$tapscompletioninstalled = get_config('mod_tapscompletion', 'version');
 
 $output = '';
 
-if ($regionsinstalled && $coursemetadatainstalled && $arupadvertinstalled && $tapsenrolinstalled && $tapscompletioninstalled) {
+if ($regionsinstalled && $coursemetadatainstalled && $arupadvertinstalled && $tapsenrolinstalled) {
 
     $PAGE->requires->js_call_amd('local_taps/enhance', 'initialise');
 
@@ -52,7 +51,6 @@ SELECT
     te.id as teid,
     teiw.id as teiwid,
     teiw.name as teiwname,
-    tc.id as tcid,
     ltc.courseid as attapscourseid,
     ltc.coursecode as attapscoursecode,
     ltc.coursename as attapscoursename,
@@ -77,20 +75,13 @@ LEFT JOIN
     {tapsenrol_iw} teiw
     ON teiw.id = te.internalworkflowid
 LEFT JOIN
-    {tapscompletion} tc
-    ON c.id = tc.course
-LEFT JOIN
     {local_taps_course} ltc
     ON at.tapscourseid = ltc.courseid
 LEFT JOIN
     {local_taps_course} ltc2
-    ON te.tapscourse = ltc2.courseid
-LEFT JOIN
-    {local_taps_course} ltc3
-    ON tc.tapscourse = ltc3.courseid
+    ON te.course = ltc2.courseid
 WHERE
     at.id IS NOT NULL
-    OR tc.id IS NOT NULL
     OR te.id IS NOT NULL
 ORDER BY
     c.id ASC
@@ -127,7 +118,6 @@ EOS;
             get_string('tapsenrol', 'local_taps'),
             get_string('regions:enrolment', 'tapsenrol'),
             get_string('tapsenrol:workflow', 'local_taps'),
-            get_string('tapscompletion', 'local_taps'),
             get_string('tapscoursedetails', 'local_taps'),
             get_string('issues', 'local_taps'),
         );
@@ -174,7 +164,6 @@ EOS;
             }
 
             $row[] = local_taps_yesno(!is_null($record->teiwid), $record->teiwname);
-            $row[] = local_taps_yesno(!is_null($record->tcid));
 
             $issues = array();
             $detailscell = new html_table_cell();
@@ -182,7 +171,6 @@ EOS;
             $tapscoursedetails = array(
                 'at' => '',
                 'te' => '',
-                'tc' => '',
             );
 
             $tapscourseids = array();
@@ -194,9 +182,6 @@ EOS;
             }
             if (!is_null($record->teid)) {
                 $tapscourseids['te'] = $record->tetapscourseid;
-            }
-            if (!is_null($record->tcid)) {
-                $tapscourseids['tc'] = $record->tctapscourseid;
             }
 
             if (empty($tapscourseids)) {
