@@ -39,7 +39,6 @@ class tapsenrol {
 
     protected $_coursegroups;
 
-    protected $_tapscourse;
     protected $_tapsclasses = array();
 
     public static $completiontimetypes = [
@@ -201,15 +200,16 @@ class tapsenrol {
     }
 
     public function get_tapsclasses($canview = true) {
-        if (!isset($this->_tapsclasses[$this->tapsenrol->tapscourse]) && $canview) {
+        if (!isset($this->_tapsclasses[$this->course->id]) && $canview) {
+            $this->_tapsclasses[$this->course->id] = $this->taps->get_course_classes($this->course->id, false, false);
             $now = time();
             $classtypes = "'" . implode("', '", $this->taps->get_classtypes('elearning')) . "'";
             $extrawhere = "(classstatus = 'Planned' OR classtype IN ({$classtypes}) OR classstarttime > {$now})";
             $extrawhere .= " AND enrolmentstartdate < {$now} AND (enrolmentenddate > {$now} OR enrolmentenddate = 0)";
-            $this->_tapsclasses[$this->tapsenrol->tapscourse] = $this->taps->get_course_classes($this->tapsenrol->tapscourse, false, false, '*', $extrawhere);
+            $this->_tapsclasses[$this->course->id] = $this->taps->get_course_classes($this->course->id, false, false, '*', $extrawhere);
             // Sort in ascending date ordering with planned classes last.
             usort(
-                $this->_tapsclasses[$this->tapsenrol->tapscourse],
+                $this->_tapsclasses[$this->course->id],
                 function($a, $b) {
                     if ($a->classstatus == 'Planned' && $b->classstatus != 'Planned') {
                         return +1;
@@ -223,7 +223,7 @@ class tapsenrol {
                 }
             );
         }
-
+        
         return isset($this->_tapsclasses[$this->tapsenrol->tapscourse]) ? $this->_tapsclasses[$this->tapsenrol->tapscourse] : [];
     }
 
@@ -335,7 +335,7 @@ class tapsenrol {
             $this->_set_enrol_data();
         }
 
-        $enrolments = $this->taps->get_enroled_classes($user->idnumber, $this->tapsenrol->tapscourse, true, false);
+        $enrolments = $this->taps->get_enroled_classes($user->idnumber, $this->course->id, true, false);
 
         $shouldbeenrolled = false;
         $shouldbecomplete = false;
@@ -1691,7 +1691,7 @@ EOS;
         );
         $attendedcompare = $DB->sql_compare_text('bookingstatus');
         $attendedparams = array(
-            'courseid' => $this->tapsenrol->tapscourse,
+            'courseid' => $this->course->id,
             'staffid' => $user->idnumber
         );
         $attendedsql = <<<EOS
@@ -1764,7 +1764,7 @@ EOS;
         $statuscompare = $DB->sql_compare_text('lte.bookingstatus');
 
         $params = array(
-                'tapscourse' => $this->tapsenrol->tapscourse,
+                'course' => $this->course->id,
                 'courseid' => $this->cm->course
         );
 
@@ -1773,7 +1773,7 @@ EOS;
             FROM {local_taps_enrolment} lte
             JOIN {user} u ON u.idnumber = lte.staffid
             WHERE
-                lte.courseid = :tapscourse
+                lte.courseid = :course
                 AND (lte.archived = 0 OR lte.archived IS NULL)
                 AND lte.active = 1
                 AND {$statuscompare} {$statusin}
@@ -1794,7 +1794,7 @@ EOS;
             FROM {local_taps_enrolment} lte
             JOIN {user} u ON u.idnumber = lte.staffid
             WHERE
-                lte.courseid = :tapscourse
+                lte.courseid = :course
                 AND (lte.archived = 0 OR lte.archived IS NULL)
                 AND lte.active = 1
                 AND {$statuscompare} {$statusin}

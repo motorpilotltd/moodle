@@ -86,7 +86,7 @@ GROUP BY
     lte.classid
 EOS;
     $params = array(
-        'courseid' => $tapsenrol->tapsenrol->tapscourse,
+        'courseid' => $tapsenrol->course->id,
         'now' => time(),
     );
     $enrolments = $DB->get_records_sql($sql, array_merge($params, $inparams));

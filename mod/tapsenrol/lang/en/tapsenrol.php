@@ -554,8 +554,6 @@ $string['status:waitlisted:fullclass'] = 'You are on the waiting list for a full
 $string['status:waitlisted:plannedclass'] = 'You are on the waiting list for a class which now has seats available,
     please contact your regional administrator to be assigned one of the remaining seats.';
 
-$string['tapscourse'] = 'Linked course';
-$string['tapscourse_help'] = 'Linked course selection is determined by the Arup advert activity.';
 $string['tapsenrol:addinstance'] = 'Add a new Arup linked course enrolment';
 $string['tapsenrol:canapproveanyone'] = 'Can approve anyone';
 $string['tapsenrol:deleteattendedenrolments'] = 'Can delete attended enrolments';

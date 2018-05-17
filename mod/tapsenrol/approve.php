@@ -38,7 +38,7 @@ if ($id) {
 if ($id && !$loaderror) {
     // Now know enrolment is loaded OK.
     $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
-    $tapsenrol = $DB->get_record('tapsenrol', array('tapscourse' => $enrolment->courseid));
+    $tapsenrol = $DB->get_record('tapsenrol', array('course' => $enrolment->courseid));
     if (!$user || !$tapsenrol) {
         $loaderror = 'User or activity not found.';
     }
@@ -170,7 +170,7 @@ JOIN
     ON lte.enrolmentid = tit.enrolmentid
 JOIN
     {tapsenrol} t
-    ON t.tapscourse = lte.courseid
+    ON t.course = lte.courseid
 JOIN
     {tapsenrol_iw} ti
     ON ti.id = t.internalworkflowid

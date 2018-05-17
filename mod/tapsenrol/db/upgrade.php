@@ -171,6 +171,11 @@ function xmldb_tapsenrol_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
+        $field = new xmldb_field('tapscourse', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
         $DB->execute("update te set te.autocompletion = tc.autocompletion, te.completionattended = tc.completionattended, te.completiontimetype = tc.completiontimetype
 from {tapsenrol} te
 inner join {course_modules} cm_enrol on cm_enrol.instance = te.id and cm_enrol.module = 31

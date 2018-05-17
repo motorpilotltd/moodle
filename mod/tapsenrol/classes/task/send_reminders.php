@@ -78,7 +78,7 @@ JOIN
     ON lte.enrolmentid = iwt.enrolmentid AND (lte.archived = 0 OR lte.archived IS NULL)
 JOIN
     {tapsenrol} t
-    ON t.tapscourse = lte.courseid
+    ON t.course = lte.courseid
 JOIN
     {tapsenrol_iw} iw
     ON iw.id = t.internalworkflowid

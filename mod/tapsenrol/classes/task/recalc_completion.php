@@ -78,7 +78,7 @@ FROM {local_taps_enrolment} lte
 JOIN {user} u
     ON u.idnumber = lte.staffid
 JOIN {tapsenrol} t
-    ON t.tapscourse = lte.courseid
+    ON t.course = lte.courseid
 JOIN {course_modules} cm
     ON cm.instance = t.id
 JOIN {course} c

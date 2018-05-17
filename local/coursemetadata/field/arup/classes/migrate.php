@@ -133,6 +133,10 @@ class migrate {
                 $DB->execute('UPDATE {local_taps_enrolment} SET courseid = :courseid WHERE courseid = :tapscourseid',
                         ['courseid' => $course->id, 'tapscourseid' => $advert->tapscourseid]);
 
+                // Link local_taps_enrolment to the moodle course.
+                $DB->execute('UPDATE {tapsenrol} SET courseid = :courseid WHERE courseid = :tapscourseid',
+                        ['courseid' => $course->id, 'tapscourseid' => $advert->tapscourseid]);
+
                 course_delete_module($cmid);
                 $DB->delete_records_select('local_taps_course', 'id = :tapscourseid', ['tapscourseid' => $advert->tapscourseid]);
                 $DB->delete_records_select('local_taps_course_category', 'courseid = :courseid',

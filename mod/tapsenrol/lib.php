@@ -55,14 +55,6 @@ function tapsenrol_update_instance($data, $mform) {
 }
 
 function tapsenrol_region_mapping($data) {
-    if (!empty($data->region)) {
-        tapsenrol_region_mapping_override($data);
-    } else {
-        tapsenrol_region_mapping_oracle($data);
-    }
-}
-
-function tapsenrol_region_mapping_override($data) {
     global $DB;
 
     if (in_array(0, $data->region)) {
@@ -77,34 +69,6 @@ function tapsenrol_region_mapping_override($data) {
 
     foreach ($allregions as $regionid) {
         if (!in_array($regionid, $data->region)) {
-            $DB->delete_records('tapsenrol_region', array('regionid' => $regionid, 'tapsenrolid' => $data->id));
-        } else if (!$DB->get_record('tapsenrol_region', array('regionid' => $regionid, 'tapsenrolid' => $data->id))) {
-            $regionmapping = new stdClass();
-            $regionmapping->tapsenrolid = $data->id;
-            $regionmapping->regionid = $regionid;
-            $DB->insert_record('tapsenrol_region', $regionmapping);
-        }
-    }
-}
-
-function tapsenrol_region_mapping_oracle($data) {
-    global $DB;
-
-    $tapscourseregion = $DB->get_field('local_taps_course', 'courseregion', array('courseid' => $data->tapscourse));
-
-    if (!$tapscourseregion) {
-        return;
-    }
-
-    if (stripos($tapscourseregion, 'global') !== false) {
-        $DB->delete_records('local_regions_reg_cou', array('courseid' => $data->course));
-        return;
-    }
-
-    $allregions = $DB->get_records_menu('local_regions_reg', array('userselectable' => 1), '', 'id, tapsname');
-    foreach ($allregions as $regionid => $regionname) {
-        $regionname = trim(str_ireplace('region', '', $regionname));
-        if (stripos($tapscourseregion, $regionname) === false) {
             $DB->delete_records('tapsenrol_region', array('regionid' => $regionid, 'tapsenrolid' => $data->id));
         } else if (!$DB->get_record('tapsenrol_region', array('regionid' => $regionid, 'tapsenrolid' => $data->id))) {
             $regionmapping = new stdClass();
@@ -181,60 +145,54 @@ function tapsenrol_cm_info_view(cm_info $cm) {
     if (!$tapsenrol->check_installation()) {
         $output .= $renderer->alert(html_writer::tag('p', get_string('installationissue', 'tapsenrol')), 'alert-danger', false);
     } else {
+        $canview = $canviewclasses = $PAGE->user_is_editing();
+        if ($USER->auth == 'saml' && $USER->idnumber != '') {
+            $canview = true;
 
-        $tapscourse = $tapsenrol->get_tapscourse();
+            $output .= $tapsenrol->enrolment_check($USER->idnumber, true);
 
-        if ($tapscourse) {
-            $canview = $canviewclasses = $PAGE->user_is_editing();
-            if ($USER->auth == 'saml' && $USER->idnumber != '') {
-                $canview = true;
-
-                $output .= $tapsenrol->enrolment_check($USER->idnumber, true);
-
-                $regionselect = 'id IN (SELECT regionid FROM {tapsenrol_region} WHERE tapsenrolid = :tapsenrolid)';
-                $regions = $DB->get_records_select_menu('local_regions_reg', $regionselect, array('tapsenrolid' => $tapsenrol->tapsenrol->id), '', 'id, name');
-                if (empty($regions)) {
+            $regionselect = 'id IN (SELECT regionid FROM {tapsenrol_region} WHERE tapsenrolid = :tapsenrolid)';
+            $regions = $DB->get_records_select_menu('local_regions_reg', $regionselect, array('tapsenrolid' => $tapsenrol->tapsenrol->id), '', 'id, name');
+            if (empty($regions)) {
+                $canviewclasses = true;
+            } else {
+                local_regions_load_data_user($USER);
+                if (isset($USER->regions_field_geotapsregionid) && array_key_exists($USER->regions_field_geotapsregionid, $regions)) {
                     $canviewclasses = true;
-                } else {
-                    local_regions_load_data_user($USER);
-                    if (isset($USER->regions_field_geotapsregionid) && array_key_exists($USER->regions_field_geotapsregionid, $regions)) {
-                        $canviewclasses = true;
-                    }
-                }
-                if ($canviewclasses) {
-                    $canviewclasses = $cm->uservisible;
                 }
             }
-
-            if ($canview) {
-                $classes = $tapsenrol->get_tapsclasses($canviewclasses);
-                $enrolments = $tapsenrol->taps->get_enroled_classes($USER->idnumber, $tapsenrol->tapsenrol->tapscourse, false, false);
-                $enrolmentoutput = $renderer->enrolment_history($tapsenrol, $enrolments, $classes, $tapsenrol->cm->id);
+            if ($canviewclasses) {
+               $canviewclasses = $cm->uservisible;
             }
-
-            if (!$canview || !$canviewclasses) {
-                $a = new stdClass();
-                $a->course = core_text::strtolower(get_string('course'));
-                $a->reason = '';
-                if (!$canviewclasses && !empty($cm->availableinfo)) {
-                    $a->reason = '<br>' . \core_availability\info::format_info($cm->availableinfo, $cm->get_course());
-                } else if (!$canviewclasses && !empty($regions)) {
-                    $a->reason = get_string('cannotenrol:regions', 'tapsenrol', implode(', ', $regions));
-                }
-                $enrolmentoutput = $renderer->alert(html_writer::tag('p', get_string('cannotenrol', 'tapsenrol', $a)), 'alert-warning', false);
-            }
-
-            if (!empty($SESSION->tapsenrol->alert->message)) {
-                $output .= $renderer->alert($SESSION->tapsenrol->alert->message, $SESSION->tapsenrol->alert->type);
-                unset($SESSION->tapsenrol->alert);
-            }
-
-            $output .= html_writer::start_tag('div', array('class' => 'tapsenrol_info_wrapper'));
-            $output .= $enrolmentoutput;
-            $output .= html_writer::end_tag('div'); // End div tapsenrol_info_wrapper.
-        } else {
-            $output .= $renderer->alert(get_string('couldnotloadcourse', 'tapsenrol', core_text::strtolower(get_string('course'))), 'alert-danger', false);
         }
+
+        $enrolmentoutput = '';
+        if ($canview) {
+            $classes = $tapsenrol->get_tapsclasses($canviewclasses);
+            $enrolments = $tapsenrol->taps->get_enroled_classes($USER->idnumber, $tapsenrol->tapsenrol->course, false, false);
+            $enrolmentoutput = $renderer->enrolment_history($tapsenrol, $enrolments, $classes, $tapsenrol->cm->id);
+        }
+
+        if (!$canview || !$canviewclasses) {
+            $a = new stdClass();
+            $a->course = core_text::strtolower(get_string('course'));
+            $a->reason = '';
+            if (!$canviewclasses && !empty($cm->availableinfo)) {
+                $a->reason = '<br>' . \core_availability\info::format_info($cm->availableinfo, $cm->get_course());
+            } else if (!$canviewclasses && !empty($regions)) {
+                $a->reason = get_string('cannotenrol:regions', 'tapsenrol', implode(', ', $regions));
+            }
+            $enrolmentoutput = $renderer->alert(html_writer::tag('p', get_string('cannotenrol', 'tapsenrol', $a)), 'alert-warning', false);
+        }
+
+        if (!empty($SESSION->tapsenrol->alert->message)) {
+            $output .= $renderer->alert($SESSION->tapsenrol->alert->message, $SESSION->tapsenrol->alert->type);
+            unset($SESSION->tapsenrol->alert);
+        }
+
+        $output .= html_writer::start_tag('div', array('class' => 'tapsenrol_info_wrapper'));
+        $output .= $enrolmentoutput;
+        $output .= html_writer::end_tag('div'); // End div tapsenrol_info_wrapper.
     }
 
     $output .= $renderer->admin_links($tapsenrol);

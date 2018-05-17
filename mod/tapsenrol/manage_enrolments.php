@@ -74,7 +74,7 @@ if (!$tapsenrol->tapsenrol->internalworkflowid) {
         'delete' => $wherebase,
     );
     $params = array(
-        'courseid' => $tapsenrol->tapsenrol->tapscourse,
+        'courseid' => $tapsenrol->tapsenrol->course,
         'now' => $now,
         'now2' => $now,
     );
@@ -136,6 +136,6 @@ if ($displayform) {
 
 echo $output->back_to_module($tapsenrol->course->id);
 
-echo $output->back_to_coursemanager($tapsenrol->get_tapscourse()->id);
+echo $output->back_to_coursemanager($tapsenrol->course->id);
 
 echo $OUTPUT->footer();

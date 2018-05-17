@@ -370,7 +370,7 @@ EOJ;
 } else if ($type == 'move') {
     $where = 'courseid = :courseid AND (classstarttime > :now OR classstarttime = 0) AND classid != :classid';
     $params = array(
-        'courseid' => $tapsenrol->tapsenrol->tapscourse,
+        'courseid' => $tapsenrol->course->id,
         'now' => time(),
         'classid' => $class->classid,
     );

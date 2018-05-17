@@ -569,8 +569,8 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         return html_writer::tag('p', $link);
     }
 
-    public function back_to_coursemanager($tapscourseid) {
-        $url = new moodle_url('/local/coursemanager/index.php', array('page' => 'course', 'cmcourse' => $tapscourseid));
+    public function back_to_coursemanager($courseid) {
+        $url = new moodle_url('/local/coursemanager/index.php', array('page' => 'course', 'cmcourse' => $courseid));
         $link = html_writer::link($url, get_string('backtocoursemanager', 'tapsenrol'));
         return html_writer::tag('p', $link);
     }
@@ -879,7 +879,7 @@ JOIN
     ON lte.enrolmentid = tit.enrolmentid
 JOIN
     {tapsenrol} t
-    ON t.tapscourse = lte.courseid
+    ON t.course = lte.courseid
 JOIN
     {tapsenrol_iw} ti
     ON ti.id = t.internalworkflowid
@@ -1212,7 +1212,7 @@ EOF;
         }
 
         if (has_capability('local/coursemanagercourse:add', $tapsenrol->context->course)) {
-            $editcourseurl = new moodle_url('/local/coursemanager/index.php', array('page' => 'course', 'cmcourse' => $tapsenrol->get_tapscourse()->id));
+            $editcourseurl = new moodle_url('/local/coursemanager/index.php', array('page' => 'course', 'cmcourse' => $tapsenrol->course->id));
             $links[] = array(
                 'url' => $editcourseurl,
                 'title' => get_string('editcourse', 'tapsenrol')
@@ -1220,7 +1220,7 @@ EOF;
         }
 
         if (has_capability('local/coursemanagerclass:add', $tapsenrol->context->course)) {
-            $editclassurl = new moodle_url('/local/coursemanager/index.php', array('page' => 'classoverview', 'cmcourse' => $tapsenrol->get_tapscourse()->id));
+            $editclassurl = new moodle_url('/local/coursemanager/index.php', array('page' => 'classoverview', 'cmcourse' => $tapsenrol->course->id));
             $links[] = array(
                 'url' => $editclassurl,
                 'title' => get_string('editclass', 'tapsenrol')

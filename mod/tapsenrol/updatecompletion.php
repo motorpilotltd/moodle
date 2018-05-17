@@ -48,7 +48,7 @@ if (isset($_POST['submit'])) {
     require_sesskey();
 
     $other = array(
-        'courseid' => $tapsenrol->tapsenrol->tapscourse,
+        'courseid' => $tapsenrol->course->id,
     );
     $event = \mod_tapsenrol\event\statuses_updated::create(array(
         'objectid' => $tapsenrol->tapsenrol->id,

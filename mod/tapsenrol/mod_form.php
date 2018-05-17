@@ -60,8 +60,6 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
         }
         $mform->addRule('name', null, 'required', null, 'client');
 
-        $this->_taps_courses_select();
-
         $options = array('' => get_string('choosedots'));
         $iws = $DB->get_records_menu('tapsenrol_iw', null, 'name ASC', 'id, name');
         $mform->addElement('select', 'internalworkflowid', get_string('internalworkflow', 'tapsenrol'), $options + $iws);
@@ -149,14 +147,6 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
                 $mform->setConstant('autocompletion', $instance->autocompletion);
             }
         }
-    }
-
-    public function validation($data, $files) {
-        $errors = parent::validation($data, $files);
-
-        // Internal Moodle validation will ensure tapscourse is existing choice or from arupadvert activity.
-
-        return $errors;
     }
 
     public function get_data() {
@@ -294,45 +284,6 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
         } else if ($instancecount > 1) {
             $this->_trigger_notice(get_string('alreadyexists:edit', 'tapsenrol', core_text::strtolower(get_string('course'))));
         }
-    }
-
-    protected function _taps_courses_select() {
-        global $DB;
-        $mform = $this->_form;
-
-        $arupadvert = $DB->get_record('arupadvert', array('course' => $this->current->course));
-        if ($arupadvert && $arupadvert->datatype == 'taps') {
-            $tapscourseid = $DB->get_field('arupadvertdatatype_taps', 'tapscourseid', array('arupadvertid' => $arupadvert->id));
-        } else if ($this->current->instance) {
-            $tapscourseid = $DB->get_field('tapsenrol', 'tapscourse', array('id' => $this->current->instance));
-        }
-
-        $selectoptions = array();
-        if ($tapscourseid) {
-            $tapscoursesin = $DB->get_records_select(
-                    'local_taps_course',
-                    'courseid = :courseid',
-                    array('courseid' => $tapscourseid),
-                    '',
-                    'courseid, courseregion, coursename, coursecode'
-                    );
-            $tapscourses = array();
-            foreach ($tapscoursesin as $tapscoursein) {
-                $coursecode = $tapscoursein->coursecode ? ' ['.$tapscoursein->coursecode.']' : '';
-                $tapscourses[$tapscoursein->courseid] = $tapscoursein->courseregion .
-                    ' - ' .
-                    $tapscoursein->coursename .
-                    $coursecode;
-            }
-            asort($tapscourses);
-            $selectoptions = $selectoptions + $tapscourses;
-        }
-        if (empty($selectoptions)) {
-            $selectoptions[''] = get_string('noapplicablecourses', 'tapsenrol');
-        }
-
-        $mform->addElement('select', 'tapscourse', get_string('tapscourse', 'tapsenrol'), $selectoptions, array('style' => 'max-width:100%'));
-        $mform->addHelpButton('tapscourse', 'tapscourse', 'tapsenrol');
     }
 
     protected function _trigger_notice($message) {
