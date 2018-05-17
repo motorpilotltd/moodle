@@ -176,13 +176,6 @@ function xmldb_tapsenrol_upgrade($oldversion) {
             $dbman->drop_field($table, $field);
         }
 
-        $DB->execute("update te set te.autocompletion = tc.autocompletion, te.completionattended = tc.completionattended, te.completiontimetype = tc.completiontimetype
-from {tapsenrol} te
-inner join {course_modules} cm_enrol on cm_enrol.instance = te.id and cm_enrol.module = 31
-inner join {course_modules} cm_completion on cm_enrol.course = cm_completion.course and cm_completion.module = 30
-inner join {tapscompletion} tc on tc.id = cm_completion.instance
-where cm_enrol.module = 31");
-
         // Savepoint reached.
         upgrade_mod_savepoint(true, 2015111613, 'tapsenrol');
     }
