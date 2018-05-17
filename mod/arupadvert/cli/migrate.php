@@ -60,4 +60,4 @@ if (!$options['domigration']) {
     exit(0);
 }
 
-\coursemetadatafield_arup\migrate::deprecate_arupadvert_tap();
+\mod_arupadvert\migrate::deprecate_arupadvert_tap();

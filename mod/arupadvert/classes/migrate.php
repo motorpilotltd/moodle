@@ -6,7 +6,7 @@
  * Time: 15:05
  */
 
-namespace coursemetadatafield_arup;
+namespace mod_arupadvert;
 
 class migrate {
 
