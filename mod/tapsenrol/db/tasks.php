@@ -65,12 +65,12 @@ $tasks = array(
     ),
 
     array(
-            'classname' => 'mod_tapscompletion\task\recalc_completion',
-            'blocking' => 0,
-            'minute' => '*/5',
-            'hour' => '*',
-            'day' => '*',
-            'dayofweek' => '*',
-            'month' => '*'
+        'classname' => 'mod_tapsenrol\task\recalc_completion',
+        'blocking' => 0,
+        'minute' => '*/5',
+        'hour' => '*',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
     ),
 );

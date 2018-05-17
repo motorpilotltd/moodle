@@ -48,7 +48,7 @@ class eventobservers {
         if ($ue->lastenrol) {
             $course = $DB->get_record('course', array('id' => $event->courseid));
             $completion = new \completion_info($course);
-            $cms = get_fast_modinfo($event->courseid, -1)->get_instances_of('tapscompletion');
+            $cms = get_fast_modinfo($event->courseid, -1)->get_instances_of('tapsenrol');
             foreach ($cms as $cm) {
                 $DB->delete_records('tapsenrol_completion', array('tapsenrolid' => $cm->instance, 'userid' => $ue->userid));
                 $completion->update_state($cm, COMPLETION_INCOMPLETE, $ue->userid);
@@ -243,11 +243,11 @@ EOS;
             $record->userid = $event->relateduserid;
             $record->completed = $enrolment->enrolmentid;
             $record->timemodified = time();
-            $DB->insert_record('tapscompletion_completion', $record);
+            $DB->insert_record('tapsenrol_completion', $record);
         } else if (!$tccompletion->completed) {
             $tccompletion->completed = $enrolment->enrolmentid;
             $tccompletion->timemodified = time();
-            $DB->update_record('tapscompletion_completion', $tccompletion);
+            $DB->update_record('tapsenrol_completion', $tccompletion);
         }
 
         $ccompletion = new \completion_completion(['course' => $event->courseid, 'userid' => $event->relateduserid]);

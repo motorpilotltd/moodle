@@ -40,6 +40,6 @@ $observers = array(
     array(
         'eventname'   => '\core\event\course_completed',
         'priority'    => 9999, // High priority to run first.
-        'callback'    => '\mod_tapscompletion\eventobservers::course_completed',
+        'callback'    => '\mod_tapsenrol\eventobservers::course_completed',
     ),
 );

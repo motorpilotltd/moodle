@@ -120,8 +120,8 @@ if (!$tapsenrol->tapsenrol->internalworkflowid) {
                     'url' => $updatecompletionurl,
                     'title' => get_string('updatecompletion', 'tapsenrol')
             );
-            $tapscompletionlink = html_writer::link($updatecompletionurl, get_string('manageenrolments:markattendance', 'tapsenrol'));
-            $html .= html_writer::tag('p', $tapscompletionlink);
+            $tapsenrollink = html_writer::link($updatecompletionurl, get_string('manageenrolments:markattendance', 'tapsenrol'));
+            $html .= html_writer::tag('p', $tapsenrollink);
         }
 
         $displayform = true;
