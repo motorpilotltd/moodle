@@ -11,7 +11,9 @@ namespace mod_tapscompletion;
 class migrate {
 
     public static function deprecate_tapscompletion() {
-        global $DB;
+        global $DB, $CFG;
+
+        require_once("$CFG->dirroot/course/lib.php");
 
         $completionmodule = $DB->get_record('modules', ['name' => 'tapscompletion']);
         $enrolmodule = $DB->get_record('modules', ['name' => 'tapsenrol']);
