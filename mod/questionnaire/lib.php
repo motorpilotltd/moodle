@@ -640,7 +640,7 @@ function questionnaire_extend_settings_navigation(settings_navigation $settings,
                 $urlargs = array('instance' => $questionnaire->id, 'user' => $USER->id,
                     'action' => 'dwnpg', 'group' => $currentgroupid);
 /* BEGIN CORE MOD */
-                $myreportnode->add(get_string('downloadtextformat'), new moodle_url('/mod/questionnaire/report.php', $urlargs));
+                $myreportnode->add(get_string('downloadtextformat', 'questionnaire'), new moodle_url('/mod/questionnaire/report.php', $urlargs));
 /* END CORE MOD */
             }
         } else {
