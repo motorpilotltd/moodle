@@ -214,8 +214,8 @@ class tapsenrol {
     public function get_tapsclasses($canview = true) {
         if (!isset($this->_tapsclasses[$this->tapsenrol->tapscourse]) && $canview) {
             $now = time();
-            $classtypes = implode(', ', $this->taps->get_classtypes('elearning'));
-            $extrawhere = "(classstatus = 'Planned' OR classtype IN ({$classtypes}) OR classstartime > {$now})";
+            $classtypes = "'" . implode("', '", $this->taps->get_classtypes('elearning')) . "'";
+            $extrawhere = "(classstatus = 'Planned' OR classtype IN ({$classtypes}) OR classstarttime > {$now})";
             $extrawhere .= " AND enrolmentstartdate < {$now} AND (enrolmentenddate > {$now} OR enrolmentenddate = 0)";
             $this->_tapsclasses[$this->tapsenrol->tapscourse] = $this->taps->get_course_classes($this->tapsenrol->tapscourse, false, false, '*', $extrawhere);
             // Sort in ascending date ordering with planned classes last.
