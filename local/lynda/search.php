@@ -35,6 +35,14 @@ $search = optional_param('search', '', PARAM_TEXT);
 $page = optional_param('page', 1, PARAM_INT) - 1; // courses run form zero-index
 $perpage = optional_param('perpage', 10, PARAM_INT);
 
+$context = context_system::instance();
+if (has_capability('local/lynda:manage', $context)) {
+    echo $OUTPUT->single_button(
+            new moodle_url('/local/lynda/manage.php'),
+            get_string('managecourses', 'local_lynda')
+    );
+}
+
 $userregion = local_regions_get_user_region($USER);
 if (isset($userregion->regionid)) {
     $results = new \local_lynda\searchresults($search, $userregion->geotapsregionid, $page, $perpage);

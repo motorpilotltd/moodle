@@ -23,10 +23,19 @@
 require_once(dirname(__FILE__).'/../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
-
-admin_externalpage_setup('managecourses');
-
+$context = context_system::instance();
 $strheading = get_string('managecourses', 'local_lynda');
+if (has_capability('moodle/site:config', $context)) {
+    admin_externalpage_setup('managecourses');
+} else {
+    require_capability('local/lynda:manage', $context);
+    $PAGE->set_pagelayout('admin');
+    $PAGE->set_context($context);
+    $PAGE->set_url('/local/lynda/manage.php');
+    $PAGE->set_title($strheading);
+    $PAGE->set_heading($strheading);
+}
+
 $PAGE->navbar->add($strheading);
 
 $showallpagesize = 5000;
