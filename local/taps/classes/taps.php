@@ -1011,10 +1011,9 @@ EOS;
         );
         $sql = "SELECT classid, COUNT(enrolmentid)
                   FROM {local_taps_enrolment}
-                  WHERE courseid = :courseid AND (archived = 0 OR archived IS NULL) AND bookingstatus {$in}
-                  GROUP BY classid
-                  ORDER BY classid ASC
-                  ";
+                 WHERE courseid = :courseid AND (archived = 0 OR archived IS NULL) AND bookingstatus {$in}
+              GROUP BY classid
+              ORDER BY classid ASC";
         $enrolments = $DB->get_records_sql_menu($sql, $params);
 
         foreach ($classes as $class) {
