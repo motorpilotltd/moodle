@@ -33,7 +33,7 @@ if ($detailsform->is_cancelled()){
     if($certif->id == null){
         $message = get_string('certificationcreated', 'local_custom_certification');
     }
-    $certif->set_details($data->fullname, $data->shortname, $data->category, $data->summary['text'], $data->endnote['text'], $data->idnumber, $data->visible, $data->linkedtapscourseid, $data->uservisible, $data->reportvisible);
+    $certif->set_details($data->fullname, $data->shortname, $data->category, $data->summary['text'], $data->endnote['text'], $data->idnumber, $data->visible, $data->courseid, $data->uservisible, $data->reportvisible);
     file_save_draft_area_files($data->overviewfiles_filemanager,  context_system::instance()->id, 'local_custom_certification', 'attachment', $certif->id, $overviewfilesoptions);
     \local_custom_certification\notification::add($message, \local_custom_certification\notification::TYPE_SUCCESS);
     redirect(new moodle_url('/local/custom_certification/edit.php', ['action' => 'details', 'id' => $certif->id]));

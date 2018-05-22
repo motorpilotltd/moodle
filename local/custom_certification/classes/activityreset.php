@@ -368,7 +368,7 @@ class activityreset {
             $compare = $DB->sql_compare_text('bookingstatus');
             $params = [
                 'staffid' => $staffid,
-                'courseid' => $te->tapscourse,
+                'courseid' => $te->course,
                 'active' => 1
             ];
             $enrolments = $DB->get_records_select('local_taps_enrolment', "staffid = :staffid AND courseid = :courseid AND active = :active AND {$compare} {$in}", array_merge($params, $inparams));

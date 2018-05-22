@@ -562,7 +562,7 @@ class completion
 
         // Does this user have a completed old TAPS course enrolment?
         $taps = new \local_taps\taps();
-        list($insql1, $params1) = $DB->get_in_or_equal(explode(',', $certification->linkedtapscourseid), SQL_PARAMS_NAMED, 'courseid');
+        list($insql1, $params1) = $DB->get_in_or_equal(explode(',', $certification->courseid), SQL_PARAMS_NAMED, 'courseid');
         list($insql2, $params2) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
         $sql = <<<EOS
 SELECT

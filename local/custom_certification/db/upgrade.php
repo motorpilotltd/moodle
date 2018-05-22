@@ -134,7 +134,20 @@ function xmldb_local_custom_certification_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018022802, 'local', 'custom_certification');
     }
 
-    if ($oldversion < 2018022803) {
+    if ($oldversion < 2018022804) {
+        // Update field to link certificate to multiple TAPS courses.
+        $table = new xmldb_table('certif');
+        $field = new xmldb_field('linkedtapscourseid', XMLDB_TYPE_TEXT);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field, 'courseid');
+        }
+
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2018022803, 'local', 'custom_certification');
+    }
+
+    if ($oldversion < 2018022805) {
         // Update to add donotsend timeframe to messages table.
         $table = new xmldb_table('certif_messages');
         $field = new xmldb_field('donotsendtime', XMLDB_TYPE_INTEGER, 10, null, XMLDB_NOTNULL, null, 0);

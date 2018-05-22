@@ -63,7 +63,7 @@ class certification
     public $deleted;
     public $recertificationdatetype;
     public $visible;
-    public $linkedtapscourseid;
+    public $courseid;
     public $uservisible;
     public $reportvisible;
     public $canmange;
@@ -102,7 +102,7 @@ class certification
         $this->deleted = $ceritification->deleted;
         $this->visible = $ceritification->visible;
         $this->recertificationdatetype = $ceritification->recertificationdatetype;
-        $this->linkedtapscourseid = $ceritification->linkedtapscourseid;
+        $this->courseid = $ceritification->courseid;
         $this->uservisible = $ceritification->uservisible;
         $this->reportvisible = $ceritification->reportvisible;
         $this->canmange = has_capability('local/custom_certification:manage', $this->get_context());
@@ -457,7 +457,7 @@ class certification
      * @param string $idnumber
      * @param int $visible Determine if certificaito is visible (1) or hidden (0)
      */
-    public function set_details($fullname, $shortname, $category, $summary, $endnote, $idnumber, $visible, $linkedtapscourseid, $uservisible, $reportvisible)
+    public function set_details($fullname, $shortname, $category, $summary, $endnote, $idnumber, $visible, $courseid, $uservisible, $reportvisible)
     {
         global $DB, $USER;
 
@@ -471,7 +471,7 @@ class certification
         $this->usermodified = $USER->id;
         $this->visible = $visible;
         $this->deleted = 0;
-        $this->linkedtapscourseid = $linkedtapscourseid;
+        $this->courseid = $courseid;
         $this->uservisible = $uservisible;
         $this->reportvisible = $reportvisible;
 
@@ -1002,7 +1002,7 @@ class certification
         $certification = new self($certifid);
         $new = self::create();
         $new->set_details($certification->fullname, $certification->shortname, $certification->category,
-            $certification->summary, $certification->endnote, $certification->idnumber, 0, $certification->linkedtapscourseid, $certification->uservisible, $certification->reportvisible);
+            $certification->summary, $certification->endnote, $certification->idnumber, 0, $certification->courseid, $certification->uservisible, $certification->reportvisible);
         $new->set_recertificationtimeperiod($certification->recertificationdatetype, $certification->activeperiodtime, $certification->activeperiodtimeunit,
             $certification->windowperiod, $certification->windowperiodunit);
         $coursesets = $certification->certificationcoursesets;

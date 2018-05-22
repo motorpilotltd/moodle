@@ -1,6 +1,8 @@
 <?php
 namespace local_custom_certification\form;
 
+use local_mssql\dbshim;
+
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');    ///  It must be included from a Moodle page
 }
@@ -94,30 +96,38 @@ class certification_details_form extends \moodleform
         $mform->addHelpButton('endnote', 'endnote', 'local_custom_certification');
         $mform->setType('endnote', PARAM_RAW);
 
+        $remotetagidconcat = dbshim::sql_group_concat('reg.name', ',', true);
+
+        $sql = "SELECT c.id as courseid, c.fullname as coursename, $remotetagidconcat as courseregion, c.shortname
+                FROM {course} c 
+                LEFT JOIN {local_regions_reg_cou} regcou ON regcou.courseid = c.id
+                LEFT JOIN {local_regions_reg} reg ON reg.id = regcou.regionid
+                WHERE c.enddate = 0 OR c.enddate > :now AND c.visible = 1
+                GROUP BY c.id, c.fullname, c.shortname 
+                ORDER BY c.fullname ASC, shortname ASC, $remotetagidconcat ASC";
+
+        $params = ['now' => time()];
         
-        $tapscourses = $DB->get_records_select(
-                'local_taps_course',
-                'enddate = 0 OR enddate > :now',
-                ['now' => time()],
-                'courseregion ASC, coursename ASC, coursecode ASC',
-                'courseid, courseregion, coursename, coursecode'
-            );
-        if (empty($tapscourses)) {
-            $selectoptions = ['' => get_string('noapplicablecourses', 'local_custom_certification')];
+        $courses = $DB->get_records_sql($sql, $params);
+
+        $selectoptions = [];
+
+        if (empty($courses)) {
+            $selectoptions[''] = get_string('noapplicablecourses', 'local_custom_certification');
         }
-        foreach ($tapscourses as $tapscourse) {
-            $selectoptions[$tapscourse->courseid] =
-                    (!empty($tapscourse->courseregion) ? $tapscourse->courseregion : 'NO REGION') .
-                    ' - ' .
-                    (!empty($tapscourse->coursename) ? $tapscourse->coursename : 'NO NAME') .
+        foreach ($courses as $course) {
+            $selectoptions[$course->courseid] =
+                    (!empty($course->coursename) ? $course->coursename : 'NO NAME') .
                     ' [' .
-                    (!empty($tapscourse->coursecode) ? $tapscourse->coursecode : '-') .
-                    ']';
+                    (!empty($course->shortname) ? $course->shortname : '-') .
+                    ']' .
+                    ' - ' .
+                    (!empty($course->courseregion) ? $course->courseregion : 'NO REGION');
         }
-        $tapscourse = $mform->addElement('select', 'linkedtapscourseid', get_string('linkedtapscourseid', 'local_custom_certification'), $selectoptions, ['class' => 'local-custom-certification-multiselect']);
-        $mform->setType('linkedtapscourseid', PARAM_INT);
-        $tapscourse->setMultiple(true);
-        $mform->addHelpButton('linkedtapscourseid', 'linkedtapscourseid', 'local_custom_certification');
+        $course = $mform->addElement('select', 'courseid', get_string('courseid', 'local_custom_certification'), $selectoptions, ['class' => 'local-custom-certification-multiselect']);
+        $mform->setType('courseid', PARAM_INT);
+        $course->setMultiple(true);
+        $mform->addHelpButton('courseid', 'courseid', 'local_custom_certification');
 
         $this->add_action_buttons();
         $mform->closeHeaderBefore('buttonsave');
@@ -154,8 +164,8 @@ class certification_details_form extends \moodleform
             $default_values = (array)$default_values;
         }
 
-        if (isset($default_values['linkedtapscourseid'])) {
-            $default_values['linkedtapscourseid'] = explode(',', $default_values['linkedtapscourseid']);
+        if (isset($default_values['courseid'])) {
+            $default_values['courseid'] = explode(',', $default_values['courseid']);
         }
 
         parent::set_data($default_values);
@@ -168,12 +178,12 @@ class certification_details_form extends \moodleform
             return $data;
         }
 
-        if (!isset($data->linkedtapscourseid)) {
-            $data->linkedtapscourseid = null;
+        if (!isset($data->courseid)) {
+            $data->courseid = null;
         }
 
-        if (is_array($data->linkedtapscourseid)) {
-            $data->linkedtapscourseid = implode(',', $data->linkedtapscourseid);
+        if (is_array($data->courseid)) {
+            $data->courseid = implode(',', $data->courseid);
         }
 
         if (!isset($data->uservisible)) {

@@ -19,9 +19,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2018022804; // Continuing incrementing WA versioning as already jumped past base Moodle version.
+$plugin->version   = 2018022805; // Continuing incrementing WA versioning as already jumped past base Moodle version.
 $plugin->requires  = 2017051500; // Moodle 3.3.
 $plugin->component = 'local_custom_certification';
 $plugin->maturity  = MATURITY_STABLE;

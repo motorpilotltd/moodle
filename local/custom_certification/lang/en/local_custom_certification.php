@@ -341,8 +341,8 @@ $string['mandatorytrainingrevalidation'] = 'Mandatory training (revalidation)';
 $string['optional'] = 'Optional';
 
 // Arup additions.
-$string['linkedtapscourseid'] = 'Linked course(s) (optional)';
-$string['linkedtapscourseid_help'] = 'Optionally select linked course(s) to connect this certifcation to.<br /><br />'
+$string['courseid'] = 'Linked course(s) (optional)';
+$string['courseid_help'] = 'Optionally select linked course(s) to connect this certifcation to.<br /><br />'
         . 'On initial completion check it will take the completion time of the most recently completed linked course enrolment and complete the certificate.<br /><br />'
         . 'This will take precedence over any existing Moodle course completions so care should be taken when applying to certifications with courses that may already be completed in Moodle.';
 $string['noapplicablecourses'] = 'No applicable linked courses available';
