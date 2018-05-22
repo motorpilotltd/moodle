@@ -115,15 +115,10 @@ SELECT
     lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.classcompletiondate, lte.duration, lte.durationunits,
         lte.expirydate, lte.cpdid, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
         lte.learningdesccont1, lte.learningdesccont2, lte.healthandsafetycategory, lte.usedtimezone,
-    ltcc.categoryhierarchy,
     lte.course,
     cat.id as categoryid, cat.name as categoryname
 FROM
     {local_taps_enrolment} lte
-LEFT JOIN
-    {local_taps_course_category} ltcc
-    ON ltcc.courseid = lte.courseid
-        AND {$DB->sql_compare_text('ltcc.primaryflag', 1)} = :primaryflag
 LEFT JOIN
     {course} c
     ON c.id = lte.course
@@ -160,9 +155,6 @@ EOS;
             }
             if (!empty($record->course)) {
                 $learninghistory->category = format_string($record->categoryname);
-            } elseif (empty($record->classcategory)) {
-                $categories = explode('->', $record->categoryhierarchy);
-                $learninghistory->category = array_pop($categories);
             } else {
                 $learninghistory->category = format_string($record->classcategory);
             }

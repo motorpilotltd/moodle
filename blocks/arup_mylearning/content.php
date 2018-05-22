@@ -425,9 +425,6 @@ class block_arup_mylearning_content {
             if (!empty($th->course)) {
                 $categoryurl = new moodle_url('/course/category.php', array('id' => $th->categoryid));
                 $cell->text = html_writer::link($categoryurl, format_string($th->categoryname));
-            } else if (empty($th->classcategory)) {
-                $categories = explode('->', $th->categoryhierarchy);
-                $cell->text = array_pop($categories);
             } else {
                 $cell->text = format_string($th->classcategory);
             }
@@ -597,9 +594,6 @@ class block_arup_mylearning_content {
                     case 'classcategory' :
                         if (!empty($th->course)) {
                             $data = format_string($th->categoryname);
-                        } else if (empty($th->classcategory)) {
-                            $categories = explode('->', $th->categoryhierarchy);
-                            $data = array_pop($categories);
                         } else {
                             $data = format_string($th->classcategory);
                         }
@@ -887,10 +881,6 @@ SELECT
     cat.id as categoryid, cat.name as categoryname
 FROM
     {local_taps_enrolment} lte
-LEFT JOIN
-    {local_taps_course_category} ltcc
-    ON ltcc.courseid = lte.courseid
-        AND {$DB->sql_compare_text('ltcc.primaryflag', 1)} = :primaryflag
 LEFT JOIN
     {course} c
     ON c.id = lte.course
