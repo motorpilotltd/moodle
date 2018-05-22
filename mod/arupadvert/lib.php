@@ -215,7 +215,7 @@ function arupadvert_cm_info_view(cm_info $cm) {
             $class->name = $arupadvert->name;
         }
         $class->get_advert_block();
-        $class->canviewshare = has_capability('mod/arupadvert:viewsharelink', $cm->get_context());
+        $class->canviewshare = has_capability('mod/arupadvert:viewsharelink', $cm->context);
         $output = $renderer->cm_info_view($arupadvert, $class);
     } else {
         $output = html_writer::tag('p', get_string('nooutput', 'arupadvert'));
