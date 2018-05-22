@@ -213,7 +213,7 @@ JOIN
     ON lte.enrolmentid = tit.enrolmentid
 JOIN
     {tapsenrol} t
-    ON t.tapscourse = lte.courseid
+    ON t.course = lte.courseid
 JOIN
     {tapsenrol_iw} ti
     ON ti.id = t.internalworkflowid
