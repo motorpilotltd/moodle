@@ -230,9 +230,9 @@ class tapsenrol {
             usort(
                 $this->_tapsclasses[$this->tapsenrol->tapscourse],
                 function($a, $b) {
-                    if ($a->classstatus == 'Planned') {
+                    if ($a->classstatus == 'Planned' && $b->classstatus != 'Planned') {
                         return +1;
-                    } else if ($b->classstatus == 'Planned') {
+                    } else if ($b->classstatus == 'Planned' && $a->classstatus != 'Planned') {
                         return -1;
                     }
                     if ($a->classstarttime == $b->classstarttime) {
@@ -242,7 +242,7 @@ class tapsenrol {
                 }
             );
         }
-
+        
         return isset($this->_tapsclasses[$this->tapsenrol->tapscourse]) ? $this->_tapsclasses[$this->tapsenrol->tapscourse] : [];
     }
 

@@ -24,8 +24,8 @@ class timezone_manager {
         global $DB;
 
         // Very likely we'll want actual logic here at some point?
-
-        return self::spawn($DB->get_records('local_timezones'));
+        // Sort the list by 'display' field
+        return self::spawn($DB->get_records('local_timezones', null, 'display'));
     }
 
     public static function spawn($records) {

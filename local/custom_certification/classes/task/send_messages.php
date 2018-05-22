@@ -36,9 +36,10 @@ class send_messages extends \core\task\scheduled_task
         /**
          * Add messages related with recertification window open
          */
-
+        $concat = $DB->sql_concat_join("'-'", ['cc.userid', 'cm.id']);
         $query = "
             SELECT
+              {$concat} as uniqueid,
               cm.*,
               cc.userid
             FROM {certif_messages} cm
@@ -75,7 +76,10 @@ class send_messages extends \core\task\scheduled_task
     public function prepare_due_messages(){
         global $DB;
 
-        $query = "SELECT
+        $concat = $DB->sql_concat_join("'-'", ['cua.userid', 'cm.id']);
+        $query = "
+            SELECT
+              {$concat} as uniqueid,
               cm.*,
               cua.userid
             FROM {certif_user_assignments} cua
@@ -110,7 +114,10 @@ class send_messages extends \core\task\scheduled_task
     public function prepare_overdue_messages(){
         global $DB;
 
-        $query = "SELECT
+        $concat = $DB->sql_concat_join("'-'", ['cua.userid', 'cm.id']);
+        $query = "
+            SELECT
+              {$concat} as uniqueid,
               cm.*,
               cua.userid
             FROM {certif_user_assignments} cua
@@ -148,9 +155,10 @@ class send_messages extends \core\task\scheduled_task
      */
     public function prepare_enrolment_messages(){
         global $DB;
+        $concat = $DB->sql_concat_join("'-'", ['cua.id', 'cm.id']);
         $query = "
             SELECT
-              CONCAT(cua.id, '#', cm.id) as uniqueid,
+              {$concat} as uniqueid,
               cm.*,
               cua.userid
             FROM {certif_user_assignments} cua

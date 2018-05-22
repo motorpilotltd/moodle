@@ -659,6 +659,52 @@ class block_arup_mylearning_content {
         }
     }
 
+    protected function _has_content_lynda() {
+        global $DB, $USER, $CFG;
+
+        require_once($CFG->dirroot . '/local/regions/lib.php');
+
+        $userregion = local_regions_get_user_region($USER);
+        if (!isset($userregion) || !isset($userregion->geotapsregionid)) {
+            return false;
+        }
+
+        if (!\local_lynda\lib::enabledforregion($userregion->geotapsregionid)) {
+            return false;
+        }
+
+        return $DB->count_records('local_lynda_progress', array('userid' => $USER->id));
+    }
+
+    protected function _get_lynda_html() {
+        global $USER;
+
+        $table = new html_table();
+
+        $table->head = array(
+                get_string('course'),
+                get_string('percentcomplete', 'local_lynda'),
+                get_string('lastviewed', 'local_lynda')
+        );
+
+        $progresses = \local_lynda\lyndacourseprogress::fetch_all(['userid' => $USER->id]);
+        foreach ($progresses as $progress) {
+            if (!isset($progress->lyndacourse)) {
+                continue;
+            }
+            $url = new \moodle_url('/local/lynda/launch.php', ['lyndacourseid' => $progress->lyndacourse->remotecourseid]);
+            $linkedtitle = \html_writer::link($url, $progress->lyndacourse->title);
+            $cells = [];
+            $cells[] = new html_table_cell($linkedtitle);
+            $cells[] = new html_table_cell($progress->percentcomplete . '%');
+            $cells[] = new html_table_cell(userdate($progress->lastviewed));
+
+            $table->data[] = new html_table_row($cells);
+        }
+
+        return html_writer::table($table);
+    }
+
     protected function _get_halogen_html() {
         global $DB, $USER;
 

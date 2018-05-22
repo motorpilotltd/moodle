@@ -152,6 +152,7 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
             foreach ($aruptimezones as $country) {
                 $thiscountry = new stdClass();
                 $thiscountry->name = $country->display;
+                $thiscountry->timezone = $country->timezone;
                 $template->countries[] = $thiscountry;
             }
         } else {

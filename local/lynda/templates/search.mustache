@@ -1,0 +1,29 @@
+<div class="lynda-search-results-container">
+    <div class="lynda-search-results search-results" data-result-count="{{ resultcount }}">
+        {{# results }}
+        <article class="clearfix search-result">
+            <a class="image-holder" href="{{{ uri }}}" style="background-image: url('{{{ thumburi }}}');">
+                <i class="fa fa-play-circle"></i>
+            </a>
+
+            <div class="info">
+                <header>
+                    <h1><a href="{{{ uri }}}">{{{ title }}}</a></h1>
+                </header>
+                <div class="description summary">
+                    {{{ description }}}
+                </div>
+                <div class="arup_course_metadata"><span>{{# str }} duration, local_search {{/ str }}:</span>{{{duration}}}</div>
+            </div>
+        </article>
+        {{/ results }}
+        {{^ results }}
+            {{# str }} noresults, local_lynda {{/str}}
+        {{/results}}
+        <div class="loading-bar">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <p class="append">{{# str }} loadmore, local_lynda {{/ str }}</p>
+            <p class="replace">{{# str }} loadfiltered, local_lynda {{/ str }}</p>
+        </div>
+    </div>
+</div>

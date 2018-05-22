@@ -48,8 +48,6 @@ try {
         $result->data = $report->export_report();
         $result->success = 'success';
     }
-   
-
 } catch (Exception $e) {
     $result->message = $e->getMessage();
 }

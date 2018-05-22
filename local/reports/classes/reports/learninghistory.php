@@ -111,8 +111,9 @@ class learninghistory extends base {
             'bookingstatus',
             'classcost',
             'classcostcurrency',
-            'cpd',  
+            'cpd',
             'learningdesc',
+            'classcategory',
             'classtype',
             'bookingplaceddate',
             'coursecode',
@@ -122,7 +123,8 @@ class learninghistory extends base {
             'region_name',
             'geo_region',
             'company_code',
-            'centre_code');
+            'centre_code',
+            'courseregion');
 
         $this->sortfields = array(
             'classname');
@@ -132,7 +134,10 @@ class learninghistory extends base {
             'classstartdate',
             'classenddate',
             'bookingstatus',
-            'coursename');
+            'coursename',
+            'classcategory',
+            'classcost',
+            'classcostcurrency');
 
         $this->textfilterfields = array(
             'actualregion' => 'dropdown',
@@ -187,7 +192,7 @@ class learninghistory extends base {
         global $DB;
 
         \core_php_time_limit::raise();
-        raise_memory_limit(MEMORY_EXTRA);
+        raise_memory_limit(MEMORY_HUGE);
 
         if (empty($this->sort)) {
             $this->sort = 'lte.staffid';
@@ -269,7 +274,7 @@ class learninghistory extends base {
         //echo $wherestring;
         //$wherestring = '';
 
-        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode
+        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode, ltco.courseregion
                   FROM {local_taps_enrolment} as lte
                   JOIN SQLHUB.ARUP_ALL_STAFF_V as staff 
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
@@ -563,6 +568,36 @@ class learninghistory extends base {
             }
         }
 
+        // Show classcategory for CPD records
+        if ($key == 'classcategory') {
+            if (!empty($row->cpdid)) {
+                return $row->$key;
+            } else {
+                return '';
+            }
+        }
+
+        if ($key == 'classcost') {
+            if ($row->pricebasis == 'No Charge') {
+                return '';
+            } else if (!empty($row->price)) {
+                return $row->price;
+            } else {
+                return $row->$key;
+            }
+        }
+
+        if ($key == 'classcostcurrency') {
+            if ($row->pricebasis == 'No Charge') {
+                return '';
+            } else if (!empty($row->price)) {
+                return $row->currencycode;
+            } else if (!empty($row->classcost)) {
+                return $row->$key;
+            } else {
+                return '';
+            }
+        }
     }
 
     public function get_dropdown($field) {

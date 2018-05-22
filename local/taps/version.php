@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111612;
+$plugin->version   = 2015111613;
 $plugin->requires  = 2015111600; // Moodle 3.0.x.
 $plugin->component = 'local_taps';
 $plugin->maturity  = MATURITY_STABLE;

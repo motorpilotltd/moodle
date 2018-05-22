@@ -121,6 +121,7 @@ class report {
         $this->pages = array();
         $this->add_page('report', 'learninghistory');
         $this->add_page('report', 'elearningstatus');
+        $this->add_page('report', 'daterangelearning');
         if (!array_key_exists($this->page, $this->pages)) {
             print_error('error:pagedoesnotexist', 'local_reports', print_r($this->pages, true));
         }
