@@ -24,11 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version      = 2015111601;
+$plugin->version      = 2015111602;
 $plugin->requires     = 2015111600; // Moodle 3.0.
 $plugin->component    = 'mod_arupadvert';
 $plugin->maturity     = MATURITY_STABLE;
-$plugin->release      = '3.0.1 (Build: 2015111601)';
+$plugin->release      = '3.0.2 (Build: 2015111602)';
 
 $plugin->dependencies = array(
     'local_coursemetadata' => 2015111600,
