@@ -101,7 +101,7 @@ class mod_arupadvert_renderer extends plugin_renderer_base {
 
         $template->canviewshare = $info->canviewshare;
         $template->description = json_encode(format_string($info->description));
-        $template->ogsharelink = urlencode("$CFG->wwwroot/mod/arupadvert/redirect.php?shortname={$this->page->course->shortname}");
+        $template->ogsharelink = urlencode(new moodle_url("/mod/arupadvert/redirect.php", ['shortname' => $this->page->course->shortname]));
         return $this->render_from_template('mod_arupadvert/cminfoview', $template);
     }
 
