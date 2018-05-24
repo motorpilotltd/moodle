@@ -1785,9 +1785,8 @@ EOS;
 
         $classidwhere = '';
         if ($classid) {
-            $this->classid = $classid;
             $classidwhere = 'AND lte.classid = :classid';
-            $params['classid'] = $this->classid;
+            $params['classid'] = $classid;
         }
 
         $sql = "SELECT lte.enrolmentid, lte.classid, lte.classname, u.*

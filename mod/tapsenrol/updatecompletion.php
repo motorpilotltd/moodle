@@ -179,7 +179,7 @@ if (isset($_POST['submit'])) {
 
     if (!empty($tapsenrol->classes)) {
         $classfilterform = new \mod_tapsenrol\class_filter_form(null, array('id' => $tapsenrol->cm->id, 'classes' => $tapsenrol->classes));
-        $classfilterform->set_data(array('classid' => $tapsenrol->classid));
+        $classfilterform->set_data(array('classid' => $classid));
         echo $classfilterform->display();
     }
 
