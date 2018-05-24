@@ -264,7 +264,7 @@ class migrate {
 
                 // Link local_certif to the moodle course.
                 $DB->execute('UPDATE {certif} SET courseid = :courseid WHERE courseid = :tapscourseid',
-                        ['courseid' => $course->id, 'tapscourseid' => $advert->tapscourseid]);
+                        ['courseid' => $course->id, 'tapscourseid' => $tapscourse->courseid]);
 
                 $DB->delete_records_select('local_taps_course', 'id = :tapscourseid', ['tapscourseid' => $tapscourse->id]);
                 $DB->delete_records_select('local_taps_course_category', 'courseid = :courseid',
