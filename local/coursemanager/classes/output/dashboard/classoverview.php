@@ -45,12 +45,9 @@ class classoverview extends base {
         $data->editing = $this->editing;
 
         $page = $this->coursemanager->get_current_pageobject();
-        $currentcourse = $this->coursemanager->get_current_courseobject($this->coursemanager->cmcourse->id);
-        if (!empty($currentcourse->moodlecourse)) {
-            $tapsenrolid = $this->tapsenrol_id($currentcourse->moodlecourse->id);
-        }
+        $tapsenrolid = $this->tapsenrol_id($this->coursemanager->course->id);
         $data->addclass = $page->addclass;
-        $addclassparams = array('page' => 'class', 'cmcourse' => $currentcourse->id, 'cmclass' => -1);
+        $addclassparams = array('page' => 'class', 'courseid' => $this->coursemanager->course->id, 'cmclass' => -1);
         $data->addclassurl = new moodle_url($this->coursemanager->baseurl, $addclassparams);
         
         $data->canedit = false;
@@ -81,7 +78,7 @@ class classoverview extends base {
                 $th->nosort = false;
                 $th->sortdesc = false;
                 $th->sortasc = false;
-                $myparams = array('page' => 'classoverview', 'classsort' => $fieldname, 'cmcourse' => $currentcourse->id, 'dir' => 'ASC');
+                $myparams = array('page' => 'classoverview', 'classsort' => $fieldname, 'courseid' => $this->coursemanager->course->id, 'dir' => 'ASC');
                 $params = array_merge($this->coursemanager->searchparams, $myparams);
                 if ($this->coursemanager->classsort == $fieldname) {
                     if ($this->coursemanager->direction == 'ASC') {
@@ -122,7 +119,7 @@ class classoverview extends base {
             }
             try {
                 $timezone = new \DateTimeZone($class->usedtimezone);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $timezone = new \DateTimeZone(date_default_timezone_get());
             }
             $showclass = new stdClass();
@@ -149,7 +146,7 @@ class classoverview extends base {
                 }
                 if ($fieldname == 'classname') {
                     $viewparams = array('page' => 'class',
-                        'cmcourse' => $currentcourse->id,
+                        'courseid' => $this->coursemanager->course->id,
                         'cmclass' => $class->id,
                         'start' => $this->coursemanager->start);
                     $params = array_merge($this->coursemanager->searchparams, $viewparams);
@@ -164,7 +161,7 @@ class classoverview extends base {
 
                 // Edit.
                 $editparams = array('page' => 'class',
-                    'cmcourse' => $currentcourse->id,
+                    'courseid' => $this->coursemanager->course->id,
                     'cmclass' => $class->id,
                     'start' => $this->coursemanager->start,
                     'edit' => 1);
@@ -174,7 +171,7 @@ class classoverview extends base {
                 $value->value = $edit;
 
                 // Delegate list.
-                if ($realcourse = $DB->get_record('course', array('idnumber' => $currentcourse->courseid))) {
+                if ($realcourse = $DB->get_record('course', array('idnumber' => $this->coursemanager->course->id))) {
                     $rcc = context_course::instance($realcourse->id);
                     $params = array('contextid' => $rcc->id, 'classid' => $class->classid);
                     $urldelegate = new moodle_url('/local/delegatelist/index.php', $params);
@@ -188,7 +185,7 @@ class classoverview extends base {
 
                 // Duplicate
                 $duplicateparams = array('duplicate' => true,
-                    'cmcourse' => $currentcourse->id,
+                    'courseid' => $this->coursemanager->course->id,
                     'cmclass' => $class->id,
                     'page' => 'class',
                     'start' => $this->coursemanager->start,
@@ -201,7 +198,7 @@ class classoverview extends base {
 
                 // Delete.
                 $deleteparams = array('action' => 'deleteclass',
-                    'cmcourse' => $currentcourse->id,
+                    'courseid' => $this->coursemanager->course->id,
                     'cmclass' => $class->id,
                     'page' => 'classoverview',
                     'start' => $this->coursemanager->start,
@@ -236,7 +233,7 @@ class classoverview extends base {
                 } else {
                     // Create URL to force deletion
                     $deleteparams = array('action' => 'forcedeleteclass',
-                        'cmcourse' => $currentcourse->id,
+                        'courseid' => $this->coursemanager->course->id,
                         'cmclass' => $class->id,
                         'page' => 'classoverview',
                         'start' => $this->coursemanager->start,
@@ -251,7 +248,7 @@ class classoverview extends base {
                 
                 // Cancel this action
                 $cancelparams = array(
-                    'cmcourse' => $currentcourse->id,
+                    'courseid' => $this->coursemanager->course->id,
                     'page' => 'classoverview',
                     'start' => $this->coursemanager->start);
                 $params = array_merge($this->coursemanager->searchparams, $cancelparams);

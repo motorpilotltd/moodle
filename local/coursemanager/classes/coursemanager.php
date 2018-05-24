@@ -56,7 +56,7 @@ class coursemanager {
 
     private $page;
     private $user;
-    private $cmcourse;
+    private $course;
     private $context;
     private $formid;
     private $form;
@@ -75,7 +75,7 @@ class coursemanager {
      * @param string page the name of the page
      * @param int $formid the id of the form
      */
-    public function __construct($cmcourse, $cmclass, $page, $formid) {
+    public function __construct($courseid, $cmclass, $page, $formid) {
         global $PAGE, $USER;
 
         // Get / Set the start / limit for amount of courses retreived from DB.
@@ -94,7 +94,7 @@ class coursemanager {
         $this->baseurl = '/local/coursemanager/index.php';
         $this->searchparams = array();
         $this->user = $USER;
-        $this->cmcourse = $this->get_course($cmcourse);
+        $this->course = get_course($courseid);
         $this->cmclass = $this->get_class($cmclass);
         $this->page = $page;
         $this->formid = $formid;
@@ -175,12 +175,12 @@ class coursemanager {
                 if (!$this->check_permission('local/coursemanager:deletecourse')) {
                     return false;
                 }
-                $cmcourse = $this->get_current_courseobject($this->cmcourse->id);
+                $cmcourse = $this->get_current_courseobject($this->course->id);
                 if ($cmcourse->classes > 0) {
-                    $this->pendingdeletecourse = $this->cmcourse->id;
+                    $this->pendingdeletecourse = $this->course->id;
                 } else {
-                    $this->cmcourse->archived = 1;
-                    $DB->update_record('local_taps_course', $this->cmcourse);
+                    $this->course->visible = false;
+                    update_course($this->course);
                 }
             }
             if ($this->action == 'deleteclass') {
@@ -276,19 +276,6 @@ class coursemanager {
         $page = new $class($this);
         $content .= $this->renderer->render($page);
         return $content;
-    }
-
-
-    private function get_course($cmcourseid) {
-        global $DB;
-        $params = array('id' => $cmcourseid);
-        if ($cmcourseid > 0 && $cmcourse = $DB->get_record('local_taps_course', $params)) {
-            return $cmcourse;
-        } else {
-            $cmcourse = new stdClass();
-            $cmcourse->id = -1;
-            return $cmcourse;
-        }
     }
 
     private function get_class($cmclassid) {
@@ -507,7 +494,7 @@ class coursemanager {
      */
     private function find_classes() {
         global $DB;
-        if ($this->cmcourse->id > 0) {
+        if ($this->course->id > 0) {
             if (empty($this->classsort)) {
                 $this->classsort = 'classstarttime';
                 $this->direction = 'DESC';
@@ -539,7 +526,7 @@ class coursemanager {
                       GROUP BY c.". implode(', c.', $showfields) . " " .
                       $order;
 
-            $params['courseid'] = $this->cmcourse->courseid;
+            $params['courseid'] = $this->course->id;
             $this->classlist = $DB->get_records_sql($sql, $params);
         }
     }
@@ -550,7 +537,6 @@ class coursemanager {
     public function coursemanager_pages() {
         $this->pages = array();
         $this->add_page('dashboard', 'overview');
-        $this->add_page('form', 'course', 'cmcourse');
         $this->add_page('dashboard', 'classoverview');
         $this->add_page('form', 'class', 'cmclass');
         $this->add_page('form', 'class_scheduled', 'cmclass');
@@ -638,8 +624,8 @@ class coursemanager {
             }
         }
 
-        if ($this->cmcourse->id >= 1 ) {
-            $myparams['cmcourse'] = $this->cmcourse->id;
+        if ($this->course->id >= 1 ) {
+            $myparams['courseid'] = $this->course->id;
             $params = array_merge($this->searchparams, $myparams);
             $currentcourse = $this->get_current_courseobject($this->cmcourse->id);
 
@@ -681,7 +667,7 @@ class coursemanager {
             }
         }
 
-        if ($this->cmcourse->id == -1) {
+        if ($this->course->id == -1) {
             if ($name == 'course') {
                 $page->visible = true;
                 $params['edit'] = 1;
@@ -719,7 +705,7 @@ class coursemanager {
 
         foreach ($this->pages as $page) {
             $navitem = clone($page);
-            $navitem->cmcourse = $this->cmcourse->id;
+            $navitem->course = $this->course->id;
             $navigation->items[] = $navitem;
         }
 
@@ -737,8 +723,8 @@ class coursemanager {
 
         $mdlcourseid = false;
 
-        if ($this->cmcourse && $this->cmcourse->id !== -1) {
-            $mdlcourseid = $DB->get_field('course', 'id', ['idnumber' => $this->cmcourse->courseid]);
+        if ($this->course && $this->course->id !== -1) {
+            $mdlcourseid = $DB->get_field('course', 'id', ['idnumber' => $this->course->id]);
         }
 
         return $mdlcourseid === false ? \context_system::instance() : \context_course::instance($mdlcourseid);

@@ -66,7 +66,7 @@ class cmclass {
                 }
                 // Class Types
                 $params = array(
-                    'cmcourse' => $this->coursemanager->cmcourse->id,
+                    'courseid' => $this->coursemanager->course->id,
                     'start' => $this->coursemanager->start,
                     'cmclass' => $this->coursemanager->cmclass->id,
                     'edit' => 1,

@@ -42,7 +42,6 @@ class classtable extends coursetable {
         
         $form = $this->coursemanager->form;
         $page = $this->coursemanager->get_current_pageobject();
-        $this->cmcourse = $this->coursemanager->get_current_courseobject($this->coursemanager->cmcourse->id);
         $fields = array(
             'tab1' => 'header',
             'classname' => 'text',
@@ -68,12 +67,12 @@ class classtable extends coursetable {
             $data->icon = $OUTPUT->pix_icon('i/edit', get_string('form:course:edit', 'local_coursemanager'));
         }
         $this->myparams = array('page' => 'class',
-                'cmcourse' => $this->cmcourse->id, 'cmclass' => $this->coursemanager->cmclass->id, 'edit' => '1');
+                'courseid' => $this->coursemanager->course->id, 'cmclass' => $this->coursemanager->cmclass->id, 'edit' => '1');
 
         $data->rows = array();
         try {
             $timezone = new \DateTimeZone($form->usedtimezone);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $timezone = new \DateTimeZone(date_default_timezone_get());
         }
         foreach ($fields as $key => $type) {

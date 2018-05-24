@@ -165,7 +165,8 @@ class course_edit_form extends moodleform {
         }
 
         /* BEGIN CORE MOD - /local/coursemetadata */
-        coursemetadata_definition($mform, $course->id);
+        $courseid = isset($course->id) ? $course->id : null;
+        coursemetadata_definition($mform, $courseid);
         /* END CORE MOD - /local/coursemetadata */
 
         // Course format.

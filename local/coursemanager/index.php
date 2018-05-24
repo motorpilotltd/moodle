@@ -33,12 +33,12 @@ $PAGE->navbar->add(get_string('pluginname', 'local_coursemanager'), new moodle_u
 $PAGE->navbar->add(get_string('managecourses', 'local_coursemanager'));
 $PAGE->blocks->show_only_fake_blocks();
 
-$cmcourse = optional_param('cmcourse', 0, PARAM_INT);
+$courseid = optional_param('courseid', 0, PARAM_INT);
 $cmclass = optional_param('cmclass', 0, PARAM_INT);
 $page = optional_param('page', 'overview', PARAM_TEXT);
 $formid = optional_param('formid', 0, PARAM_INT);
 
-$cm = new \local_coursemanager\coursemanager($cmcourse, $cmclass, $page, $formid);
+$cm = new \local_coursemanager\coursemanager($courseid, $cmclass, $page, $formid);
 $cm->prepare_page();
 
 $PAGE->set_title(get_string('pluginname', 'local_coursemanager'));

@@ -18,7 +18,6 @@ class delegate_list {
     private $_context;
     private $_course;
     private $_tapsenrolcm;
-    private $_tapscourseid;
     private $_classes;
     private $_activeclass;
 
@@ -61,7 +60,6 @@ class delegate_list {
         }
 
         $this->_tapsenrolcm = get_coursemodule_from_instance('tapsenrol', $tapsenrol->id);
-        $this->_tapscourseid = $tapsenrol->tapscourse;
 
         $this->_taps = new \local_taps\taps();
 
@@ -119,7 +117,7 @@ class delegate_list {
         }
 
         $where = 'courseid = :courseid';
-        $params = array('courseid' => $this->_tapscourseid);
+        $params = array('courseid' => $this->_course->id);
         if ($classesinlast && !$this->has_capability('manager')) {
             $where .= ' AND (classendtime > :classendtime OR classendtime = 0)';
             $params['classendtime'] = strtotime("{$classesinlast} days ago");

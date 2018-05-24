@@ -74,7 +74,7 @@ class local_taps_addcourse_form extends moodleform {
         $mform->addHelpButton('advertblockimage', 'advertblockimage', 'arupadvert');
 
         $arupadvertalreadyused = $DB->get_records_menu('arupadvertdatatype_taps', array(), '', 'tapscourseid as id, tapscourseid');
-        $tapsenrolalreadyused = $DB->get_records_menu('tapsenrol', array(), '', 'tapscourse as id, tapscourse');
+        $tapsenrolalreadyused = $DB->get_records_menu('tapsenrol', array(), '', 'course as id, course');
         $alreadyused = $arupadvertalreadyused + $tapsenrolalreadyused;
 
         $select = '';

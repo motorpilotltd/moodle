@@ -39,7 +39,6 @@ class cmform_class extends moodleform {
         $mform->settype('duplicate', PARAM_INT);
 
         $this->add_element("start", "hidden", PARAM_INT);
-        $this->add_element("cmcourse", "hidden", PARAM_INT);
         $this->add_element("cmclass", "hidden", PARAM_INT);
         $this->add_element("courseid", "hidden", PARAM_INT);
         $this->add_element("coursename", "hidden", PARAM_INT);
@@ -159,15 +158,12 @@ class cmform_class extends moodleform {
         if ($data['usedtimezone'] == "0") {
             $errors['usedtimezone'] = get_string('required', 'local_coursemanager');
         }
-        if (!isset($data['cmcourse'])) {
-            $errors['classname'] = get_string('formerror', 'local_coursemanager');
-        }
-        $course = $DB->get_record('local_taps_course', array('id' => $data['cmcourse']));
+        $course = get_course($data['courseid']);
         $sql = 'SELECT id FROM {local_taps_class}
-                 WHERE courseid = :cmcourse
+                 WHERE courseid = :courseid
                    AND LOWER(classname) = LOWER(:classname)
                    AND NOT classid  = :classid';
-        $dupes = $DB->get_records_sql($sql, array('cmcourse' => $course->courseid, 'classname' => $data['classname'], 'classid' => $data['classid']));
+        $dupes = $DB->get_records_sql($sql, array('courseid' => $course->id, 'classname' => $data['classname'], 'classid' => $data['classid']));
         if (count($dupes) > 0) {
             $errors['classname'] =  get_string('duplicateclassname', 'local_coursemanager');
         }

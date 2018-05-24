@@ -85,10 +85,10 @@ class forms {
         global $DB, $USER, $SESSION;
 
         $sform = new stdClass();
-        $sform->cmcourse = '-1';
+        $sform->course = '-1';
         $sform->cmclass = '-1';
         $sform->id = '-1';
-        if ($this->coursemanager->page == 'course' && $this->coursemanager->cmcourse->id == -1) {
+        if ($this->coursemanager->page == 'course' && $this->coursemanager->course->id == -1) {
             //return $sform;
         }
         $sform->start = $this->coursemanager->start;
@@ -100,7 +100,7 @@ class forms {
                 $classdata->cmclass = $classdata->id;
                 $classdata->cmcourse = $DB->get_field('local_taps_course', 'id', array('courseid' => $classdata->courseid));
                 $classdata->start = $this->coursemanager->start;
-                $classdata->coursename = $classdata->coursenamedisplay = $this->coursemanager->cmcourse->coursename;
+                $classdata->coursename = $classdata->coursenamedisplay = $this->coursemanager->course->fullname;
                 if ($this->coursemanager->editing == 1 && $classdata->classtype == 'Scheduled') {
                     // Unset for Scheduled classes as hidden fields in secondary form.
                     unset($classdata->classtype);
@@ -109,7 +109,7 @@ class forms {
                 // Need to do some date/time offsetting.
                 try {
                     $timezone = new \DateTimeZone($classdata->usedtimezone);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $timezone = new \DateTimeZone(date_default_timezone_get());
                 }
                 $utctimezone = new \DateTimeZone('UTC');
@@ -337,7 +337,7 @@ class forms {
             }
         } else if ($datatype == 'class') {
             $database = 'local_taps_class';
-            $data->coursename = $this->coursemanager->cmcourse->coursename;
+            $data->coursename = $this->coursemanager->course->fullname;
             if (!isset($data->enrolmentenddateenabled)) {
                 $data->enrolmentenddate = 0;
             }
@@ -451,7 +451,7 @@ class forms {
                 $data->classstatus = $record->classstatus;
                 $data->classstarttime = $record->classstarttime;
             }
-            $params = array('page' => 'classoverview', 'cmcourse' => $data->cmcourse, 'start' => 0);
+            $params = array('page' => 'classoverview', 'courseid' => $data->courseid, 'start' => 0);
             if ($eventtype === 'updated' && $data->classtype == 'Scheduled' && $data->classstatus == 'Normal' && $data->classstarttime > time()) {
                 // Any 'placed' enrolments?
                 $statuses = array_merge($taps->get_statuses('placed'));

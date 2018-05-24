@@ -190,7 +190,7 @@ class overview extends base {
                 }
                 // Create link to form
                 if ($fieldname == 'coursecode') {
-                    $myparams = array('page' => 'course', 'cmcourse' => $course->id, 'start' => $this->coursemanager->start);
+                    $myparams = array('page' => 'course', 'courseid' => $course->id, 'start' => $this->coursemanager->start);
                     $params = array_merge($this->coursemanager->searchparams, $myparams);
                     $link = new moodle_url('/local/coursemanager/index.php', $params);
                     $value->value = html_writer::link($link, $value->value);
@@ -205,14 +205,14 @@ class overview extends base {
             if ($page->add) {
                 $value = new stdClass();
 
-                $editparams = array('page' => 'course', 'cmcourse' => $course->id, 'start' => $this->coursemanager->start);
+                $editparams = array('page' => 'course', 'courseid' => $course->id, 'start' => $this->coursemanager->start);
                 $params = array_merge($this->coursemanager->searchparams, $editparams);
                 $editlink = new moodle_url('/local/coursemanager/index.php', $params);
                 $edit = $OUTPUT->action_icon($editlink, new \pix_icon('i/edit', get_string('edit')));
                 $value->value = $edit;
 
                 $deleteparams = array('action' => 'deletecourse',
-                    'cmcourse' => $course->id,
+                    'courseid' => $course->id,
                     'page' => 'overview',
                     'start' => $this->coursemanager->start,
                     'limit' => $this->coursemanager->limit,
@@ -242,7 +242,7 @@ class overview extends base {
         }
 
         $data->addcourse = $page->addcourse;
-        $addcourseparams = array('page' => 'course', 'cmcourse' => $this->coursemanager->cmcourse->id);
+        $addcourseparams = array('page' => 'course', 'courseid' => $this->course->id);
         $data->addcourseurl = new moodle_url('/local/coursemanager', $addcourseparams);
         $data->hassearch = $this->coursemanager->hassearch;
         $data->filteroptions = $this->coursemanager->filteroptions;
