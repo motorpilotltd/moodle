@@ -152,10 +152,11 @@ class eventobservers {
         ];
 
         // Update values.
+        $expirytime = ($au->expirydate != 0) ? $au->expirydate : $au->validityexpirydate;
         $windowopentimediff = $completion->timeexpires - $completion->timewindowsopens;
         $completion->timecompleted = $au->completiondate;
-        $completion->timeexpires = $completion->duedate = $au->expirydate;
-        $completion->timewindowsopens = $au->expirydate - $windowopentimediff;
+        $completion->timeexpires = $completion->duedate = $expirytime;
+        $completion->timewindowsopens = $expirytime - $windowopentimediff;
         $DB->update_record('certif_completions', $completion);
 
         // Logging (new) values.
