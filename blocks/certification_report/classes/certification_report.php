@@ -1364,7 +1364,7 @@ class certification_report {
             WHERE ce.userid = :userid
             AND ce.certifid = :certifid
             AND ce.archived = :archived
-            AND ce.timeexpires > :now
+            AND (ce.timeexpires > :now OR ce.timeexpires = 0)
         ";
 
         return $DB->get_record_sql($query, ['userid' => $userid, 'certifid' => $certifid, 'archived' => 0, 'now' => time()], IGNORE_MULTIPLE);
