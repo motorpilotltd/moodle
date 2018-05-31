@@ -21,7 +21,7 @@ class certification_report {
 
     /**
      * Prepare sql for given criteria
-     * 
+     *
      * @param $criteria
      * @param $paramname
      * @param $field
@@ -367,11 +367,11 @@ class certification_report {
                         DISTINCT
                         cau.userid,
                         cau.certifid
-                    FROM {cohort} c 
+                    FROM {cohort} c
                     JOIN {certif_assignments} ca ON  ca.assignmenttypeid = c.id AND ca.assignmenttype = :assignmenttype
                     JOIN {certif_assignments_users} cau ON cau.assignmentid = ca.id
                     WHERE c.id {$sqldata}
-                ) ca ON ca.userid = cua.userid AND ca.certifid = cua.certifid 
+                ) ca ON ca.userid = cua.userid AND ca.certifid = cua.certifid
             ";
             $params['assignmenttype'] = certification::ASSIGNMENT_TYPE_AUDIENCE;
         }
@@ -489,7 +489,7 @@ class certification_report {
               CASE WHEN (h.REGION_NAME IS NULL OR h.REGION_NAME = '') THEN '-1' ELSE h.REGION_NAME END as actualregion,
               CASE WHEN (h.GEO_NAME IS NULL OR h.GEO_NAME = '') THEN '-1' ELSE h.GEO_NAME END as georegion,
               CASE WHEN u.icq = '' THEN '-1' ELSE u.icq END as costcentre,
-              ce.id as exemptionid, 
+              ce.id as exemptionid,
               cc.duedate,
               cc.progress,
               cc.timeexpires,
@@ -693,7 +693,7 @@ class certification_report {
                     WHEN
                         (
                             cc.timecompleted > 0
-                            AND 
+                            AND
                             (
                                 cc.timeexpires = 0
                                 OR cc.timeexpires > :timeexpires3
@@ -702,14 +702,14 @@ class certification_report {
                         OR
                         (
                             cca.timecompleted > 0
-                            AND 
+                            AND
                             (
                                 cca.timeexpires = 0
                                 OR cca.timeexpires > :timeexpires4
                             )
                         )
                     THEN 100
-                    ELSE 0 
+                    ELSE 0
                     END
                 ) as progresssum,
                 SUM(
@@ -802,7 +802,7 @@ class certification_report {
                 h.REGION_NAME as actualregion,
                 h.GEO_REGION as georegion,
                 CASE WHEN u.icq = '' THEN '-1' ELSE u.icq END as costcentre,
-                ce.id as exemptionid, 
+                ce.id as exemptionid,
                 cc.duedate,
                 cc.progress,
                 cc.timeexpires,
@@ -835,7 +835,7 @@ class certification_report {
                   cca.certifid,
                   MAX(cca.timecompleted) as timecompleted,
                   MAX(cca.timeexpires) as timeexpires
-                FROM {certif_completions_archive} cca 
+                FROM {certif_completions_archive} cca
                 GROUP BY cca.userid, cca.certifid
             ) cca ON cca.userid = cua.userid AND cca.certifid = cua.certifid
             ".$join."
@@ -843,12 +843,12 @@ class certification_report {
             ".$where."
             ".$groupby."
             ".$orderby."
-            
+
         ";
 
         $params['now'] = $now;
         $params['archived'] = 0;
-        
+
         $completiondata = $DB->get_recordset_sql($query, $params);
 
         /**
@@ -868,7 +868,7 @@ class certification_report {
                   SUM(u.users) + SUM(u.optionalusers) + SUM(u.exemptusers) as allusers,
                   SUM(u.compliant) + SUM(u.optionalcompliant) + SUM(u.exemptcompliant) as allcompliant
                 FROM
-                (   
+                (
                     SELECT
                         u.id,
                         u.icq,
@@ -1099,7 +1099,7 @@ class certification_report {
                 $data[$compldata->itemid]['certifications'][$compldata->certifid]['optionaluserscounter'] = $compldata->optionaluserscounter;
                 $data[$compldata->itemid]['certifications'][$compldata->certifid]['exemptprogress'] = round($compldata->exemptprogresssum / MAX(1, $compldata->exemptuserscounter));
                 $data[$compldata->itemid]['certifications'][$compldata->certifid]['exemptuserscounter'] = $compldata->exemptuserscounter;
-                
+
                 $data['viewtotal']['certifications'][$compldata->certifid]['progresssum'] += $compldata->progresssum;
                 $data['viewtotal']['certifications'][$compldata->certifid]['userscounter'] += $compldata->userscounter;
                 $data['viewtotal']['certifications'][$compldata->certifid]['progress'] = round($data['viewtotal']['certifications'][$compldata->certifid]['progresssum'] / MAX(1, $data['viewtotal']['certifications'][$compldata->certifid]['userscounter']));
@@ -1356,7 +1356,7 @@ class certification_report {
         global $DB;
 
         $query = "
-            SELECT 
+            SELECT
               ce.*,
               ".$DB->sql_fullname('u.firstname', 'u.lastname')." as modifier
             FROM {certif_exemptions} ce
@@ -1364,9 +1364,10 @@ class certification_report {
             WHERE ce.userid = :userid
             AND ce.certifid = :certifid
             AND ce.archived = :archived
+            AND (ce.timeexpires > :now OR ce.timeexpires = 0)
         ";
 
-        return $DB->get_record_sql($query, ['userid' => $userid, 'certifid' => $certifid, 'archived' => 0], IGNORE_MULTIPLE);
+        return $DB->get_record_sql($query, ['userid' => $userid, 'certifid' => $certifid, 'archived' => 0, 'now' => time()], IGNORE_MULTIPLE);
     }
 
     /**
@@ -1395,17 +1396,17 @@ class certification_report {
             $DB->update_record('certif_exemptions', $record);
         }
 
-            $record = new \stdClass();
-            $record->userid = $userid;
-            $record->modifierid = $USER->id;
-            $record->certifid = $certifid;
-            $record->reason = $reason;
-            $record->timeexpires = ($timeexpires != '' ? strtotime($timeexpires) : 0);
-            $record->timecreated = time();
-            $record->timemodified = time();
+        $record = new \stdClass();
+        $record->userid = $userid;
+        $record->modifierid = $USER->id;
+        $record->certifid = $certifid;
+        $record->reason = $reason;
+        $record->timeexpires = ($timeexpires != '' ? strtotime($timeexpires) : 0);
+        $record->timecreated = time();
+        $record->timemodified = time();
         $record->archived = $archived;
-            $DB->insert_record('certif_exemptions', $record);
-        }
+        $DB->insert_record('certif_exemptions', $record);
+    }
 
     /**
      * Get rag status basing on progress for region / cost centre
@@ -1427,7 +1428,7 @@ class certification_report {
 
     /**
      * Export data to CSV
-     * 
+     *
      * @param $certifications
      * @param $data
      * @return mixed
