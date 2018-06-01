@@ -86,7 +86,9 @@ function hvp_get_core_settings($context) {
  * @param \context_course|\context_module $context
  * @return array
  */
-function hvp_get_core_assets($context) {
+/* BEGIN CORE MOD */
+function hvp_get_core_assets($context, $nojs = false, $nocss = false) {
+/* END CORE MOD */
     global $CFG, $PAGE;
 
     // Get core settings.
@@ -104,18 +106,22 @@ function hvp_get_core_assets($context) {
     // Use relative URL to support both http and https.
     $liburl = $CFG->httpswwwroot . '/mod/hvp/library/';
     $relpath = '/' . preg_replace('/^[^:]+:\/\/[^\/]+\//', '', $liburl);
-
-    // Add core stylesheets.
-    foreach (\H5PCore::$styles as $style) {
-        $settings['core']['styles'][] = $relpath . $style . $cachebuster;
-        $PAGE->requires->css(new moodle_url($liburl . $style . $cachebuster));
+/* BEGIN CORE MOD */
+    if (!$nocss) {
+        // Add core stylesheets.
+        foreach (\H5PCore::$styles as $style) {
+            $settings['core']['styles'][] = $relpath . $style . $cachebuster;
+            $PAGE->requires->css(new moodle_url($liburl . $style . $cachebuster));
+        }
     }
-    // Add core JavaScript.
-    foreach (\H5PCore::$scripts as $script) {
-        $settings['core']['scripts'][] = $relpath . $script . $cachebuster;
-        $PAGE->requires->js(new moodle_url($liburl . $script . $cachebuster), true);
+    if (!$nojs) {
+        // Add core JavaScript.
+        foreach (\H5PCore::$scripts as $script) {
+            $settings['core']['scripts'][] = $relpath . $script . $cachebuster;
+            $PAGE->requires->js(new moodle_url($liburl . $script . $cachebuster), true);
+        }
     }
-
+/* END CORE MOD */
     return $settings;
 }
 
