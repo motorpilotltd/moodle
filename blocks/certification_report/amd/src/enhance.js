@@ -95,7 +95,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'core/log',
                     $.ajax({
                         type: "POST",
                         url: cfg.wwwroot + '/blocks/certification_report/ajax/exemption.php',
-                        dataType: "HTML",
+                        dataType: "json",
                         data: {
                             action: 'saveexemption',
                             reason: reason,
@@ -103,17 +103,21 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'core/log',
                             userid: userid,
                             certifid: certifid
                         },
-                        success: function () {
-                            str.get_string('notrequired', 'block_certification_report').done(function(s) {
-                                var html = '<a href="#" class="setexemption" data-userid="' +
-                                    userid +
-                                    '" data-certifid="' +
-                                    certifid + '">' +
-                                    s +
-                                    '</a>';
-                                $('#certif_data_' + userid + '_' + certifid).html(html);
-                                $('.exemption-modal-wrapper').remove();
-                            }).fail(notification.exception);
+                        success: function (data) {
+                            if (data.hasexpired) {
+                                location.reload();
+                            } else {
+                                str.get_string('notrequired', 'block_certification_report').done(function(s) {
+                                    var html = '<a href="#" class="setexemption" data-userid="' +
+                                        userid +
+                                        '" data-certifid="' +
+                                        certifid + '">' +
+                                        s +
+                                        '</a>';
+                                    $('#certif_data_' + userid + '_' + certifid).html(html);
+                                    $('.exemption-modal-wrapper').remove();
+                                }).fail(notification.exception);
+                            }
                         }
                     });
                 }

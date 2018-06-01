@@ -213,19 +213,11 @@ class tapsenrol {
 
     public function get_tapsclasses($canview = true) {
         if (!isset($this->_tapsclasses[$this->tapsenrol->tapscourse]) && $canview) {
-            $this->_tapsclasses[$this->tapsenrol->tapscourse] = $this->taps->get_course_classes($this->tapsenrol->tapscourse, false, false);
             $now = time();
-            foreach ($this->_tapsclasses[$this->tapsenrol->tapscourse] as $index => $class) {
-                $classstartdateok =
-                        $class->classstatus == 'Planned'
-                        || $this->taps->is_classtype($class->classtype, 'elearning')
-                        || $class->classstarttime > $now;
-                $enrolmentstartdateok = $class->enrolmentstartdate < $now;
-                $enrolmentenddateok = $class->enrolmentenddate > $now || $class->enrolmentenddate == 0;
-                if (!$classstartdateok || !$enrolmentenddateok || !$enrolmentstartdateok) {
-                    unset($this->_tapsclasses[$this->tapsenrol->tapscourse][$index]);
-                }
-            }
+            $classtypes = "'" . implode("', '", $this->taps->get_classtypes('elearning')) . "'";
+            $extrawhere = "(classstatus = 'Planned' OR classtype IN ({$classtypes}) OR classstarttime > {$now})";
+            $extrawhere .= " AND enrolmentstartdate < {$now} AND (enrolmentenddate > {$now} OR enrolmentenddate = 0)";
+            $this->_tapsclasses[$this->tapsenrol->tapscourse] = $this->taps->get_course_classes($this->tapsenrol->tapscourse, false, false, '*', $extrawhere);
             // Sort in ascending date ordering with planned classes last.
             usort(
                 $this->_tapsclasses[$this->tapsenrol->tapscourse],
@@ -242,7 +234,7 @@ class tapsenrol {
                 }
             );
         }
-        
+
         return isset($this->_tapsclasses[$this->tapsenrol->tapscourse]) ? $this->_tapsclasses[$this->tapsenrol->tapscourse] : [];
     }
 
@@ -885,7 +877,7 @@ EOS;
 
     public function move_workflow($enrolment, $user, $class, $targetclass, $resendemail) {
         global $DB, $USER;
-        
+
         $time = time();
 
         // Load tracking record, if exists.
@@ -1079,7 +1071,7 @@ EOS;
 
         // Run an enrolment check to update groups.
         $this->enrolment_check($enrolmentnew->staffid, false);
-        
+
         return true;
     }
 
@@ -1746,7 +1738,7 @@ EOS;
                 }
             }
         }
-        
+
         return $return;
     }
 }

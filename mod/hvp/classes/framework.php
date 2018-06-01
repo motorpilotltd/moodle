@@ -891,6 +891,7 @@ class framework implements \H5PFrameworkInterface {
             'course' => $content['course'],
             'intro' => $content['intro'],
             'introformat' => $content['introformat'],
+            'displaycontent' => $content['displaycontent'],
             'json_content' => $content['params'],
             'embed_type' => 'div',
             'main_library_id' => $content['library']['libraryId'],
@@ -1028,6 +1029,7 @@ class framework implements \H5PFrameworkInterface {
                       , hl.minor_version
                       , hl.embed_types
                       , hl.fullscreen
+                      , hc.displaycontent
                 FROM {hvp} hc
                 JOIN {hvp_libraries} hl ON hl.id = hc.main_library_id
                 WHERE hc.id = ?", array($id));
@@ -1055,6 +1057,7 @@ class framework implements \H5PFrameworkInterface {
             'libraryMinorVersion' => $data->minor_version,
             'libraryEmbedTypes' => $data->embed_types,
             'libraryFullscreen' => $data->fullscreen,
+            'displaycontent' => $data->displaycontent
         );
 
         return $content;

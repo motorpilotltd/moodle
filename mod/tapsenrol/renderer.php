@@ -103,6 +103,10 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         $delegateurl = new moodle_url('/local/delegatelist/index.php', array('contextid' => $tapsenrol->context->course->id));
         $delegateicon = html_writer::tag('i', '', array('class' => 'fa fa-users'));
 
+        if ($enrolments || $classes) {
+            $seatsremaining = $tapsenrol->taps->get_seats_remaining_by_course($tapsenrol->get_tapscourse()->courseid);
+        }
+
         if ($enrolments) {
             $hideadvert = true;
             foreach ($enrolments as $enrolment) {
@@ -168,8 +172,8 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                     }
                 }
                 $cells[] = $enrolment->duration ? (float) $enrolment->duration.' '.$enrolment->durationunits : '-';
-                $seatsremaining = $tapsenrol->taps->get_seats_remaining($enrolment->classid);
-                $cells[] = ($seatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $seatsremaining) . $delegatebutton;
+                $classseatsremaining = isset($seatsremaining[$enrolment->classid]) ? $seatsremaining[$enrolment->classid] : 0;
+                $cells[] = ($classseatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $classseatsremaining) . $delegatebutton;
                 if (!isset($enrolment->price)) {
                     $class = $tapsenrol->taps->get_class_by_id($enrolment->classid);
                     $enrolment->price = $class ? $class->price : null;
@@ -298,8 +302,8 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                     }
                 }
                 $cells[] = $class->classduration ? (float) $class->classduration.' '.$class->classdurationunits : '-';
-                $seatsremaining = $tapsenrol->taps->get_seats_remaining($class->classid);
-                $cells[] = ($seatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $seatsremaining) . $delegatebutton;
+                $classseatsremaining = isset($seatsremaining[$class->classid]) ? $seatsremaining[$class->classid] : 0;
+                $cells[] = ($classseatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $classseatsremaining) . $delegatebutton;
                 $cells[] = $class->price ? $class->price.' '.$class->currencycode : '-';
                 if ($classtype == 'classroom'
                         && $tapsenrol->tapsenrol->internalworkflowid
@@ -308,7 +312,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                         && $class->classstarttime < (time() + $tapsenrol->iw->closeenrolment)) {
                     $helpicon = $OUTPUT->help_icon('enrol:closed', 'tapsenrol');
                     $cells[] = html_writer::tag('span', get_string('enrol:closed', 'tapsenrol') . '&nbsp;' . $helpicon, array('class' => 'nowrap'));
-                } else if ($seatsremaining == 0) {
+                } else if ($classseatsremaining == 0) {
                     $enrolurl = new moodle_url('/mod/tapsenrol/enrol.php', array('id' => $cmid, 'classid' => $class->classid));
                     $enroltext = get_string('enrol:waitinglist', 'tapsenrol') . ' ' . html_writer::tag('span', '', array('class' => 'caret caret-right'));
                     $cells[] = get_string('classfull', 'tapsenrol') .
@@ -390,11 +394,10 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         if ($classes && $checkseats) {
             foreach ($classes as $class) {
                 if ($class->classid == $checkseats->classid) {
-                    $status = $tapsenrol->taps->get_status_type($checkseats->bookingstatus);
-                    $seatsremaining = $tapsenrol->taps->get_seats_remaining($class->classid);
-                    if ($seatsremaining == 0 && $status == 'requested') {
+                    $classseatsremaining = isset($seatsremaining[$class->classid]) ? $seatsremaining[$class->classid] : 0;
+                    if ($classseatsremaining == 0 && $status == 'requested') {
                         $html .= $this->alert(get_string('status:requested:fullclass', 'tapsenrol'), 'alert-warning');
-                    } else if ($seatsremaining == 0 && $status == 'waitlisted') {
+                    } else if ($classseatsremaining == 0 && $status == 'waitlisted') {
                         $html .= $this->alert(get_string('status:waitlisted:fullclass', 'tapsenrol'), 'alert-warning');
                     } else if ($class->classstatus == 'Normal' && $status == 'waitlisted') {
                         $html .= $this->alert(get_string('status:waitlisted:plannedclass', 'tapsenrol'), 'alert-warning');

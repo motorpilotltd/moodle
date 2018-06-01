@@ -40,6 +40,7 @@ $string['tags'] = 'Lynda Tags';
 $string['regions'] = 'Regions';
 $string['loadmore'] = 'Loading courses from Lynda.com';
 $string['loadfiltered'] = 'Loading courses';
+$string['lynda:manage'] = "Manage Lynda courses";
 $string['noresults'] = '<div class="alert alert-info" role="alert">No results found that match your search</div>';
 $string['enabledregions'] = 'Regions with access to Lynda.com';
 $string['percentcomplete'] = 'Percentage complete';
