@@ -252,7 +252,7 @@
 
     } else {
 
-        $countries = get_string_manager()->get_list_of_countries(false);
+        $countries = get_string_manager()->get_list_of_countries(true);
         if (empty($mnethosts)) {
             $mnethosts = $DB->get_records('mnet_host', null, 'id', 'id,wwwroot,name');
         }
@@ -262,11 +262,17 @@
                 $users[$key]->country = $countries[$user->country];
             }
         }
-        if ($sort == "country") {  // Need to resort by full country name, not code
+        if ($sort == "country") {
+            // Need to resort by full country name, not code.
             foreach ($users as $user) {
                 $susers[$user->id] = $user->country;
             }
-            asort($susers);
+            // Sort by country name, according to $dir.
+            if ($dir === 'DESC') {
+                arsort($susers);
+            } else {
+                asort($susers);
+            }
             foreach ($susers as $key => $value) {
                 $nusers[] = $users[$key];
             }
