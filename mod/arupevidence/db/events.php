@@ -15,19 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * This file defines observers needed by mod_arupevidence.
  *
- * @package     local_taps
- * @copyright   2016 Motorpilot Ltd
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    mod_arupevidence
+ * @copyright  2017 Xantico Ltd
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2015111616;
-$plugin->requires  = 2015111600; // Moodle 3.0.x.
-$plugin->component = 'local_taps';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.16 (Build: {$plugin->version})";
-
-$plugin->dependencies = array();
+// List of observers.
+$observers = array(
+    array(
+        'eventname'   => '\core\event\course_completed',
+        'priority'    => 1,
+        'callback'    => '\mod_arupevidence\eventobservers::course_completed',
+    ),
+    array(
+        'eventname'   => '\local_custom_certification\event\certification_completed',
+        'priority'    => 1,
+        'callback'    => '\mod_arupevidence\eventobservers::certification_completed',
+    ),
+);
