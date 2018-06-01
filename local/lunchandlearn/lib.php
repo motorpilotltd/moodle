@@ -200,12 +200,9 @@ function lunchandlearn_add_event_key() {
     $ek->add(get_string('lunchandlearnevent', 'local_lunchandlearn'), $llink, navigation_node::TYPE_SETTING, null, 'lunchandlearnevent', $lalicon);
 
     $arguments = array(
-            'id'             => 'ek',
-            'instance'       => 'ek',
-            'candock'        => false,
-            'expansionlimit' => 0
+        'instanceid' => 'ek'
     );
-    $PAGE->requires->yui_module(array('core_dock', 'moodle-block_navigation-navigation'), 'M.block_navigation.init_add_tree', array($arguments));
+    $PAGE->requires->js_call_amd('block_navigation/navblock', 'init', $arguments);
 
     return $eventkey;
 }
