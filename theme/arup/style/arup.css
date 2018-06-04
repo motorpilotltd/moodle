@@ -27110,9 +27110,6 @@ div#changenumsections > a {
   height: 12px;
   margin: 5px;
 }
-div#changenumsections > a > img {
-  display: block;
-}
 /* Redirect page styling */
 .pagelayout-redirect #content,
 .pagelayout-redirect #page-content {
