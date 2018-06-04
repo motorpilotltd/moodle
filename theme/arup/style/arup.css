@@ -27537,6 +27537,9 @@ div.maincalendar table.calendarmonth td li.cancelled a {
   width: auto;
   line-height: 27px;
 }
+.path-calendar .maincalendar .calendar-controls .current {
+  margin: 2px 0 0 0;
+}
 .path-calendar div.maincalendar .controls .arrow_link {
   font-size: 1.5em;
   line-height: 1.4em;
@@ -27578,8 +27581,11 @@ div.maincalendar table.calendarmonth td li.cancelled a {
   width: 18px;
 }
 .path-calendar .maincalendar .eventlist .event .icon {
-  margin: 0 11px 0 -28px;
+  margin: 0 11px 0 -46px;
   padding: 0;
+}
+.path-calendar .maincalendar .eventlist .event .commands .icon {
+  margin-right: 0;
 }
 .path-calendar .maincalendar .eventlist .event .date {
   float: right;

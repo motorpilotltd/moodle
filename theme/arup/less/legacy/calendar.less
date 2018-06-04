@@ -52,16 +52,16 @@
     display: none;
 }
 @media all and (max-width: 1064px) {
-    
+
     .path-calendar .block_fake .content {
         padding-left: 3px;
         padding-right: 3px;
     }
-    
+
     .block table.minicalendar th {
         font-size: 0.64em;
     }
-    
+
     .block table.minicalendar td {
         font-size: 0.76em;
     }
@@ -131,6 +131,9 @@ div.maincalendar table.calendarmonth td li.cancelled a {
     width: auto;
     line-height: 27px;
 }
+.path-calendar .maincalendar .calendar-controls .current {
+    margin: 2px 0 0 0;
+}
 .path-calendar div.maincalendar .controls .arrow_link {
     font-size: 1.5em;
     line-height: 1.4em;
@@ -176,8 +179,11 @@ div.maincalendar table.calendarmonth td li.cancelled a {
     width: 18px;
 }
 .path-calendar .maincalendar .eventlist .event .icon {
-    margin: 0 11px 0 -28px;
+    margin: 0 11px 0 -46px;
     padding: 0;
+}
+.path-calendar .maincalendar .eventlist .event .commands .icon {
+    margin-right: 0;
 }
 
 .path-calendar .maincalendar .eventlist .event .date {
@@ -272,7 +278,7 @@ div.regionfilter {
     margin-left: 6px;
 }
 
-.heightcontainer.view-event .bottom { 
+.heightcontainer.view-event .bottom {
     display: none;
 }
 
