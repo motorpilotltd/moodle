@@ -723,5 +723,17 @@ function xmldb_facetoface_upgrade($oldversion=0) {
         upgrade_mod_savepoint(true, 2013010400, 'facetoface');
     }
 
+/* BEGIN CORE MOD */
+    if ($oldversion < 2015021303) {
+        // Update all existing calendar events with userid but no courseid (3.3 compatibility).
+        $sql = "UPDATE {event}
+                   SET modulename = '0'
+                 WHERE modulename = 'facetoface' AND userid > 0 AND courseid = 0";
+        $DB->execute($sql);
+
+        upgrade_mod_savepoint(true, 2015021303, 'facetoface');
+    }
+/* END CORE MOD */
+
     return $result;
 }
