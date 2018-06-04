@@ -1343,7 +1343,10 @@ function calendar_get_mini($courses, $groups, $users, $calmonth = false, $calyea
     }
 
     // Get the events matching our criteria. Don't forget to offset the timestamps for the user's TZ.
-    $events = calendar_get_legacy_events($display->tstart, $display->tend, $users, $groups, $courses);
+/* BEGIN CORE MOD */
+// Reversion to old function call, update for LaL compatibility required.
+    $events = calendar_get_events($display->tstart, $display->tend, $users, $groups, $courses);
+/* END CORE MOD */
 
     // Set event course class for course events.
     if (!empty($events)) {
@@ -1683,7 +1686,10 @@ function calendar_get_upcoming($courses, $groups, $users, $daysinfuture, $maxeve
     $display->tend = usergetmidnight($display->tstart + DAYSECS * $display->range + 3 * HOURSECS) - 1;
 
     // Get the events matching our criteria.
-    $events = calendar_get_legacy_events($display->tstart, $display->tend, $users, $groups, $courses);
+/* BEGIN CORE MOD */
+// Reversion to old function call, update for LaL compatibility required.
+    $events = calendar_get_events($display->tstart, $display->tend, $users, $groups, $courses);
+/* END CORE MOD */
 
     // This is either a genius idea or an idiot idea: in order to not complicate things, we use this rule: if, after
     // possibly removing SITEID from $courses, there is only one course left, then clicking on a day in the month

@@ -234,8 +234,11 @@ class core_calendar_external extends external_api {
         }
 
         // Event list does not check visibility and permissions, we'll check that later.
-        $eventlist = calendar_get_legacy_events($params['options']['timestart'], $params['options']['timeend'],
+/* BEGIN CORE MOD */
+// Reversion to old function call, update for LaL compatibility required.
+        $eventlist = calendar_get_events($params['options']['timestart'], $params['options']['timeend'],
             $funcparam['users'], $funcparam['groups'], $funcparam['courses'], true, $params['options']['ignorehidden']);
+/* END CORE MOD */
 
         // WS expects arrays.
         $events = array();

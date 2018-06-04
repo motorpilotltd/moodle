@@ -180,7 +180,10 @@ if(!empty($what) && !empty($time)) {
         die();
     }
 }
-$events = calendar_get_legacy_events($timestart, $timeend, $users, $groups, array_keys($paramcourses), false);
+/* BEGIN CORE MOD */
+// Reversion to old function call, update for LaL compatibility required.
+$events = calendar_get_events($timestart, $timeend, $users, $groups, array_keys($paramcourses), false);
+/* END CORE MOD */
 
 $ical = new iCalendar;
 $ical->add_property('method', 'PUBLISH');
