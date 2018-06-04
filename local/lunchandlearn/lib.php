@@ -176,7 +176,7 @@ function lunchandlearn_add_event_key() {
         }
     }
 
-    $glink = new moodle_url(CALENDAR_URL.'set.php', array('var' => 'showglobal', 'return' => base64_encode($returnurl->out(false)), 'sesskey' => sesskey()));
+    $glink = new moodle_url(CALENDAR_URL.'set.php', array('var' => 'showglobal', 'return' => base64_encode($returnurl->out_as_local_url(false)), 'sesskey' => sesskey()));
     $globalicon = new pix_icon('i/show', 'off');
     if (calendar_show_event_type(CALENDAR_EVENT_GLOBAL)) {
         $globalicon = new pix_icon('i/hide', 'on');

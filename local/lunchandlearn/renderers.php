@@ -604,8 +604,8 @@ class theme_arup_core_calendar_renderer extends core_calendar_renderer {
             foreach($events as $eventid => $event) {
                 $event = new calendar_event($event);
                 if (!empty($event->modulename)) {
-                    $cm = get_coursemodule_from_instance($event->modulename, $event->instance);
-                    if (!\core_availability\info_module::is_user_visible($cm, 0, false)) {
+                    $instances = get_fast_modinfo($event->courseid)->get_instances_of($event->modulename);
+                    if (empty($instances[$event->instance]->uservisible)) {
                         unset($events[$eventid]);
                     }
                 }
@@ -652,7 +652,8 @@ class theme_arup_core_calendar_renderer extends core_calendar_renderer {
             $weekend = intval($CFG->calendar_weekend);
         }
 
-        $daytime = strtotime('-1 day', $display->tstart);
+        // Need to add back in offset to avoid issues with rendering links.
+        $daytime = strtotime('-1 day', ($display->tstart += HOURSECS*13));
         for ($day = 1; $day <= $display->maxdays; ++$day, ++$dayweek) {
             $daytime = strtotime('+1 day', $daytime);
             if($dayweek > $display->maxwday) {
@@ -665,7 +666,7 @@ class theme_arup_core_calendar_renderer extends core_calendar_renderer {
 
             // Reset vars
             $cell = new html_table_cell();
-            $dayhref = calendar_get_link_href(new moodle_url(CALENDAR_URL.'view.php', array('view' => 'day', 'course' => $calendar->courseid)), 0, 0, 0, $daytime);
+            $dayhref = calendar_get_link_href(new moodle_url(CALENDAR_URL . 'view.php', array('view' => 'day', 'course' => $calendar->courseid)), 0, 0, 0, $daytime);
 
             $cellclasses = array();
 
