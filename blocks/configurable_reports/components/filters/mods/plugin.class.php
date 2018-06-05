@@ -93,7 +93,7 @@ class plugin_mods extends plugin_base{
                         . '" alt="'
                         . $name
                         . '" class="activityicon" src="'
-                        . $OUTPUT->pix_url('icon', $mod->name)
+                        . $OUTPUT->image_url('icon', $mod->name)
                         . '"> '
                         . $name;
                 $modgroup[] =& $mform->createElement('checkbox', 'filter_mods['.$mod->name.']', null, $text);

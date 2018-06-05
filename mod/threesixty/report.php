@@ -251,7 +251,7 @@ if (isset($mform)) {
                 html_writer::empty_tag(
                     'img',
                     array(
-                        'src' => $OUTPUT->pix_url('i/loading'),
+                        'src' => $OUTPUT->image_url('i/loading'),
                         'class' => 'threesixty-spiderweb',
                         'data-src' => $spiderweburl->url,
                         'data-id' => $count,
