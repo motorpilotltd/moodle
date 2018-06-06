@@ -7530,7 +7530,8 @@ img.iconsmall.iconsize-big {
   width: 64px;
   height: 64px;
 }
-.btn-link.help:hover {
+.btn-link.help:hover,
+.btn-link.help:focus {
   text-decoration: none;
 }
 img.iconhelp,
@@ -24101,6 +24102,12 @@ input[type="button"].btn-link[disabled]:focus,
 fieldset[disabled] input[type="submit"].btn-link:focus,
 fieldset[disabled] input[type="button"].btn-link:focus {
   color: #777777 !important;
+  text-decoration: none !important;
+}
+input[type="submit"].btn-link.help:hover,
+input[type="button"].btn-link.help:hover,
+input[type="submit"].btn-link.help:focus,
+input[type="button"].btn-link.help:focus {
   text-decoration: none !important;
 }
 .threecolumns {

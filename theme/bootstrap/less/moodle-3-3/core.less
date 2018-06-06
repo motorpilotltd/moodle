@@ -304,8 +304,13 @@ img.iconsmall {
     }
 }
 
-.btn-link.help:hover {
-    text-decoration: none;
+.btn-link {
+    &.help {
+        &:hover,
+        &:focus {
+            text-decoration: none;
+        }
+    }
 }
 
 img.iconhelp,
