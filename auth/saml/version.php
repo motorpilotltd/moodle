@@ -24,11 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111603;
-$plugin->requires  = 2015111602;
+$plugin->version   = 2017051501;
+$plugin->requires  = 2017051500;
 $plugin->component = 'auth_saml';
-$plugin->release   = "3.0.3 (Build: {$plugin->version})";
+$plugin->release   = "3.3.1 (Build: {$plugin->version})";
 $plugin->maturity  = MATURITY_BETA;
 $plugin->dependencies = array(
-    'auth_ldap' => 2015111600,
+    'auth_ldap' => 2017051500,
 );
