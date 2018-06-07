@@ -152,7 +152,7 @@ function hvp_cm_info_dynamic(cm_info $cm) {
             }
 
             // Display options.
-            $displayoptions = $core->getDisplayOptionsForView($content['disable'], $content['id']);
+            $displayoptions = $core->getDisplayOptionsForView($content['disable'], $hvp->id);
             // Embed is not supported in Moodle.
             $displayoptions[\H5PCore::DISPLAY_OPTION_EMBED] = false;
 
