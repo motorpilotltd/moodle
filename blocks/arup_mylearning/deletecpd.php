@@ -65,7 +65,7 @@ if (!$cpd) {
     redirect($redirecturl);
     exit;
 } else if ($confirm) {
-    $taps = new \local_taps\taps();
+    $taps = new \mod_tapsenrol\taps();
 
     $SESSION->block_arup_mylearning->alert = new stdClass();
 

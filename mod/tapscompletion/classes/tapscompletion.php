@@ -37,7 +37,7 @@ class tapscompletion {
     ];
 
     public function __construct() {
-        $this->taps = new \local_taps\taps();
+        $this->taps = new \mod_tapsenrol\taps();
     }
 
     public function set_cm($type, $id, $courseid = 0) {

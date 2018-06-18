@@ -30,7 +30,7 @@ abstract class mod_tapsenrol_manage_enrolments_step2_form extends moodleform {
     public function definition() {
         global $PAGE;
 
-        $this->_taps = new \local_taps\taps();
+        $this->_taps = new \mod_tapsenrol\taps();
 
         $this->_context = context_module::instance($this->_customdata['id']);
 

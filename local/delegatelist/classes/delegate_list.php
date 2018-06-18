@@ -61,7 +61,7 @@ class delegate_list {
 
         $this->_tapsenrolcm = get_coursemodule_from_instance('tapsenrol', $tapsenrol->id);
 
-        $this->_taps = new \local_taps\taps();
+        $this->_taps = new \mod_tapsenrol\taps();
 
         $this->_set_capabilities();
 

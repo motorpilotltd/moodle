@@ -107,7 +107,7 @@ abstract class base implements renderable, templatable {
             return;
         }
 
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
 
         list($usql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
         $sql = <<<EOS

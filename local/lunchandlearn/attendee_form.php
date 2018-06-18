@@ -32,7 +32,7 @@ class attendee_form extends moodleform {
     public function definition () {
         $mform = $this->_form;
 
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
 
         $lal = $this->_customdata;
 

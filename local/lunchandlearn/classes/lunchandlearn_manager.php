@@ -356,7 +356,7 @@ EOS;
     }
 
     public static function add_cpd(lunchandlearn $session, $user, $extra=null) {
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
 
         $desc =!empty($extra->p_learning_desc['text']) ? $extra->p_learning_desc['text'] : $session->get_summary();
 

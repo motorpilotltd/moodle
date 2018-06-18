@@ -80,7 +80,7 @@ class csvimport {
         $this->columns = $cir->get_columns();
         $this->validate();
         $this->reset();
-        $this->taps = new \local_taps\taps();
+        $this->taps = new \mod_tapsenrol\taps();
     }
 
     /**

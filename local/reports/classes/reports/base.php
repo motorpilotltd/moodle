@@ -61,7 +61,7 @@ class base {
     public $visiblesearchfields;
 
     public function __construct(\local_reports\report $report) {
-        $this->taps = new \local_taps\taps();
+        $this->taps = new \mod_tapsenrol\taps();
         
         $this->reportname = 'base';
         $this->report = $report;

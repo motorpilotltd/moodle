@@ -519,7 +519,7 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
 
         $dbman = $DB->get_manager();
         if ($dbman->table_exists('tapsenrol_iw_tracking') && get_config('local_taps', 'version')) {
-            $taps = new \local_taps\taps();
+            $taps = new \mod_tapsenrol\taps();
 
             list($in, $inparams) = $DB->get_in_or_equal(
                 $taps->get_statuses('requested'),

@@ -69,7 +69,7 @@ class eventobservers {
             return;
         }
 
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
 
         $class = $taps->get_class_by_id($event->other['classid']);
 

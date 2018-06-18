@@ -162,7 +162,7 @@ EOS;
 
     private function get_taps() {
         if (empty($this->taps)) {
-            $this->taps = new \local_taps\taps();
+            $this->taps = new \mod_tapsenrol\taps();
         }
         return $this->taps;
     }

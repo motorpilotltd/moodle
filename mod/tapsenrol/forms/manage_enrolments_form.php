@@ -56,7 +56,7 @@ class mod_tapsenrol_manage_enrolments_form extends moodleform {
 
         if ($class) {
             $hide = '';
-            $taps = new \local_taps\taps();
+            $taps = new \mod_tapsenrol\taps();
             $class->location = ($class->location ? $class->location : get_string('tbc', 'tapsenrol'));
             if (!$class->classstarttime) {
                 $class->date = get_string('waitinglist:classroom', 'tapsenrol');

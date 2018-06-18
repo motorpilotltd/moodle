@@ -27,7 +27,7 @@ try {
     $class = $DB->get_record('local_taps_class', array('classid' => $classid));
 
     if ($class) {
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
 
         $a->success = 1;
         $a->classname = $class->classname;

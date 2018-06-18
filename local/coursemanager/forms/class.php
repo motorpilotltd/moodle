@@ -50,7 +50,7 @@ class cmform_class extends moodleform {
         $this->add_element("classname", "text", PARAM_TEXT, null, null, true);
 
         $this->add_element("classduration", "text", PARAM_FLOAT);
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
         $durationunits = $taps->get_durationunitscode();
         array_shift($durationunits);
         array_unshift($durationunits, get_string('form:course:getdurationunits', 'local_coursemanager'));
@@ -275,7 +275,7 @@ class cmform_class extends moodleform {
         $mform = $this->_form;
         if ($this->_customdata->id > 0 && $this->_customdata->classid > 0) {
             // Check for attended enrolments and unset duration/time fields so they are not updated.
-            $taps = new \local_taps\taps();
+            $taps = new \mod_tapsenrol\taps();
             list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
             $sql = "SELECT COUNT(id)
                   FROM {local_taps_enrolment}

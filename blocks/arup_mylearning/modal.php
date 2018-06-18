@@ -26,7 +26,7 @@ try {
     $PAGE->set_url('/blocks/arup_mylearning/modal.php');
 
     if (get_config('local_taps', 'version')) {
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
 
         $enrolment = $DB->get_record('local_taps_enrolment', array('id' => $id, 'staffid' => $USER->idnumber));
         if ($enrolment) {

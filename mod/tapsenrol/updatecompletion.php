@@ -59,7 +59,7 @@ if (isset($_POST['submit'])) {
 
     $staffids = optional_param_array('staffid', array(), PARAM_ALPHANUMEXT);
 
-    $taps = new \local_taps\taps();
+    $taps = new \mod_tapsenrol\taps();
     $classes = [];
 
     require_once($CFG->libdir.'/completionlib.php');

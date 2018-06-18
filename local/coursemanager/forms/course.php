@@ -59,7 +59,7 @@ class cmform_course extends moodleform {
             $this->add_element("duration", "text", PARAM_FLOAT);
             // Duration units and durationunitscode can be set via single dropdown.
             // See variables in \local_taps\taps
-            $taps = new \local_taps\taps();
+            $taps = new \mod_tapsenrol\taps();
             $durationunits = $taps->get_durationunitscode();
             array_shift($durationunits);
             array_unshift($durationunits, get_string('form:course:getdurationunits', 'local_coursemanager'));

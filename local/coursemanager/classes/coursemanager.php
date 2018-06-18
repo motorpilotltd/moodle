@@ -512,7 +512,7 @@ class coursemanager {
                 'classendtime',
                 'maximumattendees');
 
-            $taps = new \local_taps\taps();
+            $taps = new \mod_tapsenrol\taps();
             $statuses = array_merge($taps->get_statuses('placed'), $taps->get_statuses('attended'));
             list($insql, $params) = $DB->get_in_or_equal($statuses, SQL_PARAMS_NAMED, 'status');
 

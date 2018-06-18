@@ -201,7 +201,7 @@ function aruphonestybox_sendtotaps($id, $user, &$debug=array()) {
         'p_health_and_safety_category' => $data->healthandsafetycategory
     );
 
-    $taps = new \local_taps\taps();
+    $taps = new \mod_tapsenrol\taps();
     $result = $taps->add_cpd_record(
             $user->idnumber,
             $data->classname,

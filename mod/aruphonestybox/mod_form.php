@@ -67,7 +67,7 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
     }
 
     public function add_taps_fields(MoodleQuickForm $mform) {
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
 
         $mform->addElement('header', 'tapstemplate', get_string('cpdformheader', 'mod_aruphonestybox'));
 

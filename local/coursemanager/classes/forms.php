@@ -289,7 +289,7 @@ class forms {
     public function store_data($data) {
         global $DB, $SESSION;
 
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
 
         $classpages = array('class_scheduled', 'class_scheduled_normal', 'class_scheduled_planned', 'class_self_paced');
 

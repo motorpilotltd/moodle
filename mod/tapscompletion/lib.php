@@ -80,7 +80,7 @@ function tapscompletion_cm_info_view(cm_info $cm) {
     if (!$tapscompletion->check_installation()) {
             $cm->set_content($renderer->alert(html_writer::tag('p', get_string('installationissue', 'tapscompletion')), 'alert-danger', false));
     } else {
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
 
         list($in, $inparams) = $DB->get_in_or_equal(
             $taps->get_statuses('placed'),

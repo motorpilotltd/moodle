@@ -151,7 +151,7 @@ if ($showall) {
 
     echo $outputcache;
 
-    $taps = new \local_taps\taps();
+    $taps = new \mod_tapsenrol\taps();
     list($in, $inparams) = $DB->get_in_or_equal(
         $taps->get_statuses('requested'),
         SQL_PARAMS_NAMED, 'status'

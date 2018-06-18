@@ -53,7 +53,7 @@ class send_reminders extends \core\task\scheduled_task {
 
         $now = time();
 
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
 
         list($in, $inparams) = $DB->get_in_or_equal(
             $taps->get_statuses('requested'),

@@ -49,7 +49,7 @@ class tapsenrol {
     public function __construct($id, $type = 'cm', $courseid = 0) {
         global $SESSION;
 
-        $this->taps = new \local_taps\taps();
+        $this->taps = new \mod_tapsenrol\taps();
         if (!isset($SESSION->tapsenrol)) {
             $SESSION->tapsenrol = new stdClass();
         }

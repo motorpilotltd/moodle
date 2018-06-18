@@ -72,7 +72,7 @@ class daterangelearning extends base {
         $this->visiblesearchfields = 3;
         $this->exportxlsurl = new moodle_url('/local/reports/export.php', array('page' => 'daterangelearning'));
         $this->showall = false;
-        $this->taps = new \local_taps\taps();
+        $this->taps = new \mod_tapsenrol\taps();
 
         if (!empty($this->action)) {
             $this->action($this->action);

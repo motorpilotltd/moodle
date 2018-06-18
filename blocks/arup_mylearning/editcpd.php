@@ -49,7 +49,7 @@ if (!get_config('local_taps', 'version')) {
 require_login();
 
 
-$taps = new \local_taps\taps();
+$taps = new \mod_tapsenrol\taps();
 
 $cpd = new stdClass();
 if ($action == 'edit') {

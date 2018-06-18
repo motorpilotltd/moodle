@@ -352,7 +352,7 @@ class activityreset {
 
         $now = time();
 
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
 
         $tes = $DB->get_records('tapsenrol', ['course' => $courseid]);
         $staffid = $DB->get_field('user', 'idnumber', ['id' => $userid]);

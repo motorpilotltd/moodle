@@ -25,7 +25,7 @@ class block_arup_recent_courses extends block_base {
         $this->title = get_string('pluginname', 'block_arup_recent_courses');
 
         if ($this->_is_taps_installed()) {
-            $this->_taps = new \local_taps\taps();
+            $this->_taps = new \mod_tapsenrol\taps();
         }
     }
 

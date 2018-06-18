@@ -34,7 +34,7 @@ class addactivity_form extends \moodleform {
     public function definition() {
         global $PAGE, $CFG;
 
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
 
         \wa_learning_path\lib\load_model('activity');
 
