@@ -72,28 +72,23 @@ class eventobservers {
         );
         $logevent = \mod_aruphonestybox\event\cpd_request_sent::create($params);
         $logevent->trigger();
+        
+        // Insert/update user record.
+        $params = array('aruphonestyboxid' => $cm->instance, 'userid' => $user->id);
 
-        $return = aruphonestybox_process_result(aruphonestybox_sendtotaps($cm->instance, $user));
-        if (empty($return->success)) {
-            error_log($return->error);
-        } else {
-            // Insert/update user record.
-            $params = array('aruphonestyboxid' => $cm->instance, 'userid' => $user->id);
+        $DB->delete_records('aruphonestybox_users', $params);
+        $params['completion'] = 1;
+        $params['taps'] = 1;
+        $DB->insert_record('aruphonestybox_users', $params);
 
-            $DB->delete_records('aruphonestybox_users', $params);
-            $params['completion'] = 1;
-            $params['taps'] = 1;
-            $DB->insert_record('aruphonestybox_users', $params);
+        $completion = new \completion_info(get_course($event->courseid));
+        $completion->update_state($cm, COMPLETION_COMPLETE, $user->id);
 
-            $completion = new \completion_info(get_course($event->courseid));
-            $completion->update_state($cm, COMPLETION_COMPLETE, $user->id);
-
-            // Update Moodle course completion date.
-            // Record should exist as we're observing course completion.
-            // @TODO : More work to do before this bit can be implemented.
-            //$ccompletion = new \completion_completion(array('course' => $event->courseid, 'userid' => $user->id));
-            //$ccompletion->timecompleted = $completiontime;
-            //$ccompletion->update();
-        }
+        // Update Moodle course completion date.
+        // Record should exist as we're observing course completion.
+        // @TODO : More work to do before this bit can be implemented.
+        //$ccompletion = new \completion_completion(array('course' => $event->courseid, 'userid' => $user->id));
+        //$ccompletion->timecompleted = $completiontime;
+        //$ccompletion->update();
     }
 }

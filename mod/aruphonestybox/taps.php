@@ -40,25 +40,22 @@ $logevent = \mod_aruphonestybox\event\cpd_request_sent::create($params);
 $logevent->trigger();
 
 $result = aruphonestybox_sendtotaps($id, $USER, $debug);
-$return = aruphonestybox_process_result($result, $debug);
 
-if ($return->success == true) {
-    // Remove any current records.
-    $status = $DB->delete_records('aruphonestybox_users', array(
-            'aruphonestyboxid' => $id,
-            'userid' => $USER->id
-    ));
-    $debug[] = 'deleted ahbu record, status: ' . $status;
+// Remove any current records.
+$status = $DB->delete_records('aruphonestybox_users', array(
+        'aruphonestyboxid' => $id,
+        'userid' => $USER->id
+));
+$debug[] = 'deleted ahbu record, status: ' . $status;
 
-    $ahbu = new stdClass;
-    $ahbu->aruphonestyboxid = $id;
-    $ahbu->userid = $USER->id;
-    $ahbu->completion = 1;
-    $ahbu->taps = 1;
-    $DB->insert_record('aruphonestybox_users', $ahbu);
+$ahbu = new stdClass;
+$ahbu->aruphonestyboxid = $id;
+$ahbu->userid = $USER->id;
+$ahbu->completion = 1;
+$ahbu->taps = 1;
+$DB->insert_record('aruphonestybox_users', $ahbu);
 
-    $debug[] = 'Added record to ahbu';
-}
+$debug[] = 'Added record to ahbu';
 
 $completion = new completion_info($course);
 
