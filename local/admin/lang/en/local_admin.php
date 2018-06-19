@@ -25,7 +25,11 @@ $string['admin:enrolmentcheck'] = 'Run enrolment checks for selected courses/use
 $string['admin:registeradusers'] = 'Register AD users';
 $string['admin:testemails'] = 'Test emails';
 $string['adminfunctions'] = 'Admin functions';
+$string['arupdefaultcourse'] = 'Pre-configure standard Arup course';
 
+$string['default_enrolment_role'] = 'Default enrolment role';
+
+$string['enrolment'] = 'Enrolment details';
 $string['enrolmentcheck'] = 'Enrolment check';
 $string['enrolmentcheck:course'] = 'Course';
 $string['enrolmentcheck:error:staffid'] = 'Staff ID "{$a}" is invalid<br>';
@@ -35,6 +39,14 @@ $string['enrolmentcheck:staffids'] = 'Staff IDs (one per line)';
 $string['enrolmentcheck:stats:enrolled'] = '{$a->stat} user{$a->s} enrolled or already enrolled.';
 $string['enrolmentcheck:stats:nonmoodle'] = '{$a->stat} non-Moodle user{$a->s}.';
 $string['enrolmentcheck:stats:notenrolled'] = '{$a->stat} user{$a->s} un-enrolled or already not enrolled.';
+$string['enrolmentrole'] = 'Default role for enrolments';
+$string['enrolmentrole_help'] = 'Select role used for automatic enrolment.<br />'
+        . 'This enables the auto enrolment plugin to enrol the user in the module once the tapsenrol activity is complete.<br />'
+        . 'Default is Participant or Student.';
+
+$string['internalworkflowhdr'] = 'Arup linked course enrolment settings';
+
+$string['settings'] = 'Settings';
 
 $string['taskupdatesupervisors'] = 'Update supervisors (profile flag)';
 $string['taskupdateusers'] = 'Update users';
@@ -79,6 +91,7 @@ $string['completionunlockhelp:coursecriteria'] = 'Completion is locked as this a
 
 $string['groupsstatichelp'] = 'You do not have permission to edit these values, please contact an administrator if you require help.';
 
+$string['updatearupdefaultcourse'] = 'Update Arup Default Course';
 $string['urgloginnotallowed'] = 'We believe that you have accessed Moodle from a digital workspace test account and have blocked '
     . 'your access to stop test accounts being created in Moodle.<br />If you need to login then please use your normal Arup '
     . 'username.<br />If you believe this not to be true then please contact moodle@arup.com for assistance.';

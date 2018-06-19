@@ -16,23 +16,36 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-if ($ADMIN->fulltree) {
+$folder = new admin_category('tapsenrolfolder', new lang_string('pluginname', 'tapsenrol'));
+$ADMIN->add('modsettings', $folder);
 
-    $settings->add(
-        new admin_setting_configcheckbox(
-            'tapsenrol/forceemailsending',
-            get_string('settings:forceemailsending', 'tapsenrol'),
-            get_string('settings:forceemailsending_desc', 'tapsenrol'),
-            '0',
-            '1',
-            '0'
+$settings->visiblename = new lang_string('settings', 'tapsenrol');
+$ADMIN->add('tapsenrolfolder', $settings);
+
+$ADMIN->add(
+        'tapsenrolfolder',
+        new admin_externalpage(
+                'tapsenrol/iw_configure',
+                get_string('internalworkflow_configure', 'tapsenrol'),
+                $CFG->wwwroot . '/mod/tapsenrol/admin/internalworkflow.php',
+                ['mod/tapsenrol:internalworkflow_edit',
+                        'mod/tapsenrol:internalworkflow',
+                        'mod/tapsenrol:internalworkflow_lock']
         )
+);
+
+if ($ADMIN->fulltree) {
+    $settings->add(
+            new admin_setting_configcheckbox(
+                    'tapsenrol/forceemailsending',
+                    get_string('settings:forceemailsending', 'tapsenrol'),
+                    get_string('settings:forceemailsending_desc', 'tapsenrol'),
+                    '0',
+                    '1',
+                    '0'
+            )
     );
-
-    $url = new moodle_url('/mod/tapsenrol/admin/internalworkflow.php');
-    $link = html_writer::link($url, get_string('internalworkflow_settings', 'tapsenrol'), array('class' => 'btn btn-primary'));
-    $html = html_writer::tag('p', $link);
-
-    $settings->add(new admin_setting_heading('tapsenrol_internalworkflow', get_string('internalworkflow_heading', 'tapsenrol'), $html));
-
 }
+
+// Prevent Moodle from adding settings block in standard location.
+$settings = null;

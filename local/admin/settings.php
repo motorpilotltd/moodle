@@ -71,4 +71,13 @@ if ($hassiteconfig
                     'local/admin:enrolmentcheck'
                     )
             );
+
+    $settings = new admin_settingpage('local_admin_settings', get_string('settings', 'local_admin'));
+    $enrolmentroles = array('' => get_string('choosedots')) + get_default_enrol_roles(context_course::instance(SITEID));
+    $settings->add(new admin_setting_configselect('local_admin/default_enrolment_role', get_string('default_enrolment_role', 'local_admin'),
+            '', null, $enrolmentroles));
+
+    $ADMIN->add('local_admin', $settings);
+    // Prevent Moodle from adding settings block in standard location.
+    $settings = null;
 }

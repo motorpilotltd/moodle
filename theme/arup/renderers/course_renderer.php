@@ -342,17 +342,4 @@ class theme_arup_core_course_renderer extends theme_bootstrap_core_course_render
          */
         redirect(new moodle_url('/local/accordion/index.php', array('id' => $catid)));
     }
-
-    public function course_section_cm_list($course, $section, $sectionreturn = null, $displayoptions = array()) {
-        $arupmetadata = \coursemetadatafield_arup\arupmetadata::fetch(['course' => $course->id]);
-
-        $oput = '';
-
-        if ($section->section == 0 && $arupmetadata->display) {
-            $oput .= $this->page->get_renderer('coursemetadatafield_arup')->info_view($arupmetadata);
-        }
-
-        $oput .= parent::course_section_cm_list($course, $section, $sectionreturn, $displayoptions);
-        return $oput;
-    }
 }

@@ -1,14 +1,22 @@
 Remove concept of linked course
 Namespaces
 Migrate events, all related tables
+Configurable reports - Not worrying for tapscompletion as only two exist and they look to be used by admin users - id 149 and 152, will need fixing by hand
 
 
 
 
-There's only one course where there is an enrol but no completion, I'm going to not worry.
 
-out of 162155 completions of a mod_tapsenrol activity there are 672 where they haven't also completed the associated taps compeltion module so am ignoring this as an edge case:
 
+
+Migrations:
+
+tapscompletion - mod/tapscompletion/cli/migrate.php
+There's only one course where there is an enrol but no completion, I'm going to not worry about this one exception.
+For all others tapsenrol upgrade step 2015111613 copies the values into the three fields that have been migrated
+
+tapscompletion_completion - ignore
+Out of 162155 completions of a mod_tapsenrol activity there are 672 where they haven't also completed the associated taps compeltion module so am ignoring this as an edge case:
 select cm_enrol.id, cm_tapcompletion.id from mdl_tapsenrol te
 inner join mdl_course_modules cm_enrol on cm_enrol.instance = te.id and cm_enrol.module = 31
 inner join mdl_course_modules cm_tapcompletion on cm_enrol.course = cm_tapcompletion.course and cm_tapcompletion.module = 30
@@ -16,3 +24,34 @@ inner join mdl_tapscompletion tc on tc.id = cm_tapcompletion.instance
 inner join mdl_course_modules_completion cmc_enrol on cm_enrol.id = cmc_enrol.coursemoduleid
 left join mdl_course_modules_completion cmc_tapcompletion on cm_tapcompletion.id = cmc_tapcompletion.coursemoduleid and cmc_enrol.userid = cmc_tapcompletion.userid
 where cmc_enrol.completionstate <> cmc_tapcompletion.completionstate;
+
+Delete all instances of tapscompletion - mod/tapscompletion/cli/migrate.php
+Update logstore_standard_log - mod/tapscompletion/cli/migrate.php
+
+
+
+
+
+Deleted local/taps/listcourses.php
+    Anything you do from here you can do do from the standard course management area...
+
+Suggest we delete local/taps/addcourse.php
+Recommend we move Catalogue location group up so that all the form elements we always want (to either create an 'Arup' course or a normal one) are in a contiguous bock.
+Allow people to hit the core course/edit.php page if people have the "local/taps:addcourse"
+If people also have the core moodle permissions then they can uncheck a 'Configure standard Arup Course' text box which will reveal the full form, otherwise we hide the following sections:
+Course format
+Appearance
+Files and uploads
+Completion tracking
+Groups
+Role renaming
+Tags
+
+If the 'Configure standard Arup Course' is checked (or not available for unchecking) then the following elements are added:
+Default role for enrolments
+Use internal workflow
+Enrolment region override
+
+If the 'Configure standard Arup Course' is checked (or not available for unchecking) then on course creation we apply the defaults as in local/taps/addcourse.php (having refactored them into a nice function on \local_taps\taps)
+
+Drop the field Catalogue region override - not relevant any more.

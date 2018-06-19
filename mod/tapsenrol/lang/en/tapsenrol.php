@@ -138,7 +138,6 @@ $string['date'] = 'Date';
 $string['duration'] = 'Duration';
 
 $string['editclass'] = 'Edit Linked Course Classes';
-$string['editcourse'] = 'Edit Linked Course';
 $string['enrol'] = 'Enrol Here';
 $string['enrol:alert:alreadyattended'] = 'Please note that re-enrolling will reset the module so that you can re-take it. Your learning history will not be affected.';
 $string['enrol:alert:alreadyattended:certification'] = 'You have completed certifications to which this course is linked, on re-enrolling these will be archived and restarted:<br>{$a}';
@@ -531,6 +530,7 @@ $string['reviewenrolment:pre:iw'] = '';
 $string['seatsremaining'] = 'Seats Remaining';
 $string['separator'] = ' - ';
 $string['selectallforclass'] = 'All for class';
+$string['settings'] = 'Settings';
 $string['settings:forceemailsending'] = 'Override $CFG email settings';
 $string['settings:forceemailsending_desc'] = 'Will ignore $CFG->noemailever, $CFG->divertallemailsto and $CFG->divertccemailsto email settings and attempt to send emails.';
 $string['staffid'] = 'Staff ID';
@@ -578,9 +578,8 @@ $string['to'] = 'to';
 $string['trainingcenter'] = 'Room';
 
 $string['unlimited'] = 'Unlimited';
-$string['updatecompletion'] = 'Arup linked course completion';
-$string['updatecompletionheader'] = 'Arup linked course completion';
 $string['updateusers'] = 'Update users';
+$string['updatecompletion'] = 'Update completion';
 $string['userstocomplete'] = 'Users to complete';
 
 $string['waitinglist:classroom'] = 'Waiting List';

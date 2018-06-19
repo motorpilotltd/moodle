@@ -169,6 +169,10 @@ class course_edit_form extends moodleform {
         coursemetadata_definition($mform, $courseid);
         /* END CORE MOD - /local/coursemetadata */
 
+        /* BEGIN CORE MOD - /local/regions */
+        local_regions_definition_course($mform);
+        /* END CORE MOD - /local/regions */
+
         // Course format.
         $mform->addElement('header', 'courseformathdr', get_string('type_format', 'plugin'));
 
@@ -293,9 +297,6 @@ class course_edit_form extends moodleform {
             $mform->setType('enablecompletion', PARAM_INT);
             $mform->setDefault('enablecompletion', 0);
         }
-/* BEGIN CORE MOD - /local/regions */
-        local_regions_definition_course($mform);
-/* END CORE MOD - /local/regions */
 
         enrol_course_edit_form($mform, $course, $context);
 
@@ -439,6 +440,8 @@ class course_edit_form extends moodleform {
 /* BEGIN CORE MOD - /local/coursemetadata */
         coursemetadata_definition_after_data($mform, $courseid);
 /* END CORE MOD - /local/coursemetadata */
+
+        \local_admin\courseformmoddifier::alter_definition($mform);
     }
 
     /**
