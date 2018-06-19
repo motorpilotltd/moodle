@@ -110,7 +110,7 @@ class mod_arupevidence_mod_form extends moodleform_mod {
             'approvalusers',
             get_string('approvalusers', 'mod_arupevidence'),
             array('' => ''),
-            array('class' => 'select2 select2-user', 'data-placeholder' => get_string('chooseusers', 'mod_arupevidence'))
+            array('class' => 'select2-user', 'data-placeholder' => get_string('chooseusers', 'mod_arupevidence'))
         );
         $mform->disabledIf('approvalusers', 'approvalrequired', 'unchecked');
         $users->setMultiple(true);

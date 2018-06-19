@@ -51,10 +51,10 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 });
 
                 var courseid = args;
-                $('.select2').select2({
+                $('select.select2').select2({
                     width: '75%'
                 });
-                $('.select2-user').select2({
+                $('select.select2-user').select2({
                     width: '75%',
                     minimumInputLength: 2,
                     allowClear: true,
