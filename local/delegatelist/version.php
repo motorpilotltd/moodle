@@ -29,7 +29,3 @@ $plugin->requires  = 2015111600; // Moodle 3.0.x.
 $plugin->component = 'local_delegatelist';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release   = "3.0.1 (Build: {$plugin->version})";
-
-$plugin->dependencies = array(
-    'local_taps' => 2015111601
-);

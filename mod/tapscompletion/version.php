@@ -31,7 +31,6 @@ $plugin->maturity     = MATURITY_STABLE;
 $plugin->release      = "3.0.7 (Build: {$plugin->version})";
 
 $plugin->dependencies = array(
-    'local_taps' => 2015111601,
     'arupadvertdatatype_taps' => 2015111601,
     'mod_tapsenrol' => 2015111601,
 );

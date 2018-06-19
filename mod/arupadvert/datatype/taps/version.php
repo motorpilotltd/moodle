@@ -29,7 +29,3 @@ $plugin->requires     = 2015111600; // Moodle 3.0.
 $plugin->component    = 'arupadvertdatatype_taps';
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->release      = "3.0.2 (Build: {$plugin->version}";
-
-$plugin->dependencies = array(
-    'local_taps' => 2015111601,
-);
