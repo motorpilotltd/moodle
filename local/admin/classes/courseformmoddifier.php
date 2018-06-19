@@ -66,7 +66,7 @@ class courseformmoddifier {
         $enrolmentregion = $mform->createElement('select', 'enrolmentregion', get_string('enrolment_region_mapping', 'tapsenrol'), $regionoptions, $regionattributes);
         $mform->insertElementBefore($enrolmentregion, 'courseformathdr');
         $enrolmentregion->setMultiple(true);
-        $enrolmenthint = \html_writer::tag('div', get_string('overrideregions', 'local_taps'), array('class' => 'felement fselect'));
+        $enrolmenthint = \html_writer::tag('div', get_string('overrideregions', 'tapsenrol'), array('class' => 'felement fselect'));
         $enrolmenthint = $mform->createElement('html', \html_writer::tag('div', $enrolmenthint, array('class' => 'fitem')));
         $mform->insertElementBefore($enrolmenthint, 'courseformathdr');
 

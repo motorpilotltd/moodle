@@ -76,7 +76,7 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
         $region = &$mform->addElement('select', 'region', get_string('regions', 'local_regions'), $regionoptions, array('size' => $size, 'style' => 'min-width:200px'));
         $region->setMultiple(true);
         if (empty($this->_instance)) {
-            $hint = html_writer::tag('div', get_string('overrideregions', 'local_taps'), array('class' => 'felement fselect'));
+            $hint = html_writer::tag('div', get_string('overrideregions', 'tapsenrol'), array('class' => 'felement fselect'));
             $mform->addElement('html', html_writer::tag('div', $hint, array('class' => 'fitem')));
         }
 

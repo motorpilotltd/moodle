@@ -5,7 +5,6 @@ defined('MOODLE_INTERNAL') || die();
 if ($hassiteconfig) {
     $regionsinstalled = get_config('local_regions', 'version');
     $coursemetadatainstalled = get_config('local_coursemetadata', 'version');
-    $tapsinstalled = get_config('local_taps', 'version');
 
     $coursemetadataoptions = array();
     if ($coursemetadatainstalled) {
@@ -28,27 +27,25 @@ EOS;
     $settings = new admin_settingpage('local_search_settings', get_string('configuration', 'local_search'));
     $ADMIN->add('localplugins', $settings);
 
-    $possiblepositions = count($coursemetadataoptions) + (bool) $regionsinstalled + (bool) $tapsinstalled;
+    $possiblepositions = count($coursemetadataoptions) + (bool) $regionsinstalled;
 
-    if ($tapsinstalled) {
-        $settings->add(
-            new admin_setting_configcheckbox(
-                'local_search/duration_info',
-                get_string('search_show_duration_info', 'local_search'),
-                get_string('search_show_duration_info_desc', 'local_search'),
-                0, 1, 0
-            )
-        );
-        $settings->add(
-            new admin_setting_configselect(
-                'local_search/duration_position',
-                get_string('search_show_duration_position', 'local_search'),
-                get_string('search_show_duration_position_desc', 'local_search'),
-                1,
-                array_combine(range(1, $possiblepositions), range(1, $possiblepositions))
-            )
-        );
-    }
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'local_search/duration_info',
+            get_string('search_show_duration_info', 'local_search'),
+            get_string('search_show_duration_info_desc', 'local_search'),
+            0, 1, 0
+        )
+    );
+    $settings->add(
+        new admin_setting_configselect(
+            'local_search/duration_position',
+            get_string('search_show_duration_position', 'local_search'),
+            get_string('search_show_duration_position_desc', 'local_search'),
+            1,
+            array_combine(range(1, $possiblepositions), range(1, $possiblepositions))
+        )
+    );
 
     if ($regionsinstalled) {
         $settings->add(
@@ -64,7 +61,7 @@ EOS;
                 'local_search/regions_position',
                 get_string('search_show_regions_position', 'local_search'),
                 get_string('search_show_regions_position_desc', 'local_search'),
-                (bool) $regionsinstalled + (bool) $tapsinstalled,
+                (bool) $regionsinstalled,
                 array_combine(range(1, $possiblepositions), range(1, $possiblepositions))
             )
         );

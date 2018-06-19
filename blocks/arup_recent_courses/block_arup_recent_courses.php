@@ -23,10 +23,7 @@ class block_arup_recent_courses extends block_base {
 
     public function init() {
         $this->title = get_string('pluginname', 'block_arup_recent_courses');
-
-        if ($this->_is_taps_installed()) {
-            $this->_taps = new \mod_tapsenrol\taps();
-        }
+        $this->_taps = new \mod_tapsenrol\taps();
     }
 
     public function applicable_formats() {
@@ -99,7 +96,7 @@ class block_arup_recent_courses extends block_base {
                         $cell->text = html_writer::empty_tag(
                             'img',
                             array(
-                                'src' => $OUTPUT->image_url($classtypegroup, 'local_taps'),
+                                'src' => $OUTPUT->image_url($classtypegroup, 'block_arup_recent_courses'),
                                 'alt' => $alttitle,
                                 'title' => $alttitle
                             )
@@ -256,9 +253,7 @@ EOS;
     protected function _get_taps_enrolments() {
         global $DB, $USER;
 
-        if (empty($USER->idnumber)
-            || !$this->_is_taps_installed()
-        ) {
+        if (empty($USER->idnumber)) {
             return array();
         }
 
@@ -379,12 +374,5 @@ EOS;
         $fieldclass = new $fieldclassname($this->_methodologyfield->id, $courseid);
 
         return $fieldclass->display_data();
-    }
-
-    protected function _is_taps_installed() {
-        if (!isset($this->_tapsinstalled)) {
-            $this->_tapsinstalled = get_config('local_taps', 'version');
-        }
-        return $this->_tapsinstalled;
     }
 }

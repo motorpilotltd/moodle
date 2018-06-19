@@ -38,14 +38,6 @@ if (!isset($SESSION->block_arup_mylearning)) {
     $SESSION->block_arup_mylearning = new stdClass ();
 }
 
-if (!get_config('local_taps', 'version')) {
-    $SESSION->block_arup_mylearning->alert = new stdClass();
-    $SESSION->block_arup_mylearning->alert->message = get_string('alert:cannot:'.$action, 'block_arup_mylearning');
-    $SESSION->block_arup_mylearning->alert->type = 'alert-danger';
-    redirect($redirecturl);
-    exit;
-}
-
 require_login();
 
 
@@ -164,15 +156,8 @@ if ($form->is_cancelled()) {
     $SESSION->block_arup_mylearning->alert = new stdClass();
     $SESSION->block_arup_mylearning->alert->type = 'alert-danger';
 
-    if ($result === false) {
-        $a = get_string('alert:error:failedtoconnect', 'block_arup_mylearning');
-        $SESSION->block_arup_mylearning->alert->message = get_string('alert:error:'.$action, 'block_arup_mylearning', $a);
-    } else if ($result['cpdid'] < 0) {
-        if (get_string_manager()->string_exists($result['errormessage'], 'local_taps')) {
-            $a = get_string($result['errormessage'], 'local_taps');
-        } else {
-            $a = $result['errormessage'];
-        }
+    if ($result['cpdid'] < 0) {
+        $a = $result['errormessage'];
         $SESSION->block_arup_mylearning->alert->message = get_string('alert:error:'.$action, 'block_arup_mylearning', $a);
         $SESSION->block_arup_mylearning->alert->type = '';
     } else {

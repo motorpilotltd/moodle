@@ -503,6 +503,8 @@ $string['nopermission'] = 'Sorry, you do not have permission to perform the requ
 $string['nousers'] = 'No applicable users';
 
 $string['online'] = 'Online';
+$string['overrideregions'] = 'Only add region mappings above if you wish to override those set at course level.<br />'
+        . 'CTRL-click to select multiple options or de-select selected options.';
 
 $string['pluginname'] = 'Arup linked course enrolment';
 $string['pluginadministration'] = 'Arup linked course enrolment administration';

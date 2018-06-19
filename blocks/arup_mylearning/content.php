@@ -334,9 +334,7 @@ class block_arup_mylearning_content {
 
     protected function _has_content_myhistory() {
         global $USER;
-        return ($USER->idnumber
-            && $this->_is_taps_installed()
-        );
+        return ($USER->idnumber);
     }
 
     protected function _get_myhistory_html() {
@@ -397,7 +395,7 @@ class block_arup_mylearning_content {
                 $cell->text = html_writer::empty_tag(
                     'img',
                     array(
-                        'src' => $OUTPUT->image_url($th->classtypegroup, 'local_taps'),
+                        'src' => $OUTPUT->image_url($th->classtypegroup, 'block_arup_mylearning'),
                         'alt' => $alttitle,
                         'title' => $alttitle
                     )
@@ -829,9 +827,7 @@ class block_arup_mylearning_content {
 
         $return = array();
 
-        if (!$USER->idnumber
-            || !$this->_is_taps_installed()
-        ) {
+        if (!$USER->idnumber) {
             return $return;
         }
 
@@ -862,9 +858,7 @@ EOS;
     protected function _get_taps_history() {
         global $DB, $USER;
 
-        if (!$USER->idnumber
-            || !$this->_is_taps_installed()
-        ) {
+        if (!$USER->idnumber) {
             return array();
         }
 
@@ -916,12 +910,6 @@ EOS;
     /* HISTORY FUNCTIONS - END */
 
     /* UTILITY FUNCTIONS - START */
-    protected function _is_taps_installed() {
-        if (!isset($this->_tapsinstalled)) {
-            $this->_tapsinstalled = get_config('local_taps', 'version');
-        }
-        return $this->_tapsinstalled;
-    }
 
     protected function _get_export_button($tab) {
         $url = new moodle_url('/blocks/arup_mylearning/export.php', array('tab' => $tab, 'instance' => $this->_block->instance->id));
@@ -929,13 +917,9 @@ EOS;
     }
 
     protected function _get_add_cpd_button($tab) {
-        if ($this->_is_taps_installed()) {
-            $url = new moodle_url('/blocks/arup_mylearning/editcpd.php', array('tab' => $tab, 'instance' => $this->_block->instance->id));
-            $link = html_writer::tag('span', get_string('addcpd', 'block_arup_mylearning'));
-            return html_writer::link($url, $link, array('class' => 'btn btn-primary'));
-        } else {
-            return '';
-        }
+        $url = new moodle_url('/blocks/arup_mylearning/editcpd.php', array('tab' => $tab, 'instance' => $this->_block->instance->id));
+        $link = html_writer::tag('span', get_string('addcpd', 'block_arup_mylearning'));
+        return html_writer::link($url, $link, array('class' => 'btn btn-primary'));
     }
 
     public static function user_has_role_assignments($userid, array $rolearchetypes, $contextid = 0) {

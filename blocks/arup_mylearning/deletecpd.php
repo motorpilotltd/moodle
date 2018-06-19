@@ -33,14 +33,6 @@ if (!isset($SESSION->block_arup_mylearning)) {
     $SESSION->block_arup_mylearning = new stdClass ();
 }
 
-if (!get_config('local_taps', 'version')) {
-    $SESSION->block_arup_mylearning->alert = new stdClass();
-    $SESSION->block_arup_mylearning->alert->message = get_string('alert:cannot:delete', 'block_arup_mylearning');
-    $SESSION->block_arup_mylearning->alert->type = 'alert-danger';
-    redirect($redirecturl);
-    exit;
-}
-
 require_login();
 
 require_capability('block/arup_mylearning:deletecpd', $context);
