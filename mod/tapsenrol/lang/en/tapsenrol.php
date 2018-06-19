@@ -84,10 +84,6 @@ $string['approve:title'] = 'Enrolment approval';
 $string['approve:title:approve'] = 'Approve request';
 $string['approve:title:either'] = 'Approve or reject request';
 $string['approve:title:reject'] = 'Reject request';
-$string['arupadvertmissing'] = 'The Arup advert activity is not installed.<br />Please install and then add an Arup advert activity to this {$a} before proceeding.';
-$string['arupadvertnotinstalled'] = 'No Arup advert activity was found in this {$a}.<br />Please add an Arup advert activity before proceeding.';
-$string['arupadvertnottaps'] = 'The Arup advert activity in this {$a} is not using the linked course datatype.<br />Please update the Arup advert activity before proceeding.';
-$string['arupadverttoomany'] = 'There is more than one Arup advert activity in this {$a}.<br />Please ensure only one Arup advert activity is present before proceeding.';
 $string['autocompletion'] = 'Automatically update learning history on course completion';
 $string['autocompletionhint'] = 'This setting can only be changed by administrators.';
 

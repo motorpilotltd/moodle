@@ -37,9 +37,6 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
             }
         }
         if ($runchecks) {
-            // Check for arupadvert activity (suite driver) presence.
-            $this->_arupadvert_exists();
-
             // Check enrolment plugins are as required.
             $this->_check_enrolment_plugins();
 
@@ -181,39 +178,6 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
 
     public function completion_rule_enabled($data) {
         return !empty($data['completionenrolment']) || !empty($data['completionattended']);
-    }
-
-    protected function _arupadvert_exists() {
-        global $DB;
-
-        if (!$DB->get_record('modules', array('name' => 'arupadvert'))) {
-            // Arup advert not installed.
-            $this->_trigger_notice(get_string('arupadvertnotinstalled', 'tapsenrol', core_text::strtolower(get_string('course'))));
-        } else {
-            $sql = "SELECT cm.id, a.datatype
-                FROM {course_modules} cm
-                JOIN {modules} m ON m.id = cm.module
-                JOIN {arupadvert} a ON a.id = cm.instance
-                WHERE m.name = :modulename AND cm.course = :courseid
-                ";
-            $params = array(
-                'modulename' => 'arupadvert',
-                'courseid' => $this->current->course
-            );
-            $arupadverts = $DB->get_records_sql($sql, $params);
-            if (!$arupadverts) {
-                // No Arup advert in this course.
-                $this->_trigger_notice(get_string('arupadvertmissing', 'tapsenrol', core_text::strtolower(get_string('course'))));
-            } else if (count($arupadverts) > 1) {
-                $this->_trigger_notice(get_string('arupadverttoomany', 'tapsenrol', core_text::strtolower(get_string('course'))));
-            } else {
-                $arupadvert = array_shift($arupadverts);
-                if ($arupadvert->datatype != 'taps') {
-                    // Arup advert is not a TAPS one.
-                    $this->_trigger_notice(get_string('arupadvertnottaps', 'tapsenrol', core_text::strtolower(get_string('course'))));
-                }
-            }
-        }
     }
 
     protected function _check_enrolment_plugins() {
