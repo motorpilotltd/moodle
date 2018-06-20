@@ -830,15 +830,36 @@ function get_courses_search($searchterms, $sort, $page, $recordsperpage, &$total
     // But want to show courses user is enrolled on
     $enrolledcourses = enrol_get_my_courses();
     foreach($rs as $course) {
-        // Preload contexts only for hidden courses or courses we need to return.
-        context_helper::preload_from_record($course);
-        $coursecontext = context_course::instance($course->id);
-        if (!$course->visible && !has_capability('moodle/course:viewhiddencourses', $coursecontext)) {
-            continue;
-        }
-        if (!empty($requiredcapabilities)) {
-            if (!has_all_capabilities($requiredcapabilities, $coursecontext)) {
-                continue;
+        $visible = true;
+        $skip = array_key_exists($course->id, $enrolledcourses);
+
+        if (!$skip) {
+            // Preload contexts only for hidden courses or courses we need to return.
+            context_helper::preload_from_record($course);
+            $coursecontext = context_course::instance($course->id);
+            if (!$course->visible) {
+                // No need to check all categories.
+                $visible = false;
+            } elseif ($course->category != 0) {
+                // Check for any hidden category in the tree for this course.
+                // If catgeory not in array then it is hidden.
+                if (!isset($categories[$course->category])) {
+                    $visible = false;
+                } else {
+                    $parentcategories = explode('/', $categories[$course->category]->path);
+                    unset($parentcategories[0]);
+                    foreach ($parentcategories as $parentcategory) {
+                        if (!isset($categories[$parentcategory]) || !$categories[$parentcategory]->visible) {
+                            $visible = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!empty($requiredcapabilities)) {
+                if (!has_all_capabilities($requiredcapabilities, $coursecontext)) {
+                    continue;
+                }
             }
         }
 
