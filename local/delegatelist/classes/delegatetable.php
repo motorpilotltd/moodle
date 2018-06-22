@@ -16,7 +16,7 @@ class delegatetable extends table_sql {
         parent::__construct($uniqueid);
         $this->_delegatelist = $delegatelist;
     }
-    
+
     public function initialise() {
         $this->define_baseurl($this->_delegatelist->get_url());
 
@@ -49,7 +49,7 @@ class delegatetable extends table_sql {
             $this->column_class('sponsor', 'mdl-left');
         }
         $this->column_class('timeaccess', 'mdl-left');
-        
+
         // define the main sortable column
         $sortable = array(
             'firstname' => get_string('table:firstname', 'local_delegatelist'),
@@ -281,7 +281,7 @@ class delegatetable extends table_sql {
                 }
                 $content .= html_writer::end_div();
                 return $content;
-                
+
             case 'timeaccess':
                 if (empty($row->timeaccess)) {
                     return get_string('notaccessed', 'local_delegatelist');
@@ -313,8 +313,8 @@ class delegatetable extends table_sql {
         $renderer = $PAGE->get_renderer('local_delegatelist');
         echo $renderer->alert(get_string('noresults', 'local_delegatelist'), 'alert-warning', false);
     }
-    
-    
+
+
     /* Need to override this whole method to change sorting */
     /**
      * Must be called after table is defined. Use methods above first. Cannot
@@ -453,7 +453,7 @@ class delegatetable extends table_sql {
         }
         return false;
     }
-    
+
      /**
      * Get the columns to sort by, in the form required by {@link construct_order_by()}.
      * @return array column name => SORT_... constant.
@@ -493,8 +493,8 @@ class delegatetable extends table_sql {
         if ($this->_delegatelist->get_function() == 'display') {
             // Add buttons and end form
             echo html_writer::start_div('buttons');
-            echo html_writer::tag('button', get_string('selectall'), array('id' => 'checkall', 'class' => 'btn'));
-            echo html_writer::tag('button', get_string('deselectall'), array('id' => 'checknone', 'class' => 'btn'));
+            echo html_writer::tag('button', get_string('selectall'), array('id' => 'checkall', 'class' => 'btn btn-default'));
+            echo html_writer::tag('button', get_string('deselectall'), array('id' => 'checknone', 'class' => 'btn btn-default'));
             echo html_writer::end_div();
             echo html_writer::start_div('buttons');
             echo html_writer::tag('button', get_string('sendemail', 'local_delegatelist'), array('id' => 'sendemail', 'class' => 'btn btn-primary'));
@@ -513,27 +513,18 @@ class delegatetable extends table_sql {
     }
 
     public function download_buttons() {
+        global $OUTPUT;
         if ($this->is_downloadable() && !$this->is_downloading() && $this->_delegatelist->has_capability('manager')) {
-            $downloadoptions = $this->get_download_menu();
-
-            $downloadelements = new stdClass();
-            $downloadelements->formatsmenu = html_writer::select($downloadoptions,
-                    'download', $this->defaultdownloadformat, false);
-            $downloadelements->downloadbutton = html_writer::empty_tag('input', array('type' => 'submit', 'value' => get_string('download')));
-            $url = str_ireplace('/index.php', '/download.php', $this->baseurl);
-            $html = html_writer::start_tag('form', array('action' => $url, 'method' => 'post'));
+            $url = new moodle_url(str_ireplace('/index.php', '/download.php', $this->baseurl));
             $activeclass = $this->_delegatelist->get_active_class();
-            $activeclassid = empty($activeclass)? 0 : $activeclass->classid;
-            $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'classid', 'value' => $activeclassid));
+            $params = $url->params();
+            $params['classid'] = (empty($activeclass)? 0 : $activeclass->classid);
             foreach ($this->_delegatelist->get_filters() as $name => $value) {
-                $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => $name, 'value' => $value));
+                $params[$name] = $value;
             }
-            $html .= html_writer::start_div('mdl-right');
-            $html .= html_writer::tag('label', get_string('downloadas', 'table', $downloadelements));
-            $html .= html_writer::end_div();
-            $html .= html_writer::end_tag('form');
 
-            return $html;
+            return $OUTPUT->download_dataformat_selector(get_string('downloadas', 'table'),
+                    $url->out_omit_querystring(), 'download', $params);
         } else {
             return '';
         }

@@ -4,7 +4,7 @@ $currenturl = qualified_me();
 
 $detailsform = new local_custom_certification\form\certification_certification_form($currenturl, [
     'certif' => $certif
-]);
+], 'post', '', null, $canmanage);
 
 if ($data = $detailsform->get_data()) {
     $certif->set_recertificationtimeperiod($data->recertificationdatetype, $data->activeperiodtime, $data->activeperiodtimeunit, $data->windowperiodtime, $data->windowperiodtimeunit);

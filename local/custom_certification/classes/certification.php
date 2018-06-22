@@ -64,6 +64,7 @@ class certification
     public $linkedtapscourseid;
     public $uservisible;
     public $reportvisible;
+    public $canmange;
 
     public $certificationcoursesets;
     public $recertificationcoursesets;
@@ -102,6 +103,7 @@ class certification
         $this->linkedtapscourseid = $ceritification->linkedtapscourseid;
         $this->uservisible = $ceritification->uservisible;
         $this->reportvisible = $ceritification->reportvisible;
+        $this->canmange = has_capability('local/custom_certification:manage', $this->get_context());
 
         $coursesets = $this->get_coursesets();
         $this->certificationcoursesets = $coursesets['certification'];
@@ -588,6 +590,7 @@ class certification
     public static function get_all($filters = [], $orderby = '')
     {
         global $DB;
+
         $params = [];
         $params['deleted'] = 0;
         $query = "SELECT 
@@ -597,6 +600,17 @@ class certification
             JOIN {course_categories} cc ON cc.id = c.category
             WHERE c.deleted = :deleted
         ";
+
+        if(!isset($filters['category'])){
+            $filters['category'] = [];
+        }
+
+        /**
+         * Get all categories where I have access to view or manage certifications
+         */
+        list($inoreqaalquery, $inorequalparams) = $DB->get_in_or_equal( self::get_viewable_categories(), SQL_PARAMS_NAMED);
+        $query .= "AND c.category " . $inoreqaalquery;
+        $params += $inorequalparams;
 
         if (isset($filters['fullname'])) {
             $query .= "AND ".$DB->sql_like('c.fullname', ":fullname", false, false)." ";
@@ -631,8 +645,13 @@ class certification
         }
         
         $query .= $orderby;
-        
-        return $DB->get_records_sql($query, $params);
+        $certifications = $DB->get_records_sql($query, $params);
+        $editablecategories = self::get_editable_categories();
+        foreach($certifications as &$certification){
+            $certification->canmanage = in_array($certification->category, $editablecategories);
+        }
+
+        return $certifications;
     }
 
     /**
@@ -945,7 +964,7 @@ class certification
      *
      * @return array
      */
-    public static function get_categories($parent = 0)
+    public static function get_categories($parent = 0, $filters = [])
     {
         global $DB;
         $params = ['visible' => 1];
@@ -954,6 +973,11 @@ class certification
         } else {
             $where = $DB->sql_like('path', ':path');
             $params['path'] = "%/{$parent}/%";
+        }
+        if(isset($filters['category'])){
+            list($inoreqaalquery, $inorequalparams) = $DB->get_in_or_equal($filters['category'], SQL_PARAMS_NAMED);
+            $where .= " AND id " . $inoreqaalquery;
+            $params += $inorequalparams;
         }
         return $DB->get_records_select_menu('course_categories', $where, $params, 'sortorder ASC', 'id, name');
     }
@@ -1140,5 +1164,35 @@ class certification
         $userassignment->optional = $optional;
         $DB->update_record('certif_user_assignments', $userassignment);
         completion::calculate_duedate($certifid, $userid);
+    }
+
+    /**
+     * Get context
+     *
+     * @return \context_coursecat
+     */
+    public function get_context(){
+        return \context_coursecat::instance($this->category);
+    }
+
+    /**
+     * Get categories that I have access to view or manage
+     * @return array
+     */
+    public static function get_viewable_categories(){
+        global $CFG;
+        require_once($CFG->libdir . '/coursecatlib.php');
+        return array_merge(array_keys(\coursecat::make_categories_list('local/custom_certification:manage')), array_keys(\coursecat::make_categories_list('local/custom_certification:view')));
+    }
+
+
+    /**
+     * Get categories that I have access to manage
+     * @return array
+     */
+    public static function get_editable_categories(){
+        global $CFG;
+        require_once($CFG->libdir . '/coursecatlib.php');
+        return array_keys(\coursecat::make_categories_list('local/custom_certification:manage'));
     }
 }

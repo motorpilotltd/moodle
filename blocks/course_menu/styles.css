@@ -84,3 +84,22 @@ a.showHide.plus {
 #linksTableContainer input.link-text.cm-error {
     border: 1px solid red;
 }
+.block_navigation .block_tree [aria-expanded="false"], .block_navigation .block_tree [aria-expanded="true"] {
+    background-repeat: no-repeat;
+    background-position: left 10px;
+}
+
+.jsenabled .block_navigation .block_tree li.collapsed ul {
+    display: none;
+}
+
+.block_navigation .block_tree [aria-expanded="true"]:before, .block_navigation .block_tree [aria-expanded="false"]:before {
+    float: right;
+    margin-top: 17px;
+}
+
+.block_navigation .block_tree .depth_3:before,
+.block_navigation .block_tree .depth_4:before {
+    margin-top: 3px;
+}
+/* END CORE MOD */

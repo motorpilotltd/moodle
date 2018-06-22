@@ -120,13 +120,23 @@ function report_customsql_generate_csv($report, $timenow) {
     $DB->update_record('report_customsql_queries', $updaterecord);
 
     // Report is runable daily, weekly or monthly.
-    if (($report->runable != 'manual') && !empty($report->emailto)) {
+    if ($report->runable != 'manual') {
         if ($csvfilenames) {
             foreach ($csvfilenames as $csvfilename) {
-                report_customsql_email_report($report, $csvfilename);
+                if (!empty($report->emailto)) {
+                    report_customsql_email_report($report, $csvfilename);
+                }
+                if (!empty($report->customdir)) {
+                    report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename);
+                }
             }
         } else { // If there is no data.
-            report_customsql_email_report($report);
+            if (!empty($report->emailto)) {
+                report_customsql_email_report($report);
+            }
+            if (!empty($report->customdir)) {
+                report_customsql_copy_csv_to_customdir($report);
+            }
         }
     }
     return $csvtimestamp;
@@ -308,12 +318,14 @@ function report_customsql_print_reports_for($reports, $type) {
                               array('href' => report_customsql_url('view.php?id='.$report->id))).
              ' '.report_customsql_time_note($report, 'span');
         if ($canedit) {
-            $imgedit = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/edit'),
+/* BEGIN CORE MOD */
+            $imgedit = html_writer::tag('img', '', array('src' => $OUTPUT->image_url('t/edit'),
                                                          'class' => 'iconsmall',
                                                          'alt' => get_string('edit')));
-            $imgdelete = html_writer::tag('img', '', array('src' => $OUTPUT->pix_url('t/delete'),
+            $imgdelete = html_writer::tag('img', '', array('src' => $OUTPUT->image_url('t/delete'),
                                                            'class' => 'iconsmall',
                                                            'alt' => get_string('delete')));
+/* END CORE MOD */
             echo ' '.html_writer::tag('span', get_string('availableto', 'report_customsql',
                                       $capabilities[$report->capability]),
                                       array('class' => 'admin_note')).' '.
@@ -351,11 +363,18 @@ function report_customsql_pretify_column_names($row) {
     return $colnames;
 }
 
+/**
+ * Writes a CSV row and replaces placeholders.
+ * @param resource $handle the file pointer
+ * @param array $data a data row
+ */
 function report_customsql_write_csv_row($handle, $data) {
     global $CFG;
     $escapeddata = array();
     foreach ($data as $value) {
         $value = str_replace('%%WWWROOT%%', $CFG->wwwroot, $value);
+        $value = str_replace('%%Q%%', '?', $value);
+        $value = str_replace('%%C%%', ':', $value);
         $escapeddata[] = '"'.str_replace('"', '""', $value).'"';
     }
     fwrite($handle, implode(',', $escapeddata)."\r\n");
@@ -641,3 +660,36 @@ function report_customsql_category_options() {
     global $DB;
     return $DB->get_records_menu('report_customsql_categories', null, 'name ASC', 'id, name');
 }
+
+/**
+ * Copies a csv file to an optional custom directory or file path.
+ *
+ * @param object $report
+ * @param integer $timenow
+ * @param string $csvfilename
+ */
+function report_customsql_copy_csv_to_customdir($report, $timenow, $csvfilename = null) {
+
+    // If the filename is empty then there was no data so we can't export a
+    // new file, but if we are saving over the same file then we should delete
+    // the existing file or it will have stale data in it.
+    if (empty($csvfilename)) {
+        $filepath = $report->customdir;
+        if (!is_dir($filepath)) {
+            file_put_contents($filepath, '');
+            mtrace("No data so resetting $filepath");
+        }
+        return;
+    }
+
+    $filename = $report->id . '-' . basename($csvfilename);
+    if (is_dir($report->customdir)) {
+        $filepath = realpath($report->customdir) . DIRECTORY_SEPARATOR . $filename;
+    } else {
+        $filepath = $report->customdir;
+    }
+
+    copy($csvfilename, $filepath);
+    mtrace("Exported $csvfilename to $filepath");
+}
+

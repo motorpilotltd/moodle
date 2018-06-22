@@ -5,7 +5,7 @@ require_once($CFG->dirroot . '/lib/formslib.php');
 require_login();
 
 $systemcontext = context_system::instance();
-require_capability('local/custom_certification:view', $systemcontext);
+
 
 global $TEXTAREA_OPTIONS, $CFG, $PAGE, $SESSION;
 $TEXTAREA_OPTIONS = [
@@ -33,6 +33,11 @@ $assignmentid = optional_param('assignmentid', null, PARAM_INT);
 
 
 $certif = new \local_custom_certification\certification($certifid, $action == 'assignments' ? true : false);
+$context = $certif->get_context();
+if (!has_any_capability(['local/custom_certification:view', 'local/custom_certification:manage'], $context)) {
+    throw new required_capability_exception($context, 'local/custom_certification:view', 'nopermissions','');
+}
+$canmanage = has_capability('local/custom_certification:manage', $context);
 
 if (empty($certif->id) || $certif->deleted == 1) {
     return redirect(new moodle_url('/local/custom_certification/index.php'));

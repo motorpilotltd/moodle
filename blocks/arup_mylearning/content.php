@@ -399,7 +399,7 @@ class block_arup_mylearning_content {
                 $cell->text = html_writer::empty_tag(
                     'img',
                     array(
-                        'src' => $OUTPUT->pix_url($th->classtypegroup, 'local_taps'),
+                        'src' => $OUTPUT->image_url($th->classtypegroup, 'local_taps'),
                         'alt' => $alttitle,
                         'title' => $alttitle
                     )
@@ -416,7 +416,7 @@ class block_arup_mylearning_content {
             if (!empty($th->course)) {
                 $courseurl = new moodle_url('/course/view.php', array('id' => $th->course));
             }
-            $coursename = format_string($th->coursename ? $th->coursename : $th->classname);
+            $coursename = format_string($th->coursename ? $th->coursename : $th->classname, true, ['escape' => false]);
             $courselink = '';
             if ($courseurl) {
                 $courselink = html_writer::link($courseurl, $coursename);
@@ -472,7 +472,7 @@ class block_arup_mylearning_content {
                     'data-toggle' => 'modal',
                     'data-target' => '#info-modal',
                     'data-label' => $coursename,
-                    'data-url' => $modalurl,
+                    'data-url' => $modalurl->out(false),
                 )
             );
             if (!is_null($th->cpdid)) {

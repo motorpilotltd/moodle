@@ -30,8 +30,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015021300;
+/* BEGIN CORE MOD */
+// Arup version bump.
+$plugin->version   = 2015021303;
+/* END CORE MOD */
 $plugin->requires  = 2014111000;  // Requires this Moodle version.
-$plugin->release   = '2.8.0 (Build: 2015021300)'; // User-friendly version number.
+/* BEGIN CORE MOD */
+// Arup version bump.
+$plugin->release   = '2.8.3 (Build: 2015021303)'; // User-friendly version number.
+/* END CORE MOD */
 $plugin->component = 'mod_facetoface';
 $plugin->maturity  = MATURITY_STABLE;

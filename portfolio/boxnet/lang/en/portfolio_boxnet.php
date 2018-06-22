@@ -23,9 +23,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['apiv1migration_message_content'] = 'As part of the recent Moodle upgrade to 2.6, the Box portfolio plugin has been disabled. To re-enable it, you need to re-configure it as described in the documentation {$a->docsurl}.';
-$string['apiv1migration_message_small'] = 'This plugin has been disabled, as it requires configuration as described in the documentation Box APIv1 migration.';
-$string['apiv1migration_message_subject'] = 'Important information regarding Box portfolio plugin';
 $string['clientid'] = 'Client ID';
 $string['clientsecret'] = 'Client secret';
 $string['existingfolder'] = 'Existing folder to put file(s) into';
@@ -42,6 +39,8 @@ $string['notarget'] = 'You must specify either an existing folder or a new folde
 $string['noticket'] = 'Could not retrieve a ticket from Box to begin the authentication session';
 $string['password'] = 'Your Box password (will not be stored)';
 $string['pluginname'] = 'Box';
+$string['privacy:metadata'] = 'This plugin sends data externally to a linked Box account. It does not store data locally.';
+$string['privacy:metadata:data'] = 'Personal data passed through from the portfolio subsystem.';
 $string['sendfailed'] = 'Failed to send content to Box: {$a}';
 $string['setupinfo'] = 'Setup instructions';
 $string['setupinfodetails'] = 'To obtain a client ID and secret, log in to Box and visit the <a href="{$a->servicesurl}">Box developers page</a>. Follow \'Create new application\' and create a new application for your Moodle site. The client ID and secret are displayed in the \'OAuth2 parameters\' section of the application edit form. Optionally, you can also provide other information about your Moodle site.';

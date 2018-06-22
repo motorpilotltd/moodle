@@ -371,6 +371,23 @@ function upgrade_stale_php_files_present() {
     global $CFG;
 
     $someexamplesofremovedfiles = array(
+        // Removed in 3.3.
+        '/badges/backpackconnect.php',
+        '/calendar/yui/src/info/assets/skins/sam/moodle-calendar-info.css',
+        '/competency/classes/external/exporter.php',
+        '/mod/forum/forum.js',
+        '/user/pixgroup.php',
+        // Removed in 3.2.
+        '/calendar/preferences.php',
+        '/lib/alfresco/',
+        '/lib/jquery/jquery-1.12.1.min.js',
+        '/lib/password_compat/tests/',
+        '/lib/phpunit/classes/unittestcase.php',
+        // Removed in 3.1.
+        '/lib/classes/log/sql_internal_reader.php',
+        '/lib/zend/',
+        '/mod/forum/pix/icon.gif',
+        '/tag/templates/tagname.mustache',
         // Removed in 3.0.
         '/mod/lti/grade.php',
         '/tag/coursetagslib.php',
@@ -494,6 +511,7 @@ function upgrade_plugins($type, $startcallback, $endcallback, $verbose) {
                         message_update_processors($plug);
                     }
                     upgrade_plugin_mnet_functions($component);
+                    core_tag_area::reset_definitions_for_component($component);
                     $endcallback($component, true, $verbose);
                 }
             }
@@ -532,6 +550,7 @@ function upgrade_plugins($type, $startcallback, $endcallback, $verbose) {
                 message_update_processors($plug);
             }
             upgrade_plugin_mnet_functions($component);
+            core_tag_area::reset_definitions_for_component($component);
             $endcallback($component, true, $verbose);
 
         } else if ($installedversion < $plugin->version) { // upgrade
@@ -566,6 +585,7 @@ function upgrade_plugins($type, $startcallback, $endcallback, $verbose) {
                 message_update_processors($plug);
             }
             upgrade_plugin_mnet_functions($component);
+            core_tag_area::reset_definitions_for_component($component);
             $endcallback($component, false, $verbose);
 
         } else if ($installedversion > $plugin->version) {
@@ -669,6 +689,7 @@ function upgrade_plugins_modules($startcallback, $endcallback, $verbose) {
                     message_update_providers($component);
                     \core\message\inbound\manager::update_handlers_for_component($component);
                     upgrade_plugin_mnet_functions($component);
+                    core_tag_area::reset_definitions_for_component($component);
                     $endcallback($component, true, $verbose);
                 }
             }
@@ -703,6 +724,7 @@ function upgrade_plugins_modules($startcallback, $endcallback, $verbose) {
             message_update_providers($component);
             \core\message\inbound\manager::update_handlers_for_component($component);
             upgrade_plugin_mnet_functions($component);
+            core_tag_area::reset_definitions_for_component($component);
 
             $endcallback($component, true, $verbose);
 
@@ -739,6 +761,7 @@ function upgrade_plugins_modules($startcallback, $endcallback, $verbose) {
             message_update_providers($component);
             \core\message\inbound\manager::update_handlers_for_component($component);
             upgrade_plugin_mnet_functions($component);
+            core_tag_area::reset_definitions_for_component($component);
 
             $endcallback($component, false, $verbose);
 
@@ -860,6 +883,7 @@ function upgrade_plugins_blocks($startcallback, $endcallback, $verbose) {
                     message_update_providers($component);
                     \core\message\inbound\manager::update_handlers_for_component($component);
                     upgrade_plugin_mnet_functions($component);
+                    core_tag_area::reset_definitions_for_component($component);
                     $endcallback($component, true, $verbose);
                 }
             }
@@ -899,6 +923,7 @@ function upgrade_plugins_blocks($startcallback, $endcallback, $verbose) {
             \core\task\manager::reset_scheduled_tasks_for_component($component);
             message_update_providers($component);
             \core\message\inbound\manager::update_handlers_for_component($component);
+            core_tag_area::reset_definitions_for_component($component);
             upgrade_plugin_mnet_functions($component);
 
             $endcallback($component, true, $verbose);
@@ -935,6 +960,7 @@ function upgrade_plugins_blocks($startcallback, $endcallback, $verbose) {
             message_update_providers($component);
             \core\message\inbound\manager::update_handlers_for_component($component);
             upgrade_plugin_mnet_functions($component);
+            core_tag_area::reset_definitions_for_component($component);
 
             $endcallback($component, false, $verbose);
 
@@ -1071,6 +1097,28 @@ function external_update_descriptions($component) {
             $dbfunction->capabilities = $functioncapabilities;
             $update = true;
         }
+
+        if (isset($function['services']) and is_array($function['services'])) {
+            sort($function['services']);
+            $functionservices = implode(',', $function['services']);
+        } else {
+            // Force null values in the DB.
+            $functionservices = null;
+        }
+
+        if ($dbfunction->services != $functionservices) {
+            // Now, we need to check if services were removed, in that case we need to remove the function from them.
+            $servicesremoved = array_diff(explode(",", $dbfunction->services), explode(",", $functionservices));
+            foreach ($servicesremoved as $removedshortname) {
+                if ($externalserviceid = $DB->get_field('external_services', 'id', array("shortname" => $removedshortname))) {
+                    $DB->delete_records('external_services_functions', array('functionname' => $dbfunction->name,
+                                                                                'externalserviceid' => $externalserviceid));
+                }
+            }
+
+            $dbfunction->services = $functionservices;
+            $update = true;
+        }
         if ($update) {
             $DB->update_record('external_functions', $dbfunction);
         }
@@ -1083,6 +1131,15 @@ function external_update_descriptions($component) {
         $dbfunction->classpath  = empty($function['classpath']) ? null : $function['classpath'];
         $dbfunction->component  = $component;
         $dbfunction->capabilities = array_key_exists('capabilities', $function)?$function['capabilities']:'';
+
+        if (isset($function['services']) and is_array($function['services'])) {
+            sort($function['services']);
+            $dbfunction->services = implode(',', $function['services']);
+        } else {
+            // Force null values in the DB.
+            $dbfunction->services = null;
+        }
+
         $dbfunction->id = $DB->insert_record('external_functions', $dbfunction);
     }
     unset($functions);
@@ -1187,6 +1244,52 @@ function external_update_descriptions($component) {
             $newf->externalserviceid = $dbservice->id;
             $newf->functionname      = $fname;
             $DB->insert_record('external_services_functions', $newf);
+        }
+    }
+}
+
+/**
+ * Allow plugins and subsystems to add external functions to other plugins or built-in services.
+ * This function is executed just after all the plugins have been updated.
+ */
+function external_update_services() {
+    global $DB;
+
+    // Look for external functions that want to be added in existing services.
+    $functions = $DB->get_records_select('external_functions', 'services IS NOT NULL');
+
+    $servicescache = array();
+    foreach ($functions as $function) {
+        // Prevent edge cases.
+        if (empty($function->services)) {
+            continue;
+        }
+        $services = explode(',', $function->services);
+
+        foreach ($services as $serviceshortname) {
+            // Get the service id by shortname.
+            if (!empty($servicescache[$serviceshortname])) {
+                $serviceid = $servicescache[$serviceshortname];
+            } else if ($service = $DB->get_record('external_services', array('shortname' => $serviceshortname))) {
+                // If the component is empty, it means that is not a built-in service.
+                // We don't allow functions to inject themselves in services created by an user in Moodle.
+                if (empty($service->component)) {
+                    continue;
+                }
+                $serviceid = $service->id;
+                $servicescache[$serviceshortname] = $serviceid;
+            } else {
+                // Service not found.
+                continue;
+            }
+            // Finally add the function to the service.
+            $newf = new stdClass();
+            $newf->externalserviceid = $serviceid;
+            $newf->functionname      = $function->name;
+
+            if (!$DB->record_exists('external_services_functions', (array)$newf)) {
+                $DB->insert_record('external_services_functions', $newf);
+            }
         }
     }
 }
@@ -1435,7 +1538,9 @@ function print_upgrade_part_end($plugin, $installation, $verbose) {
         }
     }
     if ($verbose) {
-        echo $OUTPUT->notification(get_string('success'), 'notifysuccess');
+        $notification = new \core\output\notification(get_string('success'), \core\output\notification::NOTIFY_SUCCESS);
+        $notification->set_show_closebutton(false);
+        echo $OUTPUT->render($notification);
         print_upgrade_separator();
     }
 }
@@ -1536,6 +1641,7 @@ function install_core($version, $verbose) {
         \core\task\manager::reset_scheduled_tasks_for_component('moodle');
         message_update_providers('moodle');
         \core\message\inbound\manager::update_handlers_for_component('moodle');
+        core_tag_area::reset_definitions_for_component('moodle');
 
         // Write default settings unconditionally
         admin_apply_default_settings(NULL, true);
@@ -1603,6 +1709,7 @@ function upgrade_core($version, $verbose) {
         \core\task\manager::reset_scheduled_tasks_for_component('moodle');
         message_update_providers('moodle');
         \core\message\inbound\manager::update_handlers_for_component('moodle');
+        core_tag_area::reset_definitions_for_component('moodle');
         // Update core definitions.
         cache_helper::update_definitions(true);
 
@@ -1646,6 +1753,10 @@ function upgrade_noncore($verbose) {
         foreach ($plugintypes as $type=>$location) {
             upgrade_plugins($type, 'print_upgrade_part_start', 'print_upgrade_part_end', $verbose);
         }
+        // Upgrade services.
+        // This function gives plugins and subsystems a chance to add functions to existing built-in services.
+        external_update_services();
+
         // Update cache definitions. Involves scanning each plugin for any changes.
         cache_helper::update_definitions();
         // Mark the site as upgraded.
@@ -1737,7 +1848,6 @@ function upgrade_plugin_mnet_functions($component) {
     }
 
     // reflect all the services we're publishing and save them
-    require_once($CFG->dirroot . '/lib/zend/Zend/Server/Reflection.php');
     static $cachedclasses = array(); // to store reflection information in
     foreach ($publishes as $service => $data) {
         $f = $data['filename'];
@@ -1770,8 +1880,8 @@ function upgrade_plugin_mnet_functions($component) {
                 $key = $dataobject->filename . '|' . $dataobject->classname;
                 if (!array_key_exists($key, $cachedclasses)) { // look to see if we've already got a reflection object
                     try {
-                        $cachedclasses[$key] = Zend_Server_Reflection::reflectClass($dataobject->classname);
-                    } catch (Zend_Server_Reflection_Exception $e) { // catch these and rethrow them to something more helpful
+                        $cachedclasses[$key] = new ReflectionClass($dataobject->classname);
+                    } catch (ReflectionException $e) { // catch these and rethrow them to something more helpful
                         throw new moodle_exception('installreflectionclasserror', 'mnet', '', (object)array('method' => $dataobject->functionname, 'class' => $dataobject->classname, 'error' => $e->getMessage()));
                     }
                 }
@@ -1779,27 +1889,20 @@ function upgrade_plugin_mnet_functions($component) {
                 if (!$r->hasMethod($dataobject->functionname)) {
                     throw new moodle_exception('installnosuchmethod', 'mnet', '', (object)array('method' => $dataobject->functionname, 'class' => $dataobject->classname));
                 }
-                // stupid workaround for zend not having a getMethod($name) function
-                $ms = $r->getMethods();
-                foreach ($ms as $m) {
-                    if ($m->getName() == $dataobject->functionname) {
-                        $functionreflect = $m;
-                        break;
-                    }
-                }
+                $functionreflect = $r->getMethod($dataobject->functionname);
                 $dataobject->static = (int)$functionreflect->isStatic();
             } else {
                 if (!function_exists($dataobject->functionname)) {
                     throw new moodle_exception('installnosuchfunction', 'mnet', '', (object)array('method' => $dataobject->functionname, 'file' => $dataobject->filename));
                 }
                 try {
-                    $functionreflect = Zend_Server_Reflection::reflectFunction($dataobject->functionname);
-                } catch (Zend_Server_Reflection_Exception $e) { // catch these and rethrow them to something more helpful
+                    $functionreflect = new ReflectionFunction($dataobject->functionname);
+                } catch (ReflectionException $e) { // catch these and rethrow them to something more helpful
                     throw new moodle_exception('installreflectionfunctionerror', 'mnet', '', (object)array('method' => $dataobject->functionname, '' => $dataobject->filename, 'error' => $e->getMessage()));
                 }
             }
             $dataobject->profile =  serialize(admin_mnet_method_profile($functionreflect));
-            $dataobject->help = $functionreflect->getDescription();
+            $dataobject->help = admin_mnet_method_get_help($functionreflect);
 
             if ($record_exists = $DB->get_record('mnet_rpc', array('xmlrpcpath'=>$dataobject->xmlrpcpath))) {
                 $dataobject->id      = $record_exists->id;
@@ -1877,325 +1980,74 @@ function upgrade_plugin_mnet_functions($component) {
 }
 
 /**
- * Given some sort of Zend Reflection function/method object, return a profile array, ready to be serialized and stored
+ * Given some sort of reflection function/method object, return a profile array, ready to be serialized and stored
  *
- * @param Zend_Server_Reflection_Function_Abstract $function can be any subclass of this object type
+ * @param ReflectionFunctionAbstract $function reflection function/method object from which to extract information
  *
- * @return array
+ * @return array associative array with function/method information
  */
-function admin_mnet_method_profile(Zend_Server_Reflection_Function_Abstract $function) {
-    $protos = $function->getPrototypes();
-    $proto = array_pop($protos);
-    $ret = $proto->getReturnValue();
-    $profile = array(
-        'parameters' =>  array(),
-        'return'     =>  array(
-            'type'        => $ret->getType(),
-            'description' => $ret->getDescription(),
-        ),
+function admin_mnet_method_profile(ReflectionFunctionAbstract $function) {
+    $commentlines = admin_mnet_method_get_docblock($function);
+    $getkey = function($key) use ($commentlines) {
+        return array_values(array_filter($commentlines, function($line) use ($key) {
+            return $line[0] == $key;
+        }));
+    };
+    $returnline = $getkey('@return');
+    return array (
+        'parameters' => array_map(function($line) {
+            return array(
+                'name' => trim($line[2], " \t\n\r\0\x0B$"),
+                'type' => $line[1],
+                'description' => $line[3]
+            );
+        }, $getkey('@param')),
+
+        'return' => array(
+            'type' => !empty($returnline[0][1]) ? $returnline[0][1] : 'void',
+            'description' => !empty($returnline[0][2]) ? $returnline[0][2] : ''
+        )
     );
-    foreach ($proto->getParameters() as $p) {
-        $profile['parameters'][] = array(
-            'name' => $p->getName(),
-            'type' => $p->getType(),
-            'description' => $p->getDescription(),
-        );
-    }
-    return $profile;
-}
-
-
-/**
- * This function finds duplicate records (based on combinations of fields that should be unique)
- * and then progamatically generated a "most correct" version of the data, update and removing
- * records as appropriate
- *
- * Thanks to Dan Marsden for help
- *
- * @param   string  $table      Table name
- * @param   array   $uniques    Array of field names that should be unique
- * @param   array   $fieldstocheck  Array of fields to generate "correct" data from (optional)
- * @return  void
- */
-function upgrade_course_completion_remove_duplicates($table, $uniques, $fieldstocheck = array()) {
-    global $DB;
-
-    // Find duplicates
-    $sql_cols = implode(', ', $uniques);
-
-    $sql = "SELECT {$sql_cols} FROM {{$table}} GROUP BY {$sql_cols} HAVING (count(id) > 1)";
-    $duplicates = $DB->get_recordset_sql($sql, array());
-
-    // Loop through duplicates
-    foreach ($duplicates as $duplicate) {
-        $pointer = 0;
-
-        // Generate SQL for finding records with these duplicate uniques
-        $sql_select = implode(' = ? AND ', $uniques).' = ?'; // builds "fieldname = ? AND fieldname = ?"
-        $uniq_values = array();
-        foreach ($uniques as $u) {
-            $uniq_values[] = $duplicate->$u;
-        }
-
-        $sql_order = implode(' DESC, ', $uniques).' DESC'; // builds "fieldname DESC, fieldname DESC"
-
-        // Get records with these duplicate uniques
-        $records = $DB->get_records_select(
-            $table,
-            $sql_select,
-            $uniq_values,
-            $sql_order
-        );
-
-        // Loop through and build a "correct" record, deleting the others
-        $needsupdate = false;
-        $origrecord = null;
-        foreach ($records as $record) {
-            $pointer++;
-            if ($pointer === 1) { // keep 1st record but delete all others.
-                $origrecord = $record;
-            } else {
-                // If we have fields to check, update original record
-                if ($fieldstocheck) {
-                    // we need to keep the "oldest" of all these fields as the valid completion record.
-                    // but we want to ignore null values
-                    foreach ($fieldstocheck as $f) {
-                        if ($record->$f && (($origrecord->$f > $record->$f) || !$origrecord->$f)) {
-                            $origrecord->$f = $record->$f;
-                            $needsupdate = true;
-                        }
-                    }
-                }
-                $DB->delete_records($table, array('id' => $record->id));
-            }
-        }
-        if ($needsupdate || isset($origrecord->reaggregate)) {
-            // If this table has a reaggregate field, update to force recheck on next cron run
-            if (isset($origrecord->reaggregate)) {
-                $origrecord->reaggregate = time();
-            }
-            $DB->update_record($table, $origrecord);
-        }
-    }
 }
 
 /**
- * Find questions missing an existing category and associate them with
- * a category which purpose is to gather them.
+ * Given some sort of reflection function/method object, return an array of docblock lines, where each line is an array of
+ * keywords/descriptions
  *
- * @return void
+ * @param ReflectionFunctionAbstract $function reflection function/method object from which to extract information
+ *
+ * @return array docblock converted in to an array
  */
-function upgrade_save_orphaned_questions() {
-    global $DB;
+function admin_mnet_method_get_docblock(ReflectionFunctionAbstract $function) {
+    return array_map(function($line) {
+        $text = trim($line, " \t\n\r\0\x0B*/");
+        if (strpos($text, '@param') === 0) {
+            return preg_split('/\s+/', $text, 4);
+        }
 
-    // Looking for orphaned questions
-    $orphans = $DB->record_exists_select('question',
-            'NOT EXISTS (SELECT 1 FROM {question_categories} WHERE {question_categories}.id = {question}.category)');
-    if (!$orphans) {
-        return;
-    }
+        if (strpos($text, '@return') === 0) {
+            return preg_split('/\s+/', $text, 3);
+        }
 
-    // Generate a unique stamp for the orphaned questions category, easier to identify it later on
-    $uniquestamp = "unknownhost+120719170400+orphan";
-    $systemcontext = context_system::instance();
-
-    // Create the orphaned category at system level
-    $cat = $DB->get_record('question_categories', array('stamp' => $uniquestamp,
-            'contextid' => $systemcontext->id));
-    if (!$cat) {
-        $cat = new stdClass();
-        $cat->parent = 0;
-        $cat->contextid = $systemcontext->id;
-        $cat->name = get_string('orphanedquestionscategory', 'question');
-        $cat->info = get_string('orphanedquestionscategoryinfo', 'question');
-        $cat->sortorder = 999;
-        $cat->stamp = $uniquestamp;
-        $cat->id = $DB->insert_record("question_categories", $cat);
-    }
-
-    // Set a category to those orphans
-    $params = array('catid' => $cat->id);
-    $DB->execute('UPDATE {question} SET category = :catid WHERE NOT EXISTS
-            (SELECT 1 FROM {question_categories} WHERE {question_categories}.id = {question}.category)', $params);
+        return array($text);
+    }, explode("\n", $function->getDocComment()));
 }
 
 /**
- * Rename old backup files to current backup files.
+ * Given some sort of reflection function/method object, return just the help text
  *
- * When added the setting 'backup_shortname' (MDL-28657) the backup file names did not contain the id of the course.
- * Further we fixed that behaviour by forcing the id to be always present in the file name (MDL-33812).
- * This function will explore the backup directory and attempt to rename the previously created files to include
- * the id in the name. Doing this will put them back in the process of deleting the excess backups for each course.
+ * @param ReflectionFunctionAbstract $function reflection function/method object from which to extract information
  *
- * This function manually recreates the file name, instead of using
- * {@link backup_plan_dbops::get_default_backup_filename()}, use it carefully if you're using it outside of the
- * usual upgrade process.
- *
- * @see backup_cron_automated_helper::remove_excess_backups()
- * @link http://tracker.moodle.org/browse/MDL-35116
- * @return void
- * @since Moodle 2.4
+ * @return string docblock help text
  */
-function upgrade_rename_old_backup_files_using_shortname() {
-    global $CFG;
-    $dir = get_config('backup', 'backup_auto_destination');
-    $useshortname = get_config('backup', 'backup_shortname');
-    if (empty($dir) || !is_dir($dir) || !is_writable($dir)) {
-        return;
-    }
+function admin_mnet_method_get_help(ReflectionFunctionAbstract $function) {
+    $helplines = array_map(function($line) {
+        return implode(' ', $line);
+    }, array_values(array_filter(admin_mnet_method_get_docblock($function), function($line) {
+        return strpos($line[0], '@') !== 0 && !empty($line[0]);
+    })));
 
-    require_once($CFG->dirroot.'/backup/util/includes/backup_includes.php');
-    $backupword = str_replace(' ', '_', core_text::strtolower(get_string('backupfilename')));
-    $backupword = trim(clean_filename($backupword), '_');
-    $filename = $backupword . '-' . backup::FORMAT_MOODLE . '-' . backup::TYPE_1COURSE . '-';
-    $regex = '#^'.preg_quote($filename, '#').'.*\.mbz$#';
-    $thirtyapril = strtotime('30 April 2012 00:00');
-
-    // Reading the directory.
-    if (!$files = scandir($dir)) {
-        return;
-    }
-    foreach ($files as $file) {
-        // Skip directories and files which do not start with the common prefix.
-        // This avoids working on files which are not related to this issue.
-        if (!is_file($dir . '/' . $file) || !preg_match($regex, $file)) {
-            continue;
-        }
-
-        // Extract the information from the XML file.
-        try {
-            $bcinfo = backup_general_helper::get_backup_information_from_mbz($dir . '/' . $file);
-        } catch (backup_helper_exception $e) {
-            // Some error while retrieving the backup informations, skipping...
-            continue;
-        }
-
-        // Make sure this a course backup.
-        if ($bcinfo->format !== backup::FORMAT_MOODLE || $bcinfo->type !== backup::TYPE_1COURSE) {
-            continue;
-        }
-
-        // Skip the backups created before the short name option was initially introduced (MDL-28657).
-        // This was integrated on the 2nd of May 2012. Let's play safe with timezone and use the 30th of April.
-        if ($bcinfo->backup_date < $thirtyapril) {
-            continue;
-        }
-
-        // Let's check if the file name contains the ID where it is supposed to be, if it is the case then
-        // we will skip the file. Of course it could happen that the course ID is identical to the course short name
-        // even though really unlikely, but then renaming this file is not necessary. If the ID is not found in the
-        // file name then it was probably the short name which was used.
-        $idfilename = $filename . $bcinfo->original_course_id . '-';
-        $idregex = '#^'.preg_quote($idfilename, '#').'.*\.mbz$#';
-        if (preg_match($idregex, $file)) {
-            continue;
-        }
-
-        // Generating the file name manually. We do not use backup_plan_dbops::get_default_backup_filename() because
-        // it will query the database to get some course information, and the course could not exist any more.
-        $newname = $filename . $bcinfo->original_course_id . '-';
-        if ($useshortname) {
-            $shortname = str_replace(' ', '_', $bcinfo->original_course_shortname);
-            $shortname = core_text::strtolower(trim(clean_filename($shortname), '_'));
-            $newname .= $shortname . '-';
-        }
-
-        $backupdateformat = str_replace(' ', '_', get_string('backupnameformat', 'langconfig'));
-        $date = userdate($bcinfo->backup_date, $backupdateformat, 99, false);
-        $date = core_text::strtolower(trim(clean_filename($date), '_'));
-        $newname .= $date;
-
-        if (isset($bcinfo->root_settings['users']) && !$bcinfo->root_settings['users']) {
-            $newname .= '-nu';
-        } else if (isset($bcinfo->root_settings['anonymize']) && $bcinfo->root_settings['anonymize']) {
-            $newname .= '-an';
-        }
-        $newname .= '.mbz';
-
-        // Final check before attempting the renaming.
-        if ($newname == $file || file_exists($dir . '/' . $newname)) {
-            continue;
-        }
-        @rename($dir . '/' . $file, $dir . '/' . $newname);
-    }
-}
-
-/**
- * Detect duplicate grade item sortorders and resort the
- * items to remove them.
- */
-function upgrade_grade_item_fix_sortorder() {
-    global $DB;
-
-    // The simple way to fix these sortorder duplicates would be simply to resort each
-    // affected course. But in order to reduce the impact of this upgrade step we're trying
-    // to do it more efficiently by doing a series of update statements rather than updating
-    // every single grade item in affected courses.
-
-    $sql = "SELECT DISTINCT g1.courseid
-              FROM {grade_items} g1
-              JOIN {grade_items} g2 ON g1.courseid = g2.courseid
-             WHERE g1.sortorder = g2.sortorder AND g1.id != g2.id
-             ORDER BY g1.courseid ASC";
-    foreach ($DB->get_fieldset_sql($sql) as $courseid) {
-        $transaction = $DB->start_delegated_transaction();
-        $items = $DB->get_records('grade_items', array('courseid' => $courseid), '', 'id, sortorder, sortorder AS oldsort');
-
-        // Get all duplicates in course order, highest sort order, and higest id first so that we can make space at the
-        // bottom higher end of the sort orders and work down by id.
-        $sql = "SELECT DISTINCT g1.id, g1.sortorder
-                FROM {grade_items} g1
-                JOIN {grade_items} g2 ON g1.courseid = g2.courseid
-                WHERE g1.sortorder = g2.sortorder AND g1.id != g2.id AND g1.courseid = :courseid
-                ORDER BY g1.sortorder DESC, g1.id DESC";
-
-        // This is the O(N*N) like the database version we're replacing, but at least the constants are a billion times smaller...
-        foreach ($DB->get_records_sql($sql, array('courseid' => $courseid)) as $duplicate) {
-            foreach ($items as $item) {
-                if ($item->sortorder > $duplicate->sortorder || ($item->sortorder == $duplicate->sortorder && $item->id > $duplicate->id)) {
-                    $item->sortorder += 1;
-                }
-            }
-        }
-        foreach ($items as $item) {
-            if ($item->sortorder != $item->oldsort) {
-                $DB->update_record('grade_items', array('id' => $item->id, 'sortorder' => $item->sortorder));
-            }
-        }
-
-        $transaction->allow_commit();
-    }
-}
-
-/**
- * Detect file areas with missing root directory records and add them.
- */
-function upgrade_fix_missing_root_folders() {
-    global $DB, $USER;
-
-    $transaction = $DB->start_delegated_transaction();
-
-    $sql = "SELECT contextid, component, filearea, itemid
-              FROM {files}
-             WHERE (component <> 'user' OR filearea <> 'draft')
-          GROUP BY contextid, component, filearea, itemid
-            HAVING MAX(CASE WHEN filename = '.' AND filepath = '/' THEN 1 ELSE 0 END) = 0";
-
-    $rs = $DB->get_recordset_sql($sql);
-    $defaults = array('filepath' => '/',
-        'filename' => '.',
-        'userid' => 0, // Don't rely on any particular user for these system records.
-        'filesize' => 0,
-        'timecreated' => time(),
-        'timemodified' => time(),
-        'contenthash' => sha1(''));
-    foreach ($rs as $r) {
-        $pathhash = sha1("/$r->contextid/$r->component/$r->filearea/$r->itemid/.");
-        $DB->insert_record('files', (array)$r + $defaults +
-            array('pathnamehash' => $pathhash));
-    }
-    $rs->close();
-    $transaction->allow_commit();
+    return implode("\n", $helplines);
 }
 
 /**
@@ -2219,7 +2071,10 @@ function upgrade_fix_missing_root_folders_draft() {
         'filename' => '.',
         'userid' => 0, // Don't rely on any particular user for these system records.
         'filesize' => 0,
-        'contenthash' => sha1(''));
+        // Note: This does not use the file_storage API's hash calculator
+        // because access to core APIs is not allowed during upgrade.
+        'contenthash' => sha1(''),
+    );
     foreach ($rs as $r) {
         $r->pathnamehash = sha1("/$r->contextid/user/draft/$r->itemid/.");
         $DB->insert_record('files', (array)$r + $defaults);
@@ -2299,6 +2154,125 @@ function check_database_tables_row_format(environment_results $result) {
         }
     }
 
+    return null;
+}
+
+/**
+ * This function verfies that the database has tables using InnoDB Antelope row format.
+ *
+ * @param environment_results $result
+ * @return environment_results|null updated results object, or null if no Antelope table has been found.
+ */
+function check_mysql_file_format(environment_results $result) {
+    global $DB;
+
+    if ($DB->get_dbfamily() == 'mysql') {
+        $collation = $DB->get_dbcollation();
+        $collationinfo = explode('_', $collation);
+        $charset = reset($collationinfo);
+
+        if ($charset == 'utf8mb4') {
+            if ($DB->get_row_format() !== "Barracuda") {
+                $result->setInfo('mysql_full_unicode_support#File_format');
+                $result->setStatus(false);
+                return $result;
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * This function verfies that the database has a setting of one file per table. This is required for 'utf8mb4'.
+ *
+ * @param environment_results $result
+ * @return environment_results|null updated results object, or null if innodb_file_per_table = 1.
+ */
+function check_mysql_file_per_table(environment_results $result) {
+    global $DB;
+
+    if ($DB->get_dbfamily() == 'mysql') {
+        $collation = $DB->get_dbcollation();
+        $collationinfo = explode('_', $collation);
+        $charset = reset($collationinfo);
+
+        if ($charset == 'utf8mb4') {
+            if (!$DB->is_file_per_table_enabled()) {
+                $result->setInfo('mysql_full_unicode_support#File_per_table');
+                $result->setStatus(false);
+                return $result;
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * This function verfies that the database has the setting of large prefix enabled. This is required for 'utf8mb4'.
+ *
+ * @param environment_results $result
+ * @return environment_results|null updated results object, or null if innodb_large_prefix = 1.
+ */
+function check_mysql_large_prefix(environment_results $result) {
+    global $DB;
+
+    if ($DB->get_dbfamily() == 'mysql') {
+        $collation = $DB->get_dbcollation();
+        $collationinfo = explode('_', $collation);
+        $charset = reset($collationinfo);
+
+        if ($charset == 'utf8mb4') {
+            if (!$DB->is_large_prefix_enabled()) {
+                $result->setInfo('mysql_full_unicode_support#Large_prefix');
+                $result->setStatus(false);
+                return $result;
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * This function checks the database to see if it is using incomplete unicode support.
+ *
+ * @param  environment_results $result $result
+ * @return environment_results|null updated results object, or null if unicode is fully supported.
+ */
+function check_mysql_incomplete_unicode_support(environment_results $result) {
+    global $DB;
+
+    if ($DB->get_dbfamily() == 'mysql') {
+        $collation = $DB->get_dbcollation();
+        $collationinfo = explode('_', $collation);
+        $charset = reset($collationinfo);
+
+        if ($charset == 'utf8') {
+            $result->setInfo('mysql_full_unicode_support');
+            $result->setStatus(false);
+            return $result;
+        }
+    }
+    return null;
+}
+
+/**
+ * Check if the site is being served using an ssl url.
+ *
+ * Note this does not really perform any request neither looks for proxies or
+ * other situations. Just looks to wwwroot and warn if it's not using https.
+ *
+ * @param  environment_results $result $result
+ * @return environment_results|null updated results object, or null if the site is https.
+ */
+function check_is_https(environment_results $result) {
+    global $CFG;
+
+    // Only if is defined, non-empty and whatever core tell us.
+    if (!empty($CFG->wwwroot) && !is_https()) {
+        $result->setInfo('site not https');
+        $result->setStatus(false);
+        return $result;
+    }
     return null;
 }
 
@@ -2443,4 +2417,268 @@ function upgrade_install_plugins(array $installable, $confirmed, $heading='', $c
         echo $output->footer();
         die();
     }
+}
+/**
+ * Method used to check the installed unoconv version.
+ *
+ * @param environment_results $result object to update, if relevant.
+ * @return environment_results|null updated results or null if unoconv path is not executable.
+ */
+function check_unoconv_version(environment_results $result) {
+    global $CFG;
+
+    if (!during_initial_install() && !empty($CFG->pathtounoconv) && file_is_executable(trim($CFG->pathtounoconv))) {
+        $currentversion = 0;
+        $supportedversion = 0.7;
+        $unoconvbin = \escapeshellarg($CFG->pathtounoconv);
+        $command = "$unoconvbin --version";
+        exec($command, $output);
+
+        // If the command execution returned some output, then get the unoconv version.
+        if ($output) {
+            foreach ($output as $response) {
+                if (preg_match('/unoconv (\\d+\\.\\d+)/', $response, $matches)) {
+                    $currentversion = (float)$matches[1];
+                }
+            }
+        }
+
+        if ($currentversion < $supportedversion) {
+            $result->setInfo('unoconv version not supported');
+            $result->setStatus(false);
+            return $result;
+        }
+    }
+    return null;
+}
+
+/**
+ * Checks for up-to-date TLS libraries. NOTE: this is not currently used, see MDL-57262.
+ *
+ * @param environment_results $result object to update, if relevant.
+ * @return environment_results|null updated results or null if unoconv path is not executable.
+ */
+function check_tls_libraries(environment_results $result) {
+    global $CFG;
+
+    if (!function_exists('curl_version')) {
+        $result->setInfo('cURL PHP extension is not installed');
+        $result->setStatus(false);
+        return $result;
+    }
+
+    if (!\core\upgrade\util::validate_php_curl_tls(curl_version(), PHP_ZTS)) {
+        $result->setInfo('invalid ssl/tls configuration');
+        $result->setStatus(false);
+        return $result;
+    }
+
+    if (!\core\upgrade\util::can_use_tls12(curl_version(), php_uname('r'))) {
+        $result->setInfo('ssl/tls configuration not supported');
+        $result->setStatus(false);
+        return $result;
+    }
+
+    return null;
+}
+
+/**
+ * Check if recommended version of libcurl is installed or not.
+ *
+ * @param environment_results $result object to update, if relevant.
+ * @return environment_results|null updated results or null.
+ */
+function check_libcurl_version(environment_results $result) {
+
+    if (!function_exists('curl_version')) {
+        $result->setInfo('cURL PHP extension is not installed');
+        $result->setStatus(false);
+        return $result;
+    }
+
+    // Supported version and version number.
+    $supportedversion = 0x071304;
+    $supportedversionstring = "7.19.4";
+
+    // Installed version.
+    $curlinfo = curl_version();
+    $currentversion = $curlinfo['version_number'];
+
+    if ($currentversion < $supportedversion) {
+        // Test fail.
+        // Set info, we want to let user know how to resolve the problem.
+        $result->setInfo('Libcurl version check');
+        $result->setNeededVersion($supportedversionstring);
+        $result->setCurrentVersion($curlinfo['version']);
+        $result->setStatus(false);
+        return $result;
+    }
+
+    return null;
+}
+
+/**
+ * Fix how auth plugins are called in the 'config_plugins' table.
+ *
+ * For legacy reasons, the auth plugins did not always use their frankenstyle
+ * component name in the 'plugin' column of the 'config_plugins' table. This is
+ * a helper function to correctly migrate the legacy settings into the expected
+ * and consistent way.
+ *
+ * @param string $plugin the auth plugin name such as 'cas', 'manual' or 'mnet'
+ */
+function upgrade_fix_config_auth_plugin_names($plugin) {
+    global $CFG, $DB, $OUTPUT;
+
+    $legacy = (array) get_config('auth/'.$plugin);
+    $current = (array) get_config('auth_'.$plugin);
+
+    // I don't want to rely on array_merge() and friends here just in case
+    // there was some crazy setting with a numerical name.
+
+    if ($legacy) {
+        $new = $legacy;
+    } else {
+        $new = [];
+    }
+
+    if ($current) {
+        foreach ($current as $name => $value) {
+            if (isset($legacy[$name]) && ($legacy[$name] !== $value)) {
+                // No need to pollute the output during unit tests.
+                if (!empty($CFG->upgraderunning)) {
+                    $message = get_string('settingmigrationmismatch', 'core_auth', [
+                        'plugin' => 'auth_'.$plugin,
+                        'setting' => s($name),
+                        'legacy' => s($legacy[$name]),
+                        'current' => s($value),
+                    ]);
+                    echo $OUTPUT->notification($message, \core\output\notification::NOTIFY_ERROR);
+
+                    upgrade_log(UPGRADE_LOG_NOTICE, 'auth_'.$plugin, 'Setting values mismatch detected',
+                        'SETTING: '.$name. ' LEGACY: '.$legacy[$name].' CURRENT: '.$value);
+                }
+            }
+
+            $new[$name] = $value;
+        }
+    }
+
+    foreach ($new as $name => $value) {
+        set_config($name, $value, 'auth_'.$plugin);
+        unset_config($name, 'auth/'.$plugin);
+    }
+}
+
+/**
+ * Populate the auth plugin settings with defaults if needed.
+ *
+ * As a result of fixing the auth plugins config storage, many settings would
+ * be falsely reported as new ones by admin/upgradesettings.php. We do not want
+ * to confuse admins so we try to reduce the bewilderment by pre-populating the
+ * config_plugins table with default values. This should be done only for
+ * disabled auth methods. The enabled methods have their settings already
+ * stored, so reporting actual new settings for them is valid.
+ *
+ * @param string $plugin the auth plugin name such as 'cas', 'manual' or 'mnet'
+ */
+function upgrade_fix_config_auth_plugin_defaults($plugin) {
+    global $CFG;
+
+    $pluginman = core_plugin_manager::instance();
+    $enabled = $pluginman->get_enabled_plugins('auth');
+
+    if (isset($enabled[$plugin])) {
+        // Do not touch settings of enabled auth methods.
+        return;
+    }
+
+    // We can't directly use {@link core\plugininfo\auth::load_settings()} here
+    // because the plugins are not fully upgraded yet. Instead, we emulate what
+    // that method does. We fetch a temporary instance of the plugin's settings
+    // page to get access to the settings and their defaults. Note we are not
+    // adding that temporary instance into the admin tree. Yes, this is a hack.
+
+    $plugininfo = $pluginman->get_plugin_info('auth_'.$plugin);
+    $adminroot = admin_get_root();
+    $ADMIN = $adminroot;
+    $auth = $plugininfo;
+
+    $section = $plugininfo->get_settings_section_name();
+    $settingspath = $plugininfo->full_path('settings.php');
+
+    if (file_exists($settingspath)) {
+        $settings = new admin_settingpage($section, 'Emulated settings page for auth_'.$plugin, 'moodle/site:config');
+        include($settingspath);
+
+        if ($settings) {
+            // Consistently with what admin/cli/upgrade.php does, apply the default settings twice.
+            // I assume this is done for theoretical cases when a default value depends on an other.
+            admin_apply_default_settings($settings, false);
+            admin_apply_default_settings($settings, false);
+        }
+    }
+}
+
+/**
+ * Search for a given theme in any of the parent themes of a given theme.
+ *
+ * @param string $needle The name of the theme you want to search for
+ * @param string $themename The name of the theme you want to search for
+ * @param string $checkedthemeforparents The name of all the themes already checked
+ * @return bool True if found, false if not.
+ */
+function upgrade_theme_is_from_family($needle, $themename, $checkedthemeforparents = []) {
+    global $CFG;
+
+    // Once we've started checking a theme, don't start checking it again. Prevent recursion.
+    if (!empty($checkedthemeforparents[$themename])) {
+        return false;
+    }
+    $checkedthemeforparents[$themename] = true;
+
+    if ($themename == $needle) {
+        return true;
+    }
+
+    if ($themedir = upgrade_find_theme_location($themename)) {
+        $THEME = new stdClass();
+        require($themedir . '/config.php');
+        $theme = $THEME;
+    } else {
+        return false;
+    }
+
+    if (empty($theme->parents)) {
+        return false;
+    }
+
+    // Recursively search through each parent theme.
+    foreach ($theme->parents as $parent) {
+        if (upgrade_theme_is_from_family($needle, $parent, $checkedthemeforparents)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Finds the theme location and verifies the theme has all needed files.
+ *
+ * @param string $themename The name of the theme you want to search for
+ * @return string full dir path or null if not found
+ * @see \theme_config::find_theme_location()
+ */
+function upgrade_find_theme_location($themename) {
+    global $CFG;
+
+    if (file_exists("$CFG->dirroot/theme/$themename/config.php")) {
+        $dir = "$CFG->dirroot/theme/$themename";
+    } else if (!empty($CFG->themedir) and file_exists("$CFG->themedir/$themename/config.php")) {
+        $dir = "$CFG->themedir/$themename";
+    } else {
+        return null;
+    }
+
+    return $dir;
 }

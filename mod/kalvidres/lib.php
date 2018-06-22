@@ -271,3 +271,5 @@ function kalvidres_reset_userdata($data) {
     return array();
 }
 /* END CORE MOD */
+
+

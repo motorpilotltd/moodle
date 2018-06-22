@@ -36,7 +36,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'core/log',
             /**
              * Add Select2.
              */
-            $('.select2').select2({
+            $('select.select2').select2({
                 width: '75%'
             });
 

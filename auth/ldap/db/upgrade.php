@@ -22,34 +22,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
+ * Function to upgrade auth_ldap.
  * @param int $oldversion the version we are upgrading from
  * @return bool result
  */
 function xmldb_auth_ldap_upgrade($oldversion) {
-
-    // Moodle v2.5.0 release upgrade line
-    // Put any upgrade step following this
-
-    // MDL-39323 New setting in 2.5, make sure it's defined.
-    if ($oldversion < 2013052100) {
-        if (get_config('start_tls', 'auth/ldap') === false) {
-            set_config('start_tls', 0, 'auth/ldap');
-        }
-        upgrade_plugin_savepoint(true, 2013052100, 'auth', 'ldap');
-    }
-
-    // Moodle v2.6.0 release upgrade line.
-    // Put any upgrade step following this.
-
-    // Moodle v2.7.0 release upgrade line.
-    // Put any upgrade step following this.
+    global $CFG, $DB;
 
     // Moodle v2.8.0 release upgrade line.
     // Put any upgrade step following this.
 
     if ($oldversion < 2014111001) {
-        global $DB;
         // From now on the default LDAP objectClass setting for AD has been changed, from 'user' to '(samaccounttype=805306368)'.
         if (is_enabled_auth('ldap')
                 && ($DB->get_field('config_plugins', 'value', array('name' => 'user_type', 'plugin' => 'auth/ldap')) === 'ad')
@@ -65,6 +51,22 @@ function xmldb_auth_ldap_upgrade($oldversion) {
     // Put any upgrade step following this.
 
     // Moodle v3.0.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    // Moodle v3.1.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    // Automatically generated Moodle v3.2.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    if ($oldversion < 2017020700) {
+        // Convert info in config plugins from auth/ldap to auth_ldap.
+        upgrade_fix_config_auth_plugin_names('ldap');
+        upgrade_fix_config_auth_plugin_defaults('ldap');
+        upgrade_plugin_savepoint(true, 2017020700, 'auth', 'ldap');
+    }
+
+    // Automatically generated Moodle v3.3.0 release upgrade line.
     // Put any upgrade step following this.
 
     return true;

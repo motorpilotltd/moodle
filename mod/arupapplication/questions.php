@@ -192,7 +192,7 @@ if (is_array($statementquestions)) {
         echo $OUTPUT->box_start('statementquestion_box_'.$align.' clipboard');
         $buttonlink = $movehereurl->out();
         $strbutton = get_string('action:move_here', 'arupapplication');
-        $src = $OUTPUT->pix_url('movehere');
+        $src = $OUTPUT->image_url('movehere');
         echo '<a title="'.$strbutton.'" href="'.$buttonlink.'">
                 <img class="movetarget" alt="'.$strbutton.'" src="'.$src.'" />
               </a>';
@@ -224,7 +224,7 @@ if (is_array($statementquestions)) {
             $buttonlink = $moveupurl->out();
             $strbutton = get_string('action:up', 'arupapplication');
             echo '<a class="icon up" title="'.$strbutton.'" href="'.$buttonlink.'">
-                    <img alt="'.$strbutton.'" src="'.$OUTPUT->pix_url('t/up') . '" />
+                    <img alt="'.$strbutton.'" src="'.$OUTPUT->image_url('t/up') . '" />
                   </a>';
             echo '</span>';
         }
@@ -236,7 +236,7 @@ if (is_array($statementquestions)) {
             $buttonlink = $movedownurl->out();
             $strbutton = get_string('action:down', 'arupapplication');
             echo '<a class="icon down" title="'.$strbutton.'" href="'.$buttonlink.'">
-                    <img alt="'.$strbutton.'" src="'.$OUTPUT->pix_url('t/down') . '" />
+                    <img alt="'.$strbutton.'" src="'.$OUTPUT->image_url('t/down') . '" />
                   </a>';
             echo '</span>';
         }
@@ -246,7 +246,7 @@ if (is_array($statementquestions)) {
         $buttonlink = $moveurl->out();
         $strbutton = get_string('action:move', 'arupapplication');
         echo '<a class="editing_move" title="'.$strbutton.'" href="'.$buttonlink.'">
-                <img alt="'.$strbutton.'" src="'.$OUTPUT->pix_url('t/move') . '" />
+                <img alt="'.$strbutton.'" src="'.$OUTPUT->image_url('t/move') . '" />
               </a>';
         echo '</span>';
 
@@ -263,7 +263,7 @@ if (is_array($statementquestions)) {
         $buttonlink = $editurl->out();
         $strbutton = get_string('action:edit', 'arupapplication');
         echo '<a class="editing_update" title="'.$strbutton.'" href="'.$buttonlink.'">
-                <img alt="'.$strbutton.'" src="'.$OUTPUT->pix_url('t/edit') . '" />
+                <img alt="'.$strbutton.'" src="'.$OUTPUT->image_url('t/edit') . '" />
               </a>';
         echo '</span>';
 
@@ -278,7 +278,7 @@ if (is_array($statementquestions)) {
 
             $buttonlink = $deleteitemurl->out();
             $strbutton = get_string('action:delete', 'arupapplication');
-            $src = $OUTPUT->pix_url('t/delete');
+            $src = $OUTPUT->image_url('t/delete');
             echo '<a class="icon delete" title="'.$strbutton.'" href="'.$buttonlink.'">
                     <img alt="'.$strbutton.'" src="'.$src.'" />
                   </a>';
@@ -291,7 +291,7 @@ if (is_array($statementquestions)) {
             echo $OUTPUT->box_start('clipboard'); //only shown if shouldmoving = 1
             $buttonlink = $movehereurl->out();
             $strbutton = get_string('action:move_here', 'arupapplication');
-            $src = $OUTPUT->pix_url('movehere');
+            $src = $OUTPUT->image_url('movehere');
             echo '<a title="'.$strbutton.'" href="'.$buttonlink.'">
                     <img class="movetarget" alt="'.$strbutton.'" src="'.$src.'" />
                   </a>';

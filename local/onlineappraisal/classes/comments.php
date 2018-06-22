@@ -195,7 +195,7 @@ class comments {
         if (empty($comment->ownerid) && !isset($owners[0])) {
             $owners[0] = new stdClass();
             $owners[0]->fullname = get_string('comment:system', 'local_onlineappraisal');
-            $owners[0]->imageurl = $OUTPUT->pix_url('u/f2')->out(false);
+            $owners[0]->imageurl = $OUTPUT->image_url('u/f2')->out(false);
         } else if (!empty($comment->ownerid) && !isset($owners[$comment->ownerid])) {
             $owner = $DB->get_record('user', array('id' => $comment->ownerid));
             $ownerpicture = new \user_picture($owner);

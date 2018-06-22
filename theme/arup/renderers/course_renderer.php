@@ -48,7 +48,7 @@ class theme_arup_core_course_renderer extends theme_bootstrap_core_course_render
      * @param array $displayoptions
      * @return string
      */
-    public function course_section_cm($course, &$completioninfo, cm_info $mod, $sectionreturn, $displayoptions = array()) {
+    public function course_section_cms($course, &$completioninfo, cm_info $mod, $sectionreturn, $displayoptions = array()) {
 
         $template = new stdClass();
 
@@ -84,10 +84,6 @@ class theme_arup_core_course_renderer extends theme_bootstrap_core_course_render
         $template->cmname = $cmname;
 
         if (!empty($cmname)) {
-
-            if ($this->page->user_is_editing()) {
-                $template->rename = course_get_cm_rename_action($mod, $sectionreturn);
-            }
 
             // Module can put text after the link (e.g. forum unread)
             $template->afterlink = $mod->afterlink;
@@ -140,7 +136,7 @@ class theme_arup_core_course_renderer extends theme_bootstrap_core_course_render
      * @param array $displayoptions
      * @return string
      */
-    public function course_section_cm_name(cm_info $mod, $displayoptions = array()) {
+    public function course_section_cm_name_depricated(cm_info $mod, $displayoptions = array()) {
         global $CFG;
         $output = '';
         $template = new stdClass();
@@ -215,6 +211,62 @@ class theme_arup_core_course_renderer extends theme_bootstrap_core_course_render
         $template->iconurl = $mod->get_icon_url();
 
         return $this->render_from_template('theme_arup/coursesectioncmname', $template);
+    }
+
+    /**
+     * Renders html to display a name with the link to the course module on a course page
+     *
+     * If module is unavailable for user but still needs to be displayed
+     * in the list, just the name is returned without a link
+     *
+     * Note, that for course modules that never have separate pages (i.e. labels)
+     * this function return an empty string
+     *
+     * @param cm_info $mod
+     * @param array $displayoptions
+     * @return string
+     */
+    public function course_section_cm_name_title(cm_info $mod, $displayoptions = array()) {
+        $output = '';
+        $url = $mod->url;
+        if (!$mod->is_visible_on_course_page() || !$url) {
+            // Nothing to be displayed to the user.
+            return $output;
+        }
+
+        //Accessibility: for files get description via icon, this is very ugly hack!
+        $instancename = $mod->get_formatted_name();
+        $altname = $mod->modfullname;
+        // Avoid unnecessary duplication: if e.g. a forum name already
+        // includes the word forum (or Forum, etc) then it is unhelpful
+        // to include that in the accessible description that is added.
+        if (false !== strpos(core_text::strtolower($instancename),
+                core_text::strtolower($altname))) {
+            $altname = '';
+        }
+        // File type after name, for alphabetic lists (screen reader).
+        if ($altname) {
+            $altname = get_accesshide(' '.$altname);
+        }
+
+        list($linkclasses, $textclasses) = $this->course_section_cm_classes($mod);
+
+        // Get on-click attribute value if specified and decode the onclick - it
+        // has already been encoded for display (puke).
+        $onclick = htmlspecialchars_decode($mod->onclick, ENT_QUOTES);
+
+        // Display link itself.
+        $activitylink = html_writer::tag('span', $instancename . $altname, array('class' => 'instancename')) . html_writer::empty_tag('img', array('src' => $mod->get_icon_url(),
+                'class' => 'iconlarge activityicon', 'alt' => ' ', 'role' => 'presentation'))
+                ;
+        if ($mod->uservisible) {
+            $output .= html_writer::link($url, $activitylink, array('class' => $linkclasses, 'onclick' => $onclick));
+        } else {
+            // We may be displaying this just in order to show information
+            // about visibility, without the actual link ($mod->is_visible_on_course_page()).
+            $output .= html_writer::tag('div', $activitylink, array('class' => $textclasses));
+        }
+        return $output;
     }
 
     /**

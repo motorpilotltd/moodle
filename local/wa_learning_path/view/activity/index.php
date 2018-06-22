@@ -39,17 +39,17 @@ foreach ($this->list as $activity) {
     $buttons = array();
     if (\wa_learning_path\lib\has_capability('editactivity')) {
         $buttons[] = html_writer::link(new \moodle_url($this->url, array('a' => 'edit', 'id' => $activity->id)),
-            html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
+            html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('i/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
             array('title' => $this->get_string('edit'), 'class' => ''));
     }
     if (\wa_learning_path\lib\has_capability('deleteactivity')) {
         $buttons[] = html_writer::link(new \moodle_url($this->url, array('a' => 'delete', 'id' => $activity->id)),
-            html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/delete'), 'alt' => $this->get_string('delete'), 'class' => 'iconsmall')),
+            html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/delete'), 'alt' => $this->get_string('delete'), 'class' => 'iconsmall')),
             array('class' => 'delete', 'title' => $this->get_string('delete')));
     }
     
     $buttons[] = html_writer::link(new \moodle_url($this->url, array('a' => 'view', 'id' => $activity->id)),
-            html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/preview'), 'alt' => $this->get_string('view'), 'class' => 'iconsmall')),
+            html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/preview'), 'alt' => $this->get_string('view'), 'class' => 'iconsmall')),
             array('class' => 'view', 'title' => $this->get_string('view')));
 
     $this->table->data[] = array(

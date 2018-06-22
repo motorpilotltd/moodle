@@ -24,14 +24,13 @@
 if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');
 }
-/* BEGIN CORE MOD */
-$plugin->version = 2015120930.01; // Arup sub-release .01
-/* END CORE MOD */
+
+$plugin->version = 2017120639;
 $plugin->component  = 'mod_kalvidres';
-$plugin->release    = 'Kaltura release 4.0.08';
+$plugin->release    = 'Kaltura release 4.1.1';
 $plugin->requires = 2014050800;
 $plugin->cron       = 0;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = array(
-    'local_kaltura' => 2015120930
+    'local_kaltura' => 2017120634
 );

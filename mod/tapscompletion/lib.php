@@ -61,6 +61,7 @@ function tapscompletion_cm_info_dynamic(cm_info $cm) {
         $cannotedit = !$PAGE->user_is_editing() || !can_update_moduleinfo($cm);
         $cannotcomplete = !has_capability('mod/tapscompletion:updatecompletion', $context);
         if ($cannotedit && $cannotcomplete) {
+            $cm->set_extra_classes('hidecompletion');
             $cm->set_no_view_link();
         }
     }

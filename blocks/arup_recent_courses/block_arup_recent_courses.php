@@ -100,7 +100,7 @@ class block_arup_recent_courses extends block_base {
                         $cell->text = html_writer::empty_tag(
                             'img',
                             array(
-                                'src' => $OUTPUT->pix_url($classtypegroup, 'local_taps'),
+                                'src' => $OUTPUT->image_url($classtypegroup, 'local_taps'),
                                 'alt' => $alttitle,
                                 'title' => $alttitle
                             )

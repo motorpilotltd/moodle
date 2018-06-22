@@ -5,8 +5,8 @@ The Dataform notification rules allow sending custom messages to specified recip
 
 Release:
 ------------
-2.9.0
+3.0.4
 
 Documentation:
 --------------
-http://docs.moodle.org/29/en/Dataform_notification_block
+http://docs.moodle.org/30/en/Dataform_notification_block

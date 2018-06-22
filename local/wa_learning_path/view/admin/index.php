@@ -40,17 +40,17 @@ foreach ($this->learningpaths as $learningpath) {
     $buttons = array();
     if (\wa_learning_path\lib\has_capability('addlearningpath')) {
         $buttons[] = html_writer::link(new \moodle_url($this->url, array('a' => 'edit', 'id' => $learningpath->id)),
-            html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
+            html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('i/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
             array('title' => $this->get_string('edit'), 'class' => ''));
     } elseif (\wa_learning_path\lib\has_capability('amendlearningcontent') || \wa_learning_path\lib\has_capability('editmatrixgrid')) {
         $buttons[] = html_writer::link(new \moodle_url($this->url, array('a' => 'edit_matrix', 'id' => $learningpath->id)),
-            html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
+            html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('i/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
             array('title' => $this->get_string('edit'), 'class' => ''));
     }
 
     if (\wa_learning_path\lib\has_capability('deletelearningpath')) {
         $buttons[] = html_writer::link(new \moodle_url($this->url, array('a' => 'delete', 'id' => $learningpath->id)),
-            html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/delete'), 'alt' => $this->get_string('delete'), 'class' => 'iconsmall')),
+            html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/delete'), 'alt' => $this->get_string('delete'), 'class' => 'iconsmall')),
             array('class' => 'delete', 'title' => $this->get_string('delete')));
     }
 

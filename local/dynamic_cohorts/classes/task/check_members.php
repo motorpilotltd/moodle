@@ -14,8 +14,6 @@ class check_members extends \core\task\scheduled_task
 
     /**
      * Add or remove members from cohort
-     *
-     * @global \moodle_database $DB
      */
     public function execute()
     {
@@ -46,7 +44,7 @@ class check_members extends \core\task\scheduled_task
         }
 
         $userselect = 'u.' . implode(', u.', array_keys($userrules));
-        
+
         // Open second connection as we need no prefix.
         $cfg = $DB->export_dbconfig();
         if (!isset($cfg->dboptions)) {
@@ -72,6 +70,7 @@ class check_members extends \core\task\scheduled_task
             $castidnumber = $DB->sql_cast_char2int('u.idnumber');
             $hubjoin = "LEFT JOIN SQLHUB.ARUP_ALL_STAFF_V h ON h.EMPLOYEE_NUMBER = {$castidnumber}";
         }
+
 
         /**
          * Get all users from system
@@ -119,14 +118,39 @@ class check_members extends \core\task\scheduled_task
             AND u.deleted = :deleted
             AND u.suspended = :suspended
             AND uif.shortname {$in}
+            
         ";
         $userscustomfields = $DB->get_records_sql($query, array_merge($params, $inparams));
+
+        $query = "
+            SELECT
+              cm.id, 
+              cm.userid,
+              cm.cohortid
+            FROM {cohort_members} cm
+            JOIN {user} u ON u.id = cm.userid
+            WHERE u.id > 1
+            AND u.deleted = :deleted
+            AND u.suspended = :suspended
+        ";
+        $cohortmembers = $DB->get_records_sql($query, $params);
+
         /**
          * Assign custom fields to user array
          */
         foreach($userscustomfields as $userscustomfield){
             $var = 'custom_'.$userscustomfield->shortname;
             $users[$userscustomfield->userid]->$var = $userscustomfield->data;
+        }
+
+        /**
+         * Assign cohorts to user array
+         */
+        foreach($cohortmembers as $cohortmember){
+            if(!isset($users[$cohortmember->userid]->cohort)){
+                $users[$cohortmember->userid]->cohort = [];
+            }
+            $users[$cohortmember->userid]->cohort[] = $cohortmember->cohortid;
         }
         /**
          * Get only dynamic cohorts
@@ -150,7 +174,6 @@ class check_members extends \core\task\scheduled_task
                      * Check if user meets ruleset rules
                      */
                     $add = $this->meets_ruleset($ruleset, $user);
-                    
                     /**
                      * If ruleset criteria are meet and operator beetwen ruleset is OR then leave foreach and add user
                      */
@@ -187,12 +210,14 @@ class check_members extends \core\task\scheduled_task
                     }
                 }
             }
+
+
             // Remove any suspended/deleted users.
             $removeuserscountsql = "SELECT COUNT(u.id) FROM {cohort_members} cm JOIN {user} u ON u.id = cm.userid WHERE cm.cohortid = :cohortid AND (u.deleted = 1 OR u.suspended = 1)";
             $removedusers += $suspendedusers = $DB->count_records_sql($removeuserscountsql, ['cohortid' => $cohort->cohortid]);
             $removeusersselect = "userid IN (SELECT u.id FROM {cohort_members} cm JOIN {user} u ON u.id = cm.userid WHERE cm.cohortid = :cohortid AND (u.deleted = 1 OR u.suspended = 1))";
             $DB->delete_records_select('cohort_members', $removeusersselect, ['cohortid' => $cohort->cohortid]);
-            
+
             $removeduserstext = "Removed users: {$removedusers}";
 
             if ($suspendedusers) {
@@ -226,7 +251,6 @@ class check_members extends \core\task\scheduled_task
                     $fieldname = $rule->field;
                     break;
             }
-            
             /**
              * If rule field is datetime type and field is not set or disabled set rule criteria as not meet
              */
@@ -285,6 +309,12 @@ class check_members extends \core\task\scheduled_task
                 break;
             case dynamic_cohorts::CRITERIA_TYPE_IS_AFTER:
                 return (int) $field > (int) $value;
+                break;
+            case dynamic_cohorts::CRITERIA_TYPE_IS_MEMBER:
+                return in_array($value, (array)$field);
+                break;
+            case dynamic_cohorts::CRITERIA_TYPE_IS_NOT_MEMBER:
+                return !in_array($value, (array)$field);
                 break;
         }
     }

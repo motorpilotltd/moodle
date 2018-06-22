@@ -26,6 +26,7 @@ require_once(dirname(__FILE__) . '/../../../../config.php');
 require_once($CFG->dirroot . '/course/lib.php');
 require_once($CFG->dirroot . '/cohort/lib.php');
 require_once(dirname(__FILE__) . '/edit_form.php');
+require_once($CFG->libdir . '/coursecatlib.php');
 
 $id = optional_param('id', 0, PARAM_INT);
 $contextid = optional_param('contextid', 0, PARAM_INT);
@@ -78,6 +79,7 @@ $PAGE->set_pagelayout('admin');
 $stringmanager = get_string_manager();
 $strings = $stringmanager->load_component_strings('local_dynamic_cohorts', 'en');
 
+$PAGE->requires->css(new moodle_url('/local/dynamic_cohorts/styles/style.css'));
 $PAGE->requires->js(new moodle_url('/local/dynamic_cohorts/js/dynamic_cohorts.js'));
 $PAGE->requires->strings_for_js(array_keys($strings), 'local_dynamic_cohorts');
 
@@ -151,10 +153,12 @@ $editform = new cohort_edit_form(
     array(
         'editoroptions' => $editoroptions,
         'data' => $cohort,
+        'viewonly' => !in_array($cohort->contextid, \local_dynamic_cohorts\dynamic_cohorts::get_editable_context_list()),
         'returnurl' => $returnurl,
         'cohorttypes' => \local_dynamic_cohorts\dynamic_cohorts::get_cohort_types(),
         'roles' => $systemcontextroles,
-        'renderer' => $PAGE->get_renderer('local_dynamic_cohorts', 'ruleset')
+        'renderer' => $PAGE->get_renderer('local_dynamic_cohorts', 'ruleset'),
+        'rolerenderer' => $PAGE->get_renderer('local_dynamic_cohorts', 'role')
     )
 );
 
@@ -193,6 +197,12 @@ if ($editform->is_cancelled()) {
         $data->rulesetrules['field']=$post['field'];
         $data->rulesetrules['criteriatype']=$post['criteriatype'];
         $data->rulesetrules['value']=$post['value'];
+    }
+    if(!empty($post['roles'])){
+        $data->roles = [];
+        foreach($post['roles'] as $key => $roleid){
+            $data->roles[] = ['roleid' => $roleid, 'contextid' => $post['contexts'][$key]]; 
+        }
     }
 
     \local_dynamic_cohorts\dynamic_cohorts::update_cohort($data);

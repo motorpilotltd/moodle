@@ -315,10 +315,10 @@ function local_taps_wrap($id, $text) {
 function local_taps_yesno($yes, $tooltip = null) {
     global $OUTPUT;
     if ($yes && !empty($tooltip)) {
-        return html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/valid'), 'class' => 'taps-tooltip', 'title' => $tooltip));
+        return html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('i/valid'), 'class' => 'taps-tooltip', 'title' => $tooltip));
     } else if ($yes) {
-        return html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/valid')));
+        return html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('i/valid')));
     } else {
-        return html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/invalid')));
+        return html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('i/invalid')));
     }
 }

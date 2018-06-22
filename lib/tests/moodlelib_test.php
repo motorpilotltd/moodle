@@ -202,12 +202,18 @@ class core_moodlelib_testcase extends advanced_testcase {
             $this->fail('coding_exception expected');
         } catch (moodle_exception $ex) {
             $this->assertInstanceOf('coding_exception', $ex);
+        } catch (Error $error) {
+            // PHP 7.1 throws Error even earlier.
+            $this->assertRegExp('/Too few arguments to function/', $error->getMessage());
         }
         try {
             @optional_param('username');
             $this->fail('coding_exception expected');
         } catch (moodle_exception $ex) {
             $this->assertInstanceOf('coding_exception', $ex);
+        } catch (Error $error) {
+            // PHP 7.1 throws Error even earlier.
+            $this->assertRegExp('/Too few arguments to function/', $error->getMessage());
         }
         try {
             optional_param('', 'default_user', PARAM_RAW);
@@ -248,12 +254,18 @@ class core_moodlelib_testcase extends advanced_testcase {
             $this->fail('coding_exception expected');
         } catch (moodle_exception $ex) {
             $this->assertInstanceOf('coding_exception', $ex);
+        } catch (Error $error) {
+            // PHP 7.1 throws Error even earlier.
+            $this->assertRegExp('/Too few arguments to function/', $error->getMessage());
         }
         try {
             @optional_param_array('username');
             $this->fail('coding_exception expected');
         } catch (moodle_exception $ex) {
             $this->assertInstanceOf('coding_exception', $ex);
+        } catch (Error $error) {
+            // PHP 7.1 throws Error even earlier.
+            $this->assertRegExp('/Too few arguments to function/', $error->getMessage());
         }
         try {
             optional_param_array('', array('a'=>'default_user'), PARAM_RAW);
@@ -305,6 +317,9 @@ class core_moodlelib_testcase extends advanced_testcase {
             $this->fail('coding_exception expected');
         } catch (moodle_exception $ex) {
             $this->assertInstanceOf('coding_exception', $ex);
+        } catch (Error $error) {
+            // PHP 7.1 throws Error even earlier.
+            $this->assertRegExp('/Too few arguments to function/', $error->getMessage());
         }
         try {
             required_param('username', '');
@@ -348,6 +363,9 @@ class core_moodlelib_testcase extends advanced_testcase {
             $this->fail('coding_exception expected');
         } catch (moodle_exception $ex) {
             $this->assertInstanceOf('coding_exception', $ex);
+        } catch (Error $error) {
+            // PHP 7.1 throws Error.
+            $this->assertRegExp('/Too few arguments to function/', $error->getMessage());
         }
         try {
             required_param_array('', PARAM_RAW);
@@ -409,6 +427,9 @@ class core_moodlelib_testcase extends advanced_testcase {
             $this->fail('moodle_exception expected');
         } catch (moodle_exception $ex) {
             $this->assertInstanceOf('moodle_exception', $ex);
+        } catch (Error $error) {
+            // PHP 7.1 throws Error even earlier.
+            $this->assertRegExp('/Too few arguments to function/', $error->getMessage());
         }
     }
 
@@ -429,6 +450,9 @@ class core_moodlelib_testcase extends advanced_testcase {
             $this->fail('moodle_exception expected');
         } catch (moodle_exception $ex) {
             $this->assertInstanceOf('moodle_exception', $ex);
+        } catch (Error $error) {
+            // PHP 7.1 throws Error even earlier.
+            $this->assertRegExp('/Too few arguments to function/', $error->getMessage());
         }
 
         try {
@@ -601,12 +625,25 @@ class core_moodlelib_testcase extends advanced_testcase {
         $this->assertSame('/just/a/path', clean_param('/just/a/path', PARAM_LOCALURL));
         $this->assertSame('course/view.php?id=3', clean_param('course/view.php?id=3', PARAM_LOCALURL));
 
-        // Local absolute HTTPS.
+        // Local absolute HTTPS in a non HTTPS site.
+        $CFG->wwwroot = str_replace('https:', 'http:', $CFG->wwwroot); // Need to simulate non-https site.
         $httpsroot = str_replace('http:', 'https:', $CFG->wwwroot);
-        $CFG->loginhttps = false;
+        $CFG->loginhttps = false; // Not allowed.
         $this->assertSame('', clean_param($httpsroot, PARAM_LOCALURL));
         $this->assertSame('', clean_param($httpsroot . '/with/something?else=true', PARAM_LOCALURL));
-        $CFG->loginhttps = true;
+        $CFG->loginhttps = true; // Allowed.
+        $this->assertSame($httpsroot, clean_param($httpsroot, PARAM_LOCALURL));
+        $this->assertSame($httpsroot . '/with/something?else=true',
+            clean_param($httpsroot . '/with/something?else=true', PARAM_LOCALURL));
+
+        // Local absolute HTTPS in a HTTPS site.
+        $CFG->wwwroot = str_replace('https:', 'http:', $CFG->wwwroot);
+        $httpsroot = $CFG->wwwroot;
+        $CFG->loginhttps = false; // Always allowed.
+        $this->assertSame($httpsroot, clean_param($httpsroot, PARAM_LOCALURL));
+        $this->assertSame($httpsroot . '/with/something?else=true',
+            clean_param($httpsroot . '/with/something?else=true', PARAM_LOCALURL));
+        $CFG->loginhttps = true; // Always allowed.
         $this->assertSame($httpsroot, clean_param($httpsroot, PARAM_LOCALURL));
         $this->assertSame($httpsroot . '/with/something?else=true',
             clean_param($httpsroot . '/with/something?else=true', PARAM_LOCALURL));
@@ -966,6 +1003,240 @@ class core_moodlelib_testcase extends advanced_testcase {
                 shorten_text($text, 1));
     }
 
+    /**
+     * Provider for long filenames and its expected result, with and without hash.
+     *
+     * @return array of ($filename, $length, $expected, $includehash)
+     */
+    public function shorten_filename_provider() {
+        $filename = 'sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem';
+        $shortfilename = 'sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque';
+
+        return [
+            'More than 100 characters' => [
+                $filename,
+                null,
+                'sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium tot',
+                false,
+            ],
+            'More than 100 characters with hash' => [
+                $filename,
+                null,
+                'sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque l - 3bec1da8b8',
+                true,
+            ],
+            'More than 100 characters with extension' => [
+                "{$filename}.zip",
+                null,
+                'sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium tot.zip',
+                false,
+            ],
+            'More than 100 characters with extension and hash' => [
+                "{$filename}.zip",
+                null,
+                'sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque l - 3bec1da8b8.zip',
+                true,
+            ],
+            'Limit filename to 50 chars' => [
+                $filename,
+                50,
+                'sed ut perspiciatis unde omnis iste natus error si',
+                false,
+            ],
+            'Limit filename to 50 chars with hash' => [
+                $filename,
+                50,
+                'sed ut perspiciatis unde omnis iste n - 3bec1da8b8',
+                true,
+            ],
+            'Limit filename to 50 chars with extension' => [
+                "{$filename}.zip",
+                50,
+                'sed ut perspiciatis unde omnis iste natus error si.zip',
+                false,
+            ],
+            'Limit filename to 50 chars with extension and hash' => [
+                "{$filename}.zip",
+                50,
+                'sed ut perspiciatis unde omnis iste n - 3bec1da8b8.zip',
+                true,
+            ],
+            'Test filename that contains less than 100 characters' => [
+                $shortfilename,
+                null,
+                $shortfilename,
+                false,
+            ],
+            'Test filename that contains less than 100 characters and hash' => [
+                $shortfilename,
+                null,
+                $shortfilename,
+                true,
+            ],
+            'Test filename that contains less than 100 characters with extension' => [
+                "{$shortfilename}.zip",
+                null,
+                "{$shortfilename}.zip",
+                false,
+            ],
+            'Test filename that contains less than 100 characters with extension and hash' => [
+                "{$shortfilename}.zip",
+                null,
+                "{$shortfilename}.zip",
+                true,
+            ],
+        ];
+    }
+
+    /**
+     * Test the {@link shorten_filename()} method.
+     *
+     * @dataProvider shorten_filename_provider
+     *
+     * @param string $filename
+     * @param int $length
+     * @param string $expected
+     * @param boolean $includehash
+     */
+    public function test_shorten_filename($filename, $length, $expected, $includehash) {
+        if (null === $length) {
+            $length = MAX_FILENAME_SIZE;
+        }
+
+        $this->assertSame($expected, shorten_filename($filename, $length, $includehash));
+    }
+
+    /**
+     * Provider for long filenames and its expected result, with and without hash.
+     *
+     * @return array of ($filename, $length, $expected, $includehash)
+     */
+    public function shorten_filenames_provider() {
+        $shortfilename = 'sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque';
+        $longfilename = 'sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem';
+        $extfilename = $longfilename.'.zip';
+        $expected = 'sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium tot';
+        $expectedwithhash = 'sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque l - 3bec1da8b8';
+        $expectedext = 'sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium tot.zip';
+        $expectedextwithhash = 'sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque l - 3bec1da8b8.zip';
+        $expected50 = 'sed ut perspiciatis unde omnis iste natus error si';
+        $expected50withhash = 'sed ut perspiciatis unde omnis iste n - 3bec1da8b8';
+        $expected50ext = 'sed ut perspiciatis unde omnis iste natus error si.zip';
+        $expected50extwithhash = 'sed ut perspiciatis unde omnis iste n - 3bec1da8b8.zip';
+        $expected50short = 'sed ut perspiciatis unde omnis iste n - 5fb6543490';
+
+        return [
+            'Empty array without hash' => [
+                [],
+                null,
+                [],
+                false,
+            ],
+            'Empty array with hash' => [
+                [],
+                null,
+                [],
+                true,
+            ],
+            'Array with less than 100 characters' => [
+                [$shortfilename, $shortfilename, $shortfilename],
+                null,
+                [$shortfilename, $shortfilename, $shortfilename],
+                false,
+            ],
+            'Array with more than 100 characters without hash' => [
+                [$longfilename, $longfilename, $longfilename],
+                null,
+                [$expected, $expected, $expected],
+                false,
+            ],
+            'Array with more than 100 characters with hash' => [
+                [$longfilename, $longfilename, $longfilename],
+                null,
+                [$expectedwithhash, $expectedwithhash, $expectedwithhash],
+                true,
+            ],
+            'Array with more than 100 characters with extension' => [
+                [$extfilename, $extfilename, $extfilename],
+                null,
+                [$expectedext, $expectedext, $expectedext],
+                false,
+            ],
+            'Array with more than 100 characters with extension and hash' => [
+                [$extfilename, $extfilename, $extfilename],
+                null,
+                [$expectedextwithhash, $expectedextwithhash, $expectedextwithhash],
+                true,
+            ],
+            'Array with more than 100 characters mix (short, long, with extension) without hash' => [
+                [$shortfilename, $longfilename, $extfilename],
+                null,
+                [$shortfilename, $expected, $expectedext],
+                false,
+            ],
+            'Array with more than 100 characters mix (short, long, with extension) with hash' => [
+                [$shortfilename, $longfilename, $extfilename],
+                null,
+                [$shortfilename, $expectedwithhash, $expectedextwithhash],
+                true,
+            ],
+            'Array with less than 50 characters without hash' => [
+                [$longfilename, $longfilename, $longfilename],
+                50,
+                [$expected50, $expected50, $expected50],
+                false,
+            ],
+            'Array with less than 50 characters with hash' => [
+                [$longfilename, $longfilename, $longfilename],
+                50,
+                [$expected50withhash, $expected50withhash, $expected50withhash],
+                true,
+            ],
+            'Array with less than 50 characters with extension' => [
+                [$extfilename, $extfilename, $extfilename],
+                50,
+                [$expected50ext, $expected50ext, $expected50ext],
+                false,
+            ],
+            'Array with less than 50 characters with extension and hash' => [
+                [$extfilename, $extfilename, $extfilename],
+                50,
+                [$expected50extwithhash, $expected50extwithhash, $expected50extwithhash],
+                true,
+            ],
+            'Array with less than 50 characters mix (short, long, with extension) without hash' => [
+                [$shortfilename, $longfilename, $extfilename],
+                50,
+                [$expected50, $expected50, $expected50ext],
+                false,
+            ],
+            'Array with less than 50 characters mix (short, long, with extension) with hash' => [
+                [$shortfilename, $longfilename, $extfilename],
+                50,
+                [$expected50short, $expected50withhash, $expected50extwithhash],
+                true,
+            ],
+        ];
+    }
+
+    /**
+     * Test the {@link shorten_filenames()} method.
+     *
+     * @dataProvider shorten_filenames_provider
+     *
+     * @param string $filenames
+     * @param int $length
+     * @param string $expected
+     * @param boolean $includehash
+     */
+    public function test_shorten_filenames($filenames, $length, $expected, $includehash) {
+        if (null === $length) {
+            $length = MAX_FILENAME_SIZE;
+        }
+
+        $this->assertSame($expected, shorten_filenames($filenames, $length, $includehash));
+    }
+
     public function test_usergetdate() {
         global $USER, $CFG, $DB;
         $this->resetAfterTest();
@@ -1168,6 +1439,26 @@ class core_moodlelib_testcase extends advanced_testcase {
         } catch (moodle_exception $ex) {
             $this->assertInstanceOf('coding_exception', $ex);
         }
+    }
+
+    public function test_set_user_preference_for_current_user() {
+        global $USER;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        set_user_preference('test_pref', 2);
+        set_user_preference('test_pref', 1, $USER->id);
+        $this->assertEquals(1, get_user_preferences('test_pref'));
+    }
+
+    public function test_unset_user_preference_for_current_user() {
+        global $USER;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        set_user_preference('test_pref', 1);
+        unset_user_preference('test_pref', $USER->id);
+        $this->assertNull(get_user_preferences('test_pref'));
     }
 
     public function test_get_extra_user_fields() {
@@ -1582,7 +1873,7 @@ class core_moodlelib_testcase extends advanced_testcase {
                 'expectedoutput' => '1309485600'
             ),
             array(
-                'usertimezone' => '14', // Server time.
+                'usertimezone' => '-14', // Server time.
                 'year' => '2011',
                 'month' => '7',
                 'day' => '1',
@@ -2644,13 +2935,132 @@ class core_moodlelib_testcase extends advanced_testcase {
         $this->assertEventContextNotUsed($event);
     }
 
+    /**
+     * A data provider for testing email messageid
+     */
+    public function generate_email_messageid_provider() {
+        return array(
+            'nopath' => array(
+                'wwwroot' => 'http://www.example.com',
+                'ids' => array(
+                    'a-custom-id' => '<a-custom-id@www.example.com>',
+                    'an-id-with-/-a-slash' => '<an-id-with-%2F-a-slash@www.example.com>',
+                ),
+            ),
+            'path' => array(
+                'wwwroot' => 'http://www.example.com/path/subdir',
+                'ids' => array(
+                    'a-custom-id' => '<a-custom-id/path/subdir@www.example.com>',
+                    'an-id-with-/-a-slash' => '<an-id-with-%2F-a-slash/path/subdir@www.example.com>',
+                ),
+            ),
+        );
+    }
+
+    /**
+     * Test email message id generation
+     *
+     * @dataProvider generate_email_messageid_provider
+     *
+     * @param string $wwwroot The wwwroot
+     * @param array $msgids An array of msgid local parts and the final result
+     */
+    public function test_generate_email_messageid($wwwroot, $msgids) {
+        global $CFG;
+
+        $this->resetAfterTest();
+        $CFG->wwwroot = $wwwroot;
+
+        foreach ($msgids as $local => $final) {
+            $this->assertEquals($final, generate_email_messageid($local));
+        }
+    }
+
+    /**
+     * A data provider for testing email diversion
+     */
+    public function diverted_emails_provider() {
+        return array(
+            'nodiverts' => array(
+                'divertallemailsto' => null,
+                'divertallemailsexcept' => null,
+                array(
+                    'foo@example.com',
+                    'test@real.com',
+                    'fred.jones@example.com',
+                    'dev1@dev.com',
+                    'fred@example.com',
+                    'fred+verp@example.com',
+                ),
+                false,
+            ),
+            'alldiverts' => array(
+                'divertallemailsto' => 'somewhere@elsewhere.com',
+                'divertallemailsexcept' => null,
+                array(
+                    'foo@example.com',
+                    'test@real.com',
+                    'fred.jones@example.com',
+                    'dev1@dev.com',
+                    'fred@example.com',
+                    'fred+verp@example.com',
+                ),
+                true,
+            ),
+            'alsodiverts' => array(
+                'divertallemailsto' => 'somewhere@elsewhere.com',
+                'divertallemailsexcept' => '@dev.com, fred(\+.*)?@example.com',
+                array(
+                    'foo@example.com',
+                    'test@real.com',
+                    'fred.jones@example.com',
+                ),
+                true,
+            ),
+            'divertsexceptions' => array(
+                'divertallemailsto' => 'somewhere@elsewhere.com',
+                'divertallemailsexcept' => '@dev.com, fred(\+.*)?@example.com',
+                array(
+                    'dev1@dev.com',
+                    'fred@example.com',
+                    'fred+verp@example.com',
+                ),
+                false,
+            ),
+        );
+    }
+
+    /**
+     * Test email diversion
+     *
+     * @dataProvider diverted_emails_provider
+     *
+     * @param string $divertallemailsto An optional email address
+     * @param string $divertallemailsexcept An optional exclusion list
+     * @param array $addresses An array of test addresses
+     * @param boolean $expected Expected result
+     */
+    public function test_email_should_be_diverted($divertallemailsto, $divertallemailsexcept, $addresses, $expected) {
+        global $CFG;
+
+        $this->resetAfterTest();
+        $CFG->divertallemailsto = $divertallemailsto;
+        $CFG->divertallemailsexcept = $divertallemailsexcept;
+
+        foreach ($addresses as $address) {
+            $this->assertEquals($expected, email_should_be_diverted($address));
+        }
+    }
+
     public function test_email_to_user() {
         global $CFG;
 
         $this->resetAfterTest();
 
-        $user1 = $this->getDataGenerator()->create_user();
-        $user2 = $this->getDataGenerator()->create_user();
+        $user1 = $this->getDataGenerator()->create_user(array('maildisplay' => 1));
+        $user2 = $this->getDataGenerator()->create_user(array('maildisplay' => 1));
+        $user3 = $this->getDataGenerator()->create_user(array('maildisplay' => 0));
+        set_config('allowedemaildomains', "example.com\r\nmoodle.org");
 
         $subject = 'subject';
         $messagetext = 'message text';
@@ -2692,16 +3102,42 @@ class core_moodlelib_testcase extends advanced_testcase {
         email_to_user($user1, $user2, $subject, $messagetext);
         $this->assertDebuggingCalled('Unit tests must not send real emails! Use $this->redirectEmails()');
 
-        // Test $CFG->emailonlyfromnoreplyaddress.
-        set_config('emailonlyfromnoreplyaddress', 1);
-        $this->assertNotEmpty($CFG->emailonlyfromnoreplyaddress);
+        // Test that an empty noreplyaddress will default to a no-reply address.
         $sink = $this->redirectEmails();
-        email_to_user($user1, $user2, $subject, $messagetext);
-        unset_config('emailonlyfromnoreplyaddress');
-        email_to_user($user1, $user2, $subject, $messagetext);
+        email_to_user($user1, $user3, $subject, $messagetext);
         $result = $sink->get_messages();
         $this->assertEquals($CFG->noreplyaddress, $result[0]->from);
-        $this->assertNotEquals($CFG->noreplyaddress, $result[1]->from);
+        $sink->close();
+        set_config('noreplyaddress', '');
+        $sink = $this->redirectEmails();
+        email_to_user($user1, $user3, $subject, $messagetext);
+        $result = $sink->get_messages();
+        $this->assertEquals('noreply@www.example.com', $result[0]->from);
+        $sink->close();
+
+        // Test $CFG->allowedemaildomains.
+        set_config('noreplyaddress', 'noreply@www.example.com');
+        $this->assertNotEmpty($CFG->allowedemaildomains);
+        $sink = $this->redirectEmails();
+        email_to_user($user1, $user2, $subject, $messagetext);
+        unset_config('allowedemaildomains');
+        email_to_user($user1, $user2, $subject, $messagetext);
+        $result = $sink->get_messages();
+        $this->assertNotEquals($CFG->noreplyaddress, $result[0]->from);
+        $this->assertEquals($CFG->noreplyaddress, $result[1]->from);
+        $sink->close();
+
+        // Try to send an unsafe attachment, we should see an error message in the eventual mail body.
+        $attachment = '../test.txt';
+        $attachname = 'txt';
+
+        $sink = $this->redirectEmails();
+        email_to_user($user1, $user2, $subject, $messagetext, '', $attachment, $attachname);
+        $this->assertSame(1, $sink->count());
+        $result = $sink->get_messages();
+        $this->assertCount(1, $result);
+        $this->assertContains('error.txt', $result[0]->body);
+        $this->assertContains('Error in attachment.  User attempted to attach a filename with a unsafe name.', $result[0]->body);
         $sink->close();
     }
 
@@ -2735,6 +3171,149 @@ class core_moodlelib_testcase extends advanced_testcase {
         $this->assertEquals(context_user::instance($user->id), $event->get_context());
         $this->assertEventContextNotUsed($event);
     }
+
+    /**
+     * Data provider for test_generate_confirmation_link
+     * @return Array of confirmation urls and expected resultant confirmation links
+     */
+    public function generate_confirmation_link_provider() {
+        global $CFG;
+        return [
+            "Simple name" => [
+                "username" => "simplename",
+                "confirmationurl" => null,
+                "expected" => $CFG->wwwroot . "/login/confirm.php?data=/simplename"
+            ],
+            "Period in between words in username" => [
+                "username" => "period.inbetween",
+                "confirmationurl" => null,
+                "expected" => $CFG->wwwroot . "/login/confirm.php?data=/period%2Einbetween"
+            ],
+            "Trailing periods in username" => [
+                "username" => "trailingperiods...",
+                "confirmationurl" => null,
+                "expected" => $CFG->wwwroot . "/login/confirm.php?data=/trailingperiods%2E%2E%2E"
+            ],
+            "At symbol in username" => [
+                "username" => "at@symbol",
+                "confirmationurl" => null,
+                "expected" => $CFG->wwwroot . "/login/confirm.php?data=/at%40symbol"
+            ],
+            "Dash symbol in username" => [
+                "username" => "has-dash",
+                "confirmationurl" => null,
+                "expected" => $CFG->wwwroot . "/login/confirm.php?data=/has-dash"
+            ],
+            "Underscore in username" => [
+                "username" => "under_score",
+                "confirmationurl" => null,
+                "expected" => $CFG->wwwroot . "/login/confirm.php?data=/under_score"
+            ],
+            "Many different characters in username" => [
+                "username" => "many_-.@characters@_@-..-..",
+                "confirmationurl" => null,
+                "expected" => $CFG->wwwroot . "/login/confirm.php?data=/many_-%2E%40characters%40_%40-%2E%2E-%2E%2E"
+            ],
+            "Custom relative confirmation url" => [
+                "username" => "many_-.@characters@_@-..-..",
+                "confirmationurl" => "/custom/local/url.php",
+                "expected" => $CFG->wwwroot . "/custom/local/url.php?data=/many_-%2E%40characters%40_%40-%2E%2E-%2E%2E"
+            ],
+            "Custom relative confirmation url with parameters" => [
+                "username" => "many_-.@characters@_@-..-..",
+                "confirmationurl" => "/custom/local/url.php?with=param",
+                "expected" => $CFG->wwwroot . "/custom/local/url.php?with=param&data=/many_-%2E%40characters%40_%40-%2E%2E-%2E%2E"
+            ],
+            "Custom local confirmation url" => [
+                "username" => "many_-.@characters@_@-..-..",
+                "confirmationurl" => $CFG->wwwroot . "/custom/local/url.php",
+                "expected" => $CFG->wwwroot . "/custom/local/url.php?data=/many_-%2E%40characters%40_%40-%2E%2E-%2E%2E"
+            ],
+            "Custom local confirmation url with parameters" => [
+                "username" => "many_-.@characters@_@-..-..",
+                "confirmationurl" => $CFG->wwwroot . "/custom/local/url.php?with=param",
+                "expected" => $CFG->wwwroot . "/custom/local/url.php?with=param&data=/many_-%2E%40characters%40_%40-%2E%2E-%2E%2E"
+            ],
+            "Custom external confirmation url" => [
+                "username" => "many_-.@characters@_@-..-..",
+                "confirmationurl" => "http://moodle.org/custom/external/url.php",
+                "expected" => "http://moodle.org/custom/external/url.php?data=/many_-%2E%40characters%40_%40-%2E%2E-%2E%2E"
+            ],
+            "Custom external confirmation url with parameters" => [
+                "username" => "many_-.@characters@_@-..-..",
+                "confirmationurl" => "http://moodle.org/ext.php?with=some&param=eters",
+                "expected" => "http://moodle.org/ext.php?with=some&param=eters&data=/many_-%2E%40characters%40_%40-%2E%2E-%2E%2E"
+            ],
+            "Custom external confirmation url with parameters" => [
+                "username" => "many_-.@characters@_@-..-..",
+                "confirmationurl" => "http://moodle.org/ext.php?with=some&data=test",
+                "expected" => "http://moodle.org/ext.php?with=some&data=/many_-%2E%40characters%40_%40-%2E%2E-%2E%2E"
+            ],
+        ];
+    }
+
+    /**
+     * Test generate_confirmation_link
+     * @dataProvider generate_confirmation_link_provider
+     * @param string $username The name of the user
+     * @param string $confirmationurl The url the user should go to to confirm
+     * @param string $expected The expected url of the confirmation link
+     */
+    public function test_generate_confirmation_link($username, $confirmationurl, $expected) {
+        $this->resetAfterTest();
+        $sink = $this->redirectEmails();
+
+        $user = $this->getDataGenerator()->create_user(
+            [
+                "username" => $username,
+                "confirmed" => false,
+                "email" => 'test@example.com',
+            ]
+        );
+
+        send_confirmation_email($user, $confirmationurl);
+        $sink->close();
+        $messages = $sink->get_messages();
+        $message = array_shift($messages);
+        $messagebody = quoted_printable_decode($message->body);
+
+        $this->assertContains($expected, $messagebody);
+    }
+
+    /**
+     * Test generate_confirmation_link with custom admin link
+     */
+    public function test_generate_confirmation_link_with_custom_admin() {
+        global $CFG;
+
+        $this->resetAfterTest();
+        $sink = $this->redirectEmails();
+
+        $admin = $CFG->admin;
+        $CFG->admin = 'custom/admin/path';
+
+        $user = $this->getDataGenerator()->create_user(
+            [
+                "username" => "many_-.@characters@_@-..-..",
+                "confirmed" => false,
+                "email" => 'test@example.com',
+            ]
+        );
+        $confirmationurl = "/admin/test.php?with=params";
+        $expected = $CFG->wwwroot . "/" . $CFG->admin . "/test.php?with=params&data=/many_-%2E%40characters%40_%40-%2E%2E-%2E%2E";
+
+        send_confirmation_email($user, $confirmationurl);
+        $sink->close();
+        $messages = $sink->get_messages();
+        $message = array_shift($messages);
+        $messagebody = quoted_printable_decode($message->body);
+
+        $sink->close();
+        $this->assertContains($expected, $messagebody);
+
+        $CFG->admin = $admin;
+    }
+
 
     /**
      * Test remove_course_content deletes course contents
@@ -2930,6 +3509,9 @@ class core_moodlelib_testcase extends advanced_testcase {
         $result = random_bytes_emulate(666);
         $this->assertSame(666, strlen($result));
 
+        $result = random_bytes_emulate(40);
+        $this->assertSame(40, strlen($result));
+
         $this->assertDebuggingNotCalled();
 
         $result = random_bytes_emulate(0);
@@ -3012,6 +3594,183 @@ class core_moodlelib_testcase extends advanced_testcase {
     }
 
     /**
+     * Data provider for private ips.
+     */
+    public function data_private_ips() {
+        return array(
+            array('10.0.0.0'),
+            array('172.16.0.0'),
+            array('192.168.1.0'),
+            array('fdfe:dcba:9876:ffff:fdc6:c46b:bb8f:7d4c'),
+            array('fdc6:c46b:bb8f:7d4c:fdc6:c46b:bb8f:7d4c'),
+            array('fdc6:c46b:bb8f:7d4c:0000:8a2e:0370:7334'),
+            array('127.0.0.1'), // This has been buggy in past: https://bugs.php.net/bug.php?id=53150.
+        );
+    }
+
+    /**
+     * Checks ip_is_public returns false for private ips.
+     *
+     * @param string $ip the ipaddress to test
+     * @dataProvider data_private_ips
+     */
+    public function test_ip_is_public_private_ips($ip) {
+        $this->assertFalse(ip_is_public($ip));
+    }
+
+    /**
+     * Data provider for public ips.
+     */
+    public function data_public_ips() {
+        return array(
+            array('2400:cb00:2048:1::8d65:71b3'),
+            array('2400:6180:0:d0::1b:2001'),
+            array('141.101.113.179'),
+            array('123.45.67.178'),
+        );
+    }
+
+    /**
+     * Checks ip_is_public returns true for public ips.
+     *
+     * @param string $ip the ipaddress to test
+     * @dataProvider data_public_ips
+     */
+    public function test_ip_is_public_public_ips($ip) {
+        $this->assertTrue(ip_is_public($ip));
+    }
+
+    /**
+     * Test the function can_send_from_real_email_address
+     *
+     * @param string $email Email address for the from user.
+     * @param int $display The user's email display preference.
+     * @param bool $samecourse Are the users in the same course?
+     * @param string $config The CFG->allowedemaildomains config values
+     * @param bool $result The expected result.
+     * @dataProvider data_can_send_from_real_email_address
+     */
+    public function test_can_send_from_real_email_address($email, $display, $samecourse, $config, $result) {
+        $this->resetAfterTest();
+
+        $fromuser = $this->getDataGenerator()->create_user();
+        $touser = $this->getDataGenerator()->create_user();
+        $course = $this->getDataGenerator()->create_course();
+        set_config('allowedemaildomains', $config);
+
+        $fromuser->email = $email;
+        $fromuser->maildisplay = $display;
+        if ($samecourse) {
+            $this->getDataGenerator()->enrol_user($fromuser->id, $course->id, 'student');
+            $this->getDataGenerator()->enrol_user($touser->id, $course->id, 'student');
+        } else {
+            $this->getDataGenerator()->enrol_user($fromuser->id, $course->id, 'student');
+        }
+        $this->assertEquals($result, can_send_from_real_email_address($fromuser, $touser));
+    }
+
+    /**
+     * Data provider for test_can_send_from_real_email_address.
+     *
+     * @return array Returns an array of test data for the above function.
+     */
+    public function data_can_send_from_real_email_address() {
+        return [
+            // Test from email is in allowed domain.
+            // Test that from display is set to show no one.
+            [
+                'email' => 'fromuser@example.com',
+                'display' => core_user::MAILDISPLAY_HIDE,
+                'samecourse' => false,
+                'config' => "example.com\r\ntest.com",
+                'result' => false
+            ],
+            // Test that from display is set to course members only (course member).
+            [
+                'email' => 'fromuser@example.com',
+                'display' => core_user::MAILDISPLAY_COURSE_MEMBERS_ONLY,
+                'samecourse' => true,
+                'config' => "example.com\r\ntest.com",
+                'result' => true
+            ],
+            // Test that from display is set to course members only (Non course member).
+            [
+                'email' => 'fromuser@example.com',
+                'display' => core_user::MAILDISPLAY_COURSE_MEMBERS_ONLY,
+                'samecourse' => false,
+                'config' => "example.com\r\ntest.com",
+                'result' => false
+            ],
+            // Test that from display is set to show everyone.
+            [
+                'email' => 'fromuser@example.com',
+                'display' => core_user::MAILDISPLAY_EVERYONE,
+                'samecourse' => false,
+                'config' => "example.com\r\ntest.com",
+                'result' => true
+            ],
+            // Test a few different config value formats for parsing correctness.
+            [
+                'email' => 'fromuser@example.com',
+                'display' => core_user::MAILDISPLAY_EVERYONE,
+                'samecourse' => false,
+                'config' => "\n test.com\nexample.com \n",
+                'result' => true
+            ],
+            [
+                'email' => 'fromuser@example.com',
+                'display' => core_user::MAILDISPLAY_EVERYONE,
+                'samecourse' => false,
+                'config' => "\r\n example.com \r\n test.com \r\n",
+                'result' => true
+            ],
+
+            // Test from email is not in allowed domain.
+            // Test that from display is set to show no one.
+            [   'email' => 'fromuser@moodle.com',
+                'display' => core_user::MAILDISPLAY_HIDE,
+                'samecourse' => false,
+                'config' => "example.com\r\ntest.com",
+                'result' => false
+            ],
+            // Test that from display is set to course members only (course member).
+            [   'email' => 'fromuser@moodle.com',
+                'display' => core_user::MAILDISPLAY_COURSE_MEMBERS_ONLY,
+                'samecourse' => true,
+                'config' => "example.com\r\ntest.com",
+                'result' => false
+            ],
+            // Test that from display is set to course members only (Non course member.
+            [   'email' => 'fromuser@moodle.com',
+                'display' => core_user::MAILDISPLAY_COURSE_MEMBERS_ONLY,
+                'samecourse' => false,
+                'config' => "example.com\r\ntest.com",
+                'result' => false
+            ],
+            // Test that from display is set to show everyone.
+            [   'email' => 'fromuser@moodle.com',
+                'display' => core_user::MAILDISPLAY_EVERYONE,
+                'samecourse' => false,
+                'config' => "example.com\r\ntest.com",
+                'result' => false
+            ],
+            // Test a few erroneous config value and confirm failure.
+            [   'email' => 'fromuser@moodle.com',
+                'display' => core_user::MAILDISPLAY_EVERYONE,
+                'samecourse' => false,
+                'config' => "\r\n   \r\n",
+                'result' => false
+            ],
+            [   'email' => 'fromuser@moodle.com',
+                'display' => core_user::MAILDISPLAY_EVERYONE,
+                'samecourse' => false,
+                'config' => " \n   \n \n ",
+                'result' => false
+            ],
+        ];
+    }
+
+    /**
      * Test that generate_email_processing_address() returns valid email address.
      */
     public function test_generate_email_processing_address() {
@@ -3027,11 +3786,11 @@ class core_moodlelib_testcase extends advanced_testcase {
 
         $CFG->maildomain = 'example.com';
         $CFG->mailprefix = 'mdl+';
-        $this->assertEquals(1, validate_email(generate_email_processing_address(0, $modargs)));
+        $this->assertTrue(validate_email(generate_email_processing_address(0, $modargs)));
 
         $CFG->maildomain = 'mail.example.com';
         $CFG->mailprefix = 'mdl-';
-        $this->assertEquals(1, validate_email(generate_email_processing_address(23, $modargs)));
+        $this->assertTrue(validate_email(generate_email_processing_address(23, $modargs)));
     }
 
     /**
@@ -3062,5 +3821,131 @@ class core_moodlelib_testcase extends advanced_testcase {
         // Array used in the grader report.
         $a = array('aggregatesonly' => [51, 34], 'gradesonly' => [21, 45, 78]);
         $this->assertEquals($a, unserialize_array(serialize($a)));
+    }
+
+    /**
+     * Test that the component_class_callback returns the correct default value when the class was not found.
+     *
+     * @dataProvider component_class_callback_default_provider
+     * @param $default
+     */
+    public function test_component_class_callback_not_found($default) {
+        $this->assertSame($default, component_class_callback('thisIsNotTheClassYouWereLookingFor', 'anymethod', [], $default));
+    }
+
+    /**
+     * Test that the component_class_callback returns the correct default value when the class was not found.
+     *
+     * @dataProvider component_class_callback_default_provider
+     * @param $default
+     */
+    public function test_component_class_callback_method_not_found($default) {
+        require_once(__DIR__ . '/fixtures/component_class_callback_example.php');
+
+        $this->assertSame($default, component_class_callback(test_component_class_callback_example::class, 'this_is_not_the_method_you_were_looking_for', ['abc'], $default));
+    }
+
+    /**
+     * Test that the component_class_callback returns the default when the method returned null.
+     *
+     * @dataProvider component_class_callback_default_provider
+     * @param $default
+     */
+    public function test_component_class_callback_found_returns_null($default) {
+        require_once(__DIR__ . '/fixtures/component_class_callback_example.php');
+
+        $this->assertSame($default, component_class_callback(test_component_class_callback_example::class, 'method_returns_value', [null], $default));
+        $this->assertSame($default, component_class_callback(test_component_class_callback_child_example::class, 'method_returns_value', [null], $default));
+    }
+
+    /**
+     * Test that the component_class_callback returns the expected value and not the default when there was a value.
+     *
+     * @dataProvider component_class_callback_data_provider
+     * @param $default
+     */
+    public function test_component_class_callback_found_returns_value($value) {
+        require_once(__DIR__ . '/fixtures/component_class_callback_example.php');
+
+        $this->assertSame($value, component_class_callback(test_component_class_callback_example::class, 'method_returns_value', [$value], 'This is not the value you were looking for'));
+        $this->assertSame($value, component_class_callback(test_component_class_callback_child_example::class, 'method_returns_value', [$value], 'This is not the value you were looking for'));
+    }
+
+    /**
+     * Test that the component_class_callback handles multiple params correctly.
+     *
+     * @dataProvider component_class_callback_multiple_params_provider
+     * @param $default
+     */
+    public function test_component_class_callback_found_accepts_multiple($params, $count) {
+        require_once(__DIR__ . '/fixtures/component_class_callback_example.php');
+
+        $this->assertSame($count, component_class_callback(test_component_class_callback_example::class, 'method_returns_all_params', $params, 'This is not the value you were looking for'));
+        $this->assertSame($count, component_class_callback(test_component_class_callback_child_example::class, 'method_returns_all_params', $params, 'This is not the value you were looking for'));
+    }
+
+    /**
+     * Data provider with list of default values for user in component_class_callback tests.
+     *
+     * @return array
+     */
+    public function component_class_callback_default_provider() {
+        return [
+            'null' => [null],
+            'empty string' => [''],
+            'string' => ['This is a string'],
+            'int' => [12345],
+            'stdClass' => [(object) ['this is my content']],
+            'array' => [['a' => 'b',]],
+        ];
+    }
+
+    /**
+     * Data provider with list of default values for user in component_class_callback tests.
+     *
+     * @return array
+     */
+    public function component_class_callback_data_provider() {
+        return [
+            'empty string' => [''],
+            'string' => ['This is a string'],
+            'int' => [12345],
+            'stdClass' => [(object) ['this is my content']],
+            'array' => [['a' => 'b',]],
+        ];
+    }
+
+    /**
+     * Data provider with list of default values for user in component_class_callback tests.
+     *
+     * @return array
+     */
+    public function component_class_callback_multiple_params_provider() {
+        return [
+            'empty array' => [
+                [],
+                0,
+            ],
+            'string value' => [
+                ['one'],
+                1,
+            ],
+            'string values' => [
+                ['one', 'two'],
+                2,
+            ],
+            'arrays' => [
+                [[], []],
+                2,
+            ],
+            'nulls' => [
+                [null, null, null, null],
+                4,
+            ],
+            'mixed' => [
+                ['a', 1, null, (object) [], []],
+                5,
+            ],
+        ];
     }
 }

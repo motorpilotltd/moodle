@@ -24,6 +24,7 @@
 /* BEGIN CORE MOD */
 class block_configurable_reports extends block_base {
 /* END CORE MOD */
+
     /**
      * Sets the block name and version number
      *

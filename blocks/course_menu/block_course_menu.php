@@ -156,9 +156,9 @@ class block_course_menu extends block_base
             $sections[$k]['expanded'] = in_array(md5($sections[$k]['trimmed_name']), $sessionVar);
 /* BEGIN CORE MOD */
             if (!empty($section['resources'])) {
-                foreach ($section['resources'] as $l => $resource) {
-                    $sections[$k]['resources'][$l]['trimmed_name'] = $this->trim($resource['name']);
-                }
+            	foreach ($section['resources'] as $l => $resource) {
+                	$sections[$k]['resources'][$l]['trimmed_name'] = $this->trim($resource['name']);
+            	}
             }
 /* END CORE MOD */
         }
@@ -372,7 +372,7 @@ class block_course_menu extends block_base
                                     $s = array();
                                     if (is_array($all) && count($all)) {
                                         foreach ($all as $item) {
-                                            if ($item->text == get_string($key)) {
+                                            if ($item->text == get_string($key, $this->blockname)) {
                                                 $s = $item;
                                                 break;
                                             }
@@ -392,7 +392,7 @@ class block_course_menu extends block_base
         $output .= '</div>';
 
         $this->contentgenerated = true;
-        $this->content->text = $output;
+        $this->content->text = '<style>.block_navigation .block_tree .tree_item.hasicon{white-space:normal;}</style>'.$output;
 
         return $this->content;
     }
@@ -789,7 +789,9 @@ class block_course_menu extends block_base
         foreach ($allmods as $mod) {
             $icon = array();
             $icon['name'] = get_string("modulename", $mod->name);
-            $icon['img'] = (string) $OUTPUT->pix_url('icon', $mod->name);
+/* BEGIN CORE MOD */
+            $icon['img'] = (string) $OUTPUT->image_url('icon', $mod->name);
+/* BEGIN CORE MOD */
             $icon['val'] = 'pix_' . $mod->name;
 
             $icons[] = $icon;
@@ -1156,15 +1158,15 @@ class block_course_menu extends block_base
     'cannotmovetopicdown', 'sections') as $key) {
             $util['str'][$key] = get_string($key, 'block_course_menu');
         }
-
-        $util['img']['hide'] = (string) $OUTPUT->pix_url('i/hide');
-        $util['img']['show'] = (string) $OUTPUT->pix_url('i/show');
-        $util['img']['up'] = (string) $OUTPUT->pix_url('t/up');
-        $util['img']['right'] = (string) $OUTPUT->pix_url('t/right');
-        $util['img']['left'] = (string) $OUTPUT->pix_url('t/left');
-        $util['img']['down'] = (string) $OUTPUT->pix_url('t/down');
-        $util['img']['edit'] = (string) $OUTPUT->pix_url('i/edit');
-
+/* BEGIN CORE MOD */
+        $util['img']['hide'] = (string) $OUTPUT->image_url('i/hide');
+        $util['img']['show'] = (string) $OUTPUT->image_url('i/show');
+        $util['img']['up'] = (string) $OUTPUT->image_url('t/up');
+        $util['img']['right'] = (string) $OUTPUT->image_url('t/right');
+        $util['img']['left'] = (string) $OUTPUT->image_url('t/left');
+        $util['img']['down'] = (string) $OUTPUT->image_url('t/down');
+        $util['img']['edit'] = (string) $OUTPUT->image_url('i/edit');
+/* END CORE MOD */
         return $util;
     }
 

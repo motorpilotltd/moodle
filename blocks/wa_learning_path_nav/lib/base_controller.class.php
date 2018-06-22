@@ -210,7 +210,7 @@ class base_controller {
             } else {
                 $fieldicon = ($dir == "ASC") ? "sort_asc" : "sort_desc";
             }
-            $fieldicon = "<img class='iconsort' src=\"" . $OUTPUT->pix_url('t/' . $fieldicon) . "\" alt=\"\" />";
+            $fieldicon = "<img class='iconsort' src=\"" . $OUTPUT->image_url('t/' . $fieldicon) . "\" alt=\"\" />";
         }
         $return = "<a class='sort-link' "
                 . "href=\"?c=" . $controller . "&amp;a=" . $extraurlparams . "&amp;sort=$field&amp;dir=$fielddir\">"

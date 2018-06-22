@@ -179,7 +179,7 @@ if ($regionsinstalled && $coursemetadatainstalled && $arupadvertinstalled && $ta
             coursemetadata_save_data($coursemetadatadata);
 
             // Create rest of sections.
-            $sections = range(1, $course->numsections);
+            $sections = range(1, $courseconfig->numsections);
             course_create_sections_if_missing($course->id, $sections);
 
             // Add advert activity.
@@ -338,7 +338,7 @@ if ($regionsinstalled && $coursemetadatainstalled && $arupadvertinstalled && $ta
             $transaction = $DB->start_delegated_transaction();
 
             $newcm->coursemodule = add_course_module($newcm);
-            $newcm->section = $course->numsections;
+            $newcm->section = $courseconfig->numsections;
 
             $modulename = $tapscompletioninstalled->name;
 
@@ -422,7 +422,7 @@ if ($regionsinstalled && $coursemetadatainstalled && $arupadvertinstalled && $ta
                 COMPLETION_CRITERIA_TYPE_ACTIVITY,
                 COMPLETION_CRITERIA_TYPE_COURSE,
                 COMPLETION_CRITERIA_TYPE_ROLE);
-            
+
             foreach ($criteriatypes as $criteriatype) {
                 $aggregation = new completion_aggregation(
                         array(

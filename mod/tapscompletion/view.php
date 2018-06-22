@@ -55,8 +55,6 @@ $PAGE->set_title($title);
 $PAGE->set_heading($tapscompletion->course->fullname);
 
 $PAGE->requires->js_call_amd('mod_tapscompletion/enhance', 'initialise');
-$PAGE->requires->js('/report/completion/textrotate.js');
-$PAGE->requires->js_function_call('textrotate_init', null, true);
 
 $output = $PAGE->get_renderer('mod_tapscompletion');
 

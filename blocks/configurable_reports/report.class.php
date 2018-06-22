@@ -236,10 +236,11 @@ class report_base {
 /* END CORE MOD */
             $output .= '<br /><div class="centerpara">';
             $output .= get_string('downloadreport', 'block_configurable_reports').': ';
-            foreach($export as $e)
+            foreach ($export as $e) {
                 if ($e) {
                     $output .= '<a href="'.$wwwpath.'&amp;download=1&amp;format='.$e.'"><img src="'.$CFG->wwwroot.'/blocks/configurable_reports/export/'.$e.'/pix.gif" alt="'.$e.'">&nbsp;'.(strtoupper($e)).'</a>&nbsp;';
                 }
+            }
             $output .= '</div>';
         }
 

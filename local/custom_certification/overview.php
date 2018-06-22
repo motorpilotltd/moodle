@@ -11,7 +11,11 @@ $PAGE->requires->css(new moodle_url('/local/custom_certification/styles/overview
 $certifid = required_param('id', PARAM_INT);
 $userid = optional_param('userid', null, PARAM_INT);
 
-$capability = has_capability('local/custom_certification:view', $systemcontext, $USER, true);
+
+$certif = new \local_custom_certification\certification($certifid, false);
+
+$canview = has_any_capability(['local/custom_certification:view', 'local/custom_certification:manage'], $certif->get_context(), $USER, true);
+$canmanage = has_capability('local/custom_certification:manage', $certif->get_context());
 
 $actualurl = new moodle_url('/local/custom_certification/overview.php', ['id' => $certifid]);
 
@@ -22,7 +26,6 @@ $PAGE->navbar->add(get_string('overviewheading', 'local_custom_certification'));
 $renderer = $PAGE->get_renderer('local_custom_certification');
 
 
-$certif = new \local_custom_certification\certification($certifid, false);
 $PAGE->set_title(get_string('overviewheading', 'local_custom_certification'));
 
 echo $OUTPUT->header();
@@ -31,7 +34,7 @@ $viewinguser = false;
 $user = $USER;
 $showoverview = true;
 if ($userid != null) {
-    if(!$capability){
+    if(!$canview){
         echo get_string('missingpermission', 'local_custom_certification');
         $showoverview = false;
     }else{
@@ -61,8 +64,8 @@ if ($showoverview) {
         $isrecertif = local_custom_certification\completion::is_recertification($certif, $user->id);
     }
 
-    echo $renderer->display_overview($certif, $certifid, $viewinguser, $userfullname, $assignmentdata, 
-                                     $capability, $enrolleduser, $isrecertif, $coursesprogress, $usercertificationdetails, $ragstatus);
+    echo $renderer->display_overview($certif, $certifid, $viewinguser, $userfullname, $assignmentdata,
+                                    $canview, $enrolleduser, $isrecertif, $coursesprogress, $usercertificationdetails, $ragstatus, $canmanage);
 
 }
 

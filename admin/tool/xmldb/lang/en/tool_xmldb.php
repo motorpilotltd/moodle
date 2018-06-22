@@ -49,7 +49,7 @@ It\'s highly recommended to be running the latest (+ version) available of your 
 This functionality doesn\'t perform any action against the DB (just reads from it), so can be safely executed at any moment.';
 $string['confirmcheckforeignkeys'] = 'This functionality will search for potential violations of the foreign keys defined in the install.xml definitions. (Moodle does not currently generate actual foreign key constraints in the database, which is why invalid data may be present.)
 
-It\'s highly recommended to be running the latest (+ version) available of your Moodle release before executing the search of missing indexes.
+It\'s highly recommended to be running the latest (+ version) available of your Moodle release before executing the search for potential violations of the foreign keys.
 
 This functionality doesn\'t perform any action against the DB (just reads from it), so can be safely executed at any moment.';
 $string['confirmcheckindexes'] = 'This functionality will search for potential missing indexes in your Moodle server, generating (but not executing!) automatically the needed SQL statements to keep everything updated.
@@ -218,3 +218,4 @@ $string['yeswrongintsfound'] = '<p>Some wrong integers have been found in your D
 <p>After doing that, it\'s highly recommended to execute this utility again to check that no more wrong integers are found.</p>';
 $string['yeswrongoraclesemanticsfound'] = '<p>Some Oracle columns using BYTE semantics have been found in your DB. Here are their details and the needed SQL statements to be executed with your favourite SQL interface to create all them. Remember to backup your data first!</p>
 <p>After doing that, it\'s highly recommended to execute this utility again to check that no more wrong semantics are found.</p>';
+$string['privacy:metadata'] = 'The XMLDB editor plugin does not store any personal data.';

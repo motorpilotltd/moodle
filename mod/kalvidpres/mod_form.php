@@ -38,38 +38,53 @@ class mod_kalvidpres_mod_form extends moodleform_mod {
     public function definition() {
         global $CFG, $COURSE, $PAGE;
 
-        $PAGE->requires->css('/mod/kalvidpres/styles.css');
-        $pageclass = 'kaltura-kalvidpres-body';
-        $PAGE->add_body_class($pageclass);
+/* BEGIN CORE MOD */
+        $loadcssjs = true;
+        // Check edge case of being called from defaults editing form...
+        // In this case we don't need to worry about what does/doesn't exist.
+        $frames = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 0);
+        foreach ($frames as $frame) {
+            if (in_array($frame['class'], ['core_completion_defaultedit_form', 'core_completion_bulkedit_form'], true)) {
+                $loadcssjs = false;
+                break;
+            }
+        }
 
-        $params = array(
-            'withblocks' => 0,
-            'courseid' => $COURSE->id,
-            'width' => KALTURA_PANEL_WIDTH,
-            'height' => KALTURA_PANEL_HEIGHT
-        );
+        if ($loadcssjs) {
+            $PAGE->requires->css('/mod/kalvidpres/styles.css');
+            $pageclass = 'kaltura-kalvidpres-body';
+            $PAGE->add_body_class($pageclass);
 
-        $url = new moodle_url('/mod/kalvidpres/lti_launch.php', $params);
+            $params = array(
+                'withblocks' => 0,
+                'courseid' => $COURSE->id,
+                'width' => KALTURA_PANEL_WIDTH,
+                'height' => KALTURA_PANEL_HEIGHT
+            );
 
-        $params = array(
-            'addvidbtnid' => 'id_'.$this->addvideobutton,
-            'ltilaunchurl' => $url->out(),
-            'height' => KALTURA_PANEL_HEIGHT,
-            'width' => KALTURA_PANEL_WIDTH,
-            'modulename' => 'kalvidpres'
-        );
+            $url = new moodle_url('/mod/kalvidpres/lti_launch.php', $params);
 
-        $PAGE->requires->yui_module('moodle-local_kaltura-ltipanel', 'M.local_kaltura.init', array($params), null, true);
-        // Make replace media language string available to the YUI modules
-        $PAGE->requires->string_for_js('replace_video', 'kalvidpres');
+            $params = array(
+                'addvidbtnid' => 'id_'.$this->addvideobutton,
+                'ltilaunchurl' => $url->out(false),
+                'height' => KALTURA_PANEL_HEIGHT,
+                'width' => KALTURA_PANEL_WIDTH,
+                'modulename' => 'kalvidpres'
+            );
 
-        // Require a YUI module to make the object tag be as large as possible.
-        $params = array(
-            'bodyclass' => $pageclass,
-            'lastheight' => null,
-            'padding' => 15
-        );
-        $PAGE->requires->yui_module('moodle-local_kaltura-lticontainer', 'M.local_kaltura.init', array($params), null, true);
+            $PAGE->requires->yui_module('moodle-local_kaltura-ltipanel', 'M.local_kaltura.init', array($params), null, true);
+            // Make replace media language string available to the YUI modules
+            $PAGE->requires->string_for_js('replace_video', 'kalvidpres');
+
+            // Require a YUI module to make the object tag be as large as possible.
+            $params = array(
+                'bodyclass' => $pageclass,
+                'lastheight' => null,
+                'padding' => 15
+            );
+            $PAGE->requires->yui_module('moodle-local_kaltura-lticontainer', 'M.local_kaltura.init', array($params), null, true);
+        }
+/* END CORE MOD */
 
         $mform =& $this->_form;
 
@@ -136,9 +151,7 @@ class mod_kalvidpres_mod_form extends moodleform_mod {
 
         $mform->addRule('name', null, 'required', null, 'client');
 
-/* BEGIN CORE MOD */
         $this->standard_intro_elements();
-/* END CORE MOD */
 
         $mform->addElement('header', 'video', get_string('video_hdr', 'kalvidpres'));
         $this->add_video_definition($mform);
@@ -146,8 +159,6 @@ class mod_kalvidpres_mod_form extends moodleform_mod {
         $this->standard_coursemodule_elements();
 
         $this->add_action_buttons();
-
-        $mform->addElement('html', html_writer::empty_tag('input', array('type' => 'hidden', 'id' => 'closeltipanel', 'value' => 0)));
     }
 
     /**
@@ -218,8 +229,6 @@ class mod_kalvidpres_mod_form extends moodleform_mod {
             'height' => $height,
             'width' => $width,
             'allowfullscreen' => 'true',
-            'webkitallowfullscreen' => 'true',
-            'mozallowfullscreen' => 'true'
         );
 
         if ($hide) {

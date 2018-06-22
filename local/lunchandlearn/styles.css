@@ -401,3 +401,7 @@ table.event .bottom-bar span.attendance {
     background: rgba(170,0,0,0.1);
     box-shadow: 0 0 3px 0 rgba(170,0,0,0.8);
 }
+
+.block_navigation.block_lal_ek .hasicon img {
+	display: inline-block;
+}

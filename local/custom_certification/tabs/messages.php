@@ -10,5 +10,6 @@ $messages = $certif->get_messages();
 $detailsform = new local_custom_certification\form\certification_messages_form($currenturl, [
     'certif' => $certif,
     'messagetypes' => $messagetypes,
-    'messages' => $messages
+    'messages' => $messages,
+    'canmanage' => $canmanage
 ]);

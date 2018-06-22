@@ -332,7 +332,7 @@ class local_lunchandlearn_renderer extends plugin_renderer_base {
         $title = get_string('sessioninfo', 'local_lunchandlearn');
 
         $img = html_writer::empty_tag('img', array(
-            'src' => $this->pix_url('help'),
+            'src' => $this->image_url('help'),
             'alt' => get_string('helpwiththis'),
             'class' => 'iconhelp'));
 

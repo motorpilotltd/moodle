@@ -38,7 +38,12 @@
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 
-//  Display the calendar page.
+/**
+ * Display the calendar page.
+ * @copyright 2003 Jon Papaioannou
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package core_calendar
+ */
 
 require_once('../config.php');
 require_once($CFG->dirroot.'/course/lib.php');
@@ -56,14 +61,6 @@ $id   = optional_param('id', 0, PARAM_INT);
 
 $url = new moodle_url('/calendar/view.php');
 
-if ($courseid != SITEID) {
-    $url->param('course', $courseid);
-}
-
-if ($view !== 'upcoming') {
-    $url->param('view', $view);
-}
-
 /* BEGIN CORE MOD */
 if ($id !== 0) {
     $url->param('id', $id);
@@ -76,11 +73,20 @@ if ($id !== 0) {
 if (!empty($day) && !empty($mon) && !empty($year)) {
     if (checkdate($mon, $day, $year)) {
         $time = make_timestamp($year, $mon, $day);
-    } else {
-        $time = usergetmidnight(time());
     }
-} else if (empty($time)) {
-    $time = usergetmidnight(time());
+}
+
+if (empty($time)) {
+    $time = time();
+}
+
+if ($courseid != SITEID) {
+    $url->param('course', $courseid);
+}
+
+if ($view !== 'upcoming') {
+    $time = usergetmidnight($time);
+    $url->param('view', $view);
 }
 
 $url->param('time', $time);
@@ -88,7 +94,8 @@ $url->param('time', $time);
 $PAGE->set_url($url);
 
 if ($courseid != SITEID && !empty($courseid)) {
-    $course = $DB->get_record('course', array('id' => $courseid));
+    // Course ID must be valid and existing.
+    $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
     $courses = array($course->id => $course);
     $issite = false;
     navigation_node::override_active_url(new moodle_url('/course/view.php', array('id' => $course->id)));
@@ -98,7 +105,7 @@ if ($courseid != SITEID && !empty($courseid)) {
     $issite = true;
 }
 
-require_course_login($course);
+require_login($course, false);
 
 /* BEGIN CORE MOD */
 require_once "{$CFG->dirroot}/local/lunchandlearn/lib.php";
@@ -218,7 +225,7 @@ if (!empty($CFG->enablecalendarexport)) {
             array('preset_what'=>'all', 'preset_time' => 'recentupcoming', 'userid' => $USER->id, 'authtoken'=>$authtoken)
         );
         echo html_writer::tag('a', 'iCal',
-            array('href' => $link, 'title' => get_string('quickdownloadcalendar', 'calendar'), 'class' => 'ical-link'));
+            array('href' => $link, 'title' => get_string('quickdownloadcalendar', 'calendar'), 'class' => 'ical-link m-l-1'));
     }
 */
 /* END CORE MOD */

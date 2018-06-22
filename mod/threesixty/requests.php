@@ -130,7 +130,7 @@ function print_requests_table($activityid, $userid, $context){
             $assessurlparams = array('a' => $activityid, 'code' => $r->uniquehash, 'internal' => 1);
             $assessurl = new moodle_url('/mod/threesixty/score.php', $assessurlparams);
             $assesstext = get_string('assess', 'threesixty');
-            $assessicon = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/valid'), 'alt' => $assesstext, 'title' => $assesstext));
+            $assessicon = html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('i/valid'), 'alt' => $assesstext, 'title' => $assesstext));
             $actions = array(
                 html_writer::link($assessurl, $assessicon)
             );
@@ -138,7 +138,7 @@ function print_requests_table($activityid, $userid, $context){
                 $declineurlparams = array('a' => $activityid, 'decline' => $r->userid, 'sesskey' => sesskey());
                 $declineurl = new moodle_url('/mod/threesixty/requests.php', $declineurlparams);
                 $declinetext = get_string('decline', 'threesixty');
-                $declineicon = html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/invalid'), 'alt' => $declinetext, 'title' => $declinetext));
+                $declineicon = html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('i/invalid'), 'alt' => $declinetext, 'title' => $declinetext));
                 $actions[] = html_writer::link($declineurl, $declineicon);
             }
             $table->data[] = array($r->lastname, $r->firstname, implode('&nbsp;', $actions));

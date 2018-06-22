@@ -25,14 +25,26 @@ class mod_tapscompletion_mod_form extends moodleform_mod {
 
         $mform =& $this->_form;
 
-        // Check for arupadvert activity (suite driver) presence.
-        $this->_arupadvert_exists();
+        // Check edge case of being called from defaults editing form...
+        // In this case we don't need to worry about what does/doesn't exsit.
+        $runchecks = true;
+        $frames = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 0);
+        foreach ($frames as $frame) {
+            if ($frame['class'] === 'core_completion_defaultedit_form') {
+                $runchecks = false;
+                break;
+            }
+        }
+        if ($runchecks) {
+            // Check for arupadvert activity (suite driver) presence.
+            $this->_arupadvert_exists();
 
-        // Check for tapsenrol activity presence.
-        $this->_tapsenrol_exists();
+            // Check for tapsenrol activity presence.
+            $this->_tapsenrol_exists();
 
-        // Check for multiple instances.
-        $this->_instances_exist();
+            // Check for multiple instances.
+            $this->_instances_exist();
+        }
 
         $mform->addElement('header', 'general', get_string('general', 'form'));
 

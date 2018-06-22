@@ -62,6 +62,10 @@
     width: 50%;
 }
 
+.block_arup_mylearning .content .modal ul {
+    list-style-type: disc;
+}
+
 /* Edit CPD form page */
 #page-blocks-arup_mylearning .editcpd_form input[type=text],
 #page-blocks-arup_mylearning .editcpd_form textarea {
