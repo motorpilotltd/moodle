@@ -18,12 +18,9 @@ namespace local_admin;
 
 class courseformmoddifier {
     public static function alter_definition(\MoodleQuickForm $mform) {
-        global $PAGE;
+        global $PAGE, $DB, $USER;
 
         $PAGE->requires->js_call_amd('local_admin/enhance', 'initialise');
-
-        global $DB;
-
 
         $arupdefaultcourse = $mform->createElement('selectyesno', 'arupdefaultcourse', get_string('arupdefaultcourse', 'local_admin'));
         $mform->insertElementBefore($arupdefaultcourse, 'fullname');
@@ -91,6 +88,11 @@ class courseformmoddifier {
                 }
                 $element->updateAttributes(array('class' => $class . ' hidden'));
             }
+        }
+
+        $systemcontext = \context_system::instance();
+        if (!has_capability("local/admin:createnonarupcourse", $systemcontext)) {
+            $elementnamestofreeze[] = 'arupdefaultcourse';
         }
 
         $mform->hardFreeze($elementnamestofreeze);
