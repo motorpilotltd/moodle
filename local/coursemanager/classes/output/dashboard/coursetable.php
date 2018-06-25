@@ -52,7 +52,7 @@ class coursetable extends base {
         $tab1 = array(
             'tab1' => 'header',
             'moodlecourse' => 'moodlecourse',
-            'coursecode' => 'text',
+            'idnumber' => 'text',
             'coursename' => 'text',
             'startdate' => 'date',
             'enddate' => 'date',

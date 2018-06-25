@@ -50,7 +50,7 @@ class overview extends base {
 
         // [id]
         // [courseid]
-        // [coursecode]
+        // [idnumber]
         // [coursename]
         // [startdate]
         // [enddate]
@@ -77,7 +77,7 @@ class overview extends base {
         // [activecourse]
         // [usedtimezone]
         // [timemodified]
-        $showfields = array('coursecode', 'classes', 'coursename', 'startdate', 'duration', 'courseregion', 'keywords');
+        $showfields = array('idnumber', 'classes', 'coursename', 'startdate', 'duration', 'courseregion', 'keywords');
         $datefields = array('startdate', 'enddate', 'timemodified');
         $numericfields = array('classes', 'duration');
 
@@ -138,10 +138,10 @@ class overview extends base {
             $data->heading[] = $th;
         }
 
-        $coursecode = '';
+        $idnumber = '';
         $prevcourseid = '';
         foreach ($courselist as $course) {
-            if ($course->archived) {
+            if (!$course->visible) {
                 continue;
             }
             $showcourse = new stdClass();
@@ -182,14 +182,14 @@ class overview extends base {
                 if (in_array($fieldname, $datefields)) {
                     $value->value = userdate($value->value, get_string('strftimedate'), 'UTC');
                 }
-                if ($fieldname == 'coursecode') {
+                if ($fieldname == 'idnumber') {
                     $value->value .= '<a id="course'.$course->id.'" class="cmanchor">';
                 }
                 if ($fieldname == 'duration') {
                     $value->value .= ' ' . $course->durationunits;
                 }
                 // Create link to form
-                if ($fieldname == 'coursecode') {
+                if ($fieldname == 'idnumber') {
                     $myparams = array('page' => 'course', 'courseid' => $course->id, 'start' => $this->coursemanager->start);
                     $params = array_merge($this->coursemanager->searchparams, $myparams);
                     $link = new moodle_url('/local/coursemanager/index.php', $params);
@@ -242,8 +242,10 @@ class overview extends base {
         }
 
         $data->addcourse = $page->addcourse;
-        $addcourseparams = array('page' => 'course', 'courseid' => $this->course->id);
-        $data->addcourseurl = new moodle_url('/local/coursemanager', $addcourseparams);
+        if (!empty($this->course)) {
+            $addcourseparams = array('page' => 'course', 'courseid' => $this->course->id);
+            $data->addcourseurl = new moodle_url('/local/coursemanager', $addcourseparams);
+        }
         $data->hassearch = $this->coursemanager->hassearch;
         $data->filteroptions = $this->coursemanager->filteroptions;
         $data->setfilters = $this->coursemanager->setfilters;

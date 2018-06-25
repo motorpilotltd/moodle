@@ -94,7 +94,9 @@ class coursemanager {
         $this->baseurl = '/local/coursemanager/index.php';
         $this->searchparams = array();
         $this->user = $USER;
-        $this->course = get_course($courseid);
+        if (!empty($courseid)) {
+            $this->course = get_course($courseid);
+        }
         $this->cmclass = $this->get_class($cmclass);
         $this->page = $page;
         $this->formid = $formid;
@@ -291,7 +293,7 @@ class coursemanager {
     }
 
     public function get_setfilters() {
-        $fields = array('coursecode', 'coursename', 'startdate', 'duration', 'courseregion', 'keywords');
+        $fields = array('idnumber', 'fullname', 'startdate', 'duration', 'courseregion', 'keywords');
         $searchoptions = count($fields);
 
         $this->setfilters = array();
@@ -304,7 +306,7 @@ class coursemanager {
             $search = optional_param('search' . $i, '', PARAM_TEXT);
             $value = optional_param('searchvalue' . $i, '', PARAM_TEXT);
             if ($i == 1 && empty($search)) {
-                $search = 'coursecode';
+                $search = 'idnumber';
             }
             if ($i == $remove) {
                 continue;
@@ -346,7 +348,7 @@ class coursemanager {
 
     public function filters() {
         $this->filters = array();
-        $fields = array('coursecode', 'coursename', 'startdate', 'duration', 'courseregion', 'keywords');
+        $fields = array('idnumber', 'coursename', 'startdate', 'duration', 'courseregion', 'keywords');
         $params = $this->searchparams;
         $params['page'] = 'overview';
         $params['start'] = $this->start;
@@ -427,52 +429,99 @@ class coursemanager {
         global $DB;
 
         if (empty($this->sort)) {
-            $this->sort = 'coursename';
+            $this->sort = 'fullname';
             $this->direction = 'ASC';
         }
 
-        $wherestring = '';
+        $wherestring = [];
 
         $params = array();
 
         foreach ($this->setfilters as $filter) {
-            if (!empty($wherestring)) {
-                $wherestring .= ' AND ';
-            }
             if (in_array($filter->field, $this->datefields)) {
                 $minoneday = $filter->value - (60 * 60 * 24);
                 $plusoneday = $filter->value + (60 * 60 * 24);
-                $wherestring = " $filter->field > $minoneday AND $filter->field < $plusoneday ";
+                $wherestring[] = "$filter->field > $minoneday AND $filter->field < $plusoneday";
             } else {
                 if ($filter->field == 'duration') {
                     $value = intval($filter->value);
-                    $wherestring .= " $filter->field = $value ";
+                    $wherestring[] = " $filter->field = $value ";
                 } else {
-                    $wherestring .= $DB->sql_like($filter->field, ':' . $filter->field, false);
+                    $wherestring[] = $DB->sql_like($filter->field, ':' . $filter->field, false);
                     $params[$filter->field] = '%' . $filter->value . '%';
                 }
             }
         }
 
-        $sql = "SELECT *
-                  FROM {local_taps_course}
-              ORDER BY " . $this->sort . ' ' . $this->direction;
-
         if (!empty($wherestring)) {
-            $sql = "SELECT *
-                      FROM {local_taps_course}
-                     WHERE ${wherestring}
-                     ORDER BY " . $this->sort . ' ' . $this->direction;
+            $wherestring = ' WHERE ' . implode(' AND ', $wherestring) . ' ';
+        } else {
+            $wherestring = '';
         }
+        $regionconcat = \local_mssql\dbshim::sql_group_concat('regname.name', ',', true);
+
+        $sql = "SELECT 
+                    c.id as courseid,
+                    c.id as id,
+                    c.category,
+                    c.sortorder,
+                    c.fullname as coursename,
+                    c.fullname,
+                    c.shortname,
+                    c.idnumber,
+                    c.summary,
+                    c.summaryformat,
+                    c.format,
+                    c.showgrades,
+                    c.newsitems,
+                    c.startdate,
+                    c.enddate,
+                    c.marker,
+                    c.maxbytes,
+                    c.legacyfiles,
+                    c.showreports,
+                    c.visible,
+                    c.visibleold,
+                    c.groupmode,
+                    c.groupmodeforce,
+                    c.defaultgroupingid,
+                    c.lang,
+                    c.calendartype,
+                    c.theme,
+                    c.timecreated,
+                    c.timemodified,
+                    c.requested,
+                    c.enablecompletion,
+                    c.completionnotify,
+                    c.cacherev,
+                    cm.name,
+                    cm.altword,
+                    cm.display,
+                    cm.showheadings,
+                    cm.description,
+                    cm.descriptionformat,
+                    cm.objectives,
+                    cm.objectivesformat,
+                    cm.audience,
+                    cm.audienceformat,
+                    cm.keywords,
+                    cm.keywordsformat,
+                    cm.accredited,
+                    cm.accreditationdate,
+                    cm.timecreated,
+                    cm.timemodified,
+                    cm.duration,
+                    cm.durationunits,
+                    reg.courseregion
+                  FROM {course} c
+                  LEFT JOIN {coursemetadata_arup} cm ON c.id = cm.course
+                  LEFT JOIN (SELECT courseid, $regionconcat as courseregion FROM {local_regions_reg_cou} creg INNER JOIN {local_regions_reg} regname ON creg.regionid = regname.id GROUP BY courseid) AS reg on reg.courseid = c.id
+                 $wherestring
+                 ORDER BY " . $this->sort . ' ' . $this->direction;
 
         $this->courselist = $DB->get_records_sql($sql, $params, $this->start * $this->limit, $this->limit);
 
-        if (!empty($wherestring)) {
-            $allresults = $DB->get_records_sql($sql, $params);
-            $this->numrecords = count($allresults);
-        } else {
-            $this->numrecords = $DB->count_records('local_taps_course');
-        }
+        $this->numrecords = $DB->count_records_sql("SELECT COUNT(id) FROM {course} $wherestring");
 
         foreach ($this->courselist as &$course) {
             $sql = "SELECT COUNT(id) as numclasses from {local_taps_class}
@@ -485,7 +534,6 @@ class coursemanager {
             }
 
             $course->moodlecourse = $DB->get_record('course', array('idnumber' => $course->courseid));
-
         }
     }
 
@@ -494,7 +542,7 @@ class coursemanager {
      */
     private function find_classes() {
         global $DB;
-        if ($this->course->id > 0) {
+        if (!empty($this->course)) {
             if (empty($this->classsort)) {
                 $this->classsort = 'classstarttime';
                 $this->direction = 'DESC';
@@ -624,7 +672,7 @@ class coursemanager {
             }
         }
 
-        if ($this->course->id >= 1 ) {
+        if (!empty($this->course)) {
             $myparams['courseid'] = $this->course->id;
             $params = array_merge($this->searchparams, $myparams);
             $currentcourse = $this->get_current_courseobject($this->cmcourse->id);
@@ -646,7 +694,7 @@ class coursemanager {
             if ($name == 'course') {
                 $page->url = new moodle_url($this->baseurl, $params);
                 $page->visible = true;
-                $page->name = $currentcourse->coursecode;
+                $page->name = $currentcourse->idnumber;
             }
 
             if ($name == 'class') {
@@ -667,7 +715,7 @@ class coursemanager {
             }
         }
 
-        if ($this->course->id == -1) {
+        if (!empty($this->course)) {
             if ($name == 'course') {
                 $page->visible = true;
                 $params['edit'] = 1;
@@ -705,7 +753,9 @@ class coursemanager {
 
         foreach ($this->pages as $page) {
             $navitem = clone($page);
-            $navitem->course = $this->course->id;
+            if (!empty($this->course)) {
+                $navitem->course = $this->course->id;
+            }
             $navigation->items[] = $navitem;
         }
 

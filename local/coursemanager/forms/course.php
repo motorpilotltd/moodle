@@ -46,7 +46,7 @@ class cmform_course extends moodleform {
         // Should be unique.
         // Needs help
         if ($tab == 1) {
-            $this->add_element("coursecode", "text", PARAM_TEXT, null, null, true);
+            $this->add_element("idnumber", "text", PARAM_TEXT, null, null, true);
             $this->add_element("coursename", "text", PARAM_TEXT);
             // Force UTC for incoming timestamps - converted in get_data() based on chosen timezone.
             $this->add_element("startdate", "date_selector", null, ['timezone' => 'UTC']);
@@ -68,14 +68,14 @@ class cmform_course extends moodleform {
             $this->add_element("onelinedescription", "textarea", PARAM_RAW, null, null, true);
 
             // Required fields
-            $mform->addRule('coursecode', get_string('required', 'local_coursemanager'), 'required', null, 'client');
+            $mform->addRule('idnumber', get_string('required', 'local_coursemanager'), 'required', null, 'client');
             $mform->addRule('coursename', get_string('required', 'local_coursemanager'), 'required', null, 'client');
             $mform->addRule('courseregion', get_string('required', 'local_coursemanager'), 'required', null, 'client');
             $mform->addRule('onelinedescription', get_string('required', 'local_coursemanager'), 'required', null, 'client');
         }
 
         if ($tab == 2) {
-            $this->add_element("coursecode", "hidden", PARAM_TEXT);
+            $this->add_element("idnumber", "hidden", PARAM_TEXT);
             $this->add_element("coursedescription", "editor", PARAM_RAW);
             $this->add_element("courseobjectives", "editor", PARAM_RAW);
             // Needs help
@@ -86,7 +86,7 @@ class cmform_course extends moodleform {
         }
 
         if ($tab == 3) {
-            $this->add_element("coursecode", "hidden", PARAM_TEXT);
+            $this->add_element("idnumber", "hidden", PARAM_TEXT);
             // Will need to check options for this. See variables taps plugin, keep them central in taps. Linked to accreditationgivendate and futurereviewdate. 
             $this->add_element("globallearningstandards", "advcheckbox");
             // Needs to be able to be null/zero (not accredited). add tickbox. Only available when globallearningstandards is selected.
@@ -176,11 +176,11 @@ class cmform_course extends moodleform {
             $errors['courseregion'] = get_string('required', 'local_coursemanager');
         }
         $sql = 'SELECT id FROM {local_taps_course}
-                 WHERE LOWER(coursecode) = LOWER(:coursecode)
+                 WHERE LOWER(idnumber) = LOWER(:idnumber)
                    AND NOT courseid  = :courseid';
-        $dupes = $DB->get_records_sql($sql, array('coursecode' => $data['coursecode'], 'courseid' => $data['courseid']));
+        $dupes = $DB->get_records_sql($sql, array('idnumber' => $data['idnumber'], 'courseid' => $data['courseid']));
         if (count($dupes) > 0) {
-            $errors['coursecode'] =  get_string('duplicatecoursecode', 'local_coursemanager');
+            $errors['idnumber'] =  get_string('duplicateidnumber', 'local_coursemanager');
         }
 
         return $errors;
