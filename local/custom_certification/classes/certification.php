@@ -108,7 +108,7 @@ class certification
         $coursesets = $this->get_coursesets();
         $this->certificationcoursesets = $coursesets['certification'];
         $this->recertificationcoursesets = $coursesets['recertification'];
-        
+
         if($withassignments){
             $this->assignments = $this->get_assignments();
             $this->assignedusers = $this->get_assigned_users();
@@ -283,7 +283,7 @@ class certification
     private function get_assignments()
     {
         global $DB;
-        
+
         $assignments = $DB->get_records(
             'certif_assignments', ['certifid' => $this->id]
         );
@@ -298,13 +298,13 @@ class certification
      */
     public function get_user_assignments($userid){
         global $DB;
-        
+
         $sql = "
             SELECT
-              cau.id, 
-              cua.assignmentid, 
+              cau.id,
+              cua.assignmentid,
               ca.assignmenttypeid,
-              ca.duedatetype, 
+              ca.duedatetype,
 			  cua.timecreated as assignmenttime,
 			  c.name as cohortname
             FROM {certif_user_assignments} cua
@@ -314,7 +314,7 @@ class certification
             WHERE cua.userid = :userid
             AND cua.certifid = :certifid
             ORDER by ca.timecreated
-        
+
         ";
 
         $params = [];
@@ -323,7 +323,7 @@ class certification
         $params['assignmenttype'] = self::ASSIGNMENT_TYPE_AUDIENCE;
 
         return $DB->get_records_sql($sql, $params);
-       
+
     }
 
     /**
@@ -337,14 +337,14 @@ class certification
         global $DB;
         $picturefields = \user_picture::fields('u');
         $query = "
-			SELECT 
-				DISTINCT 
+			SELECT
+				DISTINCT
 				".$picturefields.",
 				".$DB->sql_fullname('u.firstname', 'u.lastname')." as fullname,
 				cua.assignmentid,
 				cua.timecreated as assignmenttime,
 				cua.duedate as duedate
-			FROM {certif_user_assignments} cua 
+			FROM {certif_user_assignments} cua
 			JOIN {user} u ON u.id = cua.userid
 			WHERE cua.certifid = :certifid
 		";
@@ -369,7 +369,7 @@ class certification
 
         $coursesets = $DB->get_records('certif_coursesets', ['certifid' => $this->id], 'sortorder ASC');
         $coursessql = "
-            SELECT 
+            SELECT
                 ccc.id as id,
                 ccc.courseid as courseid,
                 ccc.coursesetid as coursesetid,
@@ -405,7 +405,7 @@ class certification
 
     /**
      * Get all cohorts assigned to certification with number of members
-     * 
+     *
      * @return array
      */
     private function get_assigned_cohorts()
@@ -413,21 +413,21 @@ class certification
         global $DB;
         $sql
             = '
-            SELECT 
+            SELECT
                 c.id,
                 c.name,
                 ca.id as assignmentid,
-                (SELECT 
-                  COUNT(1) 
+                (SELECT
+                  COUNT(1)
                 FROM {cohort_members} cm
                 WHERE cm.cohortid = c.id
                 ) as memberscount
             FROM {certif_assignments} ca
-            JOIN {cohort} c ON c.id = ca.assignmenttypeid 
-            WHERE 
+            JOIN {cohort} c ON c.id = ca.assignmenttypeid
+            WHERE
               ca.assignmenttype = :typecohort AND
               ca.certifid = :certifid
-            GROUP BY 
+            GROUP BY
               c.id,
               c.name,
               ca.id
@@ -441,13 +441,13 @@ class certification
 
     /**
      * Set details of certification - add new if not exists
-     * 
+     *
      * @param string $fullname Certification fullname
      * @param string $shortname Certification shortname
      * @param int $category Category ID - taken from course categories
      * @param string $summary Summary description
      * @param string $endnote Endnote description
-     * @param string $idnumber 
+     * @param string $idnumber
      * @param int $visible Determine if certificaito is visible (1) or hidden (0)
      */
     public function set_details($fullname, $shortname, $category, $summary, $endnote, $idnumber, $visible, $linkedtapscourseid, $uservisible, $reportvisible)
@@ -482,7 +482,7 @@ class certification
 
     /**
      * Set recertification expire time and when window opens
-     * 
+     *
      * @param $recertificationdatetype How expire date will be calucalutaed:
      *                                  const CERTIFICATION_EXPIRY_DATE - basing on last expire date, or completion date if this is certificatio path
      *                                  const CERTIFICATION_COMPLETION_DATE - basing on completion date
@@ -518,13 +518,13 @@ class certification
         global $DB;
         $sql
             = "
-            SELECT 
+            SELECT
                 ca.id,
                 ca.assignmenttype
-            FROM {certif_assignments} ca 
-            WHERE 
-                ca.certifid=:certifid AND 
-                ca.assignmenttype = :assignmenttype AND 
+            FROM {certif_assignments} ca
+            WHERE
+                ca.certifid=:certifid AND
+                ca.assignmenttype = :assignmenttype AND
                 ca.assignmenttypeid = :assignmenttypeid;
         ";
         $params['certifid'] = $certifid;
@@ -593,7 +593,7 @@ class certification
 
         $params = [];
         $params['deleted'] = 0;
-        $query = "SELECT 
+        $query = "SELECT
               c.*,
               cc.name as categoryname
             FROM {certif} c
@@ -608,7 +608,7 @@ class certification
         /**
          * Get all categories where I have access to view or manage certifications
          */
-        list($inoreqaalquery, $inorequalparams) = $DB->get_in_or_equal( self::get_viewable_categories(), SQL_PARAMS_NAMED);
+        list($inoreqaalquery, $inorequalparams) = $DB->get_in_or_equal(self::get_viewable_categories(), SQL_PARAMS_NAMED, 'param', true, -1);
         $query .= "AND c.category " . $inoreqaalquery;
         $params += $inorequalparams;
 
@@ -622,7 +622,7 @@ class certification
             $query .= "AND c.category " . $inoreqaalquery;
             $params += $inorequalparams;
         }
-        
+
         if (isset($filters['id']) && count($filters['id']) > 0) {
             list($inoreqaalquery, $inorequalparams) = $DB->get_in_or_equal($filters['id'], SQL_PARAMS_NAMED);
             $query .= "AND c.id " . $inoreqaalquery;
@@ -643,7 +643,7 @@ class certification
             $query .= "AND c.reportvisible = :reportvisible ";
             $params['reportvisible'] = $filters['reportvisible'];
         }
-        
+
         $query .= $orderby;
         $certifications = $DB->get_records_sql($query, $params);
         $editablecategories = self::get_editable_categories();
@@ -1068,7 +1068,7 @@ class certification
                     u.lastname,
                     ".$fields."
                 FROM {cohort_members} cm
-                JOIN {user} u ON u.id = cm.userid 
+                JOIN {user} u ON u.id = cm.userid
                 LEFT JOIN {certif_user_assignments} cua ON cua.userid = cm.userid AND cua.certifid = :certifid
                 WHERE cm.cohortid = :cohortid
                 ";
@@ -1102,7 +1102,7 @@ class certification
         global $DB;
         $sql = "
             SELECT
-                cau.id, 
+                cau.id,
                 cua.id as userassignmentid,
                 ca.id as assignmentid,
                 ca.duedatetype,
@@ -1111,9 +1111,9 @@ class certification
                 ca.timecreated
             FROM {certif_user_assignments} cua
             LEFT JOIN {certif_assignments_users} cau ON cau.userid = cua.userid AND cau.certifid = cua.certifid
-            LEFT JOIN {certif_assignments} ca ON ca.id = cau.assignmentid AND ca.certifid = cua.certifid 
-            WHERE 
-                cua.userid = :userid AND 
+            LEFT JOIN {certif_assignments} ca ON ca.id = cau.assignmentid AND ca.certifid = cua.certifid
+            WHERE
+                cua.userid = :userid AND
                 cua.certifid = :certifid
             ORDER by ca.timecreated
         ";
