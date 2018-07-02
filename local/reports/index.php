@@ -50,7 +50,7 @@ $PAGE->requires->strings_for_js(
         'error:request',
     ), 'local_onlineappraisal');
 
-$PAGE->requires->js_call_amd('local_reports/exportreport', 'init', array());
+$PAGE->requires->js_call_amd('local_reports/exportreport', 'init', array($page));
 
 echo $OUTPUT->header();
 

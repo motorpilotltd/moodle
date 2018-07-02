@@ -783,9 +783,6 @@ class appraisal {
         $hubdata = $DB->get_record_sql($query, $params);
 
         if ($hubdata) {
-            $record->job_title = !empty($hubdata->jobtitle) ? $hubdata->jobtitle : '';
-            $record->grade = !empty($hubdata->grade) ? $hubdata->grade : '';
-
             switch ($field) {
                 case 'jobtitle':
                     $return->data->jobtitle = $appraisal->appraisal->job_title = !empty($hubdata->jobtitle) ? $hubdata->jobtitle : '';

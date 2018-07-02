@@ -61,6 +61,7 @@ function tapscompletion_cm_info_dynamic(cm_info $cm) {
         $cannotedit = !$PAGE->user_is_editing() || !can_update_moduleinfo($cm);
         $cannotcomplete = !has_capability('mod/tapscompletion:updatecompletion', $context);
         if ($cannotedit && $cannotcomplete) {
+            $cm->set_extra_classes('hidecompletion');
             $cm->set_no_view_link();
         }
     }
@@ -116,6 +117,7 @@ function tapscompletion_cm_info_view(cm_info $cm) {
                 WHERE
                     lte.courseid = :tapscourse
                     AND (lte.archived = 0 OR lte.archived IS NULL)
+                    AND lte.active = 1
                     AND {$compare} {$in}
                     AND lte.staffid = :staffid
                 ORDER BY

@@ -351,18 +351,42 @@ class forms {
             if ($data->classtype == 'Scheduled' && $data->classstatus == 'Planned') {
                 if (!isset($data->classstarttimeenabled)) {
                     $data->classstarttime = 0;
+                    $data->classstartdate = 0;
                 }
                 if (!isset($data->classendtimeenabled)) {
                     $data->classendtime = 0;
+                    $data->classenddate = 0;
                 }
             }
             if ($data->classtype == 'Self Paced') {
                 if (!isset($data->classendtimeenabled)) {
                     $data->classendtime = 0;
+                    $data->classenddate = 0;
                 }
             }
             if (isset($data->unlimitedattendees) && $data->unlimitedattendees == 1) {
                 $data->maximumattendees = -1;
+            }
+            if ($data->id > 0 && $data->classid > 0) {
+                // Check for attended enrolments and unset duration/time fields so they are not updated.
+                list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
+                $sql = "SELECT COUNT(id)
+                      FROM {local_taps_enrolment}
+                      WHERE
+                        classid = :classid
+                        AND (archived = 0 OR archived IS NULL)
+                        AND {$DB->sql_compare_text('bookingstatus')} {$insql}";
+
+                $params['classid'] = $data->classid;
+                $hasattendedenrolments = $DB->count_records_sql($sql, $params);
+                if (!empty($hasattendedenrolments)) {
+                    unset($data->classtype);
+                    unset($data->classstatus);
+                    unset($data->classstarttime);
+                    unset($data->classstartdate);
+                    unset($data->usedtimezone);
+                    // Check/unset classendtime later as need to check if can be edited or not once old record is loaded.
+                }
             }
         }
 
@@ -378,6 +402,10 @@ class forms {
         );
 
         if ($record = $DB->get_record($database, array('id' => $data->id))) {
+            if (!empty($hasattendedenrolments) && $record->classtype == 'Self Paced' && $record->classendtime > 0) {
+                unset($data->classendtime);
+                unset($data->classenddate);
+            }
             foreach ($data as $key => $value) {
                 if (isset($record->$key) && $record->$key != $value) {
                     $oldfields[$key] = $record->$key;
@@ -417,6 +445,12 @@ class forms {
         }
 
         if ($datatype == 'class') {
+            if ($record) {
+                // Reset required unset data from DB record;
+                $data->classtype = $record->classtype;
+                $data->classstatus = $record->classstatus;
+                $data->classstarttime = $record->classstarttime;
+            }
             $params = array('page' => 'classoverview', 'cmcourse' => $data->cmcourse, 'start' => 0);
             if ($eventtype === 'updated' && $data->classtype == 'Scheduled' && $data->classstatus == 'Normal' && $data->classstarttime > time()) {
                 // Any 'placed' enrolments?

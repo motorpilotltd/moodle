@@ -41,10 +41,15 @@ class feedback extends base {
 
         $fo = new \local_onlineappraisal\feedback($this->appraisal);
         $addfeedback = optional_param('addfeedback', 0, PARAM_INT);
+        $feedbackid = optional_param('feedbackid', 0, PARAM_INT);
+
+        $requests = $fo->get_feedback_requests();
 
         $hasf2fdate = (!empty($this->appraisal->appraisal->held_date));
+        $hasdraft = !empty($requests[$feedbackid]->draft);
+        
         // Show Form
-        if ($hasf2fdate) {
+        if ($hasf2fdate && !$hasdraft) {
             if (!$this->appraisal->form->is_submitted() && $addfeedback) {
                 $data->link = new moodle_url('/local/onlineappraisal/view.php',
                 array('page' => 'feedback', 'addfeedback' => 0,
@@ -62,6 +67,8 @@ class feedback extends base {
                 $data->hasform = true;
                 $data->form = $this->appraisal->form->render();
             }
+        } else {
+            $addfeedback = false;
         }
 
         // Show Requests
@@ -82,7 +89,8 @@ class feedback extends base {
                     'appraiser' => 1));
             }
             $data->hasrequests = true;
-            $data->requests = $fo->get_feedback_requests();
+            // Re-index options for mustache.
+            $data->requests = array_values($requests);
         }
         $data->canadd = \local_onlineappraisal\permissions::is_allowed('feedback:add',
             $this->appraisal->appraisal->permissionsid, $this->appraisal->appraisal->viewingas,

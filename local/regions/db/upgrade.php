@@ -66,5 +66,18 @@ function xmldb_local_regions_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111602, 'local', 'regions');
     }
 
+    if ($oldversion < 2015111603) {
+        // Update UKMEA => UKIMEA.
+        $region = $DB->get_record('local_regions_reg', ['name' => 'UKMEA']);
+        if ($region) {
+            $region->name = 'UKIMEA';
+            $region->tapsname = 'UKIMEA Region';
+            $DB->update_record('local_regions_reg', $region);
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111603, 'local', 'regions');
+    }
+
     return true;
 }

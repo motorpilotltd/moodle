@@ -62,7 +62,7 @@ class mod_arupadvert_renderer extends plugin_renderer_base {
         $template->showheadings = $arupadvert->showheadings;
 
         if ($info->accredited) {
-            $logourl = $OUTPUT->pix_url('logo', 'arupadvertdatatype_'.$info->type);
+            $logourl = $OUTPUT->image_url('logo', 'arupadvertdatatype_'.$info->type);
         } else {
             $logourl = '';
         }
@@ -84,7 +84,7 @@ class mod_arupadvert_renderer extends plugin_renderer_base {
                 $sec->text = $content;
                 $template->sections[] = $sec;
                 $template->hassections = true;
-            } 
+            }
         }
 
         $elements = array('by', 'level', 'code', 'region', 'keywords');
@@ -99,6 +99,9 @@ class mod_arupadvert_renderer extends plugin_renderer_base {
 
         $template->courseimage = $info->imgurl;
 
+        $template->canviewshare = $info->canviewshare;
+        $template->description = json_encode(format_string($info->description));
+        $template->ogsharelink = urlencode(new moodle_url("/mod/arupadvert/redirect.php", ['shortname' => $this->page->course->shortname]));
         return $this->render_from_template('mod_arupadvert/cminfoview', $template);
     }
 
@@ -150,7 +153,7 @@ class mod_arupadvert_renderer extends plugin_renderer_base {
             $extra = empty($cm->extra) ? '' : $cm->extra;
             $icon = '';
             if (!empty($cm->icon)) {
-                $icon = '<img src="'.$OUTPUT->pix_url($cm->icon).'" class="activityicon" alt="'.get_string('modulename', $cm->modname).'" /> ';
+                $icon = '<img src="'.$OUTPUT->image_url($cm->icon).'" class="activityicon" alt="'.get_string('modulename', $cm->modname).'" /> ';
             }
 
             $class = $arupadvert->visible ? '' : 'class="dimmed"'; // Hidden modules are dimmed.

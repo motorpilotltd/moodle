@@ -40,6 +40,7 @@ $capabilities = array(
         ),
     ),
 
+    // Deprecated.
     'block/certification_report:view' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_BLOCK,
@@ -48,6 +49,7 @@ $capabilities = array(
         )
     ),
 
+    // To be deprecated in favour of 'block/certification_report:view_all'.
     'block/certification_report:view_all_regions' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_BLOCK,
@@ -56,6 +58,7 @@ $capabilities = array(
         )
     ),
 
+    // To be deprecated in favour of 'block/certification_report:view_all'.
     'block/certification_report:view_all_costcentres' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_BLOCK,
@@ -64,6 +67,7 @@ $capabilities = array(
         )
     ),
 
+    // Deprecated.
     'block/certification_report:filter' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_BLOCK,

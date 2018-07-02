@@ -101,9 +101,7 @@ $string['feedback_status'] = 'Status';
 $string['addfeedback'] = 'Add New Contributor';
 $string['addreceivedfeedback'] = 'Add Received Feedback';
 $string['appraisee_feedback_delete_text'] = 'Delete';
-$string['appraisee_feedback_edit_text'] = 'Edit';
-$string['appraisee_feedback_edit_success'] = 'Email address changed and request resend.';
-$string['appraisee_feedback_resend_text'] = 'Resend';
+$string['appraisee_feedback_editresend_text'] = 'Edit and Resend';
 $string['appraisee_feedback_view_text'] = 'View';
 $string['appraisee_feedback_viewrequest_text'] = 'View request email';
 $string['feedback_setface2face'] = 'You have to set a date for the face to face appraisal meeting before you can add feedback requests. This can be found on the Appraisee Info page.';
@@ -114,7 +112,7 @@ $string['feedback_header'] = 'Giving your feedback on {$a->appraisee_fullname} (
 $string['confidential_label'] = 'Confidential';
 $string['confidential_label_text'] = 'Tick this box to keep your comments confidential. If you leave this box unticked, your comments will be shared with the appraisee.';
 $string['feedback_send_copy'] = 'Email me a copy';
-$string['feedback_intro'] = 'Please choose three or more colleagues to contribute feedback on your appraisal. In most regions this feedback can be internal or external. Please refer to your region for specific guidance.<br/><br/> For internal contributors, you should consider gathering feedback from a "360 degree" perspective, i.e. peers, those more senior and those more junior than you. You must select a mixture of people.<br/><br/><div data-visible-regions="UKMEA, EUROPE, AUSTRALASIA">One of your contributors might be an external client or collaborator who knows you very well.</div>
+$string['feedback_intro'] = 'Please choose three or more colleagues to contribute feedback on your appraisal. In most regions this feedback can be internal or external. Please refer to your region for specific guidance.<br/><br/> For internal contributors, you should consider gathering feedback from a "360 degree" perspective, i.e. peers, those more senior and those more junior than you. You must select a mixture of people.<br/><br/><div data-visible-regions="UKIMEA, EUROPE, AUSTRALASIA">One of your contributors might be an external client or collaborator who knows you very well.</div>
 <div data-visible-regions="East Asia"><br /><div class="alert alert-warning">For East Asia region, we expect feedback to be from internal source only. Comments from external client or collaborator should be understood and fed back through internal people.</div></div>
 <div data-visible-regions="Americas"><br /><div class="alert alert-warning">For the Americas Region, comments from external clients or collaborators should be fed back through conversations gathered outside of this feedback tool.</div></div>
 <br /><div class="alert alert-danger"> Note: Your selected contributors’ feedback will be published here after the face to face meeting, unless the feedback was requested by your appraiser. In this case, your appraiser must send the appraisal to you for your final comments (stage 3) for the feedback to appear.</div>';
@@ -152,6 +150,8 @@ $string['admin:email'] = 'Email Appraisees';
 $string['admin:employmentcategory'] = 'Employment Category';
 $string['admin:grade'] = 'Grade';
 $string['admin:initialise'] = 'Create Appraisal';
+$string['admin:initialise:wideview'] = 'Wide view';
+$string['admin:initialise:standardview'] = 'Standard view';
 $string['admin:initialisingdots'] = 'Creating...';
 $string['admin:leaver'] = 'User is no longer an active staff member.';
 $string['admin:lockingdots'] = 'Assigning...';
@@ -433,7 +433,7 @@ $string['email:subject:appraiserfeedbackmsg'] = '';
 $string['email:subject:appraiseefeedback'] = 'Request for feedback for my appraisal';
 $string['email:subject:appraiserfeedback'] = 'Request for feedback for {{appraisee_fullname}}\'s appraisal';
 // Messages (above the 'line').
-$string['email:body:appraiseefeedbackmsg'] = 'Dear <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
+$string['email:body:appraiseefeedbackmsg'] = '<p>Dear <span class="placeholder bind_firstname">{{firstname}}</span>,</p>
 <p>My appraisal meeting is arranged for the <span class="placeholder">{{held_date}}</span>. My appraiser is <span class="placeholder">{{appraiser_fullname}}</span>. As you and I have worked closely together over the past year, I would appreciate your feedback on areas in which you have valued my contribution, and where you feel I could have been more effective. If you are happy to contribute, please click on the link below to provide your feedback.</p> <p>I would be grateful if you could respond before my appraisal meeting.</p>
 <p class="ignoreoncopy">Below are any additional comments from <span class="placeholder">{{appraisee_fullname}}</span>:<br /> <span>{{emailtext}}</span></p>
 <p>Yours sincerely,<br />
@@ -838,7 +838,10 @@ $string['form:feedback:firstname'] = 'First Name';
 $string['form:feedback:lastname'] = 'Last Name';
 $string['form:feedback:language'] = 'Select feedback email language';
 $string['form:feedback:sendemailbtn'] = 'Send email to Contributor';
+$string['form:feedback:resendemailbtn'] = 'Save and resend email to Contributor';
 $string['form:feedback:title'] = 'Feedback - Add a new Contributor';
+$string['form:feedback:title:resend'] = 'Feedback - Edit and resend request';
+$string['form:feedback:resendhelp'] = '<i class="fa fa-exclamation-triangle"></i> Please check names and dates in the email below are correct before resending, particularly if you are changing details above and/or your appraisal meeting date or appraiser has been changed.';
 $string['form:feedback:editemail'] = 'Edit';
 $string['form:feedback:providefirstnamelastname'] = 'Please enter the recipient firstname and lastname before clicking the edit button.';
 
@@ -1236,7 +1239,8 @@ $string['feedbackrequests:description'] = 'This dashboard shows any outstanding 
 $string['feedbackrequests:outstanding'] = 'Outstanding Requests';
 $string['feedbackrequests:norequests'] = 'No outstanding feedback requests';
 $string['feedbackrequests:completed'] = 'Completed Requests';
-$string['feedbackrequests:nocompleted'] = 'No completed feedback requests';
+$string['feedbackrequests:nocompleted'] = 'No completed feedback requests for the selected cycle';
+$string['feedbackrequests:filter:label'] = 'Appraisal Cycle';
 $string['feedbackrequests:th:requestby'] = 'Requested by';
 $string['feedbackrequests:th:requestfor'] = 'Requested for';
 $string['feedbackrequests:th:requestdate'] = 'Requested date';
@@ -1253,6 +1257,7 @@ $string['email:body:myfeedback'] = '<p>Dear {{recipient}},</p>
 $string['feedbackrequests:confidential'] = 'confidential';
 $string['feedbackrequests:nonconfidential'] = 'non confidential';
 $string['feedbackrequests:received:confidential'] = 'Received (confidential)';
+$string['feedbackrequests:received:draft'] = 'In draft';
 $string['feedbackrequests:received:nonconfidential'] = 'Received';
 $string['feedbackrequests:paneltitle:confidential'] = 'Feedback (confidential)';
 $string['feedbackrequests:paneltitle:nonconfidential'] = 'Feedback';

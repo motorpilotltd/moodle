@@ -55,8 +55,6 @@ $PAGE->set_title($title);
 $PAGE->set_heading($tapscompletion->course->fullname);
 
 $PAGE->requires->js_call_amd('mod_tapscompletion/enhance', 'initialise');
-$PAGE->requires->js('/report/completion/textrotate.js');
-$PAGE->requires->js_function_call('textrotate_init', null, true);
 
 $output = $PAGE->get_renderer('mod_tapscompletion');
 
@@ -146,7 +144,7 @@ if (isset($_POST['submit'])) {
                 break;
             case 'Full Attendance':
                 if ($tapscompletion->tapscompletion->completiontimetype == \mod_tapscompletion\tapscompletion::$completiontimetypes['classendtime']) {
-                    $completiontime = !empty($class->classendtime) ? $class->classendtime : time();
+                    $completiontime = !empty($classes[$classid]->classendtime) ? $classes[$classid]->classendtime : time();
                 } else {
                     // Everyone completes now.
                     $completiontime = time();

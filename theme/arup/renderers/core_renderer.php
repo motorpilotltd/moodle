@@ -145,13 +145,14 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
         $template->userid = $USER->id;
         $template->sesskey = sesskey();
         $template->countries =  array();
-        $template->checkmarkicon = $this->pix_url('t/check');
+        $template->checkmarkicon = $this->pix_icon('t/check', 'checkmark');
 
         $aruptimezones = $DB->get_records('local_timezones');
         if (count($aruptimezones) > 0) {
             foreach ($aruptimezones as $country) {
                 $thiscountry = new stdClass();
                 $thiscountry->name = $country->display;
+                $thiscountry->timezone = $country->timezone;
                 $template->countries[] = $thiscountry;
             }
         } else {
@@ -163,6 +164,12 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
             }
         }
         return $this->render_from_template('theme_arup/usertimemodal', $template);
+    }
+
+    // Copied from old version of theme_bootstrap as needed for override.
+    public function user_menu($user = null, $withlinks = null) {
+        $usermenu = new custom_menu('', current_language());
+        return $this->render_user_menu($usermenu, $user);
     }
 
     /**
@@ -683,6 +690,21 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
      */
     protected static function span($attributes, $content) {
         return html_writer::tag('span', $content, $attributes);
+    }
+
+    public function user_picture(stdClass $user, array $options = null) {
+        global $PAGE;
+        if ($PAGE->bodyid == 'page-mod-forum-discuss' || $PAGE->bodyid == 'page-site-index' ) {
+            $options = array('size' => '100');
+        }
+
+        $userpicture = new user_picture($user);
+        foreach ((array)$options as $key=>$value) {
+            if (array_key_exists($key, $userpicture)) {
+                $userpicture->$key = $value;
+            }
+        }
+        return $this->render($userpicture);
     }
 
 }

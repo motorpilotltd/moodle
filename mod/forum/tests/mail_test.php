@@ -184,6 +184,8 @@ class mod_forum_mail_testcase extends advanced_testcase {
         // Add a post to the discussion.
         $record = new stdClass();
         $record->course = $forum->course;
+        $strre = get_string('re', 'forum');
+        $record->subject = $strre . ' ' . $discussion->subject;
         $record->userid = $author->id;
         $record->forum = $forum->id;
         $record->discussion = $discussion->id;
@@ -248,6 +250,43 @@ class mod_forum_mail_testcase extends advanced_testcase {
         $this->assertEquals($expected, count($messages));
 
         return $messages;
+    }
+
+    public function test_cron_message_includes_courseid() {
+        $this->resetAfterTest(true);
+
+        // Create a course, with a forum.
+        $course = $this->getDataGenerator()->create_course();
+
+        $options = array('course' => $course->id, 'forcesubscribe' => FORUM_FORCESUBSCRIBE);
+        $forum = $this->getDataGenerator()->create_module('forum', $options);
+
+        // Create two users enrolled in the course as students.
+        list($author, $recipient) = $this->helper_create_users($course, 2);
+
+        // Post a discussion to the forum.
+        list($discussion, $post) = $this->helper_post_to_forum($forum, $author);
+
+        // Run cron and check that \core\event\message_sent contains the course id.
+        // Close the message sink so that message_send is run.
+        $this->helper->messagesink->close();
+
+        // Catch just the cron events. For each message sent two events are fired:
+        // core\event\message_sent
+        // core\event\message_viewed.
+        $this->helper->eventsink = $this->redirectEvents();
+        $this->expectOutputRegex('/Processing user/');
+
+        forum_cron();
+
+        // Get the events and close the sink so that remaining events can be triggered.
+        $events = $this->helper->eventsink->get_events();
+        $this->helper->eventsink->close();
+
+        // Reset the message sink for other tests.
+        $this->helper->messagesink = $this->redirectMessages();
+        $event = reset($events);
+        $this->assertEquals($course->id, $event->other['courseid']);
     }
 
     public function test_forced_subscription() {
@@ -835,6 +874,33 @@ class mod_forum_mail_testcase extends advanced_testcase {
     }
 
     /**
+     * Test inital email and reply email subjects
+     */
+    public function test_subjects() {
+        $this->resetAfterTest(true);
+
+        $course = $this->getDataGenerator()->create_course();
+
+        $options = array('course' => $course->id, 'forcesubscribe' => FORUM_FORCESUBSCRIBE);
+        $forum = $this->getDataGenerator()->create_module('forum', $options);
+
+        list($author) = $this->helper_create_users($course, 1);
+        list($commenter) = $this->helper_create_users($course, 1);
+
+        $strre = get_string('re', 'forum');
+
+        // New posts should not have Re: in the subject.
+        list($discussion, $post) = $this->helper_post_to_forum($forum, $author);
+        $messages = $this->helper_run_cron_check_count($post, 2);
+        $this->assertNotContains($strre, $messages[0]->subject);
+
+        // Replies should have Re: in the subject.
+        $reply = $this->helper_post_to_discussion($forum, $discussion, $commenter);
+        $messages = $this->helper_run_cron_check_count($reply, 2);
+        $this->assertContains($strre, $messages[0]->subject);
+    }
+
+    /**
      * dataProvider for test_forum_post_email_templates().
      */
     public function forum_post_email_templates_provider() {
@@ -867,7 +933,7 @@ class mod_forum_mail_testcase extends advanced_testcase {
                         '~{$a',
                         '~&(amp|lt|gt|quot|\#039);(?!course)',
                         'Attachment example.txt:\n' .
-                            'http://www.example.com/moodle/pluginfile.php/\d*/mod_forum/attachment/\d*/example.txt\n',
+                            'https://www.example.com/moodle/pluginfile.php/\d*/mod_forum/attachment/\d*/example.txt\n',
                         'Hello Moodle', 'Moodle Forum', 'Welcome.*Moodle', 'Love Moodle', '1\d1'
                     ),
                 ),
@@ -916,6 +982,24 @@ class mod_forum_mail_testcase extends advanced_testcase {
             'Hello Moodle&', 'Welcome to Moodle&');
         $textcases['Text mail with ampersands everywhere'] = array('data' => $newcase);
 
+        // Text+image message i.e. @@PLUGINFILE@@ token handling.
+        $newcase = $base;
+        $newcase['forums'][0]['forumposts'][0]['name'] = 'Text and image';
+        $newcase['forums'][0]['forumposts'][0]['message'] = 'Welcome to Moodle, '
+            .'@@PLUGINFILE@@/Screen%20Shot%202016-03-22%20at%205.54.36%20AM%20%281%29.png !';
+        $newcase['expectations'][0]['subject'] = '.*101.*Text and image';
+        $newcase['expectations'][0]['contents'] = array(
+            '~{$a',
+            '~&(amp|lt|gt|quot|\#039);(?!course)',
+            'Attachment example.txt:\n' .
+            'https://www.example.com/moodle/pluginfile.php/\d*/mod_forum/attachment/\d*/example.txt\n',
+            'Text and image', 'Moodle Forum',
+            'Welcome to Moodle, *\n.*'
+                .'https://www.example.com/moodle/pluginfile.php/\d+/mod_forum/post/\d+/'
+                .'Screen%20Shot%202016-03-22%20at%205\.54\.36%20AM%20%281%29\.png *\n.*!',
+            'Love Moodle', '1\d1');
+        $textcases['Text mail with text+image message i.e. @@PLUGINFILE@@ token handling'] = array('data' => $newcase);
+
         // Now the html cases.
         $htmlcases = array();
 
@@ -943,6 +1027,25 @@ class mod_forum_mail_testcase extends advanced_testcase {
             '<div class="subject">\n.*Hello Moodle\'"&gt;&amp;', '>Moodle Forum\'"&gt;&amp;',
             '>Welcome.*Moodle\'"&gt;&amp;', '>Love Moodle&\#039;&quot;&gt;&amp;', '>101\'"&gt;&amp');
         $htmlcases['HTML mail with quotes, gt, lt and ampersand  everywhere'] = array('data' => $newcase);
+
+        // Text+image message i.e. @@PLUGINFILE@@ token handling.
+        $newcase = $htmlbase;
+        $newcase['forums'][0]['forumposts'][0]['name'] = 'HTML text and image';
+        $newcase['forums'][0]['forumposts'][0]['message'] = '<p>Welcome to Moodle, '
+            .'<img src="@@PLUGINFILE@@/Screen%20Shot%202016-03-22%20at%205.54.36%20AM%20%281%29.png"'
+            .' alt="" width="200" height="393" class="img-responsive" />!</p>';
+        $newcase['expectations'][0]['subject'] = '.*101.*HTML text and image';
+        $newcase['expectations'][0]['contents'] = array(
+            '~{\$a',
+            '~&(amp|lt|gt|quot|\#039);(?!course)',
+            '<div class="attachments">( *\n *)?<a href',
+            '<div class="subject">\n.*HTML text and image', '>Moodle Forum',
+            '<p>Welcome to Moodle, '
+                .'<img src="https://www.example.com/moodle/pluginfile.php/\d+/mod_forum/post/\d+/'
+                .'Screen%20Shot%202016-03-22%20at%205\.54\.36%20AM%20%281%29\.png"'
+                .' alt="" width="200" height="393" class="img-responsive" />!</p>',
+            '>Love Moodle', '>1\d1');
+        $htmlcases['HTML mail with text+image message i.e. @@PLUGINFILE@@ token handling'] = array('data' => $newcase);
 
         return $textcases + $htmlcases;
     }

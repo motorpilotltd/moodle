@@ -176,7 +176,7 @@ function lunchandlearn_add_event_key() {
         }
     }
 
-    $glink = new moodle_url(CALENDAR_URL.'set.php', array('var' => 'showglobal', 'return' => base64_encode($returnurl->out(false)), 'sesskey' => sesskey()));
+    $glink = new moodle_url(CALENDAR_URL.'set.php', array('var' => 'showglobal', 'return' => base64_encode($returnurl->out_as_local_url(false)), 'sesskey' => sesskey()));
     $globalicon = new pix_icon('i/show', 'off');
     if (calendar_show_event_type(CALENDAR_EVENT_GLOBAL)) {
         $globalicon = new pix_icon('i/hide', 'on');
@@ -200,12 +200,9 @@ function lunchandlearn_add_event_key() {
     $ek->add(get_string('lunchandlearnevent', 'local_lunchandlearn'), $llink, navigation_node::TYPE_SETTING, null, 'lunchandlearnevent', $lalicon);
 
     $arguments = array(
-            'id'             => 'ek',
-            'instance'       => 'ek',
-            'candock'        => false,
-            'expansionlimit' => 0
+        'instanceid' => 'ek'
     );
-    $PAGE->requires->yui_module(array('core_dock', 'moodle-block_navigation-navigation'), 'M.block_navigation.init_add_tree', array($arguments));
+    $PAGE->requires->js_call_amd('block_navigation/navblock', 'init', $arguments);
 
     return $eventkey;
 }

@@ -23,6 +23,8 @@ $knownregionpost = $PAGE->blocks->is_known_region('side-post');
 
 $regions = bootstrap_grid($hassidepre, $hassidepost);
 $PAGE->set_popup_notification_allowed(false);
+$PAGE->requires->jquery();
+$PAGE->requires->js_call_amd('theme_bootstrap/optin', 'init');
 
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
@@ -40,10 +42,12 @@ echo $OUTPUT->doctype() ?>
 <nav role="navigation" class="navbar navbar-default">
     <div class="container-fluid">
     <div class="navbar-header pull-left">
-        <a class="navbar-brand" href="<?php echo $CFG->wwwroot;?>"><?php echo $SITE->shortname; ?></a>
+        <?php echo $OUTPUT->navbar_brand(); ?>
     </div>
     <div class="navbar-header pull-right">
+        <?php echo $OUTPUT->navbar_plugin_output(); ?>
         <?php echo $OUTPUT->user_menu(); ?>
+
         <?php echo $OUTPUT->navbar_button(); ?>
     </div>
     <div id="moodle-navbar" class="navbar-collapse collapse navbar-right">
@@ -65,7 +69,7 @@ echo $OUTPUT->doctype() ?>
 <div id="page" class="container-fluid">
     <header id="page-header" class="clearfix">
         <div id="page-navbar" class="clearfix">
-            <nav class="breadcrumb-nav" role="navigation" aria-label="breadcrumb"><?php echo $OUTPUT->navbar(); ?></nav>
+            <?php echo $OUTPUT->navbar(); ?>
             <div class="breadcrumb-button"><?php echo $OUTPUT->page_heading_button(); ?></div>
         </div>
 

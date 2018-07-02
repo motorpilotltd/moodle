@@ -213,26 +213,18 @@ class tapsenrol {
 
     public function get_tapsclasses($canview = true) {
         if (!isset($this->_tapsclasses[$this->tapsenrol->tapscourse]) && $canview) {
-            $this->_tapsclasses[$this->tapsenrol->tapscourse] = $this->taps->get_course_classes($this->tapsenrol->tapscourse, false, false);
             $now = time();
-            foreach ($this->_tapsclasses[$this->tapsenrol->tapscourse] as $index => $class) {
-                $classstartdateok =
-                        $class->classstatus == 'Planned'
-                        || $this->taps->is_classtype($class->classtype, 'elearning')
-                        || $class->classstarttime > $now;
-                $enrolmentstartdateok = $class->enrolmentstartdate < $now;
-                $enrolmentenddateok = $class->enrolmentenddate > $now || $class->enrolmentenddate == 0;
-                if (!$classstartdateok || !$enrolmentenddateok || !$enrolmentstartdateok) {
-                    unset($this->_tapsclasses[$this->tapsenrol->tapscourse][$index]);
-                }
-            }
+            $classtypes = "'" . implode("', '", $this->taps->get_classtypes('elearning')) . "'";
+            $extrawhere = "(classstatus = 'Planned' OR classtype IN ({$classtypes}) OR classstarttime > {$now})";
+            $extrawhere .= " AND enrolmentstartdate < {$now} AND (enrolmentenddate > {$now} OR enrolmentenddate = 0)";
+            $this->_tapsclasses[$this->tapsenrol->tapscourse] = $this->taps->get_course_classes($this->tapsenrol->tapscourse, false, false, '*', $extrawhere);
             // Sort in ascending date ordering with planned classes last.
             usort(
                 $this->_tapsclasses[$this->tapsenrol->tapscourse],
                 function($a, $b) {
-                    if ($a->classstatus == 'Planned') {
+                    if ($a->classstatus == 'Planned' && $b->classstatus != 'Planned') {
                         return +1;
-                    } else if ($b->classstatus == 'Planned') {
+                    } else if ($b->classstatus == 'Planned' && $a->classstatus != 'Planned') {
                         return -1;
                     }
                     if ($a->classstarttime == $b->classstarttime) {
@@ -539,6 +531,7 @@ LEFT JOIN
 WHERE
     lte.enrolmentid = :enrolmentid
     AND (lte.archived = 0 OR lte.archived IS NULL)
+    AND lte.active = 1
     AND {$compare} {$in}
     AND tit.id IS NULL
 EOS;
@@ -618,8 +611,7 @@ EOS;
             }
         } else {
             // Enrolment not found/already tracking.
-            error_log("tapsenrol::trigger_workflow()\n\tEnrolment ID {$enrolmentid} not found/wrong status/already tracking.\n"
-                    . "\tUser: {$enrolment->staffid}\n\tSponsor: {$formdata->sponsorfirstname} {$formdata->sponsorlastname} ({$formdata->sponsoremail})");
+            error_log("tapsenrol::trigger_workflow()\n\tEnrolment ID {$enrolmentid} not found/wrong status/already tracking.");
         }
     }
 
@@ -647,6 +639,7 @@ LEFT JOIN
 WHERE
     lte.enrolmentid = :enrolmentid
     AND (lte.archived = 0 OR lte.archived IS NULL)
+    AND lte.active = 1
     AND {$compare} {$in}
     AND tit.id IS NULL
 EOS;
@@ -699,8 +692,7 @@ EOS;
             }
         } else {
             // Enrolment not found/already tracking.
-            error_log("tapsenrol::trigger_workflow_no_approval()\n\tEnrolment ID {$enrolmentid} not found/wrong status/already tracking.\n"
-                    . "\tUser: {$enrolment->staffid}\n\tSponsor: {$formdata->sponsorfirstname} {$formdata->sponsorlastname} ({$formdata->sponsoremail})");
+            error_log("tapsenrol::trigger_workflow_no_approval()\n\tEnrolment ID {$enrolmentid} not found/wrong status/already tracking.");
         }
 
         return $message;
@@ -885,7 +877,7 @@ EOS;
 
     public function move_workflow($enrolment, $user, $class, $targetclass, $resendemail) {
         global $DB, $USER;
-        
+
         $time = time();
 
         // Load tracking record, if exists.
@@ -1079,7 +1071,7 @@ EOS;
 
         // Run an enrolment check to update groups.
         $this->enrolment_check($enrolmentnew->staffid, false);
-        
+
         return true;
     }
 
@@ -1680,6 +1672,74 @@ EOS;
                     break;
             }
         }
+    }
+
+    public function already_attended($user) {
+        global $DB;
+
+        $return = new stdClass();
+        $return->attended = false;
+        $return->completions = [];
+        $return->certifications = [];
+
+        // Does user have an 'attended' active enrolment?
+        list($attendedin, $attendedinparams) = $DB->get_in_or_equal(
+            $this->taps->get_statuses('attended'),
+            SQL_PARAMS_NAMED, 'status'
+        );
+        $attendedcompare = $DB->sql_compare_text('bookingstatus');
+        $attendedparams = array(
+            'courseid' => $this->tapsenrol->tapscourse,
+            'staffid' => $user->idnumber
+        );
+        $attendedsql = <<<EOS
+SELECT
+    COUNT(id)
+FROM
+    {local_taps_enrolment}
+WHERE
+    courseid = :courseid
+    AND staffid = :staffid
+    AND (archived = 0 OR archived IS NULL)
+    AND active = 1
+    AND {$attendedcompare} {$attendedin}
+EOS;
+        $return->attended = $DB->count_records_sql(
+            $attendedsql,
+            array_merge($attendedparams, $attendedinparams)
+        );
+
+        if ($return->attended) {
+            $completedsql = <<<EOS
+SELECT
+    cc.*, c.fullname as certifname
+FROM
+    {certif} c
+JOIN
+    {certif_completions} cc
+    ON cc.certifid = c.id
+WHERE
+    c.id IN (SELECT DISTINCT certifid FROM {certif_courseset_courses} WHERE courseid = :courseid)
+    AND c.deleted = 0
+    AND c.visible = 1
+    AND cc.userid = :userid
+    AND cc.timecompleted > 0
+EOS;
+            $completions = $DB->get_records_sql($completedsql, ['courseid' => $this->course->id, 'userid' => $user->id]);
+            // Now check course is in applicable courseset.
+            foreach ($completions as $completion) {
+                $certification = new \local_custom_certification\certification($completion->certifid, false);
+                $coursesets = empty($certification->recertificationcoursesets) ? $certification->certificationcoursesets : $certification->recertificationcoursesets;
+                foreach ($coursesets as $courseset) {
+                    if (!empty($courseset->courses) && array_key_exists($this->course->id, $courseset->courses)) {
+                        $return->completions[] = $completion;
+                        $return->certifications[$completion->certifid] = $completion->certifname;
+                    }
+                }
+            }
+        }
+
+        return $return;
     }
 }
 

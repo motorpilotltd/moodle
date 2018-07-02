@@ -32,6 +32,8 @@ $string['headerregionsactual:view'] = 'View Regions';
 $string['headerregionsgeo'] = 'Geographic Regions';
 $string['headerregionsgeo:view'] = 'View Geographic Regions';
 $string['headercostcentre'] = 'Cost centre';
+$string['headercomplete'] = '[COMPLETE]';
+$string['headertotal'] = '[TOTAL]';
 
 $string['headerconfig'] = 'Threshold configuration';
 $string['descconfig'] = '';
@@ -43,6 +45,10 @@ $string['descgreenthreshold'] = 'Set lower percentage threshold of green status 
 $string['defaultamberthreshold'] = '70';
 $string['defaultgreenthreshold'] = '90';
 
+$string['url'] = 'URL for Current Report';
+$string['url:copied'] = 'Copied!';
+$string['url:copy'] = 'Copy URL to clipboard';
+$string['url:notcopied'] = 'Press Ctrl/Command+C to copy';
 $string['fullname'] = 'User Fullname';
 $string['actualregion'] = 'Region';
 $string['actualregions'] = 'Regions';
@@ -91,7 +97,13 @@ $string['employmentcategories'] = 'Employment Categories';
 $string['groupnames'] = 'Group Names';
 $string['locationnames'] = 'Location Names';
 $string['grades'] = 'Grades';
+$string['email'] = 'Email';
 
 $string['resetcertification'] = 'Reset Certification';
 
 $string['nodata'] = 'There are no certification assignments for the filter options selected.';
+
+$string['modal:close'] = 'Close';
+
+// Tasks.
+$string['taskexportreports'] = 'Export reports';

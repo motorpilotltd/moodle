@@ -79,23 +79,23 @@
                 if (\wa_learning_path\lib\has_capability('editmatrixgrid')):
 
                     echo html_writer::link(new \moodle_url($this->url, array('a' => 'edit', 'id' => $this->id)),
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
+                        html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
                         array('title' => $this->get_string('edit'), 'class' => 'btn', 'onclick' => "wa_edit_name(this); return false;"));
                     echo html_writer::link(new \moodle_url($this->url, array('a' => 'hide', 'id' => $this->id)),
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/hide'), 'alt' => $this->get_string('hide'), 'class' => 'iconsmall')),
+                        html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/hide'), 'alt' => $this->get_string('hide'), 'class' => 'iconsmall')),
                         array('title' => $this->get_string('hide'), 'class' => 'btn wa_hide2', 'onclick' => "wa_toggle(this); return false;"));
                     echo html_writer::link(new \moodle_url($this->url, array('a' => 'show', 'id' => $this->id)),
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/show'), 'alt' => $this->get_string('show'), 'class' => 'iconsmall')),
+                        html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/show'), 'alt' => $this->get_string('show'), 'class' => 'iconsmall')),
                         array('title' => $this->get_string('show'), 'class' => 'btn wa_show', 'onclick' => "wa_toggle(this); return false;"));
                     echo html_writer::link(new \moodle_url($this->url, array('a' => 'delete', 'id' => $this->id)),
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/delete'), 'alt' => $this->get_string('delete'), 'class' => 'iconsmall')),
+                        html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/delete'), 'alt' => $this->get_string('delete'), 'class' => 'iconsmall')),
                         array('title' => $this->get_string('delete'), 'class' => 'btn', 'onclick' => "wa_delete_col(this); return false;"));
 
                     echo html_writer::link(new \moodle_url($this->url, array('a' => 'left', 'id' => $this->id)),
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/left'), 'alt' => $this->get_string('left'), 'class' => 'iconsmall')),
+                        html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/left'), 'alt' => $this->get_string('left'), 'class' => 'iconsmall')),
                         array('title' => $this->get_string('left'), 'class' => 'btn left', 'onclick' => "wa_left_col(this); return false;"));
                     echo html_writer::link(new \moodle_url($this->url, array('a' => 'right', 'id' => $this->id)),
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/right'), 'alt' => $this->get_string('right'), 'class' => 'iconsmall')),
+                        html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/right'), 'alt' => $this->get_string('right'), 'class' => 'iconsmall')),
                         array('title' => $this->get_string('right'), 'class' => 'btn right', 'onclick' => "wa_right_col(this); return false;"));
 
                 endif;
@@ -113,23 +113,23 @@
             <div>
                 <?php
                 echo html_writer::link(new \moodle_url($this->url, array('a' => 'up', 'id' => $this->id)),
-                    html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/up'), 'alt' => $this->get_string('up'), 'class' => 'iconsmall')),
+                    html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/up'), 'alt' => $this->get_string('up'), 'class' => 'iconsmall')),
                     array('title' => $this->get_string('up'), 'class' => 'btn up', 'onclick' => "wa_up_row(this); return false;"));
                 echo html_writer::link(new \moodle_url($this->url, array('a' => 'down', 'id' => $this->id)),
-                    html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/down'), 'alt' => $this->get_string('down'), 'class' => 'iconsmall')),
+                    html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/down'), 'alt' => $this->get_string('down'), 'class' => 'iconsmall')),
                     array('title' => $this->get_string('down'), 'class' => 'btn down', 'onclick' => "wa_down_row(this); return false;"));
 
                 echo html_writer::link(new \moodle_url($this->url, array('a' => 'edit', 'id' => $this->id)),
-                    html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
+                    html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
                     array('title' => $this->get_string('edit'), 'class' => 'btn edit', 'onclick' => "wa_edit_name(this); return false;"));
                 echo html_writer::link(new \moodle_url($this->url, array('a' => 'hide', 'id' => $this->id)),
-                    html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/hide'), 'alt' => $this->get_string('hide'), 'class' => 'iconsmall')),
+                    html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/hide'), 'alt' => $this->get_string('hide'), 'class' => 'iconsmall')),
                     array('title' => $this->get_string('hide'), 'class' => 'btn wa_hide2', 'onclick' => "wa_toggle(this); return false;"));
                 echo html_writer::link(new \moodle_url($this->url, array('a' => 'show', 'id' => $this->id)),
-                    html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/show'), 'alt' => $this->get_string('show'), 'class' => 'iconsmall')),
+                    html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/show'), 'alt' => $this->get_string('show'), 'class' => 'iconsmall')),
                     array('title' => $this->get_string('show'), 'class' => 'btn wa_show ', 'onclick' => "wa_toggle(this); return false;"));
                 echo html_writer::link(new \moodle_url($this->url, array('a' => 'delete', 'id' => $this->id)),
-                    html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('t/delete'), 'alt' => $this->get_string('delete'), 'class' => 'iconsmall')),
+                    html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/delete'), 'alt' => $this->get_string('delete'), 'class' => 'iconsmall')),
                     array('title' => $this->get_string('delete'), 'class' => 'btn delete', 'onclick' => "wa_delete_row(this); return false;"));
                 ?>
             </div>

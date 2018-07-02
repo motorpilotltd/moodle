@@ -248,7 +248,7 @@ class completion
         global $DB;
 
         $query = "
-            SELECT 
+            SELECT
               cua.duedate,
               cc.timecompleted,
               cc.timeexpires,
@@ -274,7 +274,7 @@ class completion
                 FROM {certif_completions_archive} cca
                 WHERE cca.certifid = :certifid
                 AND cca.userid = :userid
-                ORDER by cca.timearchived DESC 
+                ORDER by cca.timearchived DESC
             ";
                 $params = [];
                 $params['userid'] = $userid;
@@ -313,7 +313,7 @@ class completion
         }
 
         $query = "
-            SELECT 
+            SELECT
                 MAX(c.timecompleted) as timecompleted
             FROM {certif_courseset_courses} ccc
             JOIN {certif_coursesets} cc ON cc.id = ccc.coursesetid
@@ -330,8 +330,46 @@ class completion
         if($timecompleted = $DB->get_record_sql($query, $params, IGNORE_MULTIPLE)){
             return $timecompleted->timecompleted;
         }
-        
+
         return 0;
+    }
+
+    /**
+     * Update users record, calculate new timewindowsopen
+     *
+     * @param $certification Certification ID or object
+     */
+    public static function update_records_completion_status($certification) {
+        global $DB;
+
+        if(!is_object($certification)){
+            $certification = new certification($certification, false);
+        }
+
+        $params = [];
+        $query = "
+            SELECT
+              cc.*
+            FROM {certif_completions} as cc
+            WHERE cc.timewindowsopens > :now
+            AND cc.certifid = :certifid";
+
+
+        $params['now'] = time();
+        $params['certifid'] = $certification->id;
+
+        $records = $DB->get_records_sql($query, $params);
+
+        foreach ($records as $record) {
+            $datetime = new \DateTime();
+            $datetime->setTimestamp($record->timeexpires);
+            $interval = new \DateInterval('P'.$certification->windowperiod.certification::get_time_period_for_interval($certification->windowperiodunit));
+            $datetime->sub($interval);
+            $record->timewindowsopens = $datetime->getTimestamp();
+
+            $DB->update_record('certif_completions', $record);
+        }
+
     }
 
     /**
@@ -436,7 +474,7 @@ class completion
          * Actualize due date
          */
         self::calculate_duedate($completionrecord->certifid, $completionrecord->userid);
-        
+
         /**
          * Trigger certification_completed event if status is changed to completed
          */
@@ -488,6 +526,7 @@ WHERE
     staffid = :staffid
     AND courseid {$insql1}
     AND {$DB->sql_compare_text('bookingstatus')} {$insql2}
+    AND archived = 0
 EOS;
         $params = array_merge($params1, $params2);
         $params['staffid'] = $DB->get_field('user', 'idnumber', ['id' => $userid]);
@@ -583,17 +622,25 @@ EOS;
 
             self::delete_courseset_completion_data($completionrecord->certifid, $completionrecord->userid);
             $coursesets = empty($certification->recertificationcoursesets) ? $certification->certificationcoursesets : $certification->recertificationcoursesets;
+            // Track which courses have been reset.
+            $resetcourses = [];
             foreach($coursesets as $courseset){
                 foreach($courseset->courses as $course){
                     self::reset_course_for_user($course->courseid, $completionrecord->userid);
+                    $resetcourses[] = $course->courseid;
                 }
             }
-            // Update linked enrolment if still needs resetting.
+            // Update linked enrolment if still needs resetting (i.e. if 'faked' certification completion from historical TAPS data.
+            // Only necessary if related (Moodle) course is one of the ones being reset.
             if ($insertrecord->tapsenrolmentid
                     && $enrolment = $DB->get_record('local_taps_enrolment', ['enrolmentid' => $insertrecord->tapsenrolmentid, 'active' => 1])) {
-                $enrolment->active = 0;
-                $enrolment->timemodifed = time();
-                $DB->update_record('local_taps_enrolment', $enrolment);
+                // Check it relates to a reset Moodle course.
+                $mdlcourseid = $DB->get_field('course', 'id', ['idnumber' => $this->cmcourse->courseid]);
+                if (in_array($mdlcourseid, $resetcourses)) {
+                    $enrolment->active = 0;
+                    $enrolment->timemodifed = time();
+                    $DB->update_record('local_taps_enrolment', $enrolment);
+                }
             }
             self::check_completion($completionrecord->certifid, $completionrecord->userid);
 
@@ -611,6 +658,9 @@ EOS;
             ];
             $event = event\certification_window_opened::create($params);
             $event->trigger();
+
+            // Return all linked courses that have been reset.
+            return $resetcourses;
         }
     }
 
@@ -703,7 +753,7 @@ EOS;
         global $DB;
 
         $query = "
-            SELECT 
+            SELECT
                 cc.*
             FROM {certif_completions} cc
             WHERE cc.certifid = :certifid
@@ -734,7 +784,7 @@ EOS;
               cua.duedate as assignmentduedate,
               cca.timeexpires as lasttimeexpires,
               cca.timewindowsopens as lasttimewindowsopens
-            FROM {certif_user_assignments} cua 
+            FROM {certif_user_assignments} cua
             LEFT JOIN {certif_completions} comp ON comp.certifid = cua.certifid AND comp.userid = cua.userid
             LEFT JOIN (
               SELECT
@@ -797,7 +847,7 @@ EOS;
 
         $query = "
             SELECT
-              c.id, 
+              c.id,
               c.courseid,
               c.coursesetid,
               COUNT(criteria.id) as criterianumber,
@@ -830,10 +880,10 @@ EOS;
             $coursesprogress[$courseprogress->courseid] = 0;
             if($courseprogress->method == COMPLETION_AGGREGATION_ANY && $courseprogress->completedcriterianumber > 0){
                 /**
-                 * Set progress to 100% if any acitivity is completed and completion aggreation method is "ANY"
+                 * Set progress to 100% if any activity is completed and completion aggregation method is "ANY"
                  */
                 $coursesprogress[$courseprogress->courseid] = 100;
-            }elseif($courseprogress->method == COMPLETION_AGGREGATION_ALL){
+            } else if ($courseprogress->method == COMPLETION_AGGREGATION_ALL || empty($courseprogress->method)) {
                 /**
                  * Calculate progress: divide completed activities by number of all activities which need to be completed
                  */
@@ -930,7 +980,7 @@ EOS;
 
     /**
      * Get RAG status basing on completion date and duedate
-     * 
+     *
      * @param $timecompleted Completion date
      * @param $duedate Duedate
      * @return string RAG status

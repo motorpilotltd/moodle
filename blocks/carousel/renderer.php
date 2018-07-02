@@ -32,7 +32,7 @@ class block_carousel_renderer extends plugin_renderer_base {
             $manageurl = new moodle_url('/blocks/carousel/manage_instances.php');
             $template->manage = $manageurl->out();
         }
-		$template->pattern = $this->pix_url('pattern', 'block_carousel');
+		$template->pattern = $this->image_url('pattern', 'block_carousel');
 		return $this->render_from_template('block_carousel/carousel', $template);
 	}
 }

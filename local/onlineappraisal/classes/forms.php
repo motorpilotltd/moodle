@@ -88,7 +88,11 @@ class forms {
         
         require_once($CFG->dirroot . '/local/onlineappraisal/forms/'.$this->appraisal->page.'.php');
         $formclass = 'apform_' . $this->appraisal->page;
-        $sform = $this->stored_form();
+        if (method_exists($formclass, 'stored_form')) {
+            $sform = call_user_func([$formclass, 'stored_form'], $this);
+        } else {
+            $sform = $this->stored_form();
+        }
         $this->form_permissions($sform);
         $this->form = new $formclass(null, $sform);
         $this->process_data($sform);

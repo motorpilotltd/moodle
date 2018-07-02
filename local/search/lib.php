@@ -23,7 +23,7 @@ if (REGIONS_INSTALLED) {
     }
     if (!defined('REGIONS_REGION_UKMEA')) {
         $like = $DB->sql_like('name', ':name', false);
-        $region = $DB->get_field_select('local_regions_reg', 'id', $like, array('name' => '%ukmea%'));
+        $region = $DB->get_field_select('local_regions_reg', 'id', $like, array('name' => '%ukimea%'));
         define('REGIONS_REGION_UKMEA', $region === false ? false : (int) $region);
     }
     unset($like, $region);
@@ -116,7 +116,7 @@ function local_search_get_url($search, $page, $perpage, $showall, $allregions)
  * @return object {@link $COURSE} records
  */
 function local_search_get_courses_search($searchterms, &$totalcount, &$region, \local_search\local\filters $filters, $sort = 'fullname ASC', $page = 0, $recordsperpage = 50, $showall = false, $allregions = false) {
-    global $DB, $SESSION, $USER;
+    global $DB, $SESSION, $OUTPUT;
 
     $arupadvertinstalled = $DB->count_records('modules', array('name' => 'arupadvert'));
     $arupadvertselect = '';
@@ -228,118 +228,36 @@ EOJ;
         }
     }
 
-    if ($DB->sql_regex_supported()) {
-        $REGEXP    = $DB->sql_regex(true);
-        $NOTREGEXP = $DB->sql_regex(false);
-    }
-
-    $searchcond = array();
+    $searchcond = '';
+    $rankingjoin = '';
     $params     = array_merge($regionsparams, $filterparams);
-    $i = 0;
 
-    if (!empty($searchterms) && !$showall) {
+    if (!empty($searchterms)) {
+        $query = implode(' ', $searchterms);
+        $rankingjoins = [];
+        $rankingjoins['rank_course'] = "LEFT JOIN FREETEXTTABLE({course}, *, '$query') AS rank_course ON rank_course.[KEY] = c.id";
 
-        // Thanks Oracle for your non-ansi concat and type limits in coalesce. MDL-29912
-        if ($DB->get_dbfamily() == 'oracle') {
-            if ($arupadvertinstalled) {
-                if ($arupadverttapsinstalled && $arupadvertcustominstalled) {
-                    $concat = $DB->sql_concat(
-                        'c.summary', "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
-                        "' '", 'ltc.coursecode', "' '", 'ltc.keywords', "' '", 'ltcc.classname',
-                        "' '", 'ac.keywords'
-                    );
-                } elseif ($arupadverttapsinstalled) {
-                    $concat = $DB->sql_concat(
-                        'c.summary', "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
-                        "' '", 'ltc.coursecode', "' '", 'ltc.keywords', "' '", 'ltcc.classname'
-                    );
-                } elseif ($arupadvertcustominstalled) {
-                    $concat = $DB->sql_concat(
-                        'c.summary', "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
-                        "' '", 'ac.keywords'
-                    );
-                }
-            } else {
-                $concat = $DB->sql_concat(
-                    'c.summary', "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname'
-                );
-            }
-        } else {
-            if ($arupadvertinstalled) {
-                if ($arupadverttapsinstalled && $arupadvertcustominstalled) {
-                    $concat = $DB->sql_concat(
-                        "COALESCE(c.summary, '')",
-                        "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
-                        "' '", "COALESCE(ltc.coursecode, '')",
-                        "' '", "COALESCE(ltc.keywords, '')",
-                        "' '", "COALESCE(ltcc.classname, '')",
-                        "' '", "COALESCE(ac.keywords, '')"
-                    );
-                } elseif ($arupadverttapsinstalled) {
-                    $concat = $DB->sql_concat(
-                        "COALESCE(c.summary, '')",
-                        "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
-                        "' '", "COALESCE(ltc.coursecode, '')",
-                        "' '", "COALESCE(ltc.keywords, '')",
-                        "' '", "COALESCE(ltcc.classname, '')"
-                    );
-                } elseif ($arupadvertcustominstalled) {
-                    $concat = $DB->sql_concat(
-                        "COALESCE(c.summary, '')",
-                        "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname',
-                        "' '", "COALESCE(ac.keywords, '')"
-                    );
-                }
-            } else {
-                $concat = $DB->sql_concat(
-                    "COALESCE(c.summary, '')",
-                    "' '", 'c.fullname', "' '", 'c.idnumber', "' '", 'c.shortname'
-                );
-            }
+        if ($arupadvertcustominstalled) {
+            $rankingjoins['rank_arupadvertdatatype_custom'] = "LEFT JOIN FREETEXTTABLE({arupadvertdatatype_custom}, *, '$query') AS rank_arupadvertdatatype_custom ON rank_arupadvertdatatype_custom.[KEY] = ac.id";
         }
 
-        foreach ($searchterms as $searchterm) {
-            $i++;
-
-            $NOT = false; /// Initially we aren't going to perform NOT LIKE searches, only MSSQL and Oracle
-                       /// will use it to simulate the "-" operator with LIKE clause
-
-        /// Under Oracle and MSSQL, trim the + and - operators and perform
-        /// simpler LIKE (or NOT LIKE) queries
-            if (!$DB->sql_regex_supported()) {
-                if (substr($searchterm, 0, 1) == '-') {
-                    $NOT = true;
-                }
-                $searchterm = trim($searchterm, '+-');
-            }
-
-            // TODO: +- may not work for non latin languages
-
-            if (substr($searchterm,0,1) == '+') {
-                $searchterm = trim($searchterm, '+-');
-                $searchterm = preg_quote($searchterm, '|');
-                $searchcond[] = "$concat $REGEXP :ss$i";
-                $params['ss'.$i] = "(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)";
-
-            } else if (substr($searchterm,0,1) == "-") {
-                $searchterm = trim($searchterm, '+-');
-                $searchterm = preg_quote($searchterm, '|');
-                $searchcond[] = "$concat $NOTREGEXP :ss$i";
-                $params['ss'.$i] = "(^|[^a-zA-Z0-9])$searchterm([^a-zA-Z0-9]|$)";
-
-            } else {
-                $searchcond[] = $DB->sql_like($concat,":ss$i", false, true, $NOT);
-                $params['ss'.$i] = "%$searchterm%";
-            }
+        if ($arupadverttapsinstalled) {
+            $rankingjoins['rank_local_taps_class'] =
+                    "LEFT JOIN FREETEXTTABLE({local_taps_class}, *, '$query') AS rank_local_taps_class ON rank_local_taps_class.[KEY] = ltcc.id";
+            $rankingjoins['rank_local_taps_course'] =
+                    "LEFT JOIN FREETEXTTABLE({local_taps_course}, *, '$query') AS rank_local_taps_course ON rank_local_taps_course.[KEY] = ltc.id";
         }
+        $rankingjoin = implode("\n", array_values($rankingjoins));
 
-        if (empty($searchcond)) {
-            $totalcount = 0;
-            return array();
+        $rankingjoinscond = [];
+        $sortelems = [];
+        foreach ($rankingjoins as $rankingjoinname => $unused) {
+            $rankingjoinscond[] =  "$rankingjoinname.RANK IS NOT NULL";
+            $sortelems[] = "ISNULL($rankingjoinname.RANK, 0)";
         }
+        $searchcond = " AND (" . implode(' OR ', $rankingjoinscond) . " ) ";
+        $sort = implode(' + ', $sortelems) . ' DESC ';
     }
-
-    $searchcond = empty($searchcond) ? '' : ' AND ' . implode(' AND ', $searchcond);
 
     $courses = array();
     $c = 0; // counts how many visible courses we've seen
@@ -363,6 +281,7 @@ FROM {course} c
    $regionsjoin
    $filterjoin
    $ccjoin
+   $rankingjoin
 WHERE
     c.id <> {$siteid}
     $searchcond
@@ -486,7 +405,7 @@ function local_search_print_course($course, $highlightterms = '') {
 
     echo html_writer::start_tag('div', array('class' => 'coursebox clearfix'));
 
-    $imgurl = $OUTPUT->pix_url('no_image', 'local_search');
+    $imgurl = $OUTPUT->image_url('no_image', 'local_search');
     if (!empty($course->aid)) {
         $sql = <<<EOS
 SELECT
@@ -755,7 +674,7 @@ function local_search_get_results_data($courses, $highlightterms = '', $total = 
         // Rewrite file URLs so that they are correct
         $course->summary = file_rewrite_pluginfile_urls($course->summary, 'pluginfile.php', $context->id, 'course', 'summary', NULL);
 
-        $imgurl = (string)$OUTPUT->pix_url('no_image', 'local_search');
+        $imgurl = (string)$OUTPUT->image_url('no_image', 'local_search');
 
         if (!empty($course->aid)) {
             $sql = <<<EOS

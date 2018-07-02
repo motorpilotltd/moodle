@@ -22,12 +22,12 @@ $timeexpires = optional_param('timeexpires', null, PARAM_TEXT);
 
 switch($action){
     case 'getexemptionform':
-        
+
         $formurl = new moodle_url('/local/custom_certification/index.php');
         $user = $DB->get_record('user', ['id' => $userid]);
 
         $certification = $DB->get_record('certif', ['id' => $certifid]);
-        
+
         $exemption = \block_certification_report\certification_report::get_exemption($userid, $certifid);
 
         $exemptionform = new block_certification_report\form\certification_report_exemption_form($formurl, [
@@ -37,12 +37,13 @@ switch($action){
         ]);
 
         echo $renderer->get_modal($exemptionform->render(), fullname($user).' ('.$certification->fullname.')');
-        
+
         break;
     case 'saveexemption':
         if(has_capability('block/certification_report:set_exemption', context_system::instance())){
             \block_certification_report\certification_report::save_exemption($userid, $certifid, $reason, $timeexpires);
         }
+        echo json_encode(['hasexpired' => $timeexpires < time()]);
         break;
     case 'deleteexmption':
         if(has_capability('block/certification_report:set_exemption', context_system::instance())) {

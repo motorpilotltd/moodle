@@ -156,13 +156,6 @@ class mod_dataform_entry_manager {
         // Access base params: this dataform and this view.
         $accessparams = array('dataformid' => $this->dataformid, 'viewid' => $this->viewid);
 
-        // ENTRY TYPE FILTERING.
-        $wheretype = '';
-        // Specific entry type requested.
-        if ($filter->entrytype) {
-            $wheretype .= " AND e.type = ? ";
-            $params[] = $filter->entrytype;
-        }
         // USER FILTERING.
         if ($filter->grouped) {
             // Grouped entries without user info; don't filter by user.
@@ -224,7 +217,7 @@ class mod_dataform_entry_manager {
         }
 
         // Sql for fetching the entries.
-        $whatentry = ' e.id, e.dataid, e.state, e.timecreated, e.timemodified, e.userid, e.groupid, e.type ';
+        $whatentry = ' e.id, e.dataid, e.state, e.timecreated, e.timemodified, e.userid, e.groupid ';
         $tables = " {dataform_entries} e $fromuser ";
         $wheredfid = " e.dataid = ? ";
 
@@ -249,12 +242,12 @@ class mod_dataform_entry_manager {
         $count = ' COUNT(e.id) ';
         $whatsql = " $whatentry $whatuser $contentwhat $joinwhat";
         $fromsql  = " $tables $sorttables $searchtables $contenttables $jointables";
-        $wheresql = " $wheredfid $wheretype $whereuser $wheregroup $sortwhere $searchwhere $contentwhere";
+        $wheresql = " $wheredfid $whereuser $wheregroup $sortwhere $searchwhere $contentwhere";
 
         $sqlselect  = "SELECT $whatsql FROM $fromsql WHERE $wheresql $sortorder";
 
         // Count total entries the user is authorized to view (without additional filtering).
-        $sqlcountmax = "SELECT $count FROM $tables $sorttables WHERE $wheredfid $wheretype $whereuser $wheregroup $sortwhere";
+        $sqlcountmax = "SELECT $count FROM $tables $sorttables WHERE $wheredfid $whereuser $wheregroup $sortwhere";
         // Count entries in this particular view call (with filtering; only of searching).
         $sqlcountfiltered = $searchwhere ? "SELECT $count FROM $fromsql WHERE $wheresql" : null;
 
@@ -288,8 +281,7 @@ class mod_dataform_entry_manager {
             return null;
         }
 
-        // Get a clone.
-        $filter = $options['filter']->clone;
+        $filter = $options['filter'];
 
         if (!$sql = $this->get_sql_query($filter)) {
             return null;
@@ -434,8 +426,7 @@ class mod_dataform_entry_manager {
         global $DB;
 
         if (!empty($options['filter'])) {
-            // Get a clone.
-            $filter = $options['filter']->clone;
+            $filter = $options['filter'];
 
             if (!$sql = $this->get_sql_query($filter)) {
                 return 0;
@@ -976,22 +967,11 @@ class mod_dataform_entry_manager {
         $entryuserid = !empty($entry->userid) ? $entry->userid : $currentuserid;
 
         $entry->dataid = $df->id;
-        $entry->type = !isset($entry->type) ? '' : $entry->type;
         $entry->userid = $df->grouped ? 0 : $entryuserid;
         $entry->groupid = !isset($entry->groupid) ? $df->currentgroup : $entry->groupid;
         $entry->timecreated = !isset($entry->timecreated) ? time() : $entry->timecreated;
         $entry->timemodified = !isset($entry->timemodified) ? time() : $entry->timemodified;
         $entry->state = !empty($entry->state) ? $entry->state : 0;
-
-        // Adjust the entry type if needed.
-        $entrytype = '';
-        if (!$entry->type) {
-            $view = $this->view_manager->get_view_by_id($this->viewid);
-            if ($view->entrytype) {
-                $entry->type = $view->entrytype;
-            }
-        }
-
         $entry->id = $DB->insert_record('dataform_entries', $entry);
 
         return $entry->id;

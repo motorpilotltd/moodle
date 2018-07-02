@@ -22,8 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['alreadyexists:add'] = 'An Arup enrolment activity already exists in this {$a}.<br />Multiple instances are not allowed.';
-$string['alreadyexists:edit'] = 'Multiple Arup enrolment activities already exist in this {$a}.<br />No instance of this activity will function whilst there are multiple instances in the {$a}.';
 $string['arupenrol:addinstance'] = 'Add a new Arup enrol';
 
 $string['completionenrol'] = 'Show as complete when user is enrolled';

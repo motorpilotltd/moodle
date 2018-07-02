@@ -42,7 +42,7 @@ class block_dataformnotification_generator extends testing_block_generator {
      * @param array $options
      * @return stdClass block record
      */
-    public function create_instance($record = null, array $options = null) {
+    public function create_instance($record = null, $options = null) {
         global $DB;
 
         $this->instancecount++;

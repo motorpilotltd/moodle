@@ -50,6 +50,7 @@
 
 <h3>{{#str}}feedbackrequests:completed, local_onlineappraisal{{/str}}</h3>
 
+{{{filterselect}}}
 
 <table class="generaltable">
     <thead>
@@ -80,9 +81,6 @@
                 <td class="text-center">
                 {{#confidential}}
                     <i class="fa fa-check text-success"></i>
-                {{/confidential}}
-                {{^confidential}}
-                    <i class="fa fa-times text-error"></i>
                 {{/confidential}}
                 </td>
                 <td class="text-center w-1">

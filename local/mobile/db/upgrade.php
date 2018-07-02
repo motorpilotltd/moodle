@@ -74,5 +74,45 @@ function xmldb_local_mobile_upgrade($oldversion) {
 
         upgrade_plugin_savepoint(true, 2014060300, 'local', 'mobile');
     }
+
+    if ($oldversion < 2016102600) {
+        // Update configs moved to core.
+        $typeoflogin = get_config('local_mobile', 'typeoflogin');
+        $forcedurlscheme = get_config('local_mobile', 'urlscheme');
+
+        if (!empty($typeoflogin)) {
+            set_config('typeoflogin', $typeoflogin, 'tool_mobile');
+        }
+
+        if (!empty($forcedurlscheme)) {
+            set_config('forcedurlscheme', $forcedurlscheme, 'tool_mobile');
+        }
+
+        upgrade_plugin_savepoint(true, 2016102600, 'local', 'mobile');
+    }
+
+    if ($oldversion < 2017050401) {
+        // Update configs moved to core.
+        $forcelogout = get_config('local_mobile', 'forcelogout');
+        $disabledfeatures = get_config('local_mobile', 'disabledfeatures');
+        $custommenuitems = get_config('local_mobile', 'custommenuitems');
+        $customlangstrings = get_config('local_mobile', 'customlangstrings');
+
+        if (!empty($forcelogout)) {
+            set_config('forcelogout', $forcelogout, 'tool_mobile');
+        }
+        if (!empty($disabledfeatures)) {
+            set_config('disabledfeatures', $disabledfeatures, 'tool_mobile');
+        }
+        if (!empty($custommenuitems)) {
+            set_config('custommenuitems', $custommenuitems, 'tool_mobile');
+        }
+        if (!empty($customlangstrings)) {
+            set_config('customlangstrings', $customlangstrings, 'tool_mobile');
+        }
+
+        upgrade_plugin_savepoint(true, 2017050401, 'local', 'mobile');
+    }
+
     return true;
 }

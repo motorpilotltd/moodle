@@ -389,6 +389,8 @@ function local_regions_save_data_user($usernew) {
 
 function local_regions_map_taps_region($tapsregion) {
     global $DB;
+    // Strip out hyphens.
+    $tapsregion = str_ireplace('-', '', $tapsregion);
     $region = $DB->get_record_select(
             'local_regions_reg',
             'name = :name OR tapsname = :tapsname',
@@ -511,3 +513,24 @@ function local_regions_tidy_user_mappings() {
         ");
 }
 
+function local_regions_get_user_region($user) {
+    global $DB;
+
+    $sql = <<<EOS
+SELECT
+    lru.userid,
+    lru.regionid,
+    lrr.name,
+    lru.geotapsregionid
+FROM
+    {local_regions_use} lru
+JOIN
+    {local_regions_reg} lrr
+    ON lrr.id = lru.regionid
+WHERE
+    lru.userid = :userid
+EOS;
+    $userregion = $DB->get_record_sql($sql, array('userid' => $user->id));
+
+    return $userregion;
+}

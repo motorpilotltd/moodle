@@ -37,4 +37,5 @@ $string['kalvidres:addinstance'] = 'Add a Kaltura Video Resource';
 $string['eventvideo_resource_viewed'] = 'Video resource viewed';
 /* BEGIN CORE MOD */
 $string['arup:view:heading'] = '';
+$string['kalvidres:view'] = 'View kalvidres activity';
 /* END CORE MOD */

@@ -28,7 +28,9 @@ $prefix = "s__block_course_menu_"; //use only as a flag, get the full data from 
 <div id="expandableTreeContainer">
     <div class="expandableTreeTd">
         <a href="javascript:void(0)" rel="expandableTree">
-            <img src="<?php echo $OUTPUT->pix_url($expandableShow) ?>" alt="" border="0" class="show-hide" />
+<!-- BEGIN CORE MOD -->
+            <img src="<?php echo $OUTPUT->image_url($expandableShow) ?>" alt="" border="0" class="show-hide" />
+<!-- END CORE MOD -->
             <?php echo get_string('expandable_tree', $this->blockname) ?>
             <input type="hidden" class="expandableTree" name="expandableTree" id="id_expandableTree" value="<?php echo $this->config->expandableTree ?>" />
             <!-- use only as a flag, get the full data from _POST -->
@@ -39,7 +41,9 @@ $prefix = "s__block_course_menu_"; //use only as a flag, get the full data from 
 <div id="linksEnableContainer">
     <div class="expandableTreeTd">
         <a href="javascript:void(0)" rel="linksEnable">
-            <img src="<?php echo $OUTPUT->pix_url($linksShow) ?>" border="0" class="show-hide" alt="" />
+<!-- BEGIN CORE MOD -->
+            <img src="<?php echo $OUTPUT->image_url($linksShow) ?>" border="0" class="show-hide" alt="" />
+<!-- END CORE MOD -->
             <?php echo get_string('activatecustomlinks', $this->blockname) ?>
             <input type="hidden" name="linksEnable" class="linksEnable" value="<?php echo $this->config->linksEnable ?>" id="id_linksEnable" />
         </a>
@@ -130,7 +134,9 @@ $prefix = "s__block_course_menu_"; //use only as a flag, get the full data from 
                     <td width="24" style="width: 24px">
                         <?php if (!empty($element['canHide'])) : ?>
                         <a href="javascript:void(0)" class="e-hide-element" rel="e-visible">
-                            <img alt="" src="<?php echo $OUTPUT->pix_url($element['visible'] ? 'i/hide' : 'i/show') ?>" class="show-hide" />
+<!-- BEGIN CORE MOD -->
+                            <img alt="" src="<?php echo $OUTPUT->image_url($element['visible'] ? 'i/hide' : 'i/show') ?>" class="show-hide" />
+<!-- END CORE MOD -->
                             <input type="hidden" name="visibles[]" value="<?php echo $element['visible'] ?>" class="e-visible" />
                         </a>
                         <?php else : ?>
@@ -147,12 +153,16 @@ $prefix = "s__block_course_menu_"; //use only as a flag, get the full data from 
                     </td>
                     <td class="element-move-up" width="24" style="width:24px">
                         <a href="javascript:void(0)" <?php if ($index == 0) echo 'style="display: none"' ?>>
-                            <img src="<?php echo $OUTPUT->pix_url('t/up') ?>" alt="" />
+<!-- BEGIN CORE MOD -->
+                            <img src="<?php echo $OUTPUT->image_url('t/up') ?>" alt="" />
+<!-- END CORE MOD -->
                         </a>
                     </td>
                     <td class="element-move-down" width="24" style="width: 24px">
                         <a href="javascript:void(0)" <?php if ($index > count($this->config->elements) - 2) echo 'style="display: none"' ?>>
-                            <img src="<?php echo $OUTPUT->pix_url('t/down') ?>" alt="" />
+<!-- BEGIN CORE MOD -->
+                            <img src="<?php echo $OUTPUT->image_url('t/down') ?>" alt="" />
+<!-- END CORE MOD -->
                         </a>
                     </td>
                 </tr>
@@ -177,12 +187,16 @@ $prefix = "s__block_course_menu_"; //use only as a flag, get the full data from 
             </td>
             <td class="element-move-up" width="24" style="width:24px">
                 <a href="javascript:void(0)">
-                    <img src="<?php echo $OUTPUT->pix_url('t/up') ?>" alt="" />
+<!-- BEGIN CORE MOD -->
+                    <img src="<?php echo $OUTPUT->image_url('t/up') ?>" alt="" />
+<!-- END CORE MOD -->
                 </a>
             </td>
             <td class="element-move-down" width="24" style="width: 24px">
                 <a href="javascript:void(0)">
-                    <img src="<?php echo $OUTPUT->pix_url('t/down') ?>" alt="" />
+<!-- BEGIN CORE MOD -->
+                    <img src="<?php echo $OUTPUT->image_url('t/down') ?>" alt="" />
+<!-- END CORE MOD -->
                 </a>
             </td>
         </tr>

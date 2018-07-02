@@ -63,6 +63,15 @@ class check_enrolments extends \core\task\scheduled_task
             $assignedusers = [];
 
             foreach ($assignments as $assignment) {
+
+                // check if cohort exist in the cohorts table
+                if ($assignment->assignmenttype == certification::ASSIGNMENT_TYPE_AUDIENCE
+                    && !$DB->record_exists('cohort', array('id' => $assignment->assignmenttypeid))) {
+                    // delete cohort entry on the certif_assignments table
+                    certification::delete_assignment($assignment->certifid, $assignment->assignmenttype, $assignment->assignmenttypeid);
+                    continue;
+                }
+
                 //get assigned users
                 $users = certification::get_users_from_assignment($assignment->id);
                 //prepare list of user to check if they are still assigned

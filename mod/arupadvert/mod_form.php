@@ -61,8 +61,19 @@ class mod_arupadvert_mod_form extends moodleform_mod {
 
         $mform =& $this->_form;
 
+        $runchecks = true;
+        // Check edge case of being called from defaults editing form...
+        // In this case we don't need to worry about what does/doesn't exist.
+        $frames = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 0);
+        foreach ($frames as $frame) {
+            if ($frame['class'] === 'core_completion_defaultedit_form') {
+                $runchecks = false;
+                break;
+            }
+        }
+
         // If adding, check to see if one already exists.
-        if (!$this->current->instance) {
+        if ($runchecks && !$this->current->instance) {
             $sql = "SELECT COUNT(*)
                 FROM {course_modules} cm
                 JOIN {modules} m ON m.id = cm.module

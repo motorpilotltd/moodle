@@ -1,0 +1,28 @@
+{
+  "Total": 237,
+  "UserTotal": 134,
+  "ReportData": [
+    {
+      "UserID": 7391072,
+      "CourseID": 180212,
+      "Rank": 0,
+      "Username": "3631",
+      "Email": "Asmir.Alicelebic@arup.com",
+      "FirstName": "Asmir",
+      "LastName": "Alicelebic",
+      "FullName": "Asmir Alicelebic",
+      "CourseName": "Navisworks Essential Training",
+      "Authors": "Eric Wing",
+      "CertificateNumber": "27DAED68BA6A4F59B106A53D95998876",
+      "Culture": "en-US",
+      "GroupName": null,
+      "ReleaseDate": "03\/27\/2014 00:00:00",
+      "CompleteDate": "06\/22\/2016 06:03:24",
+      "CourseDuration": 172.62,
+      "HoursViewed": 0,
+      "CoursePercentage": 0,
+      "CustomFields": [],
+      "Groups": null
+    }
+  ]
+}

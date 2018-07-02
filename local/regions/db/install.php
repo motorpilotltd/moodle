@@ -64,8 +64,8 @@ function xmldb_local_regions_install() {
             'userselectable' => 1
         ),
         array(
-            'name' => 'UKMEA',
-            'tapsname' => 'UK-MEA Region',
+            'name' => 'UKIMEA',
+            'tapsname' => 'UKIMEA Region',
             'userselectable' => 1
         ),
     );

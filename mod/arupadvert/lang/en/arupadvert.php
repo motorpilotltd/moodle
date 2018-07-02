@@ -62,3 +62,4 @@ $string['showheadings'] = 'Show headings';
 $string['subplugintype_arupadvertdatatype'] = 'Data type';
 
 $string['viewnotimplemented'] = 'This activity does not utilise a view page, you will be returned to the {$a} you were viewing.';
+$string['redirect_message'] = '<i class="fa fa-spinner fa-pulse"></i> Redirecting to {$a}...';

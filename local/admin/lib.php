@@ -27,3 +27,38 @@ class local_admin_user extends \core_user {
         return $user;
     }
 }
+
+function local_admin_extend_navigation_course($nav, $course, $context) {
+    global $DB, $PAGE, $USER;
+
+    if (is_role_switched($course->id)) {
+        if ($role = $DB->get_record('role', array('id' => $USER->access['rsw'][$context->path]))) {
+            // Build role-return link instead of logout link.
+            $url = new moodle_url('/course/switchrole.php', array(
+                'id' => $course->id,
+                'sesskey' => sesskey(),
+                'switchrole' => 0,
+                'returnurl' => $PAGE->url->out_as_local_url(false)
+            ));
+            $icon = 'a/logout';
+            $stringid = 'switchrolereturn';
+        }
+    } else {
+        // Build switch role link.
+        $roles = get_switchable_roles($context);
+        if (is_array($roles) && (count($roles) > 0)) {
+            $url = new moodle_url('/course/switchrole.php', array(
+                'id' => $course->id,
+                'switchrole' => -1,
+                'returnurl' => $PAGE->url->out_as_local_url(false)
+            ));
+            $icon = 'i/switchrole';
+            $stringid = 'switchroleto';
+        }
+    }
+
+    if (!empty($url)) {
+        $node = $nav->add(get_string($stringid), $url, navigation_node::TYPE_SETTING, null, 'switchroles', new pix_icon($icon, ''));
+        $node->preceedwithhr = true;
+    }
+}

@@ -208,8 +208,7 @@ class classoverview extends base {
                     'limit' => $this->coursemanager->limit,
                     'sort' => $this->coursemanager->sort,
                     'classsort' => $this->coursemanager->classsort,
-                    'dir' => $this->coursemanager->direction,
-                    'class' => $class->id);
+                    'dir' => $this->coursemanager->direction);
                 $params = array_merge($this->coursemanager->searchparams, $deleteparams);
                 $urldelete = new moodle_url($this->coursemanager->baseurl, $params);
                 $urldelete->set_anchor('class' . $prevclassid);
@@ -231,7 +230,7 @@ class classoverview extends base {
                 }
                 if (!empty($tapsenrolid)) {
                     $enrolparams = array('id' => $tapsenrolid,
-                        'classid' => $class->id);
+                        'classid' => $class->classid);
                     $showclass->urldelete = new moodle_url('/mod/tapsenrol/manage_enrolments.php', $enrolparams);
 
                 } else {
@@ -241,7 +240,10 @@ class classoverview extends base {
                         'cmclass' => $class->id,
                         'page' => 'classoverview',
                         'start' => $this->coursemanager->start,
-                        'class' => $class->id);
+                        'limit' => $this->coursemanager->limit,
+                        'sort' => $this->coursemanager->sort,
+                        'classsort' => $this->coursemanager->classsort,
+                        'dir' => $this->coursemanager->direction);
                     $params = array_merge($this->coursemanager->searchparams, $deleteparams);
                     $showclass->urldelete = new moodle_url($this->coursemanager->baseurl, $params);
                 }

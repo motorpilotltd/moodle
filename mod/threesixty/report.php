@@ -133,7 +133,7 @@ if (isset($user)) {
     $PAGE->requires->js(new moodle_url('/mod/threesixty/js/chosen.jquery.min.js'));
     $PAGE->requires->css(new moodle_url('/mod/threesixty/css/chosen.min.css'));
     $PAGE->requires->css(new moodle_url('/mod/threesixty/css/chosen.threesixty.css'));
-    $PAGE->requires->js_init_code(js_writer::function_call("jQuery('.chosen-select').chosen"), true);
+    $PAGE->requires->js_init_code(js_writer::function_call("jQuery('select.chosen-select').chosen"), true);
 }
 
 /// Header
@@ -251,7 +251,7 @@ if (isset($mform)) {
                 html_writer::empty_tag(
                     'img',
                     array(
-                        'src' => $OUTPUT->pix_url('i/loading'),
+                        'src' => $OUTPUT->image_url('i/loading'),
                         'class' => 'threesixty-spiderweb',
                         'data-src' => $spiderweburl->url,
                         'data-id' => $count,

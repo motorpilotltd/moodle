@@ -76,6 +76,8 @@ $string['eventgroupmemberremoved'] = 'Group member removed';
 $string['eventgroupupdated'] = 'Group updated';
 $string['eventgroupingcreated'] = 'Grouping created';
 $string['eventgroupingdeleted'] = 'Grouping deleted';
+$string['eventgroupinggroupassigned'] = 'Group assigned to grouping';
+$string['eventgroupinggroupunassigned'] = 'Group unassigned from grouping';
 $string['eventgroupingupdated'] = 'Grouping updated';
 $string['existingmembers'] = 'Existing members: {$a}';
 $string['filtergroups'] = 'Filter groups by:';
@@ -105,7 +107,7 @@ $string['groupmembersselected'] = 'Members of selected group';
 $string['groupmode'] = 'Group mode';
 $string['groupmode_help'] = 'This setting has 3 options:
 
-* No groups - There are no sub groups, everyone is part of one big community
+* No groups
 * Separate groups - Each group member can only see their own group, others are invisible
 * Visible groups - Each group member works in their own group, but can also see other groups
 
@@ -137,6 +139,8 @@ $string['importgroups_help'] = 'Groups may be imported via text file. The format
 * Required fieldname is groupname
 * Optional fieldnames are description, enrolmentkey, picture, hidepicture';
 $string['importgroups_link'] = 'group/import';
+$string['includeonlyactiveenrol'] = 'Include only active enrolments';
+$string['includeonlyactiveenrol_help'] = 'If enabled, suspended users will not be included in groups.';
 $string['javascriptrequired'] = 'This page requires JavaScript to be enabled.';
 $string['members'] = 'Members per group';
 $string['membersofselectedgroup'] = 'Members of:';
@@ -168,6 +172,10 @@ $string['overview'] = 'Overview';
 $string['potentialmembers'] = 'Potential members: {$a}';
 $string['potentialmembs'] = 'Potential members';
 $string['printerfriendly'] = 'Printer-friendly display';
+$string['privacy:metadata:groups'] = 'A record of group membership.';
+$string['privacy:metadata:groups:groupid'] = 'The ID of the group.';
+$string['privacy:metadata:groups:timeadded'] = 'The timestamp indicating when the user was added to the group.';
+$string['privacy:metadata:groups:userid'] = 'The ID of the user which is associated to the group.';
 $string['random'] = 'Randomly';
 $string['removegroupfromselectedgrouping'] = 'Remove group from grouping';
 $string['removefromgroup'] = 'Remove user from group {$a}';

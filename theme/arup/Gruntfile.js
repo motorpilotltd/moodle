@@ -54,7 +54,7 @@ module.exports = function(grunt) {
             tasks: ["compile"],
             options: {
                 spawn: false,
-                livereload: true
+                livereload: false 
             }
         },
         replace: {

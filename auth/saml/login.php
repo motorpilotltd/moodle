@@ -43,7 +43,7 @@ if ($cancel) {
 // HTTPS is required in this page when $CFG->loginhttps enabled.
 $PAGE->https_required();
 
-$samlconfig = get_config('auth/saml');
+$samlconfig = get_config('auth_saml');
 
 // If autologin is enabled redirect to the IdP without showing the login form.
 do {

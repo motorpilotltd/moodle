@@ -34,6 +34,7 @@ $string['eventcoursecreated'] = 'Course Created';
 $string['eventcourseupdated'] = 'Course Updated';
 
 // Form strings.
+$string['form:alert:attendedenrolments'] = 'This class has completed enrolments associated with it, therefore not all fields are editable.';
 $string['form:alert:cancelled'] = 'Form Cancelled';
 $string['form:alert:saved'] = 'Form Saved';
 $string['form:alert:error'] = 'Failed to Save';
@@ -54,6 +55,7 @@ $string['formerror'] = 'Form Error';
 $string['duplicateclassname'] = 'This class name is already in use for this course, please use a unique classname';
 $string['duplicatecoursecode'] = 'This course code is already in use, please use a unique course code';
 $string['resendinvites'] = 'As you have updated the class information for an upcoming class you may wish to <a href="{$a}">resend invites</a>.';
+$string['classendtime:past'] = 'Class end time cannot be in the past';
 // Overview tables.
 $string['active'] = 'Active';
 $string['coursetableintro'] = 'Lorum Ipsum dolor sit amet';

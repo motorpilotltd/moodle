@@ -50,6 +50,12 @@ $PAGE->set_context(context_module::instance($cm->id));
 $PAGE->set_course($course);
 $PAGE->set_cm($cm);
 $PAGE->set_title($questionnaire->survey->title);
-echo $OUTPUT->header();
+
+// Add renderer and page objects to the questionnaire object for display use.
+$questionnaire->add_renderer($PAGE->get_renderer('mod_questionnaire'));
+$questionnaire->add_page(new \mod_questionnaire\output\reportpage());
+
+echo $questionnaire->renderer->header();
 $questionnaire->survey_print_render('', 'print', $course->id, $resphash->rid, false);
-echo $OUTPUT->footer();
+echo $questionnaire->renderer->render($questionnaire->page);
+echo $questionnaire->renderer->footer();

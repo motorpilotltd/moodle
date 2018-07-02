@@ -333,9 +333,9 @@ function arupapplication_listsubmissions($cm, $context) {
 function arupapplication_yesno($yes) {
     global $OUTPUT;
     if ($yes) {
-        return html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/valid')));
+        return html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('i/valid')));
     } else {
-        return html_writer::empty_tag('img', array('src' => $OUTPUT->pix_url('i/invalid')));
+        return html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('i/invalid')));
     }
 }
 

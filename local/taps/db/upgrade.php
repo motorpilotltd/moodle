@@ -196,6 +196,34 @@ function xmldb_local_taps_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111611, 'local', 'taps');
     }
 
+    if ($oldversion < 2015111615) {
+
+        // Define field archived to be added to local_taps_enrolment.
+        $table = new xmldb_table('local_taps_enrolment');
+        $field = new xmldb_field('providerid', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'classcontext');
+
+        // Conditionally launch add field archived.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Taps savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111615, 'local', 'taps');
+    }
+
+    if ($oldversion < 2015111616) {
+        // Define field archived to be added to local_taps_enrolment.
+        $table = new xmldb_table('local_taps_enrolment');
+        $field = new xmldb_field('locked', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0, 'archived');
+
+        // Conditionally launch add field archived.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Taps savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111616, 'local', 'taps');
+    }
 
     return true;
 }

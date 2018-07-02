@@ -38,23 +38,7 @@ $THEME->supportscssoptimisation = false;
 
 $THEME->editor_sheets = array('editor');
 
-$THEME->plugins_exclude_sheets = array(
-    'block' => array(
-        'search_forums'
-    ),
-    'tool' => array(
-        'customlang'
-    ),
-    'mod' => array(
-        'feedback'
-    ),
-);
-
-$THEME->lessvariablescallback = 'theme_elegance_less_variables';
-$THEME->extralesscallback = 'theme_elegance_extra_less';
-
 $THEME->rendererfactory = 'theme_overridden_renderer_factory';
-$THEME->csspostprocess = 'theme_bootstrap_process_css';
 
 $THEME->layouts = array(
     // Most backwards compatible layout without the blocks - this is the layout used by default.
@@ -172,7 +156,7 @@ $THEME->javascripts = array(
 );
 
 $THEME->javascripts_footer = array(
-    'moodlebootstrap', 'dock'
+    'dock'
 );
 
 $THEME->hidefromselector = false;

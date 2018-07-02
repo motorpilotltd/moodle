@@ -29,7 +29,7 @@ Feature: Teachers can override the grade for any question
       | question | page |
       | TF1      | 1    |
     And I log in as "student1"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I follow "Quiz 1"
     And I press "Attempt quiz now"
     And I follow "Finish attempt ..."
@@ -37,7 +37,7 @@ Feature: Teachers can override the grade for any question
     And I click on "Submit all and finish" "button" in the "Confirmation" "dialogue"
     And I log out
     And I log in as "teacher1"
-    And I follow "Course 1"
+    And I am on "Course 1" course homepage
     And I follow "Quiz 1"
     And I follow "Attempts: 1"
     And I follow "Review attempt"
@@ -53,8 +53,7 @@ Feature: Teachers can override the grade for any question
     And I press "Save"
     And I should see "That is not a valid number."
     And I set the field "Mark" to "10.0"
-    And I press "Save"
-    And I switch to the main window
+    And I press "Save" and switch to main window
     And I should see "Complete" in the "Manually graded 10 with comment: " "table_row"
     # This time is same as time the window is open. So wait for it to close before proceeding.
     And I wait "2" seconds

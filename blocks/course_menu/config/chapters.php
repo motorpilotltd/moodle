@@ -43,7 +43,9 @@ $subChapShow = $this->config->subChapEnable ? 'i/hide' : 'i/show';
         <div class="fitem">
             <div class="fitemtitle" id="chapEnableContainer">
                 <a href="javascript:void(0)" id="chap-enable">
-                    <img src="<?php echo $OUTPUT->pix_url($chapShow) ?>" border="0" class="show-hide" alt="" />
+<!-- BEGIN CORE MOD -->
+                    <img src="<?php echo $OUTPUT->image_url($chapShow) ?>" border="0" class="show-hide" alt="" />
+<!-- END CORE MOD -->
                     <?php echo get_string('chaptering', $this->blockname) ?>
                 </a>
             </div>
@@ -59,7 +61,9 @@ $subChapShow = $this->config->subChapEnable ? 'i/hide' : 'i/show';
         <div class="fitem cm-chapter-enable" <?php if (!$this->config->chapEnable) echo 'style="display: none"' ?> id="subChapEnableContainer">
             <div class="fitemtitle">
                 <a href="javascript:void(0)" id="subchap-enable">
-                    <img src="<?php echo $OUTPUT->pix_url($subChapShow) ?>" border="0" class="show-hide" alt="" />
+<!-- BEGIN CORE MOD -->
+                    <img src="<?php echo $OUTPUT->image_url($subChapShow) ?>" border="0" class="show-hide" alt="" />
+<!-- END CORE MOD -->
                     <?php echo get_string('subchaptering', $this->blockname) ?>
                 </a>
             </div>

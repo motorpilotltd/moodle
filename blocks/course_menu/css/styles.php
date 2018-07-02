@@ -4,7 +4,7 @@
  *
  * This file is part of the Course Menu block for Moodle
  *
- * The Course Menu block for Moodle software package is Copyright © 2008 onwards NetSapiensis AB and is provided under
+ * The Course Menu block for Moodle software package is Copyright ï¿½ 2008 onwards NetSapiensis AB and is provided under
  * the terms of the GNU GENERAL PUBLIC LICENSE Version 3 (GPL). This program is free software: you can redistribute it
  * and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version.
@@ -34,13 +34,17 @@ a.showHide {
     padding-left: 20px;
 }
 a.showHide.minus {
-    background: url("<?php echo $OUTPUT->pix_url('t/expanded') ?>") right center no-repeat;
+/* BEGIN CORE MOD */
+    background: url("<?php echo $OUTPUT->image_url('t/expanded') ?>") right center no-repeat;
+/* END CORE MOD */
     padding-left: 0;
     padding-right: 20px;
 }
 
 a.showHide.plus {
-    background: url("<?php echo $OUTPUT->pix_url('t/collapsed') ?>") left center no-repeat;
+/* BEGIN CORE MOD */
+    background: url("<?php echo $OUTPUT->image_url('t/collapsed') ?>") left center no-repeat;
+/* END CORE MOD */
 }
 
 .showHideCont {

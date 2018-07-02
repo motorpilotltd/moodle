@@ -96,7 +96,7 @@ try {
     $validsamlsession = $as->isAuthenticated();
     $samlattributes = $as->getAttributes();
 } catch (Exception $e) {
-    session_write_close();
+    session_destroy();
     require_once('../../config.php');
     require_once('error.php');
 
@@ -104,7 +104,7 @@ try {
     $PAGE->set_url('/auth/saml/index.php');
     $PAGE->set_context(context_system::instance());
 
-    $pluginconfig = get_config('auth/saml');
+    $pluginconfig = get_config('auth_saml');
     $urltogo = $CFG->wwwroot . '/';
 
     $err['login'] = $e->getMessage();
@@ -113,7 +113,7 @@ try {
 }
 
 // Now we close simpleSAMLphp session.
-session_write_close();
+session_destroy();
 
 // We load all moodle config and libs.
 require_once('../../config.php');
@@ -137,7 +137,7 @@ if ($setwantsurl) {
 }
 
 // Get the plugin config for saml.
-$pluginconfig = get_config('auth/saml');
+$pluginconfig = get_config('auth_saml');
 
 if (!$validsamlsession) {
     // Not valid session. Ship user off to Identity Provider.

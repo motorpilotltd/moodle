@@ -132,7 +132,7 @@ function cr_add_jsordering($cssid) {
 
         <style type="text/css">
         <?php echo $cssid; ?> th.header{
-            background-image:url(<?php echo $OUTPUT->pix_url('normal', 'block_configurable_reports'); ?>);
+            background-image:url(<?php echo $OUTPUT->image_url('normal', 'block_configurable_reports'); ?>);
             background-position:right center;
             background-repeat:no-repeat;
             cursor:pointer;
@@ -140,11 +140,11 @@ function cr_add_jsordering($cssid) {
         }
 
         <?php echo $cssid; ?> th.headerSortUp{
-         background-image:url(<?php echo $OUTPUT->pix_url('asc', 'block_configurable_reports');?>);
+         background-image:url(<?php echo $OUTPUT->image_url('asc', 'block_configurable_reports');?>);
         }
 
         <?php echo $cssid; ?> th.headerSortDown{
-         background-image:url(<?php echo $OUTPUT->pix_url('desc', 'block_configurable_reports');?>);
+         background-image:url(<?php echo $OUTPUT->image_url('desc', 'block_configurable_reports');?>);
         }
         </style>
     <?php

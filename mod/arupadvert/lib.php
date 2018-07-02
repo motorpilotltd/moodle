@@ -127,6 +127,11 @@ function arupadvert_update_instance($data, $mform) {
                 $datatype->edit_instance($data, $mform);
             } else {
                 // Tidy up any now unused.
+                // Update course's idnumber field
+                if (($course = $DB->get_record('course', array('id' => $data->course))) && $datatype->type == 'taps') {
+                    $course->idnumber = '';
+                    $DB->update_record('course', $course);
+                }
                 $datatype->delete_instance($data->id);
             }
         }
@@ -154,6 +159,12 @@ function arupadvert_delete_instance($id) {
 
     if (!$arupadvert = $DB->get_record('arupadvert', array('id' => $id))) {
         return false;
+    }
+
+    // Update course's idnumber field
+    if ($course = $DB->get_record('course', array('id' => $arupadvert->course))) {
+        $course->idnumber = '';
+        $DB->update_record('course', $course);
     }
 
     $DB->delete_records('arupadvert', array('id' => $arupadvert->id));
@@ -204,6 +215,7 @@ function arupadvert_cm_info_view(cm_info $cm) {
             $class->name = $arupadvert->name;
         }
         $class->get_advert_block();
+        $class->canviewshare = has_capability('mod/arupadvert:viewsharelink', $cm->context);
         $output = $renderer->cm_info_view($arupadvert, $class);
     } else {
         $output = html_writer::tag('p', get_string('nooutput', 'arupadvert'));
@@ -214,7 +226,7 @@ function arupadvert_cm_info_view(cm_info $cm) {
 
 /**
  * List of features supported by arupadvert.
- * 
+ *
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed True if module supports feature, false if not, null if doesn't know
  */
@@ -259,7 +271,7 @@ function arupadvert_supports($feature) {
 
 /**
  * This function is used by the reset_course_userdata function in moodlelib.
- * 
+ *
  * @param stdClass $data the data submitted from the reset course.
  * @return array status array
  */
@@ -457,7 +469,9 @@ function arupadvert_pluginfile($course, $cm, $context, $filearea, $args, $forced
         return false;
     }
 
-    require_course_login($course, true, $cm);
+    if (!optional_param('og', 0, PARAM_BOOL)) {
+        require_course_login($course, true, $cm);
+    }
 
     if ($filearea !== 'blockimage') {
         return false;

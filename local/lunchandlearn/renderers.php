@@ -140,18 +140,18 @@ class theme_arup_core_calendar_renderer extends core_calendar_renderer {
         $content =  html_writer::start_div('eventfullactions');
         if (isset($editlink)) {
             $content .= html_writer::start_tag('a', array('href' => $editlink));
-            $content .= html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/edit'), 'alt' => get_string('tt_editevent', 'calendar'), 'title' => get_string('tt_editevent', 'calendar')));
+            $content .= html_writer::empty_tag('img', array('src' => $this->output->image_url('t/edit'), 'alt' => get_string('tt_editevent', 'calendar'), 'title' => get_string('tt_editevent', 'calendar')));
             $content .= html_writer::end_tag('a');
         }
         if (isset($deletelink)) {
             $content .= html_writer::start_tag('a', array('href' => $deletelink));
-            $content .= html_writer::empty_tag('img', array('src' => $this->output->pix_url('t/delete'), 'alt' => get_string('tt_deleteevent', 'calendar'), 'title' => get_string('tt_deleteevent', 'calendar')));
+            $content .= html_writer::empty_tag('img', array('src' => $this->output->image_url('t/delete'), 'alt' => get_string('tt_deleteevent', 'calendar'), 'title' => get_string('tt_deleteevent', 'calendar')));
             $content .= html_writer::end_tag('a');
         }
         if (isset($attendeeslink)) {
             $content .= html_writer::tag('a',
                         html_writer::empty_tag('img', array(
-                            'src'  => $this->output->pix_url('t/groups'),
+                            'src'  => $this->output->image_url('t/groups'),
                             'alt'  => get_string('attendees', 'local_lunchandlearn'),
                             'title' => get_string('attendees', 'local_lunchandlearn')
                         )),
@@ -162,7 +162,7 @@ class theme_arup_core_calendar_renderer extends core_calendar_renderer {
         }
         if ($showinvite) {
             $content .= html_writer::start_tag('a', array('href' => $invitelink));
-            $content .= html_writer::empty_tag('img', array('width' => '12', 'src' => $this->output->pix_url('t/email'), 'alt' => get_string('invite', 'local_lunchandlearn'), 'title' => get_string('invite', 'local_lunchandlearn')));
+            $content .= html_writer::empty_tag('img', array('width' => '12', 'src' => $this->output->image_url('t/email'), 'alt' => get_string('invite', 'local_lunchandlearn'), 'title' => get_string('invite', 'local_lunchandlearn')));
             $content .= html_writer::end_tag('a');
         }
         $content .= html_writer::end_div();
@@ -446,74 +446,97 @@ class theme_arup_core_calendar_renderer extends core_calendar_renderer {
         $content .= calendar_get_mini($calendar->courses, $calendar->groups, $calendar->users, false, false, 'display', $calendar->courseid, $nextmonthtime);
         $content .= html_writer::end_tag('div');
         $content .= html_writer::empty_tag('hr');
-        $content .= html_writer::div($this->navigation_node(lunchandlearn_add_event_key(), array('class' => 'block_tree list')), 'block_navigation  block');
+        $content .= html_writer::div($this->navigation_node(lunchandlearn_add_event_key(), array('class' => 'block_tree list')), 'block_navigation block block_lal_ek');
 
         return $content;
     }
 
 
-    protected function navigation_node(navigation_node $node, $attrs=array()) {
+    protected function navigation_node(navigation_node $node, $attrs=array(), $depth = 0) {
         $items = $node->children;
 
         // exit if empty, we don't want an empty ul element
-        if ($items->count() == 0) {
+        if ($items->count()==0) {
             return '';
         }
 
         // array of nested li elements
         $lis = array();
+        $number = 0;
         foreach ($items as $item) {
+            $number++;
             if (!$item->display) {
                 continue;
             }
 
-            $isbranch = ($item->children->count()>0  || $item->nodetype == navigation_node::NODETYPE_BRANCH);
-            $hasicon = (!$isbranch && $item->icon instanceof renderable);
+            $isbranch = ($item->children->count()>0  || $item->nodetype==navigation_node::NODETYPE_BRANCH);
 
             if ($isbranch) {
                 $item->hideicon = true;
             }
-            $content = $this->output->render($item);
 
-            // this applies to the li item which contains all child lists too
-            $liclasses = array($item->get_css_type());
-            $liexpandable = array();
-            if (!$item->forceopen || (!$item->forceopen && $item->collapse) || ($item->children->count() == 0  && $item->nodetype == navigation_node::NODETYPE_BRANCH)) {
-                $liclasses[] = 'collapsed';
-            }
+            $content = $this->output->render($item);
+            $id = $item->id ? $item->id : html_writer::random_id();
+            $ulattr = ['id' => $id . '_group', 'role' => 'group'];
+            $liattr = ['class' => [$item->get_css_type(), 'depth_'.$depth], 'tabindex' => '-1'];
+            $pattr = ['class' => ['tree_item'], 'role' => 'treeitem'];
+            $pattr += !empty($item->id) ? ['id' => $item->id] : [];
+            $hasicon = (!$isbranch && $item->icon instanceof renderable);
+
             if ($isbranch) {
-                $liclasses[] = 'contains_branch';
-                $liexpandable = array('aria-expanded' => in_array('collapsed', $liclasses) ? "false" : "true");
+                $liattr['class'][] = 'contains_branch';
+                if (!$item->forceopen || (!$item->forceopen && $item->collapse) || ($item->children->count() == 0
+                        && $item->nodetype == navigation_node::NODETYPE_BRANCH)) {
+                    $pattr += ['aria-expanded' => 'false'];
+                } else {
+                    $pattr += ['aria-expanded' => 'true'];
+                }
+                if ($item->requiresajaxloading) {
+                    $pattr['data-requires-ajax'] = 'true';
+                    $pattr['data-loaded'] = 'false';
+                } else {
+                    $pattr += ['aria-owns' => $id . '_group'];
+                }
             } else if ($hasicon) {
-                $liclasses[] = 'item_with_icon';
+                $liattr['class'][] = 'item_with_icon';
+                $pattr['class'][] = 'hasicon';
             }
             if ($item->isactive === true) {
-                $liclasses[] = 'current_branch';
+                $liattr['class'][] = 'current_branch';
             }
-            $liattr = array('class' => join(' ',$liclasses)) + $liexpandable;
+            if (!empty($item->classes) && count($item->classes) > 0) {
+                $pattr['class'] = array_merge($pattr['class'], $item->classes);
+            }
+            $nodetextid = 'label_' . $depth . '_' . $number;
+
             // class attribute on the div item which only contains the item content
-            $divclasses = array('tree_item');
+            $pattr['class'][] = 'tree_item';
             if ($isbranch) {
-                $divclasses[] = 'branch';
+                $pattr['class'][] = 'branch';
             } else {
-                $divclasses[] = 'leaf';
+                $pattr['class'][] = 'leaf';
             }
-            if (!empty($item->classes) && count($item->classes)>0) {
-                $divclasses[] = join(' ', $item->classes);
+
+            $liattr['class'] = join(' ', $liattr['class']);
+            $pattr['class'] = join(' ', $pattr['class']);
+
+            if (isset($pattr['aria-expanded']) && $pattr['aria-expanded'] === 'false') {
+                $ulattr += ['aria-hidden' => 'true'];
             }
-            $divattr = array('class' => join(' ', $divclasses));
-            if (!empty($item->id)) {
-                $divattr['id'] = $item->id;
-            }
-            $content = html_writer::tag('p', $content, $divattr) . $this->navigation_node($item);
+
+            $content = html_writer::tag('p', $content, $pattr) . $this->navigation_node($item, $ulattr, $depth + 1);
             if (!empty($item->preceedwithhr) && $item->preceedwithhr===true) {
                 $content = html_writer::empty_tag('hr') . $content;
             }
+            $liattr['aria-labelledby'] = $nodetextid;
             $content = html_writer::tag('li', $content, $liattr);
             $lis[] = $content;
         }
 
         if (count($lis)) {
+            if (empty($attrs['role'])) {
+                $attrs['role'] = 'group';
+            }
             return html_writer::tag('ul', implode("\n", $lis), $attrs);
         } else {
             return '';
@@ -581,8 +604,8 @@ class theme_arup_core_calendar_renderer extends core_calendar_renderer {
             foreach($events as $eventid => $event) {
                 $event = new calendar_event($event);
                 if (!empty($event->modulename)) {
-                    $cm = get_coursemodule_from_instance($event->modulename, $event->instance);
-                    if (!\core_availability\info_module::is_user_visible($cm, 0, false)) {
+                    $instances = get_fast_modinfo($event->courseid)->get_instances_of($event->modulename);
+                    if (empty($instances[$event->instance]->uservisible)) {
                         unset($events[$eventid]);
                     }
                 }
@@ -629,7 +652,8 @@ class theme_arup_core_calendar_renderer extends core_calendar_renderer {
             $weekend = intval($CFG->calendar_weekend);
         }
 
-        $daytime = strtotime('-1 day', $display->tstart);
+        // Need to add back in offset to avoid issues with rendering links.
+        $daytime = strtotime('-1 day', ($display->tstart += HOURSECS*13));
         for ($day = 1; $day <= $display->maxdays; ++$day, ++$dayweek) {
             $daytime = strtotime('+1 day', $daytime);
             if($dayweek > $display->maxwday) {
@@ -642,7 +666,7 @@ class theme_arup_core_calendar_renderer extends core_calendar_renderer {
 
             // Reset vars
             $cell = new html_table_cell();
-            $dayhref = calendar_get_link_href(new moodle_url(CALENDAR_URL.'view.php', array('view' => 'day', 'course' => $calendar->courseid)), 0, 0, 0, $daytime);
+            $dayhref = calendar_get_link_href(new moodle_url(CALENDAR_URL . 'view.php', array('view' => 'day', 'course' => $calendar->courseid)), 0, 0, 0, $daytime);
 
             $cellclasses = array();
 

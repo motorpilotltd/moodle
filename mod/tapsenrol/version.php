@@ -34,4 +34,5 @@ $plugin->dependencies = array(
     'local_taps' => 2015111601,
     'arupadvertdatatype_taps' => 2015111601,
     'local_regions' => 2015111601,
+    'local_custom_certification' => 2017032908,
 );

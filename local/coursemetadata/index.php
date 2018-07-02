@@ -206,7 +206,7 @@ function coursemetadata_category_icons($category) {
              . '" href="index.php?id='
              . $category->id
              . '&amp;action=editcategory"><img src="'
-             . $OUTPUT->pix_url('t/edit')
+             . $OUTPUT->image_url('t/edit')
              . '" alt="'
              . $stredit
              . '" class="iconsmall" /></a> ';
@@ -221,13 +221,13 @@ function coursemetadata_category_icons($category) {
                   . '&amp;action=deletecategory&amp;sesskey='
                   . sesskey()
                   . '"><img src="'
-                  . $OUTPUT->pix_url('t/delete')
+                  . $OUTPUT->image_url('t/delete')
                   . '" alt="'
                   . $strdelete
                   . '" class="iconsmall" /></a> ';
     } else {
         $editstr .= '<img src="'
-                  . $OUTPUT->pix_url('spacer')
+                  . $OUTPUT->image_url('spacer')
                   . '" alt="" class="iconsmall" /> ';
     }
 
@@ -240,12 +240,12 @@ function coursemetadata_category_icons($category) {
                   . '&amp;action=movecategory&amp;dir=up&amp;sesskey='
                   . sesskey()
                   . '"><img src="'
-                  . $OUTPUT->pix_url('t/up')
+                  . $OUTPUT->image_url('t/up')
                   . '" alt="'
                   . $strmoveup
                   . '" class="iconsmall" /></a> ';
     } else {
-        $editstr .= '<img src="'.$OUTPUT->pix_url('spacer') . '" alt="" class="iconsmall" /> ';
+        $editstr .= '<img src="'.$OUTPUT->image_url('spacer') . '" alt="" class="iconsmall" /> ';
     }
 
     // Move down.
@@ -257,13 +257,13 @@ function coursemetadata_category_icons($category) {
                   . '&amp;action=movecategory&amp;dir=down&amp;sesskey='
                   . sesskey()
                   . '"><img src="'
-                  . $OUTPUT->pix_url('t/down')
+                  . $OUTPUT->image_url('t/down')
                   . '" alt="'
                   . $strmovedown
                   . '" class="iconsmall" /></a> ';
     } else {
         $editstr .= '<img src="'
-                  . $OUTPUT->pix_url('spacer')
+                  . $OUTPUT->image_url('spacer')
                   . '" alt="" class="iconsmall" /> ';
     }
 
@@ -292,7 +292,7 @@ function coursemetadata_field_icons($field) {
              . '" href="index.php?id='
              . $field->id
              . '&amp;action=editfield"><img src="'
-             . $OUTPUT->pix_url('t/edit')
+             . $OUTPUT->image_url('t/edit')
              . '" alt="'
              . $stredit
              . '" class="iconsmall" /></a> ';
@@ -305,7 +305,7 @@ function coursemetadata_field_icons($field) {
               . '&amp;action=deletefield&amp;sesskey='
               . sesskey()
               . '"><img src="'
-              . $OUTPUT->pix_url('t/delete')
+              . $OUTPUT->image_url('t/delete')
               . '" alt="'
               . $strdelete
               . '" class="iconsmall" /></a> ';
@@ -319,13 +319,13 @@ function coursemetadata_field_icons($field) {
                   . '&amp;action=movefield&amp;dir=up&amp;sesskey='
                   . sesskey()
                   . '"><img src="'
-                  . $OUTPUT->pix_url('t/up')
+                  . $OUTPUT->image_url('t/up')
                   . '" alt="'
                   . $strmoveup
                   . '" class="iconsmall" /></a> ';
     } else {
         $editstr .= '<img src="'
-                  . $OUTPUT->pix_url('spacer')
+                  . $OUTPUT->image_url('spacer')
                   . '" alt="" class="iconsmall" /> ';
     }
 
@@ -338,13 +338,13 @@ function coursemetadata_field_icons($field) {
                   . '&amp;action=movefield&amp;dir=down&amp;sesskey='
                   . sesskey()
                   . '"><img src="'
-                  . $OUTPUT->pix_url('t/down')
+                  . $OUTPUT->image_url('t/down')
                   . '" alt="'
                   . $strmovedown
                   . '" class="iconsmall" /></a> ';
     } else {
         $editstr .= '<img src="'
-                  . $OUTPUT->pix_url('spacer')
+                  . $OUTPUT->image_url('spacer')
                   . '" alt="" class="iconsmall" /> ';
     }
 

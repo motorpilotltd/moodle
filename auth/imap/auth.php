@@ -37,13 +37,16 @@ class auth_plugin_imap extends auth_plugin_base {
      */
     public function __construct() {
         $this->authtype = 'imap';
-        $this->config = get_config('auth/imap');
+        $this->config = get_config('auth_imap');
     }
 
     /**
-     * Old syntax of class constructor for backward compatibility.
+     * Old syntax of class constructor. Deprecated in PHP7.
+     *
+     * @deprecated since Moodle 3.1
      */
     public function auth_plugin_imap() {
+        debugging('Use of class name as constructor is deprecated', DEBUG_DEVELOPER);
         self::__construct();
     }
 
@@ -136,47 +139,6 @@ class auth_plugin_imap extends auth_plugin_base {
         } else {
             return null;
         }
-    }
-
-    /**
-     * Prints a form for configuring this authentication plugin.
-     *
-     * This function is called from admin/auth.php, and outputs a full page with
-     * a form for configuring this plugin.
-     *
-     * @param array $page An object containing all the data for this page.
-     */
-    function config_form($config, $err, $user_fields) {
-        global $OUTPUT;
-
-        include "config.html";
-    }
-
-    /**
-     * Processes and stores configuration data for this authentication plugin.
-     */
-    function process_config($config) {
-        // set to defaults if undefined
-        if (!isset ($config->host)) {
-            $config->host = '127.0.0.1';
-        }
-        if (!isset ($config->type)) {
-            $config->type = 'imap';
-        }
-        if (!isset ($config->port)) {
-            $config->port = '143';
-        }
-        if (!isset($config->changepasswordurl)) {
-            $config->changepasswordurl = '';
-        }
-
-        // save settings
-        set_config('host', $config->host, 'auth/imap');
-        set_config('type', $config->type, 'auth/imap');
-        set_config('port', $config->port, 'auth/imap');
-        set_config('changepasswordurl', $config->changepasswordurl, 'auth/imap');
-
-        return true;
     }
 
 }

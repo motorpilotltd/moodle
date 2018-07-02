@@ -110,6 +110,7 @@ class coursetable extends base {
         if (is_null($timezone)) {
             $timezone = new \DateTimeZone('UTC');
         }
+        $utctimezone = new \DateTimeZone('UTC');
         
         $row = new stdClass();
         $row->name = get_string($langprefix.$key, 'local_coursemanager');
@@ -144,9 +145,11 @@ class coursetable extends base {
             if ($value == 0) {
                 $row->value = get_string('notset', 'local_coursemanager');
             } else {
-                $date = new \DateTime(null, $timezone);
-                $date->setTimestamp($value);
-                $row->value = str_ireplace([' ', 'UTC'], ['&nbsp;', 'GMT'], $date->format('d M Y H:i T'));
+                // Need to adjust timestamps back as already adjusted for form element display.
+                $time = new \DateTime(null, $utctimezone);
+                $time->setTimestamp($value);
+                $newtime = new \DateTime($time->format('Y-m-d H:i'), $timezone);
+                $row->value = str_ireplace([' ', 'UTC'], ['&nbsp;', 'GMT'], $newtime->format('d M Y H:i T'));
             }
         } else if ($type == 'html') {
             $row->value = file_rewrite_pluginfile_urls($value,

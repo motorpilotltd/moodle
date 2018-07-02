@@ -30,8 +30,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'core/log'], f
          *
          * @method init
          */
-        init: function() {
-            log.debug('Listening to the exportreport btn');
+        init: function(page) {
             $('#exportreport').click(function(e){
                 e.preventDefault();
                 // Return if already running.
@@ -46,7 +45,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'core/log'], f
                         type: 'POST',
                         url: cfg.wwwroot + '/local/reports/ajax.php?sesskey=' + cfg.sesskey,
                         data: {
-                            page: 'learninghistory'
+                            page: page
                         },
                         success: function(data) {
                             // Failure if object not returned.
@@ -62,11 +61,9 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'core/log'], f
                                 $('#downloadlink').attr('href', data.data.url);
                                 $('#downloadlink').html(data.data.filename);
                                 $('#closedownloadmodal').removeClass('disabled');
-                                log.debug(data.data);
                             } else {
                                 log.debug('nosuccess');
                             }
-                            log.debug(data.message);
                         },
                         error: function(){
                             log.debug('error in ajax exportreports');

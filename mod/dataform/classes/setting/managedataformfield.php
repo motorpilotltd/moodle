@@ -186,14 +186,18 @@ class managedataformfield extends \admin_setting {
             if (isset($enabled[$plugin])) {
                 $aurl = new \moodle_url($url, array('action' => 'disable', 'plugin' => $plugintype));
                 $hideshow = "<a href=\"$aurl\">";
-                $hideshow .= "<img src=\"" . $OUTPUT->pix_url('t/hide') . "\" class=\"iconsmall\" alt=\"$strdisable\" /></a>";
+/* BEGIN CORE MOD */
+                $hideshow .= "<img src=\"" . $OUTPUT->image_url('t/hide') . "\" class=\"iconsmall\" alt=\"$strdisable\" /></a>";
+/* END CORE MOD */
                 $isenabled = true;
                 $displayname = "<span>$name</span>";
             } else {
                 if (isset($available[$plugin])) {
                     $aurl = new \moodle_url($url, array('action' => 'enable', 'plugin' => $plugintype));
                     $hideshow = "<a href=\"$aurl\">";
-                    $hideshow .= "<img src=\"" . $OUTPUT->pix_url('t/show') . "\" class=\"iconsmall\" alt=\"$strenable\" /></a>";
+/* BEGIN CORE MOD */
+                    $hideshow .= "<img src=\"" . $OUTPUT->image_url('t/show') . "\" class=\"iconsmall\" alt=\"$strenable\" /></a>";
+/* END CORE MOD */
                     $isenabled = false;
                     $displayname = "<span class=\"dimmed_text\">$name</span>";
                 } else {
@@ -214,16 +218,24 @@ class managedataformfield extends \admin_setting {
                 if ($updowncount > 1) {
                     $aurl = new \moodle_url($url, array('action' => 'up', 'plugin' => $plugintype));
                     $updown .= "<a href=\"$aurl\">";
-                    $updown .= "<img src=\"" . $OUTPUT->pix_url('t/up') . "\" alt=\"$strup\" class=\"iconsmall\" /></a>&nbsp;";
+/* BEGIN CORE MOD */
+                    $updown .= "<img src=\"" . $OUTPUT->image_url('t/up') . "\" alt=\"$strup\" class=\"iconsmall\" /></a>&nbsp;";
+/* END CORE MOD */
                 } else {
-                    $updown .= "<img src=\"" . $OUTPUT->pix_url('spacer') . "\" class=\"iconsmall\" alt=\"\" />&nbsp;";
+/* BEGIN CORE MOD */
+                    $updown .= "<img src=\"" . $OUTPUT->image_url('spacer') . "\" class=\"iconsmall\" alt=\"\" />&nbsp;";
+/* END CORE MOD */
                 }
                 if ($updowncount < $plugincount) {
                     $aurl = new \moodle_url($url, array('action' => 'down', 'plugin' => $plugintype));
                     $updown .= "<a href=\"$aurl\">";
-                    $updown .= "<img src=\"" . $OUTPUT->pix_url('t/down') . "\" alt=\"$strdown\" class=\"iconsmall\" /></a>";
+/* BEGIN CORE MOD */
+                    $updown .= "<img src=\"" . $OUTPUT->image_url('t/down') . "\" alt=\"$strdown\" class=\"iconsmall\" /></a>";
+/* END CORE MOD */
                 } else {
-                    $updown .= "<img src=\"" . $OUTPUT->pix_url('spacer') . "\" class=\"iconsmall\" alt=\"\" />";
+/* BEGIN CORE MOD */
+                    $updown .= "<img src=\"" . $OUTPUT->image_url('spacer') . "\" class=\"iconsmall\" alt=\"\" />";
+/* END CORE MOD */
                 }
                 ++$updowncount;
             }

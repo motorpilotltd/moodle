@@ -43,20 +43,14 @@ class admin_group extends moodleform {
         if (!empty($this->_customdata['cohorts'])) {
             $mform->addElement('select', 'cohortid', get_string('cohort', 'local_onlineappraisal'), $this->_customdata['cohorts']);
             $mform->setDefault('cohortid', $this->_customdata['cohortid']);
-
-            $mform->addElement('hidden', 'currentcohortid', $this->_customdata['cohortid']);
-            $mform->setType('currentcohortid', PARAM_INT);
         }
 
         $mform->addElement('hidden', 'page', $page);
         $mform->setType('page', PARAM_ALPHA);
 
-        $mform->addElement('hidden', 'currentgroupid', $groupid);
-        $mform->setType('currentgroupid', PARAM_ALPHANUMEXT);
-
         $this->add_action_buttons(false, get_string('form:go', 'local_onlineappraisal'));
 
         $mform->disable_form_change_checker();
     }
-    
+
 }

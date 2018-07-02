@@ -108,7 +108,7 @@ class report_mods extends report_base {
                         . '" alt="'
                         . $name
                         . '" class="activityicon" src="'
-                        . $OUTPUT->pix_url('icon', $mod)
+                        . $OUTPUT->image_url('icon', $mod)
                         . '"> ';
                 }
                 $row->activities = substr($activities, 0, -1);

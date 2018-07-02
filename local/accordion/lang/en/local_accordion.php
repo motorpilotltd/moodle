@@ -62,7 +62,7 @@ $string['viewcategory'] = 'View category';
 // Fake blocks.
 $string['advancedfilters'] = 'Advanced filters';
 $string['allregions'] = 'All regions';
-$string['andukmea'] = '&nbsp;&amp;&nbsp;UKMEA';
+$string['andukmea'] = '&nbsp;&amp;&nbsp;UKIMEA';
 
 $string['buildarea'] = 'build area';
 
@@ -84,6 +84,6 @@ $string['region'] = 'Region';
 
 $string['subregion'] = 'Location';
 
-$string['ukmea:show'] = 'Show <strong>UKMEA</strong> modules';
+$string['ukmea:show'] = 'Show <strong>UKIMEA</strong> modules';
 
 $string['viewalllearningpaths'] = 'View all learning paths';

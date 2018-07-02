@@ -42,7 +42,7 @@ $PAGE->blocks->show_only_fake_blocks();
 
 if (!has_capability('local/coursemanager:addcpd', context_system::instance())) {
     echo $OUTPUT->header();
-    echo html_writer::tag('div', get_string('form:csv:notallowed', 'local_coursemanager'), array('alert alert-warning'));
+    echo html_writer::tag('div', get_string('form:csv:notallowed', 'local_coursemanager'), array('class' => 'alert alert-warning'));
     echo $OUTPUT->footer();
     die();
 }

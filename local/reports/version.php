@@ -23,7 +23,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version   = 2017052700;
+$plugin->version   = 2017111400;
 $plugin->requires  = 2015111600; // Moodle 3.0.
 $plugin->component = 'local_reports';
 $plugin->maturity  = MATURITY_BETA;

@@ -266,180 +266,6 @@ class auth_plugin_saml extends auth_plugin_ldap {
     }
 
     /**
-     * Prints a form for configuring this authentication plugin.
-     *
-     * This function is called from admin/auth.php, and outputs a full page with
-     * a form for configuring this plugin.
-     *
-     * @param object $config
-     * @param object $err
-     * @param array $userfields
-     * @return void
-     */
-    public function config_form($config, $err, $userfields) {
-        global $CFG, $OUTPUT; // Global $OUTPUT used in included file.
-
-        if (!function_exists('ldap_connect')) { // Is php-ldap really there?
-            echo $OUTPUT->notification(get_string('auth_ldap_noextension', 'auth_ldap'));
-            return;
-        }
-
-        include($CFG->dirroot.'/auth/saml/config.html');
-    }
-
-    /**
-     * A chance to validate form data, and last chance to
-     * do stuff before it is inserted in config_plugin.
-     *
-     * @param object $form object with submitted configuration settings (without system magic quotes)
-     * @param array $err array of error messages
-     * @return void
-     */
-    public function validate_form($form, &$err) {
-
-        if (!isset($form->db_reset)) {
-            if (!isset($form->samllib) || !file_exists($form->samllib.'/_autoload.php')) {
-                $err['samllib'] = get_string('samllib_error', 'auth_saml', $form->samllib);
-            }
-        }
-    }
-
-    /**
-     * Processes and stores configuration data for this authentication plugin.
-     *
-     * @param object $config Configuration object
-     * @return bool
-     */
-    public function process_config($config) {
-        global $err, $DB, $CFG;
-
-        if (isset($config->db_reset)) {
-            try {
-                $DB->delete_records('config_plugins', array('plugin' => 'auth/saml'));
-            } catch (Exception $e) {
-                $err['reset'] = get_string('db_reset_error', 'auth_saml');
-                return false;
-            }
-            redirect(new moodle_url('/admin/auth_config.php', array('auth' => 'saml')));
-        }
-
-        // Class for settings to be saved to file.
-        $samlsettings = new stdClass();
-
-        // SAML settings.
-        if (!isset($config->samllib)) {
-            $samlsettings->samllib = '';
-        } else {
-            $samlsettings->samllib = $config->samllib;
-        }
-        if (!isset($config->sp_source)) {
-            $samlsettings->sp_source = 'saml';
-        } else {
-            $samlsettings->sp_source = $config->sp_source;
-        }
-        if (!isset($config->dosinglelogout)) {
-            $samlsettings->dosinglelogout = false;
-        } else {
-            $samlsettings->dosinglelogout = $config->dosinglelogout;
-        }
-        if (!isset($config->username)) {
-            $config->username = 'userPrincipalName';
-        }
-        if (!isset($config->autologin)) {
-            $config->autologin = false;
-        }
-        if (!isset($config->autologin_subnet)) {
-            $config->autologin_subnet = '';
-        }
-        if (!isset($config->samllogfile)) {
-            $config->samllogfile = '';
-        }
-
-        // LDAP settings.
-        if (!isset($config->host_url)) {
-            $config->host_url = '';
-        }
-        if (!isset($config->start_tls)) {
-             $config->start_tls = false;
-        }
-        if (empty($config->ldapencoding)) {
-            $config->ldapencoding = 'utf-8';
-        }
-        if (!isset($config->pagesize)) {
-            $config->pagesize = LDAP_DEFAULT_PAGESIZE;
-        }
-        if (!isset($config->contexts)) {
-            $config->contexts = '';
-        }
-        if (!isset($config->user_type)) {
-            $config->user_type = 'default';
-        }
-        if (!isset($config->user_attribute)) {
-            $config->user_attribute = '';
-        }
-        if (!isset($config->search_sub)) {
-            $config->search_sub = '';
-        }
-        if (!isset($config->opt_deref)) {
-            $config->opt_deref = LDAP_DEREF_NEVER;
-        }
-        if (!isset($config->bind_dn)) {
-            $config->bind_dn = '';
-        }
-        if (!isset($config->bind_pw)) {
-            $config->bind_pw = '';
-        }
-        if (!isset($config->ldap_version)) {
-            $config->ldap_version = '3';
-        }
-        if (!isset($config->objectclass)) {
-            $config->objectclass = '';
-        }
-
-        // LDAP mappings.
-        foreach ($this->userfields as $field) {
-            if (!isset($config->{"ldap_map_$field"})) {
-                $config->{"ldap_map_$field"} = '';
-            }
-        }
-
-        // Save required SAML settings to file.
-        $samlsettingsencoded = json_encode($samlsettings);
-        file_put_contents($CFG->dataroot . '/saml_config.json', $samlsettingsencoded);
-
-        // Save SAML settings.
-        set_config('samllib', $samlsettings->samllib, $this->pluginconfig);
-        set_config('sp_source', $samlsettings->sp_source, $this->pluginconfig);
-        set_config('dosinglelogout', $samlsettings->dosinglelogout, $this->pluginconfig);
-        set_config('username', $config->username, $this->pluginconfig);
-        set_config('autologin', $config->autologin, $this->pluginconfig);
-        set_config('autologin_subnet', $config->autologin_subnet, $this->pluginconfig);
-        set_config('samllogfile', $config->samllogfile, $this->pluginconfig);
-
-        // Save LDAP settings.
-        set_config('host_url', trim($config->host_url), $this->pluginconfig);
-        set_config('start_tls', $config->start_tls, $this->pluginconfig);
-        set_config('ldapencoding', trim($config->ldapencoding), $this->pluginconfig);
-        set_config('pagesize', (int)trim($config->pagesize), $this->pluginconfig);
-        set_config('contexts', trim($config->contexts), $this->pluginconfig);
-        set_config('user_type', core_text::strtolower(trim($config->user_type)), $this->pluginconfig);
-        set_config('user_attribute', core_text::strtolower(trim($config->user_attribute)), $this->pluginconfig);
-        set_config('search_sub', $config->search_sub, $this->pluginconfig);
-        set_config('opt_deref', $config->opt_deref, $this->pluginconfig);
-        set_config('bind_dn', trim($config->bind_dn), $this->pluginconfig);
-        set_config('bind_pw', $config->bind_pw, $this->pluginconfig);
-        set_config('ldap_version', $config->ldap_version, $this->pluginconfig);
-        set_config('objectclass', trim($config->objectclass), $this->pluginconfig);
-
-        // Save LDAP mappings.
-        foreach ($this->userfields as $field) {
-            set_config("ldap_map_$field", $config->{"ldap_map_$field"}, $this->pluginconfig);
-        }
-
-        return true;
-    }
-
-    /**
      * Post authentication hook.
      * This method is called from authenticate_user_login() for all enabled auth plugins.
      *
@@ -643,4 +469,23 @@ class auth_plugin_saml extends auth_plugin_ldap {
             }
         }
     }
+}
+
+
+function auth_saml_updatedcallback() {
+    global $CFG;
+    $samlsettings = new stdClass();
+
+    if ($value = get_config('auth_saml', 'samllib')) {
+        $samlsettings->samllib = $value;
+    }
+
+    if ($value = get_config('auth_saml', 'sp_source')) {
+        $samlsettings->sp_source = $value;
+    }
+
+    $samlsettings->dosinglelogout = get_config('auth_saml', 'dosinglelogout');
+
+    $samlsettingsencoded = json_encode($samlsettings);
+    file_put_contents($CFG->dataroot . '/saml_config.json', $samlsettingsencoded);
 }

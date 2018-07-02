@@ -29,6 +29,7 @@ require_once($CFG->dirroot.'/user/editadvanced_form.php');
 require_once($CFG->dirroot.'/user/editlib.php');
 require_once($CFG->dirroot.'/user/profile/lib.php');
 require_once($CFG->dirroot.'/user/lib.php');
+require_once($CFG->dirroot.'/webservice/lib.php');
 /* BEGIN CORE MOD - /local/regions */
 require_once($CFG->dirroot.'/local/regions/lib.php');
 /* END CORE MOD - /local/regions */
@@ -122,10 +123,7 @@ local_regions_load_data_user($user);
 profile_load_data($user);
 
 // User interests.
-if (!empty($CFG->usetags)) {
-    require_once($CFG->dirroot.'/tag/lib.php');
-    $user->interests = tag_get_tags_array('user', $id);
-}
+$user->interests = core_tag_tag::get_item_tags_array('core', 'user', $id);
 
 if ($user->id !== -1) {
     $usercontext = context_user::instance($user->id);
@@ -227,6 +225,9 @@ if ($usernew = $userform->get_data()) {
                     // the problem here is we do not want to logout admin here when changing own password.
                     \core\session\manager::kill_user_sessions($usernew->id, session_id());
                 }
+                if (!empty($usernew->signoutofotherservices)) {
+                    webservice::delete_user_ws_tokens($usernew->id);
+                }
             }
         }
 
@@ -245,7 +246,7 @@ if ($usernew = $userform->get_data()) {
 // Hide personal tags field.
 /*
     // Update tags.
-    if (!empty($CFG->usetags) and empty($USER->newadminuser)) {
+    if (empty($USER->newadminuser) && isset($usernew->interests)) {
         useredit_update_interests($usernew, $usernew->interests);
     }
 */
@@ -255,7 +256,7 @@ if ($usernew = $userform->get_data()) {
     if (empty($USER->newadminuser)) {
 /* BEGIN CORE MOD */
         if ($DB->get_field('user', 'auth', array('id' => $usernew->id)) != 'saml') {
-            useredit_update_picture($usernew, $userform, $filemanageroptions);
+            core_user::update_picture($usernew, $filemanageroptions);
         }
 /* END CORE MOD */
     }

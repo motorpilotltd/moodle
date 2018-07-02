@@ -118,60 +118,42 @@ if ($type == 'future' || $type == 'past') {
                 $a .= "<br />FAILED: User (Moodle User ID: {$userid}) not found.";
                 continue;
             }
-            // Here we need to reset any linked certifications.
-            $linkedcertifs = $DB->get_records_menu('certif_courseset_courses', ['courseid' => $tapsenrol->course->id], '', 'DISTINCT certifid as id, certifid as value');
-            foreach ($linkedcertifs as $linkedcertif) {
-                $query = <<<EOS
-SELECT
-    cc.*
-FROM {certif_completions} cc
-JOIN {certif} c ON c.id = cc.certifid
-WHERE 
-    cc.userid = :userid
-    AND cc.certifid = :certifid
-    AND c.deleted = 0
-    AND c.visible = 1
-    AND cc.timecompleted > 0
-EOS;
-                $completionrecords = $DB->get_records_sql($query, ['userid' => $user->id, 'certifid' => $linkedcertif]);
-
-                foreach($completionrecords as $completionrecord){
-                    \local_custom_certification\completion::open_window($completionrecord);
-                }
-            }
-            // Check we are OK to re-enrol.
-            // If still active full attendance enrolment can't re-enrol.
-            list($attendedin, $attendedinparams) = $DB->get_in_or_equal(
-                $tapsenrol->taps->get_statuses('attended'),
-                SQL_PARAMS_NAMED, 'status'
-            );
-            $attendedcompare = $DB->sql_compare_text('bookingstatus');
-            $attendedparams = array(
-                'staffid' => $user->idnumber,
-                'courseid' => $class->courseid,
-            );
-            $attendedsql = <<<EOS
-SELECT
-    id
-FROM
-    {local_taps_enrolment}
-WHERE
-    staffid = :staffid
-    AND courseid = :courseid
-    AND (archived = 0 OR archived IS NULL)
-    AND active = 1
-    AND {$attendedcompare} {$attendedin}
-EOS;
-            $attended = $DB->get_records_sql(
-                $attendedsql,
-                array_merge($attendedparams, $attendedinparams)
-            );
-
+            
             $username = fullname($user);
-            if ($attended) {
-                $a .= "<br />FAILED: [{$username}] Could not enrol as there is an active completed enrolment present.";
+
+            // Does a not cancelled enrolment exist?.
+            list($in, $inparams) = $DB->get_in_or_equal(
+                $tapsenrol->taps->get_statuses('cancelled'),
+                SQL_PARAMS_NAMED, 'status', false
+            );
+            $compare = $DB->sql_compare_text('bookingstatus');
+            $params = array_merge(
+                array('staffid' => $user->idnumber, 'classid' => $fromform->classid),
+                $inparams
+            );
+            $select = "staffid = :staffid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}";
+            $existingenrolments = $DB->count_records_select('local_taps_enrolment', $select, $params);
+            if ($existingenrolments) {
+                $a .= "<br />FAILED: [{$username}] Could not enrol: ALREADY_ENROLLED.";
                 continue;
             }
+
+            // Here we need to find and reset any linked certifications.
+            $completioncache = \cache::make('core', 'completion');
+            $alreadyattended = $tapsenrol->already_attended($user);
+            $resetcourses = [];
+            foreach ($alreadyattended->completions as $completion) {
+                $resetcourses = \local_custom_certification\completion::open_window($completion);
+                foreach ($resetcourses as $resetcourseid) {
+                    $completioncache->delete("{$user->id}_{$resetcourseid}");
+                }
+            }
+            // If not already done via a linked certification, simply reset the course.
+            if (!in_array($tapsenrol->course->id, $resetcourses)) {
+                \local_custom_certification\completion::reset_course_for_user($tapsenrol->course->id, $user->id);
+                $completioncache->delete("{$user->id}_{$tapsenrol->course->id}");
+            }
+
             $enrolresult = $tapsenrol->enrol_employee($fromform->classid, $user->idnumber);
             if ($enrolresult->success) {
                 $iwtrack = new stdClass();
@@ -265,6 +247,28 @@ EOS;
         redirect($actionurl);
         exit;
     }
+
+    $jscode = <<<EOJ
+$('#tapsenrol-checkbox-selectall').change(function(){
+    var that = $(this);
+    if (that.prop('checked') === true) {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') !== true) {
+                that.prop('checked', true).change();
+            }
+        });
+    } else {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') === true) {
+                that.prop('checked', false).change();
+            }
+        });
+    }
+});
+EOJ;
+    $PAGE->requires->js_init_code($jscode, true);
 } else if ($type == 'waitlist') {
     $mform = new mod_tapsenrol_manage_enrolments_waitlist_form($actionurl, $customdata);
 
@@ -315,13 +319,32 @@ EOS;
     }
 
     $jscode = <<<EOJ
+$('#tapsenrol-checkbox-selectall').change(function(){
+    var that = $(this);
+    if (that.prop('checked') === true) {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') !== true) {
+                that.prop('checked', true).change();
+            }
+        });
+    } else {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') === true) {
+                that.prop('checked', false).change();
+            }
+        });
+    }
+});
 $('.tapsenrol-current-enrolments .tapsenrol-checkbox').change(function(){
     var that = $(this);
-    var seatsremaining = paresInt($('#tapsenrol-waitlist-seatsremaining').data('seatsremaining'));
+    var seatsremainingspan = $('#tapsenrol-waitlist-seatsremaining');
+    var seatsremaining = parseInt(seatsremainingspan.data('seatsremaining'));
     if (seatsremaining === -1) {
         return;
     }
-    var seatsremainingalert = seatsremaining.closest('.alert');
+    var seatsremainingalert = seatsremainingspan.closest('.alert');
     if (seatsremaining === 0 && that.prop('checked') === true) {
         that.prop('checked', false);
         $('html, body').animate({
@@ -332,7 +355,7 @@ $('.tapsenrol-current-enrolments .tapsenrol-checkbox').change(function(){
     } else if (that.prop('checked') === false) {
         seatsremaining = seatsremaining + 1;
     }
-    $('#tapsenrol-waitlist-seatsremaining').text(seatsremaining);
+    $('#tapsenrol-waitlist-seatsremaining').text(seatsremaining).data('seatsremaining', seatsremaining);
     if (seatsremaining === 0) {
         seatsremainingalert.removeClass('alert-info').removeClass('alert-warning').addClass('alert-danger');
     } else if (seatsremaining < 3) {
@@ -431,6 +454,28 @@ EOJ;
         redirect($actionurl);
         exit;
     }
+
+    $jscode = <<<EOJ
+$('#tapsenrol-checkbox-selectall').change(function(){
+    var that = $(this);
+    if (that.prop('checked') === true) {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') !== true) {
+                that.prop('checked', true).change();
+            }
+        });
+    } else {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') === true) {
+                that.prop('checked', false).change();
+            }
+        });
+    }
+});
+EOJ;
+    $PAGE->requires->js_init_code($jscode, true);
 } else if ($type == 'update') {
     // @TODO
     $mform = new mod_tapsenrol_manage_enrolments_update_form($actionurl, $customdata);
@@ -490,6 +535,28 @@ EOJ;
         redirect($actionurl);
         exit;
     }
+
+    $jscode = <<<EOJ
+$('#tapsenrol-checkbox-selectall').change(function(){
+    var that = $(this);
+    if (that.prop('checked') === true) {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') !== true) {
+                that.prop('checked', true).change();
+            }
+        });
+    } else {
+        $('.tapsenrol-current-enrolments .tapsenrol-checkbox').each(function(){
+            var that = $(this);
+            if (that.prop('checked') === true) {
+                that.prop('checked', false).change();
+            }
+        });
+    }
+});
+EOJ;
+    $PAGE->requires->js_init_code($jscode, true);
 }
 
 echo $html;

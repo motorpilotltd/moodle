@@ -38,5 +38,12 @@ function xmldb_auth_saml_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111600, 'auth', 'saml');
     }
 
+    if ($oldversion < 2017051501) {
+        // Convert info in config plugins from auth/saml to auth_saml.
+        upgrade_fix_config_auth_plugin_names('saml');
+        upgrade_fix_config_auth_plugin_defaults('saml');
+        upgrade_plugin_savepoint(true, 2017051501, 'auth', 'saml');
+    }
+
     return true;
 }

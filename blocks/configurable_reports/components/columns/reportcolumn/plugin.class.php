@@ -163,7 +163,7 @@ class plugin_reportcolumn extends plugin_base {
                         $components['conditions']['config']->conditionexpr = '';
                     }
 /* END CORE MOD */
-                    $components['conditions']['config']->conditionexpr = $this->fix_condition_expr($components['conditions']['config']->conditionexpr, count($components['conditions']['elements']));
+					$components['conditions']['config']->conditionexpr = $this->fix_condition_expr($components['conditions']['config']->conditionexpr, count($components['conditions']['elements']));
                     $reportclass->config->components = cr_serialize($components);
                 }
             } else if ($this->report->type == 'courses') {
@@ -193,7 +193,7 @@ class plugin_reportcolumn extends plugin_base {
                             $components['conditions']['config']->conditionexpr = '';
                         }
 /* END CORE MOD */
-                        $components['conditions']['config']->conditionexpr = $this->fix_condition_expr($components['conditions']['config']->conditionexpr, count($components['conditions']['elements']));
+					    $components['conditions']['config']->conditionexpr = $this->fix_condition_expr($components['conditions']['config']->conditionexpr, count($components['conditions']['elements']));
                     }
                     $reportclass->config->components = cr_serialize($components);
                 }
@@ -217,7 +217,7 @@ class plugin_reportcolumn extends plugin_base {
                         $components['conditions']['config']->conditionexpr = '';
                     }
 /* END CORE MOD */
-                    $components['conditions']['config']->conditionexpr = $this->fix_condition_expr($components['conditions']['config']->conditionexpr, count($components['conditions']['elements']));
+					$components['conditions']['config']->conditionexpr = $this->fix_condition_expr($components['conditions']['config']->conditionexpr, count($components['conditions']['elements']));
                     $reportclass->config->components = cr_serialize($components);
                 }
             }

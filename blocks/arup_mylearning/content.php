@@ -399,7 +399,7 @@ class block_arup_mylearning_content {
                 $cell->text = html_writer::empty_tag(
                     'img',
                     array(
-                        'src' => $OUTPUT->pix_url($th->classtypegroup, 'local_taps'),
+                        'src' => $OUTPUT->image_url($th->classtypegroup, 'local_taps'),
                         'alt' => $alttitle,
                         'title' => $alttitle
                     )
@@ -416,7 +416,7 @@ class block_arup_mylearning_content {
             if (!empty($th->course)) {
                 $courseurl = new moodle_url('/course/view.php', array('id' => $th->course));
             }
-            $coursename = format_string($th->coursename ? $th->coursename : $th->classname);
+            $coursename = format_string($th->coursename ? $th->coursename : $th->classname, true, ['escape' => false]);
             $courselink = '';
             if ($courseurl) {
                 $courselink = html_writer::link($courseurl, $coursename);
@@ -472,11 +472,11 @@ class block_arup_mylearning_content {
                     'data-toggle' => 'modal',
                     'data-target' => '#info-modal',
                     'data-label' => $coursename,
-                    'data-url' => $modalurl,
+                    'data-url' => $modalurl->out(false),
                 )
             );
             if (!is_null($th->cpdid)) {
-                if ($hascapabilities['editcpd']) {
+                if ($hascapabilities['editcpd'] && !$th->locked) {
                     $editcpdurl = new moodle_url(
                             '/blocks/arup_mylearning/editcpd.php',
                             array('cpdid' => $th->cpdid, 'tab' => 'myhistory', 'instance' => $this->_block->instance->id)
@@ -492,7 +492,7 @@ class block_arup_mylearning_content {
                     );
                 }
 
-                if ($hascapabilities['deletecpd']) {
+                if ($hascapabilities['deletecpd'] && !$th->locked) {
                     $deletecpdurl = new moodle_url(
                             '/blocks/arup_mylearning/deletecpd.php',
                             array('cpdid' => $th->cpdid, 'tab' => 'myhistory', 'instance' => $this->_block->instance->id)
@@ -657,6 +657,52 @@ class block_arup_mylearning_content {
         } else {
             return false;
         }
+    }
+
+    protected function _has_content_lynda() {
+        global $DB, $USER, $CFG;
+
+        require_once($CFG->dirroot . '/local/regions/lib.php');
+
+        $userregion = local_regions_get_user_region($USER);
+        if (!isset($userregion) || !isset($userregion->geotapsregionid)) {
+            return false;
+        }
+
+        if (!\local_lynda\lib::enabledforregion($userregion->geotapsregionid)) {
+            return false;
+        }
+
+        return $DB->count_records('local_lynda_progress', array('userid' => $USER->id));
+    }
+
+    protected function _get_lynda_html() {
+        global $USER;
+
+        $table = new html_table();
+
+        $table->head = array(
+                get_string('course'),
+                get_string('percentcomplete', 'local_lynda'),
+                get_string('lastviewed', 'local_lynda')
+        );
+
+        $progresses = \local_lynda\lyndacourseprogress::fetch_all(['userid' => $USER->id]);
+        foreach ($progresses as $progress) {
+            if (!isset($progress->lyndacourse)) {
+                continue;
+            }
+            $url = new \moodle_url('/local/lynda/launch.php', ['lyndacourseid' => $progress->lyndacourse->remotecourseid]);
+            $linkedtitle = \html_writer::link($url, $progress->lyndacourse->title);
+            $cells = [];
+            $cells[] = new html_table_cell($linkedtitle);
+            $cells[] = new html_table_cell($progress->percentcomplete . '%');
+            $cells[] = new html_table_cell(userdate($progress->lastviewed));
+
+            $table->data[] = new html_table_row($cells);
+        }
+
+        return html_writer::table($table);
     }
 
     protected function _get_halogen_html() {
@@ -825,7 +871,7 @@ EOS;
 
     /* HISTORY FUNCTIONS - START */
     protected function _get_taps_history() {
-        global $CFG, $DB, $USER;
+        global $DB, $USER;
 
         if (!$USER->idnumber
             || !$this->_is_taps_installed()
@@ -841,7 +887,7 @@ EOS;
 SELECT
     lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.classcompletiondate, lte.duration, lte.durationunits,
         lte.expirydate, lte.cpdid, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
-        lte.learningdesccont1, lte.learningdesccont2, lte.healthandsafetycategory, lte.usedtimezone,
+        lte.learningdesccont1, lte.learningdesccont2, lte.healthandsafetycategory, lte.usedtimezone, lte.locked,
     ltcc.categoryhierarchy,
     a.course,
     cat.id as categoryid, cat.name as categoryname

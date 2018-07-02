@@ -31,7 +31,7 @@ $string['pluginname'] = 'Yammer';
 $string['blocktitle'] = 'Block title';
 
 // Yammer network settings.
-$string['config_help'] = 'You can display My Feed, a Group Feed, a Topic Feed, a User Feed or an OG object feed. Users will need to log in to view the feed.  Additionally, the feed is restricted to users of the network specified.</br>To retrieve the feed ID and network permalink, please navigate to the feed in the <a href="https://www.yammer.com" target="_blank">Yammer web application</a> and copy it from the URL.</br>Detailed documentation for the embedded feed specifcation is available <a href="https://developer.yammer.com/connect/" target="_blank">here</a>.';
+$string['config_help'] = 'You can display My Feed, a Group Feed, a Topic Feed, a User Feed or an OG object feed. Users will need to log in to view the feed.  Additionally, the feed is restricted to users of the network specified.</br>To retrieve the feed ID and network permalink, please navigate to the feed in the <a href="https://www.yammer.com" target="_blank">Yammer web application</a> and copy it from the URL.</br>Detailed documentation for the embedded feed specifcation is available <a href="https://developer.yammer.com/docs/embed" target="_blank">here</a>.';
 $string['defaultgroupid'] = 'Default Group ID';
 $string['defaultgroupid_help'] = 'The default group ID to post to.';
 $string['defaulttocanonical'] = 'Default to Canonical Network';
@@ -43,15 +43,24 @@ $string['feedtype'] = 'Feed Type';
 $string['feedtype_help'] = 'The type of feed to display.This can be <em>my</em>, <em>group</em>, <em>topic</em>, <em>user</em>, or <em>open-graph</em>.';
 $string['network'] = 'Network permalink';
 $string['network_help'] = 'This is the name of your Network, e.g. yammer.com/<strong>my-company-name.net</strong>.';
-$string['usesso'] = 'Use SSO';
-$string['usesso_desc'] = 'Enable Single Sign On.';
-$string['usesso_help'] = 'The newest version of Yammer Embed (released April 2014) supports Single Sign-on if your organization has used it on your Yammer Enterprise account.';
 $string['yammer_settings'] = 'Yammer network settings';
 
 // Open graph settings.
 $string['showogpreview'] = 'Show OG preview';
 $string['showogpreview_desc'] = 'Show open graph object preview.';
 $string['showogpreview_help'] = 'Display an Open Graph preview of the target URL beneath the new message publisher, which provides users with a preview of the Open Graph summary they will see in the conversation they are starting.';
+$string['og-audio'] = 'Audio';
+$string['og-department'] = 'Department';
+$string['og-document'] = 'Document';
+$string['og-file'] = 'File';
+$string['og-folder'] = 'Folder';
+$string['og-image'] = 'Image';
+$string['og-page'] = 'Page';
+$string['og-person'] = 'Person';
+$string['og-place'] = 'Place';
+$string['og-project'] = 'Project';
+$string['og-team'] = 'Team';
+$string['og-video'] = 'Video';
 $string['ogtype'] = 'OpenGraph type';
 $string['ogtype_help'] = 'Select the OpenGraph object type.';
 $string['ogurl'] = 'Open Graph URL';

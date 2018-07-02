@@ -99,6 +99,7 @@ class taps {
             'EACPDT7' => 'EA CPD Type VII',
             'EACPDT8' => 'EA CPD Type VIII',
             'EC' => 'External Course',
+            'ECO' => 'External Course Online',
             'HS' => 'Health and Safety',
             'INF' => 'Informal',
             'IM' => 'Institute Meetings',
@@ -160,14 +161,38 @@ class taps {
     /** @var array class cost currency. */
     private $_classcostcurrency = array(
         '' => null,
-        'AUD' => 'Australian Dollars',
-        'CNY' => 'Chinese Yuan',
-        'EUR' => 'Euro',
-        'HKD' => 'Hong Kong Dollars',
-        'GBP' => 'Pounds Sterling',
-        'RON' => 'Romanian New Leu',
-        'SGD' => 'Singapore Dollars',
-        'USD' => 'US Dollars'
+        'AED' => 'United Arab Emirates Dirham',
+        'AUD' => 'AUD	Australia Dollar',
+        'BND' => 'Brunei Darussalam Dollar',
+        'BWP' => 'Botswana Pula',
+        'CAD' => 'Canada Dollar',
+        'CNY' => 'China Yuan Renminbi',
+        'COP' => 'Colombia Peso',
+        'DKK' => 'Denmark Krone',
+        'EUR' => 'Euro Member Countries',
+        'GBP' => 'United Kingdom Pound',
+        'HKD' => 'Hong Kong Dollar',
+        'IDR' => 'Indonesia Rupiah',
+        'INR' => 'India Rupee',
+        'JPY' => 'Japan Yen',
+        'KHR' => 'Cambodia Riel',
+        'KRW' => 'Korea (South) Won',
+        'MUR' => 'Mauritius Rupee',
+        'MYR' => 'Malaysia Ringgit',
+        'NGN' => 'Nigeria Naira',
+        'NZD' => 'New Zealand Dollar',
+        'PHP' => 'Philippines Peso',
+        'PLN' => 'Poland Zloty',
+        'QAR' => 'Qatar Riyal',
+        'RSD' => 'Serbia Dinar',
+        'RUB' => 'Russia Ruble',
+        'SGD' => 'Singapore Dollar',
+        'THB' => 'Thailand Baht',
+        'TRY' => 'Turkey Lira',
+        'USD' => 'US Dollar',
+        'VND' => 'Viet Nam Dong',
+        'ZAR' => 'South Africa Rand',
+        'ZWD' => 'Zimbabwe Dollar',
     );
 
     /** @var array health and safety category. */
@@ -478,7 +503,7 @@ EOS;
      * @param int $courseid
      * @return mixed
      */
-    public function get_course_classes($courseid, $hidden = false, $archived = false) {
+    public function get_course_classes($courseid, $hidden = false, $archived = false, $fields = '*', $extrawhere = '') {
         global $DB;
         $where = 'courseid = :courseid';
         if (!$hidden) {
@@ -487,7 +512,10 @@ EOS;
         if (!$archived) {
             $where .= ' AND (archived = 0 OR archived IS NULL)';
         }
-        return $DB->get_records_select('local_taps_class', $where, array('courseid' => $courseid));
+        if ($extrawhere) {
+            $where .= " AND ({$extrawhere})";
+        }
+        return $DB->get_records_select('local_taps_class', $where, array('courseid' => $courseid), '', $fields);
     }
 
     /**
@@ -535,7 +563,7 @@ EOS;
      */
     public function get_course_enrolments($courseid) {
         global $DB;
-        
+
         return $DB->get_records_select('local_taps_enrolment', 'courseid = :courseid AND (archived = 0 OR archived IS NULL)', array('courseid' => $courseid));
     }
 
@@ -618,6 +646,7 @@ EOS;
         $cpd->certificateno = (isset($optional['p_certificate_number']) ? $optional['p_certificate_number'] : null);
         $cpd->expirydate = (isset($optional['p_certificate_expiry_date']) ? $optional['p_certificate_expiry_date'] : 0);
         $cpd->learningdesc = (isset($optional['p_learning_desc']) ? $optional['p_learning_desc'] : null);
+        $cpd->providerid = (isset($optional['p_providerid']) ? $optional['p_providerid'] : null);
         // Use of learningdesccont1 and learningdesccont2 has been deprecated.
         $cpd->learningdesccont1 = null;
         $cpd->learningdesccont2 = null;
@@ -628,8 +657,10 @@ EOS;
         $cpd->classstartdate = $cpd->classstarttime;
         $cpd->classenddate = $cpd->classendtime = ($cpd->classcompletiondate + (24 * 60 * 60) - 1); // End of completion day
 
-        $cpd->timemodified = time();
+        // Is it locked?
+        $cpd->locked = (!empty($optional['locked']) ? 1 : 0);
 
+        $cpd->timemodified = time();
 
         $maxcpdid = $DB->get_field_sql('SELECT MAX(cpdid) FROM {local_taps_enrolment}');
 
@@ -665,7 +696,8 @@ EOS;
     public function edit_cpd_record($cpdid, $classtitle, $providername, $completiontime, $duration, $durationunitscode, $optional = array()) {
         global $DB;
 
-        $cpd = $DB->get_record('local_taps_enrolment', array('cpdid' => $cpdid));
+        // Must be unlocked.
+        $cpd = $DB->get_record('local_taps_enrolment', array('cpdid' => $cpdid, 'locked' => 0));
 
         if (!$cpd) {
             return false;
@@ -711,6 +743,14 @@ EOS;
      */
     public function delete_cpd_record($cpdid) {
         global $DB;
+
+        // Must be unlocked.
+        $cpd = $DB->get_record('local_taps_enrolment', array('cpdid' => $cpdid, 'locked' => 0));
+
+        if (!$cpd) {
+            return false;
+        }
+
         return $DB->delete_records('local_taps_enrolment', array('cpdid' => $cpdid));
     }
 
@@ -766,7 +806,7 @@ EOS;
             array('staffid' => $enrolment->staffid, 'classid' => $enrolment->classid),
             $inparams
         );
-        $select = "staffid = :staffid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}";
+        $select = "staffid = :staffid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND active = 1 AND {$compare} {$in}";
         $existingenrolments = $DB->count_records_select('local_taps_enrolment', $select, $params);
         if ($existingenrolments) {
             $result->success = false;
@@ -955,13 +995,48 @@ EOS;
             array_merge($this->get_statuses('placed'), $this->get_statuses('attended')),
             SQL_PARAMS_NAMED, 'status'
         );
-        $compare = $DB->sql_compare_text('bookingstatus');
         $params = array_merge(
             array('classid' => $classid),
             $inparams
         );
-        $enrolments = $DB->count_records_select('local_taps_enrolment', "classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}", $params);
-        
+        $enrolments = $DB->count_records_select('local_taps_enrolment', "classid = :classid AND (archived = 0 OR archived IS NULL) AND bookingstatus {$in}", $params);
+
         return max(array(0, $class->maximumattendees - $enrolments));
+    }
+
+    public function get_seats_remaining_by_course($courseid) {
+        global $DB;
+
+        $seatsremaining = [];
+
+        $classes = $this->get_course_classes($courseid, false, false, 'classid, maximumattendees');
+
+        // Placed and attended count as taking seats.
+        list($in, $inparams) = $DB->get_in_or_equal(
+            array_merge($this->get_statuses('placed'), $this->get_statuses('attended')),
+            SQL_PARAMS_NAMED, 'status'
+        );
+        $params = array_merge(
+            array('courseid' => $courseid),
+            $inparams
+        );
+        $sql = "SELECT classid, COUNT(enrolmentid)
+                  FROM {local_taps_enrolment}
+                 WHERE courseid = :courseid AND (archived = 0 OR archived IS NULL) AND bookingstatus {$in}
+              GROUP BY classid
+              ORDER BY classid ASC";
+        $enrolments = $DB->get_records_sql_menu($sql, $params);
+
+        foreach ($classes as $class) {
+            if (!($class->maximumattendees > 0)) {
+                $seatsremaining[$class->classid] = -1;
+            } else if (!isset($enrolments[$class->classid])) {
+                $seatsremaining[$class->classid] = $class->maximumattendees;
+            } else {
+                $seatsremaining[$class->classid] = max(array(0, $class->maximumattendees - $enrolments[$class->classid]));
+            }
+        }
+
+        return $seatsremaining;
     }
 }

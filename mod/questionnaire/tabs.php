@@ -17,10 +17,14 @@
 /**
  * prints the tabbed bar
  *
- * @author Mike Churchward
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @package questionnaire
+ * @package mod_questionnaire
+ * @copyright  2016 Mike Churchward (mike.churchward@poetgroup.org)
+ * @author     Mike Churchward
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
+
 global $DB, $SESSION;
 $tabs = array();
 $row  = array();
@@ -31,17 +35,10 @@ if (!isset($SESSION->questionnaire)) {
 }
 $currenttab = $SESSION->questionnaire->current_tab;
 
-// If this questionnaire has a survey, get the survey and owner.
 // In a questionnaire instance created "using" a PUBLIC questionnaire, prevent anyone from editing settings, editing questions,
 // viewing all responses...except in the course where that PUBLIC questionnaire was originally created.
 
-$courseid = $questionnaire->course->id;
-if ($survey = $DB->get_record('questionnaire_survey', array('id' => $questionnaire->sid))) {
-    $owner = (trim($survey->owner) == trim($courseid));
-} else {
-    $survey = false;
-    $owner = true;
-}
+$owner = !empty($questionnaire->sid) && ($questionnaire->survey->courseid == $questionnaire->course->id);
 if ($questionnaire->capabilities->manage  && $owner) {
     $row[] = new tabobject('settings', $CFG->wwwroot.htmlspecialchars('/mod/questionnaire/qsettings.php?'.
             'id='.$questionnaire->cm->id), get_string('advancedsettings'));
@@ -185,6 +182,7 @@ if (($canviewallgroups || ($canviewgroups && $questionnaire->capabilities->reada
 
     }
 } else if ($canviewgroups && $questionnaire->capabilities->readallresponses && ($numresp > 0) && $canviewgroups &&
+           // If resp_view is set to QUESTIONNAIRE_STUDENTVIEWRESPONSES_NEVER, then this will always be false.
            ($questionnaire->resp_view == QUESTIONNAIRE_STUDENTVIEWRESPONSES_ALWAYS ||
             ($questionnaire->resp_view == QUESTIONNAIRE_STUDENTVIEWRESPONSES_WHENCLOSED
                 && $questionnaire->is_closed()) ||
@@ -261,6 +259,5 @@ if ((count($row) > 1) || (!empty($row2) && (count($row2) > 1))) {
         $tabs[] = $row3;
     }
 
-    print_tabs($tabs, $currenttab, $inactive, $activated);
-
+    $questionnaire->page->add_to_page('tabsarea', print_tabs($tabs, $currenttab, $inactive, $activated, true));
 }

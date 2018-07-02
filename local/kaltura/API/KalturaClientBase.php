@@ -47,7 +47,7 @@ class MultiRequestSubResult implements ArrayAccess
 	{
         return new MultiRequestSubResult($this->value . ':' . $name);
 	}
-	
+
 	public function offsetExists($offset)
 	{
 		return true;
@@ -61,7 +61,7 @@ class MultiRequestSubResult implements ArrayAccess
 	public function offsetSet($offset, $value)
 	{
 	}
-	
+
 	public function offsetUnset($offset)
 	{
 	}
@@ -157,13 +157,13 @@ class KalturaClientBase
 	* @var Array of response headers
 	*/
 	private $responseHeaders = array();
-	
+
 	/**
 	 * path to save served results
 	 * @var string
 	 */
 	protected $destinationPath = null;
-	
+
 	/**
 	 * return served results without unserializing them
 	 * @var boolean
@@ -297,7 +297,7 @@ class KalturaClientBase
 			$this->resetRequest();
 			throw new KalturaClientException("Downloading files is not supported as part of multi-request.", KalturaClientException::ERROR_DOWNLOAD_IN_MULTIREQUEST);
 		}
-		
+
 		if (count($this->callsQueue) == 0)
 		{
 			$this->resetRequest();
@@ -371,7 +371,7 @@ class KalturaClientBase
 			}
 			if (!is_null($serverName) || !is_null($serverSession))
 				$this->log("server: [{$serverName}], session: [{$serverSession}]");
-			
+
 			$this->log("result (serialized): " . $postResult);
 
 			if($this->returnServedResult)
@@ -441,10 +441,10 @@ class KalturaClientBase
 	{
 		if (function_exists('curl_init'))
 			return $this->doCurl($url, $params, $files);
-			
+
 		if($this->destinationPath || $this->returnServedResult)
 			throw new KalturaClientException("Downloading files is not supported with stream context http request, please use curl.", KalturaClientException::ERROR_DOWNLOAD_NOT_SUPPORTED);
-				
+
 		return $this->doPostRequest($url, $params, $files);
 	}
 
@@ -506,7 +506,7 @@ class KalturaClientBase
 
 		if (isset($this->config->proxyHost)) {
 /* BEGIN CORE MOD */
-			curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, false);
+            	curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, false);
 /* END CORE MOD */
 			curl_setopt($ch, CURLOPT_PROXY, $this->config->proxyHost);
 			if (isset($this->config->proxyPort)) {
@@ -548,12 +548,12 @@ class KalturaClientBase
 		{
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		}
-		
+
 		$result = curl_exec($ch);
-		
+
 		if($destinationResource)
 			fclose($destinationResource);
-			
+
 		$curlError = curl_error($ch);
 		curl_close($ch);
 		return array($result, $curlError);
@@ -1162,8 +1162,9 @@ class KalturaClientException extends Exception
 class KalturaConfiguration
 {
 	private $logger;
-
-	public $serviceUrl    				= "http://www.kaltura.com/";
+/* BEGIN CORE MOD */
+	public $serviceUrl    				= "https://www.kaltura.com/";
+/* END CORE MOD */
 	public $partnerId    				= null;
 	public $format        				= 3;
 	public $clientTag 	  				= "php5:14-01-16";

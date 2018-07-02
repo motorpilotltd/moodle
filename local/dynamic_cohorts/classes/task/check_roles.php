@@ -29,12 +29,13 @@ class check_roles extends \core\task\scheduled_task
          */
         $query = "
             SELECT
-              ".$DB->sql_concat('cm.userid', "'#'", 'cr.roleid')." as uniqid, 
+              ".$DB->sql_concat('cm.userid', "'#'", 'cr.roleid',  "'#'", 'cr.contextid')." as uniqid, 
               cm.userid,
-              cr.roleid
+              cr.roleid,
+              cr.contextid
             FROM {cohort_members} cm
             JOIN {wa_cohort_roles}  cr ON cr.cohortid = cm.cohortid
-            LEFT JOIN {role_assignments} ra ON ra.roleid = cr.roleid AND ra.userid = cm.userid AND ra.component = :component
+            LEFT JOIN {role_assignments} ra ON ra.roleid = cr.roleid AND ra.userid = cm.userid AND ra.component = :component AND ra.contextid = cr.contextid
             WHERE ra.id IS NULL
         ";
 
@@ -43,8 +44,8 @@ class check_roles extends \core\task\scheduled_task
 
         $users = $DB->get_records_sql($query, $params);
 
-        $context = \context_system::instance();
         foreach($users as $user){
+            $context = \context::instance_by_id($user->contextid);
             if($actionscounter >= $maxactions){
                 break;
             }
@@ -65,12 +66,13 @@ class check_roles extends \core\task\scheduled_task
             FROM {role_assignments} ra
             LEFT JOIN (
                 SELECT
-                  DISTINCT 
+                  DISTINCT
                   cm.userid,
-                  cr.roleid
+                  cr.roleid,
+                  cr.contextid
                 FROM {cohort_members} cm
                 JOIN {wa_cohort_roles}  cr ON cr.cohortid = cm.cohortid
-            ) cm ON cm.userid = ra.userid AND cm.roleid = ra.roleid
+            ) cm ON cm.userid = ra.userid AND cm.roleid = ra.roleid AND cm.contextid = ra.contextid 
             WHERE ra.component = :component
             AND cm.userid IS NULL
         ";
