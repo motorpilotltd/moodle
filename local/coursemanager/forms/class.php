@@ -49,7 +49,7 @@ class cmform_class extends moodleform {
         $this->add_element("coursenamedisplay", "text", PARAM_TEXT);
 
         $this->add_element("classname", "text", PARAM_TEXT, null, null, true);
-        
+
         $this->add_element("classduration", "text", PARAM_FLOAT);
         $taps = new \local_taps\taps();
         $durationunits = $taps->get_durationunitscode();
@@ -57,7 +57,7 @@ class cmform_class extends moodleform {
         array_unshift($durationunits, get_string('form:course:getdurationunits', 'local_coursemanager'));
 
         $this->add_element("classdurationunitscode", "select", null, $durationunits);
-        
+
 
         // Set automatically based on classstarttime (this field existed because some TAPS returned timezones needed to be normalised/converted).
         // Allow users to set this one.
@@ -86,7 +86,7 @@ class cmform_class extends moodleform {
         $this->add_element("classsuppliername", "text", PARAM_TEXT);
 
         $mform->hardFreeze('coursenamedisplay');
-        
+
         $mform->addRule('classname', get_string('required', 'local_coursemanager'), 'required', null, 'client');
 
         if ($data->id > 0) {
@@ -150,7 +150,7 @@ class cmform_class extends moodleform {
         // $errors['somefield'] = $this->str('someerror');
         if (isset($data['price'])) {
             if (strpos($data['price'], ",")) {
-                $errors['price'] = $this->str('priceerror'); 
+                $errors['price'] = $this->str('priceerror');
             }
         }
         if (isset($data['classtype']) && $data['classtype'] == "0") {
@@ -161,7 +161,7 @@ class cmform_class extends moodleform {
         }
         if (!isset($data['cmcourse'])) {
             $errors['classname'] = get_string('formerror', 'local_coursemanager');
-        } 
+        }
         $course = $DB->get_record('local_taps_course', array('id' => $data['cmcourse']));
         $sql = 'SELECT id FROM {local_taps_class}
                  WHERE courseid = :cmcourse
@@ -316,5 +316,31 @@ class cmform_class extends moodleform {
                 }
             }
         }
+    }
+
+    public function set_data($defaultvalues) {
+        try {
+            $timezone = new DateTimeZone($defaultvalues->usedtimezone);
+        } catch (Exception $e) {
+            $timezone = new DateTimeZone(date_default_timezone_get());
+        }
+
+        if (!empty($defaultvalues->enrolmentstartdate)) {
+            // Offset to 00:00:00 UTC for form.
+            $enrolmentstartdate = new DateTime(null, $timezone);
+            $enrolmentstartdate->setTimestamp($defaultvalues->enrolmentstartdate);
+            $enrolmentstartdate->setTimestamp($enrolmentstartdate->getTimestamp() + $enrolmentstartdate->getOffset());
+            $defaultvalues->enrolmentstartdate = $enrolmentstartdate->getTimestamp();
+        }
+
+        if (!empty($defaultvalues->enrolmentenddate)) {
+            // Offset to 23:59:59 UTC for form.
+            $enrolmentenddate = new DateTime(null, $timezone);
+            $enrolmentenddate->setTimestamp($defaultvalues->enrolmentenddate);
+            $enrolmentenddate->setTimestamp($enrolmentenddate->getTimestamp() + $enrolmentenddate->getOffset());
+            $defaultvalues->enrolmentenddate = $enrolmentenddate->getTimestamp();
+        }
+
+        parent::set_data($defaultvalues);
     }
 }
