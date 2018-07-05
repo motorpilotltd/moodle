@@ -3310,7 +3310,9 @@ function facetoface_user_complete($course, $user, $mod, $facetoface) {
  */
 function facetoface_add_session_to_calendar($session, $facetoface, $calendartype='none', $userid=0, $eventtype='session') {
     global $CFG, $DB;
-
+/* BEGIN CORE MOD */
+    require_once($CFG->dirroot . '/calendar/lib.php');
+/* END CORE MOD */
     if (empty($session->datetimeknown)) {
         return true; // Date unkown, can't add to calendar.
     }
