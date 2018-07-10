@@ -18,84 +18,31 @@ namespace local_admin;
 
 class courseformmoddifier {
     public static function alter_definition(\MoodleQuickForm $mform) {
-        global $PAGE, $DB, $USER;
+        global $PAGE, $DB;
 
         $PAGE->requires->js_call_amd('local_admin/enhance', 'initialise');
+
+        $courseid = $mform->getElementValue('id');
+
+        $systemcontext = \context_system::instance();
+        if (!empty($courseid) && !!has_capability("local/admin:createnonarupcourse", $systemcontext)) {
+            self::freezeandhideunwantedelements($mform);
+            return;
+        }
+        if (!empty($courseid)) {
+            return;
+        }
 
         $arupdefaultcourse = $mform->createElement('selectyesno', 'arupdefaultcourse', get_string('arupdefaultcourse', 'local_admin'));
         $mform->insertElementBefore($arupdefaultcourse, 'fullname');
         $mform->setDefault('arupdefaultcourse', true);
 
-        if($mform->getElementValue('arupdefaultcourse')[0] == 0) {
+        if ($mform->getElementValue('arupdefaultcourse')[0] !== 0) {
             return;
         }
 
-        $mform->addElement('html', \html_writer::tag('div', ' ', ['class' => 'hidden', 'id' => 'id_updatecourseformat']));
-
-        $mform->registerNoSubmitButton('updatearupdefaultcourse');
-        $mform->addElement('submit', 'updatearupdefaultcourse', get_string('updatearupdefaultcourse', 'local_admin'));
-
-        $enrolment = $mform->createElement('header', 'enrolment', get_string('enrolment', 'local_admin'));
-        $mform->insertElementBefore($enrolment, 'courseformathdr');
-
-        $enrolmentroles = array('' => get_string('choosedots')) + get_default_enrol_roles(\context_course::instance(SITEID));
-        $enrolmentrole = $mform->createElement('select', 'enrolmentrole', get_string('enrolmentrole', 'local_admin'), $enrolmentroles);
-        $mform->insertElementBefore($enrolmentrole, 'courseformathdr');
-        $mform->addRule('enrolmentrole', null, 'required', null, 'client');
-        $mform->addHelpButton('enrolmentrole', 'enrolmentrole', 'local_admin');
-        $mform->setDefault('enrolmentrole', get_config('local_admin', 'default_enrolment_role'));
-
-        $dbregionoptions = $DB->get_records_select_menu('local_regions_reg', 'userselectable = 1', array(), 'name DESC', 'id, name');
-        $regionoptions = array(0 => get_string('global', 'local_regions')) + $dbregionoptions;
-        $size = min(array(count($regionoptions), 10));
-        $regionattributes = array('size' => $size, 'style' => 'min-width:200px');
-
-        $internalworkflowhdr = $mform->createElement('header', 'internalworkflowhdr', get_string('internalworkflowhdr', 'local_admin'));
-        $mform->insertElementBefore($internalworkflowhdr, 'courseformathdr');
-
-        $options = array('' => get_string('choosedots'));
-        $iws = $DB->get_records_menu('tapsenrol_iw', null, 'name ASC', 'id, name');
-        $internalworkflowid = $mform->createElement('select', 'internalworkflowid', get_string('internalworkflow', 'tapsenrol'), $options + $iws);
-        $mform->insertElementBefore($internalworkflowid, 'courseformathdr');
-        $mform->addRule('internalworkflowid', null, 'required', null, 'client');
-        $mform->addHelpButton('internalworkflowid', 'internalworkflow', 'tapsenrol');
-
-        $enrolmentregion = $mform->createElement('select', 'enrolmentregion', get_string('enrolment_region_mapping', 'tapsenrol'), $regionoptions, $regionattributes);
-        $mform->insertElementBefore($enrolmentregion, 'courseformathdr');
-        $enrolmentregion->setMultiple(true);
-        $enrolmenthint = \html_writer::tag('div', get_string('overrideregions', 'tapsenrol'), array('class' => 'felement fselect'));
-        $enrolmenthint = $mform->createElement('html', \html_writer::tag('div', $enrolmenthint, array('class' => 'fitem')));
-        $mform->insertElementBefore($enrolmenthint, 'courseformathdr');
-
-        // Hard freeze and hide everything from courseformathdr up to but not including buttonarr.
-        // Add configure standard arup course checkbox and JS
-        $removestart = $mform->_elementIndex['courseformathdr'];
-        $stopbefore = $mform->_elementIndex['buttonar'];
-
-        $elements_to_freeze = array_slice($mform->_elements, $removestart, $stopbefore - $removestart, true);
-        $elementnamestofreeze = [];
-
-        foreach ($elements_to_freeze as $element) {
-
-            if ($element->getType() == 'header') {
-                $mform->removeElement($element->getName());
-            } else {
-                $elementnamestofreeze[] = $element->getName();
-
-                $class = $element->getAttribute('class');
-                if (empty($class)) {
-                    $class = '';
-                }
-                $element->updateAttributes(array('class' => $class . ' hidden'));
-            }
-        }
-
-        $systemcontext = \context_system::instance();
-        if (!has_capability("local/admin:createnonarupcourse", $systemcontext)) {
-            $elementnamestofreeze[] = 'arupdefaultcourse';
-        }
-
-        $mform->hardFreeze($elementnamestofreeze);
+        self::addarupelements($mform);
+        self::freezeandhideunwantedelements($mform);
     }
 
     public static function post_creation($data, $course) {
@@ -245,5 +192,90 @@ class courseformmoddifier {
         $event->trigger();
 
         rebuild_course_cache($course->id);
+    }
+
+    /**
+     * @param \MoodleQuickForm $mform
+     */
+    private static function freezeandhideunwantedelements(\MoodleQuickForm $mform) {
+        // Hard freeze and hide everything from courseformathdr up to but not including buttonarr.
+        // Add configure standard arup course checkbox and JS
+        $removestart = $mform->_elementIndex['courseformathdr'];
+        $stopbefore = $mform->_elementIndex['buttonar'];
+
+        $elements_to_freeze = array_slice($mform->_elements, $removestart, $stopbefore - $removestart, true);
+        $elementnamestofreeze = [];
+
+        foreach ($elements_to_freeze as $element) {
+
+            if ($element->getType() == 'header') {
+                $mform->removeElement($element->getName());
+            } else {
+                $elementnamestofreeze[] = $element->getName();
+
+                $class = $element->getAttribute('class');
+                if (empty($class)) {
+                    $class = '';
+                }
+                $element->updateAttributes(array('class' => $class . ' hidden'));
+            }
+        }
+
+        $systemcontext = \context_system::instance();
+        if (!has_capability("local/admin:createnonarupcourse", $systemcontext)) {
+            $elementnamestofreeze[] = 'arupdefaultcourse';
+        }
+
+        $mform->hardFreeze($elementnamestofreeze);
+    }
+
+    /**
+     * @param \MoodleQuickForm $mform
+     * @param $DB
+     */
+    private static function addarupelements(\MoodleQuickForm $mform) {
+        global $DB;
+        
+        $mform->addElement('html', \html_writer::tag('div', ' ', ['class' => 'hidden', 'id' => 'id_updatecourseformat']));
+
+        $mform->registerNoSubmitButton('updatearupdefaultcourse');
+        $mform->addElement('submit', 'updatearupdefaultcourse', get_string('updatearupdefaultcourse', 'local_admin'));
+
+        $enrolment = $mform->createElement('header', 'enrolment', get_string('enrolment', 'local_admin'));
+        $mform->insertElementBefore($enrolment, 'courseformathdr');
+
+        $enrolmentroles = array('' => get_string('choosedots')) + get_default_enrol_roles(\context_course::instance(SITEID));
+        $enrolmentrole =
+                $mform->createElement('select', 'enrolmentrole', get_string('enrolmentrole', 'local_admin'), $enrolmentroles);
+        $mform->insertElementBefore($enrolmentrole, 'courseformathdr');
+        $mform->addRule('enrolmentrole', null, 'required', null, 'client');
+        $mform->addHelpButton('enrolmentrole', 'enrolmentrole', 'local_admin');
+        $mform->setDefault('enrolmentrole', get_config('local_admin', 'default_enrolment_role'));
+
+        $dbregionoptions =
+                $DB->get_records_select_menu('local_regions_reg', 'userselectable = 1', array(), 'name DESC', 'id, name');
+        $regionoptions = array(0 => get_string('global', 'local_regions')) + $dbregionoptions;
+        $size = min(array(count($regionoptions), 10));
+        $regionattributes = array('size' => $size, 'style' => 'min-width:200px');
+
+        $internalworkflowhdr =
+                $mform->createElement('header', 'internalworkflowhdr', get_string('internalworkflowhdr', 'local_admin'));
+        $mform->insertElementBefore($internalworkflowhdr, 'courseformathdr');
+
+        $options = array('' => get_string('choosedots'));
+        $iws = $DB->get_records_menu('tapsenrol_iw', null, 'name ASC', 'id, name');
+        $internalworkflowid =
+                $mform->createElement('select', 'internalworkflowid', get_string('internalworkflow', 'tapsenrol'), $options + $iws);
+        $mform->insertElementBefore($internalworkflowid, 'courseformathdr');
+        $mform->addRule('internalworkflowid', null, 'required', null, 'client');
+        $mform->addHelpButton('internalworkflowid', 'internalworkflow', 'tapsenrol');
+
+        $enrolmentregion = $mform->createElement('select', 'enrolmentregion', get_string('enrolment_region_mapping', 'tapsenrol'),
+                $regionoptions, $regionattributes);
+        $mform->insertElementBefore($enrolmentregion, 'courseformathdr');
+        $enrolmentregion->setMultiple(true);
+        $enrolmenthint = \html_writer::tag('div', get_string('overrideregions', 'tapsenrol'), array('class' => 'felement fselect'));
+        $enrolmenthint = $mform->createElement('html', \html_writer::tag('div', $enrolmenthint, array('class' => 'fitem')));
+        $mform->insertElementBefore($enrolmenthint, 'courseformathdr');
     }
 }
