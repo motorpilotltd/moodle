@@ -162,7 +162,7 @@ $string['noenrolments'] = 'You do not have any current enrolments on this course
 
 $string['form:modal:validityconfirm:dismiss'] = 'Dismiss';
 $string['form:modal:validityconfirm:title'] = 'Check your evidence validity period';
-$string['form:modal:validityconfirm:content'] = 'Your evidence expiry date didn\'t met the exepcted validity period of {$a}. Please try again or save your evidence.';
+$string['form:modal:validityconfirm:content'] = 'Your evidence expiry date doesn\'t meet the expected validity period of {$a}. Please try again or save your evidence.';
 $string['modal:validityconfirm:cancel'] = 'Cancel';
 $string['modal:validityconfirm:confirm'] = 'Continue';
 

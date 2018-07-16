@@ -33,6 +33,9 @@ class mod_arupevidence_completion_form extends moodleform
         global $COURSE, $PAGE, $USER;
         $mform = $this->_form;
 
+        // Disable change checker as interferes with validity period modal confirmation.
+        $mform->disable_form_change_checker();
+
         $this->_arupevidenceuser = $this->_customdata['arupevidenceuser'] ? $this->_customdata['arupevidenceuser'] : null;
         $this->_arupevidence = $this->_customdata['arupevidence'] ? $this->_customdata['arupevidence'] : null;
 
