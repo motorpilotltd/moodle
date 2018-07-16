@@ -49,6 +49,7 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
         $table->head[] = get_string('approve:name', 'mod_arupevidence');
         $table->head[] = get_string('approve:email', 'mod_arupevidence');
         $table->head[] = get_string('approve:datecompleted', 'mod_arupevidence');
+        $table->head[] = get_string('approve:expirydate', 'mod_arupevidence');
         $table->head[] = get_string('approve:certificatelink', 'mod_arupevidence');
         if ($isreject) {
             $table->head[] = get_string('reject:daterejected', 'mod_arupevidence');
@@ -85,6 +86,11 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
 
                 // Date Completed
                 $cell->text = (!empty($usercompletion->completiondate))? userdate($usercompletion->completiondate,'%A, %d %B %Y', 0) : '';
+                $cell->attributes['class'] = 'text-left';
+                $cells[] = clone($cell);
+
+                // Expiry Date.
+                $cell->text = (!empty($usercompletion->expirydate))? userdate($usercompletion->expirydate,'%A, %d %B %Y', 0) : '';
                 $cell->attributes['class'] = 'text-left';
                 $cells[] = clone($cell);
 
