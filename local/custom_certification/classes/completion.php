@@ -290,6 +290,7 @@ class completion
             $record = new \stdClass();
             $record->id = $details->id;
             $record->duedate = $duedate;
+            $record->timemodified = time();
             $DB->update_record('certif_completions', $record);
         }
     }
@@ -366,7 +367,7 @@ class completion
             $interval = new \DateInterval('P'.$certification->windowperiod.certification::get_time_period_for_interval($certification->windowperiodunit));
             $datetime->sub($interval);
             $record->timewindowsopens = $datetime->getTimestamp();
-
+            $record->timemodified = time();
             $DB->update_record('certif_completions', $record);
         }
 
@@ -441,6 +442,7 @@ class completion
 
             $completionrecord->progress = $certifpath == certification::CERTIFICATIONPATH_BASIC ? $progress['certification'] : $progress['recertification'];
 
+            $completionrecord->timemodified = time();
             $completionrecord->id = $DB->insert_record('certif_completions', $completionrecord, true);
         } else {
             if($status == self::COMPLETION_STATUS_COMPLETED && $completionrecord->status != self::COMPLETION_STATUS_COMPLETED){
@@ -468,6 +470,7 @@ class completion
             $completionrecord->cronchecked = 1;
             $completionrecord->progress = $certifpath == certification::CERTIFICATIONPATH_BASIC ? $progress['certification'] : $progress['recertification'];
             $completionrecord->status = $status;
+            $completionrecord->timemodified = time();
             $DB->update_record('certif_completions', $completionrecord);
         }
         /**
