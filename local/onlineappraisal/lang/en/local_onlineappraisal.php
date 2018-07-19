@@ -33,6 +33,23 @@ $string['setting:logo'] = 'Alternate logo';
 $string['setting:logo_desc'] = 'An alternate logo which will be used specifically for appraisal pages.';
 $string['setting:helpurl'] = 'Help Url';
 $string['setting:helpurl_desc'] = 'A link to a help page for the Appraisal menu';
+$string['setting:quicklinks'] = 'Quick links';
+$string['setting:quicklinks_desc'] = 'Links to be added to the quick links block under the main navigation block.
+
+Enter each quick link on a new line with format:<br>
+item text, link URL, and language code (optional, comma separated list, can be negated with ! at beginning, for displaying the item to users of the specified language only), separated by pipe characters.
+
+For example...<br>
+1. Shows for all languages except es, pl, nl<br>
+2. Shows for es<br>
+3. Shows for pl, nl<br>
+4. Shows for all
+<pre>
+Contribution Guide|https://example.com/guide|!es,pl,nl
+Guía de Contribución|https://example.com/guide-es|es
+Guide for Poland and the Netherlands|https://example.com/guide-pl-nl|pl,nl
+Guide to Appraisal|https://example.com/guide-appraisal
+</pre>';
 $string['settings'] = 'Online appraisal configuration';
 
 $string['appraisal'] = 'Appraisal';
@@ -1393,3 +1410,7 @@ $string['itadmin:deletefeedback'] = 'Delete Feedback';
 $string['itadmin:feedbackdeleted'] = 'Feedback Deleted';
 $string['itadmin:faqcontent'] = '<h4>How do I change the status of an appraisal?</h4>
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ullamcorper, metus laoreet efficitur maximus, elit lorem egestas justo, sed lacinia nisl urna a nibh. Vestibulum vel nunc massa. Cras sit amet turpis accumsan, luctus felis sed, elementum diam. Sed eu metus tempor turpis auctor scelerisque at vel lectus. Pellentesque odio turpis, venenatis id nulla in, eleifend maximus sem. Aliquam vitae vestibulum felis. Integer ultrices neque vitae odio aliquam, nec tristique enim vulputate. Pellentesque porta sagittis diam vitae facilisis. Duis eleifend iaculis neque, non luctus turpis cursus sed. In eget nibh quis enim finibus pharetra vel fringilla arcu. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.';
+
+// Fake blocks.
+$string['navigation'] = 'Navigation';
+$string['quicklinks'] = 'Quick links';
