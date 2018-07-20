@@ -22,7 +22,7 @@
         }
         .felement input[type="text"],
         textarea {
-            max-width: 635px;
+            max-width: 505px;
         }
         textarea {
             min-height: 200px;
@@ -93,9 +93,15 @@
         .fcheckbox > span > label {
             display: inline;
         }
-    }
-    .fitem.fitem_fcheckbox .fitemtitle {
-        display: none;
+        &.fitem_fcheckbox .fitemtitle {
+            display: none;
+        }
+        &.oa-repeating-element .felement .oa-repeating-element {
+            margin-bottom: 0;
+        }
+        &.femptylabel.oa-repeating-element .fitemtitle {
+            display: none;
+        }
     }
     &.admin_group {
         position: relative;
@@ -167,6 +173,10 @@
         font-size: 0.85em;
         margin-bottom: 15px;
         margin-top: -13px;
+    }
+    button.oa-add-repeating-element {
+        display: none;
+        margin: 0 0 10px 0;
     }
 }
 

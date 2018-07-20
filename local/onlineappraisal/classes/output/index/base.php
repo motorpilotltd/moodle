@@ -63,7 +63,7 @@ abstract class base implements renderable, templatable {
                 $this->data->{$state}->appraisals = array_values($appraisals);
             }
         }
-        
+
         $this->pre_process_appraisals();
     }
 
@@ -126,7 +126,7 @@ abstract class base implements renderable, templatable {
         }
         $permissions['editf2f'] = permissions::is_allowed('f2f:add', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
         $permissions['togglef2f'] = permissions::is_allowed('f2f:complete', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
-        
+
         $permissions['haspermissions'] = in_array(true, $permissions);
 
         // Keep these separate to appear outside of dropdown.

@@ -87,7 +87,7 @@ class appraisal extends base {
      */
     private function get_summaries_extra_rows($data) {
         global $DB;
-        
+
         foreach ($this->data->summaries as $summary) {
             switch ($summary->name) {
                 case 'signoff' :
@@ -113,13 +113,13 @@ class appraisal extends base {
      */
     private function get_forms() {
         global $DB;
-        
+
         $this->data->forms = array();
 
         // Forms and fields to print (in order).
         $forms = array(
             'lastyear' => array('appraiseereview', 'appraiserreview', 'appraiseedevelopment', 'appraiseefeedback'),
-            'careerdirection' => array('progress', 'comments'),
+            'careerdirection' => array('mobility', 'progress', 'comments'),
             'impactplan' => array('impact', 'support', 'comments'),
             'development' => array('seventy', 'twenty', 'ten', 'comments'),
         );
@@ -149,7 +149,7 @@ class appraisal extends base {
 
     /**
      * Get field information from loaded form data.
-     * 
+     *
      * @param array $fields
      * @param string $formname
      * @param array $formdata

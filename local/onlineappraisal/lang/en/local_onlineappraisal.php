@@ -83,6 +83,7 @@ $string['userinfo'] = 'Appraisee Info';
 $string['summaries'] = 'Summaries';
 $string['checkin'] = 'Check-in';
 $string['help'] = 'Help';
+$string['successionplan'] = 'Career Path and Development Plan';
 
 // General alerts.
 $string['alert:language:notdefault'] = '<strong>Warning</strong>: You are not using the default language to view this appraisal. Please ensure you provide answers to the questions in the most appropriate language for everyone involved.';
@@ -888,6 +889,13 @@ $string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">Last y
 // Career Direction
 $string['form:careerdirection:title'] = 'Section 2: Career Direction';
 $string['form:careerdirection:intro'] = 'The purpose of this section is to allow the appraisee to consider their career aspirations and discuss these in a practical way with their appraiser. For junior members of staff, the horizon for this conversation is likely to be about 1-3 years. For more senior members of staff we would expect it to be 3-5 years.';
+$string['form:careerdirection:mobility'] = 'Mobility preparedness to relocate';
+$string['form:careerdirection:mobilityhelp'] = 'Please expand on your reason with the comments section 2.1.';
+$string['form:careerdirection:mobility:answer:1'] = 'Fully internationally mobile';
+$string['form:careerdirection:mobility:answer:2'] = 'Fully mobile in current region';
+$string['form:careerdirection:mobility:answer:3'] = 'Fully mobile in current country';
+$string['form:careerdirection:mobility:answer:4'] = 'Limited mobility in current country';
+$string['form:careerdirection:mobility:answer:5'] = 'Not currently mobile';
 $string['form:careerdirection:progress'] = '2.1 How do you want your career to progress?';
 $string['form:careerdirection:progresshelp'] = '<div class="well well-sm"> <em>You should consider:</em> <ul class="m-b-0"> <li><em>What type of work do you want to be doing and with what level of responsibility?</em></li> <li><em>What is important to you about your work over the next few years e.g. breadth, depth, specialisation, generalisation, mobility, design, responsibility for people, etc?</em></li>
 <li><em>Where would you like to be located?</em></li> </ul> </div>';
@@ -978,6 +986,13 @@ $string['form:summaries:signoffhelp'] = '<div class="well well-sm"><em>To be com
 $string['form:summaries:grpleader'] = '5.5 Leader summary';
 $string['form:summaries:grpleaderhelp'] = '<div class="well well-sm"><em>To be completed by senior leader as the final sign off.</em></div>';
 $string['form:summaries:grpleadercaption'] = 'Completed by {$a->fullname}{$a->date}';
+$string['form:summaries:promotion'] = 'Please provide your assessment of the Appraisee\'s adequacy in their grade by choosing the best option from the list below.
+This information is your recommendation to Local Practice Leader & Group Leader and should NOT be discussed with the Appraisee.';
+$string['form:summaries:promotion:answer:1'] = 'Recommend promotion to next grade this cycle';
+$string['form:summaries:promotion:answer:2'] = 'Well place in current grade';
+$string['form:summaries:promotion:answer:3'] = 'Needs development in current grade';
+$string['form:summaries:promotion:answer:4'] = 'Not acceptable in current grade';
+$string['form:summaries:promotion:answer:5'] = 'Too new to assess';
 
 // Six month review [Legacy].
 $string['form:sixmonth:title'] = 'Six Month Review';
@@ -985,6 +1000,36 @@ $string['form:sixmonth:intro'] = 'The purpose of this section is to provide a re
 $string['form:sixmonth:sixmonthreview'] = 'Six Month Review';
 $string['form:sixmonth:sixmonthreviewhelp'] = '<div class="well well-sm">To be completed by appraisee and/or appraiser.<br /><br />Last modified: {$a}</div>';
 $string['form:sixmonth:never'] = 'Never';
+
+// Succession plan.
+$string['form:successionplan:title'] = 'Career Path and Development Plan';
+$string['form:successionplan:intro'] = 'This section informs the succession plan. This will be shared with region board, management board as appropriate. ';
+$string['form:successionplan:assessment'] = 'Assessment of Career Path';
+$string['form:successionplan:assessment:answer:1'] = 'Significantly larger role';
+$string['form:successionplan:assessment:answer:2'] = 'Potential for lateral move to broaden experience';
+$string['form:successionplan:assessment:answer:3'] = 'Moderate growth in role';
+$string['form:successionplan:assessment:answer:4'] = 'Focus on current role for 12 months';
+$string['form:successionplan:readiness'] = 'Readiness for next step';
+$string['form:successionplan:readiness:answer:1'] = 'Ready Now';
+$string['form:successionplan:readiness:answer:2'] = 'Ready in 1-2 years';
+$string['form:successionplan:readiness:answer:3'] = 'Ready in 3-5 years';
+$string['form:successionplan:readiness:answer:4'] = 'N/A';
+$string['form:successionplan:potential'] = 'Potential Future Roles';
+$string['form:successionplan:potential:answer:1'] = 'Business Leader';
+$string['form:successionplan:potential:answer:2'] = 'Group Leader';
+$string['form:successionplan:potential:answer:3'] = 'Practive Leader (Americas Region ONLY)';
+$string['form:successionplan:potential:answer:4'] = 'Project Director';
+$string['form:successionplan:potential:answer:5'] = 'Techinical Professional';
+$string['form:successionplan:strengths'] = 'Strengths';
+$string['form:successionplan:strengths:add'] = 'Add another strength';
+$string['form:successionplan:strengths:add:noscript'] = 'Save to add another strength input';
+$string['form:successionplan:developmentareas'] = 'Areas for development';
+$string['form:successionplan:developmentareas:add'] = 'Add another area for development';
+$string['form:successionplan:developmentareas:add:noscript'] = 'Save to add another area for development input';
+$string['form:successionplan:appraiseecomments'] = 'Appraisee comments';
+$string['form:successionplan:appraisercomments'] = 'Appraiser comments';
+$string['form:successionplan:locked'] = 'Lock Career Path and Development Plan (Will no longer be editable)';
+$string['form:successionplan:islocked'] = 'Career Path and Development Plan has been locked and can no longer be edited.';
 
 // Events.
 $string['eventappraisaladminviewed'] = 'Appraisal admin viewed';

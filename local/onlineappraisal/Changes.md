@@ -1,7 +1,7 @@
 20160509 11:05 - Bas
 Had to fix some SQL to make this work on my system. Search for "// Note Bas" in lib.php for more info.
 
-20160509 12:55 - Bas 
+20160509 12:55 - Bas
 Add in new files and structure.
 
 20160510 16:00 - Bas
@@ -652,3 +652,7 @@ Fix for incorrect $a being passed to standalone status comment additions.
 Updated group leader sign off (minimum viable solution) functionality.
     Now a selectable user (but only if groupleacder active flag is enabled for costcentre).
     See TAPS-1113 for further info.
+
+Version 2018010100 July/August 2018
+Added succession plan
+    Version bump to rebuild permissions cache.

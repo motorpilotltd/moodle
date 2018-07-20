@@ -96,12 +96,12 @@ class appraisal {
 
         // Initially set an empty action.
         $this->set_action();
-        
+
         // Serve the default welcome page if appraisee and new appraisal.
         if ($this->appraisal->statusid == 1 && $this->appraisal->viewingas == 'appraisee') {
             $this->page = 'introduction';
         }
-        
+
         // Set up pages for navigation.
         $this->appraisal_pages();
 
@@ -180,7 +180,7 @@ class appraisal {
      */
     private function appraisal_users($costcentre) {
         global $DB;
-        
+
         foreach (self::$types as $type => $info) {
             $isuser = "is_{$type}";
 
@@ -190,7 +190,7 @@ class appraisal {
             if ($info['load']) {
                 $typeuid = "{$type}_userid";
                 $userid = !empty($this->appraisal->$typeuid) ? $this->appraisal->$typeuid : null;
-                
+
                 $this->appraisal->{$type} = $userid ? $DB->get_record('user', array('id' => $userid)) : false;
 
                 if ($info['required'] && !$this->appraisal->{$type}) {
@@ -256,7 +256,7 @@ class appraisal {
      * @return bool true if user can view.
      */
     private function can_view_appraisal() {
-        
+
         if (empty($this->appraisal)) {
             print_error('error:noappraisal', 'local_onlineappraisal');
         }
@@ -287,6 +287,7 @@ class appraisal {
         $this->add_page('form', 'summaries');
         $this->add_page('form', 'sixmonth');
         $this->add_page('dashboard', 'checkin', false, 'checkins', true, false);
+        $this->add_page('form', 'successionplan');
         $this->add_page('dashboard', 'help', false, false, true, false);
         $this->add_page('dashboard', 'addfeedback', 'addfeedback', false, false, false);
 
@@ -319,7 +320,7 @@ class appraisal {
             $page->add = $this->check_permission($addpermission);
         } else {
             if (permissions::exists($viewpermission)) {
-                $page->view = $this->check_permission($viewpermission); 
+                $page->view = $this->check_permission($viewpermission);
             } else {
                 // Fallback to generic appraisal:view permission.
                 $page->view = $this->check_permission('appraisal:view');
@@ -351,7 +352,7 @@ class appraisal {
         if (empty($page->url)) {
             $page->url = new moodle_url('/local/onlineappraisal/view.php', array('page' => $name, 'appraisalid' => $this->appraisal->id, 'view' => $this->appraisal->viewingas));
         }
-        
+
         if ($hook && $this->page == $name) {
             $class = "\\local_onlineappraisal\\$hook";
             $classinstance = new $class($this);
@@ -397,7 +398,7 @@ class appraisal {
         }
         return $nexturl;
     }
-    
+
     /**
      * Redirect the user to the next appraisal page.
      * navigation structure.
@@ -457,7 +458,7 @@ class appraisal {
 
         $printvars = new stdClass();
         $printvars->options = array();
-        
+
         $printurl = new moodle_url(
                 '/local/onlineappraisal/print.php',
                 array(
@@ -465,7 +466,7 @@ class appraisal {
                     'view' => $this->appraisal->viewingas
                 )
             );
-        
+
         $options = array('appraisal' => 'appraisal', 'feedback' => 'feedback', 'feedbackown' => 'feedback');
         foreach ($options as $permission => $option) {
             if (permissions::is_allowed("{$permission}:print", $this->appraisal->permissionsid, $this->appraisal->viewingas, $this->appraisal->archived, $this->appraisal->legacy)) {
@@ -487,7 +488,7 @@ class appraisal {
 
         // Re-index options for mustache.
         $printvars->options = array_values($printvars->options);
-        
+
         $printvars->dropdown = count($printvars->options) > 1;
 
         // Reverse order as they pull-right!
@@ -534,7 +535,7 @@ class appraisal {
             $navitem->name = get_string($page->name, 'local_onlineappraisal');
             $navitem->view = $this->appraisal->viewingas;
             $navitem->appraisalid = $this->appraisal->id;
-            
+
             if ($page->type == 'form') {
                 $stored = in_array($page->name, $forms);
                 $navitem->checkbox = true;
@@ -587,7 +588,7 @@ class appraisal {
 
                 $pagehtml = $this->$contentmethod();
             }
-            
+
             // Are there alerts.
             // First the lmaguage alert.
             $alerthtml = $this->language_alert();
@@ -720,7 +721,7 @@ class appraisal {
      */
     public function set_appraisal_field($field, $value) {
         global $DB;
-        
+
         // Array of safe fields and their associated permission check string.
         $safefields = array(
             'held_date' => 'f2f:add',
@@ -729,7 +730,7 @@ class appraisal {
             'six_month_review' => 'sixmonth:add',
             'six_month_review_date' => 'sixmonth:add',
         );
-        
+
         if (!array_key_exists($field, $safefields)) {
             throw new Exception('Refused to set ' .$field. ' on this appraisal');
         }
