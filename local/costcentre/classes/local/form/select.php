@@ -43,7 +43,7 @@ class select extends \moodleform {
                 'costcentre',
                 get_string('label:costcentre', 'local_costcentre'),
                 array('' => '') + $this->costcentre->costcentresmenu,
-                array('class' => 'select2', 'data-placeholder' => get_string('choosecostcentre', 'local_costcentre')));
+                array('class' => 'select2', 'data-placeholder' => get_string('chooseonecostcentre', 'local_costcentre')));
 
         $mform->addElement('hidden', 'action', $this->costcentre->validaction);
         $mform->setType('action', PARAM_ALPHA);

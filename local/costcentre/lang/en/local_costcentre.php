@@ -37,9 +37,10 @@ $string['error:invalid:action'] = 'Invalid action specified.';
 $string['error:invalid:page'] = 'Invalid page requested.';
 
 // General strings.
-$string['choosecostcentre'] = 'Choose cost centre';
+$string['choosecostcentre'] = 'Choose one or more cost centres';
+$string['chooseonecostcentre'] = 'Choose cost centre';
 $string['chooseuser'] = 'Choose one or more users';
-$string['chooseoneuser'] = 'Choose one user';
+$string['chooseoneuser'] = 'Choose user';
 $string['choospermission'] = 'Choose one or more permissions';
 
 $string['edit:cancelled'] = 'Editing cancelled, your changes were not saved.';
