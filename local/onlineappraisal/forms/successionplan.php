@@ -99,39 +99,37 @@ class apform_successionplan extends moodleform {
             $mform->disabledIf($question, 'islocked', 'eq', 1);
         }
 
-        $strengths = [];
-        if (!empty($data->strengths)) {
-            $strengths = json_decode($data->strengths);
-        }
-        $submittedstrengths = !empty($_POST['strength']) ? count($_POST['strength']) : 0; // NEcessary for submission step!
-        $numstrengths = max([2, count($strengths) + 1, $submittedstrengths]);
-        for ($i = 0; $i < $numstrengths; $i++) {
+        $strengths = [
+            2,
+            !empty($data->strengths) ? count($data->strengths) + 1 : 0,
+            !empty($_POST['strengths']) ? count($_POST['strengths']) : 0
+        ];
+        for ($i = 0; $i < max($strengths); $i++) {
             $label = ($i === 0 ? $this->str('strengths') : '');
-            $mform->addElement('text', "strength[{$i}]", $label, ['class' => 'oa-repeating-element']);
-            $mform->setType("strength[{$i}]", PARAM_TEXT);
-            $mform->disabledIf("strength[{$i}]", 'islocked', 'eq', 1);
+            $mform->addElement('text', "strengths[{$i}]", $label, ['class' => 'oa-repeating-element']);
+            $mform->setType("strengths[{$i}]", PARAM_TEXT);
+            $mform->disabledIf("strengths[{$i}]", 'islocked', 'eq', 1);
         }
         $noscript = "<p class=\"visibleifnotjs\">{$this->str('strengths:add:noscript')}</p>";
-        $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="strength">'.$this->str('strengths:add').'</button>';
+        $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="strengths">'.$this->str('strengths:add').'</button>';
         $mform->addElement(
                 'html',
                 $button.$noscript
                 );
 
-        $developmentareas = [];
-        if (!empty($data->developmentareas)) {
-            $developmentareas = json_decode($data->developmentareas);
-        }
-        $submitteddevelopmentareas = !empty($_POST['developmentarea']) ? count($_POST['developmentarea']) : 0; // Necessary for submission step!
-        $numdevelopmentareas = max([2, count($developmentareas) + 1, $submitteddevelopmentareas]);
-        for ($i = 0; $i < $numdevelopmentareas; $i++) {
+        $developmentareas = [
+            2,
+            !empty($data->developmentareas) ? count($data->developmentareas) + 1 : 0,
+            !empty($_POST['developmentareas']) ? count($_POST['developmentareas']) : 0
+        ];
+        for ($i = 0; $i < max($developmentareas); $i++) {
             $label = ($i === 0 ? $this->str('developmentareas') : '');
-            $mform->addElement('text', "developmentarea[{$i}]", $label, ['class' => 'oa-repeating-element']);
-            $mform->setType("developmentarea[{$i}]", PARAM_TEXT);
-            $mform->disabledIf("developmentarea[{$i}]", 'islocked', 'eq', 1);
+            $mform->addElement('text', "developmentareas[{$i}]", $label, ['class' => 'oa-repeating-element']);
+            $mform->setType("developmentareas[{$i}]", PARAM_TEXT);
+            $mform->disabledIf("developmentareas[{$i}]", 'islocked', 'eq', 1);
         }
         $noscript = "<p class=\"visibleifnotjs\">{$this->str('developmentareas:add:noscript')}</p>";
-        $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="developmentarea">'.$this->str('developmentareas:add').'</button>';
+        $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="developmentareas">'.$this->str('developmentareas:add').'</button>';
         $mform->addElement(
                 'html',
                 $button.$noscript
@@ -186,20 +184,6 @@ class apform_successionplan extends moodleform {
         if ($data->userid != $USER->id) {
             $mform->hardFreeze();
         }
-
-        $strengths = !empty($data->strengths) ? json_decode($data->strengths) : [];
-        $i = 0;
-        foreach ($strengths as $strength) {
-            $mform->setDefault("strength[{$i}]", $strength);
-            $i++;
-        }
-
-        $developmentareas = !empty($data->developmentareas) ? json_decode($data->developmentareas) : [];
-        $i = 0;
-        foreach ($developmentareas as $developmentarea) {
-            $mform->setDefault("developmentarea[{$i}]", $developmentarea);
-            $i++;
-        }
     }
 
     public function get_data() {
@@ -207,17 +191,12 @@ class apform_successionplan extends moodleform {
         if (isset($data->islocked)) {
             unset($data->islocked);
         }
-        if (isset($data->strength)) {
-            $data->strengths = json_encode(array_filter($data->strength));
-            unset($data->strength);
+        // Clear empty inputs.
+        if (isset($data->strengths)) {
+            $data->strengths = array_filter($data->strengths);
         }
-        if (isset($data->strength)) {
-            $data->strengths = json_encode(array_filter($data->strength));
-            unset($data->strength);
-        }
-        if (isset($data->developmentarea)) {
-            $data->developmentareas = json_encode(array_filter($data->developmentarea));
-            unset($data->developmentarea);
+        if (isset($data->developmentareas)) {
+            $data->developmentareas = array_filter($data->developmentareas);
         }
         return $data;
     }

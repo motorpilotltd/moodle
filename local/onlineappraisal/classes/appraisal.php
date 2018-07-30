@@ -309,6 +309,8 @@ class appraisal {
      * @param boolean $redirectto Whether to allow redirection to page on 'save and continue'.
      */
     private function add_page($type, $name, $preloadform = false, $hook = false, $showinnav = true, $redirectto = true) {
+        global $DB;
+
         $page = new stdClass();
 
         $viewpermission = $name . ':view';
@@ -339,6 +341,12 @@ class appraisal {
 
         // Special cases...
         switch ($page->name) {
+            case 'successionplan':
+                // Check if enabled for appraisal.
+                if (empty($this->appraisal->successionplan)) {
+                    return;
+                }
+                break;
             case 'help':
                 $url = get_config('local_onlineappraisal', 'helpurl');
                 if ($url) {
@@ -467,7 +475,7 @@ class appraisal {
                 )
             );
 
-        $options = array('appraisal' => 'appraisal', 'feedback' => 'feedback', 'feedbackown' => 'feedback');
+        $options = array('appraisal' => 'appraisal', 'feedback' => 'feedback', 'feedbackown' => 'feedback', 'successionplan' => 'successionplan');
         foreach ($options as $permission => $option) {
             if (permissions::is_allowed("{$permission}:print", $this->appraisal->permissionsid, $this->appraisal->viewingas, $this->appraisal->archived, $this->appraisal->legacy)) {
                 $object = new stdClass();

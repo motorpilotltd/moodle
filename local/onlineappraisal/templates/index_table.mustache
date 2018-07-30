@@ -15,12 +15,13 @@
             <th class="text-center w-1">{{#str}}f2f:complete, local_onlineappraisal{{/str}}</th>
             <th>{{#str}}date:complete, local_onlineappraisal{{/str}}</th>
             <th>{{#str}}checkins:latest, local_onlineappraisal{{/str}}</th>
+            <th class="text-center w-1">{{#str}}successionplan:th, local_onlineappraisal{{/str}}</th>
             <th class="text-center w-1">&nbsp;</th>
         </tr>
     </thead>
     <tbody>
         <tr class="oa-empty-filter hidden">
-            <td colspan="{{#isgroupleader}}9{{/isgroupleader}}{{#ishrleader}}9{{/ishrleader}}{{^isgroupleader}}{{^ishrleader}}8{{/ishrleader}}{{/isgroupleader}}">
+            <td colspan="{{#isgroupleader}}10{{/isgroupleader}}{{#ishrleader}}10{{/ishrleader}}{{^isgroupleader}}{{^ishrleader}}9{{/ishrleader}}{{/isgroupleader}}">
                 <div class="alert alert-warning m-b-0" role="alert">
                     <i class="fa fa-exclamation-triangle"></i>
                     {{#str}}index:emptyfilter, local_onlineappraisal{{/str}}
@@ -97,8 +98,22 @@
             <td>
                 {{completed_date}}
             </td>
-            <td >
+            <td>
                 {{latestcheckin}}
+            </td>
+            <td class="text-center w-1">
+                <i class="fa fa-2x fa-fw
+                          {{#successionplan}}fa-check-square{{/successionplan}}
+                          {{^successionplan}}fa-square-o{{/successionplan}}
+                          {{#iscurrent}}{{^suspended}}
+                            {{#permissions.togglesuccessionplan}} oa-togglesuccessionplan{{/permissions.togglesuccessionplan}}
+                          {{/suspended}}{{/iscurrent}}"
+                   data-appraisalid="{{id}}">
+                    <span class="sr-only">
+                        {{#successionplan}}{{#str}}successionplan:has, local_onlineappraisal{{/str}}{{/successionplan}}
+                        {{^successionplan}}{{#str}}successionplan:hasnot, local_onlineappraisal{{/str}}{{/successionplan}}
+                    </span>
+                </i>
             </td>
             <td class="text-center w-1{{#suspended}} oa-user-suspended{{/suspended}}">
                 {{#permissions.haspermissions}}

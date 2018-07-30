@@ -76,7 +76,7 @@ class permissions {
     }
 
     /**
-     * Check if a certain permission is allowed for tcurrent user/status.
+     * Check if a certain permission is allowed for the current user/status.
      *
      * @param string $permission the full permission name.
      * @param int $permissionsid the permission status id for the appraisal.
@@ -249,6 +249,10 @@ class permissions {
         //successionplan:add
         self::add_permissions('successionplan', 'add', 'appraisee', 'all'); // Fields restricted.
         self::add_permissions('successionplan', 'add', 'appraiser', 'all'); // Fields restricted.
+        //successionplan:print
+        self::add_permissions('successionplan', 'print', 'all', 'all', self::PERMISSION_ALLOWED);
+        //successionplan:toggle
+        self::add_permissions('successionplan', 'toggle', 'hrleader', array(1,2,3,4,5,6,7));
 
         // Special legacy permission.
         //sixmonth:view
