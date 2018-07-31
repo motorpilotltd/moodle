@@ -320,6 +320,9 @@ class cmform_class extends moodleform {
 
     public function set_data($defaultvalues) {
         try {
+            if (empty($defaultvalues->usedtimezone)) {
+                throw new Exception();
+            }
             $timezone = new DateTimeZone($defaultvalues->usedtimezone);
         } catch (Exception $e) {
             $timezone = new DateTimeZone(date_default_timezone_get());
