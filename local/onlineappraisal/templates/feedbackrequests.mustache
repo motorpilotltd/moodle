@@ -61,7 +61,6 @@
             <th>{{#str}}feedbackrequests:th:facetofacedate, local_onlineappraisal{{/str}}</th>
             <th class="text-center">{{#str}}feedbackrequests:th:facetofaceheld, local_onlineappraisal{{/str}}</th>
             <th>{{#str}}feedbackrequests:th:completeddate, local_onlineappraisal{{/str}}</th>
-            <th class="text-center">{{#str}}feedbackrequests:th:confidential, local_onlineappraisal{{/str}}</th>
             <th class="text-center w-1">{{#str}}feedbackrequests:th:actions, local_onlineappraisal{{/str}}</th>
         </tr>
     </thead>
@@ -78,11 +77,6 @@
                 {{/face_to_face_held}}
                 </td>
                 <td>{{completeddate}}</td>
-                <td class="text-center">
-                {{#confidential}}
-                    <i class="fa fa-check text-success"></i>
-                {{/confidential}}
-                </td>
                 <td class="text-center w-1">
                     <a href="{{{feedbacklink}}}" class="btn btn-small btn-primary email-copy">
                         {{#str}}feedbackrequests:emailcopy, local_onlineappraisal{{/str}}
