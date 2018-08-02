@@ -1247,7 +1247,6 @@ $string['feedbackrequests:th:requestdate'] = 'Requested date';
 $string['feedbackrequests:th:facetofacedate'] = 'Face to face date';
 $string['feedbackrequests:th:facetofaceheld'] = 'Face to face held';
 $string['feedbackrequests:th:completeddate'] = 'Completed date';
-$string['feedbackrequests:th:confidential'] = 'Confidential';
 $string['feedbackrequests:th:actions'] = 'Actions';
 $string['feedbackrequests:emailcopy'] = 'Email me a copy';
 $string['feedbackrequests:submitfeedback'] = 'Submit feedback';
