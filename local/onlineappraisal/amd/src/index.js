@@ -22,8 +22,9 @@
  * @since      3.0
  */
 
-define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlineappraisal/datepicker'],
-       function($, cfg, str, notification, dp) {
+define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlineappraisal/datepicker',
+        'local_onlineappraisal/debounce'],
+       function($, cfg, str, notification, dp, debounce) {
 
     return /** @alias module:local_onlineappraisal/index */ {
         // Public variables and functions.
@@ -68,6 +69,19 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                     $('#oa-current-table tbody tr.oa-empty-filter').hide();
                 }
             });
+            // Search filter, across both tables.
+            var rows = $('#oa-current-table tbody tr:not(".oa-empty-filter"), #oa-archived-table tbody tr:not(".oa-empty-filter")');
+            $('#oa-table-search').keyup(debounce(function() {
+                var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+                rows.show().filter(function() {
+                    // First child to only search appraisee name.
+                    var text = $(this).children(':first').text().replace(/\s+/g, ' ').toLowerCase();
+                    /*jshint bitwise: false*/
+                    return !~text.indexOf(val);
+                    /*jshint bitwise: true*/
+                }).hide();
+            }, 300));
 
             // Marking F2F as complete.
             $('i.oa-togglef2f').css('cursor', 'pointer');

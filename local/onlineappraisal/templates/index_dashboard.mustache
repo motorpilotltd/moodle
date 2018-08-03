@@ -2,7 +2,13 @@
 <div class="m-b-15">
     {{toptext}}
 </div>
-
+{{^isappraisee}}
+<div class="row">
+    <div class="col-xs-12 col-sm-6 col-md-4 col-sm-offset-6 col-md-offset-8">
+        <input type="text" placeholder="{{#str}}index:searchtable, local_onlineappraisal{{/str}}" id="oa-table-search" class="form-control" />
+    </div>
+</div>
+{{/isappraisee}}
 <h3>{{#str}}appraisals:current, local_onlineappraisal{{/str}}</h3>
 {{#current}}
     {{^isappraisee}}
@@ -37,12 +43,19 @@
 {{/current}}
 
 <h3>{{#str}}appraisals:archived, local_onlineappraisal{{/str}}</h3>
+{{#cycleselect}}<div class="clearfix">{{{cycleselect}}}</div>{{/cycleselect}}
 {{#archived}}
     {{>local_onlineappraisal/index_table}}
+    {{#toggleleaversurl}}
+    <div class="text-right">
+        <a href="{{{toggleleaversurl}}}" class="btn btn-default btn-xs">{{toggleleaversstr}}</a>
+    </div>
+    {{/toggleleaversurl}}
 {{/archived}}
 {{^archived}}
 <div class="alert alert-warning" role="alert">
     <i class="fa fa-exclamation-triangle"></i>
-    {{#str}}appraisals:noarchived, local_onlineappraisal{{/str}}
+    {{#cycleselect}}{{#str}}appraisals:noarchived:cycle, local_onlineappraisal{{/str}}{{/cycleselect}}
+    {{^cycleselect}}{{#str}}appraisals:noarchived, local_onlineappraisal{{/str}}{{/cycleselect}}
 </div>
 {{/archived}}

@@ -193,6 +193,7 @@ $string['appraisal:select'] = 'Select appraisal {$a}';
 $string['appraisals:archived'] = 'Archived Appraisals';
 $string['appraisals:current'] = 'Current Appraisals';
 $string['appraisals:noarchived'] = 'You have no archived appraisals.';
+$string['appraisals:noarchived:cycle'] = 'You have no archived appraisals for the chosen cycle.';
 $string['appraisals:nocurrent'] = 'You have no current appraisals.';
 $string['appraisals:select'] = 'Select all appraisals';
 
@@ -236,6 +237,7 @@ $string['group'] = 'Cost Centre';
 
 $string['index:awaiting'] = 'Awaiting your input';
 $string['index:emptyfilter'] = 'No appraisals match your filter selection.';
+$string['index:filter:label'] = 'Appraisal Cycle';
 $string['index:togglef2f:complete'] = 'Mark F2F as Held';
 $string['index:togglef2f:notcomplete'] = 'Mark F2F as Not Held';
 $string['index:notstarted'] = 'Not Started';
@@ -243,7 +245,10 @@ $string['index:notstarted:tooltip'] = 'The appraisee has not yet started their a
 $string['index:printappraisal'] = 'Download Appraisal';
 $string['index:printfeedback'] = 'Download Feedback';
 $string['index:printsuccessionplan'] = 'Download Succession Development Plan';
+$string['index:searchtable'] = 'Search by Appraisee name';
 $string['index:start'] = 'Start Appraisal';
+$string['index:toggleleavers:hide'] = 'Hide leavers';
+$string['index:toggleleavers:show'] = 'Show leavers';
 $string['index:toptext:appraisee'] = 'This dashboard shows your current and any archived appraisals. Your current appraisal can
     be accessed using the link under the Actions dropdown. Archived appraisals can be downloaded using the Download Appraisal button below.';
 $string['index:toptext:appraiser'] = 'This dashboard shows any current and archived appraisals for which you are the appraiser. Any

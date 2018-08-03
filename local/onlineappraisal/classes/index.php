@@ -455,7 +455,7 @@ class index {
      * @param string $state
      * @return array appraisal records
      */
-    public function get_appraisals($type = 'appraisee', $state = 'current') {
+    public function get_appraisals($type = 'appraisee', $state = 'current', $leavers = true, $cycle = null) {
         global $DB, $USER;
 
         $params = array();
@@ -515,6 +515,19 @@ class index {
                 return array();
         }
 
+        $leaversfilter = '';
+        if (!$leavers) {
+            $leaversfilter = 'AND u.suspended = 0';
+        }
+
+        $cyclejoin = '';
+        $cyclefilter = '';
+        if ($cycle && $state === 'archived') {
+            $cyclejoin = 'JOIN {local_appraisal_cohort_apps} laca ON laca.appraisalid = aa.id';
+            $cyclefilter = 'AND laca.cohortid = :cycle';
+            $params['cycle'] = $cycle;
+        }
+
         $appraisee = $DB->sql_concat_join("' '", array('u.firstname', 'u.lastname'));
         $appraiser = $DB->sql_concat_join("' '", array('au.firstname', 'au.lastname'));
         $signoff = $DB->sql_concat_join("' '", array('su.firstname', 'su.lastname'));
@@ -528,6 +541,7 @@ class index {
                 su.id as suid, {$signoff} as signoff
             FROM
                 {local_appraisal_appraisal} aa
+            {$cyclejoin}
             LEFT JOIN
                 {local_appraisal_users} lau
                 ON lau.userid = aa.appraisee_userid AND lau.setting = 'appraisalvip'
@@ -550,8 +564,97 @@ class index {
                 aa.archived = :archived
                 AND aa.deleted = 0
                 {$typefilter}
+                {$leaversfilter}
+                {$cyclefilter}
             ORDER BY
                 u.lastname ASC, u.firstname ASC";
+
+        return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * Get appraisals for type/state.
+     *
+     * @global stdClass $DB
+     * @global stdClass $USER
+     * @param string $type
+     * @param string $state
+     * @return array appraisal records
+     */
+    public function get_cycle_appraisal_count($type = 'appraisee', $state = 'current', $leavers = true) {
+        global $DB, $USER;
+
+        $params = array();
+        switch ($state) {
+            case 'current' :
+                $params['archived'] = 0;
+                break;
+            case 'archived' :
+                $params['archived'] = 1;
+                break;
+            default :
+                // Invalid state, return empty array.
+                return [];
+        }
+
+        switch ($type) {
+            case 'appraisee' :
+            case 'signoff' :
+                $typefilter = "AND aa.{$type}_userid = :userid";
+                $params['userid'] = $USER->id;
+                break;
+            case 'appraiser' :
+                $typefilter = "AND (aa.{$type}_userid = :userid OR aa.appraisee_userid IN (SELECT appraisee_userid FROM {local_appraisal_appraisal} WHERE {$type}_userid = :userid2 AND archived = 0 AND deleted = 0))";
+                $params['userid'] = $USER->id;
+                $params['userid2'] = $USER->id;
+                break;
+            case 'groupleader' :
+                $typefilter = "AND ((aa.{$type}_userid = :userid AND c.groupleaderactive = :groupleaderactive)";
+                $params['userid'] = $USER->id;
+                $params['groupleaderactive'] = 1;
+
+                $groups = costcentre::get_user_cost_centres($USER->id, costcentre::GROUP_LEADER);
+                if (!empty($groups)) {
+                    list($insql, $inparams) = $DB->get_in_or_equal(array_keys($groups), SQL_PARAMS_NAMED);
+                    $params = $params + $inparams;
+                    $typefilter .= " OR u.icq {$insql}";
+                }
+
+                $typefilter .= ')';
+                break;
+            case 'hrleader' :
+                $groups = costcentre::get_user_cost_centres($USER->id, array(costcentre::HR_LEADER, costcentre::HR_ADMIN));
+                if (empty($groups)) {
+                    return array();
+                }
+                if (!empty($this->groupid)) {
+                    $params['uicq'] = $this->groupid;
+                    $typefilter = "AND u.icq = :uicq";
+                } else {
+                    list($insql, $inparams) = $DB->get_in_or_equal(array_keys($groups), SQL_PARAMS_NAMED);
+                    $params = $params + $inparams;
+                    $typefilter = "AND u.icq {$insql}";
+                }
+                break;
+            default :
+                // Invalid type, return empty array.
+                return array();
+        }
+
+        $leaversfilter = '';
+        if (!$leavers) {
+            $leaversfilter = 'AND u.suspended = 0';
+        }
+
+        $sql = "SELECT laca.cohortid, COUNT(aa.id) as 'count'
+                  FROM {local_appraisal_appraisal} aa
+                  JOIN {local_appraisal_cohort_apps} laca ON laca.appraisalid = aa.id
+             LEFT JOIN {user} u ON u.id = aa.appraisee_userid
+             LEFT JOIN {local_costcentre} c ON c.costcentre = u.icq
+                 WHERE aa.archived = :archived AND aa.deleted = 0
+                       {$typefilter}
+                       {$leaversfilter}
+              GROUP BY laca.cohortid";
 
         return $DB->get_records_sql($sql, $params);
     }

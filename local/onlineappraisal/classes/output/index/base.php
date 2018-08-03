@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use renderable;
 use templatable;
+use renderer_base;
 use stdClass;
 use moodle_url;
 use local_onlineappraisal\permissions as permissions;
@@ -37,12 +38,35 @@ abstract class base implements renderable, templatable {
     protected $index;
     protected $data;
     protected $type;
+    protected $leavers = false;
+    protected $cycle = null;
+    protected $cycleselect = null;
 
-    protected static $state = array('current', 'archived');
+    protected static $state = ['current' => true, 'archived' => false];
 
     public function __construct(\local_onlineappraisal\index $index) {
         $this->index = $index;
         $this->data = new stdClass();
+
+        // Grab needed parameters.
+        $this->leavers = optional_param('leavers', false, PARAM_BOOL);
+        $this->cycle = optional_param('cycle', false, PARAM_INT);
+
+        // Show/hide leavers (in archived).
+        $this->handle_leavers_toggle();
+
+        // Filtering by cycle.
+        $this->handle_cycle_filter();
+    }
+
+    /**
+     * Export this data so it can be used as the context for a mustache template.
+     * @return stdClass
+     */
+    public function export_for_template(renderer_base $output) {
+        if (!empty($this->cycleselect)) {
+            $this->data->cycleselect = $output->render($this->cycleselect);
+        }
     }
 
     protected function set_type($type) {
@@ -52,8 +76,8 @@ abstract class base implements renderable, templatable {
     protected function get_appraisals() {
         $istype = 'is' . $this->type;
 
-        foreach (self::$state as $state) {
-            $appraisals = $this->index->get_appraisals($this->type, $state);
+        foreach (self::$state as $state => $leavers) {
+            $appraisals = $this->index->get_appraisals($this->type, $state, $leavers || $this->leavers, $this->cycle);
             if (!empty($appraisals)) {
                 $isstate = 'is' . $state;
 
@@ -77,7 +101,7 @@ abstract class base implements renderable, templatable {
     }
 
     protected function pre_process_appraisals() {
-        foreach (self::$state as $state) {
+        foreach (self::$state as $state => $leavers) {
             if (!empty($this->data->{$state})) {
                 foreach ($this->data->{$state}->appraisals as $appraisal) {
                     $appraisal->progress = $this->get_progress($appraisal->statusid);
@@ -149,5 +173,54 @@ abstract class base implements renderable, templatable {
             'togglesuccessionplan' => (new moodle_url('/local/onlineappraisal/index.php', array('appraisalid' => $appraisalid, 'action' => 'togglesuccessionplan')))->out(false),
         );
         return $urls;
+    }
+
+    protected function handle_leavers_toggle() {
+        // This needs to be set for all types.
+        if ($this->type != 'appraisee') {
+            $params = [
+                'page' => $this->type,
+                'leavers' => !$this->leavers,
+                'cycle' => $this->cycle,
+            ];
+            $this->data->toggleleaversurl = (new moodle_url('', $params))->out(false);
+            $leaversstr = $this->leavers ? 'hide' : 'show';
+            $this->data->toggleleaversstr = get_string("index:toggleleavers:{$leaversstr}", 'local_onlineappraisal');
+        }
+    }
+
+    protected function handle_cycle_filter() {
+        global $DB;
+
+        if ($this->type != 'appraisee') {
+            $cycles = $DB->get_records_select_menu(
+                    'local_appraisal_cohorts',
+                    'availablefrom < :now',
+                    ['now' => time()],
+                    'availablefrom DESC',
+                    'id, name');
+            if (!$this->cycle) {
+                $this->cycle = key($cycles);
+            }
+
+            $cyclecount = $this->index->get_cycle_appraisal_count($this->type, 'archived', $this->leavers);
+            foreach ($cycles as $cycle => $cyclename) {
+                if (isset($cyclecount[$cycle])) {
+                    $cycles[$cycle] = $cyclename . " ({$cyclecount[$cycle]->count})";
+                } else {
+                    $cycles[$cycle] = $cyclename . ' (0)';
+                }
+            }
+
+            $params = [
+                'page' => $this->type,
+                'leavers' => $this->leavers // Maintain any leaver filtering.
+            ];
+            $url = new \moodle_url('', $params);
+            $this->cycleselect = new \single_select($url, 'cycle', $cycles, $this->cycle, null);
+            $this->cycleselect->label = get_string('index:filter:label', 'local_onlineappraisal');
+            $this->cycleselect->labelattributes = ['class' => 'm-t-5 m-r-5'];
+            $this->cycleselect->class = 'pull-right';
+        }
     }
 }
