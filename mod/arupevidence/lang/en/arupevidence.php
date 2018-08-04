@@ -116,6 +116,7 @@ $string['button:view'] = 'View';
 $string['approve:name'] = 'Name';
 $string['approve:email'] = 'Email';
 $string['approve:datecompleted'] = 'Date Completed';
+$string['approve:expirydate'] = 'Expiry Date';
 $string['approve:certificatelink'] = 'Certificate Link';
 $string['approve:actions'] = 'Actions';
 $string['approve:dateapproved'] = 'Date Approved';
