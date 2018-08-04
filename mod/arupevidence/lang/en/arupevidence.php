@@ -28,6 +28,8 @@ $string['modulename'] = 'Arup Evidence Upload';
 $string['modulenameplural'] = 'Arup Evidence Uploads';
 $string['modulename_help'] = 'Arup Evidence Upload allow users to upload evidence of completion for approval.';
 $string['arupevidence:addinstance'] = 'Add a new Arup Evidence Upload';
+$string['arupevidence:admin'] = 'Admin access to Arup Evidence Upload';
+$string['arupevidence:approvecompletion'] = 'Approve completion for Arup Evidence Upload';
 $string['pluginadministration'] = 'Arup Evidence Upload administration';
 $string['pluginname'] = 'Arup Evidence Upload';
 

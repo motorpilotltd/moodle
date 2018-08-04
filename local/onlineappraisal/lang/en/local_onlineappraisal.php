@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['cachedef_permissions'] = 'Permissions cache';
 
 $string['onlineappraisal:deleteappraisal'] = 'Allowed to permanently delete appraisals';
+$string['onlineappraisal:itadmin'] = 'Allowed to access the IT admin area';
 $string['pluginname'] = 'Online Appraisal';
 $string['setting:logo'] = 'Alternate logo';
 $string['setting:logo_desc'] = 'An alternate logo which will be used specifically for appraisal pages.';
