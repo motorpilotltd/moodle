@@ -72,11 +72,11 @@ class block_lunchandlearn extends block_base {
         $regionid = lunchandlearn_get_region();
         $sessions = lunchandlearn_manager::get_sessions(
                 new DateTime(),
-                $regionid,
+                $regionid == -1 ? null : $regionid,
                 $coursecatid,
-                null,
+                (new DateTime())->add(new DateInterval('P3M')),
                 false,
-                '',
+                'e.timestart ASC',
                 0,
                 $CFG->calendar_maxevents);
 
