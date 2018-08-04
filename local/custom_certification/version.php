@@ -18,7 +18,7 @@
  * @author Artur Rietz <artur.rietz@webanywhere.co.uk>
  */
 
-$plugin->version   = 2018022801;
-$plugin->release   = '1.8.5';
+$plugin->version   = 2018022802;
+$plugin->release   = '1.8.5.1';
 $plugin->requires = 2015051104;
 $plugin->component = 'local_custom_certification';
