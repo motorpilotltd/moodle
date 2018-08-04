@@ -107,7 +107,7 @@ class daterangelearning extends base {
             'classname',
             'coursename',
             'classstatus',
-            'classstartdate', 
+            'classstartdate',
             'classenddate',
             'duration',
             'durationunits',
@@ -144,7 +144,8 @@ class daterangelearning extends base {
             'classcompletiondate',
             'classcategory',
             'classcost',
-            'classcostcurrency');
+            'classcostcurrency',
+            'learningdesc');
 
         $this->textfilterfields = array(
             'startdate' => 'date',
@@ -267,15 +268,15 @@ class daterangelearning extends base {
                     continue;
                 }
                 if (in_array($filter->field, $this->datefields)) {
-                    
+
                     $classcompletiondate = $this->filtertodb['classcompletiondate'];
                     $classenddate = $this->filtertodb['classenddate'];
                     $classtype = $this->filtertodb['classtype'];
 
                     if ($filter->field == 'startdate') {
-                        
+
                         $startdate = $filtervalue;
-                        
+
                         $end = $this->setfilters['enddate'];
                         $enddate = $end->value[0];
                         $wherestring .= "
@@ -284,7 +285,7 @@ class daterangelearning extends base {
                                     $classtype = 'Scheduled'
                                     AND
                                     ($classenddate > $startdate AND $classenddate < $enddate)
-                                ) 
+                                )
                                 OR
                                 (
                                     ($classtype = 'Self Paced' OR cpdid > '')
@@ -296,7 +297,7 @@ class daterangelearning extends base {
                         $wherestring .= "1 = 1";
                     }
 
-                } else if (in_array($filter->field, $this->numericfields)) { 
+                } else if (in_array($filter->field, $this->numericfields)) {
                     $value = intval($filtervalue);
                     $wherestring .= " $filter->field = $value ";
                 } else if ($filtervalue == 'NOT SET') {
@@ -337,11 +338,11 @@ class daterangelearning extends base {
 
         $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltc.jobnumber, ltco.coursecode, ltco.courseregion
                   FROM {local_taps_enrolment} as lte
-                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff 
+                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
-             LEFT JOIN {local_taps_class} as ltc 
-                    ON ltc.classid = lte.classid 
-             LEFT JOIN {local_taps_course} as ltco 
+             LEFT JOIN {local_taps_class} as ltc
+                    ON ltc.classid = lte.classid
+             LEFT JOIN {local_taps_course} as ltco
                     ON lte.courseid = ltco.courseid
                        $wherestring
               ORDER BY " . $this->sort . ' ' . $this->direction;
@@ -349,7 +350,7 @@ class daterangelearning extends base {
         // Leave out the joins for taps_class and taps_course to speed up this query
         $sqlcount = "SELECT count(lte.id) as recnum
                   FROM {local_taps_enrolment} as lte
-                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff 
+                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
                        $wherestring";
 
@@ -389,7 +390,7 @@ class daterangelearning extends base {
             }
             return $enrolments;
         }
-        
+
     }
 
     public function get_table_data() {
@@ -665,6 +666,10 @@ class daterangelearning extends base {
             } else {
                 return '';
             }
+        }
+
+        if ($key == 'learningdesc') {
+            return html_to_text($row->$key);
         }
     }
 

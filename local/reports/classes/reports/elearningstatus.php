@@ -81,7 +81,7 @@ class elearningstatus extends base {
             $this->currentsearchkey = $this->search;
             $this->currentsearch = $this->mystr($this->search);
         }
-        
+
         $this->get_filters();
         $this->set_filter();
         // Fix array for usage in mustache.
@@ -108,7 +108,7 @@ class elearningstatus extends base {
             'classname',
             'coursename',
             'classstatus',
-            'classstartdate', 
+            'classstartdate',
             'classenddate',
             'duration',
             'durationunits',
@@ -141,7 +141,8 @@ class elearningstatus extends base {
             'coursename',
             'classcategory',
             'classcost',
-            'classcostcurrency');
+            'classcostcurrency',
+            'learningdesc');
 
         $this->textfilterfields = array(
             'actualregion' => 'dropdown',
@@ -247,7 +248,7 @@ class elearningstatus extends base {
         // Classnames are only used in the inclusion query.
         if (!isset($this->setfilters['classname'])) {
             $this->errors[] = 'Select one or more courses';
-            return array(); 
+            return array();
         } else  {
             $filter = $this->setfilters['classname'];
             $numfilters = count($filter->value);
@@ -307,7 +308,7 @@ class elearningstatus extends base {
                     continue;
                 }
 
-                if (in_array($filter->field, $this->numericfields)) { 
+                if (in_array($filter->field, $this->numericfields)) {
                     $value = intval($filtervalue);
                     $wherestring .= " $filter->field = $value ";
                 } else {
@@ -328,11 +329,11 @@ class elearningstatus extends base {
 
         $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode, ltco.courseregion
                   FROM {local_taps_enrolment} as lte
-             LEFT JOIN SQLHUB.ARUP_ALL_STAFF_V as staff 
+             LEFT JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
-             LEFT JOIN {local_taps_class} as ltc 
-                    ON ltc.classid = lte.classid 
-             LEFT JOIN {local_taps_course} as ltco 
+             LEFT JOIN {local_taps_class} as ltc
+                    ON ltc.classid = lte.classid
+             LEFT JOIN {local_taps_course} as ltco
                     ON lte.courseid = ltco.courseid
                        $enrolmentswhere
                        $wherestring
@@ -342,9 +343,9 @@ class elearningstatus extends base {
         // Leave out the joins for taps_class and taps_course to speed up this query
         $sqlcount = "SELECT count(lte.id) as recnum
                   FROM {local_taps_enrolment} as lte
-                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff 
+                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
-             LEFT JOIN {local_taps_class} as ltc 
+             LEFT JOIN {local_taps_class} as ltc
                     ON ltc.classid = lte.classid
                        $enrolmentswhere
                        $wherestring";
@@ -419,7 +420,7 @@ class elearningstatus extends base {
             }
             return $enrolments;
         }
-        
+
     }
 
     public function get_table_data() {
@@ -635,6 +636,10 @@ class elearningstatus extends base {
             } else {
                 return '';
             }
+        }
+
+        if ($key == 'learningdesc') {
+            return html_to_text($row->$key);
         }
     }
 
