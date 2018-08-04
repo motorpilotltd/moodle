@@ -32,7 +32,7 @@ class renderer extends \local_onlineappraisal\output\renderer {
     public function render_navlist(\local_onlineappraisal\output\navlist\navlist $navigation) {
         $bc = new \block_contents();
         $bc->attributes['id'] = 'local_onlineappraisal';
-        $bc->title = 'Navigation';
+        $bc->title = get_string('navigation', 'local_onlineappraisal');
         $bc->attributes['class'] = 'block block_local_onlineappraisal';
 
         // Call the export_for_template function from class navlist
@@ -45,7 +45,7 @@ class renderer extends \local_onlineappraisal\output\renderer {
     public function render_navlist_admin(\local_onlineappraisal\output\navlist\navlist_admin $navigation) {
         $bc = new \block_contents();
         $bc->attributes['id'] = 'local_onlineappraisal';
-        $bc->title = 'Navigation';
+        $bc->title = get_string('navigation', 'local_onlineappraisal');
         $bc->attributes['class'] = 'block block_local_onlineappraisal';
 
         // Call the export_for_template function from class navlist
@@ -58,7 +58,7 @@ class renderer extends \local_onlineappraisal\output\renderer {
     public function render_navlist_itadmin(\local_onlineappraisal\output\navlist\navlist_itadmin $navigation) {
         $bc = new \block_contents();
         $bc->attributes['id'] = 'local_onlineappraisal';
-        $bc->title = 'Navigation';
+        $bc->title = get_string('navigation', 'local_onlineappraisal');
         $bc->attributes['class'] = 'block block_local_onlineappraisal';
 
         // Call the export_for_template function from class navlist
@@ -71,7 +71,7 @@ class renderer extends \local_onlineappraisal\output\renderer {
     public function render_navlist_index(\local_onlineappraisal\output\navlist\navlist_index $navigation) {
         $bc = new \block_contents();
         $bc->attributes['id'] = 'local_onlineappraisal';
-        $bc->title = 'Navigation';
+        $bc->title = get_string('navigation', 'local_onlineappraisal');
         $bc->attributes['class'] = 'block block_local_onlineappraisal';
 
         // Call the export_for_template function from class navlist
@@ -84,7 +84,7 @@ class renderer extends \local_onlineappraisal\output\renderer {
     public function render_navlist_feedback(\local_onlineappraisal\output\navlist\navlist_feedback $navigation) {
         $bc = new \block_contents();
         $bc->attributes['id'] = 'local_onlineappraisal';
-        $bc->title = 'Navigation';
+        $bc->title = get_string('navigation', 'local_onlineappraisal');
         $bc->attributes['class'] = 'block block_local_onlineappraisal';
 
         // Call the export_for_template function from class navlist

@@ -1,0 +1,12 @@
+<div class="section-group onesection" role="tablist" aria-multiselectable="false">
+    <ul class="nav nav-pills nav-stacked">
+    {{#items}}
+        <li>
+            <a href="{{{url}}}" title="{{{title}}}" {{#popup}}target="_blank"{{/popup}}>
+                <span class="name">
+                    {{{text}}}
+                </span>
+            </a>
+        </li>
+    {{/items}}
+</div>
