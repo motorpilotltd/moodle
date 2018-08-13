@@ -242,7 +242,7 @@ $string['index:notstarted'] = 'Not Started';
 $string['index:notstarted:tooltip'] = 'The appraisee has not yet started their appraisal, once they have you will be able to access it.';
 $string['index:printappraisal'] = 'Download Appraisal';
 $string['index:printfeedback'] = 'Download Feedback';
-$string['index:printsuccessionplan'] = 'Succession Development Plan';
+$string['index:printsuccessionplan'] = 'Download Succession Development Plan';
 $string['index:start'] = 'Start Appraisal';
 $string['index:toptext:appraisee'] = 'This dashboard shows your current and any archived appraisals. Your current appraisal can
     be accessed using the link under the Actions dropdown. Archived appraisals can be downloaded using the Download Appraisal button below.';
@@ -264,7 +264,7 @@ $string['index:view'] = 'View Appraisal';
 $string['progress'] = 'Progress';
 $string['print:button:appraisal'] = '<i class="fa fa-download"></i> Download Appraisal';
 $string['print:button:feedback'] = '<i class="fa fa-download"></i> Download Feedback';
-$string['print:button:successionplan'] = '<i class="fa fa-download"></i> Succession Development Plan';
+$string['print:button:successionplan'] = '<i class="fa fa-download"></i> Download Succession Development Plan';
 
 $string['successionplan:has'] = 'Has Succession Development Plan';
 $string['successionplan:hasnot'] = 'Doesn\'t have Succession Development Plan';
@@ -960,7 +960,7 @@ $string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">Last y
 // Career Direction
 $string['form:careerdirection:title'] = 'Section 2: Career Direction';
 $string['form:careerdirection:intro'] = 'The purpose of this section is to allow the appraisee to consider their career aspirations and discuss these in a practical way with their appraiser. For junior members of staff, the horizon for this conversation is likely to be about 1-3 years. For more senior members of staff we would expect it to be 3-5 years.';
-$string['form:careerdirection:mobility'] = 'Mobility preparedness to relocate';
+$string['form:careerdirection:mobility'] = 'Mobility: preparedness to relocate';
 $string['form:careerdirection:mobilityhelp'] = 'Please expand on your reason with the comments section 2.1.';
 $string['form:careerdirection:mobility:answer:1'] = 'Fully internationally mobile';
 $string['form:careerdirection:mobility:answer:2'] = 'Fully mobile in current region';
@@ -1088,7 +1088,7 @@ $string['form:successionplan:readiness:answer:4'] = 'N/A';
 $string['form:successionplan:potential'] = 'Potential Future Roles';
 $string['form:successionplan:potential:answer:1'] = 'Business Leader';
 $string['form:successionplan:potential:answer:2'] = 'Group Leader';
-$string['form:successionplan:potential:answer:3'] = 'Practive Leader (Americas Region ONLY)';
+$string['form:successionplan:potential:answer:3'] = 'Practice Leader (Americas Region ONLY)';
 $string['form:successionplan:potential:answer:4'] = 'Project Director';
 $string['form:successionplan:potential:answer:5'] = 'Techinical Professional';
 $string['form:successionplan:strengths'] = 'Strengths';
@@ -1097,8 +1097,7 @@ $string['form:successionplan:strengths:add:noscript'] = 'Save to add another str
 $string['form:successionplan:developmentareas'] = 'Areas for development';
 $string['form:successionplan:developmentareas:add'] = 'Add another area for development';
 $string['form:successionplan:developmentareas:add:noscript'] = 'Save to add another area for development input';
-$string['form:successionplan:appraiseecomments'] = 'Appraisee comments';
-$string['form:successionplan:appraisercomments'] = 'Appraiser comments';
+$string['form:successionplan:developmentplan'] = 'Development Plan';
 $string['form:successionplan:locked'] = 'Lock Succession Development Plan (Will no longer be editable)';
 $string['form:successionplan:islocked'] = 'Succession Development Plan has been locked and can no longer be edited.';
 
@@ -1450,6 +1449,11 @@ $string['pdf:learninghistory:type:elearning'] = 'E-learning';
 
 $string['pdf:notcomplete'] = 'Not Complete';
 $string['pdf:notset'] = 'Not set';
+
+$string['pdf:successionplan:appraiser'] = 'Current performance summary (as per appraisal)';
+$string['pdf:successionplan:comments'] = 'Career aspiration and next steps (as per appraisal)<br>Appraiser comments';
+$string['pdf:successionplan:locked'] = 'Has this plan been locked?';
+$string['pdf:successionplan:progress'] = 'Career aspiration and next steps (as per appraisal)<br>Appraisee comments';
 
 // Legacy PDF (extra strings).
 $string['z:legacy:pdf:completed:sixmonthreview'] = 'Six month review completed:';

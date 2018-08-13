@@ -66,7 +66,7 @@ class apform_successionplan extends moodleform {
         }
 
         $islocked = (empty($data->locked) ? 0 : 1);
-        $mform->addElement('hidden', 'islocked', $islocked); // For locking other fields as checkbox will be frozen.
+        $mform->addElement('hidden', 'islocked', $islocked, ['id' => 'oa-sdp-islocked']); // For locking other fields as checkbox will be frozen.
         $mform->setType('islocked', PARAM_INT);
 
         $mform->addElement('html', '<hr class="tophr">');
@@ -104,7 +104,11 @@ class apform_successionplan extends moodleform {
             !empty($data->strengths) ? count($data->strengths) + 1 : 0,
             !empty($_POST['strengths']) ? count($_POST['strengths']) : 0
         ];
-        for ($i = 0; $i < max($strengths); $i++) {
+        $maxstrengths = max($strengths);
+        if ($islocked) {
+            $maxstrengths = (!empty($data->strengths) ? count($data->strengths) : 1);
+        }
+        for ($i = 0; $i < $maxstrengths; $i++) {
             $label = ($i === 0 ? $this->str('strengths') : '');
             $mform->addElement('text', "strengths[{$i}]", $label, ['class' => 'oa-repeating-element']);
             $mform->setType("strengths[{$i}]", PARAM_TEXT);
@@ -122,7 +126,11 @@ class apform_successionplan extends moodleform {
             !empty($data->developmentareas) ? count($data->developmentareas) + 1 : 0,
             !empty($_POST['developmentareas']) ? count($_POST['developmentareas']) : 0
         ];
-        for ($i = 0; $i < max($developmentareas); $i++) {
+        $maxdevelopmentareas = max($developmentareas);
+        if ($islocked) {
+            $maxdevelopmentareas = (!empty($data->developmentareas) ? count($data->developmentareas) : 1);
+        }
+        for ($i = 0; $i < $maxdevelopmentareas; $i++) {
             $label = ($i === 0 ? $this->str('developmentareas') : '');
             $mform->addElement('text', "developmentareas[{$i}]", $label, ['class' => 'oa-repeating-element']);
             $mform->setType("developmentareas[{$i}]", PARAM_TEXT);
@@ -135,15 +143,8 @@ class apform_successionplan extends moodleform {
                 $button.$noscript
                 );
 
-        $mform->addElement('textarearup', 'appraiseecomments', $this->str('appraiseecomments'), 'rows="3" cols="70"' . $appraiseelocked, '', 'appraisee');
-        $mform->setType('appraiseecomments', PARAM_RAW);
-        $mform->disabledIf('appraiseecomments', 'appraiseeedit', 'eq', APPRAISAL_FIELD_LOCKED);
-        $mform->disabledIf('appraiseecomments', 'islocked', 'eq', 1);
-
-        $mform->addElement('textarearup', 'appraisercomments', $this->str('appraisercomments'), 'rows="3" cols="70"' . $appraiserlocked, '', 'appraiser');
-        $mform->setType('appraisercomments', PARAM_RAW);
-        $mform->disabledIf('appraisercomments', 'appraiseredit', 'eq', APPRAISAL_FIELD_LOCKED);
-        $mform->disabledIf('appraisercomments', 'islocked', 'eq', 1);
+        $mform->addElement('textarearup', 'developmentplan', $this->str('developmentplan'), 'rows="3" cols="70"', '', '');
+        $mform->setType('developmentplan', PARAM_RAW);
 
         if (!$islocked) {
             $mform->addElement('advcheckbox', 'locked', '', $this->str('locked'), array('group' => 1), array(0, 1));

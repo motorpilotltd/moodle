@@ -34,95 +34,100 @@ class successionplan extends base {
      * Get extra context data.
      */
     protected function get_data() {
-        
-
-        // Get forms.
-        $this->get_forms();
-
-
+        // Get fields.
+        $this->get_fields();
     }
 
     /**
-     * Inject form info and data into data object.
+     * Inject field info and data into data object.
      *
      * @global \moodle_database $DB
      */
-    private function get_forms() {
+    private function get_fields() {
         global $DB;
 
-        $this->data->forms = array();
+        // Set up to match generic print template but to present as single form.
+        $this->data->forms = [];
+        $this->data->forms[0] = new stdClass();
+        $this->data->forms[0]->first = true;
+        $this->data->forms[0]->last = true;
+        $this->data->forms[0]->title = get_string('form:successionplan:title', 'local_onlineappraisal');
+        $this->data->forms[0]->fields = [];
 
         // Forms and fields to print (in order).
-        $forms = array(
-            'successionplan' => array('assessment', 'readiness', 'potential', 'strengths', 'developmentareas', 'appraiseecomments', 'appraisercomments' ,'locked'),
-        );
+        // Asterisks used to enable form repitition - stripped out before loading/processing!
+        $formfields = [
+            'successionplan' => ['assessment', 'readiness', 'potential', 'strengths', 'developmentareas'],
+            'careerdirection' => ['mobility'],
+            'successionplan*' => ['strengths', 'developmentareas'],
+            'summaries' => ['appraiser'],
+            'successionplan**' => ['developmentplan'],
+            'careerdirection*' => ['progress', 'comments'],
+            'successionplan***' => ['locked'],
+        ];
 
-        $params = array(
+        $params = [
             'appraisalid' => $this->appraisal->id,
             'user_id' => $this->appraisal->appraisee->id,
-        );
+        ];
 
         $count = 0;
-        foreach ($forms as $name => $fields) {
-            $count++;
-            $form = new stdClass();
-            $form->first = ($count == 1);
-            $form->last = ($count == count($forms));
-            $form->title = get_string("form:{$name}:title", 'local_onlineappraisal');
-
-            $params['form_name'] = $name;
+        $totalcount = count($formfields, COUNT_RECURSIVE) - count($formfields); // All elements minus top level (form names).
+        foreach ($formfields as $form => $fields) {
+            $params['form_name'] = rtrim($form, '*');
             $id = $DB->get_field('local_appraisal_forms', 'id', $params);
             $data = empty($id) ? array() : $DB->get_records('local_appraisal_data', array('form_id' => $id), '', 'name, type, data');
 
-            $form->fields = $this->get_fields($fields, $name, $data);
-
-            $this->data->forms[] = clone($form);
+            foreach ($fields as $field) {
+                $count++;
+                $this->data->forms[0]->fields[] = $this->get_field($field, $params['form_name'], $data, ($count === 1), ($count === $totalcount));
+            }
         }
     }
 
     /**
      * Get field information from loaded form data.
      *
-     * @param array $fields
+     * @param string $fieldname
      * @param string $formname
      * @param array $formdata
      * @return array
      */
-    private function get_fields($fields, $formname, $formdata) {
-        $return = array();
+    private function get_field($fieldname, $formname, $formdata, $first, $last) {
+        $field = new stdClass();
+        $field->name = $fieldname;
+        $field->first = $first;
+        $field->last = $last;
 
-        $count = 0;
-        foreach ($fields as $name) {
-            $count++;
-            $field = new stdClass();
-            $field->name = $name;
-            $field->first = ($count == 1);
-            $field->last = ($count == count($fields));
-
-            // Use PDF specific string if exists.
-            $component = 'local_onlineappraisal';
-            $str = "form:{$formname}:{$name}";
-            $pdfstr = "pdf:{$str}";
-            if (get_string_manager()->string_exists($pdfstr, $component)) {
-                $field->title = get_string($pdfstr, $component);
-            } else {
-                $field->title = get_string($str, $component);
-            }
-
-            if (isset($formdata[$name])) {
-                if ($formdata[$name]->type == 'array') {
-                    $field->isarray = true;
-                    $field->data = unserialize($formdata[$name]->data);
-                    foreach ($field->data as $index => $data) {
-                        $field->data[$index] = format_text($data, FORMAT_PLAIN, array('filter' => 'false', 'nocache' => true));
-                    }
-                } else {
-                    $field->data = format_text($formdata[$name]->data, FORMAT_PLAIN, array('filter' => 'false', 'nocache' => true));
-                }
-            }
-            $return[] = clone($field);
+        // Use PDF specific string if exists.
+        $component = 'local_onlineappraisal';
+        $str = "form:{$formname}:{$fieldname}";
+        // As pulls from other forms and we don't want their names edited!
+        $pdfstr = "pdf:successionplan:{$fieldname}";
+        if (get_string_manager()->string_exists($pdfstr, $component)) {
+            $field->title = get_string($pdfstr, $component);
+        } else {
+            $field->title = get_string($str, $component);
         }
 
-        return $return;
+        if (isset($formdata[$fieldname])) {
+            if ($fieldname === 'locked') {
+                $field->data = ($formdata[$fieldname]->data ? get_string('form:confirm:cancel:yes', $component) : get_string('form:confirm:cancel:no', $component));
+            } else if ($formdata[$fieldname]->type == 'array') {
+                $field->isarray = true;
+                $field->data = unserialize($formdata[$fieldname]->data);
+                $count = 0;
+                foreach ($field->data as $index => $data) {
+                    $count++;
+                    $field->data[$index] = new stdClass();
+                    $field->data[$index]->content = "{$count}. " . format_text($data, FORMAT_PLAIN, array('filter' => 'false', 'nocache' => true));
+                    $field->data[$index]->last = ($count === count($field->data));
+                }
+            } else {
+                $field->data = format_text($formdata[$fieldname]->data, FORMAT_PLAIN, array('filter' => 'false', 'nocache' => true));
+            }
+        }
+
+        return $field;
     }
 }

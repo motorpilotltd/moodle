@@ -1,6 +1,6 @@
 {{^dropdown}}
     {{#options}}
-        <a class="btn btn-default m-l-10 pull-right" href="{{url}}">{{{text}}}</a>
+        <a class="btn btn-default m-l-10 pull-right oa-print-confirm" href="{{url}}">{{{text}}}</a>
     {{/options}}
 {{/dropdown}}
 {{#dropdown}}
@@ -15,3 +15,23 @@
       </ul>
     </div>
 {{/dropdown}}
+
+{{>local_onlineappraisal/modal_print_confirm}}
+
+{{#js}}
+require(['jquery', 'theme_bootstrap/bootstrap'], function($) {
+    $('a.oa-print-confirm').click(function(e){
+        e.preventDefault();
+        var self = $(this);
+        $('#oa-print-confirm-modal-continue').attr('href', self.attr('href'));
+        $('#oa-print-confirm-modal').modal({
+            backdrop: 'static',
+            keyboard: false
+        });
+    });
+
+    $('#oa-print-confirm-modal-continue').click(function(){
+        $('#oa-print-confirm-modal').modal('hide');
+    });
+});
+{{/js}}

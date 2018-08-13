@@ -180,8 +180,12 @@ class appraisal extends base {
                 if ($formdata[$name]->type == 'array') {
                     $field->isarray = true;
                     $field->data = unserialize($formdata[$name]->data);
+                    $count = 0;
                     foreach ($field->data as $index => $data) {
-                        $field->data[$index] = format_text($data, FORMAT_PLAIN, array('filter' => 'false', 'nocache' => true));
+                        $count++;
+                        $field->data[$index] = new stdClass();
+                        $field->data[$index]->content = format_text($data, FORMAT_PLAIN, array('filter' => 'false', 'nocache' => true));
+                        $field->data[$index]->last = ($count === count($field->data));
                     }
                 } else {
                     $field->data = format_text($formdata[$name]->data, FORMAT_PLAIN, array('filter' => 'false', 'nocache' => true));

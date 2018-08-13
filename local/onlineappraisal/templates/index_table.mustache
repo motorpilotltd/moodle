@@ -134,6 +134,9 @@
                     {{#permissions.printfeedback}}
                         <li><a class="oa-actions-print" href="{{urls.printfeedback}}">{{#str}}index:printfeedback, local_onlineappraisal{{/str}}</a></li>
                     {{/permissions.printfeedback}}
+                    {{#permissions.printsuccessionplan}}
+                        <li><a class="oa-actions-print" href="{{urls.printsuccessionplan}}">{{#str}}index:printsuccessionplan, local_onlineappraisal{{/str}}</a></li>
+                    {{/permissions.printsuccessionplan}}
                     {{^suspended}}{{#permissions.togglef2f}}
                             <li>
                                 <a class="oa-togglef2f{{^held_date}} disabled{{/held_date}}"
