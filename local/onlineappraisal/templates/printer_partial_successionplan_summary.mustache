@@ -17,25 +17,26 @@
                         <td>{{#str}}form:userinfo:name, local_onlineappraisal{{/str}}</td>
                         <td>{{appraisal.appraisee.firstname}} {{appraisal.appraisee.lastname}}</td>
                     </tr>
-{{! Group - HUB? }}
+                    <tr>
+                        <td>{{#str}}pdf:group, local_onlineappraisal{{/str}}</td>
+                        <td>{{group}}</td>
+                    </tr>
                     <tr>
                         <td>{{#str}}form:userinfo:grade, local_onlineappraisal{{/str}}</td>
                         <td>{{appraisal.grade}}</td>
                     </tr>
-{{! Location - HUB? }}
+                    <tr>
+                        <td>{{#str}}pdf:location, local_onlineappraisal{{/str}}</td>
+                        <td>{{location}}</td>
+                    </tr>
                     <tr>
                         <td>{{#str}}pdf:helddate, local_onlineappraisal{{/str}}</td>
                         <td>{{appraisal.held_date}}</td>
                     </tr>
                     <tr>
-                        <td>{{#str}}pdf:duedate, local_onlineappraisal{{/str}}</td>
-                        <td>{{appraisal.due_date}}</td>
-                    </tr>
-                    <tr>
                         <td>{{#str}}pdf:appraisername, local_onlineappraisal{{/str}}</td>
                         <td>{{appraisal.appraiser.firstname}} {{appraisal.appraiser.lastname}}</td>
                     </tr>
-{{! Supervisor from HUB as well?!? }}
                     <tr>
                         <td>{{#str}}form:userinfo:operationaljobtitle, local_onlineappraisal{{/str}}</td>
                         <td>{{appraisal.operational_job_title}}</td>

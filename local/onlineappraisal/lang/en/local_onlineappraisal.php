@@ -1425,6 +1425,8 @@ $string['pdf:form:summaries:signoff'] = 'Sign Off summary';
 $string['pdf:form:summaries:grpleader'] = 'Leader summary';
 $string['pdf:form:summaries:recommendations'] = 'Agreed actions';
 
+$string['pdf:group'] = 'Group';
+
 $string['pdf:header:appraisal'] = '- Appraisal';
 $string['pdf:header:helddate'] = 'Appraisal Date:';
 $string['pdf:header:confidential'] = 'STRICTLY CONFIDENTIAL';
@@ -1446,6 +1448,7 @@ $string['pdf:learninghistory:th:duration'] = 'Duration';
 $string['pdf:learninghistory:th:type'] = 'Type';
 $string['pdf:learninghistory:type:classroom'] = 'Classroom';
 $string['pdf:learninghistory:type:elearning'] = 'E-learning';
+$string['pdf:location'] = 'Location';
 
 $string['pdf:notcomplete'] = 'Not Complete';
 $string['pdf:notset'] = 'Not set';

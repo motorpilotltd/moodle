@@ -36,6 +36,9 @@ class successionplan extends base {
     protected function get_data() {
         // Get fields.
         $this->get_fields();
+
+        // Get extra user data.
+        $this->get_extra_user_data();
     }
 
     /**
@@ -129,5 +132,19 @@ class successionplan extends base {
         }
 
         return $field;
+    }
+
+    private function get_extra_user_data() {
+        global $DB;
+
+        $sql = "SELECT LOCATION_NAME as location, GROUP_NAME as groupname, GROUP_CODE as groupcode
+                  FROM SQLHUB.ARUP_ALL_STAFF_V
+                 WHERE EMPLOYEE_NUMBER = :idnumber";
+        $params= ['idnumber' => (int) $this->appraisal->appraisee->idnumber];
+        $hubdata = $DB->get_record_sql($sql, $params);
+        if ($hubdata) {
+            $this->data->location = $hubdata->location;
+            $this->data->group = "{$hubdata->groupname} ({$hubdata->groupcode})";
+        }
     }
 }
