@@ -26,8 +26,12 @@ defined('MOODLE_INTERNAL') || die();
 class apform_successionplan extends moodleform {
     private $stringman;
 
+    private $userdata = ['location' => '', 'group' => ''];
+
     public function definition() {
         global $PAGE;
+
+        $this->get_userdata();
 
         $data = $this->_customdata;
         $mform = $this->_form;
@@ -68,6 +72,12 @@ class apform_successionplan extends moodleform {
         $islocked = (empty($data->locked) ? 0 : 1);
         $mform->addElement('hidden', 'islocked', $islocked, ['id' => 'oa-sdp-islocked']); // For locking other fields as checkbox will be frozen.
         $mform->setType('islocked', PARAM_INT);
+
+        // Hidden fields to be set from HUB data.
+        $mform->addElement('hidden', 'group', $this->userdata['group']);
+        $mform->setType('group', PARAM_TEXT);
+        $mform->addElement('hidden', 'location', $this->userdata['location']);
+        $mform->setType('location', PARAM_TEXT);
 
         $mform->addElement('html', '<hr class="tophr">');
         $appraiseename = fullname($data->appraisal->appraisee);
@@ -200,5 +210,25 @@ class apform_successionplan extends moodleform {
             $data->developmentareas = array_filter($data->developmentareas);
         }
         return $data;
+    }
+
+    public function set_data($default_values) {
+        parent::set_data($default_values);
+        // Overwrite user data.
+        $this->_form->setDefaults($this->userdata);
+    }
+
+    private function get_userdata() {
+        global $DB;
+
+        $sql = "SELECT LOCATION_NAME as location, GROUP_NAME as groupname, GROUP_CODE as groupcode
+                  FROM SQLHUB.ARUP_ALL_STAFF_V
+                 WHERE EMPLOYEE_NUMBER = :idnumber";
+        $params= ['idnumber' => (int) $this->_customdata->appraisal->appraisee->idnumber];
+        $hubdata = $DB->get_record_sql($sql, $params);
+        if ($hubdata) {
+            $this->userdata['location'] = $hubdata->location;
+            $this->userdata['group'] = "{$hubdata->groupname} ({$hubdata->groupcode})";
+        }
     }
 }

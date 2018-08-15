@@ -137,14 +137,19 @@ class successionplan extends base {
     private function get_extra_user_data() {
         global $DB;
 
-        $sql = "SELECT LOCATION_NAME as location, GROUP_NAME as groupname, GROUP_CODE as groupcode
-                  FROM SQLHUB.ARUP_ALL_STAFF_V
-                 WHERE EMPLOYEE_NUMBER = :idnumber";
-        $params= ['idnumber' => (int) $this->appraisal->appraisee->idnumber];
-        $hubdata = $DB->get_record_sql($sql, $params);
-        if ($hubdata) {
-            $this->data->location = $hubdata->location;
-            $this->data->group = "{$hubdata->groupname} ({$hubdata->groupcode})";
-        }
+        $sql = "SELECT name, type, data
+                  FROM {local_appraisal_data} lad
+                  JOIN {local_appraisal_forms} laf ON laf.id = lad.form_id
+                 WHERE laf.form_name = :form_name
+                       AND laf.appraisalid = :appraisalid
+                       AND laf.user_id = :user_id";
+        $params = [
+            'form_name' => 'successionplan',
+            'appraisalid' => $this->appraisal->id,
+            'user_id' => $this->appraisal->appraisee->id,
+        ];
+        $userdata = $DB->get_records_sql($sql, $params);
+        $this->data->location = (!empty($userdata['location']) ? $userdata['location']->data : '');
+        $this->data->group = (!empty($userdata['group']) ? $userdata['group']->data : '');
     }
 }
