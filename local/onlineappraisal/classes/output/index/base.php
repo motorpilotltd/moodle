@@ -110,9 +110,12 @@ abstract class base implements renderable, templatable {
     }
 
     protected function get_permissions($state, $appraisal) {
+        global $DB;
+
         $permissions = array();
         $permissions['start'] = $appraisal->statusid == APPRAISAL_NOT_STARTED && permissions::is_allowed('introduction:view', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
         $hrnoview = $this->type === 'hrleader' && empty($this->index->canviewvip[$appraisal->costcentre]);
+        $hrnotoggle = $this->type === 'hrleader' && empty($this->index->cantogglesdp[$appraisal->costcentre]);
         $glnoview = $this->type === 'groupleader' && $appraisal->groupleader_userid !== $this->index->user->id;
         $vipnoview = $appraisal->isvip && ($hrnoview || $glnoview);
         if ($vipnoview) {
@@ -128,12 +131,32 @@ abstract class base implements renderable, templatable {
         $permissions['editf2f'] = permissions::is_allowed('f2f:add', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
         $permissions['togglef2f'] = permissions::is_allowed('f2f:complete', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
 
+        // Modifications.
+        if (!empty($permissions['printsuccessionplan'])) {
+            // Only display SDP download link if has been saved.
+            $sql = "SELECT COUNT(lad.id)
+                  FROM {local_appraisal_data} lad
+                  JOIN {local_appraisal_forms} laf ON laf.id = lad.form_id
+                 WHERE laf.form_name = :form_name
+                       AND laf.appraisalid = :appraisalid
+                       AND laf.user_id = :user_id";
+            $params = [
+                'form_name' => 'successionplan',
+                'appraisalid' => $appraisal->id,
+                'user_id' => $appraisal->appraisee_userid,
+            ];
+            if ($DB->count_records_sql($sql, $params) === 0) {
+                // Not yet saved, remove download link.
+                $permissions['printsuccessionplan'] = false;
+            }
+        }
+
         $permissions['haspermissions'] = in_array(true, $permissions);
 
         // Keep these separate to appear outside of dropdown.
         $permissions['notstarted'] = $appraisal->statusid == APPRAISAL_NOT_STARTED && !$permissions['start'] && !$vipnoview;
         $permissions['vipnoview'] = $vipnoview;
-        $permissions['togglesuccessionplan'] = permissions::is_allowed('successionplan:toggle', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
+        $permissions['togglesuccessionplan'] = !$hrnotoggle && permissions::is_allowed('successionplan:toggle', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
 
         return $permissions;
     }

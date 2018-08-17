@@ -60,7 +60,7 @@ class successionplan extends base {
         // Forms and fields to print (in order).
         // Asterisks used to enable form repitition - stripped out before loading/processing!
         $formfields = [
-            'successionplan' => ['assessment', 'readiness', 'potential', 'strengths', 'developmentareas'],
+            'successionplan' => ['assessment', 'readiness', 'potential'],
             'careerdirection' => ['mobility'],
             'successionplan*' => ['strengths', 'developmentareas'],
             'summaries' => ['appraiser'],

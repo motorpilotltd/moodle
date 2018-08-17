@@ -71,6 +71,7 @@ class index {
     private $groupleaderactive = array();
 
     private $canviewvip = array();
+    private $cantogglesdp = array();
 
     /**
      * Constructor.
@@ -439,7 +440,9 @@ class index {
             $groupname = $DB->get_field_sql($sql, $params);
             $options = $options + array($group->costcentre => $group->costcentre.' - ' . $groupname);
             if ($this->is['hrleader']) {
-                $this->canviewvip[$group->costcentre] = costcentre::is_user($this->user->id, costcentre::HR_LEADER, $group->costcentre);
+                // Check if can actually view VIP and toggle SDP (HR_LEADER _only_).
+                $this->canviewvip[$group->costcentre] =
+                        $this->cantogglesdp[$group->costcentre] = costcentre::is_user($this->user->id, costcentre::HR_LEADER, $group->costcentre);
             }
         }
 

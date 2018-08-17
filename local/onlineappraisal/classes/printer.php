@@ -145,7 +145,7 @@ class printer {
         $contenthtml = $renderer->render($content);
 
         $this->pdf->set_customheaderhtml($headerhtml);
-        $this->pdf->SetMargins(10, 42, 10);
+        $this->pdf->SetMargins(10, 45, 10);
         $this->pdf->AddPage();
         if (preg_match('/[\x{4e00}-\x{9fa5}]+/u', $contenthtml)) {
             // Chinese.

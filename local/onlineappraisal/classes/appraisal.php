@@ -462,7 +462,7 @@ class appraisal {
      * @return string html
      */
     private function add_print_menu() {
-        global $PAGE;
+        global $DB, $PAGE;
 
         $printvars = new stdClass();
         $printvars->options = array();
@@ -484,6 +484,26 @@ class appraisal {
                 $object->text = get_string("print:button:{$option}", 'local_onlineappraisal');
                 $printvars->options[$permission] = clone($object);
             }
+        }
+
+        if (isset($printvars->options['successionplan'])) {
+            // Only display SDP download link if has been saved.
+            $sql = "SELECT COUNT(lad.id)
+                  FROM {local_appraisal_data} lad
+                  JOIN {local_appraisal_forms} laf ON laf.id = lad.form_id
+                 WHERE laf.form_name = :form_name
+                       AND laf.appraisalid = :appraisalid
+                       AND laf.user_id = :user_id";
+            $params = [
+                'form_name' => 'successionplan',
+                'appraisalid' => $this->appraisal->id,
+                'user_id' => $this->appraisal->appraisee->id,
+            ];
+            if ($DB->count_records_sql($sql, $params) === 0) {
+                // Not yet saved, remove SDP download link.
+                unset($printvars->options['successionplan']);
+            }
+
         }
 
         if (isset($printvars->options['feedback']) && isset($printvars->options['feedbackown'])) {
