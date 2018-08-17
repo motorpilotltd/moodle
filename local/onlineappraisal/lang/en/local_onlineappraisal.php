@@ -848,7 +848,7 @@ $string['form:addfeedback:addfeedbackhelp'] = '<div class="well well-sm">..</div
 $string['form:addfeedback:addfeedback_help'] = 'Please just copy and paste your feedback received into the "valued contribution" box unless you are able to split between "valued" and "more effective".';
 $string['form:addfeedback:addfeedback_2'] = 'Please give details of up to three areas in which you feel they could have been more effective. Be honest, but be constructively critical, as this feedback will help your colleague to tackle issues more effectively.';
 $string['form:addfeedback:addfeedback_2help'] = '<div class="well well-sm">..</div>';
-$string['form:addfeedback:warning'] = '<strong>Note: The feedback you provide will be visible to the appraisee.</strong>';
+$string['form:addfeedback:warning'] = 'Note: The feedback you provide will be visible to the appraisee.';
 $string['form:feedback:alert:cancelled'] = 'Sending cancelled, your appraisal feedback request has not been sent.';
 $string['form:feedback:alert:error'] = 'Sorry, there was an error sending your appraisal feedback request.';
 $string['form:feedback:alert:saved'] = 'Your appraisal feedback request has been successfully sent.';
