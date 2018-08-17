@@ -15,21 +15,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Renderers to align Moodle's HTML with that expected by Bootstrap
+ * Renderer override for mod_hvp.
  *
  * @package    theme_arup
- * @copyright  2015 Bas Brands, www.basbrands.nl
+ * @copyright  2016 Arup
  * @author     Bas Brands
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once($CFG->dirroot . '/theme/bootstrap/renderers.php');
-require_once('renderers/core_renderer.php');
-require_once('renderers/course_renderer.php');
-require_once('renderers/quiz_renderer.php');
-require_once('renderers/arup_renderer.php');
-require_once($CFG->dirroot . '/local/timezones/lib.php');
-require_once('renderers/lunchandlearn.php');
-require_once('renderers/format_topics_renderer.php');
-require_once('renderers/maintenance_renderer.php');
-require_once('renderers/hvp_renderer.php');
+require_once("{$CFG->dirroot}/mod/hvp/renderer.php");
+
+class theme_arup_mod_hvp_renderer extends mod_hvp_renderer {
+    /**
+     * Add styles when an H5P activity is displayed.
+     *
+     * @param array $styles Styles that will be applied.
+     * @param array $libraries Libraries that will be shown.
+     * @param string $embedType How the H5P activity is displayed.
+     */
+    public function hvp_alter_styles(&$styles, $libraries, $embedType) {
+        global $CFG;
+        $styles[] = (object) array(
+            'path'    => $CFG->httpswwwroot . '/theme/arup/style/mod_hvp.css',
+            'version' => '?ver=0.0.1',
+        );
+
+    }
+}
