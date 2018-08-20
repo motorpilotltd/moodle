@@ -15,6 +15,11 @@
 
 <div>
     <div class="oa-overview col-md-6 p-l-0">
+        {{#targetedmessage}}
+            <div class="m-t-20">
+                {{{.}}}
+            </div>
+        {{/targetedmessage}}
         <h2>{{currentstatus}}</h2>
         {{#overview}}
             <div class="m-b-20">

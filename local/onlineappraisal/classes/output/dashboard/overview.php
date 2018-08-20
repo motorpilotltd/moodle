@@ -38,10 +38,10 @@ class overview extends base {
      * @var \local_onlineappraisal\comments $comments
      */
     private $comments;
-    
+
     /**
      * Instance of stages class.
-     * @var \local_onlineappraisal\stages $stages 
+     * @var \local_onlineappraisal\stages $stages
      */
     private $stages;
 
@@ -53,7 +53,7 @@ class overview extends base {
 
     /**
      * Constructor
-     * 
+     *
      * @param \local_onlineappraisal\appraisal $appraisal
      */
     public function __construct(\local_onlineappraisal\appraisal $appraisal) {
@@ -65,7 +65,7 @@ class overview extends base {
 
     /**
      * Export this data so it can be used as the context for a mustache template.
-     * 
+     *
      * @global stdClass $SESSION
      * @param renderer_base $output
      * @return stdClass
@@ -104,7 +104,7 @@ EOS;
         } elseif ($appraisal->legacy) {
             $data->islegacy = true;
         }
-        
+
         if (!empty($SESSION->local_onlineappraisal->overviewmessage)) {
             $data->overviewmessage = new stdClass();
             $data->overviewmessage->result = $SESSION->local_onlineappraisal->overviewmessage->result;
@@ -114,6 +114,9 @@ EOS;
             // Clear message.
             unset($SESSION->local_onlineappraisal->overviewmessage);
         }
+
+        $data->targetedmessage = $this->targetedmessage();
+
         return $data;
     }
 
@@ -134,7 +137,7 @@ EOS;
         }
 
         $users = array();
-        
+
         foreach ($types as $type) {
             $user = new stdClass();
             $user->type = $type;
@@ -237,7 +240,7 @@ EOS;
             $contentidentifier = "overview:content:{$appraisal->viewingas}:{$appraisal->statusid}:groupleadersummary";
             $contentidentifier .= ($appraisal->viewingas == 'groupleader' && $appraisal->groupleader->id != $USER->id) ? ':generic' : '';
         }
-        
+
         $overview->buttons = $this->overview_buttons();
 
         $overview->content = get_string($contentidentifier, 'local_onlineappraisal', $appraisal);
@@ -256,7 +259,7 @@ EOS;
      */
     private function overview_buttons() {
         global $USER;
-        
+
         $appraisal = $this->appraisal->appraisal;
         $viewingas = $appraisal->viewingas;
         $currentstatus = $appraisal->statusid;
@@ -377,5 +380,22 @@ EOS;
         }
 
         return $commentsvars;
+    }
+
+    /**
+     * Returns a targeted message for the overview page.
+     *
+     * @return string
+     */
+    private function targetedmessage() {
+        global $DB;
+        $message = '';
+        if ($this->appraisal->appraisal->viewingas === 'appraisee') {
+            $grade = $DB->get_field_sql('SELECT GRADE FROM SQLHUB.ARUP_ALL_STAFF_V WHERE EMPLOYEE_NUMBER = :idnumber', ['idnumber' => (int) $this->appraisal->appraisal->appraisee->idnumber]);
+            if (in_array($grade, ['GRD7', 'GRD8', 'GRD9'])) {
+                $message = '<div class="alert alert-info">I am a message targeted at appraisees who are Grades 7-9.<br>I appear to appraisees only (Restriction can be lifted).<br>I could also have my visibility restricted by status if required.</div>';
+            }
+        }
+        return $message;
     }
 }
