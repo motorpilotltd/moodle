@@ -41,4 +41,24 @@ class theme_arup_mod_hvp_renderer extends mod_hvp_renderer {
         );
 
     }
+
+    /**
+     * Alter semantics before they are processed. This is useful for changing
+     * how the editor looks and how content parameters are filtered.
+     *
+     * @param object $semantics Semantics as object
+     * @param string $name Machine name of library
+     * @param int $majorversion Major version of library
+     * @param int $minorversion Minor version of library
+     */
+    public function hvp_alter_semantics(&$semantics, $name, $majorversion, $minorversion) {
+        if ($name === 'H5P.ImageHotspots') {
+            foreach ($semantics as $value) {
+                if (isset($value->name) && $value->name === 'color') {
+                    $value->default = '#0f95ff';
+                }
+            }
+        }
+        error_log(print_r($semantics, true));
+    }
 }
