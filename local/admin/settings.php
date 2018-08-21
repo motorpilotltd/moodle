@@ -30,7 +30,7 @@ $ADMIN->add('root', new admin_category('local_admin', get_string('pluginname', '
 
 $systemcontext = context_system::instance();
 if ($hassiteconfig
-        || has_capability('local/admin:testemails', $systemcontext)) {
+        || has_any_capability(['local/admin:testemails', 'local/admin:enrolmentcheck', 'local/admin:resetcourse'], $systemcontext)) {
 
     $ADMIN->add(
             'local_admin',
