@@ -115,8 +115,6 @@ EOS;
             unset($SESSION->local_onlineappraisal->overviewmessage);
         }
 
-        $data->targetedmessage = $this->targetedmessage();
-
         return $data;
     }
 
@@ -380,22 +378,5 @@ EOS;
         }
 
         return $commentsvars;
-    }
-
-    /**
-     * Returns a targeted message for the overview page.
-     *
-     * @return string
-     */
-    private function targetedmessage() {
-        global $DB;
-        $message = '';
-        if ($this->appraisal->appraisal->viewingas === 'appraisee') {
-            $grade = $DB->get_field_sql('SELECT GRADE FROM SQLHUB.ARUP_ALL_STAFF_V WHERE EMPLOYEE_NUMBER = :idnumber', ['idnumber' => (int) $this->appraisal->appraisal->appraisee->idnumber]);
-            if (in_array($grade, ['GRD7', 'GRD8', 'GRD9'])) {
-                $message = '<div class="alert alert-info">I am a message targeted at appraisees who are Grades 7-9.<br>I appear to appraisees only (Restriction can be lifted).<br>I could also have my visibility restricted by status if required.</div>';
-            }
-        }
-        return $message;
     }
 }
