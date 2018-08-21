@@ -23,6 +23,7 @@ $string['admin:accesscoursecompletionsettings'] = 'Access course completion sett
 $string['admin:accesscoursegroupsettings'] = 'Access course group settings';
 $string['admin:enrolmentcheck'] = 'Run enrolment checks for selected courses/users';
 $string['admin:registeradusers'] = 'Register AD users';
+$string['admin:resetcourse'] = 'Reset course';
 $string['admin:testemails'] = 'Test emails';
 $string['adminfunctions'] = 'Admin functions';
 
@@ -35,6 +36,17 @@ $string['enrolmentcheck:staffids'] = 'Staff IDs (one per line)';
 $string['enrolmentcheck:stats:enrolled'] = '{$a->stat} user{$a->s} enrolled or already enrolled.';
 $string['enrolmentcheck:stats:nonmoodle'] = '{$a->stat} non-Moodle user{$a->s}.';
 $string['enrolmentcheck:stats:notenrolled'] = '{$a->stat} user{$a->s} un-enrolled or already not enrolled.';
+
+$string['resetcourse'] = 'Reset course';
+$string['resetcourse:courses'] = 'Courses';
+$string['resetcourse:error:invalidcourse'] = 'Could not load course. Invalid course id: {$a->courseid}.';
+$string['resetcourse:error:invaliduser'] = 'Could not load user to reset course: {$a->coursefullname}. Invalid Moodle user id: {$a->userid}.';
+$string['resetcourse:process'] = 'Reset courses';
+$string['resetcourse:processed:course'] = 'Course: {$a->coursefullname}. Reset for {$a->userfullname}.';
+$string['resetcourse:processed:certification'] = '&nbsp;&nbsp;&nbsp;&nbsp;Associated certification reset: {$a}.';
+$string['resetcourse:selectcourses'] = 'Select courses';
+$string['resetcourse:selectusers'] = 'Select users';
+$string['resetcourse:users'] = 'Users';
 
 $string['taskupdatesupervisors'] = 'Update supervisors (profile flag)';
 $string['taskupdateusers'] = 'Update users';

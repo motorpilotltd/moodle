@@ -71,4 +71,14 @@ if ($hassiteconfig
                     'local/admin:enrolmentcheck'
                     )
             );
+
+    $ADMIN->add(
+            'local_admin',
+            new admin_externalpage(
+                    'local_admin_resetcourse',
+                    get_string('resetcourse', 'local_admin'),
+                    $CFG->wwwroot . '/local/admin/reset_course.php',
+                    'local/admin:resetcourse'
+                    )
+            );
 }
