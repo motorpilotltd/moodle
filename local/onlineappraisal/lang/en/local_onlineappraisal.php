@@ -52,6 +52,7 @@ Guide for Poland and the Netherlands|https://example.com/guide-pl-nl|pl,nl
 Guide to Appraisal|https://example.com/guide-appraisal
 </pre>';
 $string['settings'] = 'Online appraisal configuration';
+$string['taskarchivecycles'] = 'Archive old cycle appraisals';
 
 $string['appraisal'] = 'Appraisal';
 

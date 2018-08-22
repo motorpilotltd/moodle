@@ -1,5 +1,5 @@
 <?php
-// This file is part of the Arup cost centre local plugin
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,20 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * This file definies observers needed by local_onlineappraisal.
  *
- * @package     local_costcentre
- * @copyright   2016 Motorpilot Ltd
- * @author      Simon Lewis
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    local_onlineappraisal
+ * @copyright  2018 Motorpilot Ltd
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2017051502;
-$plugin->requires  = 2017051500; // Moodle 3.3.
-$plugin->component = 'local_costcentre';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.3.2 (Build: {$plugin->version})";
-
-$plugin->dependencies = array();
+// List of observers.
+$observers = array(
+    array(
+        'eventname'   => '\local_costcentre\event\costcentres_added',
+        'callback'    => '\local_onlineappraisal\eventobservers::costcentres_added',
+    ),
+);
