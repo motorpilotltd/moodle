@@ -25,10 +25,9 @@ namespace local_coursemanager;
 
 defined('MOODLE_INTERNAL') || die();
 
+use mod_tapsenrol\taps;
 use stdClass;
 use moodle_url;
-use Exception;
-use moodle_exception;
 use html_writer;
 
 class cmclass {
@@ -54,7 +53,6 @@ class cmclass {
         global $DB, $OUTPUT, $USER;
 
         // Class List
-        $classes = $this->coursemanager->classlist;
         $output = '';
 
         $duplicate = optional_param('duplicate', false, PARAM_BOOL);

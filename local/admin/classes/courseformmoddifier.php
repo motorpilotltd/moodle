@@ -37,7 +37,8 @@ class courseformmoddifier {
         $mform->insertElementBefore($arupdefaultcourse, 'fullname');
         $mform->setDefault('arupdefaultcourse', true);
 
-        if ($mform->getElementValue('arupdefaultcourse')[0] !== 0) {
+        $default = $mform->getElementValue('arupdefaultcourse');
+        if (!isset($default[0]) || empty($default[0]) ) {
             return;
         }
 
@@ -235,7 +236,7 @@ class courseformmoddifier {
      */
     private static function addarupelements(\MoodleQuickForm $mform) {
         global $DB;
-        
+
         $mform->addElement('html', \html_writer::tag('div', ' ', ['class' => 'hidden', 'id' => 'id_updatecourseformat']));
 
         $mform->registerNoSubmitButton('updatearupdefaultcourse');

@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 $string['actions'] = 'Actions';
+$string['addnewclass'] = 'Add new class';
 $string['admin:blockediting'] = 'This page is currently in admin mode, for block editing.';
 $string['admin:blocks:cancel'] = 'Edit blocks on cancellation page';
 $string['admin:blocks:enrol'] = 'Edit blocks on enrol page';
@@ -84,6 +85,7 @@ $string['approve:title'] = 'Enrolment approval';
 $string['approve:title:approve'] = 'Approve request';
 $string['approve:title:either'] = 'Approve or reject request';
 $string['approve:title:reject'] = 'Reject request';
+$string['attending'] = 'Attending';
 $string['autocompletion'] = 'Automatically update learning history on course completion';
 $string['autocompletionhint'] = 'This setting can only be changed by administrators.';
 
@@ -110,10 +112,17 @@ $string['cancelenrolment:areyousure'] = 'Are you sure you want to cancel your en
 $string['cannotenrol'] = 'Sorry, you are not able to enrol on classes in this {$a->course}.{$a->reason}';
 $string['cannotenrol:regions'] = '<br />Enrolment is only allowed from the following regions: {$a}.';
 $string['chooseclass'] = 'Choose class';
+$string['class_planned'] = 'Planned';
+$string['class_normal'] = 'Normal';
+$string['class_scheduled'] = 'Scheduled';
+$string['class_selfpaced'] = 'Self paced';
 $string['classes:classroom'] = 'To enrol onto an available class or express your interest please select from the table below:';
 $string['classes:elearning'] = 'To enrol onto the e-learning module please select from the table below:';
 $string['classes:mixed'] = 'To enrol please select from the table below:';
 $string['classfull'] = 'Full';
+$string['classstatus'] = 'Class status';
+$string['classstarttime'] = 'Class start time';
+$string['classendtime'] = 'Class end time';
 $string['classname'] = 'Class Code';
 $string['classwithname'] = 'Class : {$a}';
 $string['close'] = 'Close';
@@ -133,7 +142,7 @@ $string['couldnotloadcourse'] = 'Sorry, the {$a} details could not be loaded.';
 $string['date'] = 'Date';
 $string['duration'] = 'Duration';
 
-$string['editclass'] = 'Edit Linked Course Classes';
+$string['editclass'] = 'Edit Class';
 $string['enrol'] = 'Enrol Here';
 $string['enrol:alert:alreadyattended'] = 'Please note that re-enrolling will reset the module so that you can re-take it. Your learning history will not be affected.';
 $string['enrol:alert:alreadyattended:certification'] = 'You have completed certifications to which this course is linked, on re-enrolling these will be archived and restarted:<br>{$a}';
@@ -183,6 +192,7 @@ $string['exit:locked'] = 'Exit (Will not save)';
 $string['exit:viewonly'] = 'Exit (Will not save)';
 
 $string['filter'] = 'Filter';
+$string['forcedeletewarning'] = 'Delegates are enrolled on this class. Do you wish to unenroll these and cancel the class?';
 
 $string['groups:requirements'] = 'Groups need to be enabled within the {$a} to use this activity. The following settings are required.<br />Group mode: Visible groups<br />Default grouping: None';
 
@@ -390,6 +400,7 @@ $string['iw:sponsors_help'] = 'Enter a list of possible approver options (email 
 
 $string['location'] = 'Location';
 
+$string['manageclasses'] = 'Manage classes';
 $string['manageenrolments'] = 'Manage enrolments';
 $string['manageenrolments:button:cancel'] = 'Proceed to cancel enrolments';
 $string['manageenrolments:button:delete'] = 'Proceed to delete enrolments';
@@ -485,6 +496,7 @@ $string['manageenrolments:waitlist:results'] = 'Application approval results:{$a
 $string['manageenrolments:waitlist:seatsremaining'] = 'Seats currently remaining: <span id="tapsenrol-waitlist-seatsremaining" data-seatsremaining="{$a->value}">{$a->text}</span> (Including those selected below)';
 $string['manageenrolments:waitlist:users'] = 'Applications to approve';
 $string['markattendance'] = 'Mark attendance';
+$string['maximumattendees'] = 'Maximum attendees';
 $string['modulename'] = 'Arup linked course enrolment';
 $string['modulename_help'] = 'Adds an Arup linked course enrolment activity';
 $string['modulename_link'] = 'mod/tapsenrol/view';
@@ -512,6 +524,7 @@ $string['redirectmessage:onupdate'] = 'Your status has changed, reloading {$a->c
 $string['redirectmessage:onupdatelink'] = 'reload the {$a->course} manually';
 $string['regions:enrolment'] = 'Enrolment regions';
 $string['resendinvites'] = 'Resend invites';
+$string['resendinvitessuggestion'] = 'As you have updated the class information for an upcoming class you may wish to <a href="{$a}">resend invites</a>.';
 $string['resendinvites:cannot'] = 'Resending of invites is not possible for this activity.';
 $string['resendinvites:extrainfo'] = 'Extra information to add to invite';
 $string['resendinvites:extrainfo_help'] = 'This information will be inserted into the [[update:extrainfo]] placeholder in the invite email.';

@@ -12,19 +12,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Utility JS for activity.
+ *
+ * @package    mod_tapsenrol
+ * @copyright  2016 Motorpilot Ltd
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since      3.0
+ */
 define(['jquery'], function($) {
-    return {
+    return /** @alias module:mod_tapsenrol/editclass */ {
+        // Public variables and functions.
         /**
-         * Add enhancements.
+         * Add event handlers for check boxes.
          *
          * @method initialise
          */
         initialise: function() {
-            var updatebut = $('#id_updatearupdefaultcourse');
-            var arupdefaultselect = $('#id_arupdefaultcourse');
-
+            var updatebut = $('#id_updatetypestatus');
             updatebut.addClass('hidden');
-            arupdefaultselect.on('change', function() {
+
+            var arupclasstypeselect = $('#id_classtype');
+            arupclasstypeselect.on('change', function() {
+                updatebut.trigger( "click" );
+            });
+
+            var arupclassstatusselect = $('#id_classstatus');
+            arupclassstatusselect.on('change', function() {
                 updatebut.trigger( "click" );
             });
         }

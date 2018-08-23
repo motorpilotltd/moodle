@@ -1,0 +1,49 @@
+<?php
+// This file is part of the Arup Course Management system
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+namespace mod_tapsenrol;
+/**
+ *
+ * @package     local_coursemanager
+ * @copyright   2016 Motorpilot Ltd / Sonsbeekmedia.nl
+ * @author      Bas Brands, Simon Lewis
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+class cmform_class_scheduled_planned extends cmform_class {
+
+    public function definition() {
+        parent::definition();
+        $mform = $this->_form;
+
+        $mform->addRule('usedtimezone', get_string('required', 'local_coursemanager'), 'required', null, 'client');
+        $mform->addRule('enrolmentstartdate', get_string('required', 'local_coursemanager'), 'required', null, 'client');
+
+        $mform->removeElement('classstarttime');
+        $mform->removeElement('classendtime');
+
+        $startgroup= $this->optional_time_selector('classstarttime');
+        $endgroup = $this->optional_time_selector('classendtime');
+
+        $mform->insertElementBefore($startgroup, 'enrolmentstartdate');
+        $mform->insertElementBefore($endgroup, 'enrolmentstartdate');
+
+        $max = $mform->createElement('advcheckbox', 'unlimitedattendees', get_string('form:class:unlimitedattendees', 'local_coursemanager'), '', array('group' => 1), array(0, 1));
+        $mform->insertElementBefore($max, 'maximumattendees');
+        $mform->setDefault('unlimitedattendees', 1);
+        $mform->disabledIf("maximumattendees", "unlimitedattendees", 'eq', 1);
+    }
+}

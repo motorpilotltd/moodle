@@ -25,7 +25,7 @@ if (in_array($action, array('edit', 'delete', 'lock', 'duplicate'))) {
     $urlparams['id'] = $id;
 }
 
-admin_externalpage_setup('mod_tapsenrol_iw_configure', '', $urlparams);
+admin_externalpage_setup('tapsenrol/iw_configure', '', $urlparams);
 
 $PAGE->set_title(get_string('internalworkflow_heading', 'tapsenrol'));
 $PAGE->add_body_class('path-mod-tapsenrol-iw');

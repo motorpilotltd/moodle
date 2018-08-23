@@ -134,5 +134,29 @@ $capabilities = array(
                     'manager' => CAP_ALLOW
             )
     ),
+    'mod/tapsenrol:editclass' => array(
+            'captype' => 'read',
+            'riskbitmask' => RISK_DATALOSS,
+            'contextlevel' => CONTEXT_MODULE,
+            'archetypes' => array(
+                    'manager' => CAP_ALLOW
+            )
+    ),
+    'mod/tapsenrol:deleteclass' => array(
+            'captype' => 'read',
+            'riskbitmask' => RISK_DATALOSS,
+            'contextlevel' => CONTEXT_MODULE,
+            'archetypes' => array(
+                    'manager' => CAP_ALLOW
+            )
+    ),
+    'mod/tapsenrol:createclass' => array(
+            'captype' => 'read',
+            'riskbitmask' => RISK_DATALOSS,
+            'contextlevel' => CONTEXT_MODULE,
+            'archetypes' => array(
+                    'manager' => CAP_ALLOW
+            )
+    ),
 
 );

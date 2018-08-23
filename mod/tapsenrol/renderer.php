@@ -1212,10 +1212,10 @@ EOF;
         }
 
         if (has_capability('local/coursemanagerclass:add', $tapsenrol->context->course)) {
-            $editclassurl = new moodle_url('/local/coursemanager/index.php', array('page' => 'classoverview', 'courseid' => $tapsenrol->course->id));
+            $editclassurl = new moodle_url('/mod/tapsenrol/classoverview.php', array('cmid' => $tapsenrol->cm->id));
             $links[] = array(
                 'url' => $editclassurl,
-                'title' => get_string('editclass', 'tapsenrol')
+                'title' => get_string('manageclasses', 'tapsenrol')
             );
         }
 

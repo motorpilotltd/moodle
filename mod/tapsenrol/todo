@@ -55,3 +55,14 @@ Enrolment region override
 If the 'Configure standard Arup Course' is checked (or not available for unchecking) then on course creation we apply the defaults as in local/taps/addcourse.php (having refactored them into a nice function on \local_taps\taps)
 
 Drop the field Catalogue region override - not relevant any more.
+
+
+
+Todo
+Javascript on edit class page
+Load correct form when editing
+
+
+
+OUTSTANDING
+Remove classid and coursename fields from local_taps_class
