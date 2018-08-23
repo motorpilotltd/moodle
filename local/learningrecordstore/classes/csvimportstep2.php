@@ -21,11 +21,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_learningrecordstore;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
 
-class cmform_step2_form extends moodleform {
+class csvimportstep2 extends \moodleform {
 
     /**
      * The standard form definiton.
@@ -41,6 +43,6 @@ class cmform_step2_form extends moodleform {
     }
 
     public function str($string) {
-        return get_string('form:csv:' . $string, 'local_coursemanager');
+        return get_string('form:csv:' . $string, 'local_learningrecordstore');
     }
 }

@@ -15,17 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_coursemanager
+ * @package    local_learningrecordstore
  * @copyright  2016 SonsbeekMedia
  * @author     Bas Brands
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_learningrecordstore;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
 
-class cmform_step1_form extends moodleform {
+class csvimportstep1 extends \moodleform {
 
     /**
      *
@@ -44,7 +46,7 @@ class cmform_step1_form extends moodleform {
         $mform->addElement('filepicker', 'csv', $this->str('csv'), null, null);
         $mform->addRule('csv', null, 'required');
 
-        $choices = csv_import_reader::get_delimiter_list();
+        $choices = \csv_import_reader::get_delimiter_list();
         $mform->addElement('select', 'delimiter_name', $this->str('csvdelimiter'), $choices);
         if (array_key_exists('cfg', $choices)) {
             $mform->setDefault('delimiter_name', 'cfg');
@@ -54,19 +56,19 @@ class cmform_step1_form extends moodleform {
             $mform->setDefault('delimiter_name', 'comma');
         }
 
-        $choices = core_text::get_encodings();
+        $choices = \core_text::get_encodings();
         $mform->addElement('select', 'encoding', $this->str('encoding'), $choices);
         $mform->setDefault('encoding', 'UTF-8');
 
         $choices = array('10' => 10, '20' => 20, '100' => 100, '1000' => 1000, '100000' => 100000);
         $mform->addElement('select', 'previewrows', $this->str('rowpreviewnum'), $choices);
         $mform->setType('previewrows', PARAM_INT);
-        $mform->addHelpButton('previewrows', 'form:csv:rowpreviewnum', 'local_coursemanager');
+        $mform->addHelpButton('previewrows', 'form:csv:rowpreviewnum', 'local_learningrecordstore');
 
         $this->add_action_buttons(true, get_string('preview'));
     }
 
     public function str($string) {
-        return get_string('form:csv:' . $string, 'local_coursemanager');
+        return get_string('form:csv:' . $string, 'local_learningrecordstore');
     }
 }
