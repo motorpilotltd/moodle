@@ -18,29 +18,29 @@ require_once(dirname(__FILE__) . '/../../config.php');
 
 $id = optional_param('id', false, PARAM_INT);
 
-if (isset($id)) {
+if (!empty($id)) {
     $class = $DB->get_record('local_taps_class', ['id' => $id]);
     $course = get_course($class->courseid);
 
     // Needs refactoring so that local_taps_class links to cm not course.
     $cms = get_coursemodules_in_course('tapsenrol', $class->courseid);
     $cm = reset($cms);
-} else {
-    $cmid = required_param('cmid', null, PARAM_TEXT);
-    list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'tapsenrol');
-}
 
-$duplicate = optional_param('duplicate', false, PARAM_BOOL);
-if ($duplicate) {
-    unset($class->id);
-    unset($class->classid);
+    $duplicate = optional_param('duplicate', false, PARAM_BOOL);
+    if ($duplicate) {
+        unset($class->id);
+        unset($class->classid);
+    }
+} else {
+    $cmid = required_param('cmid', PARAM_INT);
+    list ($course, $cm) = get_course_and_cm_from_cmid($cmid, 'tapsenrol');
 }
 
 require_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
 
-$params = ['cmid' => $cmid];
+$params = ['cmid' => $cm->id];
 if ($id) {
     $params['id'] = $id;
     require_capability('mod/tapsenrol:createclass', $context);
@@ -61,16 +61,32 @@ if ($id) {
     $PAGE->set_heading(get_string('addnewclass', 'tapsenrol'));
 }
 
-echo $OUTPUT->header();
-$form = \mod_tapsenrol\cmform_class::get_form_instance($cm, $class);
+if (!isset($class)) {
+    $class = new stdClass();
+    $class->courseid = $cm->course;
+    $class->cmid = $cm->id;
+    $class->classtype = optional_param('classtype', false, PARAM_TEXT);
+    $class->classstatus = optional_param('classstatus', false, PARAM_TEXT);
+} else {
+    $class->classtype = optional_param('classtype', $class->classtype, PARAM_INT);
+    $class->classstatus = optional_param('classstatus', $class->classstatus, PARAM_INT);
+}
+$form = \mod_tapsenrol\cmform_class::get_form_instance($class);
 
-if ($form->store_data() == true) {
+$data = $form->get_data();
+
+if ($data) {
+    $form->store_data($data);
     $params =  ['cmid' => $cm->id];
     if ($form->alertrequired) {
         $params['resendinvitesclassid'] = $form->classid;
     }
     redirect(new moodle_url('/mod/tapsenrol/classoverview.php', $params));
 }
+
+echo $OUTPUT->header();
+
+$form->set_data((array)$class);
 
 echo $form->render();
 

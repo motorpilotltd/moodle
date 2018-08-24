@@ -45,7 +45,7 @@ class cmform_class_delete extends \moodleform {
             $mform->addElement('checkbox', 'forcedelete', get_string('forcedeletewarning', 'mod_tapsenrol'));
         }
 
-        $this->add_action_buttons();
+        $this->add_action_buttons(true, get_string('yes'));
     }
 
     public function validation($data, $files) {

@@ -140,6 +140,8 @@ $string['cost'] = 'Cost';
 $string['couldnotloadcourse'] = 'Sorry, the {$a} details could not be loaded.';
 
 $string['date'] = 'Date';
+$string['deleteclass'] = 'Delete Class';
+$string['deleteclassintro'] = 'Are you sure you want to delete class: {$a}';
 $string['duration'] = 'Duration';
 
 $string['editclass'] = 'Edit Class';

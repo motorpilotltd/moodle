@@ -200,7 +200,7 @@ if ($editform->is_cancelled()) {
             }
         }
 
-        \local_admin\courseformmoddifier::post_creation($data, $course);
+        \local_admin\courseformmoddifier::post_creation($course, $data);
     } else {
         // Save any changes to the files used in the editor.
         update_course($data, $editoroptions);

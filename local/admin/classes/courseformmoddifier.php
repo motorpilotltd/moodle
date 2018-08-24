@@ -33,12 +33,13 @@ class courseformmoddifier {
             return;
         }
 
-        $arupdefaultcourse = $mform->createElement('selectyesno', 'arupdefaultcourse', get_string('arupdefaultcourse', 'local_admin'));
+        $arupdefaultcourse =
+                $mform->createElement('selectyesno', 'arupdefaultcourse', get_string('arupdefaultcourse', 'local_admin'));
         $mform->insertElementBefore($arupdefaultcourse, 'fullname');
         $mform->setDefault('arupdefaultcourse', true);
 
         $default = $mform->getElementValue('arupdefaultcourse');
-        if (!isset($default[0]) || empty($default[0]) ) {
+        if (!isset($default[0]) || empty($default[0])) {
             return;
         }
 
@@ -46,22 +47,33 @@ class courseformmoddifier {
         self::freezeandhideunwantedelements($mform);
     }
 
-    public static function post_creation($data, $course) {
+    public static function post_creation($course, $data = null) {
         global $DB;
 
         if ($data->arupdefaultcourse == false) {
             return;
         }
 
+        if (isset($data)) {
+            $internalworkflowid = $data->internalworkflowid == -1 ? 0 : $data->internalworkflowid;
+            $enrolmentregion = !empty($data->enrolmentregion) ? $data->enrolmentregion : array();
+            $enrolmentrole = $data->enrolmentrole;
+        } else {
+            $internalworkflowid = 0;
+            $enrolmentregion = [];
+            $enrolmentrole = get_config('local_admin', 'default_enrolment_role');
+        }
+
         $transaction = $DB->start_delegated_transaction();
-        self::add_default_enrols($data, $course);
-        self::add_default_activities_complation($data, $course);
+        self::add_default_enrols($course, $enrolmentrole);
+
+        self::add_default_activities_complation($course, $internalworkflowid, $enrolmentregion);
         $transaction->allow_commit();
     }
 
-    private static function add_default_enrols($data, $course) {
+    private static function add_default_enrols($course, $enrolmentrole) {
         $instances = enrol_get_instances($course->id, false);
-        $plugins   = enrol_get_plugins(false);
+        $plugins = enrol_get_plugins(false);
 
         foreach ($instances as $instance) {
             $plugin = $plugins[$instance->enrol];
@@ -75,7 +87,7 @@ class courseformmoddifier {
             $enrolmanualfields = array(
                     'status'      => ENROL_INSTANCE_ENABLED,
                     'enrolperiod' => 0,
-                    'roleid'      => $data->enrolmentrole
+                    'roleid'      => $enrolmentrole
             );
             $enrolmanual->add_instance($course, $enrolmanualfields);
         }
@@ -90,7 +102,7 @@ class courseformmoddifier {
                     'customint4'  => 0,
                     'enrolperiod' => 0,
                     'status'      => ENROL_INSTANCE_ENABLED,
-                    'roleid'      => $data->enrolmentrole
+                    'roleid'      => $enrolmentrole
             );
             $enrolself->add_instance($course, $enrolselffields);
         }
@@ -105,12 +117,12 @@ class courseformmoddifier {
         }
     }
 
-    private static function add_default_activities_complation($data, $course) {
+    private static function add_default_activities_complation($course, $internalworkflowid, $enrolmentregion) {
         global $DB, $CFG;
 
         require_once("$CFG->dirroot/mod/tapsenrol/lib.php");
-        require_once($CFG->dirroot.'/completion/criteria/completion_criteria_activity.php');
-        require_once($CFG->dirroot.'/completion/criteria/completion_criteria.php');
+        require_once($CFG->dirroot . '/completion/criteria/completion_criteria_activity.php');
+        require_once($CFG->dirroot . '/completion/criteria/completion_criteria.php');
 
         $course->enablecompletion = COMPLETION_ENABLED;
         $course->completionstartonenrol = 1;
@@ -140,8 +152,8 @@ class courseformmoddifier {
         $tapsenrol->course = $course->id;
         $tapsenrol->name = 'Linked course Enrolment';
         $tapsenrol->completionenrolment = 1;
-        $tapsenrol->internalworkflowid = $data->internalworkflowid == -1 ? 0 : $data->internalworkflowid;
-        $tapsenrol->region = !empty($data->enrolmentregion) ? $data->enrolmentregion : array();
+        $tapsenrol->internalworkflowid = $internalworkflowid;
+        $tapsenrol->region = $enrolmentregion;
         $return = \tapsenrol_add_instance($tapsenrol, null);
 
         $newcm->instance = $return;

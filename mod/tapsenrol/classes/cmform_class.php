@@ -106,7 +106,7 @@ abstract class cmform_class extends \moodleform {
 
         $mform->addRule('classname', get_string('required', 'local_coursemanager'), 'required', null, 'client');
 
-        if ($data->id > 0) {
+        if (!empty($data->id)) {
             $this->add_action_buttons(true, $this->str('updateclass'));
         } else {
             $this->add_action_buttons(true, $this->str('saveclass'));
@@ -177,9 +177,10 @@ abstract class cmform_class extends \moodleform {
         $sql = 'SELECT id FROM {local_taps_class}
                  WHERE courseid = :courseid
                    AND LOWER(classname) = LOWER(:classname)
-                   AND NOT classid  = :classid';
+                   AND NOT id  = :id';
+        $id = isset($data['id']) ? $data['id'] : -1;
         $dupes = $DB->get_records_sql($sql,
-                array('courseid' => $data['courseid'], 'classname' => $data['classname'], 'id' => $data['id']));
+                array('courseid' => $data['courseid'], 'classname' => $data['classname'], 'id' => $id));
         if (count($dupes) > 0) {
             $errors['classname'] = get_string('duplicateclassname', 'local_coursemanager');
         }
@@ -290,7 +291,7 @@ abstract class cmform_class extends \moodleform {
     public function definition_after_data() {
         global $DB;
         $mform = $this->_form;
-        if ($this->_customdata->id > 0 && $this->_customdata->classid > 0) {
+        if (!empty($this->_customdata->id)) {
             // Check for attended enrolments and unset duration/time fields so they are not updated.
             $taps = new \mod_tapsenrol\taps();
             list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
@@ -336,26 +337,16 @@ abstract class cmform_class extends \moodleform {
      * @param $classid
      * @return cmform_class
      */
-    public static function get_form_instance($cm, $class) {
-        if (!isset($class)) {
-            $class = new \stdClass();
-            $class->courseid = $cm->course;
-            $class->cmid = $cm->id;
-            $class->type = false;
-            $class->status = false;
-        }
-
-        if ($class->type == self::CLASS_TYPE_SELFPACED) {
+    public static function get_form_instance($class) {
+        if ($class->classtype == self::CLASS_TYPE_SELFPACED) {
             $form = new cmform_class_selfpaced(null, $class);
-        } else if ($class->type == self::CLASS_TYPE_SCHEDULED && $class->status == self::CLASS_STATUS_PLANNED) {
+        } else if ($class->classtype == self::CLASS_TYPE_SCHEDULED && $class->classstatus == self::CLASS_STATUS_PLANNED) {
             $form = new cmform_class_scheduled_planned(null, $class);
-        } else if ($class->type == self::CLASS_TYPE_SCHEDULED && $class->status == self::CLASS_STATUS_NORMAL) {
+        } else if ($class->classtype == self::CLASS_TYPE_SCHEDULED && $class->classstatus == self::CLASS_STATUS_NORMAL) {
             $form = new cmform_class_scheduled_normal(null, $class);
-        } else if ($class->type == false && $class->status == false) {
+        } else if ($class->classtype == false && $class->classstatus == false) {
             $form = new cmform_class_selfpaced(null, $class);
         }
-
-        $form->set_data((array)$class);
 
         return $form;
     }
@@ -368,14 +359,8 @@ abstract class cmform_class extends \moodleform {
      *
      * @param object $data formdata
      */
-    public function store_data() {
+    public function store_data($data) {
         global $DB;
-
-        $data = $this->get_data();
-
-        if (!$data) {
-            return false;
-        }
 
         $taps = new taps();
 

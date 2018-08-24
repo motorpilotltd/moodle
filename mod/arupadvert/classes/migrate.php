@@ -214,6 +214,7 @@ class migrate {
                 $course->category = $archivecategoryid;
 
                 $course = create_course($course);
+                \local_admin\courseformmoddifier::post_creation($course);
 
                 $arupmetadata = new \coursemetadatafield_arup\arupmetadata();
                 $arupmetadata->name = $tapscourse->coursename;

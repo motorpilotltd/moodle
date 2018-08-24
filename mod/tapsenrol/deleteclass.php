@@ -18,24 +18,37 @@ require_once(dirname(__FILE__) . '/../../config.php');
 
 $id = optional_param('id', false, PARAM_INT);
 $class = $DB->get_record('local_taps_class', ['id' => $id]);
+$course = get_course($class->courseid);
 
 // Needs refactoring so that local_taps_class links to cm not course.
 $cms = get_coursemodules_in_course('tapsenrol', $class->courseid);
 $cm = reset($cms);
 
+require_login($course, true, $cm);
+
 $context = context_module::instance($cm->id);
 require_capability('mod/tapsenrol:deleteclass', $context);
 
-$baseurl = new moodle_url('/mod/tapsenrol/editclass.php', ['id' => $id]);
+$baseurl = new moodle_url('/mod/tapsenrol/deleteclass.php', ['id' => $id]);
 
 $PAGE->set_context($context);
 $PAGE->set_url($baseurl);
+$PAGE->set_title(get_string('deleteclass', 'tapsenrol'));
+$PAGE->set_heading(get_string('deleteclass', 'tapsenrol'));
 
 $form = new \mod_tapsenrol\cmform_class_delete(null, ['class' => $class]);
 
+$redirecturl = new moodle_url("/mod/tapsenrol/classoverview.php", ['cmid' => $cm->id]);
 if ($form->get_data()) {
     $form->dodelete();
+    redirect($redirecturl);
+} else if ($form->is_cancelled()) {
+    redirect($redirecturl);
 }
+
+echo $OUTPUT->header();
+
+echo $OUTPUT->box(get_string('deleteclassintro', 'tapsenrol', $class->classname));
 
 echo $form->render();
 

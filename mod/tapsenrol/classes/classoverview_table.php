@@ -103,7 +103,7 @@ class classoverview_table extends \table_sql {
 
         // Delegate list.
         // TODO Bring local_delegatelist into this plugin.
-        $coursecontext = \context_course::instance($this->context->get_course_context());
+        $coursecontext = $this->context->get_parent_context();
         $params = array('contextid' => $coursecontext->id, 'id' => $class->classid);
         if (has_any_capability(["local/delegatelist:managerview", "local/delegatelist:teacherview", "local/delegatelist:studentview"], $coursecontext)) {
             $urldelegate = new \moodle_url('/local/delegatelist/index.php', $params);

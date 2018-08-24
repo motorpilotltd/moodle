@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// TODO Break up and spread between tapsenrol, local_admin and local_learningrecordstore.
 namespace mod_tapsenrol;
 
 defined('MOODLE_INTERNAL') || die();
@@ -379,123 +380,6 @@ class taps {
     public function get_healthandsafetycategory() {
         return $this->_healthandsafetycategory;
     }
-
-    /**
-     * Get all courses.
-     *
-     * @param mixed $filter
-     * @param mixed $active
-     * @return mixed
-     */
-    public function get_all_courses($filter = null, $active = null) {
-        global $DB;
-
-        if (!in_array($filter, array('PRIMARY', 'ALL'))) {
-            // Only 'PRIMARY' if not set.
-            $filter = 'PRIMARY';
-        }
-
-        if (!in_array($active, array('Y', 'N'))) {
-            // Don't restrict if not set.
-            $active = 'N';
-        }
-
-        if ($filter == 'PRIMARY') {
-            if ($active == 'Y') {
-                $where = "{$DB->sql_compare_text('activecourse')} = :active";
-                $params = array('active' => $active);
-                return $DB->get_records_select('local_taps_course', $where, $params);
-            } else {
-                return $DB->get_records('local_taps_course');
-            }
-        } else {
-            $where = '';
-            $params = array();
-
-            if ($active == 'Y') {
-                $where .= " AND {$DB->sql_compare_text('ltc.activecourse')} = :active ";
-                $params['active'] = $active;
-            }
-
-            $sql = <<<EOS
-SELECT
-    ltcc.id as coursecategoryid,
-    ltcc.categoryhierarchy,
-    ltcc.primaryflag,
-    ltc.*
-FROM
-    {local_taps_course_category} ltcc
-JOIN
-    {local_taps_course} ltc
-    ON ltcc.courseid = ltc.courseid
-WHERE
-    1=1
-    {$where}
-EOS;
-            return $DB->get_records_sql($sql, $params);
-        }
-    }
-
-    /**
-     * Get course by ID.
-     *
-     * @param int $id
-     * @param mixed $filter
-     * @param mixed $active
-     * @return mixed
-     */
-    public function get_course_by_id($id, $filter = null, $active = null) {
-        global $DB;
-
-        if (!in_array($filter, array('PRIMARY', 'ALL'))) {
-            // Only 'PRIMARY' if not set.
-            $filter = 'PRIMARY';
-        }
-
-        if (!in_array($active, array('Y', 'N'))) {
-            // Don't restrict if not set.
-            $active = 'N';
-        }
-
-        if ($filter == 'PRIMARY') {
-            if ($active == 'Y') {
-                $where = "courseid = :courseid AND {$DB->sql_compare_text('activecourse')} = :active";
-                $params = array('courseid' => $id, 'active' => $active);
-                return $DB->get_record_select('local_taps_course', $where, $params);
-            } else {
-                return $DB->get_record('local_taps_course', array('courseid' => $id));
-            }
-        } else {
-            $where = '';
-            $params = array();
-
-            $where .= ' AND ltcc.courseid = :courseid ';
-            $params['courseid'] = $id;
-
-            if ($active == 'Y') {
-                $where .= " AND {$DB->sql_compare_text('ltc.activecourse')} = :active ";
-                $params['active'] = $active;
-            }
-
-            $sql = <<<EOS
-SELECT
-    ltcc.id as coursecategoryid,
-    ltcc.categoryhierarchy,
-    ltcc.primaryflag,
-    ltc.*
-FROM
-    {local_taps_course_category} ltcc
-JOIN
-    {local_taps_course} ltc
-    ON ltcc.courseid = ltc.courseid
-WHERE
-    1=1
-    {$where}
-EOS;
-            return $DB->get_records_sql($sql, $params);
-        }
-    }
-
     /**
      * Get course classes.
      *
@@ -549,30 +433,6 @@ EOS;
         $enrolments = $DB->get_records_select('local_taps_enrolment', "staffid = :staffid{$courseidwhere}{$activewhere}{$archivedwhere}", $params);
 
         return $enrolments;
-    }
-
-    /**
-     * Get enrolments on a course.
-     *
-     * @param int $courseid
-     * @return mixed
-     */
-    public function get_course_enrolments($courseid) {
-        global $DB;
-        
-        return $DB->get_records_select('local_taps_enrolment', 'courseid = :courseid AND (archived = 0 OR archived IS NULL)', array('courseid' => $courseid));
-    }
-
-    /**
-     * Get enrolments on a class.
-     *
-     * @param int $classid
-     * @return mixed
-     */
-    public function get_class_enrolments($classid) {
-        global $DB;
-
-        return $DB->get_records_select('local_taps_enrolment', 'classid = :classid AND (archived = 0 OR archived IS NULL)', array('classid' => $classid));
     }
 
     /**
@@ -985,7 +845,7 @@ EOS;
             $inparams
         );
         $enrolments = $DB->count_records_select('local_taps_enrolment', "classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}", $params);
-        
+
         return max(array(0, $class->maximumattendees - $enrolments));
     }
 }
