@@ -21,7 +21,7 @@ class window_open extends \core\task\scheduled_task
         $query = "
             SELECT
                 cc.*
-            FROM {certif_completions} cc 
+            FROM {certif_completions} cc
             JOIN {certif} c ON c.id = cc.certifid
             WHERE cc.timewindowsopens <= :now
             AND cc.timewindowsopens > 0
@@ -38,7 +38,7 @@ class window_open extends \core\task\scheduled_task
             completion::open_window($completionrecord);
         }
 
-        // Just purge the whole thing as potnetially lots of users and lots of courses.
+        // Just purge the whole thing as potentially lots of users and lots of courses.
         \cache::make('core', 'completion')->purge();
     }
 }
