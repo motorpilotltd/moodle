@@ -35,7 +35,13 @@ $string['dosinglelogout'] = 'Single Log out';
 $string['dosinglelogout_description'] = 'Check it to enable the single logout. This will log out you from moodle, identity provider and all conected service providers';
 
 $string['error:authentication_process'] = 'Error in authenticating {$a}';
+$string['error:employeeid_duplicate'] = 'There has been a issue with the details for your account discovered.<br />'
+        . 'Please contact <a href="mailto:moodle.support@arup.com">moodle.support@arup.com</a> with your username and staff id for investigation.';
 $string['error:employeeid_mismatch'] = 'There has been a mismatch in details for your account discovered.<br />'
+        . 'Please contact <a href="mailto:moodle.support@arup.com">moodle.support@arup.com</a> with your username and staff id for investigation.';
+$string['error:employeeid_nohub'] = 'There has been a issue with a missing linked HR record for your account discovered.<br />'
+        . 'Please contact <a href="mailto:moodle.support@arup.com">moodle.support@arup.com</a> with your username and staff id for investigation.';
+$string['error:employeeid_none'] = 'There has been a issue with missing details for your account discovered.<br />'
         . 'Please contact <a href="mailto:moodle.support@arup.com">moodle.support@arup.com</a> with your username and staff id for investigation.';
 $string['error:suspended_account'] = 'Your account ({$a}) is currently suspended.<br />'
         . 'Please contact <a href="mailto:moodle.support@arup.com">moodle.support@arup.com</a> to re-activate your account.';
