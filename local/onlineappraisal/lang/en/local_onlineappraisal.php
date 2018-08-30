@@ -1303,6 +1303,8 @@ $string['appraisee_welcome_info'] = 'Your appraisal deadline for this year is {$
 
 $string['introduction:video'] = '<img src="https://moodle.arup.com/scorm/_assets/ArupAppraisal.png"  alt="Arup Appraisal logo"/>';
 
+$string['introduction:targetedmessage'] = '<div class="alert alert-info">For those in leadership roles, you may wish to refer to the <a href="https://moodle.arup.com/appraisal/leadershipattributes" target="_blank">Arup Leadership Attributes</a> - the 16 qualities which define us as leaders.  For further information please refer to the accompanying <a href="https://moodle.arup.com/appraisal/leadershipattributesguide" target="_blank">Introduction to Arup Leadership Attributes</a>.</div>';
+
 // PDF.
 $string['pdf:appraisername'] = 'Appraiser Name';
 
