@@ -249,6 +249,7 @@ $string['f2f:notcomplete'] = 'F2F Not Held';
 
 $string['group'] = 'Cost Centre';
 
+$string['inactive'] = 'INACTIVE';
 $string['index:awaiting'] = 'Awaiting your input';
 $string['index:emptyfilter'] = 'No appraisals match your filter selection.';
 $string['index:togglef2f:complete'] = 'Mark F2F as Held';

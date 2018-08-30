@@ -46,7 +46,7 @@ class index {
     private $groupid;
 
     private $renderer;
-    
+
     private $is = array(
         'appraisee' => false,
         'appraiser' => false,
@@ -84,7 +84,7 @@ class index {
         $this->page = $page;
 
         $this->set_user_types();
-        
+
         // Check if this user is allowed to view index page.
         if (!$this->can_view_index()) {
             // Get BAs for user's cost centre.
@@ -115,7 +115,7 @@ class index {
 
     /**
      * Magic getter.
-     * 
+     *
      * @param string $name
      * @return mixed property
      * @throws Exception
@@ -132,7 +132,7 @@ class index {
 
     /**
      * Set accessible user types for current user.
-     * 
+     *
      * @global \moodle_database $DB
      */
     private function set_user_types() {
@@ -345,7 +345,7 @@ class index {
                 $alerthtml .= $this->renderer->render($alert);
                 unset($SESSION->local_onlineappraisal->alert);
             }
-            
+
             return $alerthtml . $formhtml . $pagehtml;
         } else {
             $alert = new alert(get_string('error:pagenotfound', 'local_onlineappraisal', $this->page), 'danger', false);
@@ -382,7 +382,7 @@ class index {
     public function get_groups() {
         global $DB;
 
-        $params = array(
+        $groupsparams = array(
             'userid' => $this->user->id,
             'bitandhrl' => costcentre::HR_LEADER,
             'bitandhra' => costcentre::HR_ADMIN,
@@ -391,62 +391,55 @@ class index {
         $bitandhrl = $DB->sql_bitand('lcu.permissions', costcentre::HR_LEADER);
         $bitandhra = $DB->sql_bitand('lcu.permissions', costcentre::HR_ADMIN);
 
-        $sql = "
-            SELECT
-                DISTINCT(lc.costcentre)
-            FROM {local_costcentre} lc
-            JOIN {local_costcentre_user} lcu ON lcu.costcentre = lc.costcentre
-            WHERE
-                lc.enableappraisal = 1
-                AND lcu.userid = :userid
-                AND ({$bitandhrl} = :bitandhrl OR {$bitandhra} = :bitandhra)
-            ORDER BY
-                lc.costcentre ASC";
+        $groupssql = "SELECT DISTINCT lc.costcentre, lc.enableappraisal
+                  FROM {local_costcentre} lc
+                  JOIN {local_costcentre_user} lcu ON lcu.costcentre = lc.costcentre
+                 WHERE lcu.userid = :userid
+                       AND ({$bitandhrl} = :bitandhrl OR {$bitandhra} = :bitandhra)
+              ORDER BY lc.enableappraisal DESC, lc.costcentre ASC";
 
-        $groups = $DB->get_records_sql($sql, $params);
+        $groups = $DB->get_records_sql($groupssql, $groupsparams);
 
         $options = array('' => get_string('form:all', 'local_onlineappraisal'));
         foreach($groups as $group) {
+            // If disabled are there any appraisals attached...
+            if (!$group->enableappraisal) {
+                $appsql = "SELECT COUNT(id)
+                             FROM {local_appraisal_appraisal}
+                            WHERE appraisee_userid IN (SELECT id
+                                                         FROM {user}
+                                                        WHERE icq = :icq)
+                              AND deleted = 0";
+                if (!$DB->count_records_sql($appsql, ['icq' => $group->costcentre])) {
+                    // No appraisals, continue to not move into options list.
+                    continue;
+                }
+            }
             // Find the group name.
-            $sql = "
-                SELECT
-                    u.department
-                FROM
-                    {user} u
-                INNER JOIN
-                    (SELECT
-                        MAX(id) maxid
-                    FROM
-                        {user} inneru
-                    INNER JOIN
-                        (SELECT
-                            MAX(timemodified) as maxtimemodified
-                        FROM
-                            {user}
-                        WHERE
-                            icq = :icq1
-                        ) groupedicq
-                        ON inneru.timemodified = groupedicq.maxtimemodified
-                    WHERE
-                        icq = :icq2
-                    ) groupedid
-                    ON u.id = groupedid.maxid
-                WHERE
-                    u.icq = :icq3";
-            $params = array_fill_keys(array('icq1', 'icq2', 'icq3'), $group->costcentre);
-            $groupname = $DB->get_field_sql($sql, $params);
-            $options = $options + array($group->costcentre => $group->costcentre.' - ' . $groupname);
+            $groupsql = "SELECT u.department
+                      FROM {user} u
+                INNER JOIN (SELECT MAX(id) maxid
+                              FROM {user} inneru
+                        INNER JOIN (SELECT MAX(timemodified) as maxtimemodified
+                                      FROM {user}
+                                     WHERE icq = :icq1) groupedicq ON inneru.timemodified = groupedicq.maxtimemodified
+                             WHERE icq = :icq2) groupedid ON u.id = groupedid.maxid
+                     WHERE u.icq = :icq3";
+            $groupparams = array_fill_keys(array('icq1', 'icq2', 'icq3'), $group->costcentre);
+            $groupname = $DB->get_field_sql($groupsql, $groupparams);
+            $disabled = ($group->enableappraisal) ? '' : ' - ' . get_string('inactive', 'local_onlineappraisal');
+            $options = $options + array($group->costcentre => $group->costcentre.' - ' . $groupname . $disabled);
             if ($this->is['hrleader']) {
                 $this->canviewvip[$group->costcentre] = costcentre::is_user($this->user->id, costcentre::HR_LEADER, $group->costcentre);
             }
         }
-        
+
         return $options;
     }
 
     /**
      * Get appraisals for type/state.
-     * 
+     *
      * @global stdClass $DB
      * @global stdClass $USER
      * @param string $type
@@ -491,7 +484,7 @@ class index {
                     $params = $params + $inparams;
                     $typefilter .= " OR u.icq {$insql}";
                 }
-                
+
                 $typefilter .= ')';
                 break;
             case 'hrleader' :
@@ -556,7 +549,7 @@ class index {
 
     /**
      * Returns whether appraisal requires action give user type and status.
-     * 
+     *
      * @param string $type
      * @param object $appraisal
      * @return boolean requires action
@@ -594,7 +587,7 @@ class index {
 
     /**
      * Toggle F2F status for an appraisal.
-     * 
+     *
      * @global \moodle_database $DB
      * @global stdClass $USER
      * @return stdClass result
