@@ -59,6 +59,5 @@ class theme_arup_mod_hvp_renderer extends mod_hvp_renderer {
                 }
             }
         }
-        error_log(print_r($semantics, true));
     }
 }
