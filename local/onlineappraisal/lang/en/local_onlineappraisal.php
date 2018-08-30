@@ -907,6 +907,13 @@ $string['form:lastyear:printappraisal'] = '<a href="{$a}" target="_blank">Last y
 // Career Direction
 $string['form:careerdirection:title'] = 'Section 2: Career Direction';
 $string['form:careerdirection:intro'] = 'The purpose of this section is to allow the appraisee to consider their career aspirations and discuss these in a practical way with their appraiser. For junior members of staff, the horizon for this conversation is likely to be about 1-3 years. For more senior members of staff we would expect it to be 3-5 years.';
+$string['form:careerdirection:mobility'] = 'Mobility: preparedness to relocate';
+$string['form:careerdirection:mobilityhelp'] = 'Please expand on your reason with the comments section 2.1.';
+$string['form:careerdirection:mobility:answer:1'] = 'Fully internationally mobile';
+$string['form:careerdirection:mobility:answer:2'] = 'Fully mobile in current region';
+$string['form:careerdirection:mobility:answer:3'] = 'Fully mobile in current country';
+$string['form:careerdirection:mobility:answer:4'] = 'Limited mobility in current country';
+$string['form:careerdirection:mobility:answer:5'] = 'Not currently mobile';
 $string['form:careerdirection:progress'] = '2.1 How do you want your career to progress?';
 $string['form:careerdirection:progresshelp'] = '<div class="well well-sm"> <em>You should consider:</em> <ul class="m-b-0"> <li><em>What type of work do you want to be doing and with what level of responsibility?</em></li> <li><em>What is important to you about your work over the next few years e.g. breadth, depth, specialisation, generalisation, mobility, design, responsibility for people, etc?</em></li>
 <li><em>Where would you like to be located?</em></li> </ul> </div>';
