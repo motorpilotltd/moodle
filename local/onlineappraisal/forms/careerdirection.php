@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 class apform_careerdirection extends moodleform {
     public function definition() {
         global $PAGE;
-        
+
         $data = $this->_customdata;
         $mform = $this->_form;
 
@@ -71,6 +71,14 @@ class apform_careerdirection extends moodleform {
         $mform->addElement('html', html_writer::tag('h2', $this->str('title')));
 
         $mform->addElement('html', html_writer::tag('div', $this->str('intro'), array('class' => 'm-b-20')));
+
+        $answers = ['' => ''];
+        for ($i = 1; $i <= 5; $i++) {
+            $answers[$this->str("mobility:answer:{$i}")] = $this->str("mobility:answer:{$i}");
+        }
+        $mform->addElement('select', 'mobility', $this->str('mobility'), $answers);
+        $mform->disabledIf('mobility', 'appraiseeedit', 'eq', APPRAISAL_FIELD_LOCKED);
+        $mform->addElement('html', html_writer::tag('p', $this->str('mobilityhelp')));
 
         $mform->addElement('textarearup', 'progress', $this->str('progress'), 'rows="10" cols="70"' . $appraiseelocked, $this->str('progresshelp'), 'appraisee');
         $mform->setType('progress', PARAM_RAW);
