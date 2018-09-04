@@ -74,7 +74,7 @@ class daterangelearning extends base {
         $pagination->prevurl = new moodle_url('/local/reports/index.php', $params);
         $params['start'] = $this->data->start + 1;
         $pagination->nexturl = new moodle_url('/local/reports/index.php', $params);
-        
+
         $leftalt = get_string('previous', 'local_reports');
         $licon = new \pix_icon('t/left', $leftalt, '', array('title' => $leftalt));
         $pagination->leftarrow = $OUTPUT->render($licon);
@@ -87,7 +87,7 @@ class daterangelearning extends base {
     }
 
     public function pagination_pages() {
-        $numpages = floor($this->data->numrecords / $this->data->limit);
+        $numpages = ceil($this->data->numrecords / $this->data->limit);
         $pages = array();
         $maxpages = 10;
         $bigjump = 200;
@@ -104,7 +104,7 @@ class daterangelearning extends base {
         }
         for ($i = $start ; $i < $numpages ; $i++) {
             $pagecount++;
-            if ($pagecount > $maxpages) { 
+            if ($pagecount > $maxpages) {
                 if (($i + 1) % $bigjump != 0) {
                     continue;
                 } else if ($numjumps >= $maxjumps) {
@@ -118,7 +118,7 @@ class daterangelearning extends base {
         if ($numpages > $maxpages) {
             $pages[] = $this->pagination_page($numpages);
         }
-        
+
         return $pages;
     }
 

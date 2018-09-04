@@ -46,4 +46,16 @@ class renderer extends plugin_renderer_base {
         return $this->render_from_template('local_onlineappraisal/caption', $templatevars);
     }
 
+    public function render_quicklinks(\local_onlineappraisal\output\quicklinks $quicklinks) {
+        $bc = new \block_contents();
+        $bc->attributes['id'] = 'local_onlineappraisal';
+        $bc->title = get_string('quicklinks', 'local_onlineappraisal');
+        $bc->attributes['class'] = 'block block_local_onlineappraisal';
+
+        // Call the export_for_template function from class quicklinks
+        $templatevars = $quicklinks->export_for_template($this);
+
+        $bc->content = parent::render_from_template('local_onlineappraisal/quicklinks', $templatevars);
+        return $bc;
+    }
 }

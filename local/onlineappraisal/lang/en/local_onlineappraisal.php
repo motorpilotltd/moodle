@@ -28,11 +28,29 @@ defined('MOODLE_INTERNAL') || die();
 $string['cachedef_permissions'] = 'Permissions cache';
 
 $string['onlineappraisal:deleteappraisal'] = 'Allowed to permanently delete appraisals';
+$string['onlineappraisal:itadmin'] = 'Allowed to access the IT admin area';
 $string['pluginname'] = 'Online Appraisal';
 $string['setting:logo'] = 'Alternate logo';
 $string['setting:logo_desc'] = 'An alternate logo which will be used specifically for appraisal pages.';
 $string['setting:helpurl'] = 'Help Url';
 $string['setting:helpurl_desc'] = 'A link to a help page for the Appraisal menu';
+$string['setting:quicklinks'] = 'Quick links';
+$string['setting:quicklinks_desc'] = 'Links to be added to the quick links block under the main navigation block.
+
+Enter each quick link on a new line with format:<br>
+item text, link URL, and language code (optional, comma separated list, can be negated with ! at beginning, for displaying the item to users of the specified language only), separated by pipe characters.
+
+For example...<br>
+1. Shows for all languages except es, pl, nl<br>
+2. Shows for es<br>
+3. Shows for pl, nl<br>
+4. Shows for all
+<pre>
+Contribution Guide|https://example.com/guide|!es,pl,nl
+Guía de Contribución|https://example.com/guide-es|es
+Guide for Poland and the Netherlands|https://example.com/guide-pl-nl|pl,nl
+Guide to Appraisal|https://example.com/guide-appraisal
+</pre>';
 $string['settings'] = 'Online appraisal configuration';
 
 $string['appraisal'] = 'Appraisal';
@@ -902,6 +920,7 @@ $string['form:addfeedback:addfeedbackhelp'] = '<div class="well well-sm">..</div
 $string['form:addfeedback:addfeedback_help'] = 'Please just copy and paste your feedback received into the "valued contribution" box unless you are able to split between "valued" and "more effective".';
 $string['form:addfeedback:addfeedback_2'] = 'Please give details of up to three areas in which you feel they could have been more effective. Be honest, but be constructively critical, as this feedback will help your colleague to tackle issues more effectively.';
 $string['form:addfeedback:addfeedback_2help'] = '<div class="well well-sm">..</div>';
+$string['form:addfeedback:warning'] = 'Note: The feedback you provide will be visible to the appraisee.';
 $string['form:feedback:alert:cancelled'] = 'Sending cancelled, your appraisal feedback request has not been sent.';
 $string['form:feedback:alert:error'] = 'Sorry, there was an error sending your appraisal feedback request.';
 $string['form:feedback:alert:saved'] = 'Your appraisal feedback request has been successfully sent.';
@@ -981,7 +1000,8 @@ $string['form:careerdirection:commentshelp'] = '<div class="well well-sm">
 
 // Impact Plan
 $string['form:impactplan:title'] = 'Section 3: Agreed Impact Plan';
-$string['form:impactplan:intro'] = 'The Agreed Impact Plan sets out how the appraisee wants to make a difference over the coming year, in terms of the work they do, and their impact on the firm overall. The plan should include how the appraisee will improve their work, or their project / team / office / group. In practice this means providing specifics about timelines, quality, budget, design/innovation and impact on people, clients or work overall.<br /><br /> The <a href="https://moodle.arup.com/appraisal/contribution" target="_blank">Contribution Guide</a> and the <a href="https://moodle.arup.com/appraisal/guide" target="_blank">Guide To Appraisal</a> will give suggestions for how these improvements might be made.';
+$string['form:impactplan:intro'] = 'The Agreed Impact Plan sets out how the appraisee wants to make a difference over the coming year, in terms of the work they do, and their impact on the firm overall. The plan should include how the appraisee will improve their work, or their project / team / office / group. In practice this means providing specifics about timelines, quality, budget, design/innovation and impact on people, clients or work overall.<br /><br />The <a href="https://moodle.arup.com/appraisal/contribution" target="_blank">Contribution Guide</a> and the <a href="https://moodle.arup.com/appraisal/guide" target="_blank">Guide To Appraisal</a> will give suggestions for how these improvements might be made.';
+$string['form:impactplan:intro_2'] = 'For those in leadership roles, you may wish to refer to the <a href="https://moodle.arup.com/appraisal/leadershipattributes" target="_blank">Arup Leadership Attributes</a> - the 16 qualities which define us as leaders - and the accompanying <a href="https://moodle.arup.com/appraisal/leadershipattributesguide" target="_blank">guidance</a>.';
 
 $string['form:impactplan:impact'] = '3.1 Describe the impact you want to have on your projects, your clients, your team or the firm next year:';
 $string['form:impactplan:impacthelp'] = '<div class="well well-sm">
@@ -1362,7 +1382,6 @@ $string['feedbackrequests:th:requestdate'] = 'Requested date';
 $string['feedbackrequests:th:facetofacedate'] = 'Face to face date';
 $string['feedbackrequests:th:facetofaceheld'] = 'Face to face held';
 $string['feedbackrequests:th:completeddate'] = 'Completed date';
-$string['feedbackrequests:th:confidential'] = 'Confidential';
 $string['feedbackrequests:th:actions'] = 'Actions';
 $string['feedbackrequests:emailcopy'] = 'Email me a copy';
 $string['feedbackrequests:submitfeedback'] = 'Submit feedback';
@@ -1398,6 +1417,8 @@ $string['appraisee_welcome'] = 'Your appraisal is an opportunity for you and you
 $string['appraisee_welcome_info'] = 'Your appraisal deadline for this year is {$a}.';
 
 $string['introduction:video'] = '<img src="https://moodle.arup.com/scorm/_assets/ArupAppraisal.png"  alt="Arup Appraisal logo"/>';
+
+$string['introduction:targetedmessage'] = '<div class="alert alert-info">For those in leadership roles, you may wish to refer to the <a href="https://moodle.arup.com/appraisal/leadershipattributes" target="_blank">Arup Leadership Attributes</a> - the 16 qualities which define us as leaders.  For further information please refer to the accompanying <a href="https://moodle.arup.com/appraisal/leadershipattributesguide" target="_blank">Introduction to Arup Leadership Attributes</a>.</div>';
 
 // PDF.
 $string['pdf:appraisername'] = 'Appraiser Name';
@@ -1516,3 +1537,7 @@ $string['itadmin:deletefeedback'] = 'Delete Feedback';
 $string['itadmin:feedbackdeleted'] = 'Feedback Deleted';
 $string['itadmin:faqcontent'] = '<h4>How do I change the status of an appraisal?</h4>
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ullamcorper, metus laoreet efficitur maximus, elit lorem egestas justo, sed lacinia nisl urna a nibh. Vestibulum vel nunc massa. Cras sit amet turpis accumsan, luctus felis sed, elementum diam. Sed eu metus tempor turpis auctor scelerisque at vel lectus. Pellentesque odio turpis, venenatis id nulla in, eleifend maximus sem. Aliquam vitae vestibulum felis. Integer ultrices neque vitae odio aliquam, nec tristique enim vulputate. Pellentesque porta sagittis diam vitae facilisis. Duis eleifend iaculis neque, non luctus turpis cursus sed. In eget nibh quis enim finibus pharetra vel fringilla arcu. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.';
+
+// Fake blocks.
+$string['navigation'] = 'Navigation';
+$string['quicklinks'] = 'Quick links';

@@ -28,6 +28,7 @@ $string['advertblockimage_help'] = 'Will be cropped to 16:9 aspect ratio if nece
 $string['alreadyexists'] = 'An advert activity already exists in this course.<br />Multiple instances are not allowed.';
 $string['altword'] = 'Alternative word for \'{$a}\' in headings';
 $string['arupadvert:addinstance'] = 'Add a new Arup advert';
+$string['arupadvert:viewsharelink'] = 'View Yammer share link';
 $string['audience'] = 'Is this {$a} right for me?';
 
 $string['block:by'] = 'By';

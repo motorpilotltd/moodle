@@ -41,12 +41,17 @@ if ($hassiteconfig) {
     $description = get_string('setting:helpurl_desc', 'local_onlineappraisal');
     $settings->add(new admin_setting_configtext($name, $title, $description, ''));
 
+    $name = 'local_onlineappraisal/quicklinks';
+    $title = get_string('setting:quicklinks','local_onlineappraisal');
+    $description = get_string('setting:quicklinks_desc', 'local_onlineappraisal');
+    $settings->add(new admin_setting_configtextarea($name, $title, $description, ''));
+
     $html = '';
     if (optional_param('rebuild_permissions', false, PARAM_BOOL)) {
         \local_onlineappraisal\permissions::rebuild_permissions();
         $html = html_writer::div('Permissions cache has been rebuilt', 'alert alert-success');
     }
-    
+
     $url = new moodle_url(qualified_me());
     $url->param('rebuild_permissions', true);
     $html .= html_writer::link($url, 'Rebuild Permissions Cache', array('class' => 'btn btn-primary'));

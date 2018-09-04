@@ -50,3 +50,6 @@ $string['redirectmessage'] = 'You are about to leave Moodle and head to Lynda.co
 $string['selectfilters'] = 'Apply filters to see results';
 $string['testmode'] = 'Fake API calls';
 $string['unmatchedrecord_received'] = 'Unmatched lynda learning record received';
+$string['cachedef_full_taxonomy'] = 'Lynda taxonomy';
+$string['cachedef_lyndacourses'] = 'Lynda courses';
+$string['cachedef_users'] = 'Lynda users';

@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['reports:export'] = 'Allowed to export reports';
+$string['reports:view'] = 'Allowed to view reports';
 $string['pluginname'] = 'Arup Reports';
 $string['learninghistory'] = 'Learning History';
 $string['daterangelearning'] = 'Date Range Learning';

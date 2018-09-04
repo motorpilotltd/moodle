@@ -265,6 +265,10 @@ class completion
 
         $details = $DB->get_record_sql($query, $params, IGNORE_MULTIPLE);
 
+        if (!$details) {
+            return;
+        }
+
         if($details->timecompleted > 0){
             $duedate = $details->timeexpires;
         }else{
@@ -290,6 +294,7 @@ class completion
             $record = new \stdClass();
             $record->id = $details->id;
             $record->duedate = $duedate;
+            $record->timemodified = time();
             $DB->update_record('certif_completions', $record);
         }
     }
@@ -366,7 +371,7 @@ class completion
             $interval = new \DateInterval('P'.$certification->windowperiod.certification::get_time_period_for_interval($certification->windowperiodunit));
             $datetime->sub($interval);
             $record->timewindowsopens = $datetime->getTimestamp();
-
+            $record->timemodified = time();
             $DB->update_record('certif_completions', $record);
         }
 
@@ -387,12 +392,15 @@ class completion
         if(!is_object($certification)){
             $certification = new certification($certification, false);
         }
-        /**
-         * Check if record exists or need to be created
-         */
-        $completionrecord = $DB->get_record('certif_completions', ['certifid' => $certification->id, 'userid' => $userid, 'certifpath' => $certifpath]);
+        // Check if record exists or need to be created.
+        $completionrecord = $DB->get_record('certif_completions', ['certifid' => $certification->id, 'userid' => $userid]);
 
-        // Pre-load ready to override if compelted in TAPS.
+        if ($completionrecord && $completionrecord->certifpath != $certifpath) {
+            // Update certification path to correct/expected.
+            $completionrecord->certifpath = $certifpath;
+        }
+
+        // Pre-load ready to override if completed in TAPS.
         $progress = self::get_user_progress($certification, $userid);
 
         // Are we linked to a old TAPS course? And this user already been linked to an enrolment?
@@ -441,6 +449,7 @@ class completion
 
             $completionrecord->progress = $certifpath == certification::CERTIFICATIONPATH_BASIC ? $progress['certification'] : $progress['recertification'];
 
+            $completionrecord->timemodified = time();
             $completionrecord->id = $DB->insert_record('certif_completions', $completionrecord, true);
         } else {
             if($status == self::COMPLETION_STATUS_COMPLETED && $completionrecord->status != self::COMPLETION_STATUS_COMPLETED){
@@ -468,6 +477,7 @@ class completion
             $completionrecord->cronchecked = 1;
             $completionrecord->progress = $certifpath == certification::CERTIFICATIONPATH_BASIC ? $progress['certification'] : $progress['recertification'];
             $completionrecord->status = $status;
+            $completionrecord->timemodified = time();
             $DB->update_record('certif_completions', $completionrecord);
         }
         /**
@@ -635,7 +645,7 @@ EOS;
             if ($insertrecord->tapsenrolmentid
                     && $enrolment = $DB->get_record('local_taps_enrolment', ['enrolmentid' => $insertrecord->tapsenrolmentid, 'active' => 1])) {
                 // Check it relates to a reset Moodle course.
-                $mdlcourseid = $DB->get_field('course', 'id', ['idnumber' => $this->cmcourse->courseid]);
+                $mdlcourseid = $DB->get_field('course', 'id', ['idnumber' => $enrolment->courseid]);
                 if (in_array($mdlcourseid, $resetcourses)) {
                     $enrolment->active = 0;
                     $enrolment->timemodifed = time();

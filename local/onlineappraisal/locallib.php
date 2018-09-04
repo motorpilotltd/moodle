@@ -124,6 +124,7 @@ function lang_setup($menu = true) {
     if ($menu) {
         // Use $FULLME as $PAGE->url may not have all parameters fully set yet.
         $url = new \moodle_url($FULLME);
+        $url->remove_params('appraisallang');
         $s = new \single_select($url, 'appraisallang', get_string_manager()->get_list_of_translations(), current_language(), null);
         $s->label = get_accesshide(get_string('form:language', 'local_onlineappraisal'));
         $s->class = 'langmenu pull-right';

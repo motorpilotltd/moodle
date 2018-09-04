@@ -18,8 +18,8 @@
  * Version details
  *
  * @package     local_costcentre
- * @copyright   2016 Motorpilot Ltd
- * @author      Simon Lewis
+ * @copyright   2017 Motorpilot Ltd
+ * @author      Aleks Daloso
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use stdClass;
 
-class select extends \moodleform {
+class usersettings extends \moodleform {
 
     private $costcentre;
 
@@ -39,16 +39,16 @@ class select extends \moodleform {
         $this->costcentre = $this->_customdata['costcentre'];
 
         $mform->addElement(
-                'select',
-                'costcentre',
-                get_string('label:costcentre', 'local_costcentre'),
-                array('' => '') + $this->costcentre->costcentresmenu,
-                array('class' => 'select2', 'data-placeholder' => get_string('chooseonecostcentre', 'local_costcentre')));
+            'select',
+            'users',
+            get_string('selectuser', 'local_costcentre'),
+            array('' => '') + $this->costcentre->users,
+            array('class' => 'select2', 'data-placeholder' => get_string('chooseoneuser', 'local_costcentre')));
 
         $mform->addElement('hidden', 'action', $this->costcentre->validaction);
         $mform->setType('action', PARAM_ALPHA);
 
-        $this->add_action_buttons(false, get_string('loadcostcentre', 'local_costcentre'));
+        $this->add_action_buttons(false, get_string('loaduser', 'local_costcentre'));
     }
 
     public function validation($data, $files) {

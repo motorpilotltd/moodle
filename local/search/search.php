@@ -34,8 +34,8 @@ foreach($DB->get_records('local_regions_reg', array('userselectable'=>'1'), 'nam
         'value' => $row->id,
         'selected' => $row->id == $region);
 }
-$options[] = array('name'=>'Global', 'value'=> '-1', -1 == $region);
-array_unshift($options, array('name'=>'All regions', 'value'=> '0', 0 == $region));
+$options[] = array('name' => get_string('global', 'local_search'), 'value' => '-1', 'selected' => -1 == $region);
+array_unshift($options, array('name' => get_string('allregions', 'local_search'), 'value' => '0',  'selected' => 0 == $region));
 
 $totalcount = 0;
 $courses = array();

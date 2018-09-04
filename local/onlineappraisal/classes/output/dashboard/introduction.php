@@ -45,6 +45,24 @@ class introduction extends base {
             $data->url->remove_params('appraisalaction');
         }
         $data->duedate = empty($this->appraisal->appraisal->due_date) ? '-' : userdate($this->appraisal->appraisal->due_date, get_string('strftimedate'), new \DateTimeZone('UTC')); // Always UTC (from datepicker).
+
+        $data->targetedmessage = $this->targetedmessage();
+
         return $data;
+    }
+
+    /**
+     * Returns a targeted message for the overview page.
+     *
+     * @return string
+     */
+    private function targetedmessage() {
+        global $DB;
+        $message = '';
+        $grade = $DB->get_field_sql('SELECT GRADE FROM SQLHUB.ARUP_ALL_STAFF_V WHERE EMPLOYEE_NUMBER = :idnumber', ['idnumber' => (int) $this->appraisal->appraisal->appraisee->idnumber]);
+        if (in_array($grade, ['GRD7', 'GRD8', 'GRD9'])) {
+            $message = get_string('introduction:targetedmessage', 'local_onlineappraisal');
+        }
+        return $message;
     }
 }

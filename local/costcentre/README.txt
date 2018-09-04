@@ -7,7 +7,8 @@ icq = 01-774
 department = Learning & Collaboration
 
 DB tables are:
-local_costcentre - Stores cost centre settings, e.g. enableappraisal which is polled by the plugin local/onlineappraisal as an access check.
+local_costcentre - Stores cost centre settings,
+    e.g. enableappraisal which is polled by the plugin local/onlineappraisal as an access check.
 local_costcentre_user - Stores permissions for users against cost centres.
 
 The users that you can assign are only users authenticated by saml. 
@@ -20,4 +21,5 @@ Possible permissions for users are defined in
 Index (index.php) is for viewing and updating cost centre settings and user permission assignments.
 
 NOTE
-In the amd/build folder there is a file called select2.min.js. This is there because it failed to build using grunt. It is used in enhance.js.
+In the amd/build folder there is a file called select2.min.js. This is there because it failed to build using grunt.
+It is used in enhance.js.
