@@ -2217,14 +2217,19 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
      * @param string $separator string to use as a separator between parent and child category. Default ' / '
      * @return array of strings
      */
-    public static function make_categories_list($requiredcapability = '', $excludeid = 0, $separator = ' / ') {
+/* BEGIN CORE MOD */
+    public static function make_categories_list($requiredcapability = '', $excludeid = 0, $separator = ' / ', $showhidden = false) {
+/* END CORE MOD */
         global $DB;
         $coursecatcache = cache::make('core', 'coursecat');
 
         // Check if we cached the complete list of user-accessible category names ($baselist) or list of ids
         // with requried cap ($thislist).
         $currentlang = current_language();
-        $basecachekey = $currentlang . '_catlist';
+/* BEGIN CORE MOD */
+        $basecachekey =  has_capability('moodle/category:viewhiddencategories', context_system::instance()) ?
+            $currentlang . '_catlist_full': $currentlang . '_catlist';
+/* END CORE MOD */
         $baselist = $coursecatcache->get($basecachekey);
         $thislist = false;
         $thiscachekey = null;
@@ -2237,8 +2242,9 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         } else if ($baselist !== false) {
             $thislist = array_keys($baselist);
         }
-
-        if ($baselist === false) {
+/* BEGIN CORE MOD */
+        if ($baselist === false || $showhidden === true) {
+/* END CORE MOD */
             // We don't have $baselist cached, retrieve it. Retrieve $thislist again in any case.
             $ctxselect = context_helper::get_preload_record_columns_sql('ctx');
             $sql = "SELECT cc.id, cc.sortorder, cc.name, cc.visible, cc.parent, cc.path, $ctxselect
@@ -2253,7 +2259,9 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
                 if (!$record->parent || isset($baselist[$record->parent])) {
                     context_helper::preload_from_record($record);
                     $context = context_coursecat::instance($record->id);
-                    if (!$record->visible && !has_capability('moodle/category:viewhiddencategories', $context)) {
+/* BEGIN CORE MOD */
+                    if (!$record->visible && !has_capability('moodle/category:viewhiddencategories', $context) && $showhidden !== true) {
+/* END CORE MOD */
                         // No cap to view category, added to neither $baselist nor $thislist.
                         continue;
                     }
