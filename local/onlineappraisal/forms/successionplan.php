@@ -53,25 +53,16 @@ class apform_successionplan extends moodleform {
         $mform->addElement('hidden', 'view', $data->appraisal->viewingas);
         $mform->setType('view', PARAM_TEXT);
 
-        $mform->addElement('hidden', 'appraiseeedit', $data->appraiseeedit);
-        $mform->setType('appraiseeedit', PARAM_INT);
-
-        $mform->addElement('hidden', 'appraiseredit', $data->appraiseredit);
-        $mform->setType('appraiseredit', PARAM_INT);
-
-        $appraiseelocked = '';
-        if ($data->appraiseeedit == APPRAISAL_FIELD_LOCKED) {
-            $appraiseelocked = ' locked="yes"';
-        }
-
-        $appraiserlocked = '';
-        if ($data->appraiseredit == APPRAISAL_FIELD_LOCKED) {
-            $appraiserlocked = ' locked="yes"';
-        }
-
-        $islocked = (empty($data->locked) ? 0 : 1);
+        $isformlocked = !empty($data->locked);
+        $islockedforuser = ($data->appraiseeedit == APPRAISAL_FIELD_LOCKED) && ($data->appraiseredit == APPRAISAL_FIELD_LOCKED);
+        $islocked = (int) ($isformlocked || $islockedforuser); // Integer for JS.
         $mform->addElement('hidden', 'islocked', $islocked, ['id' => 'oa-sdp-islocked']); // For locking other fields as checkbox will be frozen.
         $mform->setType('islocked', PARAM_INT);
+
+        $islockedattr = '';
+        if ($islocked) {
+            $islockedattr = ' locked="yes"';
+        }
 
         // Hidden fields to be set from HUB data.
         $mform->addElement('hidden', 'group', $this->userdata['group']);
@@ -90,7 +81,8 @@ class apform_successionplan extends moodleform {
 
         // Renderer for alert and/or nag modal.
         $renderer = $PAGE->get_renderer('local_onlineappraisal');
-        if ($islocked) {
+        if ($isformlocked) {
+            // Only display if form actually locked, not just locked for user.
             $alert = new \local_onlineappraisal\output\alert($this->str('islocked'), 'warning', false);
             $mform->addElement('html', $renderer->render($alert));
         }
@@ -153,14 +145,15 @@ class apform_successionplan extends moodleform {
                 $button.$noscript
                 );
 
-        $mform->addElement('textarearup', 'developmentplan', $this->str('developmentplan'), 'rows="3" cols="70"', '', '');
+        $mform->addElement('textarearup', 'developmentplan', $this->str('developmentplan'), 'rows="3" cols="70"' . $islockedattr, '', '');
         $mform->setType('developmentplan', PARAM_RAW);
 
-        if (!$islocked) {
+        if (!$isformlocked) {
             $mform->addElement('advcheckbox', 'locked', '', $this->str('locked'), array('group' => 1), array(0, 1));
+            $mform->disabledIf('locked', 'islocked', 'eq', 1);
         }
 
-        if (!$islocked && ($data->appraiseeedit == APPRAISAL_FIELD_EDIT || $data->appraiseredit == APPRAISAL_FIELD_EDIT)) {
+        if (!$islocked) {
             $buttonarray=array();
             $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('form:save', 'local_onlineappraisal'));
             $buttonarray[] = &$mform->createElement('submit', 'submitcontinue', get_string('form:submitcontinue', 'local_onlineappraisal'));

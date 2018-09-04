@@ -143,7 +143,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     label.prop('for', 'id_'+type+'_'+newindex);
                     var input = clone.find('input');
                     input.prop('id', 'id_'+type+'_'+newindex);
-                    input.prop('name', 'strength['+newindex+']');
+                    input.prop('name', type+'['+newindex+']');
                     input.val('');
                     clone.insertBefore(that);
                 });
