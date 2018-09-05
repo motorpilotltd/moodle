@@ -197,10 +197,10 @@ class apform_successionplan extends moodleform {
         }
         // Clear empty inputs.
         if (isset($data->strengths)) {
-            $data->strengths = array_filter($data->strengths);
+            $data->strengths = array_values(array_filter($data->strengths));
         }
         if (isset($data->developmentareas)) {
-            $data->developmentareas = array_filter($data->developmentareas);
+            $data->developmentareas = array_values(array_filter($data->developmentareas));
         }
         return $data;
     }
