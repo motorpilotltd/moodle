@@ -37,7 +37,10 @@ class migrate {
 
         $events = [
                 '\mod_tapscompletion\event\course_module_instance_list_viewed' => '\mod_tapsenrol\event\course_module_instance_list_viewed',
-                '\mod_tapscompletion\event\course_module_viewed'               => '\mod_tapsenrol\event\course_module_viewed'
+                '\mod_tapscompletion\event\course_module_viewed'               => '\mod_tapsenrol\event\course_module_viewed',
+                '\mod_tapscompletion\event\statuses_updated'                   => '\mod_tapsenrol\event\statuses_updated',
+                '\local_coursemanager\event\class_created'                   => '\mod_tapsenrol\event\class_created',
+                '\local_coursemanager\event\class_updated'                   => '\mod_tapsenrol\event\class_updated'
         ];
 
         foreach ($events as $from => $to) {
