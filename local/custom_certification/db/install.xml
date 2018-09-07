@@ -79,7 +79,7 @@
         <FIELD NAME="uservisible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Visibility of certification to users"/>
         <FIELD NAME="reportvisible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Visibility of certification on reports"/>
         <FIELD NAME="recertificationdatetype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0=Use cert expiry date 1=Use cert completion date"/>
-        <FIELD NAME="linkedtapscourseid" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS course IDs"/>
+        <FIELD NAME="courseid" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS course IDs"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
