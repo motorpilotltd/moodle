@@ -250,7 +250,7 @@ function tapsenrol_get_completion_state($course, $cm, $userid, $type) {
 
     $result = $type;
 
-    if ($tapsenrol->completionenrolment) {
+    if ($tapsenrol->completionattended) {
         $completed = $DB->get_field('tapsenrol_completion', 'completed', array('tapsenrolid' => $tapsenrol->id, 'userid' => $userid));
 
         $result = completion_info::aggregate_completion_states($type, $result, $completed);
