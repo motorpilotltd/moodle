@@ -24,6 +24,15 @@ class migrate {
             $archivecategoryid = $archivecategory->id;
         }
 
+        //
+        // Really, really grim BUT there aren't many to do... (also DON'T PUT CSVs IN DB fields in the first place!)
+        // Can't use replace as there are no trailing commas.
+        // Need to do it in an intrusive way as some of the course IDs may not exist until we have finished migrating.
+        $multicoursecertif = $DB->get_records_sql("SELECT * FROM {certif} WHERE courseid LIKE ','");
+        foreach ($multicoursecertif as $certif) {
+            $certif->courseid = explode(',', $certif->courseid);
+        }
+
         // Handle tapsadverts.
         // Something is wrong with the name column...
         $sql =
@@ -36,6 +45,19 @@ class migrate {
 
             try {
                 $course = $DB->get_record('course', ['id' => $advert->course]);
+
+                // Handle certifs with multiple courses.
+                foreach ($multicoursecertif as $certif) {
+                    if (in_array($advert->tapscourseid, $certif->courseid)) {
+                        unset($certif->courseid[$advert->tapscourseid]);
+                        $certif->courseid[] = $advert->course;
+
+                        // Save as we go so we can stop and re-start the script.
+                        $certif->courseid = implode(',', $certif->courseid);
+                        $DB->update_record('certif', $certif);
+                        $certif->courseid = explode(',', $certif->courseid);
+                    }
+                }
 
                 $cmid = $DB->get_field_sql(
                         'SELECT cm.id FROM {course_modules} cm INNER JOIN {modules} m ON cm.module = m.id WHERE m.name = :modulename AND cm.instance = :arupadvertid',
@@ -273,6 +295,20 @@ class migrate {
             } catch (\Exception $ex) {
                 $transaction->rollback($ex);
             }
+
+            // Handle certifs with multiple courses.
+            foreach ($multicoursecertif as $certif) {
+                if (in_array($tapscourse->courseid, $certif->courseid)) {
+                    unset($certif->courseid[$tapscourse->courseid]);
+                    $certif->courseid[] = $course->id;
+
+                    // Save as we go so we can stop and re-start the script.
+                    $certif->courseid = implode(',', $certif->courseid);
+                    $DB->update_record('certif', $certif);
+                    $certif->courseid = explode(',', $certif->courseid);
+                }
+            }
+
             $transaction->allow_commit();
         }
     }
