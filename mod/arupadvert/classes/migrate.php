@@ -28,7 +28,7 @@ class migrate {
         // Really, really grim BUT there aren't many to do... (also DON'T PUT CSVs IN DB fields in the first place!)
         // Can't use replace as there are no trailing commas.
         // Need to do it in an intrusive way as some of the course IDs may not exist until we have finished migrating.
-        $multicoursecertif = $DB->get_records_sql("SELECT * FROM {certif} WHERE courseid LIKE ','");
+        $multicoursecertif = $DB->get_records_sql("SELECT * FROM {certif} WHERE courseid LIKE '%,%'");
         foreach ($multicoursecertif as $certif) {
             $certif->courseid = explode(',', $certif->courseid);
         }
@@ -166,6 +166,7 @@ class migrate {
             } catch (\Exception $ex) {
                 $transaction->rollback($ex);
             }
+            mtrace("Processed taps advert for course $advert->course");
             $transaction->allow_commit();
         }
 
@@ -200,6 +201,7 @@ class migrate {
             } catch (\Exception $ex) {
                 $transaction->rollback($ex);
             }
+            mtrace("Processed custom advert for course $advert->course");
             $transaction->allow_commit();
         }
 
@@ -309,6 +311,7 @@ class migrate {
                 }
             }
 
+            mtrace("Processed unlinked taps course for taps course $tapscourse->id");
             $transaction->allow_commit();
         }
     }

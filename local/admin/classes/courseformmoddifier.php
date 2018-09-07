@@ -47,17 +47,18 @@ class courseformmoddifier {
         self::freezeandhideunwantedelements($mform);
     }
 
+    // If data is null then we create an arup default course
     public static function post_creation($course, $data = null) {
         global $DB;
-
-        if ($data->arupdefaultcourse == false) {
-            return;
-        }
 
         if (isset($data)) {
             $internalworkflowid = $data->internalworkflowid == -1 ? 0 : $data->internalworkflowid;
             $enrolmentregion = !empty($data->enrolmentregion) ? $data->enrolmentregion : array();
             $enrolmentrole = $data->enrolmentrole;
+
+            if ($data->arupdefaultcourse == false) {
+                return;
+            }
         } else {
             $internalworkflowid = 0;
             $enrolmentregion = [];

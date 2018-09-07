@@ -18,6 +18,7 @@ class migrate {
         $completionmodule = $DB->get_record('modules', ['name' => 'tapscompletion']);
         $enrolmodule = $DB->get_record('modules', ['name' => 'tapsenrol']);
 
+        // SQL Server only.
         $DB->execute("update te set te.autocompletion = tc.autocompletion, te.completionattended = tc.completionattended, te.completiontimetype = tc.completiontimetype
                         from {tapsenrol} te
                         inner join {course_modules} cm_enrol on cm_enrol.instance = te.id and cm_enrol.module = :enrolmoduleid
@@ -26,6 +27,7 @@ class migrate {
                 ['completionmoduleid' => $completionmodule->id, 'enrolmoduleid' => $enrolmodule->id]
         );
 
+        // SQL Server only.
         $DB->execute("update l set l.objectid = te.id, l.objecttable = 'tapsenrol', component = 'mod_tapsenrol', contextid = ctx.id, contextinstanceid = cm.id
                         from {logstore_standard_log} l
                         inner join {tapsenrol} te on te.course = l.courseid
