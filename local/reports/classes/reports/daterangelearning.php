@@ -26,6 +26,7 @@ namespace local_reports\reports;
 
 defined('MOODLE_INTERNAL') || die();
 
+use gradereport_singleview\local\ui\empty_element;
 use stdClass;
 use moodle_url;
 use renderer_base;
@@ -277,20 +278,27 @@ class daterangelearning extends base {
 
                         $startdate = $filtervalue;
 
-                        $end = $this->setfilters['enddate'];
-                        $enddate = $end->value[0];
+                        $end = isset($this->setfilters['enddate']) ? $this->setfilters['enddate'] : null ;
+                        $classenddatestring = '';
+                        $classcompletiondendstring = '';
+                        if (!empty($end)) {
+                            $enddate = $end->value[0];
+                            $classenddatestring = " AND {$classenddate} < $enddate";
+                            $classcompletiondendstring = " AND {$classcompletiondate} < $enddate";
+                        }
+
                         $wherestring .= "
                             (
                                 (
                                     $classtype = 'Scheduled'
                                     AND
-                                    ($classenddate > $startdate AND $classenddate < $enddate)
+                                    ($classenddate > $startdate" . $classenddatestring . ")
                                 )
                                 OR
                                 (
                                     ($classtype = 'Self Paced' OR cpdid > '')
                                     AND
-                                    ($classcompletiondate > $startdate AND $classcompletiondate < $enddate )
+                                    ($classcompletiondate > $startdate" . $classcompletiondendstring . ")
                                 )
                             )";
                     } else {
@@ -306,6 +314,7 @@ class daterangelearning extends base {
                     $wherestring .= "({$fieldname} IS NULL OR {$fieldname} = '')";
                 } else if ($filter->field == 'bookingstatus') {
                     // Bookingstatusus are configured in TAPS
+                    $wherestring .=  '(';
                     $fieldname = $this->filtertodb[$filter->field];
                     $statuses = $this->taps->get_statuses($filtervalue);
                     $fieldnameparam = strtolower(str_replace('.', '', $fieldname));
@@ -319,6 +328,16 @@ class daterangelearning extends base {
                         $params = array_merge($params, $inparams);
                     }
 
+                    if ($filtervalue == 'attended') {
+                        $wherestring .= ' OR (
+                            lte.cpdid IS NOT NULL 
+                            AND 
+                            lte.enrolmentid IS NULL 
+                            AND 
+                            lte.bookingstatus IS NULL
+                        )';
+                    }
+                    $wherestring .=  ' )';
                 } else {
                     $fieldname = $this->filtertodb[$filter->field];
                     $fieldnameparam = strtolower(str_replace('.', '', $fieldname));
