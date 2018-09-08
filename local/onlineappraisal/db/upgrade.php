@@ -609,5 +609,46 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017090308, 'local', 'onlineappraisal');
     }
 
+    if ($oldversion < 2018010102) {
+        $rows = $DB->get_records_select(
+                'local_appraisal_data',
+                '(name = :name1 OR name = :name2) AND type = :type',
+                ['name1' => 'strengths', 'name2' => 'developmentareas', 'type' => 'normal']
+                );
+        foreach ($rows as $row) {
+            $row->type = 'array';
+            $row->data = serialize(json_decode($row->data));
+            $DB->update_record('local_appraisal_data', $row);
+        }
+
+        // Onlineappraisal savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010102, 'local', 'onlineappraisal');
+    }
+
+    if ($oldversion < 2018010103) {
+        // Rebuild permissions table and cache.
+        \local_onlineappraisal\permissions::rebuild_permissions();
+
+        // Onlineappraisal savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010103, 'local', 'onlineappraisal');
+    }
+
+    if ($oldversion < 2018010105) {
+
+        // Define table local_appraisal_appraisal to be updated.
+        $table = new xmldb_table('local_appraisal_appraisal');
+
+        // Adding successionplan field to table local_appraisal_appraisal.
+        $field = new xmldb_field('successionplan', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', null);
+
+        // Conditionally launch add field.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Onlineappraisal savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010105, 'local', 'onlineappraisal');
+    }
+
     return true;
 }

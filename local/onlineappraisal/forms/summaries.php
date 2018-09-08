@@ -112,17 +112,11 @@ class apform_summaries extends moodleform {
             JOIN {local_regions_reg} lrr ON lrr.id = lru.geotapsregionid
             WHERE lru.userid = :userid AND lrr.name = 'Americas'";
         if ($data->appraisal->viewingas != 'appraisee' && $DB->get_field_sql($americassql, array('userid' => $data->appraisal->appraisee->id))) {
-            $question = 'Please provide your assessment of the Appraisee\'s adequacy in their grade by choosing the best option from the list below.
-                This information is your recommendation to Local Practice Leader & Group Leader and should NOT be discussed with the Appraisee.';
-            $answers = array(
-                '',
-                'Recommend promotion to next grade this cycle',
-                'Well place in current grade',
-                'Needs development in current grade',
-                'Not acceptable in current grade',
-                'Too new to assess',
-            );
-            $mform->addElement('select', 'promotion', $question, array_combine($answers, $answers));
+            $answers = ['' => ''];
+            for ($i = 1; $i <= 5; $i++) {
+                $answers[$this->str("promotion:answer:{$i}")] = $this->str("promotion:answer:{$i}");
+            }
+            $mform->addElement('select', 'promotion', $this->str('promotion'), $answers);
             $mform->disabledIf('promotion', 'appraiseredit', 'eq', APPRAISAL_FIELD_LOCKED);
         }
 
@@ -181,7 +175,7 @@ class apform_summaries extends moodleform {
 
         $mform =& $this->_form;
         $data = $this->_customdata;
-        
+
         if ($data->userid != $USER->id) {
             $mform->hardFreeze();
         }
