@@ -42,6 +42,7 @@ class view_assets {
     protected $settings;
     protected $embedtype;
     protected $files;
+
 /* BEGIN CORE MOD */
     public function __construct($cm, $course, $forceembedtype = null, $nocss = false, $nojs = false) {
 /* END CORE MOD */
