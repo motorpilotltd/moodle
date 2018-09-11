@@ -32,3 +32,4 @@ require_once($CFG->dirroot . '/local/timezones/lib.php');
 require_once('renderers/lunchandlearn.php');
 require_once('renderers/format_topics_renderer.php');
 require_once('renderers/maintenance_renderer.php');
+require_once('renderers/hvp_renderer.php');

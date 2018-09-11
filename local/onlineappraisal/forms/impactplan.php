@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 class apform_impactplan extends moodleform {
     public function definition() {
         global $PAGE;
-        
+
         $data = $this->_customdata;
         $mform = $this->_form;
 
@@ -74,6 +74,8 @@ class apform_impactplan extends moodleform {
         $mform->addElement('html', html_writer::tag('h2', $this->str('title')));
 
         $mform->addElement('html', html_writer::tag('div', $this->str('intro'), array('class' => 'm-b-20')));
+
+        $mform->addElement('html', html_writer::tag('div', $this->str('intro_2'), array('class' => 'm-b-20')));
 
         $mform->addElement('textarearup', 'impact', $this->str('impact'), 'rows="10" cols="70"' . $appraiseelocked, $this->str('impacthelp'), 'appraisee');
         $mform->setType('impact', PARAM_RAW);

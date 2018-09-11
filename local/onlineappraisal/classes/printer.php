@@ -54,7 +54,7 @@ class printer {
      * What can be printed.
      * @var string $canprint
      */
-    private $canprint = ['appraisal', 'feedback'];
+    private $canprint = ['appraisal', 'feedback', 'successionplan'];
 
     /**
      * Error message.
@@ -73,7 +73,7 @@ class printer {
     public function __construct(\local_onlineappraisal\appraisal $appraisal, $print) {
         $this->appraisal = $appraisal;
         $this->print = in_array($print, $this->canprint) ? $print : 'appraisal';
-        
+
         // Check if this user is allowed to print.
         if (!$this->can_print()) {
             throw new moodle_exception('error:noaccess', 'local_onlineappraisal');
@@ -85,7 +85,7 @@ class printer {
 
     /**
      *  Magic getter.
-     * 
+     *
      * @param string $name
      * @return mixed property
      * @throws Exception
@@ -120,12 +120,12 @@ class printer {
 
     /**
      * Generate and output PDF.
-     * 
+     *
      * @global \moodle_page $PAGE
      */
     public function pdf() {
         global $CFG, $PAGE, $SESSION;
-        
+
         $appraisal = $this->appraisal->appraisal;
 
         $renderer = $PAGE->get_renderer('local_onlineappraisal', 'printer');
@@ -145,7 +145,7 @@ class printer {
         $contenthtml = $renderer->render($content);
 
         $this->pdf->set_customheaderhtml($headerhtml);
-        $this->pdf->SetMargins(10, 40, 10);
+        $this->pdf->SetMargins(10, 45, 10);
         $this->pdf->AddPage();
         if (preg_match('/[\x{4e00}-\x{9fa5}]+/u', $contenthtml)) {
             // Chinese.
@@ -156,11 +156,11 @@ class printer {
         } else {
             $this->pdf->SetFont('freeserif', '', 12);
         }
-        
+
         $this->pdf->SetTextColor(25, 25, 75);
 
         $this->pdf->writeHTML($contenthtml, true, false, true, false, '');
-        
+
         $filenamepieces = array(
             $appraisal->id,
             fullname($appraisal->appraisee),
@@ -191,6 +191,6 @@ class printer {
             }
             exit;
         }
-        
+
     }
 }

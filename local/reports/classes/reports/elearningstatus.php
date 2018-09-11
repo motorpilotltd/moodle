@@ -617,7 +617,7 @@ class elearningstatus extends base {
         }
 
         if ($key == 'classcost') {
-            if ($row->pricebasis == 'No Charge') {
+            if (isset($row->pricebasis) && $row->pricebasis == 'No Charge') {
                 return '';
             } else if (!empty($row->price)) {
                 return $row->price;
@@ -627,7 +627,7 @@ class elearningstatus extends base {
         }
 
         if ($key == 'classcostcurrency') {
-            if ($row->pricebasis == 'No Charge') {
+            if (isset($row->pricebasis) && $row->pricebasis == 'No Charge') {
                 return '';
             } else if (!empty($row->price)) {
                 return $row->currencycode;
@@ -638,7 +638,7 @@ class elearningstatus extends base {
             }
         }
 
-        if ($key == 'learningdesc') {
+        if ($key == 'learningdesc' && isset($row->$key)) {
             return html_to_text($row->$key);
         }
     }

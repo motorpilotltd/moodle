@@ -35,7 +35,7 @@ class apform_addfeedback extends moodleform {
         $this->appraiserrequest = optional_param('appraiser', 0, PARAM_INT);
         $strrequired = get_string('required');
         $mform = $this->_form;
-        
+
         if ($data = $this->load_feedback($this->appraisalid, $this->pw)) {
             if ($data->received_date) {
                 $alert = html_writer::tag('div', $this->str('submitted'), array('class' => 'alert alert-success m-t-10'));
@@ -82,6 +82,8 @@ class apform_addfeedback extends moodleform {
                     $this->str('addfeedback_2help'), '');
                 $mform->setType('feedback_2', PARAM_RAW);
                 $mform->setDefault('feedback_2', $data->feedback_2);
+
+                $mform->addElement('html', html_writer::div($this->str('warning'), 'm-b-10'));
 
                 // Change Upgrade Log Appraisal V3 id 5
                 // $label = get_string('confidential_label', 'local_onlineappraisal');
@@ -156,7 +158,7 @@ class apform_addfeedback extends moodleform {
             $data->confidential = 0;
             $data->id = $DB->insert_record('local_appraisal_feedback', $data);
         }
-        
+
         $feedback = new \local_onlineappraisal\feedback($forms->appraisal);
         $feedback->user_feedback($data);
 

@@ -15,7 +15,7 @@
 
 /**
  * View page JS.
- * 
+ *
  * @package    local_onlineappraisal
  * @copyright  2016 Motorpilot Ltd, Sonsbeekmedia
  * @author     Simon Lewis, Bas Brands
@@ -123,6 +123,29 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                             }
                         });
                     }).fail(notification.exception);
+                });
+            }
+
+            if (page === 'successionplan' && parseInt($('#oa-sdp-islocked').val()) === 0) {
+                // Add strength/developmentarea inputs.
+                // Reveal buttons.
+                $('.oa-add-repeating-element').show();
+                $('.oa-add-repeating-element').click(function(e){
+                    e.preventDefault();
+                    var that = $(this);
+                    var index = that.data('index');
+                    var newindex = parseInt(index) + 1;
+                    that.data('index', newindex);
+                    var type = that.data('type');
+                    var clone = that.parent().find('#fitem_id_'+type+'_'+index).clone();
+                    clone.prop('id', 'fitem_id_'+type+'_'+newindex);
+                    var label = clone.find('label');
+                    label.prop('for', 'id_'+type+'_'+newindex);
+                    var input = clone.find('input');
+                    input.prop('id', 'id_'+type+'_'+newindex);
+                    input.prop('name', type+'['+newindex+']');
+                    input.val('');
+                    clone.insertBefore(that);
                 });
             }
 

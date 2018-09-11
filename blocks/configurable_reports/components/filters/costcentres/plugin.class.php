@@ -48,7 +48,7 @@ class plugin_costcentres extends plugin_base {
             $components = cr_unserialize($this->report->components);
             $permissions = (isset($components['permissions'])) ? $components['permissions'] : [];
             foreach($permissions['elements'] as $pvalue){
-                if($pvalue['pluginname'] == "pcostcentres"){
+                if($pvalue['pluginname'] == "pcostcentres" && isset($pvalue['formdata']->ccroles)){
                     $selectedroles = $pvalue['formdata']->ccroles;
                 }
             }

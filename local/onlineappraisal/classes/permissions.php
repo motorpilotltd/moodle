@@ -47,7 +47,7 @@ class permissions {
     /**
      * Checks cache for permission and tries to load if not present.
      * Will insert null in cache if not found in DB.
-     * 
+     *
      * @param string $permission
      * @return null|array
      */
@@ -65,7 +65,7 @@ class permissions {
 
     /**
      * Checks is a certain permission exists.
-     * 
+     *
      * @param string $permission
      * @return boolean
      */
@@ -76,7 +76,7 @@ class permissions {
     }
 
     /**
-     * Check if a certain permission is allowed for tcurrent user/status.
+     * Check if a certain permission is allowed for the current user/status.
      *
      * @param string $permission the full permission name.
      * @param int $permissionsid the permission status id for the appraisal.
@@ -90,12 +90,12 @@ class permissions {
             // Not a valid check.
             return false;
         }
-        
+
         $allowed = self::cache_check($permission);
 
         if (!empty($allowed[$viewingas][$permissionsid])) {
             $userallowed = $allowed[$viewingas][$permissionsid];
-            
+
             // First check for archived/legacy ONLY permissions.
             if (!$archived && $userallowed->archived == self::PERMISSION_ONLY) {
                 // Only allowed if archived.
@@ -123,7 +123,7 @@ class permissions {
 
     /**
      * Rebuilds permissions table and cache.
-     * 
+     *
      * @global moodle_database $DB
      */
     public static function rebuild_permissions() {
@@ -244,6 +244,15 @@ class permissions {
         self::add_permissions('checkin', 'add', 'appraiser', array(3,4,5,6,7));
         self::add_permissions('checkin', 'add', 'signoff', array(3,4,5,6,7));
         self::add_permissions('checkin', 'add', 'groupleader', array(3,4,5,6,7));
+        //successionplan:view
+        self::add_permissions('successionplan', 'view', 'all', 'all');
+        //successionplan:add
+        self::add_permissions('successionplan', 'add', 'appraisee', 'all'); // Fields restricted.
+        self::add_permissions('successionplan', 'add', 'appraiser', 'all'); // Fields restricted.
+        //successionplan:print
+        self::add_permissions('successionplan', 'print', 'all', 'all', self::PERMISSION_ALLOWED);
+        //successionplan:toggle
+        self::add_permissions('successionplan', 'toggle', 'hrleader', array(1,2,3,4,5,6,7));
 
         // Special legacy permission.
         //sixmonth:view
@@ -292,7 +301,7 @@ class permissions {
     /**
      * Loads multi-dimensional array of users and allowed permissions statuses for a given permission.
      * Or loads array of 'all' permissions each pointing to a sub-array as above.
-     * 
+     *
      * @global moodle_database $DB
      * @param string $permission Required permission or 'all'
      * @return array
@@ -305,7 +314,7 @@ class permissions {
         if ($permission !== 'all') {
             $params['permission'] = $permission;
         }
-        
+
         $perms = $DB->get_records(self::$table, $params);
 
         if (empty($perms)) {
@@ -314,7 +323,7 @@ class permissions {
         }
 
         $allowed = array();
-        
+
         foreach ($perms as $perm) {
             if ($perm->usertype == 'all') {
                 $types = array_keys(self::$all);

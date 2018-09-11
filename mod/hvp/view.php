@@ -36,7 +36,7 @@ $course = $DB->get_record('course', array('id' => $cm->course));
 if (!$course) {
     print_error('coursemisconf');
 }
-require_course_login($course, false, $cm);
+require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/hvp:view', $context);
 
@@ -74,4 +74,9 @@ if (trim(strip_tags($content['intro']))) {
 \mod_hvp\framework::printMessages('error', \mod_hvp\framework::messages('error'));
 
 $view->outputview();
+/* BEGIN CORE MOD */
+$url = new moodle_url('/course/view.php', array('id' => $course->id));
+$link = html_writer::link($url, get_string('backtomodule', 'hvp'));
+echo html_writer::tag('p', $link, ['class' => 'm-t-10']);
+/* END CORE MOD */
 echo $OUTPUT->footer();
