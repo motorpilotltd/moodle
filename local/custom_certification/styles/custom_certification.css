@@ -391,7 +391,8 @@ input.coursesetbtn {
     text-align: right;
 }
 
-.messagetriggertime {
+.messagetriggertime,
+.messagedonotsendtime {
     width: 50px !important;
 }
 

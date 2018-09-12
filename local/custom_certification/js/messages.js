@@ -51,6 +51,10 @@ $(document).ready(function () {
          */
         var triggertime = 0;
         /**
+         * @property integer donotsendtime
+         */
+        var donotsendtime = 0;
+        /**
          * @property integer messagetype Message type
          */
         var messagetype = 0;
@@ -113,6 +117,9 @@ $(document).ready(function () {
                 if (messagebox.find('.messagetriggertime').length > 0) {
                     triggertime = messagebox.find('.messagetriggertime').val();
                 }
+                if (messagebox.find('.messagedonotsendtime').length > 0) {
+                    donotsendtime = messagebox.find('.messagedonotsendtime').val();
+                }
                 message = {
                     messageid: messagebox.data('id'),
                     messagetype: messagebox.data('messagetype'),
@@ -120,10 +127,12 @@ $(document).ready(function () {
                     body: messagebox.find('.messagetext').val(),
                     recipient: emailcheckboxconfirm,
                     recipientemail: emailinputvalue,
-                    triggertime: triggertime
-                }
+                    triggertime: triggertime,
+                    donotsendtime: donotsendtime
+                };
                 messages.push(message);
                 triggertime = 0;
+                donotsendtime = 0;
             }
             /**
              * @description If checkbox of additional email address is enabled
@@ -176,8 +185,8 @@ $(document).ready(function () {
         });
     });
 
-   
-    $(document).on('keyup keydown', '.messagetriggertime', function () {
+
+    $(document).on('keyup keydown', '.messagetriggertime, .messagedonotsendtime', function () {
         /**
          * @property String value value of trigger time field
          */
@@ -186,7 +195,7 @@ $(document).ready(function () {
          * @description Prevent type other characters than 0 - 9 numbers
          */
         if (!value.match(/^[0-9]+$/)) {
-            $(this).val(value.substring(0, value.length - 1));
+            $(this).val(value.replace(/[^0-9]/, ''));
         }
     });
 
