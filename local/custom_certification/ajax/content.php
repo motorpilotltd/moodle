@@ -5,6 +5,8 @@ define('AJAX_SCRIPT', true);
 require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/config.php');
 use local_custom_certification\certification;
 
+require_login();
+
 // Send the correct headers.
 send_headers('text/html; charset=utf-8', false);
 
@@ -55,8 +57,8 @@ switch ($action) {
 
         $basicwheresql = '
             WHERE
-                c.visible=:coursevisible AND 
-                c.category <> :categorynullid 
+                c.visible=:coursevisible AND
+                c.category <> :categorynullid
         ';
         $courseparams['coursesetid'] = $coursesetid;
         $courseparams['coursevisible'] = 1;
@@ -70,11 +72,11 @@ switch ($action) {
             $params['coursevisible'] = 1;
             $params['categorynullid'] = 0;
             $sql = "
-                SELECT 
+                SELECT
                   id,
-                  fullname 
-                FROM 
-                  {course} c 
+                  fullname
+                FROM
+                  {course} c
                 $basicwheresql AND
                   c.fullname $insql;
             ";
@@ -89,18 +91,18 @@ switch ($action) {
         } elseif ($type == 'search') {
             $searchword = strtolower($searchword);
             $sql = "
-               SELECT 
+               SELECT
                   c.id,
                   c.fullname
-               FROM   
+               FROM
                   {certif_courseset_courses} ccc
-               RIGHT JOIN 
+               RIGHT JOIN
                   {course} c
-               ON 
-                  c.id = ccc.courseid AND 
+               ON
+                  c.id = ccc.courseid AND
                   ccc.coursesetid = :coursesetid
                $basicwheresql AND
-                  ccc.coursesetid IS NULL AND 
+                  ccc.coursesetid IS NULL AND
                   LOWER(c.fullname) LIKE '%$searchword%'
                   $courseinsql
             ";
@@ -112,18 +114,18 @@ switch ($action) {
         } elseif ($type == 'reset') {
 
             $sql = "
-               SELECT 
+               SELECT
                   c.id,
                   c.fullname
-               FROM 
+               FROM
                   {certif_courseset_courses} ccc
-               RIGHT JOIN 
+               RIGHT JOIN
                   {course} c
-               ON 
-                  c.id = ccc.courseid AND 
+               ON
+                  c.id = ccc.courseid AND
                   ccc.coursesetid = :coursesetid
                $basicwheresql AND
-                  ccc.coursesetid IS NULL 
+                  ccc.coursesetid IS NULL
                   $courseinsql
             ";
 
@@ -134,11 +136,11 @@ switch ($action) {
             die();
         }
         $sql = "
-            SELECT 
+            SELECT
                 id,
                 fullname
-            FROM 
-                {course} c 
+            FROM
+                {course} c
             $basicwheresql;
         ";
         $courses = $DB->get_records_sql($sql, $courseparams);
@@ -260,12 +262,12 @@ switch ($action) {
 
         list($insql, $params) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED);
         $sql = "
-               SELECT 
+               SELECT
                    c.id,
-                   c.fullname 
-               FROM 
-                   {course} c 
-               WHERE 
+                   c.fullname
+               FROM
+                   {course} c
+               WHERE
                    c.id $insql;
         ";
         $courses = $DB->get_records_sql($sql, $params);

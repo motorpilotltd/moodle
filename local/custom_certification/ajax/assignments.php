@@ -8,6 +8,8 @@ require_once(dirname(dirname(__FILE__)) . '/form/duedates.php');
 require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/user/lib.php');
 use local_custom_certification\certification;
 
+require_login();
+
 // Send the correct headers.
 send_headers('text/html; charset=utf-8', false);
 
