@@ -4,6 +4,8 @@ define('AJAX_SCRIPT', true);
 
 require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/config.php');
 
+require_login();
+
 // Send the correct headers.
 send_headers('text/html; charset=utf-8', false);
 
