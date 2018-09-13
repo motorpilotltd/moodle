@@ -2,6 +2,8 @@
 require_once('form/content.php');
 require_once($CFG->dirroot . '/cache/stores/session/lib.php');
 
+defined('MOODLE_INTERNAL') || die();
+
 $PAGE->requires->js(new moodle_url('/local/custom_certification/js/content.js'));
 $currenturl = qualified_me();
 

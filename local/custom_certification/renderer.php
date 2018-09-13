@@ -17,6 +17,8 @@
 use local_custom_certification\certification;
 use local_custom_certification\message;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * @author Artur Rietz <artur.rietz@webanywhere.co.uk>
  */

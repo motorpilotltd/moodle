@@ -2,6 +2,8 @@
 require_once('form/assignments.php');
 require_once('form/duedates.php');
 
+defined('MOODLE_INTERNAL') || die();
+
 use local_custom_certification\certification;
 $PAGE->requires->js(new moodle_url('/local/custom_certification/js/assignments.js'));
 

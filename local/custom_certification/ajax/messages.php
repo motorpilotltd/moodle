@@ -19,6 +19,12 @@ $messagetype = optional_param('messagetype', null, PARAM_INT);
 $messageid = optional_param('messageid', null, PARAM_INT);
 $certifid = optional_param('certifid', null, PARAM_INT);
 
+$certif = new \local_custom_certification\certification($certifid, false);
+$context = $certif->get_context();
+if (!has_capability('local/custom_certification:manage', $context)) {
+    throw new moodle_exception('nopermissions');
+}
+
 if (isset($_POST['messages'])) {
     $messages = $_POST['messages'];
 }

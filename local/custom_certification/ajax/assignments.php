@@ -26,6 +26,11 @@ $type = optional_param('type', null, PARAM_RAW);
 $page = optional_param('page', 1, PARAM_INT);
 $assignmentid = optional_param('assignmentid', 0, PARAM_INT);
 
+$certif = new \local_custom_certification\certification($certifid, false);
+$context = $certif->get_context();
+if (!has_capability('local/custom_certification:manage', $context)) {
+    throw new moodle_exception('nopermissions');
+}
 
 if (!empty($certifid)) {
     $certif = new \local_custom_certification\certification($certifid);

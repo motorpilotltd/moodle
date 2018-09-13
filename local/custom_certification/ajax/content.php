@@ -29,6 +29,13 @@ $certificationtype = optional_param('certificationtype', null, PARAM_RAW);
 $destination = optional_param('destination', null, PARAM_RAW);
 $coursefullname = optional_param('coursefullname', null, PARAM_RAW);
 $userecertification = optional_param('userecertification', true, PARAM_BOOL);
+
+$certif = new \local_custom_certification\certification($certifid, false);
+$context = $certif->get_context();
+if (!has_capability('local/custom_certification:manage', $context)) {
+    throw new moodle_exception('nopermissions');
+}
+
 if (isset($_POST['coursesets'])) {
     $coursesets = $_POST['coursesets'];
 }
