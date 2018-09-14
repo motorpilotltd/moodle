@@ -1,5 +1,13 @@
 $(document).ready(function () {
     var requestRunning = false;
+    var currenturl = document.URL;
+    var url = new URL(currenturl);
+
+    /**
+     * @property integer certifid Certification ID
+     */
+    var certifid = url.searchParams.get("id");
+
     /**
      * @description Add message
      */
@@ -17,7 +25,7 @@ $(document).ready(function () {
          */
         $.ajax({
             type: "GET",
-            url: M.cfg.wwwroot + '/local/custom_certification/ajax/messages.php?action=displaybox&messagename=' + messagename + '&messagetype=' + messagetype,
+            url: M.cfg.wwwroot + '/local/custom_certification/ajax/messages.php?action=displaybox&messagename=' + messagename + '&messagetype=' + messagetype + '&certifid=' + certifid,
             dataType: "HTML",
             success: function (response) {
                 $('.message-container').append(response);
@@ -39,10 +47,7 @@ $(document).ready(function () {
          * @property object message One message from html (foreach)
          */
         var message = {};
-        /**
-         * @property integer certifid Certification ID
-         */
-        var certifid = $(this).data('certifid');
+
         /**
          * @property integer triggertime
          * @description message trigger time available
@@ -221,6 +226,12 @@ function deleteMessage(element) {
      * @property integer messageid Message ID
      */
     var messageid = $(element).data('id');
+
+    /**
+     * @property integer certifid Certification ID
+     */
+    var certifid = $(element).data('certifid');
+
     /**
      * @description If message not saved in database
      */
@@ -236,7 +247,8 @@ function deleteMessage(element) {
             dataType: "JSON",
             data: {
                 action: 'delete',
-                messageid: messageid
+                messageid: messageid,
+                certifid, certifid
             },
             success: function () {
             }

@@ -22,7 +22,7 @@ class certification_messages_form extends \moodleform
 
         $messagebox .= \html_writer::start_div('message-container');
         foreach ($messages as $message) {
-            $messagebox .= $renderer->display_message_box($message->id, $messagetypes[$message->messagetype], $message->messagetype, $message->recipient, $message->recipientemail, $message->subject, $message->body, $message->triggertime, $canmanage);
+            $messagebox .= $renderer->display_message_box($message->id, $messagetypes[$message->messagetype], $message->messagetype, $certif->id, $message->recipient, $message->recipientemail, $message->subject, $message->body, $message->triggertime, $canmanage);
         }
 
         $messagebox .= \html_writer::end_div();

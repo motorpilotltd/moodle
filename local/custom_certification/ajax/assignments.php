@@ -19,21 +19,21 @@ $renderer = $PAGE->get_renderer('local_custom_certification');
 
 $param = optional_param('param', null, PARAM_RAW);
 $action = optional_param('action', null, PARAM_RAW);
-$certifid = optional_param('certifid', null, PARAM_INT);
+$certifid = required_param('certifid', PARAM_INT);
 $searchword = optional_param('word', null, PARAM_RAW);
 $itemid = optional_param('itemid', null, PARAM_INT);
 $type = optional_param('type', null, PARAM_RAW);
 $page = optional_param('page', 1, PARAM_INT);
 $assignmentid = optional_param('assignmentid', 0, PARAM_INT);
 
-$certif = new \local_custom_certification\certification($certifid, false);
-$context = $certif->get_context();
-if (!has_capability('local/custom_certification:manage', $context)) {
-    throw new moodle_exception('nopermissions');
-}
 
 if (!empty($certifid)) {
     $certif = new \local_custom_certification\certification($certifid);
+    $context = $certif->get_context();
+
+    if (!has_capability('local/custom_certification:manage', $context)) {
+        throw new moodle_exception('nopermissions');
+    }
 }
 
 switch ($action) {
