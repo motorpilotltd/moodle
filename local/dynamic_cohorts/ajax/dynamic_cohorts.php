@@ -2,6 +2,8 @@
 
 define('AJAX_SCRIPT', true);
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/config.php');
 
 require_login();
@@ -9,7 +11,13 @@ require_login();
 // Send the correct headers.
 send_headers('text/html; charset=utf-8', false);
 
-$PAGE->set_context(context_system::instance());
+$syscontext = context_system::instance();
+
+$PAGE->set_context($syscontext);
+
+if (!has_capability('local/dynamic_cohorts:edit', $syscontext)) {
+    throw new moodle_exception('nopermissions');
+}
 
 $rulesetrenderer = $PAGE->get_renderer('local_dynamic_cohorts', 'ruleset');
 $rolerenderer = $PAGE->get_renderer('local_dynamic_cohorts', 'role');

@@ -2,6 +2,8 @@
 namespace local_dynamic_cohorts\task;
 use local_dynamic_cohorts\dynamic_cohorts;
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot.'/cohort/lib.php');
 
 class check_members extends \core\task\scheduled_task

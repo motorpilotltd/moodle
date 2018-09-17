@@ -1,6 +1,7 @@
 <?php
 namespace local_dynamic_cohorts\task;
 
+defined('MOODLE_INTERNAL') || die();
 
 class check_roles extends \core\task\scheduled_task
 {
