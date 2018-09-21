@@ -201,6 +201,10 @@ EOJ;
         $rankingjoins['rank_course'] = "LEFT JOIN FREETEXTTABLE({course}, *, :keywords) AS rank_course ON rank_course.[KEY] = c.id";
         $params['keywords'] = $query;
 
+        $rankingjoins['rank_coursemetadata_arup'] =
+                "LEFT JOIN FREETEXTTABLE({coursemetadata_arup}, *, :keywords2) AS rank_coursemetadata_arup ON rank_coursemetadata_arup.[KEY] = ltcc.id";
+        $params['keywords2'] = $query;
+
         $rankingjoins['rank_local_taps_class'] =
                 "LEFT JOIN FREETEXTTABLE({local_taps_class}, *, :keywords3) AS rank_local_taps_class ON rank_local_taps_class.[KEY] = ltcc.id";
         $params['keywords3'] = $query;
