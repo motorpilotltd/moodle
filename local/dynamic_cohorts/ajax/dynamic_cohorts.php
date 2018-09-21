@@ -2,8 +2,6 @@
 
 define('AJAX_SCRIPT', true);
 
-defined('MOODLE_INTERNAL') || die();
-
 require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/config.php');
 
 require_login();
@@ -11,11 +9,12 @@ require_login();
 // Send the correct headers.
 send_headers('text/html; charset=utf-8', false);
 
-$syscontext = context_system::instance();
+$contextid = required_param('contextid', PARAM_INT);
+$thecontext = context::instance_by_id($contextid);
 
-$PAGE->set_context($syscontext);
+$PAGE->set_context($thecontext);
 
-if (!has_capability('local/dynamic_cohorts:edit', $syscontext)) {
+if (!has_capability('local/dynamic_cohorts:edit', $thecontext)) {
     throw new moodle_exception('nopermissions');
 }
 
@@ -32,7 +31,6 @@ $value = optional_param('value', null, PARAM_TEXT);
 $ruleid = optional_param('ruleid', null, PARAM_INT);
 $edit = optional_param('edit', null, PARAM_INT);
 $roleid = optional_param('roleid', null, PARAM_INT);
-$contextid = optional_param('contextid', null, PARAM_INT);
 
 switch ($action) {
     case 'addruleset':
