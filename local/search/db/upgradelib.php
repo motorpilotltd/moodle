@@ -37,7 +37,6 @@ function local_search_install_fulltextindexes() {
 
     $DB->execute("IF NOT EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE [name] = 'moodlecoursesearch') CREATE FULLTEXT CATALOG moodlecoursesearch");
     $DB->execute('CREATE FULLTEXT INDEX ON {course} (fullname, shortname, summary) KEY INDEX mdl_cour_id_pk ON moodlecoursesearch');
-    $DB->execute('CREATE FULLTEXT INDEX ON {arupadvertdatatype_custom} (keywords, objectives, description) KEY INDEX mdl_arupcust_id_pk ON moodlecoursesearch');
-    $DB->execute('CREATE FULLTEXT INDEX ON {local_taps_course} (keywords, coursecode, coursedescription, courseobjectives) KEY INDEX mdl_locatapscour_id_pk ON moodlecoursesearch');
     $DB->execute('CREATE FULLTEXT INDEX ON {local_taps_class} (classname) KEY INDEX mdl_locatapsclas_id_pk ON moodlecoursesearch');
+    $DB->execute('CREATE FULLTEXT INDEX ON {coursemetadata_arup} (keywords) KEY INDEX mdl_courarup_cou_ix ON moodlecoursesearch');
 }
