@@ -271,7 +271,7 @@ SELECT
 FROM
     {local_taps_enrolment} lte
 JOIN
-    {course} c ON c.id = lte.course
+    {course} c ON c.id = lte.courseid
 WHERE
     lte.staffid = :staffid
     AND lte.active = 1
