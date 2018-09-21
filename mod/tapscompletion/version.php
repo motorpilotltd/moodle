@@ -29,8 +29,3 @@ $plugin->requires     = 2015111600; // Moodle 3.0.
 $plugin->component    = 'mod_tapscompletion';
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->release      = "3.0.7 (Build: {$plugin->version})";
-
-$plugin->dependencies = array(
-    'arupadvertdatatype_taps' => 2015111601,
-    'mod_tapsenrol' => 2015111601,
-);
