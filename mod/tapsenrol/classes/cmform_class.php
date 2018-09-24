@@ -74,7 +74,7 @@ abstract class cmform_class extends \moodleform {
         $taps = new \mod_tapsenrol\taps();
         $durationunits = $taps->get_durationunitscode();
         array_shift($durationunits);
-        array_unshift($durationunits, get_string('form:course:getdurationunits', 'tapsenrol'));
+        array_unshift($durationunits, get_string('form:class:getdurationunits', 'tapsenrol'));
 
         $this->add_element("classdurationunitscode", "select", null, $durationunits);
 
