@@ -227,14 +227,6 @@ class tapsenrol {
         return isset($this->_tapsclasses[$this->tapsenrol->course]) ? $this->_tapsclasses[$this->tapsenrol->course] : [];
     }
 
-    public function get_tapscourse() {
-        if (!isset($this->_tapscourse)) {
-            $this->_tapscourse = $this->taps->get_course_by_id($this->tapsenrol->course);
-        }
-
-        return $this->_tapscourse;
-    }
-
     /**
      * Processes employee enrolment.
      *

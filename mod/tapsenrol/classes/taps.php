@@ -27,6 +27,7 @@ namespace mod_tapsenrol;
 
 defined('MOODLE_INTERNAL') || die();
 
+use coursemetadatafield_arup\arupmetadata;
 use stdClass;
 use DateTimeZone;
 
@@ -633,12 +634,8 @@ class taps {
             $result->status = 'INVALID_CLASS';
             return $result;
         }
-        $course = $this->get_course_by_id($class->courseid);
-        if (!$course) {
-            $result->success = false;
-            $result->status = 'INVALID_COURSE';
-            return $result;
-        }
+
+        $metadata = new arupmetadata(['course' => $class->courseid]);
 
         // Setup enrolment object.
         $enrolment = new stdClass();
@@ -693,7 +690,7 @@ class taps {
         $enrolment->duration = $class->classduration;
         $enrolment->durationunits = $class->classdurationunits;
         $enrolment->durationunitscode = $class->classdurationunitscode;
-        $enrolment->courseobjectives = $course->courseobjectives;
+        $enrolment->courseobjectives = $metadata->objectives;
         $enrolment->provider = null; // Could be Internal?; but we don't have this information.
         $enrolment->certificateno = null; // CPD only.
         $enrolment->expirydate = null; // CPD only.
