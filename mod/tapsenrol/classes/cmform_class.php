@@ -252,7 +252,7 @@ abstract class cmform_class extends \moodleform {
     }
 
     public function str($string) {
-        return get_string('form:class:' . $string, 'local_coursemanager');
+        return get_string('form:class:' . $string, 'mod_tapsenrol');
     }
 
     public function optional_time_selector($fieldname) {
