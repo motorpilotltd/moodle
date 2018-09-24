@@ -61,7 +61,7 @@ class eventobservers {
      * @param \stdClass $event
      * @return void
      */
-    public static function class_updated(\local_coursemanager\event\class_updated $event) {
+    public static function class_updated(\mod_tapsenrol\event\class_updated $event) {
         global $CFG, $DB;
 
         if (!isset($event->other['oldfields']['classname'])) {
