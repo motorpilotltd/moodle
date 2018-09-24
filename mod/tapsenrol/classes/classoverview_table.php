@@ -72,7 +72,7 @@ class classoverview_table extends \table_sql {
                         AND (e.archived = 0 OR e.archived IS NULL)
                         AND {$DB->sql_compare_text('e.bookingstatus')} {$insql}";
         $where = "c.courseid = :courseid
-                      GROUP BY ". implode(',', $fields);
+                      GROUP BY ". 'c.' . implode(',c.', $fields);
         $params['courseid'] = $cm->course;
         $this->set_sql($fieldsstring, $from, $where, $params);
         $this->set_count_sql('SELECT COUNT(id) FROM {local_taps_class} c WHERE c.courseid = :courseid', ['courseid' => $cm->course]);
