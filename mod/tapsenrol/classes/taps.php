@@ -380,13 +380,15 @@ class taps {
     public function get_healthandsafetycategory() {
         return $this->_healthandsafetycategory;
     }
+
+
     /**
      * Get course classes.
      *
      * @param int $courseid
      * @return mixed
      */
-    public function get_course_classes($courseid, $hidden = false, $archived = false) {
+    public function get_course_classes($courseid, $hidden = false, $archived = false, $fields = '*', $extrawhere = '') {
         global $DB;
         $where = 'courseid = :courseid';
         if (!$hidden) {
@@ -395,7 +397,10 @@ class taps {
         if (!$archived) {
             $where .= ' AND (archived = 0 OR archived IS NULL)';
         }
-        return $DB->get_records_select('local_taps_class', $where, array('courseid' => $courseid));
+        if ($extrawhere) {
+            $where .= " AND ({$extrawhere})";
+        }
+        return $DB->get_records_select('local_taps_class', $where, array('courseid' => $courseid), '', $fields);
     }
 
     /**
@@ -847,5 +852,41 @@ class taps {
         $enrolments = $DB->count_records_select('local_taps_enrolment', "classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}", $params);
 
         return max(array(0, $class->maximumattendees - $enrolments));
+    }
+
+    public function get_seats_remaining_by_course($courseid) {
+        global $DB;
+
+        $seatsremaining = [];
+
+        $classes = $this->get_course_classes($courseid, false, false, 'classid, maximumattendees');
+
+        // Placed and attended count as taking seats.
+        list($in, $inparams) = $DB->get_in_or_equal(
+                array_merge($this->get_statuses('placed'), $this->get_statuses('attended')),
+                SQL_PARAMS_NAMED, 'status'
+        );
+        $params = array_merge(
+                array('courseid' => $courseid),
+                $inparams
+        );
+        $sql = "SELECT classid, COUNT(enrolmentid)
+                  FROM {local_taps_enrolment}
+                 WHERE courseid = :courseid AND (archived = 0 OR archived IS NULL) AND bookingstatus {$in}
+              GROUP BY classid
+              ORDER BY classid ASC";
+        $enrolments = $DB->get_records_sql_menu($sql, $params);
+
+        foreach ($classes as $class) {
+            if (!($class->maximumattendees > 0)) {
+                $seatsremaining[$class->classid] = -1;
+            } else if (!isset($enrolments[$class->classid])) {
+                $seatsremaining[$class->classid] = $class->maximumattendees;
+            } else {
+                $seatsremaining[$class->classid] = max(array(0, $class->maximumattendees - $enrolments[$class->classid]));
+            }
+        }
+
+        return $seatsremaining;
     }
 }
