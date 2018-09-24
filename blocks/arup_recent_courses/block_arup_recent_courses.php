@@ -266,7 +266,7 @@ EOS;
         $sql = <<<EOS
 SELECT
     lte.id, lte.coursename, lte.classtype, lte.bookingstatus,
-    c.id,
+    c.id as course,
     c.fullname, c.shortname, c.visible
 FROM
     {local_taps_enrolment} lte
