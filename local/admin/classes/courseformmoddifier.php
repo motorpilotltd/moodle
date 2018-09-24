@@ -18,33 +18,36 @@ namespace local_admin;
 
 class courseformmoddifier {
     public static function alter_definition(\MoodleQuickForm $mform) {
-        global $PAGE, $DB;
+        global $PAGE;
 
         $PAGE->requires->js_call_amd('local_admin/enhance', 'initialise');
 
         $courseid = $mform->getElementValue('id');
 
         $systemcontext = \context_system::instance();
-        if (!empty($courseid) && !!has_capability("local/admin:createnonarupcourse", $systemcontext)) {
+        if (!has_capability("local/admin:createnonarupcourse", $systemcontext)) {
             self::freezeandhideunwantedelements($mform);
-            return;
-        }
-        if (!empty($courseid)) {
-            return;
-        }
 
-        $arupdefaultcourse =
-                $mform->createElement('selectyesno', 'arupdefaultcourse', get_string('arupdefaultcourse', 'local_admin'));
-        $mform->insertElementBefore($arupdefaultcourse, 'fullname');
-        $mform->setDefault('arupdefaultcourse', true);
+            if (empty($courseid)) {
+                self::addarupelements($mform);
+            }
+        } else {
+            $arupdefaultcourse = $mform->createElement('selectyesno', 'arupdefaultcourse', get_string('arupdefaultcourse', 'local_admin'));
+            $mform->insertElementBefore($arupdefaultcourse, 'fullname');
+            $mform->setDefault('arupdefaultcourse', true);
 
-        $default = $mform->getElementValue('arupdefaultcourse');
-        if (!isset($default[0]) || empty($default[0])) {
-            return;
+            $mform->registerNoSubmitButton('updatearupdefaultcourse');
+            $mform->addElement('submit', 'updatearupdefaultcourse', get_string('updatearupdefaultcourse', 'local_admin'));
+
+            $default = $mform->getElementValue('arupdefaultcourse');
+            if (isset($default[0]) && !empty($default[0])) {
+                if (empty($courseid)) {
+                    self::addarupelements($mform);
+                }
+
+                self::freezeandhideunwantedelements($mform);
+            }
         }
-
-        self::addarupelements($mform);
-        self::freezeandhideunwantedelements($mform);
     }
 
     // If data is null then we create an arup default course
@@ -251,9 +254,6 @@ class courseformmoddifier {
         global $DB;
 
         $mform->addElement('html', \html_writer::tag('div', ' ', ['class' => 'hidden', 'id' => 'id_updatecourseformat']));
-
-        $mform->registerNoSubmitButton('updatearupdefaultcourse');
-        $mform->addElement('submit', 'updatearupdefaultcourse', get_string('updatearupdefaultcourse', 'local_admin'));
 
         $enrolment = $mform->createElement('header', 'enrolment', get_string('enrolment', 'local_admin'));
         $mform->insertElementBefore($enrolment, 'courseformathdr');
