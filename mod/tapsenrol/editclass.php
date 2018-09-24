@@ -65,8 +65,8 @@ if (!isset($class)) {
     $class = new stdClass();
     $class->courseid = $cm->course;
     $class->cmid = $cm->id;
-    $class->classtype = optional_param('classtype', false, PARAM_TEXT);
-    $class->classstatus = optional_param('classstatus', false, PARAM_TEXT);
+    $class->classtype = optional_param('classtype', \mod_tapsenrol\cmform_class::CLASS_TYPE_SCHEDULED, PARAM_TEXT);
+    $class->classstatus = optional_param('classstatus', \mod_tapsenrol\cmform_class::CLASS_STATUS_NORMAL, PARAM_TEXT);
 } else {
     $class->classtype = optional_param('classtype', $class->classtype, PARAM_INT);
     $class->classstatus = optional_param('classstatus', $class->classstatus, PARAM_INT);
