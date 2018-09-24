@@ -61,7 +61,7 @@ class class_updated extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventclassupdated', 'local_coursemanager');
+        return get_string('eventclassupdated', 'tapsenrol');
     }
 
     /**

@@ -74,7 +74,7 @@ abstract class cmform_class extends \moodleform {
         $taps = new \mod_tapsenrol\taps();
         $durationunits = $taps->get_durationunitscode();
         array_shift($durationunits);
-        array_unshift($durationunits, get_string('form:course:getdurationunits', 'local_coursemanager'));
+        array_unshift($durationunits, get_string('form:course:getdurationunits', 'tapsenrol'));
 
         $this->add_element("classdurationunitscode", "select", null, $durationunits);
 
@@ -104,7 +104,7 @@ abstract class cmform_class extends \moodleform {
         $this->add_element("jobnumber", "text", PARAM_TEXT);
         $this->add_element("classsuppliername", "text", PARAM_TEXT);
 
-        $mform->addRule('classname', get_string('required', 'local_coursemanager'), 'required', null, 'client');
+        $mform->addRule('classname', get_string('required', 'tapsenrol'), 'required', null, 'client');
 
         if (!empty($data->id)) {
             $this->add_action_buttons(true, $this->str('updateclass'));
@@ -171,7 +171,7 @@ abstract class cmform_class extends \moodleform {
             }
         }
         if ($data['usedtimezone'] == "0") {
-            $errors['usedtimezone'] = get_string('required', 'local_coursemanager');
+            $errors['usedtimezone'] = get_string('required', 'tapsenrol');
         }
 
         $sql = 'SELECT id FROM {local_taps_class}
@@ -182,7 +182,7 @@ abstract class cmform_class extends \moodleform {
         $dupes = $DB->get_records_sql($sql,
                 array('courseid' => $data['courseid'], 'classname' => $data['classname'], 'id' => $id));
         if (count($dupes) > 0) {
-            $errors['classname'] = get_string('duplicateclassname', 'local_coursemanager');
+            $errors['classname'] = get_string('duplicateclassname', 'tapsenrol');
         }
         // Don't want to use empty() to check classendtime as need it to actually be set.
         if (!empty($this->hasattendedenrolments)
@@ -198,7 +198,7 @@ abstract class cmform_class extends \moodleform {
             $classendtimestring = gmdate('Y-m-d H:i', $data['classendtime']);
             $classendtime = new \DateTime($classendtimestring, $timezone);
             if ($classendtime->getTimestamp() < time()) {
-                $errors['classendtimegroup'] = get_string('classendtime:past', 'local_coursemanager');
+                $errors['classendtimegroup'] = get_string('classendtime:past', 'tapsenrol');
             }
         }
         return $errors;

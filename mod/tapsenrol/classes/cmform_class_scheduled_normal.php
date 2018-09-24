@@ -28,25 +28,25 @@ class cmform_class_scheduled_normal extends cmform_class {
         parent::definition();
         $mform = $this->_form;
 
-        $max = $mform->createElement('advcheckbox', 'unlimitedattendees', get_string('form:class:unlimitedattendees', 'local_coursemanager'), '', array('group' => 1), array(0, 1));
+        $max = $mform->createElement('advcheckbox', 'unlimitedattendees', get_string('form:class:unlimitedattendees', 'tapsenrol'), '', array('group' => 1), array(0, 1));
         $mform->insertElementBefore($max, 'maximumattendees');
         $mform->setDefault('unlimitedattendees', 1);
         $mform->disabledIf("maximumattendees", "unlimitedattendees", 'eq', 1);
 
-        $mform->addRule('classdurationunitscode', get_string('required', 'local_coursemanager'), 'required', null, 'client');
-        $mform->addRule('classduration', get_string('required', 'local_coursemanager'), 'required', null, 'client');
-        $mform->addRule('classstarttime', get_string('required', 'local_coursemanager'), 'required', null, 'client');
-        $mform->addRule('classendtime', get_string('required', 'local_coursemanager'), 'required', null, 'client');
-        $mform->addRule('enrolmentstartdate', get_string('required', 'local_coursemanager'), 'required', null, 'client');
-        $mform->addRule('trainingcenter', get_string('required', 'local_coursemanager'), 'required', null, 'client');
-        $mform->addRule('location', get_string('required', 'local_coursemanager'), 'required', null, 'client');
-        $mform->addRule('usedtimezone', get_string('required', 'local_coursemanager'), 'required', null, 'client');
+        $mform->addRule('classdurationunitscode', get_string('required', 'tapsenrol'), 'required', null, 'client');
+        $mform->addRule('classduration', get_string('required', 'tapsenrol'), 'required', null, 'client');
+        $mform->addRule('classstarttime', get_string('required', 'tapsenrol'), 'required', null, 'client');
+        $mform->addRule('classendtime', get_string('required', 'tapsenrol'), 'required', null, 'client');
+        $mform->addRule('enrolmentstartdate', get_string('required', 'tapsenrol'), 'required', null, 'client');
+        $mform->addRule('trainingcenter', get_string('required', 'tapsenrol'), 'required', null, 'client');
+        $mform->addRule('location', get_string('required', 'tapsenrol'), 'required', null, 'client');
+        $mform->addRule('usedtimezone', get_string('required', 'tapsenrol'), 'required', null, 'client');
     }
 
     public function validation($data, $files){
         $errors = parent::validation($data, $files);
         if ($data['classdurationunitscode'] == "0") {
-            $errors['classdurationunitscode'] = get_string('required', 'local_coursemanager');
+            $errors['classdurationunitscode'] = get_string('required', 'tapsenrol');
         }
         return $errors;
     }

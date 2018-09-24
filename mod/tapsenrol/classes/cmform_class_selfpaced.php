@@ -29,8 +29,8 @@ class cmform_class_selfpaced extends cmform_class {
         parent::definition();
         $mform = $this->_form;
 
-        $mform->addRule('classdurationunitscode', get_string('required', 'local_coursemanager'), 'required', null, 'client');
-        $mform->addRule('classduration', get_string('required', 'local_coursemanager'), 'required', null, 'client');
+        $mform->addRule('classdurationunitscode', get_string('required', 'tapsenrol'), 'required', null, 'client');
+        $mform->addRule('classduration', get_string('required', 'tapsenrol'), 'required', null, 'client');
 
         $mform->removeElement('location');
         $mform->removeElement('trainingcenter');
@@ -39,16 +39,16 @@ class cmform_class_selfpaced extends cmform_class {
         $endgroup = $this->optional_time_selector('classendtime');
         $mform->insertElementBefore($endgroup, 'enrolmentstartdate');
 
-        $max = $mform->createElement('advcheckbox', 'unlimitedattendees', get_string('form:class:unlimitedattendees', 'local_coursemanager'), '', array('group' => 1), array(0, 1));
+        $max = $mform->createElement('advcheckbox', 'unlimitedattendees', get_string('form:class:unlimitedattendees', 'tapsenrol'), '', array('group' => 1), array(0, 1));
         $mform->insertElementBefore($max, 'maximumattendees');
         $mform->setDefault('unlimitedattendees', 1);
         $mform->disabledIf("maximumattendees", "unlimitedattendees", 'eq', 1);
     }
-    
+
     public function validation($data, $files){
         $errors = parent::validation($data, $files);
         if ($data['classdurationunitscode'] == "0") {
-            $errors['classdurationunitscode'] = get_string('required', 'local_coursemanager');
+            $errors['classdurationunitscode'] = get_string('required', 'tapsenrol');
         }
         return $errors;
     }
