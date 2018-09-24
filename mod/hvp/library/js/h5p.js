@@ -359,6 +359,25 @@ H5P.init = function (target) {
     this.contentDocument.write('<!doctype html><html class="h5p-iframe"><head>' + H5P.getHeadTags(contentId) + '</head><body><div class="h5p-content" data-content-id="' + contentId + '"/></body></html>');
     this.contentDocument.close();
   });
+
+/* BEGIN CORE MOD */
+  // Add click event for overlay play button
+  H5P.jQuery('.h5p-play-overlay').on('click', function (event) {
+    var itemid =  $(this).data('itemid'),
+        self = $(this);
+
+    $.ajax({
+      type: 'POST',
+      url: M.cfg.wwwroot + '/mod/hvp/ajax.php?action=contentviewed',
+      data: {
+          id: itemid
+      }
+    });
+
+    // Remove play overlay
+    $(this).hide();
+  });
+/* END CORE MOD */
 };
 
 /**

@@ -274,7 +274,9 @@ function hvp_cm_info_view(cm_info $cm) {
 
     require_once($CFG->dirroot . '/mod/hvp/locallib.php');
     $view = new \mod_hvp\view_assets($cm, $COURSE, null, true, true);
-
+    $completion = new \completion_info($COURSE);
+    $usercompletion = $completion->get_data($cm, false, 0);
+    $hasoverlay = ($hvp->displaycontent == true && $usercompletion->viewed == false);
     $content = $view->getcontent();
     if ($content === null) {
         // No content.
@@ -309,7 +311,7 @@ function hvp_cm_info_view(cm_info $cm) {
     \mod_hvp\framework::printMessages('error', \mod_hvp\framework::messages('error'));
 
     // Capture view output.
-    $view->outputview();
+    $view->outputview($hasoverlay);
 
     $output .= ob_get_contents();
     ob_end_clean();
