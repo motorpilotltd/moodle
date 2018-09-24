@@ -130,7 +130,7 @@ abstract class cmform_class extends \moodleform {
             $mform->addElement($fieldtype, $fieldname, $this->str($fieldname));
         }
         if ($help) {
-            $mform->addHelpButton($fieldname, 'form:class:' . $fieldname, 'local_coursemanager');
+            $mform->addHelpButton($fieldname, 'form:class:' . $fieldname, 'tapsenrol');
         }
         if ($settype) {
             $mform->setType($fieldname, $settype);

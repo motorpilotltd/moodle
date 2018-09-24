@@ -30,7 +30,7 @@ $observers = array(
         'callback'    => '\mod_tapsenrol\eventobservers::user_enrolment_deleted',
     ),
     array(
-        'eventname'   => '\local_coursemanager\event\class_updated',
+        'eventname'   => '\mod_tapsenrol\event\class_updated',
         'callback'    => '\mod_tapsenrol\eventobservers::class_updated',
     ),
     array(
