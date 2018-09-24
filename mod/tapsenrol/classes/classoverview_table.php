@@ -71,7 +71,7 @@ class classoverview_table extends \table_sql {
                       ON c.classid = e.classid
                         AND (e.archived = 0 OR e.archived IS NULL)
                         AND {$DB->sql_compare_text('e.bookingstatus')} {$insql}";
-        $where = "c.courseid = :courseid
+        $where = "c.courseid = :courseid AND (c.archived is NULL OR c.archived = 0)
                       GROUP BY ". 'c.' . implode(',c.', $fields);
         $params['courseid'] = $cm->course;
         $this->set_sql($fieldsstring, $from, $where, $params);
