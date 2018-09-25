@@ -154,6 +154,7 @@ class course_completion_form extends moodleform {
             foreach ($courses as $c) {
                 $selectbox[$c->id] = $list[$c->category] . ' / ' . format_string($c->fullname, true,
                         array('context' => context_course::instance($c->id)));
+
                 // If already selected ...
                 if ($c->selected) {
                     $selected[] = $c->id;

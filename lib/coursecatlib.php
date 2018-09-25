@@ -2215,6 +2215,9 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
      *      in which case they are all required.
      * @param integer $excludeid Exclude this category and its children from the lists built.
      * @param string $separator string to use as a separator between parent and child category. Default ' / '
+     * BEGIN CORE MOD
+     * @param bool $showhidden Force the showing of hidden categories.
+     * END CORE MOD
      * @return array of strings
      */
 /* BEGIN CORE MOD */
@@ -2227,8 +2230,11 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         // with requried cap ($thislist).
         $currentlang = current_language();
 /* BEGIN CORE MOD */
-        $basecachekey =  has_capability('moodle/category:viewhiddencategories', context_system::instance()) ?
-            $currentlang . '_catlist_full': $currentlang . '_catlist';
+        if ($showhidden === true) {
+            $basecachekey =  $currentlang . '_catlist_full';
+        } else {
+            $basecachekey = $currentlang . '_catlist';
+        }
 /* END CORE MOD */
         $baselist = $coursecatcache->get($basecachekey);
         $thislist = false;
@@ -2242,9 +2248,8 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
         } else if ($baselist !== false) {
             $thislist = array_keys($baselist);
         }
-/* BEGIN CORE MOD */
-        if ($baselist === false || $showhidden === true) {
-/* END CORE MOD */
+
+        if ($baselist === false) {
             // We don't have $baselist cached, retrieve it. Retrieve $thislist again in any case.
             $ctxselect = context_helper::get_preload_record_columns_sql('ctx');
             $sql = "SELECT cc.id, cc.sortorder, cc.name, cc.visible, cc.parent, cc.path, $ctxselect
