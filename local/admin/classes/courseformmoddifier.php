@@ -238,6 +238,9 @@ class courseformmoddifier {
             }
         }
 
+        // Fake element to stop js for courseformat picker from freaking out.
+        $mform->addElement('html', \html_writer::tag('span', '', ['id' => 'id_updatecourseformat'])); // Spacer.
+
         $systemcontext = \context_system::instance();
         if (!has_capability("local/admin:createnonarupcourse", $systemcontext)) {
             $elementnamestofreeze[] = 'arupdefaultcourse';
