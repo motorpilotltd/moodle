@@ -640,7 +640,7 @@ function local_search_get_results_data($courses, $highlightterms = '', $total = 
 
         $imgurl = (string) $OUTPUT->image_url('no_image', 'local_search');
 
-        $arupmetadata = \coursemetadatafield_arup\arupmetadata::fetch(['courseid' => $course->id]);
+        $arupmetadata = \coursemetadatafield_arup\arupmetadata::fetch(['course' => $course->id]);
         if ($arupmetadata && $arupmetadata->display) {
             $fs = get_file_storage();
             $files = $fs->get_area_files($context->id, 'coursemetadatafield_arup', 'blockimage');
