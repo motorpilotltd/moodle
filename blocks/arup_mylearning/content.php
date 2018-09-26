@@ -836,7 +836,7 @@ class block_arup_mylearning_content {
         list($usql, $params) = $DB->get_in_or_equal($taps->get_statuses('cancelled'), SQL_PARAMS_NAMED, 'status', false);
         $sql = <<<EOS
 SELECT
-    lte.id, lte.bookingstatus, lte.classcompletiontime, lte.course
+    lte.id, lte.bookingstatus, lte.classcompletiontime, lte.courseid as course
 FROM
     {local_taps_enrolment} lte
 WHERE
@@ -871,7 +871,7 @@ SELECT
         lte.expirydate, lte.cpdid, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
         lte.learningdesccont1, lte.learningdesccont2, lte.healthandsafetycategory, lte.usedtimezone, lte.locked,
     ltcc.categoryhierarchy,
-    lte.course,
+    lte.courseid as course,
     cat.id as categoryid, cat.name as categoryname
 FROM
     {local_taps_enrolment} lte

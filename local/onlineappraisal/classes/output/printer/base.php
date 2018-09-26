@@ -53,7 +53,7 @@ abstract class base implements renderable, templatable {
 
     /**
      * Constructor.
-     * 
+     *
      * @param \local_onlineappraisal\printer $printer
      */
     public function __construct(\local_onlineappraisal\printer $printer) {
@@ -75,7 +75,7 @@ abstract class base implements renderable, templatable {
     public function export_for_template(renderer_base $output) {
         // Get deep clone of generic appraisal data.
         $this->data->appraisal = unserialize(serialize($this->appraisal));
-        
+
         // Format dates.
         $this->data->appraisal->due_date = userdate($this->data->appraisal->due_date, get_string('strftimedate'), new \DateTimeZone('UTC')); // Always UTC (from datepicker).
         $this->data->appraisal->held_date = empty($this->data->appraisal->held_date) ? get_string('pdf:notset', 'local_onlineappraisal') : userdate($this->data->appraisal->held_date, get_string('strftimedate'), new \DateTimeZone('UTC')); // Always UTC (from datepicker).
@@ -102,7 +102,7 @@ abstract class base implements renderable, templatable {
 
         $mylearninginstalled = get_config('block_arup_mylearning', 'version');
         $tapsinstalled = get_config('local_taps', 'version');
-        
+
         if (empty($staffid) || !$mylearninginstalled || !$tapsinstalled) {
             return;
         }
@@ -115,7 +115,7 @@ SELECT
     lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.classcompletiondate, lte.duration, lte.durationunits,
         lte.expirydate, lte.cpdid, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
         lte.learningdesccont1, lte.learningdesccont2, lte.healthandsafetycategory, lte.usedtimezone,
-    lte.course,
+    lte.courseid as course,
     cat.id as categoryid, cat.name as categoryname
 FROM
     {local_taps_enrolment} lte
