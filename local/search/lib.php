@@ -640,28 +640,14 @@ function local_search_get_results_data($courses, $highlightterms = '', $total = 
 
         $imgurl = (string) $OUTPUT->image_url('no_image', 'local_search');
 
-        if (!empty($course->aid)) {
-            $sql = <<<EOS
-SELECT
-    cm.id
-FROM
-    {course_modules} cm
-JOIN
-    {modules} m
-    ON m.id = cm.module
-    AND m.name = :modulename
-WHERE
-    cm.course = :courseid
-EOS;
-            $arupmetadata = \coursemetadatafield_arup\arupmetadata::fetch(['courseid' => $course->id]);
-            if ($arupmetadata && $arupmetadata->display) {
-                $fs = get_file_storage();
-                $files = $fs->get_area_files($context->id, 'coursemetadatafield_arup', 'blockimage');
-                if ($files) {
-                    $file = array_pop($files);
-                    $imgurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
-                            $file->get_filearea(), null, $file->get_filepath(), $file->get_filename(), false);
-                }
+        $arupmetadata = \coursemetadatafield_arup\arupmetadata::fetch(['courseid' => $course->id]);
+        if ($arupmetadata && $arupmetadata->display) {
+            $fs = get_file_storage();
+            $files = $fs->get_area_files($context->id, 'coursemetadatafield_arup', 'blockimage');
+            if ($files) {
+                $file = array_pop($files);
+                $imgurl = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(),
+                        $file->get_filearea(), null, $file->get_filepath(), $file->get_filename(), false);
             }
         }
         $resultrow['imgurl'] = $imgurl;
