@@ -104,7 +104,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         $delegateicon = html_writer::tag('i', '', array('class' => 'fa fa-users'));
 
         if ($enrolments || $classes) {
-            $seatsremaining = $tapsenrol->taps->get_seats_remaining_by_course($tapsenrol->context->course->id);
+            $seatsremaining = $tapsenrol->taps->get_seats_remaining_by_course($tapsenrol->course->id);
         }
 
         if ($enrolments) {
