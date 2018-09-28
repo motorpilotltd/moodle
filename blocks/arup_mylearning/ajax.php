@@ -44,5 +44,5 @@ try {
     }
 } catch (Exception $e) {
     echo $e->getMessage();
-    debug($e->getTraceAsString());
+    debugging($e->getTraceAsString());
 }
