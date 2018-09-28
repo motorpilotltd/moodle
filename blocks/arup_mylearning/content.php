@@ -876,7 +876,7 @@ FROM
     {local_taps_enrolment} lte
 LEFT JOIN
     {course} c
-    ON c.id = lte.course
+    ON c.id = lte.courseid
 LEFT JOIN
     {course_categories} cat
     ON cat.id = c.category
