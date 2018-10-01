@@ -2,6 +2,8 @@
 
 namespace local_custom_certification;
 
+defined('MOODLE_INTERNAL') || die();
+
 class message {
 	// Enrolment - EVENT triggered.
 	const TYPE_ENROLMENT = 1;

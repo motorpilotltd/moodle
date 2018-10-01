@@ -2,6 +2,8 @@
 
 namespace local_custom_certification;
 
+defined('MOODLE_INTERNAL') || die();
+
 global $CFG;
 require_once($CFG->dirroot . '/cohort/externallib.php');
 require_once($CFG->dirroot . '/enrol/certification/lib.php');

@@ -1,6 +1,8 @@
 <?php
 namespace local_custom_certification\task;
 
+defined('MOODLE_INTERNAL') || die();
+
 use local_custom_certification\message;
 
 class send_messages extends \core\task\scheduled_task

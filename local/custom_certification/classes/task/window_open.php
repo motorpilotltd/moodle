@@ -1,6 +1,8 @@
 <?php
 namespace local_custom_certification\task;
 
+defined('MOODLE_INTERNAL') || die();
+
 use local_custom_certification\completion;
 
 class window_open extends \core\task\scheduled_task

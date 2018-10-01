@@ -17,6 +17,7 @@
 /**
  * @author Artur Rietz <artur.rietz@webanywhere.co.uk>
  */
+defined('MOODLE_INTERNAL') || die();
 
 defined('MOODLE_INTERNAL') || die();
 
