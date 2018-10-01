@@ -1,5 +1,8 @@
 <?php
 require_once('form/messages.php');
+
+defined('MOODLE_INTERNAL') || die();
+
 $PAGE->requires->js(new moodle_url('/local/custom_certification/js/messages.js'));
 
 $currenturl = qualified_me();

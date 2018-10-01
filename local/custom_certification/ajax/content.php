@@ -16,7 +16,7 @@ $renderer = $PAGE->get_renderer('local_custom_certification');
 
 $param = optional_param('param', null, PARAM_RAW);
 $action = optional_param('action', null, PARAM_RAW);
-$certifid = optional_param('certifid', null, PARAM_INT);
+$certifid = required_param('certifid', PARAM_INT);
 $certifpath = optional_param('certifpath', null, PARAM_INT);
 $searchword = optional_param('word', null, PARAM_RAW);
 $type = optional_param('type', null, PARAM_RAW);
@@ -29,12 +29,20 @@ $certificationtype = optional_param('certificationtype', null, PARAM_RAW);
 $destination = optional_param('destination', null, PARAM_RAW);
 $coursefullname = optional_param('coursefullname', null, PARAM_RAW);
 $userecertification = optional_param('userecertification', true, PARAM_BOOL);
+
+
+
 if (isset($_POST['coursesets'])) {
     $coursesets = $_POST['coursesets'];
 }
 
 if (!empty($certifid)) {
     $certif = new \local_custom_certification\certification($certifid, false);
+
+    $context = $certif->get_context();
+    if (!has_capability('local/custom_certification:manage', $context)) {
+        throw new moodle_exception('nopermissions');
+    }
 }
 
 switch ($action) {
