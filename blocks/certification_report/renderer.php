@@ -27,7 +27,7 @@ class block_certification_report_renderer extends plugin_renderer_base {
             // Only 'viewtotal' set so no actual data.
             return html_writer::tag('div', get_string('nodata', 'block_certification_report'), array('class' => 'alert alert-warning', 'style' => 'margin-top: 10px;'));
         }
-        
+
         // Which region view are we looking at?
         $regionview = optional_param('regionview', 'actual', PARAM_ALPHA) == 'geo' ? 'geo' : 'actual';
 
@@ -46,7 +46,7 @@ class block_certification_report_renderer extends plugin_renderer_base {
         } else {
             $header[] = get_string('header'.$view, 'block_certification_report');
         }
-        
+
         $tabledata = [];
         foreach($certifications as $certification){
             if(isset($data['viewtotal']['certifications'][$certification->id]) && $data['viewtotal']['certifications'][$certification->id]['progress'] !== null){
@@ -146,7 +146,7 @@ class block_certification_report_renderer extends plugin_renderer_base {
 
         $filterurl = new moodle_url($urlbase);
         $templatevars = new stdClass();
-        $templatevars->url = rawurldecode($filterurl);
+        $templatevars->url = $filterurl->out();
         $attributes = [
             'id' => 'copy-to-clipboard-popover',
             'data-toggle' => 'popover',
@@ -160,7 +160,7 @@ class block_certification_report_renderer extends plugin_renderer_base {
         $output .= html_writer::end_div();
 
         return $output;
-        
+
     }
 
     /**
