@@ -29,4 +29,26 @@ defined('MOODLE_INTERNAL') || die();
  */
 function xmldb_coursemetadatafield_arup_install() {
     global $CFG;
+
+    require_once("$CFG->dirroot/local/coursemetadata/classes/define_base.php");
+    require_once("$CFG->dirroot/local/coursemetadata/field/arup/define.class.php");
+    $formfield = new coursemetadata_define_arup();
+
+    $data = new stdClass();
+    $data->shortname = 'arupmetadata';
+    $data->name = 'Arup metadata';
+    $data->datatype = 'arup';
+    $data->description = '';
+    $data->descriptionformat = FORMAT_HTML;
+    $data->categoryid = 1;
+    $data->sortorder = 1;
+    $data->required = 0;
+    $data->locked = 0;
+    $data->visible = COURSEMETADATA_VISIBLE_ALL;
+    $data->forceunique=0;
+    $data->defaultdata = '';
+    $data->defaultdataformat = FORMAT_HTML;
+    $data->restricted = 0;
+
+    $formfield->define_save($data);
 }
