@@ -25,7 +25,7 @@ class courseformmoddifier {
         $courseid = $mform->getElementValue('id');
 
         $systemcontext = \context_system::instance();
-        if (!has_capability("local/admin:createnonarupcourse", $systemcontext)) {
+        if (!has_capability("local/coursemetadata:accessall", $systemcontext)) {
             self::freezeandhideunwantedelements($mform);
 
             if (empty($courseid)) {
@@ -242,7 +242,7 @@ class courseformmoddifier {
         $mform->addElement('html', \html_writer::tag('span', '', ['id' => 'id_updatecourseformat'])); // Spacer.
 
         $systemcontext = \context_system::instance();
-        if (!has_capability("local/admin:createnonarupcourse", $systemcontext)) {
+        if (!has_capability("local/coursemetadata:accessall", $systemcontext)) {
             $elementnamestofreeze[] = 'arupdefaultcourse';
         }
 

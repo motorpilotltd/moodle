@@ -50,31 +50,19 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
         $altword =
                 empty($this->arupmetadata->altword) ? \core_text::strtolower(get_string('course')) : $this->arupmetadata->altword;
 
-        $mform->addElement('checkbox', 'arupmeta_display', get_string('display', 'coursemetadatafield_arup'));
-
-        $mform->addElement('text', 'arupmeta_name', get_string('name', 'coursemetadatafield_arup'), ['maxlength' => 254]);
-        $mform->setType('arupmeta_name', PARAM_TEXT);
-
         $filemanageroptions = array();
         $filemanageroptions['return_types'] = 3;
         $filemanageroptions['accepted_types'] = array('web_image');
         $filemanageroptions['maxbytes'] = 0;
         $filemanageroptions['maxfiles'] = 1;
         $filemanageroptions['mainfile'] = false;
+        $mform->addElement('editor', 'arupmeta_description_editor',
+                get_string('description', 'coursemetadatafield_arup', $altword));
+        $mform->setType('arupmeta_description_editor', PARAM_RAW); // No XSS prevention here, users must be trusted.
 
         $mform->addElement('filemanager', 'advertblockimage', get_string('advertblockimage', 'coursemetadatafield_arup'), null,
                 $filemanageroptions);
         $mform->addHelpButton('advertblockimage', 'advertblockimage', 'coursemetadatafield_arup');
-
-        $mform->addElement('text', 'arupmeta_altword', get_string('altword', 'coursemetadatafield_arup', $altword),
-                ['maxlength' => 254]);
-        $mform->setType('arupmeta_altword', PARAM_TEXT);
-
-        $mform->addElement('checkbox', 'arupmeta_showheadings', get_string('showheadings', 'coursemetadatafield_arup'));
-
-        $mform->addElement('editor', 'arupmeta_description_editor',
-                get_string('description', 'coursemetadatafield_arup', $altword));
-        $mform->setType('arupmeta_description_editor', PARAM_RAW); // No XSS prevention here, users must be trusted.
 
         $mform->addElement('editor', 'arupmeta_objectives_editor', get_string('objectives', 'coursemetadatafield_arup', $altword));
         $mform->setType('arupmeta_objectives_editor', PARAM_RAW); // No XSS prevention here, users must be trusted.
@@ -85,14 +73,8 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
         $mform->addElement('editor', 'arupmeta_keywords_editor', get_string('keywords', 'coursemetadatafield_arup'));
         $mform->setType('arupmeta_keywords_editor', PARAM_RAW); // No XSS prevention here, users must be trusted.
 
-        $mform->addElement('checkbox', 'arupmeta_accredited', get_string('accredited', 'coursemetadatafield_arup'));
-
-        $mform->addElement('date_selector', 'arupmeta_accreditationdate',
-                get_string('accreditationdate', 'coursemetadatafield_arup'));
-
-        $mform->addElement('date_selector', 'arupmeta_timecreated', get_string('timecreated', 'coursemetadatafield_arup'));
-
-        $mform->addElement('date_selector', 'arupmeta_timemodified', get_string('timemodified', 'coursemetadatafield_arup'));
+        $mform->addElement('header', 'duration', get_string('duration', 'coursemetadatafield_arup'));
+        $mform->setExpanded('duration', true, true);
 
         $mform->addElement('text', 'arupmeta_duration', get_string('duration', 'coursemetadatafield_arup'));
         $mform->setType('arupmeta_duration', PARAM_FLOAT);
@@ -106,6 +88,31 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
                  'years'   => get_string('years', 'coursemetadatafield_arup')];
         $mform->addElement('select', 'arupmeta_durationunits', get_string('durationunits', 'coursemetadatafield_arup'),
                 $durationunits);
+
+        if ($this->_accessall) {
+            $mform->addElement('header', 'accreditation', get_string('accreditation', 'coursemetadatafield_arup'));
+            $mform->setExpanded('accreditation', true, true);
+
+            $mform->addElement('checkbox', 'arupmeta_accredited', get_string('accredited', 'coursemetadatafield_arup'));
+
+            $mform->addElement('date_selector', 'arupmeta_accreditationdate',
+                    get_string('accreditationdate', 'coursemetadatafield_arup'));
+
+            $mform->addElement('header', 'courseadminsettings', get_string('courseadminsettings', 'coursemetadatafield_arup'));
+            $mform->setExpanded('courseadminsettings', true, true);
+
+            $mform->addElement('checkbox', 'arupmeta_display', get_string('display', 'coursemetadatafield_arup'));
+
+            $mform->addElement('checkbox', 'arupmeta_showheadings', get_string('showheadings', 'coursemetadatafield_arup'));
+
+            $mform->addElement('text', 'arupmeta_altword', get_string('altword', 'coursemetadatafield_arup', $altword),
+                    ['maxlength' => 254]);
+            $mform->setType('arupmeta_altword', PARAM_TEXT);
+
+            $mform->addElement('date_selector', 'arupmeta_timecreated', get_string('timecreated', 'coursemetadatafield_arup'));
+
+            $mform->addElement('date_selector', 'arupmeta_timemodified', get_string('timemodified', 'coursemetadatafield_arup'));
+        }
     }
 
     private function editors() {

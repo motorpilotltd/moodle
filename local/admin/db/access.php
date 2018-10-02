@@ -54,11 +54,4 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    'local/admin:createnonarupcourse' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
-    ),
 );

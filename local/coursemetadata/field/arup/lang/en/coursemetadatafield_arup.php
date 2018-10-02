@@ -23,10 +23,13 @@
  */
 
 $string['pluginname'] = 'Arup course meta data';
+$string['accreditation'] = 'Accreditation';
 $string['advertblockimage'] = 'Image for advert block';
 $string['advertblockimage_help'] = 'Will be cropped to 16:9 aspect ratio if necessary.';
+$string['courseadminsettings'] = 'Course admin settings';
 $string['name'] = 'Name';
 $string['description'] = 'What will this {$a} cover?';
+$string['duration'] = 'Duration';
 $string['showheadings'] = 'Show headings';
 $string['altword'] = 'Alternative word for \'{$a}\' in headings';
 $string['display'] = 'Display advert';
