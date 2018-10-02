@@ -41,7 +41,7 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
 
     public $course;
     public $display;
-    public $name;
+    public $name; // NOT ACTUALLY USED BUT RETAINED IN CASE WE NEED IT.
     public $altword;
     public $showheadings;
     public $description;
