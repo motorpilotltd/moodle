@@ -886,4 +886,9 @@ class taps {
 
         return $seatsremaining;
     }
+
+    public static function is_user_signedup(&$information, $course, $section, $userid) {
+        $information = 'NO';
+        return false;
+    }
 }

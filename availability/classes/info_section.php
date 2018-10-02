@@ -79,4 +79,13 @@ class info_section extends info {
         return $this->section;
     }
 
+    public function is_available(&$information, $grabthelot = false, $userid = 0,
+            \course_modinfo $modinfo = null) {
+
+        if (!\mod_tapsenrol\taps::is_user_signedup($information, $this->course, $this->section, $userid)) {
+            return false;
+        }
+
+        return parent::is_available($coreinfo, $grabthelot, $userid, $modinfo);
+    }
 }
