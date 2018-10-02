@@ -69,10 +69,22 @@ function coursemetadata_definition($mform, $courseid) {
                     }
                 }
 
+                $firstfield = reset($fields);
+                require_once($CFG->dirroot.'/local/coursemetadata/field/'.$firstfield->datatype.'/field.class.php');
+
+                if (method_exists('coursemetadata_field_' . $firstfield->datatype, 'hidecategorywhenfirst')) {
+                    $hidecategory = call_user_func('coursemetadata_field_' . $firstfield->datatype . '::hidecategorywhenfirst');
+                } else {
+                    $hidecategory = false;
+                }
+
                 // Display the header and the fields.
                 if ($display) {
-                    $mform->addElement('header', 'category_'.$category->id, format_string($category->name));
-                    $mform->setExpanded('category_'.$category->id, true, true);
+                    if (!$hidecategory) {
+                        $mform->addElement('header', 'category_' . $category->id, format_string($category->name));
+                        $mform->setExpanded('category_' . $category->id, true, true);
+                    }
+
                     foreach ($fields as $field) {
                         require_once($CFG->dirroot.'/local/coursemetadata/field/'.$field->datatype.'/field.class.php');
                         $newfield = 'coursemetadata_field_'.$field->datatype;

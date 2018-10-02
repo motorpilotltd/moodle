@@ -41,6 +41,10 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
         return $data;
     }
 
+    public static function hidecategorywhenfirst() {
+        return true;
+    }
+
     /**
      * Add fields for editing a text coursemetadata field.
      *
