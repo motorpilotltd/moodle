@@ -279,12 +279,13 @@ class daterangelearning extends base {
                         $startdate = $filtervalue;
 
                         $end = isset($this->setfilters['enddate']) ? $this->setfilters['enddate'] : null ;
+                        var_dump($startdate, $end);
                         $classenddatestring = '';
                         $classcompletiondendstring = '';
                         if (!empty($end)) {
                             $enddate = $end->value[0];
-                            $classenddatestring = " AND {$classenddate} < $enddate";
-                            $classcompletiondendstring = " AND {$classcompletiondate} < $enddate";
+                            $classenddatestring = " AND {$classenddate} <= $enddate";
+                            $classcompletiondendstring = " AND {$classcompletiondate} <= $enddate";
                         }
 
                         $wherestring .= "
@@ -292,13 +293,13 @@ class daterangelearning extends base {
                                 (
                                     $classtype = 'Scheduled'
                                     AND
-                                    ($classenddate > $startdate" . $classenddatestring . ")
+                                    ($classenddate >= $startdate" . $classenddatestring . ")
                                 )
                                 OR
                                 (
                                     ($classtype = 'Self Paced' OR cpdid > '')
                                     AND
-                                    ($classcompletiondate > $startdate" . $classcompletiondendstring . ")
+                                    ($classcompletiondate >= $startdate" . $classcompletiondendstring . ")
                                 )
                             )";
                     } else {
@@ -330,10 +331,10 @@ class daterangelearning extends base {
 
                     if ($filtervalue == 'attended') {
                         $wherestring .= ' OR (
-                            lte.cpdid IS NOT NULL 
-                            AND 
-                            lte.enrolmentid IS NULL 
-                            AND 
+                            lte.cpdid IS NOT NULL
+                            AND
+                            lte.enrolmentid IS NULL
+                            AND
                             lte.bookingstatus IS NULL
                         )';
                     }
