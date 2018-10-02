@@ -322,19 +322,37 @@ class migrate {
         $advertcontext = \context_module::instance($cmid);
         $coursecontext = \context_course::instance($courseid);
 
-        $fileareas = ['blockimage', 'originalblockimage'];
+        $oldfiles = $fs->get_area_files($advertcontext->id, 'mod_arupadvert', 'blockimage');
+        foreach ($oldfiles as $oldfile) {
+            $filerecord = new \stdClass();
+            $filerecord->contextid = $coursecontext->id;
+            $filerecord->component = 'coursemetadatafield_arup';
+            $filerecord->filearea = 'blockimage';
 
-        foreach ($fileareas as $filearea) {
-            $oldfiles = $fs->get_area_files($advertcontext->id, 'mod_arupadvert', $filearea);
-            foreach ($oldfiles as $oldfile) {
+            $fs->create_file_from_storedfile($filerecord, $oldfile);
+
+            $existingsummary = $fs->get_area_files($coursecontext->id, 'course', 'overviewfiles');
+            if (empty($existingsummary)) {
                 $filerecord = new \stdClass();
                 $filerecord->contextid = $coursecontext->id;
-                $filerecord->component = 'coursemetadatafield_arup';
-                $filerecord->filearea = $filearea;
+                $filerecord->component = 'course';
+                $filerecord->filearea = 'overviewfiles';
 
                 $fs->create_file_from_storedfile($filerecord, $oldfile);
             }
         }
+
+        $oldfiles = $fs->get_area_files($advertcontext->id, 'mod_arupadvert', 'originalblockimage');
+        foreach ($oldfiles as $oldfile) {
+            $filerecord = new \stdClass();
+            $filerecord->contextid = $coursecontext->id;
+            $filerecord->component = 'coursemetadatafield_arup';
+            $filerecord->filearea = 'originalblockimage';
+
+            $fs->create_file_from_storedfile($filerecord, $oldfile);
+        }
+
+
     }
 
     private static function find_course_field_suffix($field, $value) {

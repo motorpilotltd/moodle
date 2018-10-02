@@ -285,7 +285,17 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
                 'filearea'  => 'blockimage',
                 'itemid'    => 0,
                 'filepath'  => '/');
-        $fs->create_file_from_string($filerecord, $data);
+        $processedimage = $fs->create_file_from_string($filerecord, $data);
+
+        $existingsummary = $fs->get_area_files($contextid, 'course', 'overviewfiles');
+        if (empty($existingsummary)) {
+            $filerecord = new \stdClass();
+            $filerecord->contextid = $contextid;
+            $filerecord->component = 'course';
+            $filerecord->filearea = 'overviewfiles';
+
+            $fs->create_file_from_storedfile($filerecord, $processedimage);
+        }
 
         @unlink($tempimage);
     }
