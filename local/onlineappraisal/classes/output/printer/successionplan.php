@@ -60,13 +60,13 @@ class successionplan extends base {
         // Forms and fields to print (in order).
         // Asterisks used to enable form repetition - stripped out before loading/processing!
 
-        // Americas only fields.
-        // Available if appraisee region is Americas (TAPS).
+        // Americas hidden fields.
+        // Available if appraisee region is NOT Americas (TAPS).
         $americassql = "SELECT lru.geotapsregionid
                           FROM {local_regions_use} lru
                           JOIN {local_regions_reg} lrr ON lrr.id = lru.geotapsregionid
                          WHERE lru.userid = :userid AND lrr.name = 'Americas'";
-        if ($DB->get_field_sql($americassql, array('userid' => $this->appraisal->appraisee->id))) {
+        if (!$DB->get_field_sql($americassql, array('userid' => $this->appraisal->appraisee->id))) {
             $americasfields = ['assessment', 'readiness'];
         } else {
             $americasfields = [];

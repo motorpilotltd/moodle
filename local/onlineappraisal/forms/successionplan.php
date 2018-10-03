@@ -94,8 +94,8 @@ class apform_successionplan extends moodleform {
             $mform->addElement('html', $renderer->render($alert));
         }
 
-        // Americas only fields.
-        // Available if appraisee region is Americas (TAPS).
+        // Americas hidden fields.
+        // Available if appraisee region is NOT Americas (TAPS).
         $americassql = "SELECT lru.geotapsregionid
                           FROM {local_regions_use} lru
                           JOIN {local_regions_reg} lrr ON lrr.id = lru.geotapsregionid
@@ -103,7 +103,7 @@ class apform_successionplan extends moodleform {
         $americas = $DB->get_field_sql($americassql, array('userid' => $data->appraisal->appraisee->id));
 
         foreach (['assessment', 'readiness', 'potential'] as $question) {
-            if (in_array($question, ['assessment', 'readiness']) && !$americas) {
+            if (in_array($question, ['assessment', 'readiness']) && $americas) {
                 continue;
             }
             $answers = ($question === 'potential') ? [] : ['' => ''];
