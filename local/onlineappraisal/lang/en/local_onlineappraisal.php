@@ -221,6 +221,8 @@ $string['comment'] = 'Comment';
 $string['comment:adddots'] = 'Add a comment...';
 $string['comment:addingdots'] = 'Adding...';
 $string['comment:addnewdots'] = 'Add a new comment...';
+$string['comment:sdp:locking'] = ' Succession Development Plan has been locked by {$a->relateduser}';
+$string['comment:sdp:unlocking'] = 'Succession Development Plan has been unlocked by {$a->relateduser}';
 $string['comment:showmore'] = '<i class="fa fa-plus-circle"></i> Show more';
 $string['comment:status:0_to_1'] = '{$a->status} - The appraisal has been created but not started yet.';
 $string['comment:status:1_to_2'] = '{$a->status} - The appraisal has been started by the appraisee.';
@@ -1118,8 +1120,13 @@ $string['form:successionplan:developmentareas'] = 'Areas for development';
 $string['form:successionplan:developmentareas:add'] = 'Add another area for development';
 $string['form:successionplan:developmentareas:add:noscript'] = 'Save to add another area for development input';
 $string['form:successionplan:developmentplan'] = 'Development Plan';
-$string['form:successionplan:locked'] = 'Lock Succession Development Plan (Will no longer be editable)';
-$string['form:successionplan:islocked'] = 'Succession Development Plan has been locked and can no longer be edited.';
+$string['form:successionplan:locked'] = 'Lock Succession Development Plan';
+$string['form:successionplan:islocked'] = 'Succession Development Plan has been locked and cannot be edited unless unlocked.';
+$string['form:successionplan:unlock'] = 'Unlock Succession Development Plan';
+$string['form:successionplan:confirm:unlock:title'] = 'Unlock Succession Development Plan';
+$string['form:successionplan:confirm:unlock:question'] = 'Are you sure you wish to unlock this Succession Development Plan?';
+$string['form:successionplan:confirm:unlock:yes'] = 'Yes, unlock it';
+$string['form:successionplan:confirm:unlock:no'] = 'No, leave it locked';
 
 // Events.
 $string['eventappraisaladminviewed'] = 'Appraisal admin viewed';
