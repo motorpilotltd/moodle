@@ -279,7 +279,6 @@ class daterangelearning extends base {
                         $startdate = $filtervalue;
 
                         $end = isset($this->setfilters['enddate']) ? $this->setfilters['enddate'] : null ;
-                        var_dump($startdate, $end);
                         $classenddatestring = '';
                         $classcompletiondendstring = '';
                         if (!empty($end)) {
