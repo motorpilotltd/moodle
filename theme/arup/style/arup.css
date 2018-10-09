@@ -22405,7 +22405,7 @@ span[data-flexitour="container"][x-placement="right-start"] div[data-role="arrow
   padding-left: 24px;
 }
 .course-content .section .activity.modtype_label.label .mod-indent-outer {
-  display: table;
+  display: block;
 }
 .course-content .single-section {
   margin: 0;
