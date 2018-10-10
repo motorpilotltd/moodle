@@ -2215,16 +2215,27 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
      *      in which case they are all required.
      * @param integer $excludeid Exclude this category and its children from the lists built.
      * @param string $separator string to use as a separator between parent and child category. Default ' / '
+     * BEGIN CORE MOD
+     * @param bool $showhidden Force the showing of hidden categories.
+     * END CORE MOD
      * @return array of strings
      */
-    public static function make_categories_list($requiredcapability = '', $excludeid = 0, $separator = ' / ') {
+/* BEGIN CORE MOD */
+    public static function make_categories_list($requiredcapability = '', $excludeid = 0, $separator = ' / ', $showhidden = false) {
+/* END CORE MOD */
         global $DB;
         $coursecatcache = cache::make('core', 'coursecat');
 
         // Check if we cached the complete list of user-accessible category names ($baselist) or list of ids
         // with requried cap ($thislist).
         $currentlang = current_language();
-        $basecachekey = $currentlang . '_catlist';
+/* BEGIN CORE MOD */
+        if ($showhidden === true) {
+            $basecachekey =  $currentlang . '_catlist_full';
+        } else {
+            $basecachekey = $currentlang . '_catlist';
+        }
+/* END CORE MOD */
         $baselist = $coursecatcache->get($basecachekey);
         $thislist = false;
         $thiscachekey = null;
@@ -2253,7 +2264,9 @@ class coursecat implements renderable, cacheable_object, IteratorAggregate {
                 if (!$record->parent || isset($baselist[$record->parent])) {
                     context_helper::preload_from_record($record);
                     $context = context_coursecat::instance($record->id);
-                    if (!$record->visible && !has_capability('moodle/category:viewhiddencategories', $context)) {
+/* BEGIN CORE MOD */
+                    if (!$record->visible && !has_capability('moodle/category:viewhiddencategories', $context) && $showhidden !== true) {
+/* END CORE MOD */
                         // No cap to view category, added to neither $baselist nor $thislist.
                         continue;
                     }
