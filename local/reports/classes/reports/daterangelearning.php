@@ -26,7 +26,6 @@ namespace local_reports\reports;
 
 defined('MOODLE_INTERNAL') || die();
 
-use gradereport_singleview\local\ui\empty_element;
 use stdClass;
 use moodle_url;
 use renderer_base;
