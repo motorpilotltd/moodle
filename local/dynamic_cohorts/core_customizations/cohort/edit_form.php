@@ -23,6 +23,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot . '/lib/formslib.php');
 
 class cohort_edit_form extends moodleform

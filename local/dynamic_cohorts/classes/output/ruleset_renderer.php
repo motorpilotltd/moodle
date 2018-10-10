@@ -1,6 +1,8 @@
 <?php
 namespace local_dynamic_cohorts\output;
 
+defined('MOODLE_INTERNAL') || die();
+
 use local_dynamic_cohorts\dynamic_cohorts;
 
 /**
