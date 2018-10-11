@@ -42,7 +42,7 @@ $PAGE->requires->js_call_amd('mod_tapsenrol/enhance', 'initialise');
 
 echo $OUTPUT->header();
 
-echo html_writer::tag('h2', get_string('updatecompletionheader', 'tapsenrol'));
+echo html_writer::tag('h2', get_string('updatecompletion', 'tapsenrol'));
 
 if (isset($_POST['submit'])) {
     require_sesskey();

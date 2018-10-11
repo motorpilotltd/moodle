@@ -16,6 +16,7 @@
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot.'/mod/tapsenrol/classes/tapsenrol.php');
+require_once($CFG->dirroot.'/local/regions/lib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // Course Module ID.
 $t = optional_param('t',  0, PARAM_INT);  // TAPS Enrolment Activity ID.

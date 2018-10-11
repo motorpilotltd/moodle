@@ -18,6 +18,8 @@ namespace mod_tapsenrol;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->libdir . '/formslib.php');
+
 class class_filter_form extends \moodleform {
     public function definition() {
         $mform =& $this->_form;
