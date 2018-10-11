@@ -185,6 +185,7 @@ $string['enrolplugins:countmismatch'] = 'The number of active enrolment plugins 
 $string['enrolplugins:incorrectorder'] = 'The active enrolment plugins do not match the requirement.';
 $string['enrolplugins:incorrectsettings'] = 'The active enrolment plugin settings do not match the requirement.';
 $string['enrolplugins:requirements'] = "Active enrolment plugins, in this order, should be 'manual', 'self' (with auto enrolment off) and 'guest'.";
+$string['enroltoaccesscourse'] = 'Sign up to a class in order to access these materials';
 $string['error:invalidclass'] = 'Invalid class selected, please try again.';
 $string['error:invalidenrolment'] = 'Invalid enrolment selected, please try again.';
 $string['eventclasscreated'] = 'Class Created';

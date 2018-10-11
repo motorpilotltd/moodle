@@ -887,8 +887,36 @@ class taps {
         return $seatsremaining;
     }
 
-    public static function is_user_signedup(&$information, $course, $section, $userid) {
-        $information = 'NO';
+    /**
+     * @param string $information
+     * @param \course_modinfo $modinfo
+     * @return bool
+     */
+    public static function is_user_signedup(&$information, $modinfo, $userid) {
+        global $USER;
+
+        if ($userid = $USER->id) {
+            $user = $USER;
+        } else {
+            $user = \core_user::get_user($userid);
+        }
+
+        $tapsenrolinstances = $modinfo->get_instances_of('tapsenrol');
+        foreach ($tapsenrolinstances as $tapsenrolinstance) {
+            $taps = new \mod_tapsenrol\taps();
+
+            $enrolments = $taps->get_enroled_classes($user->idnumber, $modinfo->courseid, true, false);
+
+            foreach($enrolments as $enrolment) {
+                $statusstype = $taps->get_status_type($enrolment->bookingstatus);
+
+                if ($statusstype == 'placed' || $statusstype == 'attended') {
+                    return true;
+                }
+            }
+        }
+
+        $information = get_string('enroltoaccesscourse', 'tapsenrol');
         return false;
     }
 }

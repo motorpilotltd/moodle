@@ -82,10 +82,13 @@ class info_section extends info {
     public function is_available(&$information, $grabthelot = false, $userid = 0,
             \course_modinfo $modinfo = null) {
 
-        if (!\mod_tapsenrol\taps::is_user_signedup($information, $this->course, $this->section, $userid)) {
+        // CORE HACK:
+        // If the user is not fully signed up to a tapsenrol activity then they are not allowed to see
+        // anything except section 0.
+        if ($this->section->section !== 0 && !\mod_tapsenrol\taps::is_user_signedup($information, $modinfo, $userid)) {
             return false;
         }
 
-        return parent::is_available($coreinfo, $grabthelot, $userid, $modinfo);
+        return parent::is_available($information, $grabthelot, $userid, $modinfo);
     }
 }
