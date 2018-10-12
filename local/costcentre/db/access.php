@@ -34,4 +34,12 @@ $capabilities = array(
         )
     ),
 
+    'local/costcentre:administer_hr' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        )
+    ),
+
 );

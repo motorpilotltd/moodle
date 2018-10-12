@@ -2,6 +2,7 @@
 
 namespace local_custom_certification;
 
+defined('MOODLE_INTERNAL') || die();
 
 use enrol_certification\certif;
 

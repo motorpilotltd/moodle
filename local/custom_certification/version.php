@@ -17,6 +17,7 @@
 /**
  * @author Artur Rietz <artur.rietz@webanywhere.co.uk>
  */
+defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2018022802;
 $plugin->release   = '1.8.5.1';
