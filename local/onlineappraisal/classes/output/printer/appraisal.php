@@ -40,6 +40,8 @@ class appraisal extends base {
         $this->get_forms();
         // Get check-ins.
         $this->get_checkins();
+        // Get activity logs
+        $this->get_activity_logs();
         // Get learning history.
         $this->get_learning_history();
     }
@@ -197,6 +199,41 @@ class appraisal extends base {
         return $return;
     }
 
+    /**
+     * Inject comments/activity logs into data object.
+     *
+     * @global \moodle_database $DB
+     */
+    private function get_activity_logs() {
+        global $DB;
+
+        // Owner caching.
+        $owners = array();
+
+        $this->data->activitylogs = array();
+
+        $records = $DB->get_records('local_appraisal_comment', array('appraisalid' => $this->appraisal->id), 'created_date ASC');
+
+        $count = 0;
+        foreach ($records as $record) {
+            $count++;
+            if (!isset($owners[$record->ownerid])) {
+                $owners[$record->ownerid] = $DB->get_record('user', array('id' => $record->ownerid));
+            }
+
+            $comment = new stdClass();
+            $comment->first = ($count == 0);
+            $comment->last = ($count == count($records));
+            $comment->name = ($owners[$record->ownerid])? fullname($owners[$record->ownerid]) : get_string('comment:system', 'local_onlineappraisal');
+            $comment->role = !empty($record->user_type)? get_string($record->user_type, 'local_onlineappraisal'): '';
+            $comment->comment = format_text($record->comment, FORMAT_PLAIN, array('filter' => 'false', 'nocache' => true));
+            $comment->date = userdate($record->created_date, get_string('strftimedate'));
+
+            $this->data->activitylogs[] = clone($comment);
+        }
+
+        $this->data->hasactivitylog = (bool) count($this->data->activitylogs);
+    }
     /**
      * Inject check-in info into data object.
      *
