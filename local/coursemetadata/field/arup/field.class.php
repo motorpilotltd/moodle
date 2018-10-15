@@ -106,8 +106,10 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
             $mform->setExpanded('courseadminsettings', true, true);
 
             $mform->addElement('checkbox', 'arupmeta_display', get_string('display', 'coursemetadatafield_arup'));
+            $mform->setDefault('arupmeta_display', true);
 
             $mform->addElement('checkbox', 'arupmeta_showheadings', get_string('showheadings', 'coursemetadatafield_arup'));
+            $mform->setDefault('arupmeta_showheadings', true);
 
             $mform->addElement('text', 'arupmeta_altword', get_string('altword', 'coursemetadatafield_arup', $altword),
                     ['maxlength' => 254]);
