@@ -50,6 +50,7 @@ $string['months'] = 'Months';
 $string['years'] = 'Years';
 $string['oneinstanceonly'] = 'Only one instance of the arup course meta data field is allowed';
 
+$string['block:by'] = 'By';
 $string['block:category'] = 'Category';
 $string['block:code'] = 'Course code';
 $string['block:level'] = 'Level';

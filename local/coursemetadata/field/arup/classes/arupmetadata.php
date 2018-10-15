@@ -60,53 +60,42 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
     public $durationunits;
 
     public function export_for_template(\renderer_base $output) {
-        global $DB;
 
-        $data = (array) $this;
-        $data = (object) $data;
+        global $CFG, $OUTPUT;
 
-        $data->courseimage = $this->get_image_url();
+        $data = new \stdClass();
 
-        $data->description = format_text($this->description, $this->descriptionformat);
-        $data->objectives = format_text($this->objectives, $this->objectivesformat);
-        $data->audience = format_text($this->audience, $this->audienceformat);
-        $data->keywords = format_text($this->keywords, $this->keywordsformat);
-        $data->accreditationdate = userdate($this->accreditationdate);
-        $data->timecreated = userdate($this->timecreated);
-        $data->timemodified = userdate($this->timemodified);
+        $data->showheadings = $this->showheadings;
 
         if ($this->accredited) {
-            $data->logo = $output->image_url('icon', 'coursemetadatafield_arup');
+            $logourl = $OUTPUT->image_url('logo', 'coursemetadatafield_arup');
         } else {
-            $data->logo = '';
+            $logourl = '';
         }
+        $data->name = $this->get_course()->fullname;
+        $data->logo = $logourl;
 
         $sections = array('description', 'objectives', 'audience');
         $data->hassections = false;
-        $data->sections = [];
-
         foreach ($sections as $section) {
             $sec = new \stdClass();
-            $content = $data->{$section};
-
+            $content = $this->{$section};
             if ($content) {
                 $altword = empty($this->altword) ? \core_text::strtolower(get_string('course')) : $this->altword;
                 $sec->heading = get_string($section, 'coursemetadatafield_arup', $altword);
-                $sec->text = $content;
+                $sec->text = format_text($content, $this->{$section . 'format'});
                 $data->sections[] = $sec;
                 $data->hassections = true;
             }
         }
 
         $elements = [
-                'category' => $this->get_categoryname(),
-                'level' => $this->get_level(),
-                'code'     => format_text($this->get_course()->summary, $this->get_course()->summaryformat),
-                'region' => $this->get_region(),
-                'keywords' => $data->keywords
+                'by'       => $this->get_categoryname(),
+                'level'    => $this->get_level(),
+                'code'     => $this->get_course()->shortname,
+                'region'   => $this->get_region(),
+                'keywords' => format_text($this->keywords, $this->keywordsformat)
         ];
-
-
         foreach ($elements as $element => $value) {
             $be = new \stdClass();
             $be->heading = get_string("block:{$element}", 'coursemetadatafield_arup');
@@ -116,10 +105,18 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
             }
         }
 
+        $data->courseimage = $this->get_image_url();
+
+        $data->canviewshare = has_capability('mod/arupadvert:viewsharelink', \context_course::instance($this->get_course()->id));
+        $data->description = json_encode(format_string($this->get_course()->summary));
+        $data->ogsharelink =
+                urlencode(new \moodle_url("/mod/arupadvert/redirect.php", ['shortname' => $this->get_course()->shortname]));
+
         return $data;
     }
 
     private $courseobject = null;
+
     public function get_course() {
         if (!isset($this->courseobject)) {
             $this->courseobject = get_course($this->course);
@@ -158,9 +155,9 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
     }
 
     public function get_image_url() {
-        $context = \context_course::instance($this->course);
+        $context = \context_course::instance($this->get_course()->id);
         $fs = get_file_storage();
-        $files = $fs->get_area_files($context->id, 'coursemetadatafield_arup', 'blockimage');
+        $files = $fs->get_area_files($context->id, 'coursemetadatafield_arup', 'blockimage', 0);
 
         if ($files) {
             $file = array_pop($files);
@@ -201,7 +198,7 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
     public function get_level() {
         global $CFG;
 
-        require_once($CFG->dirroot.'/local/coursemetadata/lib.php');
+        require_once($CFG->dirroot . '/local/coursemetadata/lib.php');
         $coursemetadata = coursemetadata_course_record($this->course);
         if (is_object($coursemetadata) && isset($coursemetadata->level) && $coursemetadata->level) {
             return preg_replace('/,(\S)/', ', $1', $coursemetadata->level);
