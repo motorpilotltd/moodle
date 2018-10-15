@@ -28,7 +28,7 @@ class filter_arupmetadata extends moodle_text_filter {
     function filter($text, array $options = array()) {
         global $PAGE;
 
-        if (strpos($text, '{{arupmetadata}}') === false) {
+        if (strpos($text, '[[arupmetadata]]') === false) {
             return $text;
         }
 
@@ -41,7 +41,7 @@ class filter_arupmetadata extends moodle_text_filter {
             $advert = $renderer->info_view($arupmetadata);
         }
 
-        return str_replace('{{arupmetadata}}', $advert, $text);
+        return str_replace('[[arupmetadata]]', $advert, $text);
     }
 }
 

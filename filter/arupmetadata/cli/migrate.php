@@ -59,6 +59,6 @@ if (!$options['domigration']) {
     exit(0);
 }
 
-$sql = "update mdl_course_sections set summary = concat('{{arupmetadata}}', summary) where section = 0";
+$sql = "update mdl_course_sections set summary = concat('[[arupmetadata]]', summary) where section = 0";
 $DB->execute($sql);
 purge_all_caches();
