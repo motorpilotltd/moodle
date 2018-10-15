@@ -15,19 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * coursemetadatafield_arup field.
+ * This file definies capabilities needed by coursemetadatafield_arup.
  *
  * @package    coursemetadatafield_arup
- * @copyright  Andrew Hancox <andrewdchancox@googlemail.com>
+ * @copyright  2016 Motorpilot Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2015111606;
-$plugin->requires  = 2015111600; // Moodle 3.0.
-$plugin->component = 'coursemetadatafield_arup';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.0.0 (Build: 2015111600)';
-
-$plugin->dependencies = array();
+$capabilities = array(
+    'coursemetadatafield/arup:viewsharelink' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' =>  'mod/arupadvert:viewsharelink'
+    ),
+);

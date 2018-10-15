@@ -107,7 +107,7 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
 
         $data->courseimage = $this->get_image_url();
 
-        $data->canviewshare = has_capability('mod/arupadvert:viewsharelink', \context_course::instance($this->get_course()->id));
+        $data->canviewshare = has_capability('coursemetadatafield/arup:viewsharelink', \context_course::instance($this->get_course()->id));
         $data->description = json_encode(format_string($this->get_course()->summary));
         $data->ogsharelink =
                 urlencode(new \moodle_url("/mod/arupadvert/redirect.php", ['shortname' => $this->get_course()->shortname]));
