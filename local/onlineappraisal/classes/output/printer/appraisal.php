@@ -40,10 +40,10 @@ class appraisal extends base {
         $this->get_forms();
         // Get check-ins.
         $this->get_checkins();
-        // Get activity logs
-        $this->get_activity_logs();
         // Get learning history.
         $this->get_learning_history();
+        // Get activity logs
+        $this->get_activity_logs();
     }
 
     /**
@@ -234,6 +234,7 @@ class appraisal extends base {
 
         $this->data->hasactivitylog = (bool) count($this->data->activitylogs);
     }
+
     /**
      * Inject check-in info into data object.
      *
