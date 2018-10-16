@@ -193,7 +193,8 @@ class index {
         // Can use is_business_adminstrator() function from here.
         $navbarmenu = new navbarmenu();
         $this->is['businessadmin'] = $navbarmenu->is_business_administrator($this->user->id);
-        $this->is['costcentreadmin'] = has_capability('local/costcentre:administer', \context_system::instance()) || costcentre::is_user($this->user->id, costcentre::BUSINESS_ADMINISTRATOR);
+        $this->is['costcentreadmin'] = has_capability('local/costcentre:administer', \context_system::instance()) || costcentre::is_user($this->user->id, costcentre::BUSINESS_ADMINISTRATOR)
+                || (has_capability('local/costcentre:administer_hr', \context_system::instance()) && costcentre::is_user($this->user->id, [costcentre::HR_LEADER, costcentre::HR_ADMIN]));
 
     }
 
