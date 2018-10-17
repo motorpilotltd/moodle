@@ -46,10 +46,11 @@ class hrleader extends base {
     public function export_for_template(renderer_base $output) {
         parent::export_for_template($output);
 
-        $this->set_type('hrleader');
         $this->data->heading = get_string('index:hrleader', 'local_onlineappraisal');
         $this->data->toptext = get_string('index:toptext:hrleader', 'local_onlineappraisal');
-        $this->get_appraisals();
+        if ($this->index->groupid || $this->searching) {
+            $this->get_appraisals();
+        }
 
         return $this->data;
     }

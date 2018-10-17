@@ -3,12 +3,23 @@
     {{toptext}}
 </div>
 {{^isappraisee}}
-<div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-4 col-sm-offset-6 col-md-offset-8">
-        <input type="text" placeholder="{{#str}}index:searchtable, local_onlineappraisal{{/str}}" id="oa-table-search" class="form-control" />
-    </div>
-</div>
+<form id="oa-index-search" class="hidden form-horizontal m-b-10">
+    <input type="hidden" name="page" value="{{page}}" />
+    <label class="sr-only" for="oa-filter-select">{{#ishrleader}}{{#str}}index:search:hrleader, local_onlineappraisal{{/str}}{{/ishrleader}}{{^ishrleader}}{{#str}}index:search, local_onlineappraisal{{/str}}{{/ishrleader}}</label>
+    <select name="appraisee" id="oa-index-search-select" class="form-control" autocomplete="off" data-placeholder="{{#ishrleader}}{{#str}}index:search:hrleader, local_onlineappraisal{{/str}}{{/ishrleader}}{{^ishrleader}}{{#str}}index:search, local_onlineappraisal{{/str}}{{/ishrleader}}">
+        {{{searchoption}}}
+    </select>
+    <button type="submit" value="1" name="search" class="btn btn-primary">{{#str}}form:go, local_onlineappraisal{{/str}}</button>
+    <button type="submit" value="0" name="search" class="btn btn-default">{{#str}}form:clear, local_onlineappraisal{{/str}}</button>
+</form>
 {{/isappraisee}}
+{{^showtables}}
+<div class="alert alert-warning" role="alert">
+    <i class="fa fa-exclamation-triangle"></i>
+    {{#str}}index:notables, local_onlineappraisal{{/str}}
+</div>
+{{/showtables}}
+{{#showtables}}
 <h3>{{#str}}appraisals:current, local_onlineappraisal{{/str}}</h3>
 {{#current}}
     {{^isappraisee}}
@@ -38,7 +49,17 @@
 {{^current}}
 <div class="alert alert-warning" role="alert">
     <i class="fa fa-exclamation-triangle"></i>
-    {{#str}}appraisals:nocurrent, local_onlineappraisal{{/str}}
+    {{#isappraisee}}
+        {{#str}}appraisals:nocurrent:you, local_onlineappraisal{{/str}}
+    {{/isappraisee}}
+    {{^isappraisee}}
+        {{#issearch}}
+            {{#str}}appraisals:nocurrent:search, local_onlineappraisal{{/str}}
+        {{/issearch}}
+        {{^issearch}}
+            {{#str}}appraisals:nocurrent, local_onlineappraisal{{/str}}
+        {{/issearch}}
+    {{/isappraisee}}
 </div>
 {{/current}}
 
@@ -55,7 +76,20 @@
 {{^archived}}
 <div class="alert alert-warning" role="alert">
     <i class="fa fa-exclamation-triangle"></i>
-    {{#cycleselect}}{{#str}}appraisals:noarchived:cycle, local_onlineappraisal{{/str}}{{/cycleselect}}
-    {{^cycleselect}}{{#str}}appraisals:noarchived, local_onlineappraisal{{/str}}{{/cycleselect}}
+    {{#isappraisee}}
+        {{#str}}appraisals:noarchived:you, local_onlineappraisal{{/str}}
+    {{/isappraisee}}
+    {{^isappraisee}}
+        {{#issearch}}
+            {{#str}}appraisals:noarchived:search, local_onlineappraisal{{/str}}
+        {{/issearch}}
+        {{#cycleselect}}
+            {{#str}}appraisals:noarchived:cycle, local_onlineappraisal{{/str}}
+        {{/cycleselect}}
+        {{^issearch}}{{^cycleselect}}
+            {{#str}}appraisals:noarchived, local_onlineappraisal{{/str}}
+        {{/cycleselect}}{{/issearch}}
+    {{/isappraisee}}
 </div>
 {{/archived}}
+{{/showtables}}

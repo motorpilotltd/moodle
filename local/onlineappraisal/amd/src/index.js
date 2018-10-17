@@ -22,9 +22,19 @@
  * @since      3.0
  */
 
-define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlineappraisal/datepicker',
-        'local_onlineappraisal/debounce'],
-       function($, cfg, str, notification, dp, debounce) {
+ // Load vendors js via cdn with fall back
+require.config({
+    enforceDefine: false,
+    paths: {
+        'select2_4_0_5': [
+            'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min',
+            M.cfg.wwwroot + '/pluginfile.php/' + M.cfg.contextid + '/local_onlineappraisal/vendor/select2_4.0.5.min'
+        ]
+    }
+});
+
+define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlineappraisal/datepicker', 'select2_4_0_5'],
+       function($, cfg, str, notification, dp) {
 
     return /** @alias module:local_onlineappraisal/index */ {
         // Public variables and functions.
@@ -69,19 +79,6 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                     $('#oa-current-table tbody tr.oa-empty-filter').hide();
                 }
             });
-            // Search filter, across both tables.
-            var rows = $('#oa-current-table tbody tr:not(".oa-empty-filter"), #oa-archived-table tbody tr:not(".oa-empty-filter")');
-            $('#oa-table-search').keyup(debounce(function() {
-                var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
-
-                rows.show().filter(function() {
-                    // First child to only search appraisee name.
-                    var text = $(this).children(':first').text().replace(/\s+/g, ' ').toLowerCase();
-                    /*jshint bitwise: false*/
-                    return !~text.indexOf(val);
-                    /*jshint bitwise: true*/
-                }).hide();
-            }, 300));
 
             // Marking F2F as complete.
             $('i.oa-togglef2f').css('cursor', 'pointer');
@@ -475,6 +472,39 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                 tr.slideUp(function(){
                     $(this).remove();
                 });
+            });
+
+            // Select2 initialisation.
+            var searchform = $('#oa-index-search');
+            searchform.removeClass('hidden');
+            $('select#oa-index-search-select').select2({
+                minimumInputLength: 2,
+                width: '50%',
+                ajax: {
+                    url: cfg.wwwroot + '/local/onlineappraisal/ajax.php?sesskey=' + cfg.sesskey,
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            c: 'index',
+                            a: 'search_index',
+                            page: searchform.find('input[name="page"]').val(),
+                            q: params.term,
+                            searchpage: params.page
+                        };
+                    },
+                    processResults: function(data, params) {
+                        params.page = params.page || 1;
+                        var results = data.data;
+                        return {
+                            results: results.items,
+                            pagination: {
+                                more: (params.page * 25) < results.totalcount
+                            }
+                        };
+                    },
+                    cache: true
+                }
             });
         }
     };

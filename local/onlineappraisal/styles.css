@@ -789,6 +789,9 @@ fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.focus {
   display: none;
   margin: 0 0 10px 0;
 }
+.path-local-onlineappraisal form.form-inline button {
+  margin-bottom: 5px;
+}
 .path-local-onlineappraisal .block_local_onlineappraisal ul.nav-stacked {
   margin: 0;
 }

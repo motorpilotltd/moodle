@@ -361,7 +361,7 @@ class index {
         }
 
         // Get requested groupid.
-        $this->groupid = optional_param('groupid', null, PARAM_ALPHANUMEXT);
+        $this->groupid = optional_param('groupid', '', PARAM_ALPHANUMEXT);
 
         // Prepare form.
         $customdata = array(
@@ -407,7 +407,7 @@ class index {
 
         $groups = $DB->get_records_sql($sql, $params);
 
-        $options = array('' => get_string('form:all', 'local_onlineappraisal'));
+        $options = array('' => get_string('form:choosedots', 'local_onlineappraisal'));
         foreach($groups as $group) {
             // Find the group name.
             $sql = "
@@ -455,10 +455,33 @@ class index {
      * @param string $state
      * @return array appraisal records
      */
-    public function get_appraisals($type = 'appraisee', $state = 'current', $leavers = true, $cycle = null) {
+    public function get_appraisals($type = 'appraisee', $state = 'current', $leavers = true, $cycle = null, $appraiseeid = null) {
         global $DB, $USER;
 
-        $params = array();
+        // Initial set up.
+        $params = [];
+        $leaversfilter = '';
+        $appraiseefilter = '';
+        $cyclejoin = '';
+        $cyclefilter = '';
+
+        if (!$appraiseeid) {
+            // Only applicable if not searching for a specific aprpaisee.
+            if (!$leavers) {
+                $leaversfilter = 'AND u.suspended = 0';
+            }
+
+            if ($cycle && $state === 'archived') {
+                $cyclejoin = 'JOIN {local_appraisal_cohort_apps} laca ON laca.appraisalid = aa.id';
+                $cyclefilter = 'AND laca.cohortid = :cycle';
+                $params['cycle'] = $cycle;
+            }
+        } else {
+            $appraiseefilter = 'AND aa.appraisee_userid = :appraiseeid';
+            $params['appraiseeid'] = $appraiseeid;
+        }
+
+        // Always present current/archived separately.
         switch ($state) {
             case 'current' :
                 $params['archived'] = 0;
@@ -468,7 +491,7 @@ class index {
                 break;
             default :
                 // Invalid state, return empty array.
-                return array();
+                return [];
         }
 
         switch ($type) {
@@ -512,20 +535,7 @@ class index {
                 break;
             default :
                 // Invalid type, return empty array.
-                return array();
-        }
-
-        $leaversfilter = '';
-        if (!$leavers) {
-            $leaversfilter = 'AND u.suspended = 0';
-        }
-
-        $cyclejoin = '';
-        $cyclefilter = '';
-        if ($cycle && $state === 'archived') {
-            $cyclejoin = 'JOIN {local_appraisal_cohort_apps} laca ON laca.appraisalid = aa.id';
-            $cyclefilter = 'AND laca.cohortid = :cycle';
-            $params['cycle'] = $cycle;
+                return [];
         }
 
         $appraisee = $DB->sql_concat_join("' '", array('u.firstname', 'u.lastname'));
@@ -561,8 +571,9 @@ class index {
                 {local_costcentre} c
                 ON c.costcentre = u.icq
             WHERE
-                aa.archived = :archived
-                AND aa.deleted = 0
+                aa.deleted = 0
+                AND aa.archived = :archived
+                {$appraiseefilter}
                 {$typefilter}
                 {$leaversfilter}
                 {$cyclefilter}
@@ -968,8 +979,94 @@ class index {
             $return->message = get_string("error:togglesuccessionplan:has{$not}", 'local_onlineappraisal');
         }
 
+        return $return;
+    }
 
+    /**
+     * Search for appraisees in dashboard tables.
+     *
+     * @global \moodle_database $DB
+     * @global stdClass $USER
+     * @return stdClass result
+     * @throws moodle_exception
+     */
+    public static function search_index() {
+        global $DB, $USER;
 
+        $searchterm = optional_param('q', '', PARAM_TEXT);
+        $searchpage = optional_param('searchpage', 1, PARAM_INT);
+
+        $page = optional_param('page', '', PARAM_ALPHA);
+
+        $return = new stdClass();
+        $return->success = false;
+        $return->message = '';
+        $return->data = ['totalcount' => 0, 'items' => []];
+
+        $params = [];
+        $pagefilter = '';
+        switch ($page) {
+            case 'signoff' :
+                $pagefilter = "AND aa.{$page}_userid = :userid";
+                $params['userid'] = $USER->id;
+                break;
+            case 'appraiser' :
+                $pagefilter = "AND (aa.{$page}_userid = :userid OR aa.appraisee_userid IN (SELECT appraisee_userid FROM {local_appraisal_appraisal} WHERE {$page}_userid = :userid2 AND archived = 0 AND deleted = 0))";
+                $params['userid'] = $USER->id;
+                $params['userid2'] = $USER->id;
+                break;
+            case 'groupleader' :
+                $pagefilter = "AND ((aa.{$page}_userid = :userid AND c.groupleaderactive = :groupleaderactive)";
+                $params['userid'] = $USER->id;
+                $params['groupleaderactive'] = 1;
+                $groups = costcentre::get_user_cost_centres($USER->id, costcentre::GROUP_LEADER);
+                if (!empty($groups)) {
+                    list($insql, $inparams) = $DB->get_in_or_equal(array_keys($groups), SQL_PARAMS_NAMED);
+                    $params = $params + $inparams;
+                    $pagefilter .= " OR u.icq {$insql}";
+                }
+                $pagefilter .= ')';
+                break;
+            case 'hrleader' :
+                $groups = costcentre::get_user_cost_centres($USER->id, array(costcentre::HR_LEADER, costcentre::HR_ADMIN));
+                if (empty($groups)) {
+                    return $return;
+                }
+                list($insql, $inparams) = $DB->get_in_or_equal(array_keys($groups), SQL_PARAMS_NAMED);
+                $params = $params + $inparams;
+                $pagefilter = "AND u.icq {$insql}";
+                break;
+            default :
+                // Invalid type, return empty array.
+                return $return;
+        }
+
+        $usertextconcat = $DB->sql_concat('u.firstname', "' '", 'u.lastname', "' ('", 'u.email', "')'");
+        $searchconcat = $DB->sql_concat_join("' '", ['u.firstname', 'u.lastname', 'u.email', 'u.idnumber']);
+        $searchlike = $DB->sql_like($searchconcat, ":searchterm", false);
+        $params['searchterm'] = "%$searchterm%";
+        $where = "aa.deleted = 0 AND {$searchlike} {$pagefilter}";
+
+        $selectcount = "SELECT COUNT(DISTINCT u.id) ";
+        $select = "SELECT DISTINCT u.id, {$usertextconcat}, u.lastname, u.firstname ";
+        $orderbycount = '';
+        $orderby = ' ORDER BY u.lastname ASC, u.firstname ASC';
+        $sql = "FROM {user} u
+                JOIN {local_appraisal_appraisal} aa ON aa.appraisee_userid = u.id
+           LEFT JOIN {local_costcentre} c ON c.costcentre = u.icq
+               WHERE {$where}";
+
+        $totalcount = $DB->count_records_sql($selectcount.$sql.$orderbycount, $params);
+        $userlist = $DB->get_records_sql_menu(
+                $select.$sql.$orderby,
+                $params,
+                ($searchpage - 1) * 25,
+                $searchpage * 25);
+
+        foreach ($userlist as $uid => $usertext) {
+            $return->data['items'][] = array('text' => $usertext, 'id' => $uid);
+        }
+        $return->success = true;
         return $return;
     }
 }

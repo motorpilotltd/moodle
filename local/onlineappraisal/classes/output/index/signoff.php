@@ -45,11 +45,11 @@ class signoff extends base {
      */
     public function export_for_template(renderer_base $output) {
         parent::export_for_template($output);
-        
+
         $this->data->heading = get_string('index:signoff', 'local_onlineappraisal');
         $this->data->toptext = get_string('index:toptext:signoff', 'local_onlineappraisal');
         $this->get_appraisals();
-
+var_dump($this->data);
         return $this->data;
     }
 }
