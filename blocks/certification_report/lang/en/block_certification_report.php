@@ -91,6 +91,7 @@ $string['choose_report_title_desc'] = 'Enter the title of the featured certifica
 $string['staffid'] = 'Staff ID';
 $string['grade'] = 'Grade';
 $string['employmentcategory'] = 'Employment Category';
+$string['discipline'] = 'Discipline';
 $string['groupname'] = 'Group Name';
 $string['locationname'] = 'Location Name';
 $string['employmentcategories'] = 'Employment Categories';
@@ -99,11 +100,16 @@ $string['locationnames'] = 'Location Names';
 $string['grades'] = 'Grades';
 $string['email'] = 'Email';
 
+$string['progress'] = 'Progress';
+$string['completiondate'] = 'Completion date';
+
 $string['resetcertification'] = 'Reset Certification';
 
 $string['nodata'] = 'There are no certification assignments for the filter options selected.';
 
 $string['modal:close'] = 'Close';
 
+// Date format
+$string['strftimedatefull'] = '%d-%b-%Y';
 // Tasks.
 $string['taskexportreports'] = 'Export reports';
