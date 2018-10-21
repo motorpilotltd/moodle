@@ -15,14 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_lynda
- * @copyright  2017 Andrew Hancox <andrewdchancox@googlemail.com> On Behalf of Arup
+ * Disable the assignment module for new installs
+ *
+ * @package mod_assignment
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016080520;
-$plugin->requires  = 2015111600; // Moodle 3.0.
-$plugin->component = 'local_lynda';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.1 (Build: {$plugin->version})";
+
+/**
+ * Code run after the mod_assignment module database tables have been created.
+ * Disables this plugin for new installs
+ * @return bool
+ */
+function xmldb_local_lynda_install() {
+    global $CFG;
+
+    require_once("$CFG->dirroot/local/lynda/db/upgradelib.php");
+    local_lynda_install_fulltextindexes();
+
+    return true;
+}
+
+

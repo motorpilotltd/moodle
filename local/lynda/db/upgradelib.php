@@ -15,14 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    local_lynda
- * @copyright  2017 Andrew Hancox <andrewdchancox@googlemail.com> On Behalf of Arup
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Assignment upgrade script.
+ *
+ * @package   mod_assignment
+ * @copyright 2013 Damyon Wiese
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016080520;
-$plugin->requires  = 2015111600; // Moodle 3.0.
-$plugin->component = 'local_lynda';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.1 (Build: {$plugin->version})";
+/**
+ * Inform admins about assignments that still need upgrading.
+ */
+function local_lynda_install_fulltextindexes() {
+    global $DB;
+
+    $dbfamily = $DB->get_dbfamily();
+    if ($dbfamily !== 'mssql') {
+        return;
+    }
+
+    $DB->execute("IF NOT EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE [name] = 'moodlecoursesearch') CREATE FULLTEXT CATALOG moodlecoursesearch");
+    $DB->execute('CREATE FULLTEXT INDEX ON {local_lynda_course} (title) KEY INDEX {localyndcour_id_pk} ON moodlecoursesearch');
+}
