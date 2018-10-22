@@ -198,6 +198,10 @@ abstract class base implements renderable, templatable {
                 'leavers' => !$this->leavers,
                 'cycle' => $this->cycle,
             ];
+            if ($this->type === 'hrleader') {
+                // Need to maintain groupid.
+                $params['groupid'] = $this->index->groupid;
+            }
             $this->data->toggleleaversurl = (new moodle_url('', $params))->out(false);
             $leaversstr = $this->leavers ? 'hide' : 'show';
             $this->data->toggleleaversstr = get_string("index:toggleleavers:{$leaversstr}", 'local_onlineappraisal');
