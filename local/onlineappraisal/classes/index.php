@@ -360,12 +360,20 @@ class index {
             return '';
         }
 
-        // Get requested groupid.
+        // Pre-load groups.
+        $groups = $this->get_groups();
+
+        // Get requested groupid (or force if only one group).
         $this->groupid = optional_param('groupid', '', PARAM_ALPHANUMEXT);
+        if (!$this->groupid && count($groups) === 2) {
+            end($groups);
+            $this->groupid = key($groups);
+            reset($groups);
+        }
 
         // Prepare form.
         $customdata = array(
-            'groups' => $this->get_groups(),
+            'groups' => $groups,
             'page' => $this->page,
             'groupid' => $this->groupid
         );
@@ -464,6 +472,7 @@ class index {
         $appraiseefilter = '';
         $cyclejoin = '';
         $cyclefilter = '';
+        $orderby = 'u.lastname ASC, u.firstname ASC';
 
         if (!$appraiseeid) {
             // Only applicable if not searching for a specific aprpaisee.
@@ -479,6 +488,7 @@ class index {
         } else {
             $appraiseefilter = 'AND aa.appraisee_userid = :appraiseeid';
             $params['appraiseeid'] = $appraiseeid;
+            $orderby = 'aa.created_date DESC';
         }
 
         // Always present current/archived separately.
@@ -578,7 +588,7 @@ class index {
                 {$leaversfilter}
                 {$cyclefilter}
             ORDER BY
-                u.lastname ASC, u.firstname ASC";
+                {$orderby}";
 
         return $DB->get_records_sql($sql, $params);
     }
