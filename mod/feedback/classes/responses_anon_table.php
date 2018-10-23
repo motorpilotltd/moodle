@@ -55,7 +55,12 @@ class mod_feedback_responses_anon_table extends mod_feedback_responses_table {
 
         $tablecolumns = ['random_response'];
         $tableheaders = [get_string('response_nr', 'feedback')];
-
+/* BEGIN CORE MOD */
+        if ($this->is_downloading()) {
+            $tablecolumns[] = 'group';
+            $tableheaders[] = get_string('groups');
+        }
+/* END CORE MOD */
         if ($this->feedbackstructure->get_feedback()->course == SITEID && !$this->feedbackstructure->get_courseid()) {
             $tablecolumns[] = 'courseid';
             $tableheaders[] = get_string('course');
@@ -71,8 +76,9 @@ class mod_feedback_responses_anon_table extends mod_feedback_responses_table {
         $params = ['instance' => $cm->instance,
             'anon' => FEEDBACK_ANONYMOUS_YES,
             'courseid' => $this->feedbackstructure->get_courseid()];
-
-        $fields = 'c.id, c.random_response, c.courseid';
+/* BEGIN CORE MOD */
+        $fields = 'c.id, c.userid, c.random_response, c.courseid';
+/* END CORE MOD */
         $from = '{feedback_completed} c';
         $where = 'c.anonymous_response = :anon AND c.feedback = :instance';
         if ($this->feedbackstructure->get_courseid()) {
