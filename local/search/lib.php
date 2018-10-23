@@ -235,17 +235,21 @@ EOJ;
     if (!empty($searchterms)) {
         $query = implode(' ', $searchterms);
         $rankingjoins = [];
-        $rankingjoins['rank_course'] = "LEFT JOIN FREETEXTTABLE({course}, *, '$query') AS rank_course ON rank_course.[KEY] = c.id";
+        $rankingjoins['rank_course'] = "LEFT JOIN FREETEXTTABLE({course}, *, :keywords) AS rank_course ON rank_course.[KEY] = c.id";
+        $params['keywords'] = $query;
 
         if ($arupadvertcustominstalled) {
-            $rankingjoins['rank_arupadvertdatatype_custom'] = "LEFT JOIN FREETEXTTABLE({arupadvertdatatype_custom}, *, '$query') AS rank_arupadvertdatatype_custom ON rank_arupadvertdatatype_custom.[KEY] = ac.id";
+            $rankingjoins['rank_arupadvertdatatype_custom'] = "LEFT JOIN FREETEXTTABLE({arupadvertdatatype_custom}, *, :keywords2) AS rank_arupadvertdatatype_custom ON rank_arupadvertdatatype_custom.[KEY] = ac.id";
+            $params['keywords2'] = $query;
         }
 
         if ($arupadverttapsinstalled) {
             $rankingjoins['rank_local_taps_class'] =
-                    "LEFT JOIN FREETEXTTABLE({local_taps_class}, *, '$query') AS rank_local_taps_class ON rank_local_taps_class.[KEY] = ltcc.id";
+                    "LEFT JOIN FREETEXTTABLE({local_taps_class}, *, :keywords3) AS rank_local_taps_class ON rank_local_taps_class.[KEY] = ltcc.id";
+            $params['keywords3'] = $query;
             $rankingjoins['rank_local_taps_course'] =
-                    "LEFT JOIN FREETEXTTABLE({local_taps_course}, *, '$query') AS rank_local_taps_course ON rank_local_taps_course.[KEY] = ltc.id";
+                    "LEFT JOIN FREETEXTTABLE({local_taps_course}, *, :keywords4) AS rank_local_taps_course ON rank_local_taps_course.[KEY] = ltc.id";
+            $params['keywords4'] = $query;
         }
         $rankingjoin = implode("\n", array_values($rankingjoins));
 

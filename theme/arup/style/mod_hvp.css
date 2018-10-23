@@ -1,0 +1,32 @@
+/* Dialog cards */
+.h5p-dialogcards .h5p-joubelui-button {
+    background-color: #0f95ff;
+}
+
+/* Course presentation */
+.h5p-course-presentation .h5p-progressbar .h5p-progressbar-part-show {
+    background-color: #0f95ff;
+    background-image: none;
+}
+.h5p-course-presentation .h5p-presentation-wrapper {
+    background-color: #ffffff;
+    background-image: none;
+}
+/* Accordion */
+.h5p-accordion .h5p-panel-title,
+.h5p-accordion .h5p-panel-title:hover,
+.h5p-accordion .h5p-panel-title:focus,
+.h5p-accordion .h5p-panel-title:active {
+    color: #0f95ff;
+}
+/* Documentation */
+.joubel-simple-rounded-button {
+    background-color: #0f95ff;
+}
+/* Image Silder */
+.h5p-image-slider-current-progress-element {
+    background-image: url("mod_hvp/H5P.ImageSlider_circle-active.svg");
+}
+.h5p-image-slide {
+    background-color: #ffffff;
+}

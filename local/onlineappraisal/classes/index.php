@@ -33,6 +33,8 @@ use moodle_exception;
 use moodle_url;
 use local_costcentre\costcentre as costcentre;
 use local_onlineappraisal\permissions as permissions;
+use local_onlineappraisal\comments as comments;
+use local_onlineappraisal\email as email;
 use local_onlineappraisal\output\alert as alert;
 
 class index {
@@ -46,7 +48,7 @@ class index {
     private $groupid;
 
     private $renderer;
-    
+
     private $is = array(
         'appraisee' => false,
         'appraiser' => false,
@@ -69,6 +71,7 @@ class index {
     private $groupleaderactive = array();
 
     private $canviewvip = array();
+    private $cantogglesdp = array();
 
     /**
      * Constructor.
@@ -84,7 +87,7 @@ class index {
         $this->page = $page;
 
         $this->set_user_types();
-        
+
         // Check if this user is allowed to view index page.
         if (!$this->can_view_index()) {
             // Get BAs for user's cost centre.
@@ -115,7 +118,7 @@ class index {
 
     /**
      * Magic getter.
-     * 
+     *
      * @param string $name
      * @return mixed property
      * @throws Exception
@@ -132,7 +135,7 @@ class index {
 
     /**
      * Set accessible user types for current user.
-     * 
+     *
      * @global \moodle_database $DB
      */
     private function set_user_types() {
@@ -345,7 +348,7 @@ class index {
                 $alerthtml .= $this->renderer->render($alert);
                 unset($SESSION->local_onlineappraisal->alert);
             }
-            
+
             return $alerthtml . $formhtml . $pagehtml;
         } else {
             $alert = new alert(get_string('error:pagenotfound', 'local_onlineappraisal', $this->page), 'danger', false);
@@ -437,16 +440,18 @@ class index {
             $groupname = $DB->get_field_sql($sql, $params);
             $options = $options + array($group->costcentre => $group->costcentre.' - ' . $groupname);
             if ($this->is['hrleader']) {
-                $this->canviewvip[$group->costcentre] = costcentre::is_user($this->user->id, costcentre::HR_LEADER, $group->costcentre);
+                // Check if can actually view VIP and toggle SDP (HR_LEADER _only_).
+                $this->canviewvip[$group->costcentre] =
+                        $this->cantogglesdp[$group->costcentre] = costcentre::is_user($this->user->id, costcentre::HR_LEADER, $group->costcentre);
             }
         }
-        
+
         return $options;
     }
 
     /**
      * Get appraisals for type/state.
-     * 
+     *
      * @global stdClass $DB
      * @global stdClass $USER
      * @param string $type
@@ -491,7 +496,7 @@ class index {
                     $params = $params + $inparams;
                     $typefilter .= " OR u.icq {$insql}";
                 }
-                
+
                 $typefilter .= ')';
                 break;
             case 'hrleader' :
@@ -556,7 +561,7 @@ class index {
 
     /**
      * Returns whether appraisal requires action give user type and status.
-     * 
+     *
      * @param string $type
      * @param object $appraisal
      * @return boolean requires action
@@ -594,7 +599,7 @@ class index {
 
     /**
      * Toggle F2F status for an appraisal.
-     * 
+     *
      * @global \moodle_database $DB
      * @global stdClass $USER
      * @return stdClass result
@@ -696,6 +701,174 @@ class index {
         } else {
             $return->message = get_string("error:f2fdate:update", 'local_onlineappraisal');
         }
+
+        return $return;
+    }
+
+    /**
+     * Toggle successionplan for an appraisal.
+     *
+     * @global \moodle_database $DB
+     * @global stdClass $USER
+     * @return stdClass result
+     * @throws moodle_exception
+     */
+    public static function toggle_successionplan() {
+        global $DB, $USER;
+
+        $appraisalid = required_param('appraisalid', PARAM_INT);
+        $confirm = optional_param('confirm', false, PARAM_BOOL);
+
+        $params = array(
+            'id' => $appraisalid,
+            'archived' => 0,
+            'deleted' => 0
+        );
+        $appraisal = $DB->get_record('local_appraisal_appraisal', $params);
+        if (empty($appraisal)) {
+            // The appraisal doesn't exist.
+            throw new moodle_exception('error:loadappraisal', 'local_onlineappraisal');
+        }
+
+        $appraisee = $DB->get_record('user', ['id' => $appraisal->appraisee_userid]);
+        $appraiser = $DB->get_record('user', ['id' => $appraisal->appraiser_userid]);
+
+        if (empty($appraisee) || empty($appraiser)) {
+            // Not valid users.
+            throw new moodle_exception('error:loadusers', 'local_onlineappraisal');
+        }
+
+        $ishrleader = $appraisee->icq && costcentre::is_user(
+                $USER->id,
+                [costcentre::HR_LEADER, costcentre::HR_ADMIN],
+                $appraisee->icq
+                );
+        if ($ishrleader) {
+            $viewingas = 'hrleader';
+        } else {
+            $viewingas = null;
+        }
+
+        if (!permissions::is_allowed('successionplan:toggle', $appraisal->permissionsid, $viewingas, $appraisal->archived, $appraisal->legacy)) {
+            throw new moodle_exception('error:permission:successionplan:toggle', 'local_onlineappraisal');
+        }
+
+        $return = new stdClass();
+
+        if (!$confirm) {
+            $return->success = false;
+            $return->data = 'confirm';
+            $a = new stdClass();
+            $a->yes = \html_writer::link(
+                    '#',
+                    get_string('form:confirm:cancel:yes', 'local_onlineappraisal'),
+                    array('class' => 'btn btn-primary m-t-5 oa-togglesuccessionplan-confirm', 'data-appraisalid' => $appraisalid, 'data-confirm' => 1)
+                    );
+            $a->no = \html_writer::link(
+                    '#',
+                    get_string('form:confirm:cancel:no', 'local_onlineappraisal'),
+                    array('class' => 'btn btn-default m-t-5 oa-togglesuccessionplan-confirm', 'data-appraisalid' => $appraisalid, 'data-confirm' => 0)
+                    );
+            if (!$appraisal->successionplan) {
+                // Confirm adding.
+                $return->message = get_string('error:togglesuccessionplan:confirm:add', 'local_onlineappraisal', $a);
+            } else {
+                // Confirm removing.
+                $return->message = get_string('error:togglesuccessionplan:confirm:remove', 'local_onlineappraisal', $a);
+            }
+            return $return;
+        }
+
+        // Toggle successionplan in appraisal record.
+        $appraisal->successionplan = $appraisal->successionplan ? 0 : 1;
+        $appraisal->modified_date = time();
+        $return->data = (bool) $appraisal->successionplan;
+        $return->success = $DB->update_record('local_appraisal_appraisal', $appraisal);
+
+        $not = $appraisal->successionplan ? '' : 'not';
+        if ($return->success) {
+            $return->message = get_string("success:togglesuccessionplan:has{$not}", 'local_onlineappraisal');
+
+            // Send emails.
+            $emailvars = new stdClass();
+            $emailvars->appraiseefirstname = $appraisee->firstname;
+            $emailvars->appraiseelastname = $appraisee->lastname;
+            $emailvars->appraiseeemail = $appraisee->email;
+            $emailvars->appraiserfirstname = $appraiser->firstname;
+            $emailvars->appraiserlastname = $appraiser->lastname;
+            $emailvars->appraiseremail = $appraiser->email;
+            $emailvars->hrleaderfirstname = $USER->firstname;
+            $emailvars->hrleaderlastname = $USER->lastname;
+            $emailvars->hrleaderemail = $USER->email;
+            $url = new \moodle_url(
+                    '/local/onlineappraisal/view.php',
+                    array('appraisalid' => $appraisal->id, 'view' => 'appraisee', 'page' => 'successionplan')
+                    );
+            $urldashboard = new \moodle_url(
+                    '/local/onlineappraisal/index.php',
+                    array('page' => 'appraisee')
+                    );
+
+            if ($not || $appraisal->statusid == 1) {
+                $emailvars->linkappraisee = $urldashboard->out();
+                $urldashboard->params(['page' =>'appraiser']);
+                $emailvars->linkappraiser = $urldashboard->out();
+
+                $emailvars->linkappraiseewhich = $emailvars->linkappraiserwhich = get_string('email:extras:linkwhich:dashboard', 'local_onlineappraisal');
+                $emailvars->statusappraiseewhich = get_string('email:extras:statuswhich:start', 'local_onlineappraisal');
+                $emailvars->statusappraiserwhich = get_string('email:extras:statuswhich:draft', 'local_onlineappraisal');
+            } else if ($appraisal->statusid == 2) {
+                $emailvars->linkappraisee = $url->out();
+                $url->params(['view' => 'appraiser', 'page' => 'overview']);
+                $emailvars->linkappraiser = $url->out();
+
+                $emailvars->linkappraiseewhich = get_string('email:extras:linkwhich:successionplan', 'local_onlineappraisal');
+                $emailvars->linkappraiserwhich = get_string('email:extras:linkwhich:overview', 'local_onlineappraisal');
+                $emailvars->statusappraiseewhich = get_string('email:extras:statuswhich:now', 'local_onlineappraisal');
+                $emailvars->statusappraiserwhich = get_string('email:extras:statuswhich:draft', 'local_onlineappraisal');
+            } else {
+                $emailvars->linkappraisee = $url->out();
+                $url->params(['view' => 'appraiser']);
+                $emailvars->linkappraiser = $url->out();
+
+                $emailvars->linkappraiseewhich = $emailvars->linkappraiserwhich = get_string('email:extras:linkwhich:successionplan', 'local_onlineappraisal');
+                $emailvars->statusappraiseewhich = $emailvars->statusappraiserwhich = get_string('email:extras:statuswhich:now', 'local_onlineappraisal');
+            }
+
+            $appraiseeemail = new email("togglesuccessionplan:appraisee:has{$not}", $emailvars, $appraisee, $USER);
+            $appraiseeemail->prepare();
+            $appraiseeemailsent = $appraiseeemail->send();
+
+            $appraiseremail = new email("togglesuccessionplan:appraiser:has{$not}", $emailvars, $appraiser, $USER);
+            $appraiseremail->prepare();
+            $appraiseremailsent = $appraiseremail->send();
+
+            if (!$appraiseeemailsent) {
+                $return->message .= get_string('error:appraisal:create:appraiseeemail', 'local_onlineappraisal');
+            }
+            if (!$appraiseremailsent) {
+                $return->message .= get_string('error:appraisal:create:appraiseremail', 'local_onlineappraisal');
+            }
+
+            // Add comment
+            $a->status = get_string('status:1', 'local_onlineappraisal');
+            $a->relateduser = fullname($USER);
+            $comment = comments::save_comment(
+                    $appraisal->id,
+                    get_string(
+                            "comment:togglesuccessionplan:has{$not}",
+                            'local_onlineappraisal',
+                            $a
+                            )
+                    );
+            if (!$comment->id) {
+                $return->message .= get_string('error:appraisal:create:comment', 'local_onlineappraisal');
+            }
+        } else {
+            $return->message = get_string("error:togglesuccessionplan:has{$not}", 'local_onlineappraisal');
+        }
+
+
 
         return $return;
     }

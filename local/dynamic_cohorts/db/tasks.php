@@ -1,5 +1,7 @@
 <?php
 
+defined('MOODLE_INTERNAL') || die();
+
 $tasks = [
     [
         'classname' => 'local_dynamic_cohorts\task\check_members',

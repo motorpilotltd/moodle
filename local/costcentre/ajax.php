@@ -33,11 +33,18 @@ $page = optional_param('page', 1, PARAM_INT);
 $usertextconcat = $DB->sql_concat('firstname', "' '", 'lastname', "' ('", 'email', "')'");
 $searchconcat = $DB->sql_concat('firstname', "' '", 'lastname', "' '", 'email', "' '", 'idnumber');
 $searchlike = $DB->sql_like($searchconcat, ":searchterm", false);
-$params = array('searchterm'=> "%$searchterm%");
+$params = array('searchterm' => "%$searchterm%");
 $where = "auth = 'saml' AND deleted = 0 AND suspended = 0 AND confirmed = 1 AND $searchlike";
 
 $totalcount = $DB->count_records_select('user', $where, $params);
-$userlist = $DB->get_records_select_menu('user', $where, $params, 'lastname ASC', "id, $usertextconcat", ($page - 1) * 25, $page * 25);
+$userlist = $DB->get_records_select_menu(
+        'user',
+        $where,
+        $params,
+        'lastname ASC',
+        "id, $usertextconcat",
+        ($page - 1) * 25,
+        $page * 25);
 
 $json = array('totalcount' => $totalcount, 'items' => array());
 foreach ($userlist as $uid => $usertext) {

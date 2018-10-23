@@ -80,7 +80,7 @@ class learninghistory extends base {
             $this->currentsearchkey = $this->search;
             $this->currentsearch = $this->mystr($this->search);
         }
-        
+
         $this->get_filters();
         $this->set_filter();
         // Fix array for usage in mustache.
@@ -104,7 +104,7 @@ class learninghistory extends base {
             'classname',
             'coursename',
             'classstatus',
-            'classstartdate', 
+            'classstartdate',
             'classenddate',
             'duration',
             'durationunits',
@@ -137,7 +137,8 @@ class learninghistory extends base {
             'coursename',
             'classcategory',
             'classcost',
-            'classcostcurrency');
+            'classcostcurrency',
+            'learningdesc');
 
         $this->textfilterfields = array(
             'actualregion' => 'dropdown',
@@ -251,7 +252,7 @@ class learninghistory extends base {
                     $minoneday = $filtervalue - (60 * 60 * 24);
                     $plusoneday = $filtervalue + (60 * 60 * 24);
                     $wherestring = " $filter->field > $minoneday AND $filter->field < $plusoneday ";
-                } else if (in_array($filter->field, $this->numericfields)) { 
+                } else if (in_array($filter->field, $this->numericfields)) {
                     $value = intval($filtervalue);
                     $wherestring .= " $filter->field = $value ";
                 } else if ($filtervalue == 'NOT SET') {
@@ -276,11 +277,11 @@ class learninghistory extends base {
 
         $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode, ltco.courseregion
                   FROM {local_taps_enrolment} as lte
-                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff 
+                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
-             LEFT JOIN {local_taps_class} as ltc 
-                    ON ltc.classid = lte.classid 
-             LEFT JOIN {local_taps_course} as ltco 
+             LEFT JOIN {local_taps_class} as ltc
+                    ON ltc.classid = lte.classid
+             LEFT JOIN {local_taps_course} as ltco
                     ON lte.courseid = ltco.courseid
                        $wherestring
               ORDER BY " . $this->sort . ' ' . $this->direction;
@@ -288,7 +289,7 @@ class learninghistory extends base {
         // Leave out the joins for taps_class and taps_course to speed up this query
         $sqlcount = "SELECT count(lte.id) as recnum
                   FROM {local_taps_enrolment} as lte
-                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff 
+                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
                        $wherestring";
 
@@ -328,7 +329,7 @@ class learninghistory extends base {
             }
             return $enrolments;
         }
-        
+
     }
 
     public function get_table_data() {
@@ -597,6 +598,10 @@ class learninghistory extends base {
             } else {
                 return '';
             }
+        }
+
+        if ($key == 'learningdesc') {
+            return html_to_text($row->$key);
         }
     }
 

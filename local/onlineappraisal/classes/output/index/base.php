@@ -63,7 +63,7 @@ abstract class base implements renderable, templatable {
                 $this->data->{$state}->appraisals = array_values($appraisals);
             }
         }
-        
+
         $this->pre_process_appraisals();
     }
 
@@ -110,9 +110,12 @@ abstract class base implements renderable, templatable {
     }
 
     protected function get_permissions($state, $appraisal) {
+        global $DB;
+
         $permissions = array();
         $permissions['start'] = $appraisal->statusid == APPRAISAL_NOT_STARTED && permissions::is_allowed('introduction:view', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
         $hrnoview = $this->type === 'hrleader' && empty($this->index->canviewvip[$appraisal->costcentre]);
+        $hrnotoggle = $this->type === 'hrleader' && empty($this->index->cantogglesdp[$appraisal->costcentre]);
         $glnoview = $this->type === 'groupleader' && $appraisal->groupleader_userid !== $this->index->user->id;
         $vipnoview = $appraisal->isvip && ($hrnoview || $glnoview);
         if ($vipnoview) {
@@ -123,15 +126,37 @@ abstract class base implements renderable, templatable {
             $permissions['printappraisal'] = permissions::is_allowed('appraisal:print', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
             $permissions['printfeedback'] = permissions::is_allowed('feedback:print', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy)
                     || permissions::is_allowed('feedbackown:print', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
+            $permissions['printsuccessionplan'] = permissions::is_allowed('successionplan:print', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
         }
         $permissions['editf2f'] = permissions::is_allowed('f2f:add', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
         $permissions['togglef2f'] = permissions::is_allowed('f2f:complete', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
-        
+
+        // Modifications.
+        if (!empty($permissions['printsuccessionplan'])) {
+            // Only display SDP download link if has been saved.
+            $sql = "SELECT COUNT(lad.id)
+                  FROM {local_appraisal_data} lad
+                  JOIN {local_appraisal_forms} laf ON laf.id = lad.form_id
+                 WHERE laf.form_name = :form_name
+                       AND laf.appraisalid = :appraisalid
+                       AND laf.user_id = :user_id";
+            $params = [
+                'form_name' => 'successionplan',
+                'appraisalid' => $appraisal->id,
+                'user_id' => $appraisal->appraisee_userid,
+            ];
+            if ($DB->count_records_sql($sql, $params) === 0) {
+                // Not yet saved, remove download link.
+                $permissions['printsuccessionplan'] = false;
+            }
+        }
+
         $permissions['haspermissions'] = in_array(true, $permissions);
 
         // Keep these separate to appear outside of dropdown.
         $permissions['notstarted'] = $appraisal->statusid == APPRAISAL_NOT_STARTED && !$permissions['start'] && !$vipnoview;
         $permissions['vipnoview'] = $vipnoview;
+        $permissions['togglesuccessionplan'] = !$hrnotoggle && permissions::is_allowed('successionplan:toggle', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
 
         return $permissions;
     }
@@ -142,7 +167,9 @@ abstract class base implements renderable, templatable {
             'view' => (new moodle_url('/local/onlineappraisal/view.php', array('appraisalid' => $appraisalid, 'page' => 'overview', 'view' => $this->type)))->out(false),
             'printappraisal' => (new moodle_url('/local/onlineappraisal/print.php', array('appraisalid' => $appraisalid, 'print' => 'appraisal', 'view' => $this->type)))->out(false),
             'printfeedback' => (new moodle_url('/local/onlineappraisal/print.php', array('appraisalid' => $appraisalid, 'print' => 'feedback', 'view' => $this->type)))->out(false),
+            'printsuccessionplan' => (new moodle_url('/local/onlineappraisal/print.php', array('appraisalid' => $appraisalid, 'print' => 'successionplan', 'view' => $this->type)))->out(false),
             'togglef2f' => (new moodle_url('/local/onlineappraisal/index.php', array('appraisalid' => $appraisalid, 'action' => 'togglef2f')))->out(false),
+            'togglesuccessionplan' => (new moodle_url('/local/onlineappraisal/index.php', array('appraisalid' => $appraisalid, 'action' => 'togglesuccessionplan')))->out(false),
         );
         return $urls;
     }

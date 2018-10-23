@@ -340,6 +340,7 @@ function hvp_upgrade_2017060900() {
     }
 }
 
+/* BEGIN CORE MOD */
 /**
  * Adds new field displaycontent to check if content should be displayed in course page
  */
@@ -357,6 +358,7 @@ function hvp_upgrade_2018012201() {
         $dbman->add_field($table, $displaycontent);
     }
 }
+/* END CORE MOD */
 
 /**
  * Hvp module upgrade function.
@@ -376,7 +378,9 @@ function xmldb_hvp_upgrade($oldversion) {
         2017040500,
         2017050900,
         2017060900,
+/* BEGIN CORE MOD */
         2018012201,
+/* END CORE MOD */
     ];
 
     foreach ($upgrades as $version) {

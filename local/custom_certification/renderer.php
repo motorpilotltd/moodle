@@ -17,6 +17,8 @@
 use local_custom_certification\certification;
 use local_custom_certification\message;
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * @author Artur Rietz <artur.rietz@webanywhere.co.uk>
  */
@@ -364,7 +366,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
         return $output;
     }
 
-    public function display_message_box($messageid, $messagename, $messagetype, $recipient = 0, $recipientemail = null, $messagesubject = null, $messagebody = null, $messagetriggertime = null, $canmanage = true)
+    public function display_message_box($messageid, $messagename, $messagetype, $certifid, $recipient = 0, $recipientemail = null, $messagesubject = null, $messagebody = null, $messagetriggertime = null, $canmanage = true)
     {
         global $OUTPUT;
         $output = '';
@@ -372,7 +374,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
         $output .= html_writer::start_div('message-box', ['data-messagetype' => $messagetype, 'data-id' => $id]);
         $output .= html_writer::tag('p', strtoupper($messagename), ['class' => 'headerinfo']);
         if($canmanage){
-            $output .= html_writer::start_tag('input', ['onclick' => "if(confirm('" . get_string('removemessageconfirmdialog', 'local_custom_certification') . "')) deleteMessage(this);", 'class' => 'delete-message', 'type' => 'button', 'value' => get_string('deletebtn', 'local_custom_certification'), 'data-id' => $messageid]);
+            $output .= html_writer::start_tag('input', ['onclick' => "if(confirm('" . get_string('removemessageconfirmdialog', 'local_custom_certification') . "')) deleteMessage(this);", 'class' => 'delete-message', 'type' => 'button', 'value' => get_string('deletebtn', 'local_custom_certification'), 'data-certifid' => $certifid,'data-id' => $messageid]);
         }
 
         $output .= html_writer::start_div('message-content');

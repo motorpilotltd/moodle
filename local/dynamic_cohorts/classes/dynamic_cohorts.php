@@ -2,6 +2,8 @@
 
 namespace local_dynamic_cohorts;
 
+defined('MOODLE_INTERNAL') || die();
+
 class dynamic_cohorts
 {
 

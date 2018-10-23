@@ -214,14 +214,20 @@ class certification_report {
         ];
         foreach ($allowedparams as $param) {
             if (!empty($filters->{$param})) {
-                $params[$param] = $filters->{$param};
+                if (is_array($filters->{$param})) {
+                    foreach ($filters->{$param} as $index => $value) {
+                        $params["{$param}[{$index}]"] = $value;
+                    }
+                } else {
+                    $params[$param] = $filters->{$param};
+                }
             }
         }
         if ($view == 'regions') {
             $params['regionview'] = optional_param('regionview', 'actual', PARAM_ALPHA) == 'geo' ? 'geo' : 'actual';
         }
 
-        return new \moodle_url("/blocks/certification_report/{$page}.php?".http_build_query($params));
+        return new \moodle_url("/blocks/certification_report/{$page}.php", $params);
     }
 
     /**

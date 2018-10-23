@@ -22,6 +22,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * Upgrade local_costcentre plugin
  *
@@ -129,6 +131,46 @@ function xmldb_local_costcentre_upgrade($oldversion) {
 
         // Costcentre savepoint reached.
         upgrade_plugin_savepoint(true, 2016080302, 'local', 'costcentre');
+    }
+
+    if ($oldversion < 2017051501) {
+
+        // Increase costcentre field(s) 255 chars.
+        // Field definition is same for both tables.
+        $field = new xmldb_field('costcentre', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+
+        $table1 = new xmldb_table('local_costcentre');
+        $table2 = new xmldb_table('local_costcentre_user');
+
+        $index1 = new xmldb_index('costcentre', XMLDB_INDEX_UNIQUE, ['costcentre']);
+        $index2 = new xmldb_index('costcentre', XMLDB_INDEX_NOTUNIQUE, ['costcentre']);
+
+        // Conditionally launch drop index.
+        if ($dbman->index_exists($table1, $index1)) {
+            $dbman->drop_index($table1, $index1);
+        }
+        if ($dbman->index_exists($table2, $index2)) {
+            $dbman->drop_index($table2, $index2);
+        }
+
+        // Conditionally launch change field.
+        if ($dbman->field_exists($table1, $field)) {
+            $dbman->change_field_precision($table1, $field);
+        }
+        if ($dbman->field_exists($table2, $field)) {
+            $dbman->change_field_precision($table2, $field);
+        }
+
+        // Conditionally launch re-add index.
+        if (!$dbman->index_exists($table1, $index1)) {
+            $dbman->add_index($table1, $index1);
+        }
+        if (!$dbman->index_exists($table2, $index2)) {
+            $dbman->add_index($table2, $index2);
+        }
+
+        // Costcentre savepoint reached.
+        upgrade_plugin_savepoint(true, 2017051501, 'local', 'costcentre');
     }
 
     return true;

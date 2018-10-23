@@ -12,6 +12,8 @@ $string['duration'] = 'Duration';
 $string['filterbuttonlabel'] = 'Filter results by';
 $string['filters'] = 'Filter results by';
 
+$string['global'] = 'Global';
+
 $string['loadfiltered'] = 'Filtering courses&hellip;';
 $string['loadmore'] = 'Loading more courses&hellip;';
 

@@ -44,9 +44,10 @@ class mod_hvp_mod_form extends moodleform_mod {
         } else {
             $this->add_intro_editor(false, get_string('intro', 'hvp'));
         }
+/* BEGIN CORE MOD */
         // Display content to course page.
         $mform->addElement('checkbox', 'displaycontent', get_string('displayoncoursepage', 'hvp'));
-
+/* END CORE MOD */
         // Action.
         $h5paction = array();
         $h5paction[] = $mform->createElement('radio', 'h5paction', '', get_string('upload', 'hvp'), 'upload');
@@ -318,12 +319,14 @@ class mod_hvp_mod_form extends moodleform_mod {
 
     public function get_data() {
         $data = parent::get_data();
-        if (isset($data->submitbutton2) && empty($data->displaycontent)) {
-            $data->displaycontent = 0;
-        }
         if (!$data) {
             return false;
         }
+/* BEGIN CORE MOD */
+        if (empty($data->displaycontent)) {
+            $data->displaycontent = 0;
+        }
+/* END CORE MOD */
         return $data;
     }
 }

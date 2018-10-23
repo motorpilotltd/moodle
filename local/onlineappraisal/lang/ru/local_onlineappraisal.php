@@ -220,7 +220,6 @@ $string['feedbackrequests:outstanding'] = 'Необработанные запр
 $string['feedbackrequests:norequests'] = 'Нет необработанных запросов на отзывы';
 $string['feedbackrequests:completed'] = 'Отвеченные запросы';
 $string['feedbackrequests:nocompleted'] = 'Нет отвеченных запросов на отзывы';
-$string['feedbackrequests:th:confidential'] = 'конфиденц';
 $string['feedbackrequests:th:actions'] = 'Действия';
 $string['feedbackrequests:emailcopy'] = 'Отправить мне копию по электронной почте';
 $string['feedbackrequests:submitfeedback'] = 'Отправить отзыв';

@@ -1,6 +1,8 @@
 <?php
 namespace local_custom_certification\task;
 
+defined('MOODLE_INTERNAL') || die();
+
 use local_custom_certification\completion;
 
 class window_open extends \core\task\scheduled_task
@@ -22,6 +24,7 @@ class window_open extends \core\task\scheduled_task
             SELECT
                 cc.*
             FROM {certif_completions} cc
+            JOIN {certif_user_assignments} cua ON cua.userid = cc.userid AND cua.certifid = cc.certifid
             JOIN {certif} c ON c.id = cc.certifid
             WHERE cc.timewindowsopens <= :now
             AND cc.timewindowsopens > 0

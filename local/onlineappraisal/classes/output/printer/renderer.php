@@ -63,4 +63,11 @@ class renderer extends \local_onlineappraisal\output\renderer {
 
         return $this->render_from_template('local_onlineappraisal/printer_feedback', $templatevars);
     }
+
+    public function render_successionplan(\local_onlineappraisal\output\printer\successionplan $successionplan) {
+        // Call the export_for_template function.
+        $templatevars = $successionplan->export_for_template($this);
+
+        return $this->render_from_template('local_onlineappraisal/printer_successionplan', $templatevars);
+    }
 }

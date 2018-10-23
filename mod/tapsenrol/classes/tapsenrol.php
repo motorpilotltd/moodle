@@ -486,6 +486,19 @@ class tapsenrol {
                 // Incomplete.
                 $this->_set_internal_completion($user->id, false);
                 $this->_completion->update_state($this->cm, COMPLETION_INCOMPLETE, $user->id);
+                $criteria = $this->_completion->get_criteria();
+                foreach($criteria as $criterion) {
+                    if ($criterion->moduleinstance == $this->cm->id) {
+                        $DB->delete_records(
+                            'course_completion_crit_compl',
+                            array(
+                                'course' => $this->_completion->course_id,
+                                'userid' => $user->id,
+                                'criteriaid' => $criterion->id
+                            )
+                        );
+                    }
+                }
                 $redirect = $redirect && true;
             } else {
                 $redirect = false;

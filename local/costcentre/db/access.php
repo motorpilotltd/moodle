@@ -15,12 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file definies capabilities needed by local_costcentre.
+ * This file defines capabilities needed by local_costcentre.
  *
  * @package    local_costcentre
  * @copyright  2016 Motorpilot Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
 

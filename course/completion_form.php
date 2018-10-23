@@ -145,14 +145,15 @@ class course_completion_form extends moodleform {
         if (!empty($courses)) {
             // Get category list.
             require_once($CFG->libdir. '/coursecatlib.php');
-            $list = coursecat::make_categories_list();
-
+/* BEGIN CORE MOD */
+            $list = coursecat::make_categories_list('', 0, ' / ', true);
+/* END CORE MOD */
             // Get course list for select box.
             $selectbox = array();
             $selected = array();
             foreach ($courses as $c) {
                 $selectbox[$c->id] = $list[$c->category] . ' / ' . format_string($c->fullname, true,
-                    array('context' => context_course::instance($c->id)));
+                        array('context' => context_course::instance($c->id)));
 
                 // If already selected ...
                 if ($c->selected) {

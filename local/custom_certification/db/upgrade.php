@@ -1,4 +1,5 @@
 <?php
+defined('MOODLE_INTERNAL') || die();
 
 function xmldb_local_custom_certification_upgrade($oldversion) {
     global $DB;
@@ -12,7 +13,7 @@ function xmldb_local_custom_certification_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
     }
-    
+
     if ($oldversion < 2017022202) {
         $table = new xmldb_table('certif_completions');
         $field = new xmldb_field('cronchecked', XMLDB_TYPE_INTEGER, 1, null, null, null, 0);
@@ -119,6 +120,18 @@ function xmldb_local_custom_certification_upgrade($oldversion) {
 
         // Savepoint reached.
         upgrade_plugin_savepoint(true, 2017032908, 'local', 'custom_certification');
+    }
+
+    if ($oldversion < 2018022802) {
+        // Update to add time modified field to completion table.
+        $table = new xmldb_table('certif_completions');
+        $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, 10, null, null, null, null);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2018022802, 'local', 'custom_certification');
     }
 
     return true;

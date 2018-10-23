@@ -1,6 +1,8 @@
 <?php
 namespace local_custom_certification\task;
 
+defined('MOODLE_INTERNAL') || die();
+
 use local_custom_certification\certification;
 use local_custom_certification\completion;
 

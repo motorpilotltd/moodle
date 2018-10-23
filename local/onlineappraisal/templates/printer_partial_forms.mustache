@@ -12,8 +12,8 @@
     <div style="display: inline-block; text-align: left; width: auto; margin-right: auto;">
         <table style="background-color: #FFFFFF; width: 100%; padding: 3px">
             {{#fields}}
-                <tr><td>{{title}}</td></tr>
-                <tr><td style="background-color: #E7E6E6;">{{^isarray}}{{{data}}}{{/isarray}}{{#isarray}}{{#data}}{{{.}}}<br />{{/data}}{{/isarray}}</td></tr>
+                <tr><td>{{{title}}}</td></tr>
+                <tr><td style="background-color: #E7E6E6;">{{^isarray}}{{{data}}}{{/isarray}}{{#isarray}}{{#data}}{{{content}}}{{^last}}<br />{{/last}}{{/data}}{{/isarray}}</td></tr>
                 {{^last}}
                 <tr><td></td></tr>
                 {{/last}}
