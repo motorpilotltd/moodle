@@ -43,5 +43,6 @@ class window_open extends \core\task\scheduled_task
 
         // Just purge the whole thing as potentially lots of users and lots of courses.
         \cache::make('core', 'completion')->purge();
+        \cache::make('core', 'coursecompletion')->purge();
     }
 }
