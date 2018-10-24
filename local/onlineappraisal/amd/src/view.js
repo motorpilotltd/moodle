@@ -22,11 +22,26 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.0
  */
-define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstrap/bootstrap'],
+ // Load vendors js via cdn with fall back
+ require.config({
+    enforceDefine: false,
+    paths: {
+        'select2_4_0_5': [
+            'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min',
+            M.cfg.wwwroot + '/pluginfile.php/' + M.cfg.contextid + '/local_onlineappraisal/vendor/select2_4.0.5.min'
+        ]
+    }
+});
+
+define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstrap/bootstrap', 'select2_4_0_5'],
        function($, cfg, str, notification) {
 
     return /** @alias module:local_onlineappraisal/view */ {
         init: function(appraisalid, view, page, statusid) {
+
+            // Select2 initialisation.
+            $('select.select2-general').select2();
+
             if (page === 'userinfo' && (view === 'appraisee' || view === 'appraiser') && statusid < 5) {
                 var classes, graderefresh, jobtitlerefresh;
                 var grade = $('#id_grade');

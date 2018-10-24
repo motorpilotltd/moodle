@@ -107,6 +107,7 @@ class apform_successionplan extends moodleform {
                 continue;
             }
             $answers = ($question === 'potential') ? [] : ['' => ''];
+            $class = ($question === 'potential') ? 'select2-general' : '';
             $i = 1;
             $answerstring = "{$question}:answer:{$i}";
             while ($this->str_exists($answerstring)) {
@@ -115,7 +116,7 @@ class apform_successionplan extends moodleform {
                 $i++;
                 $answerstring = "{$question}:answer:{$i}";
             }
-            $element = $mform->addElement('select', $question, $this->str($question), $answers);
+            $element = $mform->addElement('select', $question, $this->str($question), $answers, ['class' => $class]);
             if ($question === 'potential') {
                 $element->setMultiple(true);
             }
