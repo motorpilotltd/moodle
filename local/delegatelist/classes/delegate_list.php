@@ -474,9 +474,9 @@ EOF;
     public function get_completion_url() {
         return new moodle_url('/report/progress/index.php', array('course'=>$this->_course->id));
     }
-    
+
     public function get_attendance_url($tapsenrol) {
-        return new moodle_url('/mod/tapsenrol/view.php', array('id' => $tapsenrol->id));
+        return new moodle_url('/mod/tapsenrol/updatecompletion.php', array('id' => $tapsenrol->id));
     }
 
     public function get_print_url() {
