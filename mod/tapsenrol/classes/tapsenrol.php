@@ -341,7 +341,7 @@ class tapsenrol {
                 case 'placed' :
                     $isactive = true;
                     $shouldbeenrolled = true;
-                    $shouldbecomplete = true;
+                    $shouldbecomplete = false;
                     $groupsforuser[] = trim($enrolment->classname);
                     break;
                 case 'requested' :
