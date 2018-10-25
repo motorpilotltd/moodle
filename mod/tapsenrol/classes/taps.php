@@ -726,7 +726,9 @@ class taps {
                 $enrolment->enrolmentid = ++$maxenrolmentid; // Pre-increment.
                 $enrolment->id = $DB->insert_record('local_taps_enrolment', $enrolment);
             } catch (\dml_write_exception $e) {
-                // Likely index failure.
+                if (debugging()) {
+                    throw($e);
+                }
             }
         } while (!$enrolment->id && $DB->get_record('local_taps_enrolment', array('enrolmentid' => $enrolment->enrolmentid)));
 
@@ -901,18 +903,19 @@ class taps {
             $user = \core_user::get_user($userid);
         }
 
-        $tapsenrolinstances = $modinfo->get_instances_of('tapsenrol');
-        foreach ($tapsenrolinstances as $tapsenrolinstance) {
-            $taps = new \mod_tapsenrol\taps();
+        $taps = new \mod_tapsenrol\taps();
 
-            $enrolments = $taps->get_enroled_classes($user->idnumber, $modinfo->courseid, true, false);
+        if (empty($user)) {
+            return false;
+        }
 
-            foreach($enrolments as $enrolment) {
-                $statusstype = $taps->get_status_type($enrolment->bookingstatus);
+        $enrolments = $taps->get_enroled_classes($user->idnumber, $modinfo->courseid, true, false);
 
-                if ($statusstype == 'placed' || $statusstype == 'attended') {
-                    return true;
-                }
+        foreach ($enrolments as $enrolment) {
+            $statusstype = $taps->get_status_type($enrolment->bookingstatus);
+
+            if ($statusstype == 'placed' || $statusstype == 'attended') {
+                return true;
             }
         }
 
