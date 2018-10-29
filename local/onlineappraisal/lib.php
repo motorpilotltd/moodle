@@ -83,7 +83,7 @@ array $options=array()) {
             }
         } else if ($filearea === 'vendor') {
             // Serves 3rd party js files for CDN fallback.
-            $pluginpath = $CFG->dirroot.'/local/costcentre/';
+            $pluginpath = $CFG->dirroot.'/local/onlineappraisal/';
             $filename = implode('/', $args);
             $path = $pluginpath.'vendor/'.$filename;
             send_file($path, $filename,null, 0, false, false, '', false, ['immutable' => 'immutable']);
