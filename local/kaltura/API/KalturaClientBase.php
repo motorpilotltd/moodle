@@ -488,7 +488,7 @@ class KalturaClientBase
 		curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
 		curl_setopt($ch, CURLOPT_USERAGENT, $this->config->userAgent);
 /* BEGIN CORE MOD */
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
 /* END CORE MOD */
 		if (count($files) > 0)
 			curl_setopt($ch, CURLOPT_TIMEOUT, 0);

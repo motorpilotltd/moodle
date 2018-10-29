@@ -212,7 +212,7 @@ function kalvidres_cm_info_view(cm_info $cm) {
     try {
         $entry = $client->baseEntry->get($kalvidres->entry_id);
     } catch (Exception $e) {
-        error_log("kalvidres: entry object ({$kalvidres->entry_id}) not found/ready");
+        error_log("kalvidres: entry object ({$kalvidres->entry_id}) not found/ready | {$e->getMessage()}");
         return '';
     }
 
@@ -271,5 +271,3 @@ function kalvidres_reset_userdata($data) {
     return array();
 }
 /* END CORE MOD */
-
-
