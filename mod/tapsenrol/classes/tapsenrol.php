@@ -600,12 +600,12 @@ EOS;
                 $this->_check_region_mismatch($user, $data);
             } else {
                 // User not found.
-                error_log("tapsenrol::trigger_workflow()\n\tUser with staff ID {$enrolment->staffid} not found.\n\tEnrolment ID: {$enrolmentid}\n"
+                debugging("tapsenrol::trigger_workflow()\n\tUser with staff ID {$enrolment->staffid} not found.\n\tEnrolment ID: {$enrolmentid}\n"
                         . "\tSponsor: {$formdata->sponsorfirstname} {$formdata->sponsorlastname} ({$formdata->sponsoremail})");
             }
         } else {
             // Enrolment not found/already tracking.
-            error_log("tapsenrol::trigger_workflow()\n\tEnrolment ID {$enrolmentid} not found/wrong status/already tracking.");
+            debugging("tapsenrol::trigger_workflow()\n\tEnrolment ID {$enrolmentid} not found/wrong status/already tracking.");
         }
     }
 
@@ -681,12 +681,12 @@ EOS;
                 $message = get_string('enrol:alert:success', 'tapsenrol', $a);
             } else {
                 // User not found.
-                error_log("tapsenrol::trigger_workflow_no_approval()\n\tUser with staff ID {$enrolment->staffid} not found.\n"
+                debugging("tapsenrol::trigger_workflow_no_approval()\n\tUser with staff ID {$enrolment->staffid} not found.\n"
                         . "\tEnrolment ID: {$enrolmentid}\n\tSponsor: {$formdata->sponsorfirstname} {$formdata->sponsorlastname} ({$formdata->sponsoremail})");
             }
         } else {
             // Enrolment not found/already tracking.
-            error_log("tapsenrol::trigger_workflow_no_approval()\n\tEnrolment ID {$enrolmentid} not found/wrong status/already tracking.");
+            debugging("tapsenrol::trigger_workflow_no_approval()\n\tEnrolment ID {$enrolmentid} not found/wrong status/already tracking.");
         }
 
         return $message;
