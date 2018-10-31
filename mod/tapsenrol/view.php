@@ -48,7 +48,7 @@ if (!$tapsenrol->check_installation()) {
     echo $output->alert(html_writer::tag('p', get_string('installationissue', 'tapsenrol')), 'alert-danger', false);
 } else {
     $canview = $canviewclasses = $PAGE->user_is_editing();
-    if (($USER->auth == 'saml' && $USER->idnumber != '') || is_siteadmin()) {
+    if (($USER->idnumber != '') || is_siteadmin()) {
         $canview = true;
 
         echo $tapsenrol->enrolment_check($USER->idnumber, true);
@@ -62,6 +62,8 @@ if (!$tapsenrol->check_installation()) {
                 $canviewclasses = true;
             }
         }
+    } else {
+        debugging('User has no ID Number');
     }
 
     if ($canview) {

@@ -146,7 +146,7 @@ function tapsenrol_cm_info_view(cm_info $cm) {
         $output .= $renderer->alert(html_writer::tag('p', get_string('installationissue', 'tapsenrol')), 'alert-danger', false);
     } else {
         $canview = $canviewclasses = $PAGE->user_is_editing();
-        if ($USER->auth == 'saml' && $USER->idnumber != '') {
+        if ($USER->idnumber != '') {
             $canview = true;
 
             $output .= $tapsenrol->enrolment_check($USER->idnumber, true);
@@ -164,6 +164,8 @@ function tapsenrol_cm_info_view(cm_info $cm) {
             if ($canviewclasses) {
                $canviewclasses = $cm->uservisible;
             }
+        } else {
+            debugging('User has no ID Number');
         }
 
         $enrolmentoutput = '';
