@@ -154,7 +154,7 @@ WHERE
     h.EMPLOYEE_NUMBER =  :staffid
 EOS;
             $supidnumber = $DB->get_field_sql($supsql, ['staffid' => $staffid]);
-            $supid = $DB->get_field('user', 'id', ['idnumber' => str_pad($supidnumber, 6, '0', STR_PAD_LEFT), 'confirmed' => 1, 'suspended' => 0, 'deleted' => 0]);
+            $supid = $DB->get_field('user', 'id', ['idnumber' => $supidnumber, 'confirmed' => 1, 'suspended' => 0, 'deleted' => 0]);
             if ($supid && !in_array($supid, $appraisers)) {
                 // Need to update permissions (add).
                 costcentre::update_user_permissions($supid, $this->admin->groupid, [costcentre::APPRAISER]);

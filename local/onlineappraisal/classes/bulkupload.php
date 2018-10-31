@@ -210,8 +210,7 @@ class bulkupload {
         $data = json_decode(file_get_contents($this->path . 'bulk_upload.json'));
         foreach ($data as $users) {
             $this->rowcount++;
-            foreach($users as $user) {
-                $staffid = str_pad($user, 6, '0', STR_PAD_LEFT);
+            foreach($users as $staffid) {
                 if ($staffid !== '000000' && !isset($this->users[$staffid])) {
                     $this->usercount++;
                     try {
@@ -263,9 +262,7 @@ class bulkupload {
 
         foreach ($data as $appraisal) {
             $appraisee = $appraiser = $signoff = $groupleader = null;
-            foreach ($appraisal as $type => $intstaffid) {
-                // From original upload so needs padding.
-                $staffid = str_pad($intstaffid, 6, '0', STR_PAD_LEFT);
+            foreach ($appraisal as $type => $staffid) {
                 // Intentional variable variable.
                 $$type = (empty($staffid) || empty($users->{$staffid})) ? null : $users->{$staffid};
             }

@@ -49,7 +49,6 @@ class user_update {
 
         foreach($adds as $add) {
             try {
-                $add->staffid = str_pad($add->staffid, 6, '0', STR_PAD_LEFT);
                 if ($this->is_deleted($add->staffid)) {
                     $errorcount++;
                     // Log error.
@@ -112,7 +111,6 @@ class user_update {
         $unsuspends = $this->get_users_to_unsuspend();
 
         foreach ($unsuspends as $unsuspend) {
-            $unsuspend->staffid = str_pad($unsuspend->staffid, 6, '0', STR_PAD_LEFT);
             if (empty($this->check_ad($unsuspend->staffid))) {
                 $errorcount++;
                 // Log error.
@@ -154,7 +152,6 @@ class user_update {
 
         foreach ($suspends as $suspend) {
             try {
-                $suspend->staffid = str_pad($suspend->staffid, 6, '0', STR_PAD_LEFT);
                 $DB->execute(
                         'UPDATE {user} SET suspended = 1, timemodified = :time WHERE id = :id',
                         ['time' => time(), 'id' => $suspend->uid]
@@ -194,7 +191,6 @@ class user_update {
 
         foreach ($ccupdates as $ccupdate) {
             try {
-                $ccupdate->staffid = str_pad($ccupdate->staffid, 6, '0', STR_PAD_LEFT);
                 $params = [
                     'icq' => "{$ccupdate->companycode}-{$ccupdate->centrecode}",
                     'department' => $ccupdate->centrename,

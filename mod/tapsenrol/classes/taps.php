@@ -427,7 +427,7 @@ class taps {
         global $DB;
 
         $params = array();
-        $params['staffid'] = str_pad($staffid, 6, '0', STR_PAD_LEFT);
+        $params['staffid'] = $staffid;
         $courseidwhere = '';
         if (!is_null($courseid)) {
             $params['courseid'] = $courseid;
@@ -492,7 +492,7 @@ class taps {
         }
 
         $cpd = new stdClass();
-        $cpd->staffid = str_pad($staffid, 6, '0', STR_PAD_LEFT);
+        $cpd->staffid = $staffid;
         $cpd->classname = $classtitle;
         $cpd->provider = $providername;
         $cpd->classcompletiontime = $completiontime;
@@ -639,7 +639,7 @@ class taps {
 
         // Setup enrolment object.
         $enrolment = new stdClass();
-        $enrolment->staffid = str_pad($staffid, 6, '0', STR_PAD_LEFT);
+        $enrolment->staffid = $staffid;
         $enrolment->classid = $classid;
 
         // Does a not cancelled enrolment exist?.

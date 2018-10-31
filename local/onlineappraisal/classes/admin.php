@@ -590,7 +590,7 @@ class admin {
         if ($full) {
             foreach ($users as $user) {
                 if (!empty($user->supidnumber)) {
-                    $user->auid2 = $DB->get_field('user', 'id', ['idnumber' => str_pad($user->supidnumber, 6, '0', STR_PAD_LEFT), 'confirmed' => 1, 'suspended' => 0, 'deleted' => 0]);
+                    $user->auid2 = $DB->get_field('user', 'id', ['idnumber' => $user->supidnumber, 'confirmed' => 1, 'suspended' => 0, 'deleted' => 0]);
                 } else {
                     $user->auid2 = null;
                 }

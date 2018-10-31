@@ -84,5 +84,16 @@ function xmldb_local_admin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111601, 'local', 'admin');
     }
 
+    if ($oldversion < 2015111609) {
+        $tablecols = ['user' => 'idnumber', 'local_admin_user_update_log' => 'staffid', 'local_taps_enrolment' => 'staffid'];
+
+        foreach ($tablecols as $table => $col) {
+            $DB->execute("UPDATE {{$table}} SET $col = REPLACE(LTRIM(REPLACE($col, '0', ' ')), ' ', '0')");
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111609, 'local', 'admin');
+    }
+
     return true;
 }

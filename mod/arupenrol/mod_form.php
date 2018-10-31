@@ -171,7 +171,7 @@ class mod_arupenrol_mod_form extends moodleform_mod {
         }
 
         if (!empty($defaultvalues['keyvalue'])) {
-            $this->_keyvalue = str_pad($defaultvalues['keyvalue'], 6, '0', STR_PAD_LEFT);
+            $this->_keyvalue = $defaultvalues['keyvalue'];
         }
 
         $keylength = strlen($this->_keyvalue);

@@ -50,11 +50,9 @@ class enrolment_check extends \moodleform {
         }
 
         $staffids = explode("\n", $data['staffids']);
-        foreach ($staffids as $origstaffid) {
-            $staffid = str_pad(trim($origstaffid), 6, '0', STR_PAD_LEFT);
-            if (strlen($staffid) !== 6 || !ctype_digit($staffid)) {
-                
-                $errors['staffids'] .= get_string('enrolmentcheck:error:staffid', 'local_admin', format_string($origstaffid));
+        foreach ($staffids as $staffid) {
+            if (!ctype_digit($staffid)) {
+                $errors['staffids'] .= get_string('enrolmentcheck:error:staffid', 'local_admin', format_string($staffid));
             }
         }
 

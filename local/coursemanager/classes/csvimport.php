@@ -240,9 +240,6 @@ class csvimport {
             if (!isset($data[$col])) {
                 $data[$col] = '';
             }
-            if ($col === 'staffid') {
-                $data[$col] = str_pad($data[$col], 6, '0', STR_PAD_LEFT);
-            }
         }
         return $data;
     }

@@ -127,10 +127,17 @@ class auth_plugin_saml extends auth_plugin_ldap {
             unset($GLOBALS['samlloginattributes']);
 
             $result['username'] = $username;
-            return $result;
+            //return $result;
         } else {
-            return parent::get_userinfo($username);
+            //return parent::get_userinfo($username);
+            $result = parent::get_userinfo($username);
         }
+        
+        if (isset($result['idnumber'])) {
+            $result['idnumber'] = ltrim($result['idnumber'], 0);
+        }
+
+        return $result;
     }
 
     /**

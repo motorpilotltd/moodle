@@ -31,8 +31,7 @@ if ($fromform) {
     // Process and check enrolments...
     $tapsenrol = new tapsenrol($fromform->cm);
     $staffids = explode("\n", $fromform->staffids);
-    foreach ($staffids as $origstaffid) {
-        $staffid = str_pad(trim($origstaffid), 6, '0', STR_PAD_LEFT);
+    foreach ($staffids as $staffid) {
         $tapsenrol->enrolment_check($staffid, false);
         $processingresults[] = get_string('enrolmentcheck:processed', 'local_admin', $staffid);
     }
