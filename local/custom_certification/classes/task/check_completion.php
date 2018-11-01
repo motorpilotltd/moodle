@@ -52,13 +52,13 @@ class check_completion extends \core\task\scheduled_task
               cc.id as ccid,
               cc.certifpath
             FROM {certif_user_assignments} cua
-            LEFT HASH JOIN {certif_completions} cc ON cc.userid = cua.userid AND cc.certifid = cua.certifid
+            LEFT JOIN {certif_completions} cc ON cc.userid = cua.userid AND cc.certifid = cua.certifid
             JOIN {certif} c ON c.id = cua.certifid
             WHERE ((cc.status != :statuscompleted AND cc.cronchecked = :cronchecked)
             OR cc.id IS NULL)
             AND c.visible = :visible
             AND c.deleted = :deleted
-            ORDER by cua.certifid
+            ORDER by cua.certifid, cua.userid
         ";
 
         $params = [];
