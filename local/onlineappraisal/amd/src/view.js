@@ -126,7 +126,9 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 });
             }
 
-            if (page === 'successionplan' && parseInt($('#oa-sdp-islocked').val()) === 0) {
+            if (page === 'successionplan'
+                    && parseInt($('#oa-sdp-islocked').val()) === 0
+                    && $('#oa-sdp-view').val() !== 'appraisee') {
                 // Add strength/developmentarea inputs.
                 // Reveal buttons.
                 $('.oa-add-repeating-element').show();
