@@ -510,10 +510,16 @@ class completion
         // 0 => enrolmentid, 1 => timecompleted
         $return = [0 => null, 1 => null];
 
-        if (empty($certification->linkedtapscourseid) || !empty($completionrecord->tapsenrolmentid)) {
-            // Cerificate not linked to TAPS or user already linked to enrolment.
+        if (empty($certification->linkedtapscourseid)) {
+            // Certificate not linked to TAPS.
+            return $return;
+        } else if (!empty($completionrecord->tapsenrolmentid) && !empty($completionrecord->timecompleted)) {
+            // Already exists, maintain state.
+            $return[0] = $completionrecord->tapsenrolmentid;
+            $return[1] = $completionrecord->timecompleted;
             return $return;
         }
+
         $archived = $DB->get_records_select(
                 'certif_completions_archive',
                 'certifid = :certifid AND userid = :userid',
