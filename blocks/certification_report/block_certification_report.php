@@ -49,7 +49,8 @@ class block_certification_report extends block_base {
             $this->content->text .= $this->get_main_report_link();
         }
 
-        if ($reportlinks = $DB->get_records('certif_links', null, 'timecreated DESC')) {
+        $reportlinks = $this->get_report_links();
+        if ($reportlinks) {
             $this->content->text .= html_writer::tag('h3', get_string('heading:reportlinks', 'block_certification_report'));
             $this->content->text .= $renderer->print_reportlink_lists(['reportlinks' => array_values($reportlinks)]);
         }
@@ -133,6 +134,20 @@ EOS;
      */
     public function applicable_formats() {
         return array('all' => true);
+    }
+
+    private function get_report_links() {
+        global $DB, $USER;
+
+        $userregions = $DB->get_record('local_regions_use', ['userid' => $USER->id]);
+        if ($userregions) {
+            $params = ['georegionid' => $userregions->geotapsregionid, 'actregionid' => $userregions->acttapsregionid];
+        } else {
+            $params = ['georegionid' => -1, 'actregionid' => -1];
+        }
+        $select = "(geographicregionid = :georegionid OR geographicregionid = 0) AND (actualregionid = :actregionid OR actualregionid = 0)";
+
+        return $DB->get_records_select('certif_links', $select, $params);
     }
 
 }
