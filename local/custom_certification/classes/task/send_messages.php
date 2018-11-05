@@ -45,6 +45,8 @@ class send_messages extends \core\task\scheduled_task
     public function prepare_expired_messages() {
         global $DB;
 
+        $now = time();
+
         $concat = $DB->sql_concat_join("'-'", ['cm.id', 'cua.userid', 'cc.id']);
         $query = "
             SELECT {$concat} as uniqueid,
@@ -57,22 +59,21 @@ class send_messages extends \core\task\scheduled_task
               JOIN {certif} c ON c.id = cm.certifid
               JOIN {certif_completions} cc ON cc.certifid = cua.certifid AND cc.userid = cua.userid
          LEFT JOIN {certif_completions_archive} cca ON cca.certifid = cc.certifid AND cca.userid = cc.userid
-         LEFT JOIN {certif_exemptions} ce ON ce.certifid = c.id AND ce.userid = cua.userid AND ce.archived = 0 AND (ce.timeexpires = 0 OR ce.timeexpires > :now1)
+         LEFT JOIN {certif_exemptions} ce ON ce.certifid = c.id AND ce.userid = cua.userid AND ce.archived = 0 AND (ce.timeexpires = 0 OR ce.timeexpires > {$now})
          LEFT JOIN {certif_messages_log} cml ON cml.messageid = cm.id AND cml.userid = cua.userid AND cml.messagetypeid = cc.id
              WHERE cm.messagetype = :messagetype
-                   AND (cua.timecreated + cm.donotsendtime) < :now2
+                   AND (cua.timecreated + cm.donotsendtime) < {$now}
                    AND cc.duedate > 0
                    AND cc.progress = 0
-                   AND (cc.duedate) < :now3
+                   AND (cc.duedate) < {$now}
                    AND cca.id IS NOT NULL
                    AND ce.id IS NULL
                    AND c.visible = 1
                    AND c.deleted = 0
+                   AND cml.id IS NULL
         ";
         $params = [];
         $params['messagetype'] = message::TYPE_EXPIRED;
-        $params['now3'] = $params['now2'] = $params['now1'] = time();
-        $params['hours24'] = 24 * 60 * 60;
 
         $messages = $DB->get_records_sql($query, $params, 0, 250);
         foreach($messages as $message){
@@ -83,11 +84,19 @@ class send_messages extends \core\task\scheduled_task
     /**
      * Prepare messages X days before expiry.
      * Sent (once only) within 24 hours of the hitting the triggertime before expiry (if not sent then, never sent).
+     * Sent if progress is 0.
      * Only sent if user clear of donotsendtime window.
      * Only sent if not exempt.
      */
     public function prepare_before_expiry_messages(){
         global $DB;
+
+        $now = time();
+        $hours24 = 24 * 60 * 60;
+        if ($this->get_last_run_time() < ($now - $hours24)) {
+            // Adjust 24 hour window to account for task not running.
+            $hours24 = $now - $this->get_last_run_time() + (6 * 60 * 60);
+        }
 
         $concat = $DB->sql_concat_join("'-'", ['cm.id', 'cua.userid', 'cc.id']);
         $query = "
@@ -100,20 +109,20 @@ class send_messages extends \core\task\scheduled_task
               JOIN {certif_messages} cm ON cm.certifid = cua.certifid
               JOIN {certif} c ON c.id = cm.certifid
               JOIN {certif_completions} cc ON cc.certifid = cua.certifid AND cc.userid = cua.userid
-         LEFT JOIN {certif_exemptions} ce ON ce.certifid = c.id AND ce.userid = cua.userid AND ce.archived = 0 AND (ce.timeexpires = 0 OR ce.timeexpires > :now1)
+         LEFT JOIN {certif_exemptions} ce ON ce.certifid = c.id AND ce.userid = cua.userid AND ce.archived = 0 AND (ce.timeexpires = 0 OR ce.timeexpires > {$now})
          LEFT JOIN {certif_messages_log} cml ON cml.messageid = cm.id AND cml.userid = cua.userid AND cml.messagetypeid = cc.id
              WHERE cm.messagetype = :messagetype
-                   AND (cua.timecreated + cm.donotsendtime) < :now2
+                   AND (cua.timecreated + cm.donotsendtime) < {$now}
                    AND cc.duedate > 0
-                   AND (cc.duedate - cm.triggertime) < :now3 AND (cc.duedate - cm.triggertime) > (:now4 - :hours24)
+                   AND cc.progress = 0
+                   AND (cc.duedate - cm.triggertime) < {$now} AND (cc.duedate - cm.triggertime) > ({$now} - {$hours24})
                    AND ce.id IS NULL
                    AND c.visible = 1
                    AND c.deleted = 0
+                   AND cml.id IS NULL
         ";
         $params = [];
         $params['messagetype'] = message::TYPE_BEFORE_EXPIRY;
-        $params['now4'] = $params['now3'] = $params['now2'] = $params['now1'] = time();
-        $params['hours24'] = 24 * 60 * 60;
 
         $messages = $DB->get_records_sql($query, $params, 0, 250);
         foreach($messages as $message){
@@ -137,6 +146,8 @@ class send_messages extends \core\task\scheduled_task
     public function prepare_overdue_messages(){
         global $DB;
 
+        $now = time();
+
         $concat = $DB->sql_concat_join("'-'", ['cm.id', 'cua.userid', 'cc.id']);
         $query = "
             SELECT {$concat} as uniqueid,
@@ -149,22 +160,21 @@ class send_messages extends \core\task\scheduled_task
               JOIN {certif} c ON c.id = cm.certifid
               JOIN {certif_completions} cc ON cc.certifid = cua.certifid AND cc.userid = cua.userid
          LEFT JOIN {certif_completions_archive} cca ON cca.certifid = cc.certifid AND cca.userid = cc.userid
-         LEFT JOIN {certif_exemptions} ce ON ce.certifid = c.id AND ce.userid = cua.userid AND ce.archived = 0 AND (ce.timeexpires = 0 OR ce.timeexpires > :now1)
+         LEFT JOIN {certif_exemptions} ce ON ce.certifid = c.id AND ce.userid = cua.userid AND ce.archived = 0 AND (ce.timeexpires = 0 OR ce.timeexpires > {$now})
          LEFT JOIN {certif_messages_log} cml ON cml.messageid = cm.id AND cml.userid = cua.userid AND cml.messagetypeid = cc.id
              WHERE cm.messagetype = :messagetype
-                   AND (cua.timecreated + cm.donotsendtime) < :now2
+                   AND (cua.timecreated + cm.donotsendtime) < {$now}
                    AND cc.duedate > 0
                    AND cc.progress = 0
-                   AND (cc.duedate) < :now3
+                   AND (cc.duedate) < {$now}
                    AND cca.id IS NULL
                    AND ce.id IS NULL
                    AND c.visible = 1
                    AND c.deleted = 0
+                   AND cml.id IS NULL
         ";
         $params = [];
         $params['messagetype'] = message::TYPE_OVERDUE;
-        $params['now3'] = $params['now2'] = $params['now1'] = time();
-        $params['hours24'] = 24 * 60 * 60;
 
         $messages = $DB->get_records_sql($query, $params, 0, 250);
         foreach($messages as $message){
@@ -174,7 +184,7 @@ class send_messages extends \core\task\scheduled_task
 
     /**
      * Prepare overdue reminder messages.
-     * Sent after either message::TYPE_EXPIRY OR message::TYPE_OVERDUE.
+     * Sent after either message::TYPE_EXPIRED OR message::TYPE_OVERDUE.
      * Subsequently sent after message::TYPE_OVERDUE_REMINDER.
      * Sent if not exempt.
      * Sent if progress is 0.
@@ -184,6 +194,13 @@ class send_messages extends \core\task\scheduled_task
      */
     public function prepare_overdue_reminder_messages() {
         global $DB;
+
+        $now = time();
+        $hours24 = 24 * 60 * 60;
+        if ($this->get_last_run_time() < ($now - $hours24)) {
+            // Adjust 24 hour window to account for task not running.
+            $hours24 = $now - $this->get_last_run_time() + (6 * 60 * 60);
+        }
 
         $concat = $DB->sql_concat_join("'-'", ['cm.id', 'cua.userid', 'cc.id']);
         $query = "
@@ -196,8 +213,8 @@ class send_messages extends \core\task\scheduled_task
               JOIN {certif_messages} cm ON cm.certifid = cua.certifid
               JOIN {certif} c ON c.id = cm.certifid
               JOIN {certif_completions} cc ON cc.certifid = cua.certifid AND cc.userid = cua.userid
-              JOIN {certif_messages_log} cml ON cml.messageid IN (:messagetype1, :messagetype2, :messagetype3) AND cml.userid = cua.userid AND cml.messagetypeid = cc.id
-         LEFT JOIN {certif_exemptions} ce ON ce.certifid = c.id AND ce.userid = cua.userid AND ce.archived = 0 AND (ce.timeexpires = 0 OR ce.timeexpires > :now1)
+              JOIN {certif_messages_log} cml ON cml.messagetype IN (:messagetype1, :messagetype2, :messagetype3) AND cml.userid = cua.userid AND cml.messagetypeid = cc.id
+         LEFT JOIN {certif_exemptions} ce ON ce.certifid = c.id AND ce.userid = cua.userid AND ce.archived = 0 AND (ce.timeexpires = 0 OR ce.timeexpires > {$now})
              WHERE cm.messagetype = :messagetype
                    AND cc.timecompleted IS NULL
                    AND cc.progress = 0
@@ -205,14 +222,12 @@ class send_messages extends \core\task\scheduled_task
                    AND c.visible = 1
                    AND c.deleted = 0
           GROUP BY cua.userid, cc.id, cm.id, cm.triggertime
-            HAVING (MAX(cml.timesent) - cm.triggertime) < :now2 AND (MAX(cml.timesent) - cm.triggertime) > (:now3 - :hours24)
+            HAVING (MAX(cml.timesent) + cm.triggertime) < {$now} AND (MAX(cml.timesent) + cm.triggertime) > ({$now} - {$hours24})
         ";
         $params = [];
         $params['messagetype1'] = $params['messagetype'] = message::TYPE_OVERDUE_REMINDER;
         $params['messagetype2'] = message::TYPE_OVERDUE;
-        $params['messagetype3'] = message::TYPE_EXPIRY;
-        $params['now3'] = $params['now2'] = $params['now1'] = time();
-        $params['hours24'] = 24 * 60 * 60;
+        $params['messagetype3'] = message::TYPE_EXPIRED;
 
         $messages = $DB->get_records_sql($query, $params, 0, 250);
         foreach($messages as $message){
