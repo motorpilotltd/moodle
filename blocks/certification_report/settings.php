@@ -32,24 +32,4 @@ if ($ADMIN->fulltree) {
             $categoryoptions
         )
     );
-
-    $settings->add(
-        new admin_setting_configtext(
-            'block_certification_report/report_title',
-            get_string('choose_report_title', 'block_certification_report'),
-            get_string('choose_report_title_desc', 'block_certification_report'),
-            'Featured Report',
-            PARAM_TEXT
-        )
-    );
-
-    $settings->add(
-        new admin_setting_configtext(
-            'block_certification_report/report_certifications',
-            get_string('choose_report_certifications', 'block_certification_report'),
-            get_string('choose_report_certifications_desc', 'block_certification_report'),
-            '',
-            PARAM_TEXT
-        )
-    );
 }
