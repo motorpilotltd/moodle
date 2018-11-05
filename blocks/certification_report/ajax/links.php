@@ -18,6 +18,9 @@ define('AJAX_SCRIPT', true);
 
 require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/config.php');
 
+use block_certification_report\certification_report;
+use Horde\Socket\Client\Exception;
+
 require_login();
 
 header('Content-Type: application/json');
@@ -28,11 +31,13 @@ $result->message = '';
 $result->data = array();
 
 try {
+    if (!certification_report::is_admin()) {
+        throw new Exception('No permissions.');
+    }
 
     if (empty($SESSION->block_certif_report)) {
         $SESSION->block_certif_report = new stdClass();
     }
-
 
     $id = required_param('id', PARAM_INT);
     $action = optional_param('action', '', PARAM_ALPHA);
