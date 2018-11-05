@@ -267,7 +267,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'core/log',
                                 location.reload();
                             }
                         });
-                    })
+                    });
                 });
             });
 
