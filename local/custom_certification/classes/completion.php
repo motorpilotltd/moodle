@@ -543,7 +543,7 @@ WHERE
     staffid = :staffid
     AND courseid {$insql1}
     AND {$DB->sql_compare_text('bookingstatus')} {$insql2}
-    AND archived = 0
+    AND (archived IS NULL OR archived = 0)
 EOS;
         $params = array_merge($params1, $params2);
         $params['staffid'] = $DB->get_field('user', 'idnumber', ['id' => $userid]);
