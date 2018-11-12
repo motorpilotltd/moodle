@@ -757,6 +757,9 @@ EOS;
         ];
         $event = event\certification_course_reset::create($params);
         $event->trigger();
+
+        $cache = \cache::make('core', 'coursecompletion');
+        $cache->purge();
     }
 
     /**
