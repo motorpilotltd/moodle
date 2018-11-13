@@ -468,40 +468,40 @@ class block_arup_mylearning_content {
                     'data-url' => $modalurl->out(false),
                 )
             );
-            if (!is_null($th->cpdid)) {
-                if ($hascapabilities['editcpd'] && !$th->locked) {
-                    $editcpdurl = new moodle_url(
-                            '/blocks/arup_mylearning/editcpd.php',
-                            array('cpdid' => $th->cpdid, 'tab' => 'myhistory', 'instance' => $this->_block->instance->id)
-                            );
-                    $actions[] = $OUTPUT->action_icon(
-                        $editcpdurl,
-                        new pix_icon(
-                            't/editstring',
-                            get_string('editcpd', 'block_arup_mylearning')
-                        ),
-                        null,
-                        array('class' => 'action-icon extra-action')
-                    );
-                }
 
-                if ($hascapabilities['deletecpd'] && !$th->locked) {
-                    $deletecpdurl = new moodle_url(
-                            '/blocks/arup_mylearning/deletecpd.php',
-                            array('cpdid' => $th->cpdid, 'tab' => 'myhistory', 'instance' => $this->_block->instance->id)
-                            );
-                    $actions[] = $OUTPUT->action_icon(
-                        $deletecpdurl,
-                        new pix_icon(
-                            'icon_delete',
-                            get_string('deletecpd', 'block_arup_mylearning'),
-                            'block_arup_mylearning'
-                        ),
-                        null,
-                        array('class' => 'action-icon extra-action')
-                    );
-                }
+            if ($hascapabilities['editcpd'] && !$th->locked) {
+                $editcpdurl = new moodle_url(
+                        '/blocks/arup_mylearning/editcpd.php',
+                        array('id' => $th->id, 'tab' => 'myhistory', 'instance' => $this->_block->instance->id)
+                        );
+                $actions[] = $OUTPUT->action_icon(
+                    $editcpdurl,
+                    new pix_icon(
+                        't/editstring',
+                        get_string('editcpd', 'block_arup_mylearning')
+                    ),
+                    null,
+                    array('class' => 'action-icon extra-action')
+                );
             }
+
+            if ($hascapabilities['deletecpd'] && !$th->locked) {
+                $deletecpdurl = new moodle_url(
+                        '/blocks/arup_mylearning/deletecpd.php',
+                        array('id' => $th->id, 'tab' => 'myhistory', 'instance' => $this->_block->instance->id)
+                        );
+                $actions[] = $OUTPUT->action_icon(
+                    $deletecpdurl,
+                    new pix_icon(
+                        'icon_delete',
+                        get_string('deletecpd', 'block_arup_mylearning'),
+                        'block_arup_mylearning'
+                    ),
+                    null,
+                    array('class' => 'action-icon extra-action')
+                );
+            }
+
             $cell->attributes['class'] .= ' actions';
             $cell->text = implode($actions);
             $cells[] = clone($cell);
@@ -611,7 +611,7 @@ class block_arup_mylearning_content {
                         $data = $th->duration ? (float) $th->duration : '';
                         break;
                     case 'learningdescription' :
-                        $data = $th->learningdesc . ' ' . $th->learningdesccont1 . ' ' . $th->learningdesccont2;
+                        $data = $th->learningdesc;
                         break;
                     default :
                         $data = $th->{$field};
@@ -868,8 +868,8 @@ EOS;
         $sql = <<<EOS
 SELECT
     lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.classcompletiondate, lte.duration, lte.durationunits,
-        lte.expirydate, lte.cpdid, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
-        lte.learningdesccont1, lte.learningdesccont2, lte.healthandsafetycategory, lte.usedtimezone, lte.locked,
+        lte.expirydate, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
+        lte.healthandsafetycategory, lte.usedtimezone, lte.locked,
     lte.courseid as course,
     cat.id as categoryid, cat.name as categoryname
 FROM

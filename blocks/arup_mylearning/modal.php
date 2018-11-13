@@ -104,7 +104,7 @@ try {
         echo html_writer::start_tag('div', array('class' => 'modal-lower'));
         if ($enrolment->learningdesc) {
             $data = html_writer::empty_tag('br') .
-                $enrolment->learningdesc . ' ' . $enrolment->learningdesccont1 . ' ' . $enrolment->learningdesccont2;
+                $enrolment->learningdesc;
             echo html_writer::tag('p', html_writer::tag('strong', get_string('modal:learningdesc', 'block_arup_mylearning').':').$data);
         } else if ($enrolment->courseobjectives) {
             $data = html_writer::empty_tag('br') .

@@ -18,7 +18,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 
 $tab = required_param('tab', PARAM_ALPHA);
 $instance = required_param('instance', PARAM_INT);
-$cpdid = required_param('cpdid', PARAM_INT);
+$id = required_param('id', PARAM_INT);
 $confirm = optional_param('confirm', 0, PARAM_INT);
 
 if ($tab == 'rbreport') {
@@ -46,9 +46,9 @@ $PAGE->navbar->add(get_string('deletecpd', 'block_arup_mylearning'));
 $PAGE->set_title(get_string('deletecpd', 'block_arup_mylearning'));
 $PAGE->set_heading(get_string('deletecpd', 'block_arup_mylearning'));
 
-$confirmurl = new moodle_url('/blocks/arup_mylearning/deletecpd.php', array('tab' => $tab, 'instance' => $instance, 'cpdid' => $cpdid, 'confirm' => 1));
+$confirmurl = new moodle_url('/blocks/arup_mylearning/deletecpd.php', array('tab' => $tab, 'instance' => $instance, 'id' => $id, 'confirm' => 1));
 
-$cpd = $DB->get_record('local_taps_enrolment', array('cpdid' => $cpdid, 'staffid' => $USER->idnumber));
+$cpd = $DB->get_record('local_taps_enrolment', array('id' => $id, 'staffid' => $USER->idnumber));
 
 if (!$cpd) {
     $SESSION->block_arup_mylearning->alert = new stdClass();
@@ -61,7 +61,7 @@ if (!$cpd) {
 
     $SESSION->block_arup_mylearning->alert = new stdClass();
 
-    if ($taps->delete_cpd_record($cpdid)) {
+    if ($taps->delete_cpd_record($id)) {
         $SESSION->block_arup_mylearning->alert->message = get_string('alert:success:delete', 'block_arup_mylearning');
         $SESSION->block_arup_mylearning->alert->type = 'alert-success';
     } else {

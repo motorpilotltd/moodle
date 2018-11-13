@@ -82,8 +82,8 @@ class block_arup_mylearning_editcpd_form extends moodleform {
         $mform->addElement('editor', 'learningdesc', get_string('cpd:learningdesc', 'block_arup_mylearning'));
         $mform->setType('learningdesc', PARAM_CLEANHTML);
 
-        $mform->addElement('hidden', 'cpdid');
-        $mform->setType('cpdid', PARAM_INT);
+        $mform->addElement('hidden', 'id');
+        $mform->setType('id', PARAM_INT);
 
         $this->add_action_buttons('true', get_string($this->_customdata['action'].'cpd:save', 'block_arup_mylearning'));
     }

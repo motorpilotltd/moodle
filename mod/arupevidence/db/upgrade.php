@@ -18,7 +18,7 @@
  * Upgrade code for mod_arupevidence
  *
  * @package     mod_arupevidence
- * @copyright   2017 Xantico Ltd 
+ * @copyright   2017 Xantico Ltd
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -123,7 +123,7 @@ function xmldb_arupevidence_upgrade($oldversion) {
         $table = new xmldb_table('arupevidence_users');
         $field = new xmldb_field('itemid', XMLDB_TYPE_INTEGER, 10, null, false, null, null);
 
-        // The cpdid or enrolmentid to be use for retrieving file in mdl_files table
+        // The enrolmentid to be use for retrieving file in mdl_files table
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }

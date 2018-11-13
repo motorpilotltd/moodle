@@ -258,14 +258,6 @@ class daterangelearning extends base {
                     }
                     continue;
                 }
-                if ($filter->field == 'cpd') {
-                    if ($filtervalue == 'cpd') {
-                        $wherestring .= "cpdid > ''";
-                    } else if ($filtervalue == 'lms') {
-                        $wherestring .= "( cpdid = '' OR cpdid IS NULL )";
-                    }
-                    continue;
-                }
                 if (in_array($filter->field, $this->datefields)) {
 
                     $classcompletiondate = $this->filtertodb['classcompletiondate'];
@@ -294,7 +286,7 @@ class daterangelearning extends base {
                                 )
                                 OR
                                 (
-                                    ($classtype = 'Self Paced' OR cpdid > '')
+                                    $classtype = 'Self Paced'
                                     AND
                                     ($classcompletiondate >= $startdate" . $classcompletiondendstring . ")
                                 )
@@ -328,7 +320,7 @@ class daterangelearning extends base {
 
                     if ($filtervalue == 'attended') {
                         $wherestring .= ' OR (
-                            lte.cpdid IS NOT NULL
+                            lte.id IS NOT NULL
                             AND
                             lte.enrolmentid IS NULL
                             AND

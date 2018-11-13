@@ -113,8 +113,8 @@ abstract class base implements renderable, templatable {
         $sql = <<<EOS
 SELECT
     lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.classcompletiondate, lte.duration, lte.durationunits,
-        lte.expirydate, lte.cpdid, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
-        lte.learningdesccont1, lte.learningdesccont2, lte.healthandsafetycategory, lte.usedtimezone,
+        lte.expirydate, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
+        lte.healthandsafetycategory, lte.usedtimezone,
     lte.courseid as course,
     cat.id as categoryid, cat.name as categoryname
 FROM

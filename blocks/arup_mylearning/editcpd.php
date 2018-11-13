@@ -20,9 +20,9 @@ require_once($CFG->dirroot.'/blocks/arup_mylearning/editcpd_form.php');
 $tab = required_param('tab', PARAM_ALPHA);
 $instance = required_param('instance', PARAM_INT);
 
-$cpdid = optional_param('cpdid', 0, PARAM_INT);
+$id = optional_param('id', 0, PARAM_INT);
 $action = 'add';
-if ($cpdid) {
+if ($id) {
     $action = 'edit';
 }
 
@@ -46,7 +46,7 @@ $taps = new \mod_tapsenrol\taps();
 $cpd = new stdClass();
 if ($action == 'edit') {
     require_capability('block/arup_mylearning:editcpd', $context);
-    $cpd = $DB->get_record('local_taps_enrolment', array('cpdid' => $cpdid));
+    $cpd = $DB->get_record('local_taps_enrolment', array('id' => $id));
     if (!$cpd) {
         // No CPD to edit.
         $SESSION->block_arup_mylearning->alert = new stdClass();
@@ -66,7 +66,7 @@ if ($action == 'edit') {
     // Mapping for specific form select options that are not returned as keys.
     $cpd->classcategory = array_search($cpd->classcategory, $taps->get_classcategory());
     $cpd->classtype = array_search($cpd->classtype, $taps->get_classtypes('cpd'));
-    $learningdesc = $cpd->learningdesc . ' ' . $cpd->learningdesccont1 . ' ' . $cpd->learningdesccont2;
+    $learningdesc = $cpd->learningdesc;
     $cpd->learningdesc = ['text' => $learningdesc , 'format' => FORMAT_HTML];
 } else {
     require_capability('block/arup_mylearning:addcpd', $context);
@@ -129,7 +129,7 @@ if ($form->is_cancelled()) {
             break;
         case 'edit' :
             $result = $taps->edit_cpd_record(
-                $data->cpdid,
+                $data->id,
                 $data->classname,
                 $data->provider,
                 $data->classcompletiondate,
@@ -154,16 +154,9 @@ if ($form->is_cancelled()) {
     }
 
     $SESSION->block_arup_mylearning->alert = new stdClass();
-    $SESSION->block_arup_mylearning->alert->type = 'alert-danger';
+    $SESSION->block_arup_mylearning->alert->message = get_string('alert:success:'.$action, 'block_arup_mylearning');
+    $SESSION->block_arup_mylearning->alert->type = 'alert-success';
 
-    if ($result['cpdid'] < 0) {
-        $a = $result['errormessage'];
-        $SESSION->block_arup_mylearning->alert->message = get_string('alert:error:'.$action, 'block_arup_mylearning', $a);
-        $SESSION->block_arup_mylearning->alert->type = '';
-    } else {
-        $SESSION->block_arup_mylearning->alert->message = get_string('alert:success:'.$action, 'block_arup_mylearning');
-        $SESSION->block_arup_mylearning->alert->type = 'alert-success';
-    }
     redirect($redirecturl);
     exit;
 }

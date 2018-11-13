@@ -10,7 +10,6 @@ function xmldb_local_learningrecordstore_install() {
     $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
     $table->add_field('staffid', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL);
     $table->add_field('enrolmentid', XMLDB_TYPE_INTEGER, '10');
-    $table->add_field('cpdid', XMLDB_TYPE_INTEGER, '10');
     $table->add_field('classid', XMLDB_TYPE_INTEGER, '10');
     $table->add_field('classname', XMLDB_TYPE_TEXT);
     $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10');
@@ -28,7 +27,6 @@ function xmldb_local_learningrecordstore_install() {
     $table->add_field('certificateno', XMLDB_TYPE_TEXT);
     $table->add_field('expirydate', XMLDB_TYPE_INTEGER, '10');
     $table->add_field('bookingstatus', XMLDB_TYPE_TEXT);
-    $table->add_field('personid', XMLDB_TYPE_INTEGER, '10');
     $table->add_field('classstarttime', XMLDB_TYPE_INTEGER, '10');
     $table->add_field('classendtime', XMLDB_TYPE_INTEGER, '10');
     $table->add_field('classcompletiondate', XMLDB_TYPE_INTEGER, '10');
@@ -37,8 +35,6 @@ function xmldb_local_learningrecordstore_install() {
     $table->add_field('classcost', XMLDB_TYPE_NUMBER, 20);
     $table->add_field('classcostcurrency', XMLDB_TYPE_TEXT);
     $table->add_field('learningdesc', XMLDB_TYPE_TEXT);
-    $table->add_field('learningdesccont1', XMLDB_TYPE_TEXT);
-    $table->add_field('learningdesccont2', XMLDB_TYPE_TEXT);
     $table->add_field('timezone', XMLDB_TYPE_TEXT);
     $table->add_field('usedtimezone', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, false, 'UTC');
     $table->add_field('pricebasis', XMLDB_TYPE_TEXT);
@@ -53,7 +49,7 @@ function xmldb_local_learningrecordstore_install() {
     $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
 
     $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-    $table->add_key('enrolmentid_cpdid', XMLDB_KEY_UNIQUE, array('enrolmentid', 'cpdid'));
+    $table->add_key('enrolmentid_cpdid', XMLDB_KEY_UNIQUE, array('enrolmentid'));
 
     $table->add_index('staffid', XMLDB_INDEX_NOTUNIQUE, array('staffid'));
 

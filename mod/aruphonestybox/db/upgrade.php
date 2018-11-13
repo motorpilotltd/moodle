@@ -77,29 +77,6 @@ function xmldb_aruphonestybox_upgrade($oldversion) {
             }
         }
 
-        // Migrate data from learning description continuation fields.
-        $instances = $DB->get_records('aruphonestybox');
-        foreach ($instances as $instance) {
-            $instance->learningdesc = $instance->learningdesc
-                    . ' ' . $instance->learningdesccont1
-                    . ' ' . $instance->learningdesccont2;
-            $instance->learningdesccont1 = null;
-            $instance->learningdesccont2 = null;
-            $DB->update_record('aruphonestybox', $instance);
-        }
-
-        // Remove learning description continuation fields
-        $removefields = array(
-            new xmldb_field('learningdesccont1'),
-            new xmldb_field('learningdesccont2'),
-        );
-        // Launch field removal.
-        foreach ($removefields as $field) {
-            if ($dbman->field_exists($table, $field)) {
-                $dbman->drop_field($table, $field);
-            }
-        }
-
         // Savepoint reached.
         upgrade_plugin_savepoint(true, 2015111602, 'mod', 'aruphonestybox');
     }

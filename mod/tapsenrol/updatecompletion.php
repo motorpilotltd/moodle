@@ -121,7 +121,7 @@ if (isset($_POST['submit'])) {
                     // Everyone completes now.
                     $completiontime = time();
                 }
-                $result = $taps->set_status($enrolmentid, 'Full Attendance', $completiontime);
+                $result = $taps->set_status($enrolment, 'Full Attendance', $completiontime);
                 $a->errormessage = $result->status;
                 if (!$result->success) {
                     echo html_writer::tag('p', get_string('completionfailed', 'tapsenrol', $a));

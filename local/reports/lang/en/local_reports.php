@@ -64,7 +64,6 @@ $string['learninghistory:bookingstatus'] = 'Booking Status';
 $string['learninghistory:classcost'] = 'Standard Price';
 $string['learninghistory:classcostcurrency'] = 'Price Currency';
 $string['learninghistory:jobnumber'] = 'Job Number';
-$string['learninghistory:cpdid'] = 'CPD id';
 $string['learninghistory:cpd'] = 'CPD';
 $string['learninghistory:lms'] = 'LMS';
 $string['learninghistory:cpdandlms'] = 'CPD and LMS';
