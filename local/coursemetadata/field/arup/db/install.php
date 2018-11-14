@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
  * Post-install script.
  */
 function xmldb_coursemetadatafield_arup_install() {
-    global $CFG;
+    global $CFG, $DB;
 
     require_once("$CFG->dirroot/local/coursemetadata/classes/define_base.php");
     require_once("$CFG->dirroot/local/coursemetadata/field/arup/define.class.php");
@@ -45,10 +45,16 @@ function xmldb_coursemetadatafield_arup_install() {
     $data->required = 0;
     $data->locked = 0;
     $data->visible = COURSEMETADATA_VISIBLE_ALL;
-    $data->forceunique=0;
+    $data->forceunique = 0;
     $data->defaultdata = '';
     $data->defaultdataformat = FORMAT_HTML;
     $data->restricted = 0;
 
     $formfield->define_save($data);
+
+    $dbfamily = $DB->get_dbfamily();
+    if ($dbfamily == 'mssql') {
+        $DB->execute('CREATE FULLTEXT INDEX ON {coursemetadata_arup} (keywords) KEY INDEX mdl_courarup_cou_ix ON moodlecoursesearch');
+    }
+
 }

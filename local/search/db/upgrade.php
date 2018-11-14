@@ -48,16 +48,5 @@ function xmldb_local_search_upgrade($oldversion = 0) {
         upgrade_plugin_savepoint(true, 2015111603, 'local', 'search');
     }
 
-    if ($oldversion < 2015111604) {
-
-        $dbfamily = $DB->get_dbfamily();
-        if ($dbfamily == 'mssql') {
-            $DB->execute('CREATE FULLTEXT INDEX ON {coursemetadata_arup} (keywords) KEY INDEX mdl_courarup_cou_ix ON moodlecoursesearch');
-        }
-
-        // Main savepoint reached.
-        upgrade_plugin_savepoint(true, 2015111604, 'local', 'search');
-    }
-
     return true;
 }
