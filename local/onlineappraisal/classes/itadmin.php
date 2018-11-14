@@ -430,8 +430,8 @@ class itadmin {
         // Find users from the costcentre configuration.
         $ccroles = costcentre::get_cost_centre_users($appraisal->costcentre, costcentre::BUSINESS_ADMINISTRATOR);
 
-        foreach ($ccroles as $ccadmin) {
-            if ($ccadminuser = $DB->get_record('user', array('id' => $ccadmin->userid))) {
+        foreach ($ccroles as $ccadminuserid => $ccadminpermissions) {
+            if ($ccadminuser = $DB->get_record('user', array('id' => $ccadminuserid))) {
                 $ccadminuser->fullname = fullname($ccadminuser);
                 $admins[] = $ccadminuser;
             }
