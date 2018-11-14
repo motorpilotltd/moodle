@@ -54,7 +54,7 @@ function xmldb_coursemetadatafield_arup_install() {
 
     $dbfamily = $DB->get_dbfamily();
     if ($dbfamily == 'mssql') {
-        $DB->execute('CREATE FULLTEXT INDEX ON {coursemetadata_arup} (keywords) KEY INDEX mdl_courarup_cou_ix ON moodlecoursesearch');
+        $DB->execute('CREATE FULLTEXT INDEX ON {coursemetadata_arup} (keywords) KEY INDEX mdl_courarup_id_pk ON moodlecoursesearch');
     }
 
 }
