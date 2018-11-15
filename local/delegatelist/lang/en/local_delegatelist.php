@@ -48,6 +48,7 @@ $string['table:phone'] = 'Phone';
 $string['table:signature'] = 'Signature';
 $string['table:sponsor'] = 'Approver';
 $string['table:sponsoremail'] = 'Approver email';
+$string['table:sponsorname'] = 'Approver name';
 $string['table:sponsorfirstname'] = 'Approver firstname';
 $string['table:sponsorlastname'] = 'Approver lastname';
 $string['table:status'] = 'Status';

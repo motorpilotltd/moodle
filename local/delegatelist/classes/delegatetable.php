@@ -106,7 +106,7 @@ class delegatetable extends table_sql {
     public function initialise_download() {
         $columns = array('firstname', 'lastname', 'staffid', 'department', 'icq', 'phone1', 'address', 'bookingstatus');
         if ($this->_delegatelist->has_capability('manager')) {
-            array_push($columns, 'sponsorfirstname', 'sponsorlastname', 'sponsoremail');
+            array_push($columns, 'sponsorname', 'sponsoremail');
         }
         array_push($columns, 'timeaccess');
 
@@ -124,8 +124,7 @@ class delegatetable extends table_sql {
             get_string('table:status', 'local_delegatelist'),
         );
         if ($this->_delegatelist->has_capability('manager')) {
-            array_push($headers, get_string('table:sponsorfirstname', 'local_delegatelist'));
-            array_push($headers, get_string('table:sponsorlastname', 'local_delegatelist'));
+            array_push($headers, get_string('table:sponsorname', 'local_delegatelist'));
             array_push($headers, get_string('table:sponsoremail', 'local_delegatelist'));
         }
         array_push($headers, get_string('table:lastaccess', 'local_delegatelist'));
@@ -293,7 +292,8 @@ class delegatetable extends table_sql {
 
             case 'signature' :
                 return '';
-
+            case 'sponsorname':
+                return $row->sponsorfirstname . ' ' . $row->sponsorlastname;
             case 'sponsorlastname' :
                 $content = $row->sponsorfirstname . ' ' . $row->sponsorlastname;
                 $content .= html_writer::empty_tag('br');
