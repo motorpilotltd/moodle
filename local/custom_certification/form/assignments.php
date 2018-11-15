@@ -112,7 +112,12 @@ class certification_assignments_form extends \moodleform
 
 
         foreach ($certif->assignedcohorts as $cohort) {
-            $cohortstable .= \html_writer::start_tag('tr');
+            $attr = [];
+
+            if (!$cohort->visible) {
+                $attr['class'] = 'dimmed_text';
+            }
+            $cohortstable .= \html_writer::start_tag('tr', $attr);
             $cohortstable .= \html_writer::tag('td', $cohort->name);
             if (isset($certif->assignments[$cohort->assignmentid])) {
 
