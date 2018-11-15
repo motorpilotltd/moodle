@@ -1540,10 +1540,10 @@ $string['z:legacy:pdf:summary:six_month_review'] = 'Six Month Review Comments:';
 // Itadmin lines.
 $string['itadmin:appraisaladministrator'] = 'Appraisal Administrator';
 $string['itamdin:appraisalsummary'] = 'Appraisal Summary';
-$string['itadmin:changeroles'] = 'If you need to change the Appraiser, Leader Sign Off or Sign Off then you will need to contact the appraisal administrator listed below for this cost centre {$a}';
+$string['itadmin:changeroles'] = 'If you need to change the Appraiser, Leader Sign Off or Sign Off then you will need to contact one of the appraisal administrators, listed below, for this cost centre ({$a})';
 $string['itadmin:appraisalsummary'] = 'Appraisal Summary';
 $string['itadmin:appraisalstatus'] = 'Appraisal Status';
-$string['itadmin:statuschangetext'] = 'You can change the status of the appraisal by using the drop down below. NB: before the change occurs you will be asked to enter a reason (i.e. Service Desk Ticket) that will be displayed to all who have access to the appraisal to ensure transparency and have a full audit trail.';
+$string['itadmin:statuschangetext'] = 'You can change the status of the appraisal by using the drop down below. NB: before the change occurs you will be asked to enter a reason (i.e. Service Desk Ticket) that will be displayed to all who have access to the appraisal to ensure transparency and that there is a full audit trail.';
 $string['itadmin:changestatus'] = 'Change Status';
 $string['itadmin:change'] = 'Change';
 $string['itadmin:selectstatus'] = 'Select Status';
