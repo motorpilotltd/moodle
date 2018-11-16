@@ -44,7 +44,9 @@ class backup_facetoface_activity_structure_step extends backup_activity_structur
             'confirmationsubject', 'confirmationinstrmngr', 'confirmationmessage', 'waitlistedsubject', 'waitlistedmessage',
             'cancellationsubject', 'cancellationinstrmngr', 'cancellationmessage', 'remindersubject', 'reminderinstrmngr',
             'remindermessage', 'reminderperiod', 'requestsubject', 'requestinstrmngr', 'requestmessage',
-            'approvalreqd', 'allowcancellationsdefault'));
+/* BEGIN CORE MOD */
+            'approvalreqd', 'allowcancellationsdefault', 'completionattended', 'completionbooked'));
+/* END CORE MOD */
 
         $sessions = new backup_nested_element('sessions');
 
