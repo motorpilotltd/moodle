@@ -54,9 +54,7 @@ class mod_facetoface_mod_form extends moodleform_mod {
         $this->standard_intro_elements();
 
         $mform->addElement('text', 'thirdparty', get_string('thirdpartyemailaddress', 'facetoface'), array('size' => '64'));
-/* BEGIN CORE MOD */
-        $mform->setType('thirdparty', PARAM_RAW);
-/* END CORE MOD */
+        $mform->setType('thirdparty', PARAM_NOTAGS);
         $mform->addHelpButton('thirdparty', 'thirdpartyemailaddress', 'facetoface');
 
         $mform->addElement('checkbox', 'thirdpartywaitlist', get_string('thirdpartywaitlist', 'facetoface'));
@@ -73,26 +71,34 @@ class mod_facetoface_mod_form extends moodleform_mod {
         $mform->addElement('checkbox', 'approvalreqd', get_string('approvalreqd', 'facetoface'));
         $mform->addHelpButton('approvalreqd', 'approvalreqd', 'facetoface');
 
-        $mform->addElement('header', 'calendaroptions', get_string('calendaroptions', 'facetoface'));
+        if (has_capability('mod/facetoface:configurecancellation', $this->context)) {
+            $mform->addElement('advcheckbox', 'allowcancellationsdefault', get_string('allowcancellationsdefault', 'facetoface'));
+            $mform->setDefault('allowcancellationsdefault', 1);
+            $mform->addHelpButton('allowcancellationsdefault', 'allowcancellationsdefault', 'facetoface');
+        }
 
-        $calendaroptions = array(
-            F2F_CAL_NONE   => get_string('none'),
-            F2F_CAL_COURSE => get_string('course'),
-            F2F_CAL_SITE   => get_string('site')
-        );
-        $mform->addElement('select', 'showoncalendar', get_string('showoncalendar', 'facetoface'), $calendaroptions);
-        $mform->setDefault('showoncalendar', F2F_CAL_COURSE);
-        $mform->addHelpButton('showoncalendar', 'showoncalendar', 'facetoface');
-
-        $mform->addElement('advcheckbox', 'usercalentry', get_string('usercalentry', 'facetoface'));
-        $mform->setDefault('usercalentry', true);
-        $mform->addHelpButton('usercalentry', 'usercalentry', 'facetoface');
-
-        $mform->addElement('text', 'shortname', get_string('shortname'), array('size' => 32, 'maxlength' => 32));
-        $mform->setType('shortname', PARAM_TEXT);
-        $mform->addHelpButton('shortname', 'shortname', 'facetoface');
-        $mform->addRule('shortname', null, 'maxlength', 32);
-
+/* BEGIN CORE MOD */
+/* Hide event/calendar options */
+//        $mform->addElement('header', 'calendaroptions', get_string('calendaroptions', 'facetoface'));
+//
+//        $calendaroptions = array(
+//            F2F_CAL_NONE   => get_string('none'),
+//            F2F_CAL_COURSE => get_string('course'),
+//            F2F_CAL_SITE   => get_string('site')
+//        );
+//        $mform->addElement('select', 'showoncalendar', get_string('showoncalendar', 'facetoface'), $calendaroptions);
+//        $mform->setDefault('showoncalendar', F2F_CAL_COURSE);
+//        $mform->addHelpButton('showoncalendar', 'showoncalendar', 'facetoface');
+//
+//        $mform->addElement('advcheckbox', 'usercalentry', get_string('usercalentry', 'facetoface'));
+//        $mform->setDefault('usercalentry', true);
+//        $mform->addHelpButton('usercalentry', 'usercalentry', 'facetoface');
+//
+//        $mform->addElement('text', 'shortname', get_string('shortname'), array('size' => 32, 'maxlength' => 32));
+//        $mform->setType('shortname', PARAM_TEXT);
+//        $mform->addHelpButton('shortname', 'shortname', 'facetoface');
+//        $mform->addRule('shortname', null, 'maxlength', 32);
+/* END CORE MOD */
         // Request message.
         $mform->addElement('header', 'request', get_string('requestmessage', 'facetoface'));
         $mform->addHelpButton('request', 'requestmessage', 'facetoface');
@@ -233,6 +239,8 @@ class mod_facetoface_mod_form extends moodleform_mod {
             if (empty($data->completionattended) || !$autocompletion) {
                 $data->completionattended = 0;
             }
+            $data->usercalentry = 0;
+            $data->showoncalendar = 0;
         }
 
         return $data;

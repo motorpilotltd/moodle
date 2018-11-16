@@ -84,6 +84,9 @@ $context = context_course::instance($course->id);
 $modulecontext = context_module::instance($cm->id);
 require_capability('mod/facetoface:editsessions', $context);
 
+$PAGE->set_cm($cm);
+$PAGE->set_url('/mod/facetoface/sessions.php', array('f' => $f));
+
 $returnurl = "view.php?f=$facetoface->id";
 
 $editoroptions = array(
@@ -139,7 +142,7 @@ $details->details = isset($session->details) ? $session->details : '';
 $details->detailsformat = FORMAT_HTML;
 $details = file_prepare_standard_editor($details, 'details', $editoroptions, $modulecontext, 'mod_facetoface', 'session', $sessionid);
 
-$mform = new mod_facetoface_session_form(null, compact('id', 'f', 's', 'c', 'nbdays', 'customfields', 'course', 'editoroptions'));
+$mform = new mod_facetoface_session_form(null, compact('id', 'facetoface', 'f', 's', 'c', 'nbdays', 'customfields', 'course', 'editoroptions'));
 
 if ($mform->is_cancelled()) {
     redirect($returnurl);
@@ -170,7 +173,6 @@ if ($fromform = $mform->get_data()) { // Form submitted.
         if (!empty($fromform->datedelete[$i])) {
             continue; // Skip this date.
         }
-/* BEGIN CORE MOD */
 
         if (!empty($fromform->timestart[$i]) and !empty($fromform->timefinish[$i])) {
             $date = new stdClass();
@@ -178,7 +180,6 @@ if ($fromform = $mform->get_data()) { // Form submitted.
             $date->timefinish = $fromform->timefinish[$i];
             $sessiondates[] = $date;
         }
-/* END CORE MOD */
     }
 
     $todb = new stdClass();
@@ -189,6 +190,9 @@ if ($fromform = $mform->get_data()) { // Form submitted.
     $todb->duration = $fromform->duration;
     $todb->normalcost = $fromform->normalcost;
     $todb->discountcost = $fromform->discountcost;
+    if (has_capability('mod/facetoface:configurecancellation', $context)) {
+        $todb->allowcancellations = $fromform->allowcancellations;
+    }
 
     $sessionid = null;
     $transaction = $DB->start_delegated_transaction();
@@ -302,6 +306,9 @@ if ($fromform = $mform->get_data()) { // Form submitted.
     $toform->duration = $session->duration;
     $toform->normalcost = $session->normalcost;
     $toform->discountcost = $session->discountcost;
+    if (has_capability('mod/facetoface:configurecancellation', $context)) {
+        $toform->allowcancellations = $session->allowcancellations;
+    }
 
     if ($session->sessiondates) {
         $i = 0;
@@ -336,8 +343,7 @@ if ($c) {
 
 $pagetitle = format_string($facetoface->name);
 
-$PAGE->set_cm($cm);
-$PAGE->set_url('/mod/facetoface/sessions.php', array('f' => $f));
+
 $PAGE->set_title($pagetitle);
 $PAGE->set_heading($course->fullname);
 
