@@ -134,6 +134,8 @@ class lyndacourse extends \data_object {
      * @return self[]|int
      */
     private static function handlesearch($countonly, $keyword, $regionid, $page, $perpage) {
+        global $DB;
+
         if (empty($keyword)) {
             if ($countonly) {
                 return 0;
@@ -142,18 +144,29 @@ class lyndacourse extends \data_object {
             }
         }
 
-        global $DB;
-        $wheresql = 'WHERE lrrc.id IS NULL';
+        $obj = new self();
+        $allfields = $obj->required_fields + array_keys($obj->optional_fields);
+        $fieldlist = [];
+        foreach ($allfields as $field) {
+            $fieldlist[] = "llc.$field";
+        }
+
+        $wheresql = ' WHERE lrrc.id IS NULL ';
         $params = [];
+        $orderby = 'title ASC';
 
         if ($keyword != ' ') {
-            $wheresql .= " AND " . $DB->sql_like('title', ':keyword', false, false);
-            $params['keyword'] = '%' . $DB->sql_like_escape($keyword) . '%';
+            $searchjoin = "INNER JOIN FREETEXTTABLE({local_lynda_course}, *, :keywords) AS rank_course ON rank_course.[KEY] = llc.id";
+            $params['keywords'] = $keyword;
+            $orderby = 'rank_course.[RANK] DESC';
+            $fieldlist[] = 'rank_course.[RANK]';
         }
+        $fieldlist = implode(',', $fieldlist);
 
         $url = $DB->sql_concat_join("''",["'https://www.lynda.com/portal/lti/course/'", 'remotecourseid']);
         $sql = "FROM {local_lynda_course} llc
             INNER JOIN {local_lynda_courseregions} llcr ON llcr.regionid = :regionid AND llcr.lyndacourseid = llc.id
+            $searchjoin
             LEFT JOIN {lti} lti ON lti.toolurl = $url
             LEFT JOIN {local_regions_reg_cou} lrrc ON lrrc.courseid = lti.course AND lrrc.regionid = :regionid2
             $wheresql";
@@ -161,20 +174,12 @@ class lyndacourse extends \data_object {
         $params['regionid'] = $regionid;
         $params['regionid2'] = $regionid;
 
-        $obj = new self();
-        $allfields = $obj->required_fields + array_keys($obj->optional_fields);
-        $fieldlist = [];
-        foreach ($allfields as $field) {
-            $fieldlist[] = "llc.$field";
-        }
-        $fieldlist = implode(',', $fieldlist);
-
         if ($countonly) {
             $fields = 'SELECT COUNT(DISTINCT llc.id) ';
             return $DB->count_records_sql($fields . $sql , $params);
         } else {
             $fields = 'SELECT ' . $fieldlist . ' ';
-            if ($datas = $DB->get_records_sql($fields . $sql . 'GROUP BY ' . $fieldlist . ' ORDER BY title ASC', $params, $page * $perpage, $perpage)) {
+            if ($datas = $DB->get_records_sql("$fields $sql GROUP BY $fieldlist ORDER BY $orderby", $params, $page * $perpage, $perpage)) {
 
                 $result = array();
                 foreach ($datas as $data) {

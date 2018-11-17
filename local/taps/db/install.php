@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
  * Post-install script.
  */
 function xmldb_local_taps_install() {
-    global $DB;
+    global $DB, $CFG;
 
     // Add index on HUB view.
 
@@ -48,4 +48,7 @@ function xmldb_local_taps_install() {
         // Use of execute to avoid field names being forced to lowercase when using database_manager::add_index().
         $DB2->execute('CREATE INDEX arupallstafv_emp_ix ON SQLHUB.ARUP_ALL_STAFF_V (EMPLOYEE_NUMBER)');
     }
+
+    require_once("$CFG->dirroot/local/search/db/upgradelib.php");
+    local_search_install_fulltextindexes();
 }

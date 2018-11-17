@@ -30,8 +30,15 @@ $userregion = local_regions_get_user_region($USER);
 $lyndacourseid = required_param('lyndacourseid', PARAM_INT);
 
 require_login();
+
+if( !empty($_SERVER['HTTP_REFERER'])) {
+    $redirect = new moodle_url($_SERVER['HTTP_REFERER']);
+} else {
+    $redirect = new moodle_url('/');
+}
+
 if (!$userregion || !\local_lynda\lib::enabledforregion($userregion->geotapsregionid)) {
-    print_error('Lynda.com is not available in your region');
+    redirect($redirect, get_string('notenabledforregion', 'local_lynda'), null, \core\notification::ERROR);
 }
 
 $PAGE->set_context(context_system::instance());
@@ -57,12 +64,14 @@ $data = ["id"                            => -1,
 ];
 
 $config = get_config('local_lynda');
-if (empty($config->{'ltikey_' . $userregion->geotapsregionid}) || empty($config->{'ltisecret_' . $userregion->geotapsregionid})) {
-    print_error('LTI keys are not configured for your region');
+$ltikey = $config->{'ltikey_' . $userregion->geotapsregionid};
+$ltisecret = $config->{'ltisecret_' . $userregion->geotapsregionid};
+if (empty($ltikey) || empty($ltisecret)) {
+    redirect($redirect, get_string('noltikeys', 'local_lynda'), null, \core\notification::ERROR);
 }
 
-$data['resourcekey'] = $config->{'ltikey_' . $userregion->geotapsregionid};
-$data['password'] = $config->{'ltisecret_' . $userregion->geotapsregionid};
+$data['resourcekey'] = $ltikey;
+$data['password'] = $ltisecret;
 
 $instance = (object) $data;
 list($endpoint, $newparms) = lti_get_launch_data($instance);
