@@ -974,7 +974,8 @@ class index {
                 $return->message .= get_string('error:appraisal:create:appraiseremail', 'local_onlineappraisal');
             }
 
-            // Add comment
+            // Add comment.
+            $a = new stdClass();
             $a->status = get_string('status:1', 'local_onlineappraisal');
             $a->relateduser = fullname($USER);
             $comment = comments::save_comment(
