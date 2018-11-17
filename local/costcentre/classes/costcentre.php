@@ -41,6 +41,8 @@ class costcentre {
     private $action;
     /** @var bool Access all ability. */
     private $canaccessall;
+    /** @var bool HR Admin Access all ability. */
+    private $hraccessall;
     /** @var context The current context. */
     private $context;
     /** @var string The current cost centre. */
@@ -79,7 +81,7 @@ class costcentre {
      * @throws moodle_exception
      */
     public function __construct($page, \local_costcentre\output\renderer $renderer) {
-        global $DB, $SESSION;
+        global $DB, $SESSION, $USER;
 
         if (!isset($SESSION->localcostcentre)) {
             $SESSION->localcostcentre = new stdClass();
@@ -93,6 +95,10 @@ class costcentre {
 
         $this->context = \context_system::instance();
         $this->canaccessall = has_capability('local/costcentre:administer', $this->context);
+
+        $ishradmin = self::is_user($USER->id, array(costcentre::HR_LEADER, costcentre::HR_ADMIN));
+
+        $this->hraccessall = ($ishradmin && has_capability('local/costcentre:administer_hr', $this->context));
 
         $this->set_permission_mappings();
 
@@ -494,7 +500,7 @@ class costcentre {
                 $this->costcentresmenu = $costcentres;
             } else {
                 // Otherwise only BAs can administer cost centres.
-                $this->costcentresmenu = self::get_user_cost_centres($USER->id, self::BUSINESS_ADMINISTRATOR);
+                $this->costcentresmenu = self::get_user_cost_centres($USER->id, [self::BUSINESS_ADMINISTRATOR, self::HR_LEADER, self::HR_ADMIN]);
             }
         }
         return $this->costcentresmenu;

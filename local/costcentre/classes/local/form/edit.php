@@ -164,8 +164,7 @@ class edit extends \moodleform {
                 array('class' => 'select2-user', 'data-placeholder' => get_string('selectusers', 'local_costcentre'))
                 );
         $learningreporter->setMultiple(true);
-
-        if (!$this->costcentre->canaccessall) {
+        if (!$this->costcentre->canaccessall && !$this->costcentre->hraccessall) {
             $mform->freeze('enableappraisal');
             $mform->freeze('groupleaderactive');
             foreach (array('groupleader', 'groupleaderappraisal', 'hrleader', 'hradmin', 'businessadmin') as $type) {
@@ -233,7 +232,7 @@ class edit extends \moodleform {
         // Get data and process.
         $data = $this->get_data();
         if ($data) {
-            if (!$this->costcentre->canaccessall) {
+            if (!$this->costcentre->canaccessall && !$this->costcentre->hraccessall) {
                 unset($data->enableappraisal);
                 unset($data->groupleaderactive);
             }
@@ -263,7 +262,7 @@ class edit extends \moodleform {
     }
 
     private function _pre_validation() {
-        if (isset($_POST['_qf__local_costcentre_local_form_edit']) && !$this->costcentre->canaccessall) {
+        if (isset($_POST['_qf__local_costcentre_local_form_edit']) && (!$this->costcentre->canaccessall && !$this->costcentre->hraccessall)) {
             $originalmappings = $this->costcentre->get_mappings();
             foreach (['groupleader', 'groupleaderappraisal', 'hrleader', 'hradmin', 'businessadmin'] as $type) {
                 $_POST[$type] = empty($originalmappings->{$type}) ? [] : $originalmappings->{$type};

@@ -39,7 +39,9 @@ if (get_config('local_costcentre', 'version')) {
     $settings->add(new admin_setting_configtext($name, $title, $description, '', PARAM_INT));
 
     $fakecap = 'local/costcentre:administer';
-    if (\local_costcentre\costcentre::is_user($USER->id, \local_costcentre\costcentre::BUSINESS_ADMINISTRATOR)) {
+    $isba = \local_costcentre\costcentre::is_user($USER->id, \local_costcentre\costcentre::BUSINESS_ADMINISTRATOR);
+    $ishr = \local_costcentre\costcentre::is_user($USER->id, [\local_costcentre\costcentre::HR_LEADER, \local_costcentre\costcentre::HR_ADMIN]);
+    if ($isba || ($ishr && has_capability('local/costcentre:administer_hr', context_system::instance()))) {
         $fakecap = 'moodle/block:view';
     }
     $adminurl = new moodle_url('/local/costcentre/index.php');
