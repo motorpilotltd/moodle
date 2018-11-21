@@ -53,19 +53,19 @@ if ($showoverview) {
     $isrecertif = null;
     $coursesprogress = [];
     $ragstatus = '';
-    $usercertificationdetails = null;
+    $usercertdetails = null;
     if ($assignmentdata = $certif->get_user_assignments($user->id)) {
-        
+
         $enrolleduser = true;
         $coursesprogress = \local_custom_certification\completion::get_user_progress($certif, $user->id);
-        $usercertificationdetails = \local_custom_certification\completion::get_user_certification_details($certif->id, $user->id);
-        $ragstatus = \local_custom_certification\completion::get_rag_status($usercertificationdetails->timecompleted, $usercertificationdetails->duedate, $usercertificationdetails->assignmentduedate);
-        
+        $usercertdetails = \local_custom_certification\completion::get_user_certification_details($certif->id, $user->id);
+        $ragstatus = \local_custom_certification\completion::get_rag_status($usercertdetails->timecompleted, $usercertdetails->duedate, $usercertdetails->lasttimewindowsopens, $usercertdetails->progress, $usercertdetails->optional);
+
         $isrecertif = local_custom_certification\completion::is_recertification($certif, $user->id);
     }
 
     echo $renderer->display_overview($certif, $certifid, $viewinguser, $userfullname, $assignmentdata,
-                                    $canview, $enrolleduser, $isrecertif, $coursesprogress, $usercertificationdetails, $ragstatus, $canmanage);
+                                    $canview, $enrolleduser, $isrecertif, $coursesprogress, $usercertdetails, $ragstatus, $canmanage);
 
 }
 

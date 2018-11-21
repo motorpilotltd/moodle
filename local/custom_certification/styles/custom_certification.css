@@ -625,19 +625,29 @@ certification-overview > h2 {
     display:none!important;
 }
 
+.status-optional {
+    border: 1px solid #817f7d;
+    border-radius: 0;
+}
+
 .status-red {
-    background-color: #d20d00;
+    background-color:#d20d00;
+    border-radius: 10px;
 }
 
 .status-amber {
-    background-color: #ff9000;
+    height: 0;
+    width: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 17px solid #ff9000;
+    border-radius: 0;
+    margin-top: -3px;
 }
 
 .status-green {
-    background-color: #a6be22;
-}
-.status-optional {
-    border: 1px solid #817f7d;
+    background-color:#a6be22;
+    border-radius: 0;
 }
 
 .status-note {

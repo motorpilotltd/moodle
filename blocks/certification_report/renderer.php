@@ -208,7 +208,7 @@ class block_certification_report_renderer extends plugin_renderer_base {
                         $reset = '';
                     }
                     $cell = $reset . html_writer::span($cell);
-                    $cell .= html_writer::span('', 'report-circle status-' . $certification['ragstatus'] . ' setexemption', ['data-userid' => $user['userdata']->userid, 'data-certifid' => $certificationid]);
+                    $cell .= html_writer::span('', 'report-shape-' . $certification['ragstatus'] . ' setexemption', ['data-userid' => $user['userdata']->userid, 'data-certifid' => $certificationid]);
                     $cell = new html_table_cell($cell);
                     $cell->attributes['class'] = 'text-nowrap td-circle';
                     $cell->id = 'certif_data_' . $user['userdata']->userid . '_' . $certificationid;

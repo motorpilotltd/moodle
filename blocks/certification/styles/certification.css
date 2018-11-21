@@ -39,6 +39,7 @@
 .block_certification .category-progress {
     text-align: right;
 }
+
 .block_certification .category-progress span {
     width: 95%;
     display:inline-block;
@@ -46,31 +47,31 @@
     max-width: 100px;
 }
 
-.block_certification .status-red{
-    background-color:#d20d00;
-}
-
-.block_certification .status-amber{
-    background-color:#ff9000;
-}
-
-.block_certification .status-green{
-    background-color:#a6be22;
-}
-
-.block_certification .certification-center{
-    text-align: center;
-}
 .block_certification .status {
     height: 14px;
     width: 14px;
     display: inline-block;
-    border: 1px solid #817f7d;
     margin-right: 10px;
     vertical-align: text-top;
 }
 
-.block_certification .learner-status-note{
+.block_certification .status-red{
+    background-color:#d20d00;
+}
+
+.block_certification .status-amber {
+    background-color:#ff9000;
+}
+
+.block_certification .status-green {
+    background-color:#a6be22;
+}
+
+.block_certification .certification-center {
+    text-align: center;
+}
+
+.block_certification .learner-status-note {
     color:#6b6b6b;
     font-size:12px;
 }
@@ -95,4 +96,17 @@
     background-color: #c0c0c0;
     border: none;
     color: black;
+}
+
+.block_certification .status-icon-red {
+    border-radius: 11px;
+}
+
+.block_certification .status-icon-amber {
+    background-color: transparent;
+    height: 0;
+    width: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 12px solid #ff9000;
 }
