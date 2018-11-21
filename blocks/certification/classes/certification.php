@@ -119,14 +119,9 @@ class certification {
             /**
              * Get progress
              */
-            $certifprogress = completion::get_user_progress($certification->certifid, $USER->id);
-            if ($certification->lasttimecompleted && ($certification->lasttimeexpires > time() || $certification->lasttimeexpires == 0)) {
+            if ($certification->progress == 0 && $certification->lasttimecompleted && ($certification->lasttimeexpires > time() || $certification->lasttimeexpires == 0)) {
                 // Previous certification completion has not yet expired (or doesn't expire).
                 $certification->progress = 100;
-            } else if ($certification->certifpath == \local_custom_certification\certification::CERTIFICATIONPATH_RECERTIFICATION){
-                $certification->progress = $certifprogress['recertification'];
-            } else {
-                $certification->progress = $certifprogress['certification'];
             }
 
             /**
