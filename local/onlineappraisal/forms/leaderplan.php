@@ -107,6 +107,7 @@ class apform_leaderplan extends moodleform {
                 continue;
             }
             $answers = ($question === 'ldppotential') ? [] : ['' => ''];
+            $class = ($question === 'ldppotential') ? 'select2-general' : '';
             $i = 1;
             $answerstring = "{$question}:answer:{$i}";
             while ($this->str_exists($answerstring)) {
@@ -115,7 +116,7 @@ class apform_leaderplan extends moodleform {
                 $i++;
                 $answerstring = "{$question}:answer:{$i}";
             }
-            $element = $mform->addElement('select', $question, $this->str($question), $answers);
+            $element = $mform->addElement('select', $question, $this->str($question), $answers, ['class' => $class]);
             if ($question === 'ldppotential') {
                 $element->setMultiple(true);
             }
