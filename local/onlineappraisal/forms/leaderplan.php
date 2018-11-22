@@ -108,6 +108,7 @@ class apform_leaderplan extends moodleform {
             }
             $answers = ($question === 'ldppotential') ? [] : ['' => ''];
             $class = ($question === 'ldppotential') ? 'select2-general' : '';
+            $dataattrs = ($question === 'ldppotential') ? ['data-tags' => true] : [];
             $i = 1;
             $answerstring = "{$question}:answer:{$i}";
             while ($this->str_exists($answerstring)) {
@@ -116,7 +117,19 @@ class apform_leaderplan extends moodleform {
                 $i++;
                 $answerstring = "{$question}:answer:{$i}";
             }
-            $element = $mform->addElement('select', $question, $this->str($question), $answers, ['class' => $class]);
+            if ($question === 'ldppotential' && (isset($_POST['ldppotential']) || isset($data->ldppotential))) {
+                // Handle custom additions (user specific);
+                $ldppotentials = [];
+                $filterflags = FILTER_REQUIRE_ARRAY | FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_BACKTICK;
+                $ldppotentials += (array) filter_input(INPUT_POST, 'ldppotential', FILTER_SANITIZE_STRING, $filterflags);
+                $ldppotentials += (isset($data->ldppotential) ? $data->ldppotential : []);
+                foreach ($ldppotentials as $ldppotential) {
+                    if (!in_array($ldppotential, $answers)) {
+                        $answers[$ldppotential] = $ldppotential;
+                    }
+                }
+            }
+            $element = $mform->addElement('select', $question, $this->str($question), $answers, ['class' => $class] + $dataattrs);
             if ($question === 'ldppotential') {
                 $element->setMultiple(true);
             }

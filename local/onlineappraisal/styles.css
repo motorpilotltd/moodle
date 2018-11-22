@@ -404,8 +404,8 @@
 }
 .path-local-onlineappraisal .mform .fitem .fitemtitle select,
 .path-local-onlineappraisal .mform .fitem .felement select {
-  max-width: 100%;
-  width: auto;
+  max-width: 505px;
+  width: 100%;
 }
 .path-local-onlineappraisal .mform .fitem .fitemtitle {
   padding-bottom: 0.8em;
