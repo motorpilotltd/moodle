@@ -127,7 +127,7 @@ class leaderplan extends base {
         }
 
         if (isset($formdata[$fieldname])) {
-            if ($fieldname === 'locked') {
+            if ($fieldname === 'ldplocked') {
                 $field->data = ($formdata[$fieldname]->data ? get_string('form:confirm:cancel:yes', $component) : get_string('form:confirm:cancel:no', $component));
             } else if ($formdata[$fieldname]->type == 'array') {
                 $field->isarray = true;
