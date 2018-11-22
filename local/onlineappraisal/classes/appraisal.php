@@ -288,6 +288,7 @@ class appraisal {
         $this->add_page('form', 'sixmonth');
         $this->add_page('dashboard', 'checkin', false, 'checkins', true, false);
         $this->add_page('form', 'successionplan');
+        $this->add_page('form', 'leaderplan');
         $this->add_page('dashboard', 'help', false, false, true, false);
         $this->add_page('dashboard', 'addfeedback', 'addfeedback', false, false, false);
 
@@ -344,6 +345,12 @@ class appraisal {
             case 'successionplan':
                 // Check if enabled for appraisal.
                 if (empty($this->appraisal->successionplan)) {
+                    return;
+                }
+                break;
+            case 'leaderplan':
+                // Check if enabled for appraisal.
+                if (empty($this->appraisal->leaderplan)) {
                     return;
                 }
                 break;
@@ -475,7 +482,7 @@ class appraisal {
                 )
             );
 
-        $options = array('appraisal' => 'appraisal', 'feedback' => 'feedback', 'feedbackown' => 'feedback', 'successionplan' => 'successionplan');
+        $options = array('appraisal' => 'appraisal', 'feedback' => 'feedback', 'feedbackown' => 'feedback', 'successionplan' => 'successionplan', 'leaderplan' => 'leaderplan');
         foreach ($options as $permission => $option) {
             if (permissions::is_allowed("{$permission}:print", $this->appraisal->permissionsid, $this->appraisal->viewingas, $this->appraisal->archived, $this->appraisal->legacy)) {
                 $object = new stdClass();
@@ -503,7 +510,25 @@ class appraisal {
                 // Not yet saved, remove SDP download link.
                 unset($printvars->options['successionplan']);
             }
+        }
 
+        if (isset($printvars->options['leaderplan'])) {
+            // Only display SDP download link if has been saved.
+            $sql = "SELECT COUNT(lad.id)
+                  FROM {local_appraisal_data} lad
+                  JOIN {local_appraisal_forms} laf ON laf.id = lad.form_id
+                 WHERE laf.form_name = :form_name
+                       AND laf.appraisalid = :appraisalid
+                       AND laf.user_id = :user_id";
+            $params = [
+                'form_name' => 'leaderplan',
+                'appraisalid' => $this->appraisal->id,
+                'user_id' => $this->appraisal->appraisee->id,
+            ];
+            if ($DB->count_records_sql($sql, $params) === 0) {
+                // Not yet saved, remove SDP download link.
+                unset($printvars->options['leaderplan']);
+            }
         }
 
         if (isset($printvars->options['feedback']) && isset($printvars->options['feedbackown'])) {

@@ -166,6 +166,7 @@ abstract class base implements renderable, templatable {
             $permissions['printfeedback'] = permissions::is_allowed('feedback:print', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy)
                     || permissions::is_allowed('feedbackown:print', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
             $permissions['printsuccessionplan'] = permissions::is_allowed('successionplan:print', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
+            $permissions['printleaderplan'] = permissions::is_allowed('leaderplan:print', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
         }
         $permissions['editf2f'] = permissions::is_allowed('f2f:add', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
         $permissions['togglef2f'] = permissions::is_allowed('f2f:complete', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
@@ -189,6 +190,24 @@ abstract class base implements renderable, templatable {
                 $permissions['printsuccessionplan'] = false;
             }
         }
+        if (!empty($permissions['printleaderplan'])) {
+            // Only display SDP download link if has been saved.
+            $sql = "SELECT COUNT(lad.id)
+                  FROM {local_appraisal_data} lad
+                  JOIN {local_appraisal_forms} laf ON laf.id = lad.form_id
+                 WHERE laf.form_name = :form_name
+                       AND laf.appraisalid = :appraisalid
+                       AND laf.user_id = :user_id";
+            $params = [
+                'form_name' => 'leaderplan',
+                'appraisalid' => $appraisal->id,
+                'user_id' => $appraisal->appraisee_userid,
+            ];
+            if ($DB->count_records_sql($sql, $params) === 0) {
+                // Not yet saved, remove download link.
+                $permissions['printleaderplan'] = false;
+            }
+        }
 
         $permissions['haspermissions'] = in_array(true, $permissions);
 
@@ -196,6 +215,7 @@ abstract class base implements renderable, templatable {
         $permissions['notstarted'] = $appraisal->statusid == APPRAISAL_NOT_STARTED && !$permissions['start'] && !$vipnoview;
         $permissions['vipnoview'] = $vipnoview;
         $permissions['togglesuccessionplan'] = !$hrnotoggle && permissions::is_allowed('successionplan:toggle', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
+        $permissions['toggleleaderplan'] = !$hrnotoggle && permissions::is_allowed('leaderplan:toggle', $appraisal->permissionsid, $this->type, $appraisal->archived, $appraisal->legacy);
 
         return $permissions;
     }
@@ -207,8 +227,10 @@ abstract class base implements renderable, templatable {
             'printappraisal' => (new moodle_url('/local/onlineappraisal/print.php', array('appraisalid' => $appraisalid, 'print' => 'appraisal', 'view' => $this->type)))->out(false),
             'printfeedback' => (new moodle_url('/local/onlineappraisal/print.php', array('appraisalid' => $appraisalid, 'print' => 'feedback', 'view' => $this->type)))->out(false),
             'printsuccessionplan' => (new moodle_url('/local/onlineappraisal/print.php', array('appraisalid' => $appraisalid, 'print' => 'successionplan', 'view' => $this->type)))->out(false),
+            'printleaderplan' => (new moodle_url('/local/onlineappraisal/print.php', array('appraisalid' => $appraisalid, 'print' => 'leaderplan', 'view' => $this->type)))->out(false),
             'togglef2f' => (new moodle_url('/local/onlineappraisal/index.php', array('appraisalid' => $appraisalid, 'action' => 'togglef2f')))->out(false),
             'togglesuccessionplan' => (new moodle_url('/local/onlineappraisal/index.php', array('appraisalid' => $appraisalid, 'action' => 'togglesuccessionplan')))->out(false),
+            'toggleleaderplan' => (new moodle_url('/local/onlineappraisal/index.php', array('appraisalid' => $appraisalid, 'action' => 'toggleleaderplan')))->out(false),
         );
         return $urls;
     }

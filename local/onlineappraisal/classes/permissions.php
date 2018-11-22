@@ -253,6 +253,15 @@ class permissions {
         self::add_permissions('successionplan', 'print', 'all', 'all', self::PERMISSION_ALLOWED);
         //successionplan:toggle
         self::add_permissions('successionplan', 'toggle', 'hrleader', array(1,2,3,4,5,6,7));
+        //leaderplan:view
+        self::add_permissions('leaderplan', 'view', 'all', 'all');
+        //leaderplan:add
+        self::add_permissions('leaderplan', 'add', 'appraisee', 'all'); // Fields restricted.
+        self::add_permissions('leaderplan', 'add', 'appraiser', 'all'); // Fields restricted.
+        //leaderplan:print
+        self::add_permissions('leaderplan', 'print', 'all', 'all', self::PERMISSION_ALLOWED);
+        //leaderplan:toggle
+        self::add_permissions('leaderplan', 'toggle', 'hrleader', array(1,2,3,4,5,6,7));
 
         // Special legacy permission.
         //sixmonth:view

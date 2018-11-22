@@ -178,6 +178,58 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 });
             }).fail(notification.exception);
 
+            if (page === 'leaderplan'
+                    && parseInt($('#oa-ldp-islocked').val()) === 0
+                    && $('#oa-ldp-view').val() !== 'appraisee') {
+                // Add ldpstrength/ldpdevelopmentarea inputs.
+                // Reveal buttons.
+                $('.oa-add-repeating-element').show();
+                $('.oa-add-repeating-element').click(function(e){
+                    e.preventDefault();
+                    var that = $(this);
+                    var index = that.data('index');
+                    var newindex = parseInt(index) + 1;
+                    that.data('index', newindex);
+                    var type = that.data('type');
+                    var clone = that.parent().find('#fitem_id_'+type+'_'+index).clone();
+                    clone.prop('id', 'fitem_id_'+type+'_'+newindex);
+                    var label = clone.find('label');
+                    label.prop('for', 'id_'+type+'_'+newindex);
+                    var input = clone.find('input');
+                    input.prop('id', 'id_'+type+'_'+newindex);
+                    input.prop('name', type+'['+newindex+']');
+                    input.val('');
+                    clone.insertBefore(that);
+                });
+            }
+
+            // Confirm LDP unlocking.
+            var ldpstrs = [
+                { key: 'form:leaderplan:confirm:unlock:title', component: 'local_onlineappraisal'},
+                { key: 'form:leaderplan:confirm:unlock:question', component: 'local_onlineappraisal'},
+                { key: 'form:leaderplan:confirm:unlock:yes', component: 'local_onlineappraisal'},
+                { key: 'form:leaderplan:confirm:unlock:no', component: 'local_onlineappraisal'},
+                { key: 'form:save', component: 'local_onlineappraisal'}
+            ];
+            str.get_strings(ldpstrs).done(function(s) {
+                $('#id_submitbutton.oa-unlock-ldp').click(function(e) {
+                    e.preventDefault();
+                    var self = $(this);
+                    var form = self.closest('form');
+                    if (form.find('#id_unlock').is(':checked') === false) {
+                        return;
+                    }
+                    notification.confirm(s[0], s[1], s[2], s[3],
+                        function(){
+                            // Avoid regular leaving page notification.
+                            M.core_formchangechecker.set_form_submitted();
+                            var input = $('<input type="hidden" name="submitbutton" value="' + s[4] + '" />');
+                            form.append(input).submit();
+                        }
+                    );
+                });
+            }).fail(notification.exception);
+
             if ($('#oa-save-nag-modal').length) {
                 // Want to nag after 15 mins and check before trying to save.
                 setTimeout(function() {
