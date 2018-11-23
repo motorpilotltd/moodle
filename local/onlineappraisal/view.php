@@ -105,7 +105,7 @@ $navlist = new \local_onlineappraisal\output\navlist\navlist($oa);
 $regions = $PAGE->blocks->get_regions();
 $PAGE->blocks->add_fake_block($renderer->render($navlist), reset($regions));
 
-$quicklinks = new \local_onlineappraisal\output\quicklinks(current_language());
+$quicklinks = new \local_onlineappraisal\output\quicklinks(current_language(), $oa->page);
 if ($quicklinks->has_content()) {
     $PAGE->blocks->add_fake_block($PAGE->get_renderer('local_onlineappraisal')->render($quicklinks), reset($regions));
 }

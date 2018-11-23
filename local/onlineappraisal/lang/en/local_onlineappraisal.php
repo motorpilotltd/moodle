@@ -38,18 +38,23 @@ $string['setting:quicklinks'] = 'Quick links';
 $string['setting:quicklinks_desc'] = 'Links to be added to the quick links block under the main navigation block.
 
 Enter each quick link on a new line with format:<br>
-item text, link URL, and language code (optional, comma separated list, can be negated with ! at beginning, for displaying the item to users of the specified language only), separated by pipe characters.
+item text, link URL, language code(s), and page(s), separated by pipe characters.
+language codes and page codes are optional (empty indicates all) and should be comma separated list, can be negated with ! at beginning, for displaying the item for/on specific lanaguages/pages
 
 For example...<br>
-1. Shows for all languages except es, pl, nl<br>
-2. Shows for es<br>
-3. Shows for pl, nl<br>
-4. Shows for all
+1. Shows for all languages except es, pl, nl, on all pages<br>
+2. Shows for es, on all pages<br>
+3. Shows for pl, nl, on all pages<br>
+4. Shows for all languages, on all pages
+5. Shows for all languages, on leaderplan page only
+5. Shows for all languages, on all pages except leaderplan page.
 <pre>
 Contribution Guide|https://example.com/guide|!es,pl,nl
 Guía de Contribución|https://example.com/guide-es|es
 Guide for Poland and the Netherlands|https://example.com/guide-pl-nl|pl,nl
 Guide to Appraisal|https://example.com/guide-appraisal
+Leadership Development Plan|https://example.com/leader-plan||leaderplan
+General Info|https://example.com/general-info||!leaderplan
 </pre>';
 $string['settings'] = 'Online appraisal configuration';
 
