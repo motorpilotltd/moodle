@@ -231,7 +231,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     e.preventDefault();
                     var self = $(this);
                     var form = self.closest('form');
-                    if (form.find('#id_unlock').is(':checked') === false) {
+                    if (form.find('#id_ldplocked').is(':checked') !== false) {
                         return;
                     }
                     notification.confirm(s[0], s[1], s[2], s[3],

@@ -58,10 +58,10 @@ class apform_leaderplan extends moodleform {
         $mform->addElement('hidden', 'view', $data->appraisal->viewingas, ['id' => 'oa-ldp-view']);
         $mform->setType('view', PARAM_TEXT);
 
-        $isformlocked = !empty($data->locked);
+        $isformlocked = !empty($data->ldplocked);
         $islockedforuser = ($data->appraiseeedit == APPRAISAL_FIELD_LOCKED) && ($data->appraiseredit == APPRAISAL_FIELD_LOCKED);
         $islocked = (int) ($isformlocked || $islockedforuser); // Integer for JS.
-        $mform->addElement('hidden', 'islockedforuser', $islockedforuser); // For locking unlock checkbox.
+        $mform->addElement('hidden', 'islockedforuser', $islockedforuser); // For locking ability to unlock.
         $mform->setType('islockedforuser', PARAM_INT);
         $mform->addElement('hidden', 'islocked', $islocked, ['id' => 'oa-ldp-islocked']); // For locking other fields as checkbox will be frozen.
         $mform->setType('islocked', PARAM_INT);
@@ -186,21 +186,19 @@ class apform_leaderplan extends moodleform {
         $mform->addElement('textarearup', 'ldpdevelopmentplan', $this->str('ldpdevelopmentplan'), 'rows="3" cols="70"' . $islockedattr, '', '');
         $mform->setType('ldpdevelopmentplan', PARAM_RAW);
 
+        $mform->addElement('arupadvcheckbox', 'ldplocked', '', $this->str('ldplocked'), array('group' => 1), array(0, 1));
+        $mform->disabledIf('ldplocked', 'view', 'eq', 'appraisee');
         if (!$isformlocked) {
-            $mform->addElement('advcheckbox', 'ldplocked', '', $this->str('ldplocked'), array('group' => 1), array(0, 1));
             $mform->disabledIf('ldplocked', 'islocked', 'eq', 1);
-            $mform->disabledIf('ldplocked', 'view', 'eq', 'appraisee');
         } else {
-            $mform->addElement('advcheckbox', 'unlock', '', $this->str('unlock'), array('group' => 1), array(0, 1));
-            $mform->disabledIf('unlock', 'islockedforuser', 'eq', 1);
-            $mform->disabledIf('unlock', 'view', 'eq', 'appraisee');
+            $mform->disabledIf('ldplocked', 'islockedforuser', 'eq', 1);
         }
 
         if (!$islocked || ($isformlocked && !$islockedforuser)) {
             $buttonarray=array();
             $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('form:save', 'local_onlineappraisal'), ['class' => ($isformlocked) ? 'oa-unlock-ldp' : '']);
             if ($isformlocked) {
-                $mform->disabledIf('submitbutton', 'unlock', 'eq', 0);
+                $mform->disabledIf('submitbutton', 'ldplocked', 'eq', 1);
             }
             if (!$isformlocked) {
                 $buttonarray[] = &$mform->createElement('submit', 'submitcontinue', get_string('form:submitcontinue', 'local_onlineappraisal'));
@@ -251,15 +249,14 @@ class apform_leaderplan extends moodleform {
         if (!isset($data->ldppotential) && !$data->islocked) {
             $data->ldppotential = [];
         }
-        // Tidy up control fields.
-        if (!$data->islocked && !empty($data->ldplocked)) {
+        // Locking or unlocking?
+        if (!$data->islocked && $data->ldplocked) {
             $this->locking = true;
         }
-        if (!empty($data->unlock)) {
-            $data->ldplocked = 0;
+        if ($data->islocked && !$data->ldplocked) {
             $this->unlocking = true;
-            unset($data->unlock);
         }
+        // Tidy up control fields.
         if (isset($data->islocked)) {
             unset($data->islocked);
         }
