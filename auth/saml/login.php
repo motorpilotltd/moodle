@@ -35,6 +35,8 @@ redirect_if_major_upgrade_required();
 
 $testsession = optional_param('testsession', 0, PARAM_INT); // test session works properly
 $cancel      = optional_param('cancel', 0, PARAM_BOOL);      // redirect to frontpage, needed for loginhttps
+$anchor      = optional_param('anchor', '', PARAM_RAW);      // Used to restore hash anchor to wantsurl.
+$logintoken  = optional_param('logintoken', '', PARAM_RAW);       // Used to validate the request.
 
 if ($cancel) {
     redirect(new moodle_url('/'));
@@ -72,6 +74,23 @@ $PAGE->set_pagelayout('login');
 // Initialize variables.
 $errormsg = '';
 $errorcode = 0;
+
+// Login page requested session test.
+if ($testsession) {
+    if ($testsession == $USER->id) {
+        if (isset($SESSION->wantsurl)) {
+            $urltogo = $SESSION->wantsurl;
+        } else {
+            $urltogo = $CFG->wwwroot.'/';
+        }
+        unset($SESSION->wantsurl);
+        redirect($urltogo);
+    } else {
+        // TODO: try to find out what is the exact reason why sessions do not work
+        $errormsg = get_string("cookiesnotenabled");
+        $errorcode = 1;
+    }
+}
 
 // Check for timed out sessions.
 if (!empty($SESSION->has_timed_out)) {
@@ -119,13 +138,22 @@ if ($user !== false or $frm !== false or $errormsg !== '') {
     $frm = data_submitted();
 }
 
+// Restore the #anchor to the original wantsurl. Note that this
+// will only work for internal auth plugins, SSO plugins such as
+// SAML / CAS / OIDC will have to handle this correctly directly.
+if ($anchor && isset($SESSION->wantsurl) && strpos($SESSION->wantsurl, '#') === false) {
+    $wantsurl = new moodle_url($SESSION->wantsurl);
+    $wantsurl->set_anchor(substr($anchor, 1));
+    $SESSION->wantsurl = $wantsurl->out();
+}
+
 // Check if the user has actually submitted login data to us.
 if ($frm and isset($frm->username)) { // Login WITH cookies.
 
     $frm->username = trim(core_text::strtolower($frm->username));
 
     if (is_enabled_auth('none') ) {
-        if ($frm->username !== clean_param($frm->username, PARAM_USERNAME)) {
+        if ($frm->username !== core_user::clean_field($frm->username, 'username')) {
             $errormsg = get_string('username').': '.get_string("invalidusername");
             $errorcode = 2;
             $user = null;
@@ -139,7 +167,7 @@ if ($frm and isset($frm->username)) { // Login WITH cookies.
         $frm = false;
     } else {
         if (empty($errormsg)) {
-            $user = authenticate_user_login($frm->username, $frm->password, false, $errorcode);
+            $user = authenticate_user_login($frm->username, $frm->password, false, $errorcode, $logintoken);
         }
     }
 
@@ -217,6 +245,15 @@ if ($frm and isset($frm->username)) { // Login WITH cookies.
                 echo $OUTPUT->footer();
                 exit;
             } else if (intval($days2expire) < 0 ) {
+                if ($externalchangepassword) {
+                    // We end the session if the change password form is external. This prevents access to the site
+                    // until the password is correctly changed.
+                    require_logout();
+                } else {
+                    // If we use the standard change password form, this user preference will be reset when the password
+                    // is changed. Until then it will prevent access to the site.
+                    set_user_preference('auth_forcepasswordchange', 1, $USER);
+                }
                 echo $OUTPUT->header();
                 echo $OUTPUT->confirm(get_string('auth_passwordisexpired', 'auth'), $passwordchangeurl, $urltogo);
                 echo $OUTPUT->footer();
@@ -260,6 +297,25 @@ if (empty($SESSION->wantsurl)) {
             strpos($referer, $CFG->httpswwwroot . '/login/index.php') !== 0) { // There might be some extra params such as ?lang=.
         $SESSION->wantsurl = $referer;
     }
+}
+
+// Redirect to alternative login URL if needed.
+if (!empty($CFG->alternateloginurl)) {
+    $loginurl = new moodle_url($CFG->alternateloginurl);
+
+    $loginurlstr = $loginurl->out(false);
+
+    if (strpos($SESSION->wantsurl, $loginurlstr) === 0) {
+        // We do not want to return to alternate url.
+        $SESSION->wantsurl = null;
+    }
+
+    // If error code then add that to url.
+    if ($errorcode) {
+        $loginurl->param('errorcode', $errorcode);
+    }
+
+    redirect($loginurl->out(false));
 }
 
 // Make sure we really are on the https page when https login required.
@@ -311,7 +367,7 @@ if (!empty($SESSION->loginerrormsg)) {
     if ($errormsg) {
         $SESSION->loginerrormsg = $errormsg;
     }
-    redirect(new moodle_url('/login/index.php'));
+    redirect(new moodle_url($CFG->httpswwwroot . '/login/index.php'));
 }
 
 $PAGE->set_title("$site->fullname: $loginsite");
