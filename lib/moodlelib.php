@@ -5889,7 +5889,13 @@ function email_to_user($user, $from, $subject, $messagetext, $messagehtml = '', 
     // Check if using the true address is true, and the email is in the list of allowed domains for sending email,
     // and that the senders email setting is either displayed to everyone, or display to only other users that are enrolled
     // in a course with the sender.
-    } else if ($usetrueaddress && can_send_from_real_email_address($from, $user)) {
+/* BEGIN CORE MOD */
+// Drop domain check but retain maildisplay check (ported from can_send_from_real_email_address()).
+    } else if ($usetrueaddress &&
+            ($from->maildisplay == core_user::MAILDISPLAY_EVERYONE
+            || ($from->maildisplay == core_user::MAILDISPLAY_COURSE_MEMBERS_ONLY
+            && enrol_get_shared_courses($user, $from, false, true)))) {
+/* END CORE MOD */
         if (!validate_email($from->email)) {
             debugging('email_to_user: Invalid from-email '.s($from->email).' - not sending');
             // Better not to use $noreplyaddress in this case.

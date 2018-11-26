@@ -519,10 +519,12 @@ class delegatetable extends table_sql {
             $activeclass = $this->_delegatelist->get_active_class();
             $params = $url->params();
             $params['classid'] = (empty($activeclass)? 0 : $activeclass->classid);
+            // Remove filters as will break output due to being nested.
+            unset($params['filters']);
+            // Rebuild filters params.
             foreach ($this->_delegatelist->get_filters() as $name => $value) {
-                $params[$name] = $value;
+                $params["filters[{$name}]"] = $value;
             }
-
             return $OUTPUT->download_dataformat_selector(get_string('downloadas', 'table'),
                     $url->out_omit_querystring(), 'download', $params);
         } else {

@@ -1,4 +1,5 @@
 <?php
+defined('MOODLE_INTERNAL') || die();
 
 function xmldb_local_custom_certification_upgrade($oldversion) {
     global $DB;

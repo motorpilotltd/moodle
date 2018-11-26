@@ -13,13 +13,29 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-defined('MOODLE_INTERNAL') || die();
-/**
- * Subplugins for local_coursemetadata.
- *
- * @package   local_coursemetadata
- * @copyright 2016 Motorpilot Ltd
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 
-$subplugins = array('coursemetadatafield' => 'local/coursemetadata/field');
+/**
+ * Disable the assignment module for new installs
+ *
+ * @package mod_assignment
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+defined('MOODLE_INTERNAL') || die();
+
+
+/**
+ * Code run after the mod_assignment module database tables have been created.
+ * Disables this plugin for new installs
+ * @return bool
+ */
+function xmldb_local_lynda_install() {
+    global $CFG;
+
+    require_once("$CFG->dirroot/local/lynda/db/upgradelib.php");
+    local_lynda_install_fulltextindexes();
+
+    return true;
+}
+
+

@@ -3,10 +3,11 @@
  */
 $('#id_addruleset').on('click', function () {
     var rulesetscount = $('#rulesetscontainer').find('.ruleset').length;
+    var contextid = $("select[name='contextid'] option:selected").val();
     ++rulesetscount;
     $.ajax({
         type: "GET",
-        url: M.cfg.wwwroot + '/local/dynamic_cohorts/ajax/dynamic_cohorts.php?action=addruleset&rulesetscount=' + rulesetscount,
+        url: M.cfg.wwwroot + '/local/dynamic_cohorts/ajax/dynamic_cohorts.php?action=addruleset&rulesetscount=' + rulesetscount + '&contextid=' + contextid,
         dataType: "HTML",
         success: function (response) {
             $('#rulesetscontainer').append(response);
@@ -54,11 +55,11 @@ $(document).on('click', '.editrule', function (e) {
     var field = $("input[name='field[" + rulesetid + "][" + ruleid + "]']").val()
     var criteriatype = $("input[name='criteriatype[" + rulesetid + "][" + ruleid + "]']").val()
     var value = $("input[name='value[" + rulesetid + "][" + ruleid + "]']").val()
-
+    var contextid = $("select[name='contextid'] option:selected").val();
     var element = $(this);
     $.ajax({
         type: "GET",
-        url: M.cfg.wwwroot + '/local/dynamic_cohorts/ajax/dynamic_cohorts.php?action=editrule&rulesetid=' + rulesetid + '&ruleid=' + ruleid + '&field=' + field + '&criteriatype=' + criteriatype + '&value=' + value,
+        url: M.cfg.wwwroot + '/local/dynamic_cohorts/ajax/dynamic_cohorts.php?action=editrule&rulesetid=' + rulesetid + '&ruleid=' + ruleid + '&field=' + field + '&criteriatype=' + criteriatype + '&value=' + value + '&contextid=' + contextid,
         dataType: "HTML",
         success: function (response) {
             element.after(response);
@@ -126,14 +127,15 @@ $(document).on('change', '.field_select', function (e) {
     var edit = $(this).data('edit');
     var field = $(this).val();
     var value = $('input[name="value_' + rulesetid + '"]').val();
-
+    var contextid = $("select[name='contextid'] option:selected").val();
     var id = parseInt($("input[name='id']").val());
     $.ajax({
         type: "GET",
         url: M.cfg.wwwroot + '/local/dynamic_cohorts/ajax/dynamic_cohorts.php',
         data: {
             action: 'getcriteriatypes',
-            field: field
+            field: field,
+            contextid: contextid
         },
         success: function (response) {
             json = jQuery.parseJSON(response);
@@ -155,7 +157,8 @@ $(document).on('change', '.field_select', function (e) {
             value: value,
             edit: edit,
             id: id,
-            field: field
+            field: field,
+            contextid: contextid
         },
         success: function (response) {
             $('#value_field_' + rulesetid).html(response);
@@ -215,7 +218,7 @@ $(document).on('click', '.addrule', function (e) {
     }
 
     /**
-     * when criteria type: is empty, is checked, is not checked value can be empty 
+     * when criteria type: is empty, is checked, is not checked value can be empty
      */
     if (value != '' || criteriatype == 5 || criteriatype == 7 || criteriatype == 8) {
         $(document).find('.edit_saverule').remove();
@@ -235,13 +238,14 @@ $(document).on('click', '.addrule', function (e) {
  */
 $(document).on('change', '.context_select', function (e) {
     var context = $(this).val();
-    
+    var contextid = $("select[name='contextid'] option:selected").val();
     $.ajax({
         type: "GET",
         url: M.cfg.wwwroot + '/local/dynamic_cohorts/ajax/dynamic_cohorts.php',
         data: {
             action: 'getroles',
-            context: context
+            context: context,
+            contextid: contextid
         },
         success: function (response) {
             json = jQuery.parseJSON(response);
@@ -262,7 +266,7 @@ $(document).on('change', '.context_select', function (e) {
 $(document).on('click', '.addrole', function (e) {
 
     var roleid = $("select[name='role'] option:selected").val();
-    var contextid = $("select[name='context'] option:selected").val();
+    var contextid = $("select[name='contextid'] option:selected").val();
     if(parseInt(roleid) > 0 && parseInt(contextid) > 0){
         $.when(get_role(contextid, roleid)).done(function (response) {
             $('.rolelist').append(response);
@@ -288,7 +292,7 @@ $(document).on('click', '.deleterole', function (e) {
 function get_rule(rulesetid, ruleid, field, criteriatype, value) {
 
     var id = parseInt($("input[name='id']").val());
-
+    var contextid = $("select[name='contextid'] option:selected").val();
     return $.ajax({
         type: "GET",
         url: M.cfg.wwwroot + '/local/dynamic_cohorts/ajax/dynamic_cohorts.php',
@@ -299,7 +303,8 @@ function get_rule(rulesetid, ruleid, field, criteriatype, value) {
             criteriatype: criteriatype,
             value: value,
             id: id,
-            ruleid: ruleid
+            ruleid: ruleid,
+            contextid: contextid
         },
         dataType: "HTML",
         success: function (response) {
@@ -311,12 +316,13 @@ function get_rule(rulesetid, ruleid, field, criteriatype, value) {
 function get_role(contextid, roleid) {
 
     var id = parseInt($("input[name='id']").val());
-
+    var context = $("select[name='context'] option:selected").val();
     return $.ajax({
         type: "GET",
         url: M.cfg.wwwroot + '/local/dynamic_cohorts/ajax/dynamic_cohorts.php',
         data: {
             action: 'addrole',
+            context: context,
             contextid: contextid,
             roleid: roleid,
             id: id

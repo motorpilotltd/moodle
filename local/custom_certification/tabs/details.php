@@ -1,8 +1,8 @@
 <?php
 require_once('form/details.php');
+defined('MOODLE_INTERNAL') || die();
 
 $currenturl = qualified_me();
-
 
 $detailsform = new local_custom_certification\form\certification_details_form($currenturl, [
     'editoroptions' => $TEXTAREA_OPTIONS,

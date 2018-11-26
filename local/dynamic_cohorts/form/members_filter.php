@@ -1,6 +1,8 @@
 <?php
 namespace local_dynamic_cohorts\form;
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->dirroot . '/lib/formslib.php');
 
 class dynamic_cohorts_members_filter_form extends \moodleform {

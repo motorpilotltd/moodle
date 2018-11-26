@@ -58,9 +58,22 @@ class successionplan extends base {
         $this->data->forms[0]->fields = [];
 
         // Forms and fields to print (in order).
-        // Asterisks used to enable form repitition - stripped out before loading/processing!
+        // Asterisks used to enable form repetition - stripped out before loading/processing!
+
+        // Americas hidden fields.
+        // Available if appraisee region is NOT Americas (TAPS).
+        $americassql = "SELECT lru.geotapsregionid
+                          FROM {local_regions_use} lru
+                          JOIN {local_regions_reg} lrr ON lrr.id = lru.geotapsregionid
+                         WHERE lru.userid = :userid AND lrr.name = 'Americas'";
+        if (!$DB->get_field_sql($americassql, array('userid' => $this->appraisal->appraisee->id))) {
+            $americasfields = ['assessment', 'readiness'];
+        } else {
+            $americasfields = [];
+        }
+
         $formfields = [
-            'successionplan' => ['assessment', 'readiness', 'potential'],
+            'successionplan' => $americasfields + ['potential'],
             'careerdirection' => ['mobility'],
             'successionplan*' => ['strengths', 'developmentareas'],
             'summaries' => ['appraiser'],

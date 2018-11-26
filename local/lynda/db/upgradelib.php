@@ -13,13 +13,28 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-defined('MOODLE_INTERNAL') || die();
+
 /**
- * Subplugins for local_coursemetadata.
+ * Assignment upgrade script.
  *
- * @package   local_coursemetadata
- * @copyright 2016 Motorpilot Ltd
+ * @package   mod_assignment
+ * @copyright 2013 Damyon Wiese
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$subplugins = array('coursemetadatafield' => 'local/coursemetadata/field');
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Inform admins about assignments that still need upgrading.
+ */
+function local_lynda_install_fulltextindexes() {
+    global $DB;
+
+    $dbfamily = $DB->get_dbfamily();
+    if ($dbfamily !== 'mssql') {
+        return;
+    }
+
+    $DB->execute("IF NOT EXISTS (SELECT 1 FROM sys.fulltext_catalogs WHERE [name] = 'moodlecoursesearch') CREATE FULLTEXT CATALOG moodlecoursesearch");
+    $DB->execute('CREATE FULLTEXT INDEX ON {local_lynda_course} (title) KEY INDEX {localyndcour_id_pk} ON moodlecoursesearch');
+}

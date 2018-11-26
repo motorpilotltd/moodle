@@ -19,6 +19,8 @@
 
 namespace local_custom_certification\task;
 
+defined('MOODLE_INTERNAL') || die();
+
 use local_custom_certification\certification;
 
 global $CFG;

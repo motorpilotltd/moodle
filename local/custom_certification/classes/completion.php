@@ -2,6 +2,7 @@
 
 namespace local_custom_certification;
 
+defined('MOODLE_INTERNAL') || die();
 
 use enrol_certification\certif;
 
@@ -509,10 +510,16 @@ class completion
         // 0 => enrolmentid, 1 => timecompleted
         $return = [0 => null, 1 => null];
 
-        if (empty($certification->linkedtapscourseid) || !empty($completionrecord->tapsenrolmentid)) {
-            // Cerificate not linked to TAPS or user already linked to enrolment.
+        if (empty($certification->linkedtapscourseid)) {
+            // Certificate not linked to TAPS.
+            return $return;
+        } else if (!empty($completionrecord->tapsenrolmentid) && !empty($completionrecord->timecompleted)) {
+            // Already exists, maintain state.
+            $return[0] = $completionrecord->tapsenrolmentid;
+            $return[1] = $completionrecord->timecompleted;
             return $return;
         }
+
         $archived = $DB->get_records_select(
                 'certif_completions_archive',
                 'certifid = :certifid AND userid = :userid',
@@ -536,7 +543,7 @@ WHERE
     staffid = :staffid
     AND courseid {$insql1}
     AND {$DB->sql_compare_text('bookingstatus')} {$insql2}
-    AND archived = 0
+    AND (archived IS NULL OR archived = 0)
 EOS;
         $params = array_merge($params1, $params2);
         $params['staffid'] = $DB->get_field('user', 'idnumber', ['id' => $userid]);

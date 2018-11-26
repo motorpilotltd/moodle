@@ -17,15 +17,22 @@ $action = optional_param('action', null, PARAM_RAW);
 $messagename = optional_param('messagename', null, PARAM_RAW);
 $messagetype = optional_param('messagetype', null, PARAM_INT);
 $messageid = optional_param('messageid', null, PARAM_INT);
-$certifid = optional_param('certifid', null, PARAM_INT);
+$certifid = required_param('certifid', PARAM_INT);
+
+if (!empty($certifid)) {
+    $certif = new \local_custom_certification\certification($certifid, false);
+    $context = $certif->get_context();
+    if (!has_capability('local/custom_certification:manage', $context)) {
+        throw new moodle_exception('nopermissions');
+    }
+}
 
 if (isset($_POST['messages'])) {
     $messages = $_POST['messages'];
 }
 switch ($action) {
     case 'displaybox':
-        echo $renderer->display_message_box(0, $messagename, $messagetype);
-
+        echo $renderer->display_message_box(0, $messagename, $messagetype, $certifid);
         break;
     case 'save':
         if(isset($messages) && is_array($messages)){

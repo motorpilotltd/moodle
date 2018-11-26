@@ -32,8 +32,6 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_local_search_install() {
     global $CFG;
 
-    require_once("$CFG->dirroot/local/search/db/upgradelib.php");
-    local_search_install_fulltextindexes();
 
     return true;
 }

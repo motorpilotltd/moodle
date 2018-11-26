@@ -1,5 +1,6 @@
 <?php
 
+defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Certifications';
 $string['custom_certification:view'] = 'View Certifications';

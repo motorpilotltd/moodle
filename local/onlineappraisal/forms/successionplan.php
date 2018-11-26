@@ -23,13 +23,18 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use \local_onlineappraisal\comments as comments;
+
 class apform_successionplan extends moodleform {
     private $stringman;
 
     private $userdata = ['location' => '', 'group' => ''];
 
+    private $locking = false;
+    private $unlocking = false;
+
     public function definition() {
-        global $PAGE;
+        global $DB, $PAGE;
 
         $this->get_userdata();
 
@@ -50,12 +55,14 @@ class apform_successionplan extends moodleform {
         $mform->addElement('hidden', 'appraisalid', $data->appraisalid);
         $mform->setType('appraisalid', PARAM_INT);
 
-        $mform->addElement('hidden', 'view', $data->appraisal->viewingas);
+        $mform->addElement('hidden', 'view', $data->appraisal->viewingas, ['id' => 'oa-sdp-view']);
         $mform->setType('view', PARAM_TEXT);
 
         $isformlocked = !empty($data->locked);
         $islockedforuser = ($data->appraiseeedit == APPRAISAL_FIELD_LOCKED) && ($data->appraiseredit == APPRAISAL_FIELD_LOCKED);
         $islocked = (int) ($isformlocked || $islockedforuser); // Integer for JS.
+        $mform->addElement('hidden', 'islockedforuser', $islockedforuser); // For locking unlock checkbox.
+        $mform->setType('islockedforuser', PARAM_INT);
         $mform->addElement('hidden', 'islocked', $islocked, ['id' => 'oa-sdp-islocked']); // For locking other fields as checkbox will be frozen.
         $mform->setType('islocked', PARAM_INT);
 
@@ -87,8 +94,19 @@ class apform_successionplan extends moodleform {
             $mform->addElement('html', $renderer->render($alert));
         }
 
+        // Americas hidden fields.
+        // Available if appraisee region is NOT Americas (TAPS).
+        $americassql = "SELECT lru.geotapsregionid
+                          FROM {local_regions_use} lru
+                          JOIN {local_regions_reg} lrr ON lrr.id = lru.geotapsregionid
+                         WHERE lru.userid = :userid AND lrr.name = 'Americas'";
+        $americas = $DB->get_field_sql($americassql, array('userid' => $data->appraisal->appraisee->id));
+
         foreach (['assessment', 'readiness', 'potential'] as $question) {
-            $answers = ['' => ''];
+            if (in_array($question, ['assessment', 'readiness']) && $americas) {
+                continue;
+            }
+            $answers = ($question === 'potential') ? [] : ['' => ''];
             $i = 1;
             $answerstring = "{$question}:answer:{$i}";
             while ($this->str_exists($answerstring)) {
@@ -97,8 +115,12 @@ class apform_successionplan extends moodleform {
                 $i++;
                 $answerstring = "{$question}:answer:{$i}";
             }
-            $mform->addElement('select', $question, $this->str($question), $answers);
+            $element = $mform->addElement('select', $question, $this->str($question), $answers);
+            if ($question === 'potential') {
+                $element->setMultiple(true);
+            }
             $mform->disabledIf($question, 'islocked', 'eq', 1);
+            $mform->disabledIf($question, 'view', 'eq', 'appraisee');
         }
 
         $strengths = [
@@ -107,7 +129,7 @@ class apform_successionplan extends moodleform {
             !empty($_POST['strengths']) ? count($_POST['strengths']) : 0
         ];
         $maxstrengths = max($strengths);
-        if ($islocked) {
+        if ($islocked || $data->appraisal->viewingas === 'appraisee') {
             $maxstrengths = (!empty($data->strengths) ? count($data->strengths) : 1);
         }
         for ($i = 0; $i < $maxstrengths; $i++) {
@@ -115,6 +137,7 @@ class apform_successionplan extends moodleform {
             $mform->addElement('text', "strengths[{$i}]", $label, ['class' => 'oa-repeating-element']);
             $mform->setType("strengths[{$i}]", PARAM_TEXT);
             $mform->disabledIf("strengths[{$i}]", 'islocked', 'eq', 1);
+            $mform->disabledIf("strengths[{$i}]", 'view', 'eq', 'appraisee');
         }
         $noscript = "<p class=\"visibleifnotjs\">{$this->str('strengths:add:noscript')}</p>";
         $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="strengths">'.$this->str('strengths:add').'</button>';
@@ -129,7 +152,7 @@ class apform_successionplan extends moodleform {
             !empty($_POST['developmentareas']) ? count($_POST['developmentareas']) : 0
         ];
         $maxdevelopmentareas = max($developmentareas);
-        if ($islocked) {
+        if ($islocked || $data->appraisal->viewingas === 'appraisee') {
             $maxdevelopmentareas = (!empty($data->developmentareas) ? count($data->developmentareas) : 1);
         }
         for ($i = 0; $i < $maxdevelopmentareas; $i++) {
@@ -137,6 +160,7 @@ class apform_successionplan extends moodleform {
             $mform->addElement('text', "developmentareas[{$i}]", $label, ['class' => 'oa-repeating-element']);
             $mform->setType("developmentareas[{$i}]", PARAM_TEXT);
             $mform->disabledIf("developmentareas[{$i}]", 'islocked', 'eq', 1);
+            $mform->disabledIf("developmentareas[{$i}]", 'view', 'eq', 'appraisee');
         }
         $noscript = "<p class=\"visibleifnotjs\">{$this->str('developmentareas:add:noscript')}</p>";
         $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="developmentareas">'.$this->str('developmentareas:add').'</button>';
@@ -151,12 +175,22 @@ class apform_successionplan extends moodleform {
         if (!$isformlocked) {
             $mform->addElement('advcheckbox', 'locked', '', $this->str('locked'), array('group' => 1), array(0, 1));
             $mform->disabledIf('locked', 'islocked', 'eq', 1);
+            $mform->disabledIf('locked', 'view', 'eq', 'appraisee');
+        } else {
+            $mform->addElement('advcheckbox', 'unlock', '', $this->str('unlock'), array('group' => 1), array(0, 1));
+            $mform->disabledIf('unlock', 'islockedforuser', 'eq', 1);
+            $mform->disabledIf('unlock', 'view', 'eq', 'appraisee');
         }
 
-        if (!$islocked) {
+        if (!$islocked || ($isformlocked && !$islockedforuser)) {
             $buttonarray=array();
-            $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('form:save', 'local_onlineappraisal'));
-            $buttonarray[] = &$mform->createElement('submit', 'submitcontinue', get_string('form:submitcontinue', 'local_onlineappraisal'));
+            $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('form:save', 'local_onlineappraisal'), ['class' => ($isformlocked) ? 'oa-unlock-sdp' : '']);
+            if ($isformlocked) {
+                $mform->disabledIf('submitbutton', 'unlock', 'eq', 0);
+            }
+            if (!$isformlocked) {
+                $buttonarray[] = &$mform->createElement('submit', 'submitcontinue', get_string('form:submitcontinue', 'local_onlineappraisal'));
+            }
             $buttonarray[] = &$mform->createElement('cancel', 'cancelbutton', get_string('form:cancel', 'local_onlineappraisal'), array('class' => 'm-l-5'));
             $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
 
@@ -192,15 +226,31 @@ class apform_successionplan extends moodleform {
 
     public function get_data() {
         $data = parent::get_data();
-        if (isset($data->islocked)) {
-            unset($data->islocked);
-        }
         // Clear empty inputs.
         if (isset($data->strengths)) {
             $data->strengths = array_values(array_filter($data->strengths));
         }
         if (isset($data->developmentareas)) {
             $data->developmentareas = array_values(array_filter($data->developmentareas));
+        }
+        // Handle empty multi select, but only if unlocked.
+        if (!isset($data->potential) && !$data->islocked) {
+            $data->potential = [];
+        }
+        // Tidy up control fields.
+        if (!$data->islocked && !empty($data->locked)) {
+            $this->locking = true;
+        }
+        if (!empty($data->unlock)) {
+            $data->locked = 0;
+            $this->unlocking = true;
+            unset($data->unlock);
+        }
+        if (isset($data->islocked)) {
+            unset($data->islocked);
+        }
+        if (isset($data->islockedforuser)) {
+            unset($data->islockedforuser);
         }
         return $data;
     }
@@ -209,6 +259,35 @@ class apform_successionplan extends moodleform {
         parent::set_data($default_values);
         // Overwrite user data.
         $this->_form->setDefaults($this->userdata);
+    }
+
+    public function store_data($formsclass, $data) {
+        global $USER;
+        $formsclass->store_data($data);
+        $a = new stdClass();
+        $a->relateduser = fullname($USER);
+        if ($this->unlocking) {
+            // Add comment
+            $comment = comments::save_comment(
+                    $formsclass->appraisal->appraisalid,
+                    get_string(
+                            'comment:sdp:unlocking',
+                            'local_onlineappraisal',
+                            $a
+                            )
+                    );
+        }
+        if ($this->locking) {
+            // Add comment
+            $comment = comments::save_comment(
+                    $formsclass->appraisal->appraisalid,
+                    get_string(
+                            'comment:sdp:locking',
+                            'local_onlineappraisal',
+                            $a
+                            )
+                    );
+        }
     }
 
     private function get_userdata() {

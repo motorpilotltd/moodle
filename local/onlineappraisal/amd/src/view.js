@@ -126,7 +126,9 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 });
             }
 
-            if (page === 'successionplan' && parseInt($('#oa-sdp-islocked').val()) === 0) {
+            if (page === 'successionplan'
+                    && parseInt($('#oa-sdp-islocked').val()) === 0
+                    && $('#oa-sdp-view').val() !== 'appraisee') {
                 // Add strength/developmentarea inputs.
                 // Reveal buttons.
                 $('.oa-add-repeating-element').show();
@@ -148,6 +150,33 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     clone.insertBefore(that);
                 });
             }
+
+            // Confirm SDP unlocking.
+            var strs = [
+                { key: 'form:successionplan:confirm:unlock:title', component: 'local_onlineappraisal'},
+                { key: 'form:successionplan:confirm:unlock:question', component: 'local_onlineappraisal'},
+                { key: 'form:successionplan:confirm:unlock:yes', component: 'local_onlineappraisal'},
+                { key: 'form:successionplan:confirm:unlock:no', component: 'local_onlineappraisal'},
+                { key: 'form:save', component: 'local_onlineappraisal'}
+            ];
+            str.get_strings(strs).done(function(s) {
+                $('#id_submitbutton.oa-unlock-sdp').click(function(e) {
+                    e.preventDefault();
+                    var self = $(this);
+                    var form = self.closest('form');
+                    if (form.find('#id_unlock').is(':checked') === false) {
+                        return;
+                    }
+                    notification.confirm(s[0], s[1], s[2], s[3],
+                        function(){
+                            // Avoid regular leaving page notification.
+                            M.core_formchangechecker.set_form_submitted();
+                            var input = $('<input type="hidden" name="submitbutton" value="' + s[4] + '" />');
+                            form.append(input).submit();
+                        }
+                    );
+                });
+            }).fail(notification.exception);
 
             if ($('#oa-save-nag-modal').length) {
                 // Want to nag after 15 mins and check before trying to save.

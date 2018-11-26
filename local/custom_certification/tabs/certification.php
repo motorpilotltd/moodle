@@ -2,6 +2,8 @@
 require_once('form/certification.php');
 $currenturl = qualified_me();
 
+defined('MOODLE_INTERNAL') || die();
+
 $detailsform = new local_custom_certification\form\certification_certification_form($currenturl, [
     'certif' => $certif
 ], 'post', '', null, $canmanage);

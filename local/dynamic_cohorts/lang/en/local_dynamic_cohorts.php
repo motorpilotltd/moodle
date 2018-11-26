@@ -1,4 +1,7 @@
 <?php
+
+defined('MOODLE_INTERNAL') || die();
+
 $string['pluginname'] = 'Dynamic cohorts';
 $string['dynamic_cohorts:view'] = 'View Dynamic cohorts';
 $string['dynamic_cohorts:view_my'] = 'View Dynamic cohorts within my context';

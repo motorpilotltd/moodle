@@ -55,7 +55,7 @@ try {
     echo $OUTPUT->header();
     echo $renderer->render($alert);
     echo $OUTPUT->footer();
-    
+
     exit;
 }
 
@@ -76,6 +76,9 @@ $arguments = array(
     'dateformat' => get_string('strftimedate'),
 );
 $PAGE->requires->js_call_amd('local_onlineappraisal/index', 'init', array($arguments));
+// Add vendor CSS.
+$PAGE->requires->css(new moodle_url('/local/onlineappraisal/css/select2.min.css'));
+$PAGE->requires->css(new moodle_url('/local/onlineappraisal/css/select2-bootstrap.min.css'));
 
 $renderer = $PAGE->get_renderer('local_onlineappraisal', 'navlist');
 $navlist = new \local_onlineappraisal\output\navlist\navlist_index($index);

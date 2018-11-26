@@ -214,14 +214,20 @@ class certification_report {
         ];
         foreach ($allowedparams as $param) {
             if (!empty($filters->{$param})) {
-                $params[$param] = $filters->{$param};
+                if (is_array($filters->{$param})) {
+                    foreach ($filters->{$param} as $index => $value) {
+                        $params["{$param}[{$index}]"] = $value;
+                    }
+                } else {
+                    $params[$param] = $filters->{$param};
+                }
             }
         }
         if ($view == 'regions') {
             $params['regionview'] = optional_param('regionview', 'actual', PARAM_ALPHA) == 'geo' ? 'geo' : 'actual';
         }
 
-        return new \moodle_url("/blocks/certification_report/{$page}.php?".http_build_query($params));
+        return new \moodle_url("/blocks/certification_report/{$page}.php", $params);
     }
 
     /**
@@ -1542,9 +1548,11 @@ class certification_report {
         $completionrecord = \local_custom_certification\completion::get_completion_info($certifid, $userid);
         if ($completionrecord && $completionrecord->timecompleted > 0) {
             $resetcourses = \local_custom_certification\completion::open_window($completionrecord);
-            $completioncache = \cache::make('core', 'completion');
+            $activitycompletioncache = \cache::make('core', 'completion');
+            $coursecompletioncache = \cache::make('core', 'coursecompletion');
             foreach ($resetcourses as $courseid) {
-                $completioncache->delete("{$userid}_{$courseid}");
+                $activitycompletioncache->delete("{$userid}_{$courseid}");
+                $coursecompletioncache->delete("{$userid}_{$courseid}");
             }
         }
         return;

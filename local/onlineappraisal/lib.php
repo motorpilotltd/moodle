@@ -35,15 +35,15 @@ array $options=array()) {
         return false;
     }
 
-    $validfileareas = array('logo', 'appraisalfile');
+    $validfileareas = array('logo', 'appraisalfile', 'vendor');
 
     if (in_array($filearea, $validfileareas)) {
         $itemid = $args[0];
 
-        // This filearea is used in form Last Year Review
-        // If a file from this form is requested we need to check if this user
-        // has access to the appraisal and has to correct permissions to the appraisal.
-        if ($filearea == 'appraisalfile') {
+        if ($filearea === 'appraisalfile') {
+            // This filearea is used in form Last Year Review
+            // If a file from this form is requested we need to check if this user
+            // has access to the appraisal and has to correct permissions to the appraisal.
             $appraisalid = $itemid;
             $appraisalrecord = $DB->get_record('local_appraisal_appraisal', array('id' => $appraisalid));
             $costcentre = $DB->get_field('user', 'icq', array('id' => $appraisalrecord->appraisee_userid));
@@ -81,7 +81,12 @@ array $options=array()) {
             if (!$canview) {
                 return send_file_not_found();;
             }
-
+        } else if ($filearea === 'vendor') {
+            // Serves 3rd party js files for CDN fallback.
+            $pluginpath = $CFG->dirroot.'/local/onlineappraisal/';
+            $filename = implode('/', $args);
+            $path = $pluginpath.'vendor/'.$filename;
+            send_file($path, $filename,null, 0, false, false, '', false, ['immutable' => 'immutable']);
         }
 
         $fullpath = "/$context->id/local_onlineappraisal/$filearea/$itemid/".$args[1];
