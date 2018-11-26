@@ -76,6 +76,8 @@ class provider implements
 
         $collection->add_user_preference(tool_helper::PREF_REQUEST_FILTERS,
             'privacy:metadata:preference:tool_dataprivacy_request-filters');
+        $collection->add_user_preference(tool_helper::PREF_REQUEST_PERPAGE,
+            'privacy:metadata:preference:tool_dataprivacy_request-perpage');
 
         return $collection;
     }
@@ -134,6 +136,8 @@ class provider implements
             $data->type = tool_helper::get_shortened_request_type_string($record->type);
             // Status.
             $data->status = tool_helper::get_request_status_string($record->status);
+            // Creation method.
+            $data->creationmethod = tool_helper::get_request_creation_method_string($record->creationmethod);
             // Comments.
             $data->comments = $record->comments;
             // The DPO's comment about this request.
@@ -192,6 +196,10 @@ class provider implements
                         $option->category = get_string('requeststatus', 'tool_dataprivacy');
                         $option->name = tool_helper::get_request_status_string($value);
                         break;
+                    case tool_helper::FILTER_CREATION:
+                        $option->category = get_string('requestcreation', 'tool_dataprivacy');
+                        $option->name = tool_helper::get_request_creation_method_string($value);
+                        break;
                 }
                 $descriptions[] = get_string('filteroption', 'tool_dataprivacy', $option);
             }
@@ -199,6 +207,12 @@ class provider implements
             $values = implode(', ', $filters);
             $descriptionstext = implode(', ', $descriptions);
             writer::export_user_preference('tool_dataprivacy', tool_helper::PREF_REQUEST_FILTERS, $values, $descriptionstext);
+        }
+
+        $prefperpage = get_user_preferences(tool_helper::PREF_REQUEST_PERPAGE, null, $userid);
+        if ($prefperpage !== null) {
+            writer::export_user_preference('tool_dataprivacy', tool_helper::PREF_REQUEST_PERPAGE, $prefperpage,
+                get_string('privacy:metadata:preference:tool_dataprivacy_request-perpage', 'tool_dataprivacy'));
         }
     }
 }
