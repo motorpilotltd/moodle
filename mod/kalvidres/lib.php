@@ -224,7 +224,16 @@ HTML;
     }
 
     $intro = $kalvidres->intro ? "<br />{$kalvidres->intro}" : '';
-    if (!empty($metadata->duration)) {
+    if (!empty($metadata->duration) && stristr($metadata->duration, ':')) {
+        $durationarray = array_reverse(explode(':', $metadata->duration));
+        $hrs = isset($durationarray[2]) ? $durationarray[2] : '';
+        $min = isset($durationarray[1]) ? $durationarray[1] : '';
+        $sec = isset($durationarray[0]) ? $durationarray[0] : '';
+        $duration = "<p>Duration:" ;
+        $duration .= $hrs ? " {$hrs}h" : '';
+        $duration .= ($hrs || $min) ? " {$min}m" : '';
+        $duration .= " {$sec}s</p>";
+    } else if (!empty($metadata->duration)) {
         $hrs = intval($metadata->duration / 3600);
         $min = intval(($metadata->duration / 60) % 60);
         $sec = str_pad($metadata->duration - ($hrs * 3600) - ($min * 60), 2, '0', STR_PAD_LEFT);
