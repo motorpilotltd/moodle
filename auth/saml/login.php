@@ -299,25 +299,6 @@ if (empty($SESSION->wantsurl)) {
     }
 }
 
-// Redirect to alternative login URL if needed.
-if (!empty($CFG->alternateloginurl)) {
-    $loginurl = new moodle_url($CFG->alternateloginurl);
-
-    $loginurlstr = $loginurl->out(false);
-
-    if (strpos($SESSION->wantsurl, $loginurlstr) === 0) {
-        // We do not want to return to alternate url.
-        $SESSION->wantsurl = null;
-    }
-
-    // If error code then add that to url.
-    if ($errorcode) {
-        $loginurl->param('errorcode', $errorcode);
-    }
-
-    redirect($loginurl->out(false));
-}
-
 // Make sure we really are on the https page when https login required.
 $PAGE->verify_https_required();
 
