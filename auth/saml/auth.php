@@ -444,37 +444,42 @@ class auth_plugin_saml extends auth_plugin_ldap {
         $query = "SELECT EMPLOYEE_NUMBER
                     FROM SQLHUB.ARUP_ALL_STAFF_V
                    WHERE EMPLOYEE_NUMBER = :idnumber";
-        if (!$DB->get_record_sql($query, ['idnumber' => (int) $user->idnumber])) {
+        if (!$DB->get_record_sql($query, ['idnumber' => (int) $userinfo['idnumber']])) {
             // No HUB record.
             saml_error(get_string('error:employeeid_nohub', 'auth_saml'), '?logout');
         }
 
-        if (!empty($user->idnumber)) {
+        if ($user->id) {
+            // Moodle user loaded.
             if ($user->idnumber != $userinfo['idnumber']) {
                 // ID mismatch between Moodle and SAML/AD.
                 saml_error(get_string('error:employeeid_mismatch', 'auth_saml'), '?logout');
             }
         }
 
-        if (!$user->id) {
-            // Moodle user not found based on username, see if account for employeeid exists.
-            $existingusers = $DB->get_record(
-                'user',
-                array(
-                    'idnumber' => $userinfo['idnumber'],
-                    'mnethostid' => $CFG->mnet_localhost_id
-                ),
-                'lastaccess DESC'
-            );
-            if (count($existingusers > 1)) {
-                saml_error(get_string('error:employeeid_duplicate', 'auth_saml'), '?logout');
-            }
-            if ($existingusers) {
-                $existinguser = array_shift($existingusers);
-                $existinguser->username = trim(core_text::strtolower($username));
-                $DB->update_record('user', $existinguser);
-                $user = get_complete_user_data('id', $existinguser->id);
-            }
+        // Load all existing users with this employeeid.
+        $existingusers = $DB->get_records(
+            'user',
+            array(
+                'idnumber' => $userinfo['idnumber'],
+                'mnethostid' => $CFG->mnet_localhost_id
+            ),
+            'lastaccess DESC'
+        );
+
+        if (count($existingusers > 1)) {
+            // More than one found - this shouldn't happen but let's stop if it does!
+            saml_error(get_string('error:employeeid_duplicate', 'auth_saml'), '?logout');
+        }
+
+        // Get user (or NULL if empty).
+        $existinguser = array_shift($existingusers);
+
+        if (!$user->id && $existinguser) {
+            // Moodle user not found based on username but account for employeeid exists.
+            $existinguser->username = trim(core_text::strtolower($username));
+            $DB->update_record('user', $existinguser);
+            $user = get_complete_user_data('id', $existinguser->id);
         }
     }
 }
