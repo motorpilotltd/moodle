@@ -200,24 +200,15 @@ function kalvidpres_cm_info_view(cm_info $cm) {
     $kalvidpresid = $cm->instance;
     $kalvidpres = $DB->get_record('kalvidpres', array('id'=>$kalvidpresid));
     if (!$kalvidpres) {
-        error_log("kalvidpres: ask to print coursemodule info for a non-existent activity ($kalvidpresid)");
-        return '';
+        debugging("kalvidpres: Could not load kalvidpres record ($kalvidpresid)");
+        return;
     }
 
-    require_once($CFG->dirroot . '/local/kaltura/locallib.php');
+    $metadata = @unserialize(base64_decode($kalvidpres->metadata, true));
 
-    $client = arup_local_kaltura_get_kaltura_client();
-
-    try {
-        $entry = $client->baseEntry->get($kalvidpres->entry_id);
-    } catch (Exception $e) {
-        error_log("kalvidpres: entry object ({$kalvidres->entry_id}) not found/ready | {$e->getMessage()}");
-        return '';
-    }
-
-    if (!$entry || $entry->status != KalturaEntryStatus::READY) {
-        error_log("kalvidpres: entry object ({$kalvidpres->entry_id}) not found/ready");
-        return '';
+    if(!$metadata) {
+        debugging("kalvidpres: Could not load metadata or metadata empty ($kalvidpresid)");
+        return;
     }
 
     if (!$cm->uservisible) {
@@ -232,22 +223,38 @@ HTML;
     }
 
     $intro = $kalvidpres->intro ? "<br />{$kalvidpres->intro}" : '';
-    if (!empty($entry->duration)) {
-        $hrs = intval($entry->duration / 3600);
-        $min = intval(($entry->duration / 60) % 60);
-        $sec = str_pad($entry->duration - ($hrs * 3600) - ($min * 60), 2, '0', STR_PAD_LEFT);
+    if (!empty($metadata->duration) && stristr($metadata->duration, ':')) {
+        $durationarray = array_reverse(explode(':', $metadata->duration));
+        $hrs = isset($durationarray[2]) ? $durationarray[2] : '';
+        $min = isset($durationarray[1]) ? $durationarray[1] : '';
+        $sec = isset($durationarray[0]) ? $durationarray[0] : '';
         $duration = "<p>Duration:" ;
         $duration .= $hrs ? " {$hrs}h" : '';
         $duration .= ($hrs || $min) ? " {$min}m" : '';
         $duration .= " {$sec}s</p>";
+    } else if (!empty($metadata->duration)) {
+        $hrs = intval($metadata->duration / 3600);
+        $min = intval(($metadata->duration / 60) % 60);
+        $sec = str_pad($metadata->duration - ($hrs * 3600) - ($min * 60), 2, '0', STR_PAD_LEFT);
+        $duration = "<p>Duration:" ;
+        $duration .= $hrs ? " {$hrs}h" : '';
+        $duration .= ($hrs || $min) ? " {$min}m" : '';
+        $duration .= " {$sec}s</p>";
+
     } else {
         $duration = '';
+    }
+
+    if (!empty($metadata->thumbnailurl)) {
+        $image = html_writer::img("{$metadata->thumbnailurl}/width/240/height/180/bgcolor/000000/type/2", $kalvidpres->name);
+    } else {
+        $image = '';
     }
 
     $output = <<<HTML
 <div>
     <div class="kalvidpres-holder">
-        <img alt="{$kalvidpres->name}" src="{$entry->thumbnailUrl}/width/240/height/180/bgcolor/000000/type/2" />
+        {$image}
         {$playbutton}
         <div class="kalvidpres-info">
             <p>{$kalvidpres->name}{$intro}</p>

@@ -487,9 +487,7 @@ class KalturaClientBase
 		}
 		curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
 		curl_setopt($ch, CURLOPT_USERAGENT, $this->config->userAgent);
-/* BEGIN CORE MOD */
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
-/* END CORE MOD */
+
 		if (count($files) > 0)
 			curl_setopt($ch, CURLOPT_TIMEOUT, 0);
 		else
@@ -1171,9 +1169,7 @@ class KalturaConfiguration
 	public $partnerId    				= null;
 	public $format        				= 3;
 	public $clientTag 	  				= "php5:14-01-16";
-/* BEGIN CORE MOD */
-	public $curlTimeout   				= 60;
-/* END CORE MOD */
+	public $curlTimeout   				= 120;
 	public $userAgent					= '';
 	public $startZendDebuggerSession 	= false;
 	public $proxyHost                   = null;
