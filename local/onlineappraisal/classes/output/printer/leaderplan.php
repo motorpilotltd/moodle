@@ -59,21 +59,8 @@ class leaderplan extends base {
 
         // Forms and fields to print (in order).
         // Asterisks used to enable form repetition - stripped out before loading/processing!
-
-        // Americas hidden fields.
-        // Available if appraisee region is NOT Americas (TAPS).
-        $americassql = "SELECT lru.geotapsregionid
-                          FROM {local_regions_use} lru
-                          JOIN {local_regions_reg} lrr ON lrr.id = lru.geotapsregionid
-                         WHERE lru.userid = :userid AND lrr.name = 'Americas'";
-        if (!$DB->get_field_sql($americassql, array('userid' => $this->appraisal->appraisee->id))) {
-            $americasfields = ['ldpassessment', 'ldpreadiness'];
-        } else {
-            $americasfields = [];
-        }
-
         $formfields = [
-            'leaderplan' => $americasfields + ['ldppotential'],
+            'leaderplan' => ['ldppotential'],
             'careerdirection' => ['mobility'],
             'leaderplan*' => ['ldpstrengths', 'ldpdevelopmentareas'],
             'summaries' => ['appraiser'],
