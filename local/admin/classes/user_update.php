@@ -37,6 +37,8 @@ class user_update {
     }
 
     public function add_users() {
+        global $DB;
+
         $successcount = 0;
         $errorcount = 0;
 
@@ -60,7 +62,16 @@ class user_update {
                     continue;
                 }
 
+                // Grab username (UPN).
                 $username = array_pop($adusers);
+
+                if ($DB->record_exists('user', ['username' => $username])) {
+                    $errorcount++;
+                    // Log error.
+                    $this->log($add->staffid, null, 'ADD', 'ERROR_USERNAME_EXISTS');
+                    continue;
+                }
+
                 $user = create_user_record($username, '', 'saml');
                 if (!$user) {
                     $errorcount++;
