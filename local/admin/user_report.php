@@ -69,7 +69,7 @@ if ($formdata) {
     }
     if (!empty($formdata->to)) {
         $to = $formdata->to + (60 * 60 * 24) - 1; // End of day!
-        $where .= " AND timecreated <= {$formdata->to}";
+        $where .= " AND timecreated <= {$to}";
     }
 }
 
