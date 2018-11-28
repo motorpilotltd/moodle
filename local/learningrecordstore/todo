@@ -15,7 +15,7 @@ classcategory
 classcost
 classcostcurrency
 pricebasis
-timemodified
+timemodified (consolidation of timemodified as lastupdatedate)
 expirydate
 classtype (currently learning method)
 
@@ -26,10 +26,10 @@ bookingplaceddate
 completiontime
 userid (mapped from staffid)
 active
-timemodified
+timemodified (consolidation of timemodified as lastupdatedate)
 
 to remove:
-lastupdatedate (use timemodified
+lastupdatedate (use timemodified) DONE
 classcompletiondate (just going to use classcompletiontime renamed to completiontime from now) DONE
 classcontext (appears to only ever be null or 'health and safety') DELETED
 courseid

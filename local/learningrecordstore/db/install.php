@@ -40,7 +40,6 @@ function xmldb_local_learningrecordstore_install() {
     $table->add_field('price', XMLDB_TYPE_NUMBER, 20);
     $table->add_field('trainingcenter', XMLDB_TYPE_TEXT);
     $table->add_field('bookingplaceddate', XMLDB_TYPE_INTEGER, '10');
-    $table->add_field('lastupdatedate', XMLDB_TYPE_INTEGER, '10');
     $table->add_field('active', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, false, 1);
     $table->add_field('archived', XMLDB_TYPE_INTEGER, '4');
     $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);

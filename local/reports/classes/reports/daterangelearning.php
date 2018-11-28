@@ -128,7 +128,7 @@ class daterangelearning extends base {
             'geo_region',
             'company_code',
             'centre_code',
-            'lastupdatedate',
+            'timemodified',
             'completiontime',
             'courseregion');
 
@@ -176,7 +176,7 @@ class daterangelearning extends base {
             'leaver_flag' => 'staff.LEAVER_FLAG',
             'company_code' => 'staff.COMPANY_CODE',
             'centre_code' => 'staff.CENTRE_CODE',
-            'lastupdatedate' => 'lte.lastupdatedate',
+            'timemodified' => 'lte.timemodified',
             'completiontime' => 'lte.completiontime',
             'classenddate' => 'lte.classenddate',
             'classtype' => 'lte.classtype',
@@ -190,7 +190,7 @@ class daterangelearning extends base {
             'expirydate',
             'completiontime',
             'startdate',
-            'lastupdatedate',
+            'timemodified',
             'enddate'
             );
 
