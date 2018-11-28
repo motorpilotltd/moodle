@@ -467,7 +467,7 @@ class auth_plugin_saml extends auth_plugin_ldap {
             'lastaccess DESC'
         );
 
-        if (count($existingusers > 1)) {
+        if (count($existingusers) > 1) {
             // More than one found - this shouldn't happen but let's stop if it does!
             saml_error(get_string('error:employeeid_duplicate', 'auth_saml'), '?logout');
         }
