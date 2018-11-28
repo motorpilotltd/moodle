@@ -1,2 +1,70 @@
-Pull related classes out of mod_tapsenrol\taps into a new lrsentry class
-Rename table
+local_taps_enrolment
+
+New local_learningrecordstore table:
+provider
+healthandsafetycategory
+providerid (could be a classid, moodle courseid, lynda video id etc.)
+staffid
+duration
+durationunits
+completiontime
+description (currently learningdesc)
+certificateno
+coursename
+classcategory
+classcost
+classcostcurrency
+pricebasis
+timemodified
+expirydate
+classtype (currently learning method)
+
+New tapsenrol_class_enrolments table:
+classid
+bookingstatus
+bookingplaceddate
+completiontime
+userid (mapped from staffid)
+active
+timemodified
+
+to remove:
+lastupdatedate (use timemodified
+classcompletiondate (just going to use completiontime from now)
+classcontext (appears to only ever be null or 'health and safety')
+courseid
+cpdid (seems to be some kind of additional primary key)
+enrolmentid (seems to be some kind of additional primary key)
+learningdesccont1 (never used) DELETED
+learningdesccont2 (never used) DELETED
+personid (absent in last 97k records and not referenced anywhere in Moodle) DELETED
+courseobjectives duplicated from taps course table (now metadata field, only different in 6 cases) DELETED
+
+duplicated on local_taps_class so can be removed:
+trainingcenter (never different)
+classname (never different)
+classtype (never different)
+classstartdate (one difference)
+classenddate (two differences)
+classstarttime (one difference)
+classendtime (one difference)
+duration/classduration (never different)
+location (never different)
+durationunits/classdurationunits (never different - ignoring change in format...)
+durationunitscode (never different)
+timezone (never different)
+usedtimezone (never different)
+archived
+price
+
+local_taps_class:
+rename usedtimezone to timezone
+drop date columns where a corresponding time exists
+
+
+
+
+
+to confirm:
+price and currencycode _may_ be able to be dropped. There were multiple cost/currency fields in TAPS to represent cost to the company vs cost to attendee. The requirement to distinguish was not continued after the initial migration so I'd imagine can be removed.
+where cpdid is null it's because it's an enrolment record so should appear in tapsenrol_class_enrolments where it is not null it's a cpd record and should go in local_learningrecordstore - can also infer from presence of a classid

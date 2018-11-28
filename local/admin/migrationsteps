@@ -31,38 +31,13 @@ Update logstore_standard_log - mod/tapscompletion/cli/migrate.php
 
 
 
+mod/arupadvert/cli/migrate.php --domigration
+filter/arupmetadata/cli/migrate.php
+local/coursemanager/cli/migrate.php
+mod/tapscompletion/cli/migrate.php
 
-Deleted local/taps/listcourses.php
-    Anything you do from here you can do do from the standard course management area...
-
-Suggest we delete local/taps/addcourse.php
-Recommend we move Catalogue location group up so that all the form elements we always want (to either create an 'Arup' course or a normal one) are in a contiguous bock.
-Allow people to hit the core course/edit.php page if people have the "local/taps:addcourse"
-If people also have the core moodle permissions then they can uncheck a 'Configure standard Arup Course' text box which will reveal the full form, otherwise we hide the following sections:
-Course format
-Appearance
-Files and uploads
-Completion tracking
-Groups
-Role renaming
-Tags
-
-If the 'Configure standard Arup Course' is checked (or not available for unchecking) then the following elements are added:
-Default role for enrolments
-Use internal workflow
-Enrolment region override
-
-If the 'Configure standard Arup Course' is checked (or not available for unchecking) then on course creation we apply the defaults as in local/taps/addcourse.php (having refactored them into a nice function on \local_taps\taps)
-
-Drop the field Catalogue region override - not relevant any more.
-
-
-
-Todo
-Javascript on edit class page
-Load correct form when editing
-
-
-
-OUTSTANDING
-Remove classid and coursename fields from local_taps_class
+uninstall plugins:
+mod_arupadvert
+mod_tapscompletion
+local_taps
+local_coursemanager

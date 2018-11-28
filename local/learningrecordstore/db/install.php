@@ -22,7 +22,6 @@ function xmldb_local_learningrecordstore_install() {
     $table->add_field('duration', XMLDB_TYPE_FLOAT);
     $table->add_field('durationunits', XMLDB_TYPE_TEXT);
     $table->add_field('durationunitscode', XMLDB_TYPE_TEXT);
-    $table->add_field('courseobjectives', XMLDB_TYPE_TEXT);
     $table->add_field('provider', XMLDB_TYPE_TEXT);
     $table->add_field('certificateno', XMLDB_TYPE_TEXT);
     $table->add_field('expirydate', XMLDB_TYPE_INTEGER, '10');

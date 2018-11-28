@@ -106,10 +106,6 @@ try {
             $data = html_writer::empty_tag('br') .
                 $enrolment->learningdesc;
             echo html_writer::tag('p', html_writer::tag('strong', get_string('modal:learningdesc', 'block_arup_mylearning').':').$data);
-        } else if ($enrolment->courseobjectives) {
-            $data = html_writer::empty_tag('br') .
-                $enrolment->courseobjectives;
-            echo html_writer::tag('p', html_writer::tag('strong', get_string('modal:courseobjectives', 'block_arup_mylearning').':').$data);
         }
         echo html_writer::end_tag('div'); // End div modal-lower.
     } else {

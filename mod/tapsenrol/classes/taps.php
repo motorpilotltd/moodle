@@ -664,7 +664,6 @@ class taps {
         $enrolment->duration = $class->classduration;
         $enrolment->durationunits = $class->classdurationunits;
         $enrolment->durationunitscode = $class->classdurationunitscode;
-        $enrolment->courseobjectives = $metadata->objectives;
         $enrolment->provider = null; // Could be Internal?; but we don't have this information.
         $enrolment->certificateno = null; // CPD only.
         $enrolment->expirydate = null; // CPD only.

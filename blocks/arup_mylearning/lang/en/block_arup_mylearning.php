@@ -122,7 +122,6 @@ $string['modal:classcategory'] = 'Category';
 $string['modal:classstartdate'] = 'Start date';
 $string['modal:classtype'] = 'Method';
 $string['modal:classcompletiondate'] = 'Completion date';
-$string['modal:courseobjectives'] = 'Course objectives';
 $string['modal:duration'] = 'Duration';
 $string['modal:expirydate'] = 'Expiry date';
 $string['modal:learningdesc'] = 'Learning description';
