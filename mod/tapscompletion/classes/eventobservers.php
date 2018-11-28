@@ -122,7 +122,7 @@ class eventobservers {
                 // We need to update course completion time if applicable.
                 // Use completed field (stores enrolmentid), ignore if 1 for legacy (actual enrolmentid 1 is historic).
                 if ($tccompletion && $tccompletion->completed > 1) {
-                    $completiontime = $DB->get_field('local_taps_enrolment', 'classcompletiontime', ['enrolmentid' => $tccompletion->completed]);
+                    $completiontime = $DB->get_field('local_taps_enrolment', 'completiontime', ['enrolmentid' => $tccompletion->completed]);
                     if ($completiontime) {
                         // Update Moodle course completion date.
                         // Record should exist as we're observing course completion.

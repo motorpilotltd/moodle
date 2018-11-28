@@ -108,7 +108,7 @@ if ($form->is_cancelled()) {
                 $data->staffid,
                 $data->classname,
                 $data->provider,
-                $data->classcompletiondate,
+                $data->completiontime,
                 $data->duration,
                 $data->durationunitscode,
                 array(
@@ -132,7 +132,7 @@ if ($form->is_cancelled()) {
                 $data->id,
                 $data->classname,
                 $data->provider,
-                $data->classcompletiondate,
+                $data->completiontime,
                 $data->duration,
                 $data->durationunitscode,
                 array(

@@ -129,7 +129,7 @@ class daterangelearning extends base {
             'company_code',
             'centre_code',
             'lastupdatedate',
-            'classcompletiondate',
+            'completiontime',
             'courseregion');
 
         $this->sortfields = array(
@@ -141,7 +141,7 @@ class daterangelearning extends base {
             'classenddate',
             'bookingstatus',
             'coursename',
-            'classcompletiondate',
+            'completiontime',
             'classcategory',
             'classcost',
             'classcostcurrency',
@@ -177,7 +177,7 @@ class daterangelearning extends base {
             'company_code' => 'staff.COMPANY_CODE',
             'centre_code' => 'staff.CENTRE_CODE',
             'lastupdatedate' => 'lte.lastupdatedate',
-            'classcompletiondate' => 'lte.classcompletiondate',
+            'completiontime' => 'lte.completiontime',
             'classenddate' => 'lte.classenddate',
             'classtype' => 'lte.classtype',
             'bookingstatus' => 'lte.bookingstatus'
@@ -188,7 +188,7 @@ class daterangelearning extends base {
             'classenddate',
             'bookingplaceddate',
             'expirydate',
-            'classcompletiondate',
+            'completiontime',
             'startdate',
             'lastupdatedate',
             'enddate'
@@ -260,7 +260,7 @@ class daterangelearning extends base {
                 }
                 if (in_array($filter->field, $this->datefields)) {
 
-                    $classcompletiondate = $this->filtertodb['classcompletiondate'];
+                    $completiontime = $this->filtertodb['completiontime'];
                     $classenddate = $this->filtertodb['classenddate'];
                     $classtype = $this->filtertodb['classtype'];
 
@@ -274,7 +274,7 @@ class daterangelearning extends base {
                         if (!empty($end)) {
                             $enddate = $end->value[0];
                             $classenddatestring = " AND {$classenddate} <= $enddate";
-                            $classcompletiondendstring = " AND {$classcompletiondate} <= $enddate";
+                            $classcompletiondendstring = " AND {completiontime} <= $enddate";
                         }
 
                         $wherestring .= "
@@ -288,7 +288,7 @@ class daterangelearning extends base {
                                 (
                                     $classtype = 'Self Paced'
                                     AND
-                                    ($classcompletiondate >= $startdate" . $classcompletiondendstring . ")
+                                    ($completiontime >= $startdate" . $classcompletiondendstring . ")
                                 )
                             )";
                     } else {
@@ -607,13 +607,13 @@ class daterangelearning extends base {
         }
 
         if ($key == 'classenddate') {
-            // CPD records use classcompletiondate instead of classenddate
+            // CPD records use completiontime instead of classenddate
             if ($row->classtype == 'Self Paced') {
-                $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->classcompletiondate);
+                $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->completiontime);
                 return $this->myuserdate($date, $row);
             }
             if (!empty($row->cpdid)) {
-                return $this->myuserdate($row->classcompletiondate, $row);
+                return $this->myuserdate($row->completiontime, $row);
             }
             // Default
             return $this->myuserdate($row->$key, $row);
@@ -638,7 +638,7 @@ class daterangelearning extends base {
             }
         }
 
-        if ($key == 'classcompletiondate') {
+        if ($key == 'completiontime') {
             // Only display if 'attended' or CPD.
             if (!empty($row->cpdid) || $this->taps->is_status($row->bookingstatus, ['attended'])) {
                 return $this->myuserdate($row->$key, $row);

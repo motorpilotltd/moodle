@@ -76,11 +76,11 @@ try {
             $modalupper[] = html_writer::tag('strong', get_string('modal:duration', 'block_arup_mylearning').': ') .
                 $data;
         }
-        if ($enrolment->classcompletiondate) {
+        if ($enrolment->completiontime) {
             $date = new DateTime(null, $timezone);
-            $date->setTimestamp($enrolment->classcompletiondate);
+            $date->setTimestamp($enrolment->completiontime);
             $data = $date->format('d M Y');
-            $modalupper[] = html_writer::tag('strong', get_string('modal:classcompletiondate', 'block_arup_mylearning').': ') .
+            $modalupper[] = html_writer::tag('strong', get_string('modal:completiontime', 'block_arup_mylearning').': ') .
                 $data;
         }
         if ($enrolment->location) {

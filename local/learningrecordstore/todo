@@ -7,7 +7,7 @@ providerid (could be a classid, moodle courseid, lynda video id etc.)
 staffid
 duration
 durationunits
-completiontime
+completiontime (consolidation of classcompletiontime as classcompletiondate)
 description (currently learningdesc)
 certificateno
 coursename
@@ -30,8 +30,8 @@ timemodified
 
 to remove:
 lastupdatedate (use timemodified
-classcompletiondate (just going to use completiontime from now)
-classcontext (appears to only ever be null or 'health and safety')
+classcompletiondate (just going to use classcompletiontime renamed to completiontime from now) DONE
+classcontext (appears to only ever be null or 'health and safety') DELETED
 courseid
 cpdid (seems to be some kind of additional primary key)
 enrolmentid (seems to be some kind of additional primary key)

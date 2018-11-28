@@ -41,7 +41,7 @@ class csvimporttracker {
     protected $columns = array(
         "staffid",
         "classname",
-        "classcompletiondate",
+        "completiontime",
         "location",
         "provider",
         "duration",

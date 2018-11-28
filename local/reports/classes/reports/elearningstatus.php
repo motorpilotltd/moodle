@@ -173,7 +173,7 @@ class elearningstatus extends base {
             'classenddate',
             'bookingplaceddate',
             'expirydate',
-            'classcompletiondate'
+            'completiontime'
             );
 
         $this->numericfields = array(
@@ -227,7 +227,7 @@ class elearningstatus extends base {
                 'classcostcurrency' => $classinfo->classcostcurrency,
                 'bookingstatus' => 'No Enrolment',
                 'bookingplaceddate' => '',
-                'classcompletiondate' => ''
+                'completiontime' => ''
             );
 
         }
@@ -570,13 +570,13 @@ class elearningstatus extends base {
         }
 
         if ($key == 'classenddate') {
-            // CPD records use classcompletiondate instead of classenddate
+            // CPD records use completiontime instead of classenddate
             if ($row->classtype == 'Self Paced') {
-                $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->classcompletiondate);
+                $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->completiontime);
                 return $this->myuserdate($date, $row);
             }
             if (!empty($row->cpdid)) {
-                return $this->myuserdate($row->classcompletiondate, $row);
+                return $this->myuserdate($row->completiontime, $row);
             }
             // Default
             return $this->myuserdate($row->$key, $row);

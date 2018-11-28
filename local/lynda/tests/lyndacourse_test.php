@@ -124,7 +124,7 @@ class lyndacourse_test extends advanced_testcase {
         $record1 = reset($cpdrecords);
         $this->assertEquals('Navisworks Essential Training', $record1->classname);
         $this->assertEquals('Lynda.com', $record1->provider);
-        $this->assertEquals('1466600604', $record1->classcompletiontime);
+        $this->assertEquals('1466600604', $record1->completiontime);
         $this->assertEquals('172.62', $record1->duration);
         $this->assertEquals('Minute(s)', $record1->durationunits);
         $this->assertEquals('External Course Online', $record1->classtype);

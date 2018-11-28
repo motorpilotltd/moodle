@@ -566,7 +566,7 @@ class completion
         list($insql2, $params2) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
         $sql = <<<EOS
 SELECT
-    enrolmentid, classcompletiontime
+    enrolmentid, completiontime
 FROM
     {local_taps_enrolment}
 WHERE

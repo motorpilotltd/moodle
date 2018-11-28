@@ -41,7 +41,7 @@ class csvimport {
     protected $filecolumns = array(
         "staffid",
         "classname",
-        "classcompletiondate",
+        "completiontime",
         "classtype",
         "classcategory",
         "duration",
@@ -59,7 +59,7 @@ class csvimport {
         "staffid",
         "classname",
         "location",
-        "classcompletiondate",
+        "completiontime",
         "provider",
         "duration",
         "durationunits",
@@ -157,16 +157,16 @@ class csvimport {
                     $data['expirydate'] = usergetmidnight($expirydate , new DateTimeZone('UTC'));
                 }
             }
-            if (!empty($data['classcompletiondate'])) {
-                if ($classcompletiondate = strtotime($data['classcompletiondate'] . ' UTC')) {
-                    $data['classcompletiondate'] = usergetmidnight($classcompletiondate, new DateTimeZone('UTC'));
+            if (!empty($data['completiontime'])) {
+                if ($completiontime = strtotime($data['completiontime'] . ' UTC')) {
+                    $data['completiontime'] = usergetmidnight($completiontime, new DateTimeZone('UTC'));
                 }
             }
             $result = $this->taps->add_cpd_record(
                 $data['staffid'],
                 $data['classname'],
                 $data['provider'],
-                $data['classcompletiondate'],
+                $data['completiontime'],
                 $data['duration'],
                 $data['durationunits'],
                 array(
@@ -372,9 +372,9 @@ class csvimport {
             }
         }
         // Check if the Completion Date uses a valid date string.
-        if (!empty($data['classcompletiondate'])) {
-            if (strtotime($data['classcompletiondate'] . ' UTC') === false) {
-                $status['classcompletiondate'] = $this->mkwarn('classcompletiondate');
+        if (!empty($data['completiontime'])) {
+            if (strtotime($data['completiontime'] . ' UTC') === false) {
+                $status['completiontime'] = $this->mkwarn('completiontime');
             }
         }
 

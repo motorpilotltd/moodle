@@ -36,7 +36,6 @@
         <FIELD NAME="personid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classstarttime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classendtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classcompletiondate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classcost" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
         <FIELD NAME="classcostcurrency" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="learningdesccont1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
@@ -47,7 +46,6 @@
         <FIELD NAME="currencycode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="price" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
         <FIELD NAME="trainingcenter" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classcontext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="bookingplaceddate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="lastupdatedate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="active" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>

@@ -112,7 +112,7 @@ abstract class base implements renderable, templatable {
         list($usql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
         $sql = <<<EOS
 SELECT
-    lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.classcompletiondate, lte.duration, lte.durationunits,
+    lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.completiontime, lte.duration, lte.durationunits,
         lte.expirydate, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
         lte.healthandsafetycategory, lte.usedtimezone,
     lte.courseid as course,
@@ -128,13 +128,13 @@ LEFT JOIN
 WHERE
     lte.staffid = :staffid
     AND (lte.archived = 0 OR lte.archived IS NULL)
-    AND lte.classcompletiondate > :threeyearsago
+    AND lte.completiontime > :threeyearsago
     AND (
         {$DB->sql_compare_text('lte.bookingstatus')} {$usql}
         OR lte.bookingstatus IS NULL
     )
 ORDER BY
-    lte.classcompletiondate DESC
+    lte.completiontime DESC
 EOS;
         $params['staffid'] = $staffid;
         $params['primaryflag'] = 'Y';
@@ -159,9 +159,9 @@ EOS;
                 $learninghistory->category = format_string($record->classcategory);
             }
             $learninghistory->duration = $record->duration ? (float) $record->duration . '&nbsp;' . $record->durationunits : '';
-            if ($record->classcompletiondate) {
+            if ($record->completiontime) {
                 $date = new DateTime(null, $timezone);
-                $date->setTimestamp($record->classcompletiondate);
+                $date->setTimestamp($record->completiontime);
                 $learninghistory->completiondate = $date->format('d M Y');
             }
             if ($record->expirydate) {

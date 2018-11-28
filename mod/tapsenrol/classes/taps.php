@@ -490,7 +490,7 @@ class taps {
         $cpd->staffid = $staffid;
         $cpd->classname = $classtitle;
         $cpd->provider = $providername;
-        $cpd->classcompletiontime = $completiontime;
+        $cpd->completiontime = $completiontime;
         $cpd->duration = $duration;
         $cpd->durationunitscode = $durationunitscode;
         $cpd->durationunits = $this->_durationunitscode[$durationunitscode];
@@ -505,10 +505,10 @@ class taps {
         $cpd->learningdesc = (isset($optional['p_learning_desc']) ? $optional['p_learning_desc'] : null);
         $cpd->healthandsafetycategory = (isset($optional['p_health_and_safety_category']) ? $this->_healthandsafetycategory[$optional['p_health_and_safety_category']] : null);
 
-        $cpd->classcompletiondate = usergetmidnight($completiontime, new DateTimeZone('UTC')); // Midnight on day (UTC).
+        $cpd->completiontime = usergetmidnight($completiontime, new DateTimeZone('UTC')); // Midnight on day (UTC).
 
         $cpd->classstartdate = $cpd->classstarttime;
-        $cpd->classenddate = $cpd->classendtime = ($cpd->classcompletiondate + (24 * 60 * 60) - 1); // End of completion day
+        $cpd->classenddate = $cpd->classendtime = ($cpd->completiontime + (24 * 60 * 60) - 1); // End of completion day
 
         $cpd->timemodified = time();
 
@@ -541,7 +541,7 @@ class taps {
 
         $cpd->classname = $classtitle;
         $cpd->provider = $providername;
-        $cpd->classcompletiontime = $completiontime;
+        $cpd->completiontime = $completiontime;
         $cpd->duration = $duration;
         $cpd->durationunitscode = $durationunitscode;
         $cpd->durationunits = $this->_durationunitscode[$durationunitscode];
@@ -557,10 +557,10 @@ class taps {
 
         $cpd->healthandsafetycategory = (isset($optional['p_health_and_safety_category']) ? $this->_healthandsafetycategory[$optional['p_health_and_safety_category']] : null);
 
-        $cpd->classcompletiondate = usergetmidnight($completiontime, new DateTimeZone('UTC')); // Midnight on day (UTC).
+        $cpd->completiontime = usergetmidnight($completiontime, new DateTimeZone('UTC')); // Midnight on day (UTC).
 
         $cpd->classstartdate = $cpd->classstarttime;
-        $cpd->classenddate = $cpd->classendtime = ($cpd->classcompletiondate + (24 * 60 * 60) - 1); // End of completion day
+        $cpd->classenddate = $cpd->classendtime = ($cpd->completiontime + (24 * 60 * 60) - 1); // End of completion day
 
         $cpd->timemodified = time();
 
@@ -669,8 +669,7 @@ class taps {
         $enrolment->expirydate = null; // CPD only.
         $enrolment->classstarttime = $class->classstarttime;
         $enrolment->classendtime = $class->classendtime;
-        $enrolment->classcompletiondate = null;
-        $enrolment->classcompletiontime = null;
+        $enrolment->completiontime = null;
         $enrolment->healthandsafetycategory = null; // CPD only.
         $enrolment->classcost = $class->classcost;
         $enrolment->classcostcurrency = $class->classcostcurrency;
@@ -681,7 +680,6 @@ class taps {
         $enrolment->currencycode = $class->currencycode;
         $enrolment->price = $class->price;
         $enrolment->trainingcenter = $class->trainingcenter;
-        $enrolment->classcontext = null; // Not currently used.
         // Field bookingplaceddate is a new field from migration data.
         $enrolment->bookingplaceddate = $enrolment->timemodified = time();
 
@@ -768,13 +766,13 @@ class taps {
 
         $enrolment->bookingstatus = $status;
         if ($this->is_status($status, 'attended')) {
-            $enrolment->classcompletiontime = (empty($completiontime) ? time() : $completiontime);
+            $enrolment->completiontime = (empty($completiontime) ? time() : $completiontime);
             try {
                 $usedtimezone = new DateTimeZone($enrolment->usedtimezone);
             } catch (\Exception $e) {
                 $usedtimezone = new DateTimeZone('UTC');
             }
-            $enrolment->classcompletiondate = usergetmidnight($enrolment->classcompletiontime, $usedtimezone); // Midnight of same day as completion time.
+            $enrolment->completiontime = usergetmidnight($enrolment->completiontime, $usedtimezone); // Midnight of same day as completion time.
         }
 
         $enrolment->timemodified = time();

@@ -428,9 +428,9 @@ class block_arup_mylearning_content {
             }
             $cells[] = clone($cell);
 
-            if ($th->classcompletiondate) {
+            if ($th->completiontime) {
                 $date = new DateTime(null, $timezone);
-                $date->setTimestamp($th->classcompletiondate);
+                $date->setTimestamp($th->completiontime);
                 $data = str_ireplace(' ', '&nbsp;', $date->format('d M Y'));
             } else {
                 $data = '';
@@ -559,7 +559,7 @@ class block_arup_mylearning_content {
             'duration' => get_string('duration', 'block_arup_mylearning'),
             'durationunits' => get_string('durationunits', 'block_arup_mylearning'),
             'classstartdate' => get_string('date:start', 'block_arup_mylearning'),
-            'classcompletiondate' => get_string('date:completion', 'block_arup_mylearning'),
+            'completiontime' => get_string('date:completion', 'block_arup_mylearning'),
             'certificateno' => get_string('certificateno', 'block_arup_mylearning'),
             'expirydate' => get_string('date:expiry', 'block_arup_mylearning'),
             'learningdescription' => get_string('learningdescription', 'block_arup_mylearning'),
@@ -597,7 +597,7 @@ class block_arup_mylearning_content {
                         }
                         break;
                     case 'classstartdate' :
-                    case 'classcompletiondate' :
+                    case 'completiontime' :
                     case 'expirydate' :
                         if ($th->{$field} != 0) {
                             $date = new DateTime(null, $timezone);
@@ -836,7 +836,7 @@ class block_arup_mylearning_content {
         list($usql, $params) = $DB->get_in_or_equal($taps->get_statuses('cancelled'), SQL_PARAMS_NAMED, 'status', false);
         $sql = <<<EOS
 SELECT
-    lte.id, lte.bookingstatus, lte.classcompletiontime, lte.courseid as course
+    lte.id, lte.bookingstatus, lte.completiontime, lte.courseid as course
 FROM
     {local_taps_enrolment} lte
 WHERE
@@ -848,7 +848,7 @@ EOS;
         $params['staffid'] = $USER->idnumber;
         $tapsenrolments = $DB->get_records_sql($sql, $params);
         foreach ($tapsenrolments as $tapsenrolment) {
-            $return[$tapsenrolment->course][$tapsenrolment->id] = array($taps->get_status_type($tapsenrolment->bookingstatus) => $tapsenrolment->classcompletiontime);
+            $return[$tapsenrolment->course][$tapsenrolment->id] = array($taps->get_status_type($tapsenrolment->bookingstatus) => $tapsenrolment->completiontime);
         }
         return $return;
     }
@@ -867,7 +867,7 @@ EOS;
         list($usql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
         $sql = <<<EOS
 SELECT
-    lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.classcompletiondate, lte.duration, lte.durationunits,
+    lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.completiontime, lte.duration, lte.durationunits,
         lte.expirydate, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
         lte.healthandsafetycategory, lte.usedtimezone, lte.locked,
     lte.courseid as course,
@@ -888,7 +888,7 @@ WHERE
         OR lte.bookingstatus IS NULL
     )
 ORDER BY
-    lte.classcompletiondate DESC
+    lte.completiontime DESC
 EOS;
         $params['staffid'] = $USER->idnumber;
         $params['primaryflag'] = 'Y';

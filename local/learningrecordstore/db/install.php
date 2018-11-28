@@ -28,8 +28,7 @@ function xmldb_local_learningrecordstore_install() {
     $table->add_field('bookingstatus', XMLDB_TYPE_TEXT);
     $table->add_field('classstarttime', XMLDB_TYPE_INTEGER, '10');
     $table->add_field('classendtime', XMLDB_TYPE_INTEGER, '10');
-    $table->add_field('classcompletiondate', XMLDB_TYPE_INTEGER, '10');
-    $table->add_field('classcompletiontime', XMLDB_TYPE_INTEGER, '10');
+    $table->add_field('completiontime', XMLDB_TYPE_INTEGER, '10');
     $table->add_field('healthandsafetycategory', XMLDB_TYPE_TEXT);
     $table->add_field('classcost', XMLDB_TYPE_NUMBER, 20);
     $table->add_field('classcostcurrency', XMLDB_TYPE_TEXT);
@@ -40,7 +39,6 @@ function xmldb_local_learningrecordstore_install() {
     $table->add_field('currencycode', XMLDB_TYPE_TEXT);
     $table->add_field('price', XMLDB_TYPE_NUMBER, 20);
     $table->add_field('trainingcenter', XMLDB_TYPE_TEXT);
-    $table->add_field('classcontext', XMLDB_TYPE_TEXT);
     $table->add_field('bookingplaceddate', XMLDB_TYPE_INTEGER, '10');
     $table->add_field('lastupdatedate', XMLDB_TYPE_INTEGER, '10');
     $table->add_field('active', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, false, 1);
