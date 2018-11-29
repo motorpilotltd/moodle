@@ -810,65 +810,34 @@ fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.focus {
   top: 0;
   width: 0;
 }
-.path-local-onlineappraisal .arupadvcheckbox input + span {
+.path-local-onlineappraisal .arupadvcheckbox input ~ i,
+.path-local-onlineappraisal .arupadvcheckbox input ~ span {
   cursor: pointer;
-  display: inline-block;
-  margin-left: 5px;
-  padding-left: 40px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
 }
-.path-local-onlineappraisal .arupadvcheckbox input + span:before {
-  background: #38C19A;
-  border-radius: 20px;
-  box-shadow: none;
-  content: "";
-  display: inline-block;
-  height: 20px;
-  left: 0;
-  position: absolute;
-  transition: background 0.2s ease-out;
-  width: 40px;
-}
-.path-local-onlineappraisal .arupadvcheckbox input + span:after {
-  background: #ffffff;
-  background-clip: padding-box;
-  border: solid transparent 2px;
-  border-radius: 20px;
-  content: "";
-  display: block;
-  height: 20px;
-  left: 0;
-  position: absolute;
-  top: 0;
-  transition: margin-left 0.1s ease-in-out;
-  width: 20px;
-}
-.path-local-onlineappraisal .arupadvcheckbox input:checked + span:before {
-  background: #ED5564;
-  transition: background 0.2s ease-in;
-}
-.path-local-onlineappraisal .arupadvcheckbox input:checked + span:after {
-  background-clip: padding-box;
-  border: solid transparent 2px;
-  content: "";
-  margin-left: 20px;
-  -webkit-animation: popIn ease-in 0.3s normal;
-  animation: popIn ease-in 0.3s normal;
-}
-.path-local-onlineappraisal .arupadvcheckbox input:not(:checked) + span:after {
-  -webkit-animation: popOut ease-in 0.3s normal;
-  animation: popOut ease-in 0.3s normal;
-}
-.path-local-onlineappraisal .arupadvcheckbox input:disabled {
-  cursor: not-allowed;
-}
-.path-local-onlineappraisal .arupadvcheckbox input:disabled + span {
+.path-local-onlineappraisal .arupadvcheckbox input ~ i:disabled,
+.path-local-onlineappraisal .arupadvcheckbox input ~ span:disabled {
   cursor: not-allowed;
   filter: alpha(opacity=50);
   opacity: 0.5;
+}
+.path-local-onlineappraisal .arupadvcheckbox input ~ span {
+  display: inline-block;
+  margin-top: -2em;
+  padding-left: 2.56em;
+}
+.path-local-onlineappraisal .arupadvcheckbox input:checked + i {
+  display: none;
+}
+.path-local-onlineappraisal .arupadvcheckbox input:checked + i + i {
+  color: #ED5564;
+  display: inline-block;
+}
+.path-local-onlineappraisal .arupadvcheckbox input:not(:checked) + i {
+  color: #777777;
+  display: inline-block;
+}
+.path-local-onlineappraisal .arupadvcheckbox input:not(:checked) + i + i {
+  display: none;
 }
 .path-local-onlineappraisal .block_local_onlineappraisal ul.nav-stacked {
   margin: 0;

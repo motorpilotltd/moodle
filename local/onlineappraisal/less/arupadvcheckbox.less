@@ -16,73 +16,41 @@
         top: 0;
         width: 0;
 
-        + span {
+        ~ i, ~ span {
             cursor: pointer;
-            display: inline-block;
-            margin-left: 5px;
-            padding-left: 40px;
-            -webkit-user-select: none;
-               -moz-user-select: none;
-                -ms-user-select: none;
-                    user-select: none;
 
-            &:before {
-                background: @arupgreen;
-                border-radius: 20px;
-                box-shadow: none;
-                content: "";
-                display: inline-block;
-                height: 20px;
-                left: 0;
-                position: absolute;
-                transition: background 0.2s ease-out;
-                width: 40px;
-            }
-
-            &:after {
-                background: #ffffff;
-                background-clip: padding-box;
-                border: solid transparent 2px;
-                border-radius: 20px;
-                content: "";
-                display: block;
-                height: 20px;
-                left: 0;
-                position: absolute;
-                top: 0;
-                transition: margin-left 0.1s ease-in-out;
-                width: 20px;
-            }
-        }
-
-        &:checked {
-            + span:before {
-                background: @arupred;
-                transition: background 0.2s ease-in;
-            }
-
-            + span:after {
-                background-clip: padding-box;
-                border: solid transparent 2px;
-                content: "";
-                margin-left: 20px;
-                -webkit-animation: popIn ease-in 0.3s normal;
-                        animation: popIn ease-in 0.3s normal;
-            }
-        }
-
-        &:not(:checked) + span:after {
-            -webkit-animation: popOut ease-in 0.3s normal;
-                    animation: popOut ease-in 0.3s normal;
-        }
-
-        &:disabled {
-            cursor: not-allowed;
-
-            + span {
+            &:disabled {
                 cursor: not-allowed;
                 filter: alpha(opacity=50);
                 opacity: 0.5;
+            }
+        }
+
+        ~ span {
+            display: inline-block;
+            margin-top: -2em;
+            padding-left: 2.56em;
+        }
+
+        &:checked {
+            + i {
+                display: none;
+            }
+
+            + i + i {
+                color: @arupred;
+                display: inline-block;
+            }
+        }
+
+        &:not(:checked) {
+            + i {
+                color: @arupgrey5;
+                display: inline-block;
+            }
+
+            + i + i {
+                display: none;
             }
         }
     }

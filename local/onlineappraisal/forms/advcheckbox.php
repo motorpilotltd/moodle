@@ -131,7 +131,7 @@ class MoodleQuickForm_arupadvcheckbox extends HTML_QuickForm_advcheckbox impleme
                 )) . ' />';
         }
 
-        return $hiddeninput . '<label for="' . $this->getAttribute('id') . '" class="arupadvcheckbox">' . $input . '<span>' . $this->_text . '</span></label>';
+        return $hiddeninput . '<label for="' . $this->getAttribute('id') . '" class="arupadvcheckbox">' . $input . '<i class="fa fa-unlock fa-2x fa-fw"></i><i class="fa fa-lock fa-2x fa-fw"></i><span>' . $this->_text . '</span></label>';
     }
 
     /**
