@@ -18,8 +18,10 @@
 
         ~ i, ~ span {
             cursor: pointer;
+        }
 
-            &:disabled {
+        &:disabled {
+            ~ i, ~ span {
                 cursor: not-allowed;
                 filter: alpha(opacity=50);
                 opacity: 0.5;

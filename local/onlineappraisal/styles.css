@@ -814,8 +814,8 @@ fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.focus {
 .path-local-onlineappraisal .arupadvcheckbox input ~ span {
   cursor: pointer;
 }
-.path-local-onlineappraisal .arupadvcheckbox input ~ i:disabled,
-.path-local-onlineappraisal .arupadvcheckbox input ~ span:disabled {
+.path-local-onlineappraisal .arupadvcheckbox input:disabled ~ i,
+.path-local-onlineappraisal .arupadvcheckbox input:disabled ~ span {
   cursor: not-allowed;
   filter: alpha(opacity=50);
   opacity: 0.5;
