@@ -131,7 +131,7 @@ class feedback {
                 $fbuser->actions = $this->appraisee_actions($request);
 
                 $fbuser->hasactions = (count($this->feedbackactions) > 0);
-                
+
                 if (isset($this->viewfeedback->id) && $request->id == $this->viewfeedback->id) {
                     if ($feedbackaction == 'view') {
                         $fbuser->viewfeedback = format_text($this->viewfeedback->feedback, FORMAT_PLAIN, array('filter' => 'false', 'nocache' => true));
@@ -185,7 +185,7 @@ class feedback {
             $request->confidential == 0) {
             $this->feedback_action('view', $request->id);
         }
-        
+
         if (($USER->id == $request->requested_by) && $request->customemail && ($this->appraisal->check_permission('feedbackown:view') || $this->appraisal->check_permission('feedback:view'))) {
             $this->feedback_action('viewrequest', $request->id);
         }
@@ -348,16 +348,19 @@ class feedback {
     public function user_feedback($data) {
         global $DB;
 
+        $submitted = false;
+        $draft = false;
+
         if ($data->buttonclicked == 1) {
             $submitted = true;
             $this->appraisal->set_action('userfeedback', $data->feedbackid);
         } else if ($data->buttonclicked == 2 ) {
             $draft = true;
-            $submitted = false;
             $this->appraisal->set_action('savedraft', $data->feedbackid);
         } else {
             $this->appraisal->set_action('userfeedback', $data->feedbackid);
             $this->appraisal->failed_action('feedback');
+            return;
         }
 
         // Get this feedback.
@@ -426,7 +429,7 @@ class feedback {
                     AND (af.received_date IS NULL OR af.received_date = 0)
                ORDER BY lac.availablefrom ASC, aa.held_date ASC";
 
-        $outstandingrecords = $DB->get_records_sql($outstanding, array('email' => $USER->email));        
+        $outstandingrecords = $DB->get_records_sql($outstanding, array('email' => $USER->email));
 
         foreach ($outstandingrecords as $or) {
             if (!\local_onlineappraisal\permissions::is_allowed('feedback:submit', $or->permissionsid, 'guest', $or->archived, $or->legacy)) {
@@ -514,7 +517,7 @@ class feedback {
                 if (\core_text::strtolower($fb->email) === \core_text::strtolower($USER->email)) {
                     // Set the appraisal
                     $appuser = $DB->get_record('user', array('id' => $fb->requested_by));
-                    
+
                     $emailvars = new stdClass();
                     $emailvars->recipient = fullname($USER);
                     $emailvars->appraisee = fullname($appuser);
@@ -597,7 +600,7 @@ class feedback {
 
         // Force to requested language.
         force_current_language($lang);
-        
+
         if (!is_null($component)) {
             $format = get_string($format, $component);
         }
