@@ -33,7 +33,7 @@ lastupdatedate (use timemodified) DONE
 classcompletiondate (just going to use classcompletiontime renamed to completiontime from now) DONE
 classcontext (appears to only ever be null or 'health and safety') DELETED
 courseid
-cpdid (seems to be some kind of additional primary key)
+cpdid (seems to be some kind of additional primary key) DELETE EXCEPT local/reports
 enrolmentid (seems to be some kind of additional primary key)
 learningdesccont1 (never used) DELETED
 learningdesccont2 (never used) DELETED

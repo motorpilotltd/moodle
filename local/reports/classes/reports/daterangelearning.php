@@ -581,11 +581,7 @@ class daterangelearning extends base {
 
         // Show classname in coursename column for CPD records
         if ($key == 'coursename') {
-            if (!empty($row->cpdid)) {
-                return $row->classname;
-            } else {
-                return $row->coursename;
-            }
+            return $row->coursename;
         }
 
         // Display rows with a cpdid as a CPD records, others as a LMS record

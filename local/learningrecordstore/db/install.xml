@@ -55,7 +55,7 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="enrolmentid_cpdid" TYPE="unique" FIELDS="enrolmentid, cpdid"/>
+        <KEY NAME="enrolmentid_cpdid" TYPE="unique" FIELDS="enrolmentid"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="staffid" UNIQUE="false" FIELDS="staffid"/>

@@ -207,7 +207,6 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="staffid" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="enrolmentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="cpdid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
@@ -250,7 +249,7 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="enrolmentid_cpdid" TYPE="unique" FIELDS="enrolmentid, cpdid"/>
+        <KEY NAME="enrolmentid" TYPE="unique" FIELDS="enrolmentid"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="staffid" UNIQUE="false" FIELDS="staffid"/>

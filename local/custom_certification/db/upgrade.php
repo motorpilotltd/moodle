@@ -72,7 +72,6 @@ function xmldb_local_custom_certification_upgrade($oldversion) {
         ];
         $fields = [
             new xmldb_field('tapsenrolmentid', XMLDB_TYPE_INTEGER, 10),
-            new xmldb_field('tapscpdid', XMLDB_TYPE_INTEGER, 10),
         ];
         foreach ($tables as $table) {
             foreach ($fields as $field) {

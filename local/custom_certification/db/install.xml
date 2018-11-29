@@ -153,7 +153,6 @@
         <FIELD NAME="progress" TYPE="int" LENGTH="3" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Progress in %"/>
         <FIELD NAME="cronchecked" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Batch cron task"/>
         <FIELD NAME="tapsenrolmentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS enrolment ID"/>
-        <FIELD NAME="tapscpdid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS CPD ID"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
       </FIELDS>
       <KEYS>
@@ -178,7 +177,6 @@
         <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Due date"/>
         <FIELD NAME="timearchived" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
         <FIELD NAME="tapsenrolmentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS enrolment ID"/>
-        <FIELD NAME="tapscpdid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS CPD ID"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
