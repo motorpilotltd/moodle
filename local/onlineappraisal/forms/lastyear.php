@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 class apform_lastyear extends moodleform {
     public function definition() {
         global $PAGE;
-        
+
         $data = $this->_customdata;
         $mform = $this->_form;
 
@@ -215,6 +215,14 @@ class apform_lastyear extends moodleform {
 
         if ($objectives = $DB->get_records($table, array('appraisalid' => $oldappraisal->id,
             'previous_appraisal' => 0))) {
+
+            array_walk($objectives, function(&$val) {
+                $val->description = nl2br($val->description);
+                if (isset($val->action_required)) {
+                    $val->action_required = nl2br($val->action_required);
+                }
+            });
+
             $template = new \local_onlineappraisal\output\lastyear\lastyear_legacy($objectives, $type);
             return $renderer->render($template);
         }
@@ -268,6 +276,14 @@ class apform_lastyear extends moodleform {
                 $lastyear[] = clone($out);
             }
         }
+
+        array_walk($lastyear, function(&$val) {
+            if (!empty($val->isarray)) {
+                array_walk($out->data, function(&$val) { $val = nl2br($val); });
+            } else {
+                $val->data = nl2br($val->data);
+            }
+        });
 
         $template = new \local_onlineappraisal\output\lastyear\lastyear($lastyear, $type);
         return $renderer->render($template);
