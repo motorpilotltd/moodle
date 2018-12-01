@@ -404,8 +404,8 @@
 }
 .path-local-onlineappraisal .mform .fitem .fitemtitle select,
 .path-local-onlineappraisal .mform .fitem .felement select {
-  max-width: 100%;
-  width: auto;
+  max-width: 505px;
+  width: 100%;
 }
 .path-local-onlineappraisal .mform .fitem .fitemtitle {
   padding-bottom: 0.8em;
@@ -791,6 +791,53 @@ fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.focus {
 }
 .path-local-onlineappraisal form.form-inline button {
   margin-bottom: 5px;
+}
+.path-local-onlineappraisal .arupadvcheckbox {
+  max-width: 505px;
+  position: relative;
+}
+.path-local-onlineappraisal .arupadvcheckbox input {
+  bottom: 0;
+  cursor: pointer;
+  display: block;
+  filter: alpha(opacity=0);
+  height: 0;
+  left: 0;
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 0;
+}
+.path-local-onlineappraisal .arupadvcheckbox input ~ i,
+.path-local-onlineappraisal .arupadvcheckbox input ~ span {
+  cursor: pointer;
+}
+.path-local-onlineappraisal .arupadvcheckbox input:disabled ~ i,
+.path-local-onlineappraisal .arupadvcheckbox input:disabled ~ span {
+  cursor: not-allowed;
+  filter: alpha(opacity=50);
+  opacity: 0.5;
+}
+.path-local-onlineappraisal .arupadvcheckbox input ~ span {
+  display: inline-block;
+  margin-top: -2em;
+  padding-left: 2.56em;
+}
+.path-local-onlineappraisal .arupadvcheckbox input:checked + i {
+  display: none;
+}
+.path-local-onlineappraisal .arupadvcheckbox input:checked + i + i {
+  color: #ED5564;
+  display: inline-block;
+}
+.path-local-onlineappraisal .arupadvcheckbox input:not(:checked) + i {
+  color: #777777;
+  display: inline-block;
+}
+.path-local-onlineappraisal .arupadvcheckbox input:not(:checked) + i + i {
+  display: none;
 }
 .path-local-onlineappraisal .block_local_onlineappraisal ul.nav-stacked {
   margin: 0;

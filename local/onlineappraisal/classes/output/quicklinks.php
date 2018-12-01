@@ -40,7 +40,7 @@ class quicklinks implements renderable, templatable {
      * Quick links constructor.
      * @param string $text The caption text.
      */
-    public function __construct($language) {
+    public function __construct($language, $page) {
         $this->data = new stdClass();
         $this->data->items = [];
         $quicklinks = get_config('local_onlineappraisal', 'quicklinks');
@@ -80,6 +80,16 @@ class quicklinks implements renderable, templatable {
                                     $item->visible &= !in_array($language, $itemlanguages);
                                 } else {
                                     $item->visible &= in_array($language, $itemlanguages);
+                                }
+                            }
+                            break;
+                        case 3:
+                            if (!empty($page)) {
+                                $pages = array_map('trim', explode(',', ltrim($setting, '!')));
+                                if (stripos($setting, '!') === 0) {
+                                    $item->visible &= !in_array($page, $pages);
+                                } else {
+                                    $item->visible &= in_array($page, $pages);
                                 }
                             }
                             break;

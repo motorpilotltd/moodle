@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use \local_onlineappraisal\comments as comments;
 
-class apform_successionplan extends moodleform {
+class apform_leaderplan extends moodleform {
     private $stringman;
 
     private $userdata = ['location' => '', 'group' => ''];
@@ -46,7 +46,7 @@ class apform_successionplan extends moodleform {
         $mform->addElement('hidden', 'formid', $data->formid);
         $mform->setType('formid', PARAM_INT);
 
-        $mform->addElement('hidden', 'page', 'successionplan');
+        $mform->addElement('hidden', 'page', 'leaderplan');
         $mform->setType('page', PARAM_TEXT);
 
         $mform->addElement('hidden', 'userid', $data->userid);
@@ -55,15 +55,15 @@ class apform_successionplan extends moodleform {
         $mform->addElement('hidden', 'appraisalid', $data->appraisalid);
         $mform->setType('appraisalid', PARAM_INT);
 
-        $mform->addElement('hidden', 'view', $data->appraisal->viewingas, ['id' => 'oa-sdp-view']);
+        $mform->addElement('hidden', 'view', $data->appraisal->viewingas, ['id' => 'oa-ldp-view']);
         $mform->setType('view', PARAM_TEXT);
 
-        $isformlocked = !empty($data->locked);
+        $isformlocked = !empty($data->ldplocked);
         $islockedforuser = ($data->appraiseeedit == APPRAISAL_FIELD_LOCKED) && ($data->appraiseredit == APPRAISAL_FIELD_LOCKED);
         $islocked = (int) ($isformlocked || $islockedforuser); // Integer for JS.
-        $mform->addElement('hidden', 'islockedforuser', $islockedforuser); // For locking unlock checkbox.
+        $mform->addElement('hidden', 'islockedforuser', $islockedforuser); // For locking ability to unlock.
         $mform->setType('islockedforuser', PARAM_INT);
-        $mform->addElement('hidden', 'islocked', $islocked, ['id' => 'oa-sdp-islocked']); // For locking other fields as checkbox will be frozen.
+        $mform->addElement('hidden', 'islocked', $islocked, ['id' => 'oa-ldp-islocked']); // For locking other fields as checkbox will be frozen.
         $mform->setType('islocked', PARAM_INT);
 
         $islockedattr = '';
@@ -94,54 +94,52 @@ class apform_successionplan extends moodleform {
             $mform->addElement('html', $renderer->render($alert));
         }
 
-        // Americas hidden fields.
-        // Available if appraisee region is NOT Americas (TAPS).
-        $americassql = "SELECT lru.geotapsregionid
-                          FROM {local_regions_use} lru
-                          JOIN {local_regions_reg} lrr ON lrr.id = lru.geotapsregionid
-                         WHERE lru.userid = :userid AND lrr.name = 'Americas'";
-        $americas = $DB->get_field_sql($americassql, array('userid' => $data->appraisal->appraisee->id));
-
-        foreach (['assessment', 'readiness', 'potential'] as $question) {
-            if (in_array($question, ['assessment', 'readiness']) && $americas) {
-                continue;
-            }
-            $answers = ($question === 'potential') ? [] : ['' => ''];
-            $class = ($question === 'potential') ? 'select2-general' : '';
-            $i = 1;
-            $answerstring = "{$question}:answer:{$i}";
-            while ($this->str_exists($answerstring)) {
-                $answer = $this->str($answerstring);
-                $answers[$answer] = $answer;
-                $i++;
-                $answerstring = "{$question}:answer:{$i}";
-            }
-            $element = $mform->addElement('select', $question, $this->str($question), $answers, ['class' => $class]);
-            if ($question === 'potential') {
-                $element->setMultiple(true);
-            }
-            $mform->disabledIf($question, 'islocked', 'eq', 1);
-            $mform->disabledIf($question, 'view', 'eq', 'appraisee');
+        $answers = [];
+        $class = 'select2-general';
+        $dataattrs = ['data-tags' => true];
+        $i = 1;
+        $answerstring = "ldppotential:answer:{$i}";
+        while ($this->str_exists($answerstring)) {
+            $answer = $this->str($answerstring);
+            $answers[$answer] = $answer;
+            $i++;
+            $answerstring = "ldppotential:answer:{$i}";
         }
+        if (isset($_POST['ldppotential']) || isset($data->ldppotential)) {
+            // Handle custom additions (user specific);
+            $ldppotentials = [];
+            $filterflags = FILTER_REQUIRE_ARRAY | FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_BACKTICK;
+            $ldppotentials += (array) filter_input(INPUT_POST, 'ldppotential', FILTER_SANITIZE_STRING, $filterflags);
+            $ldppotentials += (isset($data->ldppotential) ? $data->ldppotential : []);
+            foreach ($ldppotentials as $ldppotential) {
+                if (!in_array($ldppotential, $answers)) {
+                    $answers[$ldppotential] = $ldppotential;
+                }
+            }
+        }
+        $element = $mform->addElement('select', 'ldppotential', $this->str('ldppotential'), $answers, ['class' => $class] + $dataattrs);
+        $element->setMultiple(true);
+        $mform->disabledIf('ldppotential', 'islocked', 'eq', 1);
+        $mform->disabledIf('ldppotential', 'view', 'eq', 'appraisee');
 
         $strengths = [
             2,
-            !empty($data->strengths) ? count($data->strengths) + 1 : 0,
-            !empty($_POST['strengths']) ? count($_POST['strengths']) : 0
+            !empty($data->ldpstrengths) ? count($data->ldpstrengths) + 1 : 0,
+            !empty($_POST['ldpstrengths']) ? count($_POST['ldpstrengths']) : 0
         ];
         $maxstrengths = max($strengths);
         if ($islocked || $data->appraisal->viewingas === 'appraisee') {
-            $maxstrengths = (!empty($data->strengths) ? count($data->strengths) : 1);
+            $maxstrengths = (!empty($data->ldpstrengths) ? count($data->ldpstrengths) : 1);
         }
         for ($i = 0; $i < $maxstrengths; $i++) {
-            $label = ($i === 0 ? $this->str('strengths') : '');
-            $mform->addElement('text', "strengths[{$i}]", $label, ['class' => 'oa-repeating-element']);
-            $mform->setType("strengths[{$i}]", PARAM_TEXT);
-            $mform->disabledIf("strengths[{$i}]", 'islocked', 'eq', 1);
-            $mform->disabledIf("strengths[{$i}]", 'view', 'eq', 'appraisee');
+            $label = ($i === 0 ? $this->str('ldpstrengths') : '');
+            $mform->addElement('text', "ldpstrengths[{$i}]", $label, ['class' => 'oa-repeating-element']);
+            $mform->setType("ldpstrengths[{$i}]", PARAM_TEXT);
+            $mform->disabledIf("ldpstrengths[{$i}]", 'islocked', 'eq', 1);
+            $mform->disabledIf("ldpstrengths[{$i}]", 'view', 'eq', 'appraisee');
         }
-        $noscript = "<p class=\"visibleifnotjs\">{$this->str('strengths:add:noscript')}</p>";
-        $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="strengths">'.$this->str('strengths:add').'</button>';
+        $noscript = "<p class=\"visibleifnotjs\">{$this->str('ldpstrengths:add:noscript')}</p>";
+        $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="ldpstrengths">'.$this->str('ldpstrengths:add').'</button>';
         $mform->addElement(
                 'html',
                 $button.$noscript
@@ -149,45 +147,43 @@ class apform_successionplan extends moodleform {
 
         $developmentareas = [
             2,
-            !empty($data->developmentareas) ? count($data->developmentareas) + 1 : 0,
-            !empty($_POST['developmentareas']) ? count($_POST['developmentareas']) : 0
+            !empty($data->ldpdevelopmentareas) ? count($data->ldpdevelopmentareas) + 1 : 0,
+            !empty($_POST['ldpdevelopmentareas']) ? count($_POST['ldpdevelopmentareas']) : 0
         ];
         $maxdevelopmentareas = max($developmentareas);
         if ($islocked || $data->appraisal->viewingas === 'appraisee') {
-            $maxdevelopmentareas = (!empty($data->developmentareas) ? count($data->developmentareas) : 1);
+            $maxdevelopmentareas = (!empty($data->ldpdevelopmentareas) ? count($data->ldpdevelopmentareas) : 1);
         }
         for ($i = 0; $i < $maxdevelopmentareas; $i++) {
-            $label = ($i === 0 ? $this->str('developmentareas') : '');
-            $mform->addElement('text', "developmentareas[{$i}]", $label, ['class' => 'oa-repeating-element']);
-            $mform->setType("developmentareas[{$i}]", PARAM_TEXT);
-            $mform->disabledIf("developmentareas[{$i}]", 'islocked', 'eq', 1);
-            $mform->disabledIf("developmentareas[{$i}]", 'view', 'eq', 'appraisee');
+            $label = ($i === 0 ? $this->str('ldpdevelopmentareas') : '');
+            $mform->addElement('text', "ldpdevelopmentareas[{$i}]", $label, ['class' => 'oa-repeating-element']);
+            $mform->setType("ldpdevelopmentareas[{$i}]", PARAM_TEXT);
+            $mform->disabledIf("ldpdevelopmentareas[{$i}]", 'islocked', 'eq', 1);
+            $mform->disabledIf("ldpdevelopmentareas[{$i}]", 'view', 'eq', 'appraisee');
         }
-        $noscript = "<p class=\"visibleifnotjs\">{$this->str('developmentareas:add:noscript')}</p>";
-        $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="developmentareas">'.$this->str('developmentareas:add').'</button>';
+        $noscript = "<p class=\"visibleifnotjs\">{$this->str('ldpdevelopmentareas:add:noscript')}</p>";
+        $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="ldpdevelopmentareas">'.$this->str('ldpdevelopmentareas:add').'</button>';
         $mform->addElement(
                 'html',
                 $button.$noscript
                 );
 
-        $mform->addElement('textarearup', 'developmentplan', $this->str('developmentplan'), 'rows="3" cols="70"' . $islockedattr, '', '');
-        $mform->setType('developmentplan', PARAM_RAW);
+        $mform->addElement('textarearup', 'ldpdevelopmentplan', $this->str('ldpdevelopmentplan'), 'rows="3" cols="70"' . $islockedattr, '', '');
+        $mform->setType('ldpdevelopmentplan', PARAM_RAW);
 
+        $mform->addElement('arupadvcheckbox', 'ldplocked', '', $this->str('ldplocked'), array('group' => 1), array(0, 1));
+        $mform->disabledIf('ldplocked', 'view', 'eq', 'appraisee');
         if (!$isformlocked) {
-            $mform->addElement('advcheckbox', 'locked', '', $this->str('locked'), array('group' => 1), array(0, 1));
-            $mform->disabledIf('locked', 'islocked', 'eq', 1);
-            $mform->disabledIf('locked', 'view', 'eq', 'appraisee');
+            $mform->disabledIf('ldplocked', 'islocked', 'eq', 1);
         } else {
-            $mform->addElement('advcheckbox', 'unlock', '', $this->str('unlock'), array('group' => 1), array(0, 1));
-            $mform->disabledIf('unlock', 'islockedforuser', 'eq', 1);
-            $mform->disabledIf('unlock', 'view', 'eq', 'appraisee');
+            $mform->disabledIf('ldplocked', 'islockedforuser', 'eq', 1);
         }
 
         if (!$islocked || ($isformlocked && !$islockedforuser)) {
             $buttonarray=array();
-            $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('form:save', 'local_onlineappraisal'), ['class' => ($isformlocked) ? 'oa-unlock-sdp' : '']);
+            $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('form:save', 'local_onlineappraisal'), ['class' => ($isformlocked) ? 'oa-unlock-ldp' : '']);
             if ($isformlocked) {
-                $mform->disabledIf('submitbutton', 'unlock', 'eq', 0);
+                $mform->disabledIf('submitbutton', 'ldplocked', 'eq', 1);
             }
             if (!$isformlocked) {
                 $buttonarray[] = &$mform->createElement('submit', 'submitcontinue', get_string('form:submitcontinue', 'local_onlineappraisal'));
@@ -207,11 +203,11 @@ class apform_successionplan extends moodleform {
         if (empty($this->stringman)) {
             $this->stringman = get_string_manager();
         }
-        return $this->stringman->string_exists('form:successionplan:' . $string, 'local_onlineappraisal');
+        return $this->stringman->string_exists('form:leaderplan:' . $string, 'local_onlineappraisal');
     }
 
     private function str($string) {
-        return get_string('form:successionplan:' . $string, 'local_onlineappraisal');
+        return get_string('form:leaderplan:' . $string, 'local_onlineappraisal');
     }
 
     public function definition_after_data() {
@@ -228,25 +224,24 @@ class apform_successionplan extends moodleform {
     public function get_data() {
         $data = parent::get_data();
         // Clear empty inputs.
-        if (isset($data->strengths)) {
-            $data->strengths = array_values(array_filter($data->strengths));
+        if (isset($data->ldpstrengths)) {
+            $data->ldpstrengths = array_values(array_filter($data->ldpstrengths));
         }
-        if (isset($data->developmentareas)) {
-            $data->developmentareas = array_values(array_filter($data->developmentareas));
+        if (isset($data->ldpdevelopmentareas)) {
+            $data->ldpdevelopmentareas = array_values(array_filter($data->ldpdevelopmentareas));
         }
         // Handle empty multi select, but only if unlocked.
-        if (!isset($data->potential) && !$data->islocked) {
-            $data->potential = [];
+        if (!isset($data->ldppotential) && !$data->islocked) {
+            $data->ldppotential = [];
         }
-        // Tidy up control fields.
-        if (!$data->islocked && !empty($data->locked)) {
+        // Locking or unlocking?
+        if (!$data->islocked && $data->ldplocked) {
             $this->locking = true;
         }
-        if (!empty($data->unlock)) {
-            $data->locked = 0;
+        if ($data->islocked && !$data->ldplocked) {
             $this->unlocking = true;
-            unset($data->unlock);
         }
+        // Tidy up control fields.
         if (isset($data->islocked)) {
             unset($data->islocked);
         }
@@ -272,7 +267,7 @@ class apform_successionplan extends moodleform {
             $comment = comments::save_comment(
                     $formsclass->appraisal->appraisalid,
                     get_string(
-                            'comment:sdp:unlocking',
+                            'comment:ldp:unlocking',
                             'local_onlineappraisal',
                             $a
                             )
@@ -283,7 +278,7 @@ class apform_successionplan extends moodleform {
             $comment = comments::save_comment(
                     $formsclass->appraisal->appraisalid,
                     get_string(
-                            'comment:sdp:locking',
+                            'comment:ldp:locking',
                             'local_onlineappraisal',
                             $a
                             )
