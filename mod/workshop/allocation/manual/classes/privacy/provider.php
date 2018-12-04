@@ -44,7 +44,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * @param collection $collection Collection of items to add metadata to.
      * @return collection Collection with our added items.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
 
         $collection->add_user_preference('workshopallocation_manual_perpage', 'privacy:metadata:preference:perpage');
 
@@ -56,7 +56,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      *
      * @param int $userid ID of the user we are exporting data form.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
 
         $perpage = get_user_preferences('workshopallocation_manual_perpage', null, $userid);
 

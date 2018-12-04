@@ -83,7 +83,7 @@ class plugintype_link implements type {
      *
      * @return  array
      */
-    public function get_privacy_fields() {
+    public function get_privacy_fields() : array {
         return $this->privacyfields;
     }
 

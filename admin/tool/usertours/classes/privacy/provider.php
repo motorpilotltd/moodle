@@ -50,7 +50,7 @@ class provider implements
      * @param   collection     $itemcollection The initialised item collection to add items to.
      * @return  collection     A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $items) {
+    public static function get_metadata(collection $items) : collection {
         // There are several user preferences.
         $items->add_user_preference(\tool_usertours\tour::TOUR_REQUESTED_BY_USER, 'privacy:metadata:preference:requested');
         $items->add_user_preference(\tool_usertours\tour::TOUR_LAST_COMPLETED_BY_USER, 'privacy:metadata:preference:completed');
@@ -63,7 +63,7 @@ class provider implements
      *
      * @param   int         $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
         $preferences = get_user_preferences();
         foreach ($preferences as $name => $value) {
             $descriptionidentifier = null;

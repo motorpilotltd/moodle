@@ -23,11 +23,11 @@
 
 namespace auth_manual\privacy;
 
+defined('MOODLE_INTERNAL') || die();
+
 use \core_privacy\local\request\writer;
 use \core_privacy\local\metadata\collection;
 use \core_privacy\local\request\transform;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Privacy provider for the authentication manual.
@@ -45,7 +45,7 @@ class provider implements
      * @param   collection     $collection The initialised item collection to add items to.
      * @return  collection     A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         // There is a one user preference.
         $collection->add_user_preference('auth_manual_passwordupdatetime',
             'privacy:metadata:preference:passwordupdatetime');
@@ -58,7 +58,7 @@ class provider implements
      *
      * @param   int         $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
         $lastpasswordupdatetime = get_user_preferences('auth_manual_passwordupdatetime', null, $userid);
         if ($lastpasswordupdatetime !== null) {
             $time = transform::datetime($lastpasswordupdatetime);

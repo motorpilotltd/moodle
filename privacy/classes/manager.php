@@ -27,6 +27,7 @@ use core_privacy\local\metadata\null_provider;
 use core_privacy\local\request\context_aware_provider;
 use core_privacy\local\request\contextlist_collection;
 use core_privacy\local\request\core_user_data_provider;
+use core_privacy\local\request\core_userlist_provider;
 use core_privacy\local\request\data_provider;
 use core_privacy\local\request\user_preference_provider;
 use \core_privacy\local\metadata\provider as metadata_provider;
@@ -139,7 +140,7 @@ class manager {
      * @param string $component frankenstyle component name, e.g. 'mod_assign'
      * @return bool true if the component is compliant, false otherwise.
      */
-    public function component_is_compliant($component) {
+    public function component_is_compliant(string $component) : bool {
         // Components which don't store user data need only implement the null_provider.
         if ($this->component_implements($component, null_provider::class)) {
             return true;
@@ -164,7 +165,7 @@ class manager {
      * @param  string $component Frankenstyle component name.
      * @return string The key to retrieve the language string for the null provider reason.
      */
-    public function get_null_provider_reason($component) {
+    public function get_null_provider_reason(string $component) : string {
         if ($this->component_implements($component, null_provider::class)) {
             $reason = $this->handled_component_class_callback($component, null_provider::class, 'get_reason', []);
             return empty($reason) ? 'privacy:reason' : $reason;
@@ -195,7 +196,7 @@ class manager {
      *
      * @return collection[] The array of collection objects, indexed by frankenstyle component name.
      */
-    public function get_metadata_for_components() {
+    public function get_metadata_for_components() : array {
         // Get the metadata, and put into an assoc array indexed by component name.
         $metadata = [];
         foreach ($this->get_component_list() as $component) {
@@ -215,7 +216,7 @@ class manager {
      * @param int $userid the id of the user we're fetching contexts for.
      * @return contextlist_collection the collection of contextlist items for the respective components.
      */
-    public function get_contexts_for_userid($userid) {
+    public function get_contexts_for_userid(int $userid) : contextlist_collection {
         $progress = static::get_log_tracer();
 
         $components = $this->get_component_list();
@@ -253,6 +254,46 @@ class manager {
         $progress->output(get_string('trace:done', 'core_privacy'), 1);
 
         return $clcollection;
+    }
+
+    /**
+     * Gets a collection of users for all components in the specified context.
+     *
+     * @param   \context    $context The context to search
+     * @return  userlist_collection the collection of userlist items for the respective components.
+     */
+    public function get_users_in_context(\context $context) : \core_privacy\local\request\userlist_collection {
+        $progress = static::get_log_tracer();
+
+        $components = $this->get_component_list();
+        $a = (object) [
+            'total' => count($components),
+            'progress' => 0,
+            'component' => '',
+            'datetime' => userdate(time()),
+        ];
+        $collection = new \core_privacy\local\request\userlist_collection($context);
+
+        $progress->output(get_string('trace:fetchcomponents', 'core_privacy', $a), 1);
+        foreach ($components as $component) {
+            $a->component = $component;
+            $a->progress++;
+            $a->datetime = userdate(time());
+            $progress->output(get_string('trace:preprocessingcomponent', 'core_privacy', $a), 2);
+            $userlist = new local\request\userlist($context, $component);
+
+            $this->handled_component_class_callback($component, core_userlist_provider::class, 'get_users_in_context', [$userlist]);
+
+            // Add contexts that the component may not know about.
+            \core_privacy\local\request\helper::add_shared_users_to_userlist($userlist);
+
+            if (count($userlist)) {
+                $collection->add_userlist($userlist);
+            }
+        }
+        $progress->output(get_string('trace:done', 'core_privacy'), 1);
+
+        return $collection;
     }
 
     /**
@@ -381,6 +422,48 @@ class manager {
     }
 
     /**
+     * Delete all user data for all specified users in a context.
+     *
+     * @param   \core_privacy\local\request\userlist_collection $collection
+     */
+    public function delete_data_for_users_in_context(\core_privacy\local\request\userlist_collection $collection) {
+        $progress = static::get_log_tracer();
+
+        $a = (object) [
+            'contextid' => $collection->get_context()->id,
+            'total' => count($collection),
+            'progress' => 0,
+            'component' => '',
+            'datetime' => userdate(time()),
+        ];
+
+        // Delete the data.
+        $progress->output(get_string('trace:deletingapprovedusers', 'core_privacy', $a), 1);
+        foreach ($collection as $userlist) {
+            if (!$userlist instanceof \core_privacy\local\request\approved_userlist) {
+                throw new \moodle_exception('The supplied userlist must be an approved_userlist');
+            }
+
+            $component = $userlist->get_component();
+            $a->component = $component;
+            $a->progress++;
+            $a->datetime = userdate(time());
+
+            if (empty($userlist)) {
+                // This really shouldn't happen!
+                continue;
+            }
+
+            $progress->output(get_string('trace:processingcomponent', 'core_privacy', $a), 2);
+
+            $this->handled_component_class_callback($component, core_userlist_provider::class,
+                    'delete_data_for_users', [$userlist]);
+        }
+
+        $progress->output(get_string('trace:done', 'core_privacy'), 1);
+    }
+
+    /**
      * Delete all use data which matches the specified deletion criteria.
      *
      * @param \context $context The specific context to delete data for.
@@ -444,7 +527,7 @@ class manager {
      * @param string $component the frankenstyle component name.
      * @return string the fully qualified provider classname.
      */
-    public static function get_provider_classname_for_component($component) {
+    public static function get_provider_classname_for_component(string $component) {
         return "$component\\privacy\\provider";
     }
 
@@ -456,7 +539,7 @@ class manager {
      * @param string $interface the name of the interface we want to check.
      * @return bool True if an implementation was found, false otherwise.
      */
-    protected function component_implements($component, $interface) {
+    protected function component_implements(string $component, string $interface) : bool {
         $providerclass = $this->get_provider_classname($component);
         if (class_exists($providerclass)) {
             $rc = new \ReflectionClass($providerclass);
@@ -473,7 +556,7 @@ class manager {
      * @param   string  $methodname The method to call
      * @param   array   $params The params to call
      */
-    public static function plugintype_class_callback($plugintype, $interface, $methodname, array $params) {
+    public static function plugintype_class_callback(string $plugintype, string $interface, string $methodname, array $params) {
         $components = \core_component::get_plugin_list($plugintype);
         foreach (array_keys($components) as $component) {
             static::component_class_callback("{$plugintype}_{$component}", $interface, $methodname, $params);
@@ -489,7 +572,7 @@ class manager {
      * @param   array   $params The params to call
      * @return  mixed
      */
-    public static function component_class_callback($component, $interface, $methodname, array $params) {
+    public static function component_class_callback(string $component, string $interface, string $methodname, array $params) {
         $classname = static::get_provider_classname_for_component($component);
         if (class_exists($classname) && is_subclass_of($classname, $interface)) {
             return component_class_callback($classname, $methodname, $params);
@@ -523,15 +606,10 @@ class manager {
      * @param   array   $params The params to call
      * @return  mixed
      */
-    protected function handled_component_class_callback($component, $interface, $methodname, array $params) {
+    protected function handled_component_class_callback(string $component, string $interface, string $methodname, array $params) {
         try {
             return static::component_class_callback($component, $interface, $methodname, $params);
-        } catch (\Exception $e) {
-            debugging($e->getMessage(), DEBUG_DEVELOPER, $e->getTrace());
-            $this->component_class_callback_failed($e, $component, $interface, $methodname, $params);
-
-            return null;
-        } catch (\Error $e) {
+        } catch (\Throwable $e) {
             debugging($e->getMessage(), DEBUG_DEVELOPER, $e->getTrace());
             $this->component_class_callback_failed($e, $component, $interface, $methodname, $params);
 
@@ -548,7 +626,8 @@ class manager {
      * @param string $methodname
      * @param array $params
      */
-    protected function component_class_callback_failed($e, $component, $interface, $methodname, array $params) {
+    protected function component_class_callback_failed(\Throwable $e, string $component, string $interface,
+            string $methodname, array $params) {
         if ($this->observer) {
             call_user_func_array([$this->observer, 'handle_component_failure'], func_get_args());
         }

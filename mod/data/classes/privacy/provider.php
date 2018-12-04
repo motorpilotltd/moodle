@@ -26,9 +26,11 @@ namespace mod_data\privacy;
 
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\helper;
 use core_privacy\local\request\transform;
+use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
 use core_privacy\manager;
 
@@ -45,6 +47,9 @@ class provider implements
         // This plugin stores personal data.
         \core_privacy\local\metadata\provider,
 
+        // This plugin is capable of determining which users have data within it.
+        \core_privacy\local\request\core_userlist_provider,
+
         // This plugin is a core_user_data_provider.
         \core_privacy\local\request\plugin\provider {
 
@@ -54,7 +59,7 @@ class provider implements
      * @param collection $collection a reference to the collection to use to store the metadata.
      * @return collection the updated collection of metadata items.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_database_table(
             'data_records',
             [
@@ -97,7 +102,7 @@ class provider implements
      * @param int $userid the userid.
      * @return contextlist the list of contexts containing user info for the user.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
         // Fetch all data records.
         $sql = "SELECT c.id
                   FROM {context} c
@@ -124,6 +129,57 @@ class provider implements
         $contextlist->add_from_sql($sql, $params);
 
         return $contextlist;
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     *
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if (!is_a($context, \context_module::class)) {
+            return;
+        }
+
+        // Find users with data records.
+        $sql = "SELECT dr.userid
+                  FROM {context} c
+                  JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modname
+                  JOIN {data} d ON d.id = cm.instance
+                  JOIN {data_records} dr ON dr.dataid = d.id
+                 WHERE c.id = :contextid";
+
+        $params = [
+            'modname'       => 'data',
+            'contextid'     => $context->id,
+            'contextlevel'  => CONTEXT_MODULE,
+        ];
+
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        // Find users with comments.
+        \core_comment\privacy\provider::get_users_in_context_from_sql($userlist, 'com', 'mod_data', 'database_entry', $context->id);
+
+        // Find users with ratings.
+        $sql = "SELECT dr.id
+                  FROM {context} c
+                  JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modname
+                  JOIN {data} d ON d.id = cm.instance
+                  JOIN {data_records} dr ON dr.dataid = d.id
+                 WHERE c.id = :contextid";
+
+        $params = [
+            'modname'       => 'data',
+            'contextid'     => $context->id,
+            'contextlevel'  => CONTEXT_MODULE,
+        ];
+
+        \core_rating\privacy\provider::get_users_in_context_from_sql($userlist, 'rat', 'mod_data', 'entry', $sql, $params);
     }
 
     /**
@@ -283,7 +339,9 @@ class provider implements
         ];
         // Data about the record.
         writer::with_context($context)->export_data([$recordobj->id], (object)$data);
-
+        // Related tags.
+        \core_tag\privacy\provider::export_item_tags($user->id, $context, [$recordobj->id],
+            'mod_data', 'data_records', $recordobj->id);
         // Export comments. For records that were not made by this user export only this user's comments, for own records
         // export comments made by everybody.
         \core_comment\privacy\provider::export_comments($context, 'mod_data', 'database_entry', $recordobj->id,
@@ -381,6 +439,51 @@ class provider implements
         \core_comment\privacy\provider::delete_comments_for_user($contextlist, 'mod_data', 'database_entry');
 
         // We do not delete ratings made by this user on other records because it may change grades.
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param   approved_userlist    $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
+
+        $context = $userlist->get_context();
+        $recordstobedeleted = [];
+        list($userinsql, $userinparams) = $DB->get_in_or_equal($userlist->get_userids(), SQL_PARAMS_NAMED);
+
+        $sql = "SELECT " . self::sql_fields() . "
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modname
+                  JOIN {data} d ON d.id = cm.instance
+                  JOIN {data_records} dr ON dr.dataid = d.id AND dr.userid {$userinsql}
+             LEFT JOIN {data_content} dc ON dc.recordid = dr.id
+             LEFT JOIN {data_fields} df ON df.id = dc.fieldid
+                 WHERE ctx.id = :ctxid AND ctx.contextlevel = :contextlevel
+              ORDER BY dr.id";
+
+        $params = [
+            'ctxid' => $context->id,
+            'contextlevel' => CONTEXT_MODULE,
+            'modname' => 'data',
+        ];
+        $params += $userinparams;
+
+        $rs = $DB->get_recordset_sql($sql, $params);
+        foreach ($rs as $row) {
+            self::mark_data_content_for_deletion($context, $row);
+            $recordstobedeleted[$row->recordid] = $row->recordid;
+        }
+        $rs->close();
+
+        self::delete_data_records($context, $recordstobedeleted);
+
+        // Additionally remove comments these users made on other entries.
+        \core_comment\privacy\provider::delete_comments_for_users($userlist, 'mod_data', 'database_entry');
+
+        // We do not delete ratings made by users on other records because it may change grades.
     }
 
     /**

@@ -202,6 +202,11 @@ class user_picture implements renderable {
     public $visibletoscreenreaders = true;
 
     /**
+     * @var bool Whether to include the fullname in the user picture link.
+     */
+    public $includefullname = false;
+
+    /**
      * User picture constructor.
      *
      * @param stdClass $user user record with at least id, picture, imagealt, firstname and lastname set.
@@ -427,7 +432,6 @@ class user_picture implements renderable {
             // If the currently requested page is https then we'll return an
             // https gravatar page.
             if (is_https()) {
-                $gravatardefault = str_replace($CFG->wwwroot, $CFG->httpswwwroot, $gravatardefault); // Replace by secure url.
                 return new moodle_url("https://secure.gravatar.com/avatar/{$md5}", array('s' => $size, 'd' => $gravatardefault));
             } else {
                 return new moodle_url("http://www.gravatar.com/avatar/{$md5}", array('s' => $size, 'd' => $gravatardefault));
@@ -515,7 +519,7 @@ class help_icon implements renderable, templatable {
         $data->icon = (new pix_icon('help', $alt, 'core', ['class' => 'iconhelp']))->export_for_template($output);
         $data->linktext = $this->linktext;
         $data->title = get_string('helpprefix2', '', trim($title, ". \t"));
-        $data->url = (new moodle_url($CFG->httpswwwroot . '/help.php', [
+        $data->url = (new moodle_url('/help.php', [
             'component' => $this->component,
             'identifier' => $this->identifier,
             'lang' => current_language()
@@ -2649,7 +2653,7 @@ class html_table {
      * $row2->cells = array($cell2, $cell3);
      * $t->data = array($row1, $row2);
      */
-    public $data;
+    public $data = [];
 
     /**
      * @deprecated since Moodle 2.0. Styling should be in the CSS.
@@ -4124,6 +4128,12 @@ class action_menu implements renderable, templatable {
     public $actiontext = null;
 
     /**
+     * The string to use for the accessible label for the menu.
+     * @var array
+     */
+    public $actionlabel = null;
+
+    /**
      * An icon to use for the toggling the secondary menu (dropdown).
      * @var actionicon
      */
@@ -4178,6 +4188,16 @@ class action_menu implements renderable, templatable {
         foreach ($actions as $action) {
             $this->add($action);
         }
+    }
+
+    /**
+     * Sets the label for the menu trigger.
+     *
+     * @param string $label The text
+     * @return null
+     */
+    public function set_action_label($label) {
+        $this->actionlabel = $label;
     }
 
     /**
@@ -4283,7 +4303,7 @@ class action_menu implements renderable, templatable {
             $pixicon = '<b class="caret"></b>';
             $linkclasses[] = 'textmenu';
         } else {
-            $title = new lang_string('actions', 'moodle');
+            $title = new lang_string('actionsmenu', 'moodle');
             $this->actionicon = new pix_icon(
                 't/edit_menu',
                 '',
@@ -4302,10 +4322,17 @@ class action_menu implements renderable, templatable {
         if ($this->actiontext) {
             $string = $this->actiontext;
         }
+        $label = '';
+        if ($this->actionlabel) {
+            $label = $this->actionlabel;
+        } else {
+            $label = $title;
+        }
         $actions = $this->primaryactions;
         $attributes = array(
             'class' => implode(' ', $linkclasses),
             'title' => $title,
+            'aria-label' => $label,
             'id' => 'action-menu-toggle-'.$this->instance,
             'role' => 'menuitem'
         );
@@ -4471,9 +4498,16 @@ class action_menu implements renderable, templatable {
         if (!empty($this->menutrigger)) {
             $primary->menutrigger = $this->menutrigger;
             $primary->triggerextraclasses = $this->triggerextraclasses;
+            if ($this->actionlabel) {
+                $primary->title = $this->actionlabel;
+            } else if ($this->actiontext) {
+                $primary->title = $this->actiontext;
+            } else {
+                $primary->title = strip_tags($this->menutrigger);
+            }
         } else {
-            $primary->title = get_string('actions');
-            $actionicon = new pix_icon('t/edit_menu', '', 'moodle', ['class' => 'iconsmall actionmenu', 'title' => '']);
+            $primary->title = get_string('actionsmenu');
+            $actionicon = new pix_icon('t/edit_menu', '', 'moodle', ['class' => 'iconsmall actionmenu', 'title' => $primary->title]);
         }
 
         if ($actionicon instanceof pix_icon) {

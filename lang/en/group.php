@@ -56,6 +56,7 @@ $string['deletegroupsconfirm'] = 'Are you sure you want to delete the following 
 $string['deleteselectedgroup'] = 'Delete selected group';
 $string['editgroupingsettings'] = 'Edit grouping settings';
 $string['editgroupsettings'] = 'Edit group settings';
+$string['editusersgroupsa'] = 'Edit groups for "{$a}"';
 $string['enrolmentkey'] = 'Enrolment key';
 $string['enrolmentkey_help'] = 'An enrolment key enables access to the course to be restricted to only those who know the key. If a group enrolment key is specified, then not only will entering that key let the user into the course, but it will also automatically make them a member of this group.
 
@@ -121,7 +122,7 @@ $string['groupnotamember'] = 'Sorry, you are not a member of that group';
 $string['groups'] = 'Groups';
 $string['groupscount'] = 'Groups ({$a})';
 $string['groupsettingsheader'] = 'Groups';
-$string['groupsgroupings'] = 'Groups &amp; groupings';
+$string['groupsgroupings'] = 'Groups & groupings';
 $string['groupsinselectedgrouping'] = 'Groups in:';
 $string['groupsnone'] = 'No groups';
 $string['groupsonly'] = 'Groups only';

@@ -183,7 +183,9 @@ function quiz_delete_instance($id) {
              WHERE slot.quizid = ? AND q.qtype = ?";
     $questionids = $DB->get_fieldset_sql($sql, array($quiz->id, 'random'));
 
-    // We need to do this before we try and delete randoms, otherwise they would still be 'in use'.
+    // We need to do the following deletes before we try and delete randoms, otherwise they would still be 'in use'.
+    $quizslots = $DB->get_fieldset_select('quiz_slots', 'id', 'quizid = ?', array($quiz->id));
+    $DB->delete_records_list('quiz_slot_tags', 'slotid', $quizslots);
     $DB->delete_records('quiz_slots', array('quizid' => $quiz->id));
     $DB->delete_records('quiz_sections', array('quizid' => $quiz->id));
 
@@ -1337,9 +1339,9 @@ function quiz_update_events($quiz, $override = null) {
                 } else {
                     unset($event->id);
                 }
-                $event->name = $eventname.' ('.get_string('quizopens', 'quiz').')';
+                $event->name = get_string('quizeventopens', 'quiz', $eventname);
                 // The method calendar_event::create will reuse a db record if the id field is set.
-                calendar_event::create($event);
+                calendar_event::create($event, false);
             }
             if ($timeclose && $addclose) {
                 if ($oldevent = array_shift($oldevents)) {
@@ -1348,7 +1350,7 @@ function quiz_update_events($quiz, $override = null) {
                     unset($event->id);
                 }
                 $event->type      = CALENDAR_EVENT_TYPE_ACTION;
-                $event->name      = $eventname.' ('.get_string('quizcloses', 'quiz').')';
+                $event->name      = get_string('quizeventcloses', 'quiz', $eventname);
                 $event->timestart = $timeclose;
                 $event->timesort  = $timeclose;
                 $event->eventtype = QUIZ_EVENT_TYPE_CLOSE;
@@ -1358,7 +1360,7 @@ function quiz_update_events($quiz, $override = null) {
                         $event->priority = $closepriorities[$timeclose];
                     }
                 }
-                calendar_event::create($event);
+                calendar_event::create($event, false);
             }
         }
     }
@@ -1585,6 +1587,8 @@ function quiz_reset_userdata($data) {
                        WHERE quiz IN (SELECT id FROM {quiz} WHERE course = ?)
                          AND timeclose <> 0", array($data->timeshift, $data->courseid));
 
+        // Any changes to the list of dates that needs to be rolled should be same during course restore and course reset.
+        // See MDL-9367.
         shift_course_mod_dates('quiz', array('timeopen', 'timeclose'),
                 $data->timeshift, $data->courseid);
 
@@ -2279,4 +2283,230 @@ function mod_quiz_get_completion_active_rule_descriptions($cm) {
         }
     }
     return $descriptions;
+}
+
+/**
+ * Returns the min and max values for the timestart property of a quiz
+ * activity event.
+ *
+ * The min and max values will be the timeopen and timeclose properties
+ * of the quiz, respectively, if they are set.
+ *
+ * If either value isn't set then null will be returned instead to
+ * indicate that there is no cutoff for that value.
+ *
+ * If the vent has no valid timestart range then [false, false] will
+ * be returned. This is the case for overriden events.
+ *
+ * A minimum and maximum cutoff return value will look like:
+ * [
+ *     [1505704373, 'The date must be after this date'],
+ *     [1506741172, 'The date must be before this date']
+ * ]
+ *
+ * @throws \moodle_exception
+ * @param \calendar_event $event The calendar event to get the time range for
+ * @param stdClass $quiz The module instance to get the range from
+ * @return array
+ */
+function mod_quiz_core_calendar_get_valid_event_timestart_range(\calendar_event $event, \stdClass $quiz) {
+    global $CFG, $DB;
+    require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
+    // Overrides do not have a valid timestart range.
+    if (quiz_is_overriden_calendar_event($event)) {
+        return [false, false];
+    }
+
+    $mindate = null;
+    $maxdate = null;
+
+    if ($event->eventtype == QUIZ_EVENT_TYPE_OPEN) {
+        if (!empty($quiz->timeclose)) {
+            $maxdate = [
+                $quiz->timeclose,
+                get_string('openafterclose', 'quiz')
+            ];
+        }
+    } else if ($event->eventtype == QUIZ_EVENT_TYPE_CLOSE) {
+        if (!empty($quiz->timeopen)) {
+            $mindate = [
+                $quiz->timeopen,
+                get_string('closebeforeopen', 'quiz')
+            ];
+        }
+    }
+
+    return [$mindate, $maxdate];
+}
+
+/**
+ * This function will update the quiz module according to the
+ * event that has been modified.
+ *
+ * It will set the timeopen or timeclose value of the quiz instance
+ * according to the type of event provided.
+ *
+ * @throws \moodle_exception
+ * @param \calendar_event $event A quiz activity calendar event
+ * @param \stdClass $quiz A quiz activity instance
+ */
+function mod_quiz_core_calendar_event_timestart_updated(\calendar_event $event, \stdClass $quiz) {
+    global $CFG, $DB;
+    require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
+    if (!in_array($event->eventtype, [QUIZ_EVENT_TYPE_OPEN, QUIZ_EVENT_TYPE_CLOSE])) {
+        // This isn't an event that we care about so we can ignore it.
+        return;
+    }
+
+    $courseid = $event->courseid;
+    $modulename = $event->modulename;
+    $instanceid = $event->instance;
+    $modified = false;
+    $closedatechanged = false;
+
+    // Something weird going on. The event is for a different module so
+    // we should ignore it.
+    if ($modulename != 'quiz') {
+        return;
+    }
+
+    if ($quiz->id != $instanceid) {
+        // The provided quiz instance doesn't match the event so
+        // there is nothing to do here.
+        return;
+    }
+
+    // We don't update the activity if it's an override event that has
+    // been modified.
+    if (quiz_is_overriden_calendar_event($event)) {
+        return;
+    }
+
+    $coursemodule = get_fast_modinfo($courseid)->instances[$modulename][$instanceid];
+    $context = context_module::instance($coursemodule->id);
+
+    // The user does not have the capability to modify this activity.
+    if (!has_capability('moodle/course:manageactivities', $context)) {
+        return;
+    }
+
+    if ($event->eventtype == QUIZ_EVENT_TYPE_OPEN) {
+        // If the event is for the quiz activity opening then we should
+        // set the start time of the quiz activity to be the new start
+        // time of the event.
+        if ($quiz->timeopen != $event->timestart) {
+            $quiz->timeopen = $event->timestart;
+            $modified = true;
+        }
+    } else if ($event->eventtype == QUIZ_EVENT_TYPE_CLOSE) {
+        // If the event is for the quiz activity closing then we should
+        // set the end time of the quiz activity to be the new start
+        // time of the event.
+        if ($quiz->timeclose != $event->timestart) {
+            $quiz->timeclose = $event->timestart;
+            $modified = true;
+            $closedatechanged = true;
+        }
+    }
+
+    if ($modified) {
+        $quiz->timemodified = time();
+        $DB->update_record('quiz', $quiz);
+
+        if ($closedatechanged) {
+            quiz_update_open_attempts(array('quizid' => $quiz->id));
+        }
+
+        // Delete any previous preview attempts.
+        quiz_delete_previews($quiz);
+        quiz_update_events($quiz);
+        $event = \core\event\course_module_updated::create_from_cm($coursemodule, $context);
+        $event->trigger();
+    }
+}
+
+/**
+ * Generates the question bank in a fragment output. This allows
+ * the question bank to be displayed in a modal.
+ *
+ * The only expected argument provided in the $args array is
+ * 'querystring'. The value should be the list of parameters
+ * URL encoded and used to build the question bank page.
+ *
+ * The individual list of parameters expected can be found in
+ * question_build_edit_resources.
+ *
+ * @param array $args The fragment arguments.
+ * @return string The rendered mform fragment.
+ */
+function mod_quiz_output_fragment_quiz_question_bank($args) {
+    global $CFG, $DB, $PAGE;
+    require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+    require_once($CFG->dirroot . '/question/editlib.php');
+
+    $querystring = preg_replace('/^\?/', '', $args['querystring']);
+    $params = [];
+    parse_str($querystring, $params);
+
+    // Build the required resources. The $params are all cleaned as
+    // part of this process.
+    list($thispageurl, $contexts, $cmid, $cm, $quiz, $pagevars) =
+            question_build_edit_resources('editq', '/mod/quiz/edit.php', $params);
+
+    // Get the course object and related bits.
+    $course = $DB->get_record('course', array('id' => $quiz->course), '*', MUST_EXIST);
+    require_capability('mod/quiz:manage', $contexts->lowest());
+
+    // Create quiz question bank view.
+    $questionbank = new mod_quiz\question\bank\custom_view($contexts, $thispageurl, $course, $cm, $quiz);
+    $questionbank->set_quiz_has_attempts(quiz_has_attempts($quiz->id));
+
+    // Output.
+    $renderer = $PAGE->get_renderer('mod_quiz', 'edit');
+    return $renderer->question_bank_contents($questionbank, $pagevars);
+}
+
+/**
+ * Generates the add random question in a fragment output. This allows the
+ * form to be rendered in javascript, for example inside a modal.
+ *
+ * The required arguments as keys in the $args array are:
+ *      cat {string} The category and category context ids comma separated.
+ *      addonpage {int} The page id to add this question to.
+ *      returnurl {string} URL to return to after form submission.
+ *      cmid {int} The course module id the questions are being added to.
+ *
+ * @param array $args The fragment arguments.
+ * @return string The rendered mform fragment.
+ */
+function mod_quiz_output_fragment_add_random_question_form($args) {
+    global $CFG;
+    require_once($CFG->dirroot . '/mod/quiz/addrandomform.php');
+
+    $contexts = new \question_edit_contexts($args['context']);
+    $formoptions = [
+        'contexts' => $contexts,
+        'cat' => $args['cat']
+    ];
+    $formdata = [
+        'category' => $args['cat'],
+        'addonpage' => $args['addonpage'],
+        'returnurl' => $args['returnurl'],
+        'cmid' => $args['cmid']
+    ];
+
+    $form = new quiz_add_random_form(
+        new \moodle_url('/mod/quiz/addrandom.php'),
+        $formoptions,
+        'post',
+        '',
+        null,
+        true,
+        $formdata
+    );
+    $form->set_data($formdata);
+
+    return $form->render();
 }

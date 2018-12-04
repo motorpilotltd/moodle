@@ -545,6 +545,84 @@ class core_user_externallib_testcase extends externallib_advanced_testcase {
     }
 
     /**
+     * Test create_users with invalid parameters
+     *
+     * @dataProvider data_create_users_invalid_parameter
+     * @param array $data User data to attempt to register.
+     * @param string $expectmessage Expected exception message.
+     */
+    public function test_create_users_invalid_parameter(array $data, $expectmessage) {
+        global $USER, $CFG, $DB;
+
+        $this->resetAfterTest(true);
+        $this->assignUserCapability('moodle/user:create', SYSCONTEXTID);
+
+        $this->expectException('invalid_parameter_exception');
+        $this->expectExceptionMessage($expectmessage);
+
+        core_user_external::create_users(array($data));
+    }
+
+    /**
+     * Data provider for {@link self::test_create_users_invalid_parameter()}.
+     *
+     * @return array
+     */
+    public function data_create_users_invalid_parameter() {
+        return [
+            'blank_username' => [
+                'data' => [
+                    'username' => '',
+                    'firstname' => 'Foo',
+                    'lastname' => 'Bar',
+                    'email' => 'foobar@example.com',
+                    'createpassword' => 1,
+                ],
+                'expectmessage' => 'The field username cannot be blank',
+            ],
+            'blank_firtname' => [
+                'data' => [
+                    'username' => 'foobar',
+                    'firstname' => "\t \n",
+                    'lastname' => 'Bar',
+                    'email' => 'foobar@example.com',
+                    'createpassword' => 1,
+                ],
+                'expectmessage' => 'The field firstname cannot be blank',
+            ],
+            'blank_lastname' => [
+                'data' => [
+                    'username' => 'foobar',
+                    'firstname' => '0',
+                    'lastname' => '   ',
+                    'email' => 'foobar@example.com',
+                    'createpassword' => 1,
+                ],
+                'expectmessage' => 'The field lastname cannot be blank',
+            ],
+            'invalid_email' => [
+                'data' => [
+                    'username' => 'foobar',
+                    'firstname' => 'Foo',
+                    'lastname' => 'Bar',
+                    'email' => '@foobar',
+                    'createpassword' => 1,
+                ],
+                'expectmessage' => 'Email address is invalid',
+            ],
+            'missing_password' => [
+                'data' => [
+                    'username' => 'foobar',
+                    'firstname' => 'Foo',
+                    'lastname' => 'Bar',
+                    'email' => 'foobar@example.com',
+                ],
+                'expectmessage' => 'Invalid password: you must provide a password, or set createpassword',
+            ],
+        ];
+    }
+
+    /**
      * Test delete_users
      */
     public function test_delete_users() {
@@ -1180,6 +1258,60 @@ class core_user_externallib_testcase extends externallib_advanced_testcase {
         } catch (Exception $e) {
             $this->fail('Expecting \'usernotfullysetup\' moodle_exception to be thrown.');
         }
+    }
 
+    /**
+     * Test get_private_files_info
+     */
+    public function test_get_private_files_info() {
+
+        $this->resetAfterTest(true);
+        $user = self::getDataGenerator()->create_user();
+        $this->setUser($user);
+        $usercontext = context_user::instance($user->id);
+
+        $filerecord = array(
+            'contextid' => $usercontext->id,
+            'component' => 'user',
+            'filearea'  => 'private',
+            'itemid'    => 0,
+            'filepath'  => '/',
+            'filename'  => 'thefile',
+        );
+
+        $fs = get_file_storage();
+        $file = $fs->create_file_from_string($filerecord, 'abc');
+
+        // Get my private files information.
+        $result = core_user_external::get_private_files_info();
+        $result = external_api::clean_returnvalue(core_user_external::get_private_files_info_returns(), $result);
+        $this->assertEquals(1, $result['filecount']);
+        $this->assertEquals($file->get_filesize(), $result['filesize']);
+        $this->assertEquals(0, $result['foldercount']);
+        $this->assertEquals($file->get_filesize(), $result['filesizewithoutreferences']);
+
+        // As admin, get user information.
+        $this->setAdminUser();
+        $result = core_user_external::get_private_files_info($user->id);
+        $result = external_api::clean_returnvalue(core_user_external::get_private_files_info_returns(), $result);
+        $this->assertEquals(1, $result['filecount']);
+        $this->assertEquals($file->get_filesize(), $result['filesize']);
+        $this->assertEquals(0, $result['foldercount']);
+        $this->assertEquals($file->get_filesize(), $result['filesizewithoutreferences']);
+    }
+
+    /**
+     * Test get_private_files_info missing permissions.
+     */
+    public function test_get_private_files_info_missing_permissions() {
+
+        $this->resetAfterTest(true);
+        $user1 = self::getDataGenerator()->create_user();
+        $user2 = self::getDataGenerator()->create_user();
+        $this->setUser($user1);
+
+        $this->expectException('required_capability_exception');
+        // Try to retrieve other user private files info.
+        core_user_external::get_private_files_info($user2->id);
     }
 }

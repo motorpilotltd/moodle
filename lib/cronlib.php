@@ -140,15 +140,44 @@ function cron_run_inner_scheduled_task(\core\task\task_base $task) {
 /**
  * Shared code that handles running of a single adhoc task within the cron.
  *
- * @param \core\task\task_base $task
+ * @param \core\task\adhoc_task $task
  */
-function cron_run_inner_adhoc_task(\core\task\task_base $task) {
+function cron_run_inner_adhoc_task(\core\task\adhoc_task $task) {
     global $DB, $CFG;
     mtrace("Execute adhoc task: " . get_class($task));
     cron_trace_time_and_memory();
     $predbqueries = null;
     $predbqueries = $DB->perf_get_queries();
     $pretime      = microtime(1);
+
+    if ($userid = $task->get_userid()) {
+        // This task has a userid specified.
+        if ($user = \core_user::get_user($userid)) {
+            // User found. Check that they are suitable.
+            try {
+                \core_user::require_active_user($user, true, true);
+            } catch (moodle_exception $e) {
+                mtrace("User {$userid} cannot be used to run an adhoc task: " . get_class($task) . ". Cancelling task.");
+                $user = null;
+            }
+        } else {
+            // Unable to find the user for this task.
+            // A user missing in the database will never reappear.
+            mtrace("User {$userid} could not be found for adhoc task: " . get_class($task) . ". Cancelling task.");
+        }
+
+        if (empty($user)) {
+            // A user missing in the database will never reappear so the task needs to be failed to ensure that locks are removed,
+            // and then removed to prevent future runs.
+            // A task running as a user should only be run as that user.
+            \core\task\manager::adhoc_task_failed($task);
+            $DB->delete_records('task_adhoc', ['id' => $task->get_id()]);
+
+            return;
+        }
+
+        cron_setup_user($user);
+    }
 
     try {
         get_mailer('buffer');
@@ -174,7 +203,7 @@ function cron_run_inner_adhoc_task(\core\task\task_base $task) {
         }
         mtrace("Adhoc task failed: " . get_class($task) . "," . $e->getMessage());
         if ($CFG->debugdeveloper) {
-                if (!empty($e->debuginfo)) {
+            if (!empty($e->debuginfo)) {
                 mtrace("Debug info:");
                 mtrace($e->debuginfo);
             }
@@ -183,6 +212,8 @@ function cron_run_inner_adhoc_task(\core\task\task_base $task) {
         }
         \core\task\manager::adhoc_task_failed($task);
     } finally {
+        // Reset back to the standard admin user.
+        cron_setup_user();
         cron_prepare_core_renderer(true);
     }
     get_mailer('close');

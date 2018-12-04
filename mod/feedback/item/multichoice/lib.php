@@ -318,8 +318,7 @@ class feedback_item_multichoice extends feedback_item_base {
         $inputname = $item->typ . '_' . $item->id;
         $options = $this->get_options($item);
         $separator = !empty($info->horizontal) ? ' ' : '<br>';
-        $itemval = $form->get_item_value($item);
-        $tmpvalue = !is_null($itemval) ? $itemval : 0; // Used for element defaults, so must be a valid value (not null).
+        $tmpvalue = $form->get_item_value($item) ?? 0; // Used for element defaults, so must be a valid value (not null).
 
         // Subtypes:
         // r = radio

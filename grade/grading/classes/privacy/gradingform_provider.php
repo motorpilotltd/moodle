@@ -49,7 +49,7 @@ interface gradingform_provider extends
      *
      * @return \stdClass The data to export.
      */
-    public static function get_gradingform_export_data(\context $context, $definition, $userid);
+    public static function get_gradingform_export_data(\context $context, $definition, int $userid);
 
     /**
      * Any call to this method should delete all user data for the context defined.
@@ -70,5 +70,5 @@ interface gradingform_provider extends
      * @param int $userid The user to delete.
      * @param \context $context the context to refine the deletion.
      */
-    public static function delete_gradingform_for_userid($userid, \context $context);
+    public static function delete_gradingform_for_userid(int $userid, \context $context);
 }

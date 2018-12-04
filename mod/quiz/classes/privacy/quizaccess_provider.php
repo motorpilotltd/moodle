@@ -44,7 +44,7 @@ interface quizaccess_provider extends \core_privacy\local\request\plugin\subplug
      * @param   \stdClass       $user The user to export data for
      * @return  \stdClass       The data to be exported for this access rule.
      */
-    public static function export_quizaccess_user_data(\quiz $quiz, \stdClass $user);
+    public static function export_quizaccess_user_data(\quiz $quiz, \stdClass $user) : \stdClass;
 
     /**
      * Delete all data for all users in the specified quiz.

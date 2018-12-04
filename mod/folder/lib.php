@@ -65,6 +65,10 @@ function folder_get_extra_capabilities() {
  * @return array status array
  */
 function folder_reset_userdata($data) {
+
+    // Any changes to the list of dates that needs to be rolled should be same during course restore and course reset.
+    // See MDL-9367.
+
     return array();
 }
 
@@ -466,7 +470,7 @@ function folder_cm_info_view(cm_info $cm) {
         }
         // display folder
         $renderer = $PAGE->get_renderer('mod_folder');
-        $cm->set_content($renderer->display_folder($folder));
+        $cm->set_content($renderer->display_folder($folder), true);
     }
 }
 
@@ -784,15 +788,28 @@ function folder_check_updates_since(cm_info $cm, $from, $filter = array()) {
  *
  * @param calendar_event $event
  * @param \core_calendar\action_factory $factory
+ * @param int $userid User id to use for all capability checks, etc. Set to 0 for current user (default).
  * @return \core_calendar\local\event\entities\action_interface|null
  */
 function mod_folder_core_calendar_provide_event_action(calendar_event $event,
-                                                     \core_calendar\action_factory $factory) {
-    $cm = get_fast_modinfo($event->courseid)->instances['folder'][$event->instance];
+                                                       \core_calendar\action_factory $factory,
+                                                       int $userid = 0) {
+    global $USER;
+
+    if (!$userid) {
+        $userid = $USER->id;
+    }
+
+    $cm = get_fast_modinfo($event->courseid, $userid)->instances['folder'][$event->instance];
+
+    if (!$cm->uservisible) {
+        // The module is not visible to the user for any reason.
+        return null;
+    }
 
     $completion = new \completion_info($cm->get_course());
 
-    $completiondata = $completion->get_data($cm, false);
+    $completiondata = $completion->get_data($cm, false, $userid);
 
     if ($completiondata->completionstate != COMPLETION_INCOMPLETE) {
         return null;

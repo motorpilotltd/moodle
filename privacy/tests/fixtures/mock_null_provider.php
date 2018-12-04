@@ -36,7 +36,7 @@ class provider implements \core_privacy\local\metadata\null_provider {
      *
      * @return string the reason for being a null provider.
      */
-    public static function get_reason() {
+    public static function get_reason(): string {
         return 'testcomponent2 null provider reason';
     }
 }

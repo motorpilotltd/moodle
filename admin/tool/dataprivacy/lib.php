@@ -87,6 +87,20 @@ function tool_dataprivacy_myprofile_navigation(tree $tree, $user, $iscurrentuser
         }
     }
 
+    // A returned 0 means that the setting was set and disabled, false means that there is no value for the provided setting.
+    $showsummary = get_config('tool_dataprivacy', 'showdataretentionsummary');
+    if ($showsummary === false) {
+        // This means that no value is stored in db. We use the default value in this case.
+        $showsummary = true;
+    }
+
+    if ($showsummary) {
+        $summaryurl = new moodle_url('/admin/tool/dataprivacy/summary.php');
+        $summarynode = new core_user\output\myprofile\node('privacyandpolicies', 'retentionsummary',
+            get_string('dataretentionsummary', 'tool_dataprivacy'), null, $summaryurl);
+        $category->add_node($summarynode);
+    }
+
     // Add the Privacy category to the tree if it's not empty and it doesn't exist.
     $nodes = $category->nodes;
     if (!empty($nodes)) {
@@ -97,6 +111,29 @@ function tool_dataprivacy_myprofile_navigation(tree $tree, $user, $iscurrentuser
     }
 
     return false;
+}
+
+/**
+ * Callback to add footer elements.
+ *
+ * @return string HTML footer content
+ */
+function tool_dataprivacy_standard_footer_html() {
+    $output = '';
+
+    // A returned 0 means that the setting was set and disabled, false means that there is no value for the provided setting.
+    $showsummary = get_config('tool_dataprivacy', 'showdataretentionsummary');
+    if ($showsummary === false) {
+        // This means that no value is stored in db. We use the default value in this case.
+        $showsummary = true;
+    }
+
+    if ($showsummary) {
+        $url = new moodle_url('/admin/tool/dataprivacy/summary.php');
+        $output = html_writer::link($url, get_string('dataretentionsummary', 'tool_dataprivacy'));
+        $output = html_writer::div($output, 'tool_dataprivacy');
+    }
+    return $output;
 }
 
 /**

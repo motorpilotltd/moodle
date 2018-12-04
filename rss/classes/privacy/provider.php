@@ -26,11 +26,13 @@ namespace core_rss\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
-use \core_privacy\local\metadata\collection;
-use \core_privacy\local\request\contextlist;
-use \core_privacy\local\request\approved_contextlist;
-use \core_privacy\local\request\transform;
-use \core_privacy\local\request\writer;
+use core_privacy\local\metadata\collection;
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\transform;
+use core_privacy\local\request\writer;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\approved_userlist;
 
 /**
  * Privacy class for requesting user data.
@@ -40,6 +42,7 @@ use \core_privacy\local\request\writer;
  */
 class provider implements
         \core_privacy\local\metadata\provider,
+        \core_privacy\local\request\core_userlist_provider,
         \core_privacy\local\request\subsystem\provider {
 
     /**
@@ -48,7 +51,7 @@ class provider implements
      * @param   collection $collection The initialised collection to add items to.
      * @return  collection A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_subsystem_link('core_userkey', [], 'privacy:metadata:core_userkey');
 
         return $collection;
@@ -60,7 +63,7 @@ class provider implements
      * @param int $userid The user to search.
      * @return contextlist $contextlist The contextlist containing the list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
         $sql = "SELECT ctx.id
                   FROM {user_private_key} k
                   JOIN {user} u ON k.userid = u.id
@@ -72,6 +75,21 @@ class provider implements
         $contextlist = new contextlist();
         $contextlist->add_from_sql($sql, $params);
         return $contextlist;
+    }
+
+    /**
+     * Get the list of users within a specific context.
+     *
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if (!$context instanceof \context_user) {
+            return;
+        }
+
+        \core_userkey\privacy\provider::get_user_contexts_with_script($userlist, $context, 'rss');
     }
 
     /**
@@ -111,6 +129,20 @@ class provider implements
         // Delete all the userkeys.
         \core_userkey\privacy\provider::delete_userkeys('rss', $userid);
 
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+
+        $context = $userlist->get_context();
+
+        if ($context instanceof \context_user) {
+            \core_userkey\privacy\provider::delete_userkeys('rss', $context->instanceid);
+        }
     }
 
     /**

@@ -43,7 +43,7 @@ trait submission_legacy_polyfill {
      * @param  int $userid The user ID to get context IDs for.
      * @param  \core_privacy\local\request\contextlist $contextlist Use add_from_sql with this object to add your context IDs.
      */
-    public static function get_context_for_userid_within_submission($userid, contextlist $contextlist) {
+    public static function get_context_for_userid_within_submission(int $userid, contextlist $contextlist) {
         return static::_get_context_for_userid_within_submission($userid, $contextlist);
     }
 

@@ -50,7 +50,7 @@ abstract class provider_testcase extends \advanced_testcase {
      * @param   string      $component  The component to get context data for.
      * @return  \core_privacy\local\request\contextlist
      */
-    public function get_contexts_for_userid($userid, $component) {
+    public function get_contexts_for_userid(int $userid, string $component) {
         $classname = $this->get_provider_classname($component);
 
         return $classname::get_contexts_for_userid($userid);
@@ -62,7 +62,7 @@ abstract class provider_testcase extends \advanced_testcase {
      * @param   int         $userid     The userid of the user to fetch.
      * @param   string      $component  The component to get export data for.
      */
-    public function export_all_data_for_user($userid, $component) {
+    public function export_all_data_for_user(int $userid, string $component) {
         $contextlist = $this->get_contexts_for_userid($userid, $component);
 
         $approvedcontextlist = new \core_privacy\tests\request\approved_contextlist(
@@ -82,7 +82,7 @@ abstract class provider_testcase extends \advanced_testcase {
      * @param   \context    $context    The context to export data for.
      * @param   string      $component  The component to get export data for.
      */
-    public function export_context_data_for_user($userid, \context $context, $component) {
+    public function export_context_data_for_user(int $userid, \context $context, string $component) {
         $contextlist = new \core_privacy\tests\request\approved_contextlist(
             \core_user::get_user($userid),
             $component,

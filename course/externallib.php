@@ -56,6 +56,8 @@ class core_course_external extends external_api {
                                                 'The expected keys (value format) are:
                                                 excludemodules (bool) Do not return modules, return only the sections structure
                                                 excludecontents (bool) Do not return module contents (i.e: files inside a resource)
+                                                includestealthmodules (bool) Return stealth modules for students in a special
+                                                    section (with id -1)
                                                 sectionid (int) Return only this section
                                                 sectionnumber (int) Return only this section with number (order)
                                                 cmid (int) Return only this module information (among the whole sections structure)
@@ -96,6 +98,7 @@ class core_course_external extends external_api {
                     switch ($name) {
                         case 'excludemodules':
                         case 'excludecontents':
+                        case 'includestealthmodules':
                             $value = clean_param($option['value'], PARAM_BOOL);
                             $filters[$name] = $value;
                             break;
@@ -161,20 +164,11 @@ class core_course_external extends external_api {
             $modinfo = get_fast_modinfo($course);
             $sections = $modinfo->get_section_info_all();
             $coursenumsections = course_get_format($course)->get_last_section_number();
+            $stealthmodules = array();   // Array to keep all the modules available but not visible in a course section/topic.
 
             //for each sections (first displayed to last displayed)
             $modinfosections = $modinfo->get_sections();
             foreach ($sections as $key => $section) {
-
-                // Show the section if the user is permitted to access it, OR if it's not available
-                // but there is some available info text which explains the reason & should display.
-                $showsection = $section->uservisible ||
-                    ($section->visible && !$section->available &&
-                    !empty($section->availableinfo));
-
-                if (!$showsection) {
-                    continue;
-                }
 
                 // This becomes true when we are filtering and we found the value to filter with.
                 $sectionfound = false;
@@ -216,8 +210,8 @@ class core_course_external extends external_api {
 
                 $sectioncontents = array();
 
-                // For each module of the section (if it is visible).
-                if ($section->uservisible and empty($filters['excludemodules']) and !empty($modinfosections[$section->section])) {
+                // For each module of the section.
+                if (empty($filters['excludemodules']) and !empty($modinfosections[$section->section])) {
                     foreach ($modinfosections[$section->section] as $cmid) {
                         $cm = $modinfo->cms[$cmid];
 
@@ -310,8 +304,13 @@ class core_course_external extends external_api {
                             }
                         }
 
-                        //assign result to $sectioncontents
-                        $sectioncontents[] = $module;
+                        // Assign result to $sectioncontents, there is an exception,
+                        // stealth activities in non-visible sections for students go to a special section.
+                        if (!empty($filters['includestealthmodules']) && !$section->uservisible && $cm->is_stealth()) {
+                            $stealthmodules[] = $module;
+                        } else {
+                            $sectioncontents[] = $module;
+                        }
 
                         // If we just did a filtering, break the loop.
                         if ($modfound) {
@@ -323,13 +322,46 @@ class core_course_external extends external_api {
                 $sectionvalues['modules'] = $sectioncontents;
 
                 // assign result to $coursecontents
-                $coursecontents[] = $sectionvalues;
+                $coursecontents[$key] = $sectionvalues;
 
                 // Break the loop if we are filtering.
                 if ($sectionfound) {
                     break;
                 }
             }
+
+            // Now that we have iterated over all the sections and activities, check the visibility.
+            // We didn't this before to be able to retrieve stealth activities.
+            foreach ($coursecontents as $sectionnumber => $sectioncontents) {
+                $section = $sections[$sectionnumber];
+                // Show the section if the user is permitted to access it, OR if it's not available
+                // but there is some available info text which explains the reason & should display.
+                $showsection = $section->uservisible ||
+                    ($section->visible && !$section->available &&
+                    !empty($section->availableinfo));
+
+                if (!$showsection) {
+                    unset($coursecontents[$sectionnumber]);
+                    continue;
+                }
+
+                // Remove modules information if the section is not visible for the user.
+                if (!$section->uservisible) {
+                    $coursecontents[$sectionnumber]['modules'] = array();
+                }
+            }
+
+            // Include stealth modules in special section (without any info).
+            if (!empty($stealthmodules)) {
+                $coursecontents[] = array(
+                    'id' => -1,
+                    'name' => '',
+                    'summary' => '',
+                    'summaryformat' => FORMAT_MOODLE,
+                    'modules' => $stealthmodules
+                );
+            }
+
         }
         return $coursecontents;
     }
@@ -713,8 +745,13 @@ class core_course_external extends external_api {
             require_capability('moodle/course:create', $context);
 
             // Make sure lang is valid
-            if (array_key_exists('lang', $course) and empty($availablelangs[$course['lang']])) {
-                throw new moodle_exception('errorinvalidparam', 'webservice', '', 'lang');
+            if (array_key_exists('lang', $course)) {
+                if (empty($availablelangs[$course['lang']])) {
+                    throw new moodle_exception('errorinvalidparam', 'webservice', '', 'lang');
+                }
+                if (!has_capability('moodle/course:setforcedlanguage', $context)) {
+                    unset($course['lang']);
+                }
             }
 
             // Make sure theme is valid
@@ -911,8 +948,11 @@ class core_course_external extends external_api {
                 }
 
                 // Make sure lang is valid.
-                if (array_key_exists('lang', $course) && empty($availablelangs[$course['lang']])) {
-                    throw new moodle_exception('errorinvalidparam', 'webservice', '', 'lang');
+                if (array_key_exists('lang', $course) && ($oldcourse->lang != $course['lang'])) {
+                    require_capability('moodle/course:setforcedlanguage', $context);
+                    if (empty($availablelangs[$course['lang']])) {
+                        throw new moodle_exception('errorinvalidparam', 'webservice', '', 'lang');
+                    }
                 }
 
                 // Make sure theme is valid.
@@ -933,7 +973,11 @@ class core_course_external extends external_api {
 
                 // Make sure maxbytes are less then CFG->maxbytes.
                 if (array_key_exists('maxbytes', $course)) {
-                    $course['maxbytes'] = get_max_upload_file_size($CFG->maxbytes, $course['maxbytes']);
+                    // We allow updates back to 0 max bytes, a special value denoting the course uses the site limit.
+                    // Otherwise, either use the size specified, or cap at the max size for the course.
+                    if ($course['maxbytes'] != 0) {
+                        $course['maxbytes'] = get_max_upload_file_size($CFG->maxbytes, $course['maxbytes']);
+                    }
                 }
 
                 if (!empty($course['courseformatoptions'])) {
@@ -1706,7 +1750,7 @@ class core_course_external extends external_api {
 
                     $categoryinfo = array();
                     $categoryinfo['id'] = $category->id;
-                    $categoryinfo['name'] = external_format_string($category->name, $context->id);
+                    $categoryinfo['name'] = external_format_string($category->name, $context);
                     list($categoryinfo['description'], $categoryinfo['descriptionformat']) =
                         external_format_text($category->description, $category->descriptionformat,
                                 $context->id, 'coursecat', 'description', null);
@@ -1862,7 +1906,7 @@ class core_course_external extends external_api {
 
             $createdcategories[] = array(
                 'id' => $newcategory->id,
-                'name' => external_format_string($newcategory->name, $context->id),
+                'name' => external_format_string($newcategory->name, $context),
             );
         }
 
@@ -2269,7 +2313,7 @@ class core_course_external extends external_api {
 
         $categoryname = '';
         if (!empty($category)) {
-            $categoryname = external_format_string($category->name, $category->get_context()->id);
+            $categoryname = external_format_string($category->name, $category->get_context());
         }
 
         $displayname = get_course_display_name_for_list($course);
@@ -2455,6 +2499,15 @@ class core_course_external extends external_api {
                     ),
                     'Course filters', VALUE_OPTIONAL
                 ),
+                'courseformatoptions' => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            'name' => new external_value(PARAM_RAW, 'Course format option name.'),
+                            'value' => new external_value(PARAM_RAW, 'Course format option value.'),
+                        )
+                    ),
+                    'Additional options for particular course format.', VALUE_OPTIONAL
+                ),
             );
             $coursestructure = array_merge($coursestructure, $extra);
         }
@@ -2612,7 +2665,7 @@ class core_course_external extends external_api {
                         'completionexpected' => new external_value(PARAM_INT, 'Completion time expected', VALUE_OPTIONAL),
                         'showdescription' => new external_value(PARAM_INT, 'If the description is showed', VALUE_OPTIONAL),
                         'availability' => new external_value(PARAM_RAW, 'Availability settings', VALUE_OPTIONAL),
-                        'grade' => new external_value(PARAM_INT, 'Grade (max value or scale id)', VALUE_OPTIONAL),
+                        'grade' => new external_value(PARAM_FLOAT, 'Grade (max value or scale id)', VALUE_OPTIONAL),
                         'scale' => new external_value(PARAM_TEXT, 'Scale items (if used)', VALUE_OPTIONAL),
                         'gradepass' => new external_value(PARAM_RAW, 'Grade to pass (float)', VALUE_OPTIONAL),
                         'gradecat' => new external_value(PARAM_INT, 'Grade category', VALUE_OPTIONAL),
@@ -2996,6 +3049,7 @@ class core_course_external extends external_api {
     public static function get_courses_by_field($field = '', $value = '') {
         global $DB, $CFG;
         require_once($CFG->libdir . '/coursecatlib.php');
+        require_once($CFG->dirroot . '/course/lib.php');
         require_once($CFG->libdir . '/filterlib.php');
 
         $params = self::validate_parameters(self::get_courses_by_field_parameters(),
@@ -3080,6 +3134,14 @@ class core_course_external extends external_api {
             }
             if (isset($coursesdata[$course->id]['lang'])) {
                 $coursesdata[$course->id]['lang'] = clean_param($coursesdata[$course->id]['lang'], PARAM_LANG);
+            }
+
+            $courseformatoptions = course_get_format($course)->get_config_for_external();
+            foreach ($courseformatoptions as $key => $value) {
+                $coursesdata[$course->id]['courseformatoptions'][] = array(
+                    'name' => $key,
+                    'value' => $value
+                );
             }
         }
 

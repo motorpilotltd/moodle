@@ -45,7 +45,7 @@ $string['invalid_recipient_handler'] = 'If a valid message is received but the s
 This handler processes those replies.
 
 It is not possible to disable sender verification of this handler because the user may reply from an incorrect email address if their email client configuration is incorrect.';
-$string['invalid_recipient_handler_name'] = 'Invalid recipient handler';
+$string['invalid_recipient_handler_name'] = 'Invalid sender handler';
 $string['invalidrecipientdescription'] = 'The message "{$a->subject}" could not be authenticated, since it was sent from a different email address than in your user profile. For the message to be authenticated, you need to reply to this message.';
 $string['invalidrecipientdescriptionhtml'] = 'The message "{$a->subject}" could not be authenticated, since it was sent from a different email address than in your user profile. For the message to be authenticated, you need to reply to this message.';
 $string['invalidrecipientfinal'] = 'The message "{$a->subject}" could not be authenticated. Please check that you are sending your message from the same email address as in your profile.';
@@ -96,9 +96,9 @@ $string['oneyear'] = 'One year';
 $string['pluginname'] = 'Inbound message configuration';
 $string['privacy:metadata:coreuserkey'] = 'User\'s keys to validate the email received';
 $string['privacy:metadata:messagelist'] = 'A list of message identifiers which failed validation and requires further authorisation';
-$string['privacy:metadata:messagelist:address'] = 'The address at which the email was sent';
+$string['privacy:metadata:messagelist:address'] = 'The address where the email was sent';
 $string['privacy:metadata:messagelist:messageid'] = 'The message ID';
-$string['privacy:metadata:messagelist:timecreated'] = 'The time at which the record was made';
+$string['privacy:metadata:messagelist:timecreated'] = 'The time when the record was made';
 $string['privacy:metadata:messagelist:userid'] = 'The ID of user who need to approve the message';
 $string['replysubjectprefix'] = 'Re:';
 $string['requirevalidation'] = 'Validate sender address';

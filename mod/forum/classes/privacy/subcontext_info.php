@@ -31,7 +31,7 @@ use \core_privacy\metadata\item_collection;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Subcontext subcontext_info trait.
+ * Subcontext helper trait.
  *
  * @copyright  2018 Andrew Nicols <andrew@nicols.co.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -43,7 +43,7 @@ trait subcontext_info {
      * @param   \stdClass   $discussion The discussion
      * @return  array
      */
-    protected static function get_discussion_area(\stdClass $discussion) {
+    protected static function get_discussion_area(\stdClass $discussion) : Array {
         $pathparts = [];
         if (!empty($discussion->groupname)) {
             $pathparts[] = get_string('groups');
@@ -69,7 +69,7 @@ trait subcontext_info {
      * @param   \stdClass   $post The post.
      * @return  array
      */
-    protected static function get_post_area(\stdClass $post) {
+    protected static function get_post_area(\stdClass $post) : Array {
         $parts = [
             $post->created,
             $post->subject,

@@ -46,7 +46,7 @@ class approved_contextlist extends contextlist_base {
      * @param   string          $component the frankenstyle component name.
      * @param   \int[]          $contextids The list of contextids present in this list.
      */
-    public function __construct(\stdClass $user, $component, array $contextids) {
+    public function __construct(\stdClass $user, string $component, array $contextids) {
         $this->set_user($user);
         $this->set_component($component);
         $this->set_contextids($contextids);
@@ -58,7 +58,7 @@ class approved_contextlist extends contextlist_base {
      * @param   \stdClass       $user The user record.
      * @return  $this
      */
-    protected function set_user(\stdClass $user) {
+    protected function set_user(\stdClass $user) : approved_contextlist {
         $this->user = $user;
 
         return $this;
@@ -69,7 +69,7 @@ class approved_contextlist extends contextlist_base {
      *
      * @return  \stdClass
      */
-    public function get_user() {
+    public function get_user() : \stdClass {
         return $this->user;
     }
 }

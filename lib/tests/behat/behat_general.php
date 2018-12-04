@@ -143,7 +143,7 @@ class behat_general extends behat_base {
 
         // Wait until the URL change is executed.
         if ($this->running_javascript()) {
-            $this->getSession()->wait($waittime * 1000, false);
+            $this->getSession()->wait($waittime * 1000);
 
         } else if (!empty($url)) {
             // We redirect directly as we can not wait for an automatic redirection.
@@ -253,7 +253,7 @@ class behat_general extends behat_base {
      */
     public function i_wait_seconds($seconds) {
         if ($this->running_javascript()) {
-            $this->getSession()->wait($seconds * 1000, false);
+            $this->getSession()->wait($seconds * 1000);
         } else {
             sleep($seconds);
         }
@@ -632,6 +632,9 @@ class behat_general extends behat_base {
                                 $context->getSession());
                         }
                     } catch (WebDriver\Exception\NoSuchElement $e) {
+                        // Do nothing just return, as element is no more on page.
+                        return true;
+                    } catch (ElementNotFoundException $e) {
                         // Do nothing just return, as element is no more on page.
                         return true;
                     }
@@ -1634,7 +1637,12 @@ class behat_general extends behat_base {
         }
         // Gets the node based on the requested selector type and locator.
         $node = $this->get_selected_node($selectortype, $element);
-        $this->getSession()->getDriver()->post_key("\xEE\x80\x84", $node->getXpath());
+        $driver = $this->getSession()->getDriver();
+        if ($driver instanceof \Moodle\BehatExtension\Driver\MoodleSelenium2Driver) {
+            $driver->post_key("\xEE\x80\x84", $node->getXpath());
+        } else {
+            $driver->keyDown($node->getXpath(), "\t");
+        }
     }
 
     /**
@@ -1667,12 +1675,12 @@ class behat_general extends behat_base {
      * @param string $not optional step verifier
      * @param string $nodeelement Element identifier
      * @param string $nodeselectortype Element type
-     * @throws ErrorException If not using JavaScript
+     * @throws DriverException If not using JavaScript
      * @throws ExpectationException
      */
     public function the_focused_element_is($not, $nodeelement, $nodeselectortype) {
         if (!$this->running_javascript()) {
-            throw new ErrorException('Checking focus on an element requires JavaScript');
+            throw new DriverException('Checking focus on an element requires JavaScript');
         }
         list($a, $b) = $this->transform_selector($nodeselectortype, $nodeelement);
         $element = $this->find($a, $b);
@@ -1700,12 +1708,12 @@ class behat_general extends behat_base {
      * @param string $selectortype Element type
      * @param string $nodeelement Element we look in
      * @param string $nodeselectortype The type of selector where we look in
-     * @throws ErrorException If not using JavaScript
+     * @throws DriverException If not using JavaScript
      * @throws ExpectationException
      */
     public function the_focused_element_is_in_the($not, $element, $selectortype, $nodeelement, $nodeselectortype) {
         if (!$this->running_javascript()) {
-            throw new ErrorException('Checking focus on an element requires JavaScript');
+            throw new DriverException('Checking focus on an element requires JavaScript');
         }
         $element = $this->get_node_in_container($selectortype, $element, $nodeselectortype, $nodeelement);
         $xpath = addslashes_js($element->getXpath());

@@ -47,7 +47,7 @@ class provider implements
      * @param   collection $collection The initialised collection to add items to.
      * @return  collection A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_database_table('gradingform_guide_fillings', [
             'instanceid' => 'privacy:metadata:instanceid',
             'criterionid' => 'privacy:metadata:criterionid',
@@ -73,7 +73,7 @@ class provider implements
      * @param  int $instanceid The instance ID to export data for.
      * @param  array $subcontext The directory to export this data to.
      */
-    public static function export_gradingform_instance_data(\context $context, $instanceid, array $subcontext) {
+    public static function export_gradingform_instance_data(\context $context, int $instanceid, array $subcontext) {
         global $DB;
         // Get records from the provided params.
         $params = ['instanceid' => $instanceid];
@@ -103,7 +103,7 @@ class provider implements
      *
      * @param int $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
         $prefvalue = get_user_preferences('gradingform_guide-showmarkerdesc', null, $userid);
         if ($prefvalue !== null) {
             $transformedvalue = transform::yesno($prefvalue);

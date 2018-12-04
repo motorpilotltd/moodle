@@ -60,7 +60,7 @@ class exported_html_page implements renderable, templatable {
      * @param bool $righttoleft Is the language used right to left?
      * @param string $siteurl The url to the site that created this export.
      */
-    public function __construct($navigationdata, $systemname, $username, $righttoleft, $siteurl) {
+    public function __construct(string $navigationdata, string $systemname, string $username, bool $righttoleft, string $siteurl) {
         $this->navigationdata = $navigationdata;
         $this->systemname = $systemname;
         $this->username = $username;
@@ -74,7 +74,7 @@ class exported_html_page implements renderable, templatable {
      * @param renderer_base $output
      * @return array
      */
-    public function export_for_template(renderer_base $output) {
+    public function export_for_template(renderer_base $output) : Array {
         return [
             'navigation' => $this->navigationdata,
             'systemname' => $this->systemname,

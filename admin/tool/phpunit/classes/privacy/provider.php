@@ -18,7 +18,7 @@
  * Privacy Subsystem implementation for tool_phpunit.
  *
  * @package    tool_phpunit
- * @copyright  2018 Zig Tan <zig@moodle.com>
+ * @copyright  2018 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Privacy Subsystem for tool_phpunit implementing null_provider.
  *
- * @copyright  2018 Zig Tan <zig@moodle.com>
+ * @copyright  2018 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements \core_privacy\local\metadata\null_provider {
@@ -40,7 +40,7 @@ class provider implements \core_privacy\local\metadata\null_provider {
      *
      * @return  string
      */
-    public static function get_reason() {
+    public static function get_reason() : string {
         return 'privacy:metadata';
     }
 }

@@ -16,15 +16,10 @@ if ($hassiteconfig
  or has_capability('moodle/cohort:view', $systemcontext)) { // speedup for non-admins, add all caps used on this page
 
 
-    if (empty($CFG->loginhttps)) {
-        $securewwwroot = $CFG->wwwroot;
-    } else {
-        $securewwwroot = str_replace('http:','https:',$CFG->wwwroot);
-    }
     // stuff under the "accounts" subcategory
     $ADMIN->add('accounts', new admin_externalpage('editusers', new lang_string('userlist','admin'), "$CFG->wwwroot/$CFG->admin/user.php", array('moodle/user:update', 'moodle/user:delete')));
     $ADMIN->add('accounts', new admin_externalpage('userbulk', new lang_string('userbulk','admin'), "$CFG->wwwroot/$CFG->admin/user/user_bulk.php", array('moodle/user:update', 'moodle/user:delete')));
-    $ADMIN->add('accounts', new admin_externalpage('addnewuser', new lang_string('addnewuser'), "$securewwwroot/user/editadvanced.php?id=-1", 'moodle/user:create'));
+    $ADMIN->add('accounts', new admin_externalpage('addnewuser', new lang_string('addnewuser'), "$CFG->wwwroot/user/editadvanced.php?id=-1", 'moodle/user:create'));
 
     // "User default preferences" settingpage.
     $temp = new admin_settingpage('userdefaultpreferences', new lang_string('userdefaultpreferences', 'admin'));
@@ -34,7 +29,7 @@ if ($hassiteconfig
         $choices['1'] = new lang_string('emaildisplayyes');
         $choices['2'] = new lang_string('emaildisplaycourse');
         $temp->add(new admin_setting_configselect('defaultpreference_maildisplay', new lang_string('emaildisplay'),
-            '', 2, $choices));
+            new lang_string('emaildisplay_help'), 2, $choices));
 
         $choices = array();
         $choices['0'] = new lang_string('textformat');
@@ -156,6 +151,7 @@ if ($hassiteconfig
         $temp->add(new admin_setting_configmultiselect('hiddenuserfields', new lang_string('hiddenuserfields', 'admin'),
                    new lang_string('confighiddenuserfields', 'admin'), array(),
                        array('description' => new lang_string('description'),
+                             'email' => new lang_string('email'),
                              'city' => new lang_string('city'),
                              'country' => new lang_string('country'),
                              'timezone' => new lang_string('timezone'),
@@ -190,6 +186,8 @@ if ($hassiteconfig
                     'phone2'      => new lang_string('phone2'),
                     'department'  => new lang_string('department'),
                     'institution' => new lang_string('institution'),
+                    'city'        => new lang_string('city'),
+                    'country'     => new lang_string('country'),
                 )));
         $setting = new admin_setting_configtext('fullnamedisplay', new lang_string('fullnamedisplay', 'admin'),
             new lang_string('configfullnamedisplay', 'admin'), 'language', PARAM_TEXT, 50);

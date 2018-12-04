@@ -31,8 +31,10 @@ use context_helper;
 use context_module;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\helper;
 use core_privacy\local\request\transform;
+use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
 
 require_once($CFG->dirroot . '/mod/survey/lib.php');
@@ -47,6 +49,7 @@ require_once($CFG->dirroot . '/mod/survey/lib.php');
  */
 class provider implements
     \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\request\plugin\provider {
 
     /**
@@ -55,7 +58,7 @@ class provider implements
      * @param collection $collection The initialised collection to add items to.
      * @return collection A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_database_table('survey_answers', [
             'userid' => 'privacy:metadata:answers:userid',
             'question' => 'privacy:metadata:answers:question',
@@ -78,7 +81,7 @@ class provider implements
      * @param int $userid The user to search.
      * @return contextlist $contextlist The contextlist containing the list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : \core_privacy\local\request\contextlist {
         $contextlist = new \core_privacy\local\request\contextlist();
 
         // While we should not have an analysis without answers, it's safer to gather contexts by looking at both tables.
@@ -111,6 +114,61 @@ class provider implements
         ]);
 
         return $contextlist;
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if (!is_a($context, \context_module::class)) {
+            return;
+        }
+
+        $params = [
+            'survey' => 'survey',
+            'modulelevel' => CONTEXT_MODULE,
+            'contextid' => $context->id,
+        ];
+
+        $sql = "
+            SELECT sa.userid
+              FROM {survey} s
+              JOIN {modules} m
+                ON m.name = :survey
+              JOIN {course_modules} cm
+                ON cm.instance = s.id
+               AND cm.module = m.id
+              JOIN {context} ctx
+                ON ctx.instanceid = cm.id
+               AND ctx.contextlevel = :modulelevel
+              JOIN {survey_answers} sa
+                ON sa.survey = s.id
+             WHERE ctx.id = :contextid
+               AND s.template <> 0";
+
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        $sql = "
+            SELECT sy.userid
+              FROM {survey} s
+              JOIN {modules} m
+                ON m.name = :survey
+              JOIN {course_modules} cm
+                ON cm.instance = s.id
+               AND cm.module = m.id
+              JOIN {context} ctx
+                ON ctx.instanceid = cm.id
+               AND ctx.contextlevel = :modulelevel
+              JOIN {survey_analysis} sy
+                ON sy.survey = s.id
+             WHERE ctx.id = :contextid
+               AND s.template <> 0";
+
+        $userlist->add_from_sql('userid', $sql, $params);
     }
 
     /**
@@ -273,6 +331,44 @@ class provider implements
         $params = array_merge($inparams, ['userid' => $userid]);
         $DB->delete_records_select('survey_answers', "survey $insql AND userid = :userid", $params);
         $DB->delete_records_select('survey_analysis', "survey $insql AND userid = :userid", $params);
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param   approved_userlist       $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
+        $context = $userlist->get_context();
+
+        if ($context->contextlevel != CONTEXT_MODULE) {
+            return;
+        }
+
+        // Fetch the survey ID.
+        $sql = "
+            SELECT s.id
+              FROM {survey} s
+              JOIN {modules} m
+                ON m.name = :survey
+              JOIN {course_modules} cm
+                ON cm.instance = s.id
+               AND cm.module = m.id
+             WHERE cm.id = :cmid";
+        $params = [
+            'survey' => 'survey',
+            'cmid' => $context->instanceid,
+            ];
+        $surveyid = $DB->get_field_sql($sql, $params);
+        $userids = $userlist->get_userids();
+
+        // Delete all the things.
+        list($insql, $params) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+        $params['surveyid'] = $surveyid;
+
+        $DB->delete_records_select('survey_answers', "survey = :surveyid AND userid {$insql}", $params);
+        $DB->delete_records_select('survey_analysis', "survey = :surveyid AND userid {$insql}", $params);
     }
 
     /**

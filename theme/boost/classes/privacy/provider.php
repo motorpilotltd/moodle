@@ -49,7 +49,7 @@ class provider implements
      * @param  collection $items The initialised item collection to add items to.
      * @return collection A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $items) {
+    public static function get_metadata(collection $items) : collection {
         $items->add_user_preference(self::DRAWER_OPEN_NAV, 'privacy:metadata:preference:draweropennav');
         return $items;
     }
@@ -59,7 +59,7 @@ class provider implements
      *
      * @param int $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
         $draweropennavpref = get_user_preferences(self::DRAWER_OPEN_NAV, null, $userid);
 
         if (isset($draweropennavpref)) {

@@ -27,6 +27,8 @@ namespace ltiservice_memberships\privacy;
 use \core_privacy\local\metadata\collection;
 use \core_privacy\local\request\contextlist;
 use \core_privacy\local\request\approved_contextlist;
+use \core_privacy\local\request\userlist;
+use \core_privacy\local\request\approved_userlist;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,8 +39,9 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
-    \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\plugin\provider {
+        \core_privacy\local\metadata\provider,
+        \core_privacy\local\request\core_userlist_provider,
+        \core_privacy\local\request\plugin\provider {
 
     /**
      * Returns meta data about this system.
@@ -46,7 +49,7 @@ class provider implements
      * @param collection $collection The initialised collection to add items to.
      * @return collection A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->link_external_location('External LTI provider.', [
             'userid' => 'privacy:metadata:userid',
             'useridnumber' => 'privacy:metadata:useridnumber',
@@ -65,8 +68,16 @@ class provider implements
      * @param int $userid The user to search.
      * @return contextlist The contextlist containing the list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
         return new contextlist();
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
     }
 
     /**
@@ -83,6 +94,14 @@ class provider implements
      * @param \context $context A user context.
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
     }
 
     /**

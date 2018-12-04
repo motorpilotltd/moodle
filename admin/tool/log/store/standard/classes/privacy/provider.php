@@ -40,7 +40,8 @@ use core_privacy\local\request\contextlist;
  */
 class provider implements
     \core_privacy\local\metadata\provider,
-    \tool_log\local\privacy\logstore_provider {
+    \tool_log\local\privacy\logstore_provider,
+    \tool_log\local\privacy\logstore_userlist_provider {
 
     use \tool_log\local\privacy\moodle_database_export_and_delete;
 
@@ -50,7 +51,7 @@ class provider implements
      * @param collection $collection The initialised collection to add items to.
      * @return collection A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_database_table('logstore_standard_log', [
             'eventname' => 'privacy:metadata:log:eventname',
             'userid' => 'privacy:metadata:log:userid',
@@ -84,6 +85,22 @@ class provider implements
             'userid2' => $userid,
             'userid3' => $userid,
         ]);
+    }
+
+    /**
+     * Add user IDs that contain user information for the specified context.
+     *
+     * @param \core_privacy\local\request\userlist $userlist The userlist to add the users to.
+     * @return void
+     */
+    public static function add_userids_for_context(\core_privacy\local\request\userlist $userlist) {
+        $params = ['contextid' => $userlist->get_context()->id];
+        $sql = "SELECT userid, relateduserid, realuserid
+                  FROM {logstore_standard_log}
+                 WHERE contextid = :contextid";
+        $userlist->add_from_sql('userid', $sql, $params);
+        $userlist->add_from_sql('relateduserid', $sql, $params);
+        $userlist->add_from_sql('realuserid', $sql, $params);
     }
 
     /**

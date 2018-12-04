@@ -83,6 +83,9 @@ class core_component {
         'MatthiasMullie\\Minify' => 'lib/minify/matthiasmullie-minify/src/',
         'MatthiasMullie\\PathConverter' => 'lib/minify/matthiasmullie-pathconverter/src/',
         'IMSGlobal\LTI' => 'lib/ltiprovider/src',
+        'Phpml' => 'lib/mlbackend/php/phpml/src/Phpml',
+        'PHPMailer\\PHPMailer' => 'lib/phpmailer/src',
+        'RedeyeVentures\\GeoPattern' => 'lib/geopattern-php/GeoPattern',
     );
 
     /**
@@ -415,6 +418,7 @@ $cache = '.var_export($cache, true).';
         $info = array(
             'access'      => null,
             'admin'       => $CFG->dirroot.'/'.$CFG->admin,
+            'analytics'   => $CFG->dirroot . '/analytics',
             'antivirus'   => $CFG->dirroot . '/lib/antivirus',
             'auth'        => $CFG->dirroot.'/auth',
             'availability' => $CFG->dirroot . '/availability',
@@ -441,7 +445,7 @@ $cache = '.var_export($cache, true).';
             'filepicker'  => null,
             'fileconverter' => $CFG->dirroot.'/files/converter',
             'files'       => $CFG->dirroot.'/files',
-            'filters'     => null,
+            'filters'     => $CFG->dirroot.'/filter',
             //'fonts'       => null, // Bogus.
             'form'        => $CFG->dirroot.'/lib/form',
             'grades'      => $CFG->dirroot.'/grade',
@@ -514,6 +518,7 @@ $cache = '.var_export($cache, true).';
             'gradeimport'   => $CFG->dirroot.'/grade/import',
             'gradereport'   => $CFG->dirroot.'/grade/report',
             'gradingform'   => $CFG->dirroot.'/grade/grading/form',
+            'mlbackend'     => $CFG->dirroot.'/lib/mlbackend',
             'mnetservice'   => $CFG->dirroot.'/mnet/service',
             'webservice'    => $CFG->dirroot.'/webservice',
             'repository'    => $CFG->dirroot.'/repository',
@@ -1257,7 +1262,7 @@ $cache = '.var_export($cache, true).';
      *
      * @return array an associative array of components and their corresponding paths.
      */
-    public static function get_component_list() {
+    public static function get_component_list() : array {
         $components = [];
         // Get all plugins.
         foreach (self::get_plugin_types() as $plugintype => $typedir) {

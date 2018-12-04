@@ -202,9 +202,11 @@ class mod_data_generator_testcase extends advanced_testcase {
             $fieldcontents[$fieldrecord->id] = $contents[$count++];
         }
 
+        $tags = ['Cats', 'mice'];
+
         $this->setUser($user1);
-        $datarecordid = $this->getDataGenerator()->get_plugin_generator('mod_data')->create_entry($data, $fieldcontents,
-                                                                                                    $groupa->id);
+        $datarecordid = $this->getDataGenerator()->get_plugin_generator('mod_data')->create_entry($data,
+            $fieldcontents, $groupa->id, $tags);
 
         $this->assertEquals(1, $DB->count_records('data_records', array('dataid' => $data->id)));
         $this->assertEquals(count($contents), $DB->count_records('data_content', array('recordid' => $datarecordid)));
@@ -234,5 +236,7 @@ class mod_data_generator_testcase extends advanced_testcase {
         $this->assertEquals($contents[$contentstartid]->content1, '1');
         $this->assertEquals($contents[++$contentstartid]->content, 'http://example.url');
         $this->assertEquals($contents[$contentstartid]->content1, 'sampleurl');
+        $this->assertEquals(array('Cats', 'mice'),
+            array_values(core_tag_tag::get_item_tags_array('mod_data', 'data_records', $datarecordid)));
     }
 }

@@ -41,6 +41,8 @@ use \core_privacy\manager;
  */
 class provider implements
     \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\plugin\provider,
+    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\request\subsystem\provider {
 
     /**
@@ -49,7 +51,7 @@ class provider implements
      * @param   collection     $collection The initialised collection to add items to.
      * @return  collection     A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_database_table('grading_definitions', [
                 'method' => 'privacy:metadata:grading_definitions:method',
                 'areaid' => 'privacy:metadata:grading_definitions:areaid',
@@ -86,7 +88,7 @@ class provider implements
      * @param int $userid The user to search.
      * @return contextlist $contextlist The contextlist containing the list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
         $contextlist = new contextlist();
 
         $sql = "SELECT c.id
@@ -105,6 +107,34 @@ class provider implements
         $contextlist->add_from_sql($sql, $params);
 
         return $contextlist;
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(\core_privacy\local\request\userlist $userlist) {
+        $context = $userlist->get_context();
+        if ($context->contextlevel != CONTEXT_MODULE) {
+            return;
+        }
+
+        $params = ['contextid' => $context->id];
+
+        $sql = "SELECT d.usercreated, d.usermodified
+                  FROM {grading_definitions} d
+                  JOIN {grading_areas} a ON a.id = d.areaid
+                  WHERE a.contextid = :contextid";
+        $userlist->add_from_sql('usercreated', $sql, $params);
+        $userlist->add_from_sql('usermodified', $sql, $params);
+
+        $sql = "SELECT i.raterid
+                  FROM {grading_definitions} d
+                  JOIN {grading_areas} a ON a.id = d.areaid
+                  JOIN {grading_instances} i ON i.definitionid = d.id
+                  WHERE a.contextid = :contextid";
+        $userlist->add_from_sql('raterid', $sql, $params);
     }
 
     /**
@@ -140,7 +170,7 @@ class provider implements
      * @param  int      $itemid     Item ID to export on.
      * @param  array    $subcontext Directory location to export to.
      */
-    public static function export_item_data(\context $context, $itemid, array $subcontext) {
+    public static function export_item_data(\context $context, int $itemid, array $subcontext) {
         global $DB;
 
         $sql = "SELECT gi.id AS instanceid, gd.id AS definitionid, gd.method
@@ -170,13 +200,28 @@ class provider implements
      * @param  \context $context The context to delete on.
      * @param  int|null $itemid  An optional item ID to refine the deletion.
      */
-    public static function delete_instance_data(\context $context, $itemid = null) {
+    public static function delete_instance_data(\context $context, int $itemid = null) {
+        if (is_null($itemid)) {
+            self::delete_data_for_instances($context);
+        } else {
+            self::delete_data_for_instances($context, [$itemid]);
+        }
+    }
+
+    /**
+     * Deletes all user data related to a context and possibly itemids.
+     *
+     * @param  \context $context The context to delete on.
+     * @param  array $itemids  An optional list of item IDs to refine the deletion.
+     */
+    public static function delete_data_for_instances(\context $context, array $itemids = []) {
         global $DB;
         $itemsql = '';
         $params = ['contextid' => $context->id];
-        if (isset($itemid)) {
-            $params['itemid'] = $itemid;
-            $itemsql = 'AND gi.itemid = :itemid';
+        if (!empty($itemids)) {
+            list($itemsql, $itemparams) = $DB->get_in_or_equal($itemids, SQL_PARAMS_NAMED);
+            $params = array_merge($params, $itemparams);
+            $itemsql = "AND itemid $itemsql";
         }
         $sql = "SELECT gi.id AS instanceid, gd.id, gd.method
                   FROM {grading_definitions} gd
@@ -207,7 +252,7 @@ class provider implements
      * @param  array            $subcontext Subcontext owner of the data.
      * @param  int              $userid The user whose information is to be exported.
      */
-    protected static function export_definitions(\context $context, array $subcontext, $userid = 0) {
+    protected static function export_definitions(\context $context, array $subcontext, int $userid = 0) {
         global $DB;
 
         $join = "JOIN {grading_areas} a ON a.id = d.areaid
@@ -296,7 +341,7 @@ class provider implements
      * @param  int              $definitionid The definition ID whose grading instance information is to be exported.
      * @param  int              $userid The user whose information is to be exported.
      */
-    protected static function export_grading_instances(\context $context, array $subcontext, $definitionid, $userid = 0) {
+    protected static function export_grading_instances(\context $context, array $subcontext, int $definitionid, int $userid = 0) {
         global $DB;
 
         $params = ['definitionid' => $definitionid];
@@ -358,5 +403,14 @@ class provider implements
             [$contextlist]
         );
         // End of section to be removed for final deprecation.
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(\core_privacy\local\request\approved_userlist $userlist) {
+        // The only information left to be deleted here is the grading definitions. Currently we are not deleting these.
     }
 }

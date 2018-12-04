@@ -61,10 +61,6 @@ define("LESSON_MAX_EVENT_LENGTH", "432000");
 /** Answer format is HTML */
 define("LESSON_ANSWER_HTML", "HTML");
 
-// Event types.
-define('LESSON_EVENT_TYPE_OPEN', 'open');
-define('LESSON_EVENT_TYPE_CLOSE', 'close');
-
 //////////////////////////////////////////////////////////////////////////////////////
 /// Any other lesson functions go here.  Each of them must have a name that
 /// starts with lesson_
@@ -704,10 +700,12 @@ function lesson_get_overview_report_table_and_data(lesson $lesson, $currentgroup
         list($esql, $params) = get_enrolled_sql($context, '', $currentgroup, true);
         list($sort, $sortparams) = users_order_by_sql('u');
 
+        $extrafields = get_extra_user_fields($context);
+
         $params['a1lessonid'] = $lesson->id;
         $params['b1lessonid'] = $lesson->id;
         $params['c1lessonid'] = $lesson->id;
-        $ufields = user_picture::fields('u');
+        $ufields = user_picture::fields('u', $extrafields);
         $sql = "SELECT DISTINCT $ufields
                 FROM {user} u
                 JOIN (
@@ -895,16 +893,35 @@ function lesson_get_overview_report_table_and_data(lesson $lesson, $currentgroup
 
     $table = new html_table();
 
+    $headers = [get_string('name')];
+
+    foreach ($extrafields as $field) {
+        $headers[] = get_user_field_name($field);
+    }
+
+    $headers [] = get_string('attempts', 'lesson');
+
     // Set up the table object.
     if ($data->lessonscored) {
-        $table->head = array(get_string('name'), get_string('attempts', 'lesson'), get_string('highscore', 'lesson'));
-    } else {
-        $table->head = array(get_string('name'), get_string('attempts', 'lesson'));
+        $headers [] = get_string('highscore', 'lesson');
     }
-    $table->align = array('center', 'left', 'left');
-    $table->wrap = array('nowrap', 'nowrap', 'nowrap');
+
+    $colcount = count($headers);
+
+    $table->head = $headers;
+
+    $table->align = [];
+    $table->align = array_pad($table->align, $colcount, 'center');
+    $table->align[$colcount - 1] = 'left';
+
+    if ($data->lessonscored) {
+        $table->align[$colcount - 2] = 'left';
+    }
+
+    $table->wrap = [];
+    $table->wrap = array_pad($table->wrap, $colcount, 'nowrap');
+
     $table->attributes['class'] = 'standardtable generaltable';
-    $table->size = array(null, '70%', null);
 
     // print out the $studentdata array
     // going through each student that has attempted the lesson, so, each student should have something to be displayed
@@ -991,14 +1008,21 @@ function lesson_get_overview_report_table_and_data(lesson $lesson, $currentgroup
             }
             // get line breaks in after each attempt
             $attempts = implode("<br />\n", $attempts);
+            $row = [$studentname];
+
+            foreach ($extrafields as $field) {
+                $row[] = $student->$field;
+            }
+
+            $row[] = $attempts;
 
             if ($data->lessonscored) {
                 // Add the grade if the lesson is graded.
-                $table->data[] = array($studentname, $attempts, $bestgrade . "%");
-            } else {
-                // This lesson does not have a grade.
-                $table->data[] = array($studentname, $attempts);
+                $row[] = $bestgrade."%";
             }
+
+            $table->data[] = $row;
+
             // Add the student data.
             $dataforstudent->id = $student->id;
             $dataforstudent->fullname = $studentname;
@@ -1079,6 +1103,8 @@ function lesson_get_user_detailed_report_data(lesson $lesson, $userid, $attempt)
     while ($pageid != 0) { // EOL
         $page = $lessonpages[$pageid];
         $answerpage = new stdClass;
+        // Keep the original page object.
+        $answerpage->page = $page;
         $data ='';
 
         $answerdata = new stdClass;
@@ -1157,6 +1183,44 @@ function lesson_get_user_detailed_report_data(lesson $lesson, $userid, $attempt)
     return array($answerpages, $userstats);
 }
 
+/**
+ * Return user's deadline for all lessons in a course, hereby taking into account group and user overrides.
+ *
+ * @param int $courseid the course id.
+ * @return object An object with of all lessonsids and close unixdates in this course,
+ * taking into account the most lenient overrides, if existing and 0 if no close date is set.
+ */
+function lesson_get_user_deadline($courseid) {
+    global $DB, $USER;
+
+    // For teacher and manager/admins return lesson's deadline.
+    if (has_capability('moodle/course:update', context_course::instance($courseid))) {
+        $sql = "SELECT lesson.id, lesson.deadline AS userdeadline
+                  FROM {lesson} lesson
+                 WHERE lesson.course = :courseid";
+
+        $results = $DB->get_records_sql($sql, array('courseid' => $courseid));
+        return $results;
+    }
+
+    $sql = "SELECT a.id,
+                   COALESCE(v.userclose, v.groupclose, a.deadline, 0) AS userdeadline
+              FROM (
+                      SELECT lesson.id as lessonid,
+                             MAX(leo.deadline) AS userclose, MAX(qgo.deadline) AS groupclose
+                        FROM {lesson} lesson
+                   LEFT JOIN {lesson_overrides} leo on lesson.id = leo.lessonid AND leo.userid = :userid
+                   LEFT JOIN {groups_members} gm ON gm.userid = :useringroupid
+                   LEFT JOIN {lesson_overrides} qgo on lesson.id = qgo.lessonid AND qgo.groupid = gm.groupid
+                       WHERE lesson.course = :courseid
+                    GROUP BY lesson.id
+                   ) v
+              JOIN {lesson} a ON a.id = v.lessonid";
+
+    $results = $DB->get_records_sql($sql, array('userid' => $USER->id, 'useringroupid' => $USER->id, 'courseid' => $courseid));
+    return $results;
+
+}
 
 /**
  * Abstract class that page type's MUST inherit from.
@@ -4334,7 +4398,7 @@ abstract class lesson_page extends lesson_base {
             if (count($answers) > 1) {
                 $answer = array_shift($answers);
                 foreach ($answers as $a) {
-                    $DB->delete_record('lesson_answers', array('id' => $a->id));
+                    $DB->delete_records('lesson_answers', array('id' => $a->id));
                 }
             } else if (count($answers) == 1) {
                 $answer = array_shift($answers);

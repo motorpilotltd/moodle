@@ -339,7 +339,7 @@ class auth extends \auth_plugin_base {
         $PAGE->set_title($title);
         $PAGE->set_heading($PAGE->course->fullname);
         echo $OUTPUT->header();
-        notice($message, "$CFG->httpswwwroot/index.php");
+        notice($message, "$CFG->wwwroot/index.php");
     }
 
     /**
@@ -363,7 +363,7 @@ class auth extends \auth_plugin_base {
             $errormsg = get_string('loginerror_nouserinfo', 'auth_oauth2');
             $SESSION->loginerrormsg = $errormsg;
             $client->log_out();
-            redirect(new moodle_url($CFG->httpswwwroot . '/login/index.php'));
+            redirect(new moodle_url('/login/index.php'));
         }
         if (empty($userinfo['username']) || empty($userinfo['email'])) {
             // Trigger login failed event.
@@ -375,7 +375,7 @@ class auth extends \auth_plugin_base {
             $errormsg = get_string('loginerror_userincomplete', 'auth_oauth2');
             $SESSION->loginerrormsg = $errormsg;
             $client->log_out();
-            redirect(new moodle_url($CFG->httpswwwroot . '/login/index.php'));
+            redirect(new moodle_url('/login/index.php'));
         }
 
         $userinfo['username'] = trim(core_text::strtolower($userinfo['username']));
@@ -429,7 +429,7 @@ class auth extends \auth_plugin_base {
                 $errormsg = get_string('confirmationpending', 'auth_oauth2');
                 $SESSION->loginerrormsg = $errormsg;
                 $client->log_out();
-                redirect(new moodle_url($CFG->httpswwwroot . '/login/index.php'));
+                redirect(new moodle_url('/login/index.php'));
             }
         } else if (!empty($linkedlogin)) {
             // Trigger login failed event.
@@ -441,7 +441,7 @@ class auth extends \auth_plugin_base {
             $errormsg = get_string('confirmationpending', 'auth_oauth2');
             $SESSION->loginerrormsg = $errormsg;
             $client->log_out();
-            redirect(new moodle_url($CFG->httpswwwroot . '/login/index.php'));
+            redirect(new moodle_url('/login/index.php'));
         }
 
         $issuer = $client->get_issuer();
@@ -455,7 +455,7 @@ class auth extends \auth_plugin_base {
             $errormsg = get_string('notloggedindebug', 'auth_oauth2', get_string('loginerror_invaliddomain', 'auth_oauth2'));
             $SESSION->loginerrormsg = $errormsg;
             $client->log_out();
-            redirect(new moodle_url($CFG->httpswwwroot . '/login/index.php'));
+            redirect(new moodle_url('/login/index.php'));
         }
 
         if (!$userwasmapped) {
@@ -463,15 +463,21 @@ class auth extends \auth_plugin_base {
 
             $moodleuser = \core_user::get_user_by_email($userinfo['email']);
             if (!empty($moodleuser)) {
-                $PAGE->set_url('/auth/oauth2/confirm-link-login.php');
-                $PAGE->set_context(context_system::instance());
+                if ($issuer->get('requireconfirmation')) {
+                    $PAGE->set_url('/auth/oauth2/confirm-link-login.php');
+                    $PAGE->set_context(context_system::instance());
 
-                \auth_oauth2\api::send_confirm_link_login_email($userinfo, $issuer, $moodleuser->id);
-                // Request to link to existing account.
-                $emailconfirm = get_string('emailconfirmlink', 'auth_oauth2');
-                $message = get_string('emailconfirmlinksent', 'auth_oauth2', $moodleuser->email);
-                $this->print_confirm_required($emailconfirm, $message);
-                exit();
+                    \auth_oauth2\api::send_confirm_link_login_email($userinfo, $issuer, $moodleuser->id);
+                    // Request to link to existing account.
+                    $emailconfirm = get_string('emailconfirmlink', 'auth_oauth2');
+                    $message = get_string('emailconfirmlinksent', 'auth_oauth2', $moodleuser->email);
+                    $this->print_confirm_required($emailconfirm, $message);
+                    exit();
+                } else {
+                    \auth_oauth2\api::link_login($userinfo, $issuer, $moodleuser->id, true);
+                    $userinfo = get_complete_user_data('id', $moodleuser->id);
+                    // No redirect, we will complete this login.
+                }
 
             } else {
                 // This is a new account.
@@ -488,7 +494,7 @@ class auth extends \auth_plugin_base {
                     $errormsg = get_string('accountexists', 'auth_oauth2');
                     $SESSION->loginerrormsg = $errormsg;
                     $client->log_out();
-                    redirect(new moodle_url($CFG->httpswwwroot . '/login/index.php'));
+                    redirect(new moodle_url('/login/index.php'));
                 }
 
                 if (email_is_not_allowed($userinfo['email'])) {
@@ -502,7 +508,7 @@ class auth extends \auth_plugin_base {
                     $errormsg = get_string('notloggedindebug', 'auth_oauth2', $reason);
                     $SESSION->loginerrormsg = $errormsg;
                     $client->log_out();
-                    redirect(new moodle_url($CFG->httpswwwroot . '/login/index.php'));
+                    redirect(new moodle_url('/login/index.php'));
                 }
 
                 if (!empty($CFG->authpreventaccountcreation)) {
@@ -516,20 +522,28 @@ class auth extends \auth_plugin_base {
                     $errormsg = get_string('notloggedindebug', 'auth_oauth2', $reason);
                     $SESSION->loginerrormsg = $errormsg;
                     $client->log_out();
-                    redirect(new moodle_url($CFG->httpswwwroot . '/login/index.php'));
+                    redirect(new moodle_url('/login/index.php'));
                 }
 
-                $PAGE->set_url('/auth/oauth2/confirm-account.php');
-                $PAGE->set_context(context_system::instance());
+                if ($issuer->get('requireconfirmation')) {
+                    $PAGE->set_url('/auth/oauth2/confirm-account.php');
+                    $PAGE->set_context(context_system::instance());
 
-                // Create a new (unconfirmed account) and send an email to confirm it.
-                $user = \auth_oauth2\api::send_confirm_account_email($userinfo, $issuer);
+                    // Create a new (unconfirmed account) and send an email to confirm it.
+                    $user = \auth_oauth2\api::send_confirm_account_email($userinfo, $issuer);
 
-                $this->update_picture($user);
-                $emailconfirm = get_string('emailconfirm');
-                $message = get_string('emailconfirmsent', '', $userinfo['email']);
-                $this->print_confirm_required($emailconfirm, $message);
-                exit();
+                    $this->update_picture($user);
+                    $emailconfirm = get_string('emailconfirm');
+                    $message = get_string('emailconfirmsent', '', $userinfo['email']);
+                    $this->print_confirm_required($emailconfirm, $message);
+                    exit();
+                } else {
+                    // Create a new confirmed account.
+                    $newuser = \auth_oauth2\api::create_new_confirmed_account($userinfo, $issuer);
+                    $userinfo = get_complete_user_data('id', $newuser->id);
+
+                    // No redirect, we will complete this login.
+                }
             }
         }
 
@@ -541,5 +555,3 @@ class auth extends \auth_plugin_base {
         redirect($redirecturl);
     }
 }
-
-

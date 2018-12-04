@@ -51,27 +51,6 @@ define('MEMORY_EXTRA', -3);
 /** Extremely large memory limit - not recommended for standard scripts */
 define('MEMORY_HUGE', -4);
 
-
-/**
- * Simple class. It is usually used instead of stdClass because it looks
- * more familiar to Java developers ;-) Do not use for type checking of
- * function parameters. Please use stdClass instead.
- *
- * @package    core
- * @subpackage lib
- * @copyright  2009 Petr Skoda  {@link http://skodak.org}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @deprecated since 2.0
- */
-class object extends stdClass {
-    /**
-     * Constructor.
-     */
-    public function __construct() {
-        debugging("'object' class has been deprecated, please use stdClass instead.", DEBUG_DEVELOPER);
-    }
-};
-
 /**
  * Base Moodle Exception class
  *
@@ -599,11 +578,8 @@ function get_exception_info($ex) {
 
     // When printing an error the continue button should never link offsite.
     // We cannot use clean_param() here as it is not guaranteed that it has been loaded yet.
-    $httpswwwroot = str_replace('http:', 'https:', $CFG->wwwroot);
     if (stripos($link, $CFG->wwwroot) === 0) {
         // Internal HTTP, all good.
-    } else if (!empty($CFG->loginhttps) && stripos($link, $httpswwwroot) === 0) {
-        // Internal HTTPS, all good.
     } else {
         // External link spotted!
         $link = $CFG->wwwroot . '/';
@@ -851,6 +827,13 @@ function initialise_fullme() {
     if (CLI_SCRIPT) {
         initialise_fullme_cli();
         return;
+    }
+    if (!empty($CFG->overridetossl)) {
+        if (strpos($CFG->wwwroot, 'http://') === 0) {
+            $CFG->wwwroot = str_replace('http:', 'https:', $CFG->wwwroot);
+        } else {
+            unset_config('overridetossl');
+        }
     }
 
     $rurl = setup_get_remote_url();
@@ -1122,7 +1105,9 @@ function workaround_max_input_vars() {
     }
 
     $delim = '&';
-    $fun = create_function('$p', 'return implode("'.$delim.'", $p);');
+    $fun = function($p) use ($delim) {
+        return implode($delim, $p);
+    };
     $chunks = array_map($fun, array_chunk(explode($delim, $str), $max));
 
     // Clear everything from existing $_POST array, otherwise it might be included
@@ -1410,7 +1395,7 @@ function disable_output_buffering() {
  */
 function is_major_upgrade_required() {
     global $CFG;
-    $lastmajordbchanges = 2017040403.00;
+    $lastmajordbchanges = 2017092900.00;
 
     $required = empty($CFG->version);
     $required = $required || (float)$CFG->version < $lastmajordbchanges;
@@ -1674,6 +1659,42 @@ function get_request_storage_directory($exceptiononerror = true) {
 function make_request_directory($exceptiononerror = true) {
     $basedir = get_request_storage_directory($exceptiononerror);
     return make_unique_writable_directory($basedir, $exceptiononerror);
+}
+
+/**
+ * Get the full path of a directory under $CFG->backuptempdir.
+ *
+ * @param string $directory  the relative path of the directory under $CFG->backuptempdir
+ * @return string|false Returns full path to directory given a valid string; otherwise, false.
+ */
+function get_backup_temp_directory($directory) {
+    global $CFG;
+    if (($directory === null) || ($directory === false)) {
+        return false;
+    }
+    return "$CFG->backuptempdir/$directory";
+}
+
+/**
+ * Create a directory under $CFG->backuptempdir and make sure it is writable.
+ *
+ * Do not use for storing generic temp files - see make_temp_directory() instead for this purpose.
+ *
+ * Backup temporary files must be on a shared storage.
+ *
+ * @param string $directory  the relative path of the directory to be created under $CFG->backuptempdir
+ * @param bool $exceptiononerror throw exception if error encountered
+ * @return string|false Returns full path to directory if successful, false if not; may throw exception
+ */
+function make_backup_temp_directory($directory, $exceptiononerror = true) {
+    global $CFG;
+    if ($CFG->backuptempdir !== "$CFG->tempdir/backup") {
+        check_dir_exists($CFG->backuptempdir, true, true);
+        protect_directory($CFG->backuptempdir);
+    } else {
+        protect_directory($CFG->tempdir);
+    }
+    return make_writable_directory("$CFG->backuptempdir/$directory", $exceptiononerror);
 }
 
 /**

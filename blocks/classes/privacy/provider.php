@@ -44,7 +44,8 @@ use core_privacy\local\request\writer;
 class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\subsystem\provider,
-    \core_privacy\local\request\user_preference_provider {
+    \core_privacy\local\request\user_preference_provider,
+    \core_privacy\local\request\core_userlist_provider {
 
     /**
      * Returns metadata.
@@ -52,7 +53,7 @@ class provider implements
      * @param collection $collection The initialised collection to add items to.
      * @return collection A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_user_preference('blockIDhidden', 'privacy:metadata:userpref:hiddenblock');
         $collection->add_user_preference('docked_block_instance_ID', 'privacy:metadata:userpref:dockedinstance');
         return $collection;
@@ -64,7 +65,7 @@ class provider implements
      * @param int $userid The user to search.
      * @return contextlist $contextlist The contextlist containing the list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : \core_privacy\local\request\contextlist {
         global $DB;
         $contextlist = new \core_privacy\local\request\contextlist();
 
@@ -101,6 +102,28 @@ class provider implements
         }
 
         return $contextlist;
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   \core_privacy\local\request\userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(\core_privacy\local\request\userlist $userlist) {
+        global $DB;
+
+        $context = $userlist->get_context();
+        if ($context->contextlevel != CONTEXT_BLOCK) {
+            return;
+        }
+
+        $params = ['docked' => 'docked_block_instance_' . $context->instanceid,
+                   'hidden' => 'block' . $context->instanceid . 'hidden'];
+
+        $sql = "SELECT userid
+                  FROM {user_preferences}
+                 WHERE name = :hidden OR name = :docked";
+        $userlist->add_from_sql('userid', $sql, $params);
     }
 
     /**
@@ -175,7 +198,7 @@ class provider implements
      *
      * @param int $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
       // Our preferences aren't site-wide so they are exported in export_user_data.
     }
 
@@ -224,4 +247,24 @@ class provider implements
         $DB->delete_records_select('user_preferences', $sql, $params);
     }
 
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param \core_privacy\local\request\approved_userlist $userlist The approved context and user information to delete
+     * information for.
+     */
+    public static function delete_data_for_users(\core_privacy\local\request\approved_userlist $userlist) {
+        global $DB;
+        $context = $userlist->get_context();
+        if ($context->contextlevel != CONTEXT_BLOCK) {
+            return;
+        }
+
+        list($insql, $params) = $DB->get_in_or_equal($userlist->get_userids(), SQL_PARAMS_NAMED);
+        $params['hidden'] = 'block' . $context->instanceid . 'hidden';
+        $params['docked'] = 'docked_block_instance_' . $context->instanceid;
+
+        $DB->delete_records_select('user_preferences', "(name = :hidden OR name = :docked) AND userid $insql", $params);
+    }
 }

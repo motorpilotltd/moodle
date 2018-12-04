@@ -161,22 +161,3 @@ $string['page-tag-index'] = 'Single tag page';
 $string['page-tag-search'] = 'Tag search page';
 $string['page-tag-manage'] = 'Manage tags page';
 
-// Deprecated since 3.0 .
-
-$string['addedotag'] = '"{$a}" was added as an official tag.';
-$string['newname'] = 'New tag name';
-$string['tagtype_default'] = 'Default';
-$string['tagtype_official'] = 'Official';
-$string['thistaghasnodesc'] = 'This tag currently has no description.';
-$string['updated'] = 'Updated';
-$string['withselectedtags'] = 'With selected tags...';
-
-// Deprecated since 3.1 .
-
-$string['manageofficialtags'] = 'Manage official tags';
-$string['officialtag'] = 'Official';
-$string['otags'] = 'Official tags';
-$string['othertags'] = 'Other tags';
-$string['settypeofficial'] = 'Make official';
-$string['taggedwith'] = 'tagged with "{$a}"';
-$string['tagtype'] = 'Tag type';

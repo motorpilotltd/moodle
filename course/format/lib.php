@@ -720,9 +720,14 @@ abstract class format_base {
         }
 
         if (!$forsection && empty($this->courseid)) {
-            // At this stage (this is called from definition_after_data) course data is already set as default.
-            // We can not overwrite what is in the database.
-            $mform->setDefault('enddate', $this->get_default_course_enddate($mform));
+            // Check if course end date form field should be enabled by default.
+            // If a default date is provided to the form element, it is magically enabled by default in the
+            // MoodleQuickForm_date_time_selector class, otherwise it's disabled by default.
+            if (get_config('moodlecourse', 'courseenddateenabled')) {
+                // At this stage (this is called from definition_after_data) course data is already set as default.
+                // We can not overwrite what is in the database.
+                $mform->setDefault('enddate', $this->get_default_course_enddate($mform));
+            }
         }
 
         return $elements;
@@ -1267,6 +1272,17 @@ abstract class format_base {
         }
 
         return ['modules' => $modules];
+    }
+
+    /**
+     * Return the plugin config settings for external functions,
+     * in some cases the configs will need formatting or be returned only if the current user has some capabilities enabled.
+     *
+     * @return array the list of configs
+     * @since Moodle 3.5
+     */
+    public function get_config_for_external() {
+        return array();
     }
 }
 

@@ -40,7 +40,9 @@ class provider implements
         \core_privacy\local\metadata\provider,
 
         // The Plagiarism subsystem will be called by other components and will forward requests to each plagiarism plugin implementing its APIs.
-        \core_privacy\local\request\subsystem\plugin_provider {
+        \core_privacy\local\request\subsystem\plugin_provider,
+        \core_privacy\local\request\shared_userlist_provider
+    {
 
     /**
      * Returns meta data about this system.
@@ -48,7 +50,7 @@ class provider implements
      * @param   collection     $collection The initialised collection to add items to.
      * @return  collection     A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->link_plugintype('plagiarism', 'privacy:metadata:plagiarism');
 
         return $collection;
@@ -62,7 +64,7 @@ class provider implements
      * @param   array       $subcontext The subcontext within the context to export this information to.
      * @param   array       $linkarray The weird and wonderful link array used to display information for a specific item
      */
-    public static function export_plagiarism_user_data($userid, \context $context, array $subcontext, array $linkarray) {
+    public static function export_plagiarism_user_data(int $userid, \context $context, array $subcontext, array $linkarray) {
         static::call_plugin_method('export_plagiarism_user_data', [$userid, $context, $subcontext, $linkarray]);
     }
 
@@ -81,8 +83,18 @@ class provider implements
      * @param  int      $userid    The user to delete
      * @param  \context $context   The context to refine the deletion.
      */
-    public static function delete_plagiarism_for_user($userid, \context $context) {
+    public static function delete_plagiarism_for_user(int $userid, \context $context) {
         static::call_plugin_method('delete_plagiarism_for_user', [$userid, $context]);
+    }
+
+    /**
+     * Deletes all user content for a user in a context in all plagiarism plugins.
+     *
+     * @param  array    $userids   The users to delete
+     * @param  \context $context   The context to refine the deletion.
+     */
+    public static function delete_plagiarism_for_users(array $userids, \context $context) {
+        static::call_plugin_method('delete_plagiarism_for_users', [$userids, $context]);
     }
 
     /**

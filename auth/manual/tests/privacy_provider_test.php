@@ -41,6 +41,7 @@ class auth_manual_privacy_testcase extends \core_privacy\tests\provider_testcase
 
     /** @var auth_plugin_manual Keeps the authentication plugin. */
     protected $authplugin;
+
     /**
      * Basic setup for these tests.
      */

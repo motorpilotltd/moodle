@@ -169,7 +169,7 @@ class api {
      *
      * @return array An array of the DPO role shortnames
      */
-    public static function get_dpo_role_names() {
+    public static function get_dpo_role_names() : array {
         global $DB;
 
         $dporoleids = self::get_assigned_privacy_officer_roles();
@@ -455,14 +455,56 @@ class api {
             self::DATAREQUEST_STATUS_EXPIRED,
             self::DATAREQUEST_STATUS_DELETED,
         ];
-        list($insql, $inparams) = $DB->get_in_or_equal($nonpendingstatuses, SQL_PARAMS_NAMED);
-        $select = 'type = :type AND userid = :userid AND status NOT ' . $insql;
+        list($insql, $inparams) = $DB->get_in_or_equal($nonpendingstatuses, SQL_PARAMS_NAMED, 'st', false);
+        $select = "type = :type AND userid = :userid AND status {$insql}";
         $params = array_merge([
             'type' => $type,
             'userid' => $userid
         ], $inparams);
 
         return data_request::record_exists_select($select, $params);
+    }
+
+    /**
+     * Find whether any ongoing requests exist for a set of users.
+     *
+     * @param   array   $userids
+     * @return  array
+     */
+    public static function find_ongoing_request_types_for_users(array $userids) : array {
+        global $DB;
+
+        if (empty($userids)) {
+            return [];
+        }
+
+        // Check if the user already has an incomplete data request of the same type.
+        $nonpendingstatuses = [
+            self::DATAREQUEST_STATUS_COMPLETE,
+            self::DATAREQUEST_STATUS_CANCELLED,
+            self::DATAREQUEST_STATUS_REJECTED,
+            self::DATAREQUEST_STATUS_DOWNLOAD_READY,
+            self::DATAREQUEST_STATUS_EXPIRED,
+            self::DATAREQUEST_STATUS_DELETED,
+        ];
+        list($statusinsql, $statusparams) = $DB->get_in_or_equal($nonpendingstatuses, SQL_PARAMS_NAMED, 'st', false);
+        list($userinsql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'us');
+
+        $select = "userid {$userinsql} AND status {$statusinsql}";
+        $params = array_merge($statusparams, $userparams);
+
+        $requests = $DB->get_records_select(data_request::TABLE, $select, $params, 'userid', 'id, userid, type');
+
+        $returnval = [];
+        foreach ($userids as $userid) {
+            $returnval[$userid] = (object) [];
+        }
+
+        foreach ($requests as $request) {
+            $returnval[$request->userid]->{$request->type} = true;
+        }
+
+        return $returnval;
     }
 
     /**
@@ -569,6 +611,9 @@ class api {
         // Fire an ad hoc task to initiate the data request process.
         $task = new process_data_request_task();
         $task->set_custom_data(['requestid' => $requestid]);
+        if ($request->get('type') == self::DATAREQUEST_TYPE_EXPORT) {
+            $task->set_userid($request->get('userid'));
+        }
         manager::queue_adhoc_task($task, true);
 
         return $result;
@@ -1027,8 +1072,9 @@ class api {
      * @param int $requestid the id of the request.
      * @param int $status the status to set the contexts to.
      */
-    public static function add_request_contexts_with_status(contextlist_collection $clcollection, $requestid, $status) {
+    public static function add_request_contexts_with_status(contextlist_collection $clcollection, int $requestid, int $status) {
         $request = new data_request($requestid);
+        $user = \core_user::get_user($request->get('userid'));
         foreach ($clcollection as $contextlist) {
             // Convert the \core_privacy\local\request\contextlist into a contextlist persistent and store it.
             $clp = \tool_dataprivacy\contextlist::from_contextlist($contextlist);
@@ -1039,10 +1085,14 @@ class api {
             foreach ($contextlist->get_contextids() as $contextid) {
                 if ($request->get('type') == static::DATAREQUEST_TYPE_DELETE) {
                     $context = \context::instance_by_id($contextid);
-                    if (($purpose = static::get_effective_context_purpose($context)) && !empty($purpose->get('protected'))) {
+                    $purpose = static::get_effective_context_purpose($context);
+
+                    // Data can only be deleted from it if the context is either expired, or unprotected.
+                    if (!expired_contexts_manager::is_context_expired_or_unprotected_for_user($context, $user)) {
                         continue;
                     }
                 }
+
                 $context = new contextlist_context();
                 $context->set('contextid', $contextid)
                     ->set('contextlistid', $contextlistid)
@@ -1064,7 +1114,7 @@ class api {
      * @throws \dml_exception if the requestid is invalid.
      * @throws \moodle_exception if the status is invalid.
      */
-    public static function update_request_contexts_with_status($requestid, $status) {
+    public static function update_request_contexts_with_status(int $requestid, int $status) {
         // Validate contextlist_context status using the persistent's attribute validation.
         $contextlistcontext = new contextlist_context();
         $contextlistcontext->set('status', $status);
@@ -1112,7 +1162,7 @@ class api {
      * @param data_request $request the data request with which the contextlists are associated.
      * @return contextlist_collection the collection of approved_contextlist objects.
      */
-    public static function get_approved_contextlist_collection_for_request(data_request $request) {
+    public static function get_approved_contextlist_collection_for_request(data_request $request) : contextlist_collection {
         $foruser = core_user::get_user($request->get('userid'));
 
         // Fetch all approved contextlists and create the core_privacy\local\request\contextlist objects here.
@@ -1138,6 +1188,15 @@ class api {
                     $approvedcollection->add_contextlist(new approved_contextlist($foruser, $lastcomponent, $contexts));
                 }
                 $contexts = [];
+            }
+
+            if ($request->get('type') == static::DATAREQUEST_TYPE_DELETE) {
+                $context = \context::instance_by_id($record->contextid);
+                $purpose = static::get_effective_context_purpose($context);
+                // Data can only be deleted from it if the context is either expired, or unprotected.
+                if (!expired_contexts_manager::is_context_expired_or_unprotected_for_user($context, $foruser)) {
+                    continue;
+                }
             }
 
             $contexts[] = $record->contextid;
@@ -1236,5 +1295,26 @@ class api {
         }
 
         return true;
+    }
+
+    /**
+     * Format the supplied date interval as a retention period.
+     *
+     * @param   \DateInterval   $interval
+     * @return  string
+     */
+    public static function format_retention_period(\DateInterval $interval) : string {
+        // It is one or another.
+        if ($interval->y) {
+            $formattedtime = get_string('numyears', 'moodle', $interval->format('%y'));
+        } else if ($interval->m) {
+            $formattedtime = get_string('nummonths', 'moodle', $interval->format('%m'));
+        } else if ($interval->d) {
+            $formattedtime = get_string('numdays', 'moodle', $interval->format('%d'));
+        } else {
+            $formattedtime = get_string('retentionperiodzero', 'tool_dataprivacy');
+        }
+
+        return $formattedtime;
     }
 }

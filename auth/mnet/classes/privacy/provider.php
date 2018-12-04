@@ -20,15 +20,18 @@
  * @copyright  2018 Carlos Escobedo <carlos@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace auth_mnet\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
-use \core_privacy\local\metadata\collection;
-use \core_privacy\local\request\contextlist;
-use \core_privacy\local\request\approved_contextlist;
+use core_privacy\local\metadata\collection;
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\transform;
-use \core_privacy\local\request\writer;
+use core_privacy\local\request\writer;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\approved_userlist;
 
 /**
  * Privacy provider for the mnet authentication
@@ -38,17 +41,15 @@ use \core_privacy\local\request\writer;
  */
 class provider implements
         \core_privacy\local\metadata\provider,
+        \core_privacy\local\request\core_userlist_provider,
         \core_privacy\local\request\plugin\provider {
-
-    use \core_privacy\local\legacy_polyfill;
-
     /**
      * Returns meta data about this system.
      *
-     * @param   collection     $collection The initialised item collection to add items to.
+     * @param   collection $collection The initialised item collection to add items to.
      * @return  collection     A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
 
         $sessionfields = [
                 'userid' => 'privacy:metadata:mnet_session:userid',
@@ -132,10 +133,10 @@ class provider implements
     /**
      * Get the list of contexts that contain user information for the specified user.
      *
-     * @param   int           $userid       The user to search.
+     * @param   int $userid The user to search.
      * @return  contextlist   $contextlist  The list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
         $sql = "SELECT ctx.id
                   FROM {mnet_log} ml
                   JOIN {context} ctx ON ctx.instanceid = ml.userid AND ctx.contextlevel = :contextlevel
@@ -149,9 +150,36 @@ class provider implements
     }
 
     /**
+     * Get the list of users within a specific context.
+     *
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if (!$context instanceof \context_user) {
+            return;
+        }
+
+        $params = [
+            'contextuser' => CONTEXT_USER,
+            'contextid' => $context->id
+        ];
+
+        $sql = "SELECT ctx.instanceid as userid
+                  FROM {mnet_log} ml
+                  JOIN {context} ctx
+                       ON ctx.instanceid = ml.userid
+                       AND ctx.contextlevel = :contextuser
+                 WHERE ctx.id = :contextid";
+
+        $userlist->add_from_sql('userid', $sql, $params);
+    }
+
+    /**
      * Export all user data for the specified user, in the specified contexts, using the supplied exporter instance.
      *
-     * @param   approved_contextlist    $contextlist    The approved contexts to export information for.
+     * @param   approved_contextlist $contextlist The approved contexts to export information for.
      */
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
@@ -216,6 +244,21 @@ class provider implements
         }
 
         $DB->delete_records('mnet_log', ['userid' => $context->instanceid]);
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
+
+        $context = $userlist->get_context();
+
+        if ($context instanceof \context_user) {
+            $DB->delete_records('mnet_log', ['userid' => $context->instanceid]);
+        }
     }
 
     /**

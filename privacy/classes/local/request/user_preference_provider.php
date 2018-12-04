@@ -42,5 +42,5 @@ interface user_preference_provider extends core_data_provider {
      *
      * @param   int         $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid);
+    public static function export_user_preferences(int $userid);
 }

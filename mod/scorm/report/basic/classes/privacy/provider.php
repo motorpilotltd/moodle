@@ -46,7 +46,7 @@ class provider implements
      * @param  collection $collection The initialised item collection to add items to.
      * @return collection A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         // User preferences shared between different scorm reports.
         $collection->add_user_preference('scorm_report_pagesize', 'privacy:metadata:preference:scorm_report_pagesize');
 
@@ -61,7 +61,7 @@ class provider implements
      *
      * @param  int $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
         static::get_and_export_user_preference($userid, 'scorm_report_pagesize');
         static::get_and_export_user_preference($userid, 'scorm_report_detailed', true);
     }
@@ -73,7 +73,7 @@ class provider implements
      * @param  string  $userpreference The user preference to export.
      * @param  boolean $transform If true, transform value to yesno.
      */
-    protected static function get_and_export_user_preference($userid, $userpreference, $transform = false) {
+    protected static function get_and_export_user_preference(int $userid, string $userpreference, $transform = false) {
         $prefvalue = get_user_preferences($userpreference, null, $userid);
         if ($prefvalue !== null) {
             if ($transform) {

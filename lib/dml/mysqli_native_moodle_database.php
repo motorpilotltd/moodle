@@ -1793,10 +1793,25 @@ class mysqli_native_moodle_database extends moodle_database {
     /**
      * Return regex positive or negative match sql
      * @param bool $positivematch
+     * @param bool $casesensitive
      * @return string or empty if not supported
      */
-    public function sql_regex($positivematch=true) {
-        return $positivematch ? 'REGEXP' : 'NOT REGEXP';
+    public function sql_regex($positivematch = true, $casesensitive = false) {
+        $collation = '';
+        if ($casesensitive) {
+            if (substr($this->get_dbcollation(), -4) !== '_bin') {
+                $collationinfo = explode('_', $this->get_dbcollation());
+                $collation = 'COLLATE ' . $collationinfo[0] . '_bin ';
+            }
+        } else {
+            if ($this->get_dbcollation() == 'utf8_bin') {
+                $collation = 'COLLATE utf8_unicode_ci ';
+            } else if ($this->get_dbcollation() == 'utf8mb4_bin') {
+                $collation = 'COLLATE utf8mb4_unicode_ci ';
+            }
+        }
+
+        return $collation . ($positivematch ? 'REGEXP' : 'NOT REGEXP');
     }
 
     /**
@@ -1834,7 +1849,9 @@ class mysqli_native_moodle_database extends moodle_database {
             $rv .= " JOIN (".$selects[$i].") $alias ON ".
                 join(' AND ',
                     array_map(
-                        create_function('$a', 'return "'.$falias.'.$a = '.$alias.'.$a";'),
+                        function($a) use ($alias, $falias) {
+                            return $falias . '.' . $a .' = ' . $alias . '.' . $a;
+                        },
                         preg_split('/,/', $fields))
                 );
         }
@@ -2000,5 +2017,19 @@ class mysqli_native_moodle_database extends moodle_database {
             $prefix = $this->get_prefix();
             $this->change_database_structure("ALTER TABLE {$prefix}$tablename $rowformat");
         }
+    }
+
+    /**
+     * Does this mysql instance support fulltext indexes?
+     *
+     * @return bool
+     */
+    public function is_fulltext_search_supported() {
+        $info = $this->get_server_info();
+
+        if (version_compare($info['version'], '5.6.4', '>=')) {
+            return true;
+        }
+        return false;
     }
 }

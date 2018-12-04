@@ -32,8 +32,10 @@ use context_module;
 use stdClass;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\helper;
 use core_privacy\local\request\transform;
+use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
 
 require_once($CFG->dirroot . '/mod/lesson/locallib.php');
@@ -51,6 +53,7 @@ require_once($CFG->dirroot . '/mod/lesson/pagetypes/multichoice.php');
  */
 class provider implements
     \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\request\plugin\provider,
     \core_privacy\local\request\user_preference_provider {
 
@@ -60,7 +63,7 @@ class provider implements
      * @param collection $collection The initialised collection to add items to.
      * @return collection A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_database_table('lesson_attempts', [
             'userid' => 'privacy:metadata:attempts:userid',
             'pageid' => 'privacy:metadata:attempts:pageid',
@@ -117,7 +120,7 @@ class provider implements
      * @param int $userid The user to search.
      * @return contextlist $contextlist The contextlist containing the list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : \core_privacy\local\request\contextlist {
         $contextlist = new \core_privacy\local\request\contextlist();
 
         $sql = "
@@ -164,6 +167,54 @@ class provider implements
         $contextlist->add_from_sql($sql, $params);
 
         return $contextlist;
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     *
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if (!is_a($context, \context_module::class)) {
+            return;
+        }
+
+        $params = [
+            'lesson' => 'lesson',
+            'modulelevel' => CONTEXT_MODULE,
+            'contextid' => $context->id,
+        ];
+
+        // Mapping of lesson tables which may contain user data.
+        $joins = [
+            'lesson_attempts',
+            'lesson_branch',
+            'lesson_grades',
+            'lesson_overrides',
+            'lesson_timer',
+        ];
+
+        foreach ($joins as $join) {
+            $sql = "
+                SELECT lx.userid
+                  FROM {lesson} l
+                  JOIN {modules} m
+                    ON m.name = :lesson
+                  JOIN {course_modules} cm
+                    ON cm.instance = l.id
+                   AND cm.module = m.id
+                  JOIN {context} ctx
+                    ON ctx.instanceid = cm.id
+                   AND ctx.contextlevel = :modulelevel
+                  JOIN {{$join}} lx
+                    ON lx.lessonid = l.id
+                 WHERE ctx.id = :contextid";
+
+            $userlist->add_from_sql('userid', $sql, $params);
+        }
     }
 
     /**
@@ -352,7 +403,7 @@ class provider implements
      *
      * @param int $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
         $lessonview = get_user_preferences('lesson_view', null, $userid);
         if ($lessonview !== null) {
             $value = $lessonview;
@@ -433,6 +484,43 @@ class provider implements
         foreach ($recordset as $record) {
             $cmid = $lessonidstocmids[$record->lessonid];
             $context = context_module::instance($cmid);
+            $fs->delete_area_files($context->id, 'mod_lesson', 'essay_responses', $record->id);
+        }
+        $recordset->close();
+
+        // Delete all the things.
+        $DB->delete_records_select('lesson_attempts', $sql, $params);
+        $DB->delete_records_select('lesson_branch', $sql, $params);
+        $DB->delete_records_select('lesson_grades', $sql, $params);
+        $DB->delete_records_select('lesson_timer', $sql, $params);
+        $DB->delete_records_select('lesson_overrides', $sql, $params);
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param   approved_userlist    $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
+
+        $context = $userlist->get_context();
+        $lessonid = static::get_lesson_id_from_context($context);
+        $userids = $userlist->get_userids();
+
+        if (empty($lessonid)) {
+            return;
+        }
+
+        // Prepare the SQL we'll need below.
+        list($insql, $inparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+        $sql = "lessonid = :lessonid AND userid {$insql}";
+        $params = array_merge($inparams, ['lessonid' => $lessonid]);
+
+        // Delete the attempt files.
+        $fs = get_file_storage();
+        $recordset = $DB->get_recordset_select('lesson_attempts', $sql, $params, '', 'id, lessonid');
+        foreach ($recordset as $record) {
             $fs->delete_area_files($context->id, 'mod_lesson', 'essay_responses', $record->id);
         }
         $recordset->close();

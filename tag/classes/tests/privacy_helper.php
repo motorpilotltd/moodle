@@ -60,7 +60,7 @@ trait privacy_helper {
      * @param   int                 $itemid     The itemid to store.
      */
     protected function assert_all_tags_match_on_context(
-        $userid,
+        int $userid,
         \context $context,
         array $subcontext,
         $component,

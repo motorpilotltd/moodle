@@ -230,6 +230,12 @@ function wiki_reset_userdata($data) {
             }
         }
     }
+
+    // Any changes to the list of dates that needs to be rolled should be same during course restore and course reset.
+    // See MDL-9367.
+    shift_course_mod_dates('wiki', array('editbegin', 'editend'), $data->timeshift, $data->courseid);
+    $status[] = array('component' => $componentstr, 'item' => get_string('datechanged'), 'error' => false);
+
     return $status;
 }
 
@@ -478,7 +484,7 @@ function wiki_search_form($cm, $search = '', $subwiki = null) {
         $output .= '<input name="subwikiid" type="hidden" value="' . $subwiki->id . '" />';
     }
     $output .= '<input name="searchwikicontent" type="hidden" value="1" />';
-    $output .= '<input value="' . get_string('searchwikis', 'wiki') . '" type="submit" />';
+    $output .= '<input value="' . get_string('searchwikis', 'wiki') . '" class="btn btn-secondary" type="submit" />';
     $output .= '</fieldset>';
     $output .= '</form>';
     $output .= '</div>';

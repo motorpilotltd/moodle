@@ -41,7 +41,7 @@ class transform {
      * @param   int         $userid the userid to translate
      * @return  mixed
      */
-    public static function user($userid) {
+    public static function user(int $userid) {
         // For the moment we do not think we should transform as this reveals information about other users.
         // However this function is implemented should the need arise in the future.
         return $userid;

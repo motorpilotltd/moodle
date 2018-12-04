@@ -154,7 +154,7 @@ class test_legacy_polyfill_feedback_provider implements \mod_assign\privacy\assi
      * @param  int $userid The user ID to get context IDs for.
      * @param  contextlist $contextlist Use add_from_sql with this object to add your context IDs.
      */
-    public static function _get_context_for_userid_within_feedback($userid,
+    public static function _get_context_for_userid_within_feedback(int $userid,
             \core_privacy\local\request\contextlist $contextlist) {
         static::$mock->get_return_value(__FUNCTION__, func_get_args());
     }

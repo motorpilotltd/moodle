@@ -51,6 +51,8 @@ abstract class restore_step extends base_step {
      * Note we are using one static cache here, but *by restoreid*, so it's ok for concurrence/multiple
      * executions in the same request
      *
+     * Note: The policy is to roll date only for configurations and not for user data. see MDL-9367.
+     *
      * @param int $value Time value (seconds since epoch), or empty for nothing
      * @return int Time value after applying the date offset, or empty for nothing
      */
@@ -80,10 +82,6 @@ abstract class restore_step extends base_step {
 
         if (empty($original) || empty($setting)) {
             // Original course has not startdate or setting doesn't exist, offset = 0.
-            $cache[$this->get_restoreid()] = 0;
-
-        } else if (abs($setting - $original) < 24 * 60 * 60) {
-            // Less than 24h of difference, offset = 0 (this avoids some problems with timezones).
             $cache[$this->get_restoreid()] = 0;
 
         } else {

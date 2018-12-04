@@ -420,7 +420,7 @@ Feature: User must accept policy managed by this plugin when logging in and sign
     # Create new version of the policy document.
     And I log in as "admin"
     And I navigate to "Manage policies" node in "Site administration > Users > Privacy and policies"
-    When I follow "Actions"
+    # Menu is already open because javascript is disabled.
     Then I should see "View"
     And I should see "Edit"
     And I should see "Set status to \"Inactive\""
@@ -472,11 +472,11 @@ Feature: User must accept policy managed by this plugin when logging in and sign
     # Confirm when clicking on the policy links, the policy content is displayed.
     When I click on "This site policy" "link"
     Then I should see "full text2"
-    And I click on ".close" "css_element"
+    And I click on "Close" "button"
     And I should not see "full text2"
     When I click on "This guests policy" "link"
     Then I should see "full text4"
-    And I click on ".close" "css_element"
+    And I click on "Close" "button"
     And I should not see "full text4"
     # Confirm when agreeing to policies the pop-up is no longer displayed.
     When I follow "Continue"

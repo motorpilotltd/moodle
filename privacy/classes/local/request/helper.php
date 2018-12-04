@@ -51,13 +51,25 @@ class helper {
      * @param   contextlist     $contextlist The contextlist being appended to.
      * @return  contextlist     The final contextlist
      */
-    public static function add_shared_contexts_to_contextlist_for($userid, contextlist $contextlist) {
+    public static function add_shared_contexts_to_contextlist_for(int $userid, contextlist $contextlist) : contextlist {
         if (strpos($contextlist->get_component(), 'mod_') === 0) {
             // Activity modules support data stored by core about them - for example, activity completion.
             $contextlist = static::add_shared_contexts_to_contextlist_for_course_module($userid, $contextlist);
         }
 
         return $contextlist;
+    }
+
+    /**
+     * Add core-controlled contexts which are related to a component but that component may know about.
+     *
+     * For example, most activities are not aware of activity completion, but the course implements it for them.
+     * These should be included.
+     *
+     * @param   \core_privacy\local\request\userlist    $userlist
+     * @return  contextlist     The final contextlist
+     */
+    public static function add_shared_users_to_userlist(\core_privacy\local\request\userlist $userlist) {
     }
 
     /**
@@ -89,7 +101,7 @@ class helper {
      * @param   string          $component The component being deleted for.
      * @param   context         $context   The specific context to delete data for.
      */
-    public static function delete_data_for_all_users_in_context($component, \context $context) {
+    public static function delete_data_for_all_users_in_context(string $component, \context $context) {
         // Activity modules support data stored by core about them - for example, activity completion.
         static::delete_data_for_all_users_in_context_course_module($component, $context);
     }
@@ -115,7 +127,7 @@ class helper {
      * @param   \stdClass       $user The user being written.
      * @return  \stdClass
      */
-    public static function get_context_data(\context $context, \stdClass $user) {
+    public static function get_context_data(\context $context, \stdClass $user) : \stdClass {
         global $DB;
 
         $basedata = (object) [];
@@ -152,7 +164,7 @@ class helper {
      * @param   contextlist     $contextlist The contextlist being appended to.
      * @return  contextlist     The final contextlist
      */
-    protected static function add_shared_contexts_to_contextlist_for_course_module($userid, contextlist $contextlist) {
+    protected static function add_shared_contexts_to_contextlist_for_course_module(int $userid, contextlist $contextlist) : contextlist {
         // Fetch all contexts where the user has activity completion enabled.
         $sql = "SELECT
                 c.id
@@ -181,7 +193,7 @@ class helper {
      * @param   \stdClass       $user The user being written.
      * @return  \stdClass
      */
-    protected static function get_context_module_data(\context_module $context, \stdClass $user) {
+    protected static function get_context_module_data(\context_module $context, \stdClass $user) : \stdClass {
         global $DB;
 
         $coursecontext = $context->get_course_context();
@@ -228,7 +240,7 @@ class helper {
      * @param   \stdClass $user The user being written.
      * @return  \stdClass General data about this block instance.
      */
-    protected static function get_context_block_data(\context_block $context, \stdClass $user) {
+    protected static function get_context_block_data(\context_block $context, \stdClass $user) : \stdClass {
         global $DB;
 
         $block = $DB->get_record('block_instances', ['id' => $context->instanceid]);
@@ -266,7 +278,7 @@ class helper {
      * @param   string              $component The component being deleted for.
      * @param   \context            $context The context to delete all data for.
      */
-    public static function delete_data_for_all_users_in_context_course_module($component, \context $context) {
+    public static function delete_data_for_all_users_in_context_course_module(string $component, \context $context) {
         global $DB;
 
         if ($context instanceof \context_module) {

@@ -49,7 +49,7 @@ class provider implements
      * @param   collection     $itemcollection The initialised item collection to add items to.
      * @return  collection     A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $items) {
+    public static function get_metadata(collection $items) : collection {
         // User preferences (shared between different courses).
         $items->add_user_preference('gradereport_user_view_user', 'privacy:metadata:preference:gradereport_user_view_user');
 
@@ -61,7 +61,7 @@ class provider implements
      *
      * @param   int         $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
         $prefvalue = get_user_preferences('gradereport_user_view_user', null, $userid);
         if ($prefvalue !== null) {
             $transformedvalue = transform::yesno($prefvalue);

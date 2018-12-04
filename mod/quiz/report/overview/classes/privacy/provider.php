@@ -47,7 +47,7 @@ class provider implements
      * @param   collection     $collection The initialised collection to add items to.
      * @return  collection     A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_user_preference('quiz_overview_slotmarks', 'privacy:metadata:preference:quiz_overview_slotmarks');
 
         return $collection;
@@ -58,7 +58,7 @@ class provider implements
      *
      * @param   int         $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
         $preference = get_user_preferences('quiz_overview_slotmarks', null);
         if (null !== $preference) {
             if (empty($preference)) {

@@ -40,7 +40,8 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * @param  \core_privacy\local\metadata\collection $collection A collection of meta-data.
      * @return \core_privacy\local\metadata\collection Return the collection of meta-data.
      */
-    public static function get_metadata(\core_privacy\local\metadata\collection $collection) {
+    public static function get_metadata(\core_privacy\local\metadata\collection $collection) :
+            \core_privacy\local\metadata\collection {
         $collection->add_user_preference('block_myoverview_last_tab', 'privacy:metadata:overviewlasttab');
         return $collection;
     }
@@ -50,7 +51,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      *
      * @param int $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
         $preference = get_user_preferences('block_myoverview_last_tab', null, $userid);
         if (isset($preference)) {
             \core_privacy\local\request\writer::export_user_preference('block_myoverview', 'block_myoverview_last_tab',

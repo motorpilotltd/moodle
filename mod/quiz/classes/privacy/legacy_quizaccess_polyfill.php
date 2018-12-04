@@ -23,6 +23,8 @@
  */
 namespace mod_quiz\privacy;
 
+use core_privacy\local\request\approved_userlist;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -41,7 +43,7 @@ trait legacy_quizaccess_polyfill {
      * @param   \stdClass       $user The user to export data for
      * @return  \stdClass       The data to be exported for this access rule.
      */
-    public static function export_quizaccess_user_data(\quiz $quiz, \stdClass $user) {
+    public static function export_quizaccess_user_data(\quiz $quiz, \stdClass $user) : \stdClass {
         return static::_export_quizaccess_user_data($quiz, $user);
     }
 
@@ -62,5 +64,14 @@ trait legacy_quizaccess_polyfill {
      */
     public static function delete_quizaccess_data_for_user(\quiz $quiz, \stdClass $user) {
         static::_delete_quizaccess_data_for_user($quiz, $user);
+    }
+
+    /**
+     * Delete all user data for the specified users, in the specified context.
+     *
+     * @param   approved_userlist $userlist   The approved context and user information to delete information for.
+     */
+    public static function delete_quizaccess_data_for_users(approved_userlist $userlist) {
+        static::_delete_quizaccess_data_for_users($userlist);
     }
 }

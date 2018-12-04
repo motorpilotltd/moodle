@@ -45,7 +45,7 @@ class provider implements
      * @param   collection $collection The initialised collection to add items to.
      * @return  collection     A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         return $collection->add_external_location_link('docs.google.com', ['data' => 'privacy:metadata:data'],
                                                        'privacy:metadata');
     }
@@ -58,7 +58,7 @@ class provider implements
      * @param   array $subcontext The subcontext within the context to export this information to.
      * @param   array $linkarray The weird and wonderful link array used to display information for a specific item
      */
-    public static function export_portfolio_user_data($userid, \context $context, array $subcontext, array $linkarray) {
+    public static function export_portfolio_user_data(int $userid, \context $context, array $subcontext, array $linkarray) {
     }
 
     /**
@@ -75,6 +75,6 @@ class provider implements
      * @param  int $userid The user to delete
      * @param  \context $context The context to refine the deletion.
      */
-    public static function delete_portfolio_for_user($userid, \context $context) {
+    public static function delete_portfolio_for_user(int $userid, \context $context) {
     }
 }

@@ -1039,10 +1039,11 @@ function clean_param($param, $type) {
             }
             return $param;
 
-        case PARAM_URL:          // Allow safe ftp, http, mailto urls.
+        case PARAM_URL:
+            // Allow safe urls.
             $param = fix_utf8($param);
             include_once($CFG->dirroot . '/lib/validateurlsyntax.php');
-            if (!empty($param) && validateUrlSyntax($param, 's?H?S?F?E?u-P-a?I?p?f?q?r?')) {
+            if (!empty($param) && validateUrlSyntax($param, 's?H?S?F?E-u-P-a?I?p?f?q?r?')) {
                 // All is ok, param is respected.
             } else {
                 // Not really ok.
@@ -1055,19 +1056,12 @@ function clean_param($param, $type) {
             $param = clean_param($param, PARAM_URL);
             if (!empty($param)) {
 
-                // Simulate the HTTPS version of the site.
-                $httpswwwroot = str_replace('http://', 'https://', $CFG->wwwroot);
-
                 if ($param === $CFG->wwwroot) {
-                    // Exact match;
-                } else if (!empty($CFG->loginhttps) && $param === $httpswwwroot) {
                     // Exact match;
                 } else if (preg_match(':^/:', $param)) {
                     // Root-relative, ok!
                 } else if (preg_match('/^' . preg_quote($CFG->wwwroot . '/', '/') . '/i', $param)) {
                     // Absolute, and matches our wwwroot.
-                } else if (!empty($CFG->loginhttps) && preg_match('/^' . preg_quote($httpswwwroot . '/', '/') . '/i', $param)) {
-                    // Absolute, and matches our httpswwwroot.
                 } else {
                     // Relative - let's make sure there are no tricks.
                     if (validateUrlSyntax('/' . $param, 's-u-P-a-p-f+q?r?')) {
@@ -2363,8 +2357,10 @@ function get_user_timezone($tz = 99) {
     $tz = 99;
 
     // Loop while $tz is, empty but not zero, or 99, and there is another timezone is the array.
-    while (((empty($tz) && !is_numeric($tz)) || $tz == 99) && $next = each($timezones)) {
-        $tz = $next['value'];
+    foreach ($timezones as $nextvalue) {
+        if ((empty($tz) && !is_numeric($tz)) || $tz == 99) {
+            $tz = $nextvalue;
+        }
     }
     return is_numeric($tz) ? (float) $tz : $tz;
 }
@@ -2496,13 +2492,7 @@ function dayofweek($day, $month, $year) {
 function get_login_url() {
     global $CFG;
 
-    $url = "$CFG->wwwroot/login/index.php";
-
-    if (!empty($CFG->loginhttps)) {
-        $url = str_replace('http:', 'https:', $url);
-    }
-
-    return $url;
+    return "$CFG->wwwroot/login/index.php";
 }
 
 /**
@@ -2667,12 +2657,7 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
                 redirect($changeurl);
             } else {
                 // Use moodle internal method.
-                if (empty($CFG->loginhttps)) {
-                    redirect($CFG->wwwroot .'/login/change_password.php');
-                } else {
-                    $wwwroot = str_replace('http:', 'https:', $CFG->wwwroot);
-                    redirect($wwwroot .'/login/change_password.php');
-                }
+                redirect($CFG->wwwroot .'/login/change_password.php');
             }
         } else if ($userauth->can_change_password()) {
             throw new moodle_exception('forcepasswordchangenotice');
@@ -3619,25 +3604,38 @@ function get_extra_user_fields($context, $already = array()) {
         return array();
     }
 
-    // Split showuseridentity on comma.
-    if (empty($CFG->showuseridentity)) {
-        // Explode gives wrong result with empty string.
-        $extra = array();
-    } else {
-        $extra =  explode(',', $CFG->showuseridentity);
-    }
-    $renumber = false;
+    // Split showuseridentity on comma (filter needed in case the showuseridentity is empty).
+    $extra = array_filter(explode(',', $CFG->showuseridentity));
+
     foreach ($extra as $key => $field) {
         if (in_array($field, $already)) {
             unset($extra[$key]);
-            $renumber = true;
         }
     }
-    if ($renumber) {
-        // For consistency, if entries are removed from array, renumber it
-        // so they are numbered as you would expect.
-        $extra = array_merge($extra);
+
+    // If the identity fields are also among hidden fields, make sure the user can see them.
+    $hiddenfields = array_filter(explode(',', $CFG->hiddenuserfields));
+    $hiddenidentifiers = array_intersect($extra, $hiddenfields);
+
+    if ($hiddenidentifiers) {
+        if ($context->get_course_context(false)) {
+            // We are somewhere inside a course.
+            $canviewhiddenuserfields = has_capability('moodle/course:viewhiddenuserfields', $context);
+
+        } else {
+            // We are not inside a course.
+            $canviewhiddenuserfields = has_capability('moodle/user:viewhiddendetails', $context);
+        }
+
+        if (!$canviewhiddenuserfields) {
+            // Remove hidden identifiers from the list.
+            $extra = array_diff($extra, $hiddenidentifiers);
+        }
     }
+
+    // Re-index the entries.
+    $extra = array_values($extra);
+
     return $extra;
 }
 
@@ -3693,6 +3691,9 @@ function get_user_field_name($field) {
         }
         case 'msn' : {
             return get_string('msnid');
+        }
+        case 'picture' : {
+            return get_string('pictureofuser');
         }
     }
     // Otherwise just use the same lang string.
@@ -4028,7 +4029,7 @@ function truncate_userinfo(array $info) {
  * @throws coding_exception if invalid $user parameter detected
  */
 function delete_user(stdClass $user) {
-    global $CFG, $DB;
+    global $CFG, $DB, $SESSION;
     require_once($CFG->libdir.'/grouplib.php');
     require_once($CFG->libdir.'/gradelib.php');
     require_once($CFG->dirroot.'/message/lib.php');
@@ -4077,9 +4078,6 @@ function delete_user(stdClass $user) {
     // Delete all grades - backup is kept in grade_grades_history table.
     grade_user_delete($user->id);
 
-    // Move unread messages from this user to read.
-    message_move_userfrom_unread2read($user->id);
-
     // TODO: remove from cohorts using standard API here.
 
     // Remove user tags.
@@ -4125,6 +4123,11 @@ function delete_user(stdClass $user) {
 
     // Remove users customised pages.
     $DB->delete_records('my_pages', array('userid' => $user->id, 'private' => 1));
+
+    // Delete user from $SESSION->bulk_users.
+    if (isset($SESSION->bulk_users[$user->id])) {
+        unset($SESSION->bulk_users[$user->id]);
+    }
 
     // Force logout - may fail if file based sessions used, sorry.
     \core\session\manager::kill_user_sessions($user->id);
@@ -4492,7 +4495,7 @@ EOM;
  * @return stdClass A {@link $USER} object - BC only, do not use
  */
 function complete_user_login($user) {
-    global $CFG, $USER, $SESSION;
+    global $CFG, $DB, $USER, $SESSION;
 
     \core\session\manager::login_user($user);
 
@@ -4516,6 +4519,16 @@ function complete_user_login($user) {
     );
     $event->trigger();
 
+    // Queue migrating the messaging data, if we need to.
+    if (!get_user_preferences('core_message_migrate_data', false, $USER->id)) {
+        // Check if there are any legacy messages to migrate.
+        if (\core_message\helper::legacy_messages_exist($USER->id)) {
+            \core_message\task\migrate_message_data::queue_task($USER->id);
+        } else {
+            set_user_preference('core_message_migrate_data', true, $USER->id);
+        }
+    }
+
     if (isguestuser()) {
         // No need to continue when user is THE guest.
         return $USER;
@@ -4537,7 +4550,7 @@ function complete_user_login($user) {
             } else {
                 require_once($CFG->dirroot . '/login/lib.php');
                 $SESSION->wantsurl = core_login_get_return_url();
-                redirect($CFG->httpswwwroot.'/login/change_password.php');
+                redirect($CFG->wwwroot.'/login/change_password.php');
             }
         } else {
             print_error('nopasswordchangeforced', 'auth');
@@ -4778,6 +4791,14 @@ function get_complete_user_data($field, $value, $mnethostid = null) {
                 }
                 $user->groupmember[$group->courseid][$group->id] = $group->id;
             }
+        }
+    }
+
+    // Add cohort theme.
+    if (!empty($CFG->allowcohortthemes)) {
+        require_once($CFG->dirroot . '/cohort/lib.php');
+        if ($cohorttheme = cohort_get_user_cohort_theme($user->id)) {
+            $user->cohorttheme = $cohorttheme;
         }
     }
 
@@ -5655,7 +5676,7 @@ function get_mailer($action='get') {
             // Use SMTP directly.
             $mailer->isSMTP();
             if (!empty($CFG->debugsmtp)) {
-                $mailer->SMTPDebug = true;
+                $mailer->SMTPDebug = 3;
             }
             // Specify main and backup servers.
             $mailer->Host          = $CFG->smtphosts;
@@ -6240,7 +6261,7 @@ function setnew_password_and_mail($user, $fasthash = false) {
     $a->sitename    = format_string($site->fullname);
     $a->username    = $user->username;
     $a->newpassword = $newpassword;
-    $a->link        = $CFG->wwwroot .'/login/';
+    $a->link        = $CFG->wwwroot .'/login/?lang='.$lang;
     $a->signoff     = generate_email_signoff();
 
     $message = (string)new lang_string('newusernewpasswordtext', '', $a, $lang);
@@ -6282,7 +6303,7 @@ function reset_password_and_mail($user) {
     $a->sitename    = format_string($site->fullname);
     $a->username    = $user->username;
     $a->newpassword = $newpassword;
-    $a->link        = $CFG->httpswwwroot .'/login/change_password.php';
+    $a->link        = $CFG->wwwroot .'/login/change_password.php';
     $a->signoff     = generate_email_signoff();
 
     $message = get_string('newpasswordtext', '', $a);
@@ -6363,7 +6384,7 @@ function send_password_change_confirmation_email($user, $resetrecord) {
     $data->lastname  = $user->lastname;
     $data->username  = $user->username;
     $data->sitename  = format_string($site->fullname);
-    $data->link      = $CFG->httpswwwroot .'/login/forgot_password.php?token='. $resetrecord->token;
+    $data->link      = $CFG->wwwroot .'/login/forgot_password.php?token='. $resetrecord->token;
     $data->admin     = generate_email_signoff();
     $data->resetminutes = $pwresetmins;
 
@@ -6391,6 +6412,7 @@ function send_password_change_info($user) {
     $data = new stdClass();
     $data->firstname = $user->firstname;
     $data->lastname  = $user->lastname;
+    $data->username  = $user->username;
     $data->sitename  = format_string($site->fullname);
     $data->admin     = generate_email_signoff();
 
@@ -7030,6 +7052,7 @@ function get_string_manager($forcereload=false) {
                  $translist = array();
             } else {
                 $translist = explode(',', $CFG->langlist);
+                $translist = array_map('trim', $translist);
             }
 
             if (!empty($CFG->config_php_settings['customstringmanager'])) {
@@ -9360,8 +9383,8 @@ function get_performance_info() {
                     $mode = ' <span title="request cache">[r]</span>';
                     break;
             }
-            $html .= '<ul class="cache-definition-stats list-unstyled m-l-1 cache-mode-'.$modeclass.' card d-inline-block">';
-            $html .= '<li class="cache-definition-stats-heading p-t-1 card-header bg-inverse font-weight-bold">' .
+            $html .= '<ul class="cache-definition-stats list-unstyled m-l-1 m-b-1 cache-mode-'.$modeclass.' card d-inline-block">';
+            $html .= '<li class="cache-definition-stats-heading p-t-1 card-header bg-dark bg-inverse font-weight-bold">' .
                 $definition . $mode.'</li>';
             $text .= "$definition {";
             foreach ($details['stores'] as $store => $data) {
@@ -10188,5 +10211,42 @@ class lang_string {
         $this->get_string();
         $this->forcedstring = true;
         return array('forcedstring', 'string', 'lang');
+    }
+
+    /**
+     * Returns the identifier.
+     *
+     * @return string
+     */
+    public function get_identifier() {
+        return $this->identifier;
+    }
+
+    /**
+     * Returns the component.
+     *
+     * @return string
+     */
+    public function get_component() {
+        return $this->component;
+    }
+}
+
+/**
+ * Get human readable name describing the given callable.
+ *
+ * This performs syntax check only to see if the given param looks like a valid function, method or closure.
+ * It does not check if the callable actually exists.
+ *
+ * @param callable|string|array $callable
+ * @return string|bool Human readable name of callable, or false if not a valid callable.
+ */
+function get_callable_name($callable) {
+
+    if (!is_callable($callable, true, $name)) {
+        return false;
+
+    } else {
+        return $name;
     }
 }

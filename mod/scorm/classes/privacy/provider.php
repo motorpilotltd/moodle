@@ -28,9 +28,11 @@ defined('MOODLE_INTERNAL') || die();
 
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\helper;
 use core_privacy\local\request\transform;
+use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
 
 /**
@@ -41,6 +43,7 @@ use core_privacy\local\request\writer;
  */
 class provider implements
         \core_privacy\local\metadata\provider,
+        \core_privacy\local\request\core_userlist_provider,
         \core_privacy\local\request\plugin\provider {
 
     /**
@@ -49,7 +52,7 @@ class provider implements
      * @param   collection $collection The initialised collection to add items to.
      * @return  collection A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_database_table('scorm_scoes_track', [
                 'userid' => 'privacy:metadata:userid',
                 'attempt' => 'privacy:metadata:attempt',
@@ -82,7 +85,7 @@ class provider implements
      * @param int $userid The user to search.
      * @return contextlist $contextlist The contextlist containing the list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
         $sql = "SELECT ctx.id
                   FROM {%s} ss
                   JOIN {modules} m
@@ -101,6 +104,36 @@ class provider implements
         $contextlist->add_from_sql(sprintf($sql, 'scorm_aicc_session'), $params);
 
         return $contextlist;
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if (!is_a($context, \context_module::class)) {
+            return;
+        }
+
+        $sql = "SELECT ss.userid
+                  FROM {%s} ss
+                  JOIN {modules} m
+                    ON m.name = 'scorm'
+                  JOIN {course_modules} cm
+                    ON cm.instance = ss.scormid
+                   AND cm.module = m.id
+                  JOIN {context} ctx
+                    ON ctx.instanceid = cm.id
+                   AND ctx.contextlevel = :modlevel
+                 WHERE ctx.id = :contextid";
+
+        $params = ['modlevel' => CONTEXT_MODULE, 'contextid' => $context->id];
+
+        $userlist->add_from_sql('userid', sprintf($sql, 'scorm_scoes_track'), $params);
+        $userlist->add_from_sql('userid', sprintf($sql, 'scorm_aicc_session'), $params);
     }
 
     /**
@@ -291,13 +324,47 @@ class provider implements
     }
 
     /**
+     * Delete multiple users within a single context.
+     *
+     * @param   approved_userlist       $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
+        $context = $userlist->get_context();
+
+        if (!is_a($context, \context_module::class)) {
+            return;
+        }
+
+        // Prepare SQL to gather all completed IDs.
+        $userids = $userlist->get_userids();
+        list($insql, $inparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+
+        $sql = "SELECT ss.id
+                  FROM {%s} ss
+                  JOIN {modules} m
+                    ON m.name = 'scorm'
+                  JOIN {course_modules} cm
+                    ON cm.instance = ss.scormid
+                   AND cm.module = m.id
+                  JOIN {context} ctx
+                    ON ctx.instanceid = cm.id
+                 WHERE ctx.id = :contextid
+                   AND ss.userid $insql";
+        $params = array_merge($inparams, ['contextid' => $context->id]);
+
+        static::delete_data('scorm_scoes_track', $sql, $params);
+        static::delete_data('scorm_aicc_session', $sql, $params);
+    }
+
+    /**
      * Delete data from $tablename with the IDs returned by $sql query.
      *
      * @param  string $tablename  Table name where executing the SQL query.
      * @param  string $sql    SQL query for getting the IDs of the scoestrack entries to delete.
      * @param  array  $params SQL params for the query.
      */
-    protected static function delete_data($tablename, $sql, array $params) {
+    protected static function delete_data(string $tablename, string $sql, array $params) {
         global $DB;
 
         $scoestracksids = $DB->get_fieldset_sql(sprintf($sql, $tablename), $params);

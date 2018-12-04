@@ -37,7 +37,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
     /**
      * @return array The array of metadata.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection = new collection('testcomponent');
         $collection->add_database_table('testtable', ['testfield1', 'testfield2'], 'testsummary');
         return $collection;
@@ -49,7 +49,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * @param   int $userid The user to search.
      * @return  contextlist   $contextlist  The contextlist containing the list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid): contextlist {
         $cl = new contextlist();
         $cl->add_from_sql("SELECT c.id FROM {context} c WHERE c.id = :id", ['id' => \context_system::instance()->id]);
 

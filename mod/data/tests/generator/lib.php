@@ -203,14 +203,22 @@ class mod_data_generator extends testing_module_generator {
      * @param stdClass $data record from table {data}
      * @param array $contents
      * @param int $groupid
-     * @return int
+     * @param array $tags
+     * @param array $options
+     * @return int id of the generated record in table {data_records}
      */
-    public function create_entry($data, array $contents, $groupid = 0) {
+    public function create_entry($data, array $contents, $groupid = 0, $tags = [], array $options = null) {
         global $DB, $USER, $CFG;
 
         $this->databaserecordcount++;
 
         $recordid = data_add_record($data, $groupid);
+
+        if (isset($options['approved'])) {
+            data_approve_entry($recordid, !empty($options['approved']));
+        } else {
+            $approved = null;
+        }
 
         $fields = $DB->get_records('data_fields', array('dataid' => $data->id));
 
@@ -343,6 +351,12 @@ class mod_data_generator extends testing_module_generator {
             } else {
                 $field->update_content($recordid, $content);
             }
+        }
+
+        if (!empty($tags)) {
+            $cm = get_coursemodule_from_instance('data', $data->id);
+            core_tag_tag::set_item_tags('mod_data', 'data_records', $recordid,
+                context_module::instance($cm->id), $tags);
         }
 
         return $recordid;

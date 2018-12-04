@@ -29,14 +29,13 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
 use \core_privacy\local\metadata\collection;
-use \core_privacy\local\metadata\provider as metadataprovider;
 use \core_privacy\local\request\contextlist;
-use \core_privacy\local\request\plugin\provider as pluginprovider;
-use \core_privacy\local\request\user_preference_provider as preference_provider;
 use \core_privacy\local\request\writer;
 use \core_privacy\local\request\approved_contextlist;
 use \core_privacy\local\request\transform;
 use \core_privacy\local\request\helper;
+use \core_privacy\local\request\userlist;
+use \core_privacy\local\request\approved_userlist;
 use \core_privacy\manager;
 
 /**
@@ -46,10 +45,20 @@ use \core_privacy\manager;
  * @copyright  2018 Adrian Greeve <adrian@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements metadataprovider, pluginprovider, preference_provider {
+class provider implements
+        \core_privacy\local\metadata\provider,
+        \core_privacy\local\request\plugin\provider,
+        \core_privacy\local\request\user_preference_provider,
+        \core_privacy\local\request\core_userlist_provider {
 
     /** Interface for all assign submission sub-plugins. */
     const ASSIGNSUBMISSION_INTERFACE = 'mod_assign\privacy\assignsubmission_provider';
+
+    /** Interface for all assign submission sub-plugins. This allows for deletion of users with a context. */
+    const ASSIGNSUBMISSION_USER_INTERFACE = 'mod_assign\privacy\assignsubmission_user_provider';
+
+    /** Interface for all assign feedback sub-plugins. This allows for deletion of users with a context. */
+    const ASSIGNFEEDBACK_USER_INTERFACE = 'mod_assign\privacy\assignfeedback_user_provider';
 
     /** Interface for all assign feedback sub-plugins. */
     const ASSIGNFEEDBACK_INTERFACE = 'mod_assign\privacy\assignfeedback_provider';
@@ -60,7 +69,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
      * @param  collection $collection A collection of meta data items to be added to.
      * @return  collection Returns the collection of metadata.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $assigngrades = [
                 'userid' => 'privacy:metadata:userid',
                 'timecreated' => 'privacy:metadata:timecreated',
@@ -124,7 +133,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
      * @param  int $userid The user ID.
      * @return contextlist an object with the contexts related to a userid.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
         $params = ['modulename' => 'assign',
                    'contextlevel' => CONTEXT_MODULE,
                    'userid' => $userid,
@@ -190,6 +199,76 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
                 'get_context_for_userid_within_submission', [$userid, $contextlist]);
 
         return $contextlist;
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+
+        $context = $userlist->get_context();
+        if ($context->contextlevel != CONTEXT_MODULE) {
+            return;
+        }
+
+        $params = [
+            'modulename' => 'assign',
+            'contextid' => $context->id,
+            'contextlevel' => CONTEXT_MODULE
+        ];
+
+        $sql = "SELECT g.userid, g.grader
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {assign} a ON a.id = cm.instance
+                  JOIN {assign_grades} g ON a.id = g.assignment
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel";
+        $userlist->add_from_sql('userid', $sql, $params);
+        $userlist->add_from_sql('grader', $sql, $params);
+
+        $sql = "SELECT o.userid
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {assign} a ON a.id = cm.instance
+                  JOIN {assign_overrides} o ON a.id = o.assignid
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel";
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        $sql = "SELECT s.userid
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {assign} a ON a.id = cm.instance
+                  JOIN {assign_submission} s ON a.id = s.assignment
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel";
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        $sql = "SELECT uf.userid
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {assign} a ON a.id = cm.instance
+                  JOIN {assign_user_flags} uf ON a.id = uf.assignment
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel";
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        $sql = "SELECT um.userid
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid
+                  JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                  JOIN {assign} a ON a.id = cm.instance
+                  JOIN {assign_user_mapping} um ON a.id = um.assignment
+                 WHERE ctx.id = :contextid AND ctx.contextlevel = :contextlevel";
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        manager::plugintype_class_callback('assignsubmission', self::ASSIGNSUBMISSION_USER_INTERFACE,
+                'get_userids_from_context', [$userlist]);
+        manager::plugintype_class_callback('assignfeedback', self::ASSIGNFEEDBACK_USER_INTERFACE,
+                'get_userids_from_context', [$userlist]);
     }
 
     /**
@@ -265,7 +344,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
                 }
 
                 // Time to roll my own method for deleting overrides.
-                static::delete_user_overrides($assign);
+                static::delete_overrides_for_users($assign);
                 $DB->delete_records('assign_submission', ['assignment' => $assign->get_instance()->id]);
                 $DB->delete_records('assign_user_flags', ['assignment' => $assign->get_instance()->id]);
                 $DB->delete_records('assign_user_mapping', ['assignment' => $assign->get_instance()->id]);
@@ -311,7 +390,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
                 }
             }
 
-            static::delete_user_overrides($assign, $user);
+            static::delete_overrides_for_users($assign, [$user->id]);
             $DB->delete_records('assign_user_flags', ['assignment' => $assignid, 'userid' => $user->id]);
             $DB->delete_records('assign_user_mapping', ['assignment' => $assignid, 'userid' => $user->id]);
             $DB->delete_records('assign_grades', ['assignment' => $assignid, 'userid' => $user->id]);
@@ -320,31 +399,86 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
     }
 
     /**
-     * Deletes assignment overrides.
+     * Delete multiple users within a single context.
      *
-     * @param  \assign $assign The assignment object
-     * @param  \stdClass $user The user object if we are deleting only the overrides for one user.
+     * @param  approved_userlist $userlist The approved context and user information to delete information for.
      */
-    protected static function delete_user_overrides(\assign $assign, \stdClass $user = null) {
+    public static function delete_data_for_users(approved_userlist $userlist) {
         global $DB;
 
+        $context = $userlist->get_context();
+        if ($context->contextlevel != CONTEXT_MODULE) {
+            return;
+        }
+
+        $userids = $userlist->get_userids();
+
+        $assign = new \assign($context, null, null);
         $assignid = $assign->get_instance()->id;
-        $params = (isset($user)) ? ['assignid' => $assignid, 'userid' => $user->id] : ['assignid' => $assignid];
+        $requestdata = new assign_plugin_request_data($context, $assign);
+        $requestdata->set_userids($userids);
+        $requestdata->populate_submissions_and_grades();
+        manager::plugintype_class_callback('assignsubmission', self::ASSIGNSUBMISSION_USER_INTERFACE, 'delete_submissions',
+                [$requestdata]);
+        manager::plugintype_class_callback('assignfeedback', self::ASSIGNFEEDBACK_USER_INTERFACE, 'delete_feedback_for_grades',
+                [$requestdata]);
 
-        $overrides = $DB->get_records('assign_overrides', $params);
-        if (!empty($overrides)) {
-            foreach ($overrides as $override) {
-
-                // First delete calendar events associated with this override.
-                $conditions = ['modulename' => 'assign', 'instance' => $assignid];
-                if (isset($user)) {
-                    $conditions['userid'] = $user->id;
-                }
-                $DB->delete_records('event', $conditions);
-
-                // Next delete the overrides.
-                $DB->delete_records('assign_overrides', ['id' => $override->id]);
+        // Update this function to delete advanced grading information.
+        $gradingmanager = get_grading_manager($context, 'mod_assign', 'submissions');
+        $controller = $gradingmanager->get_active_controller();
+        if (isset($controller)) {
+            $gradeids = $requestdata->get_gradeids();
+            // Careful here, if no gradeids are provided then all data is deleted for the context.
+            if (!empty($gradeids)) {
+                \core_grading\privacy\provider::delete_data_for_instances($context, $gradeids);
             }
+        }
+
+        static::delete_overrides_for_users($assign, $userids);
+        list($sql, $params) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+        $params['assignment'] = $assignid;
+        $DB->delete_records_select('assign_user_flags', "assignment = :assignment AND userid $sql", $params);
+        $DB->delete_records_select('assign_user_mapping', "assignment = :assignment AND userid $sql", $params);
+        $DB->delete_records_select('assign_grades', "assignment = :assignment AND userid $sql", $params);
+        $DB->delete_records_select('assign_submission', "assignment = :assignment AND userid $sql", $params);
+    }
+
+    /**
+     * Deletes assignment overrides in bulk
+     *
+     * @param  \assign $assign  The assignment object
+     * @param  array   $userids An array of user IDs
+     */
+    protected static function delete_overrides_for_users(\assign $assign, array $userids = []) {
+        global $DB;
+        $assignid = $assign->get_instance()->id;
+
+        $usersql = '';
+        $params = ['assignid' => $assignid];
+        if (!empty($userids)) {
+            list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+            $params = array_merge($params, $userparams);
+            $overrides = $DB->get_records_select('assign_overrides', "assignid = :assignid AND userid $usersql", $params);
+        } else {
+            $overrides = $DB->get_records('assign_overrides', $params);
+        }
+        if (!empty($overrides)) {
+            $params = ['modulename' => 'assign', 'instance' => $assignid];
+            if (!empty($userids)) {
+                $params = array_merge($params, $userparams);
+                $DB->delete_records_select('event', "modulename = :modulename AND instance = :instance AND userid $usersql",
+                        $params);
+                // Setting up for the next query.
+                $params = $userparams;
+                $usersql = "AND userid $usersql";
+            } else {
+                $DB->delete_records('event', $params);
+                // Setting up for the next query.
+                $params = [];
+            }
+            list($overridesql, $overrideparams) = $DB->get_in_or_equal(array_keys($overrides), SQL_PARAMS_NAMED);
+            $params = array_merge($params, $overrideparams);
+            $DB->delete_records_select('assign_overrides', "id $overridesql $usersql", $params);
         }
     }
 
@@ -355,7 +489,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
      * @param  assign $assign The assignment object.
      * @return array If successful an array of objects with userids that this user graded, otherwise false.
      */
-    protected static function get_graded_users($userid, \assign $assign) {
+    protected static function get_graded_users(int $userid, \assign $assign) {
         $params = ['grader' => $userid, 'assignid' => $assign->get_instance()->id];
 
         $sql = "SELECT DISTINCT userid AS id
@@ -381,7 +515,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
      * @param  \assign $assign The assignment object.
      * @param  int $userid The user ID
      */
-    protected static function store_assign_user_flags(\context $context, \assign $assign, $userid) {
+    protected static function store_assign_user_flags(\context $context, \assign $assign, int $userid) {
         $datatypes = ['locked' => get_string('locksubmissions', 'mod_assign'),
                       'mailed' => get_string('privacy:metadata:mailed', 'mod_assign'),
                       'extensionduedate' => get_string('extensionduedate', 'mod_assign'),
@@ -446,7 +580,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
      *
      * @param  int $userid The user ID that we want the preferences for.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
         $context = \context_system::instance();
         $assignpreferences = [
             'assign_perpage' => ['string' => get_string('privacy:metadata:assignperpage', 'mod_assign'), 'bool' => false],
@@ -507,7 +641,7 @@ class provider implements metadataprovider, pluginprovider, preference_provider 
      * @param  bool|boolean    $exportforteacher A flag for if this is exporting data as a teacher.
      */
     protected static function export_submission(\assign $assign, \stdClass $user, \context_module $context, array $path,
-                $exportforteacher = false) {
+            bool $exportforteacher = false) {
         $submissions = $assign->get_all_submissions($user->id);
         $teacher = ($exportforteacher) ? $user : null;
         $gradingmanager = get_grading_manager($context, 'mod_assign', 'submissions');

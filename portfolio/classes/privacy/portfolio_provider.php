@@ -34,7 +34,10 @@ defined('MOODLE_INTERNAL') || die();
  */
 interface portfolio_provider extends
         // The portfolio_provider should be implemented by plugins which only provide information to a subsystem.
-        \core_privacy\local\request\plugin\subsystem_provider {
+        \core_privacy\local\request\plugin\subsystem_provider,
+
+        // The implementation for prtfolios is handled in the subsystem itself.
+        \core_privacy\local\request\shared_userlist_provider {
 
     /**
      * Export all portfolio data from each portfolio plugin for the specified userid and context.
@@ -44,7 +47,7 @@ interface portfolio_provider extends
      * @param   array       $subcontext The subcontext within the context to export this information to.
      * @param   array       $linkarray The weird and wonderful link array used to display information for a specific item
      */
-    public static function export_portfolio_user_data($userid, \context $context, array $subcontext, array $linkarray);
+    public static function export_portfolio_user_data(int $userid, \context $context, array $subcontext, array $linkarray);
 
     /**
      * Delete all user information for the provided context.
@@ -59,5 +62,5 @@ interface portfolio_provider extends
      * @param  int      $userid    The user to delete
      * @param  \context $context   The context to refine the deletion.
      */
-    public static function delete_portfolio_for_user($userid, \context $context);
+    public static function delete_portfolio_for_user(int $userid, \context $context);
 }

@@ -27,7 +27,9 @@ defined('MOODLE_INTERNAL') || die();
 use \core_privacy\local\metadata\collection;
 use \core_privacy\local\request\contextlist;
 use \core_privacy\local\request\approved_contextlist;
+use \core_privacy\local\request\approved_userlist;
 use \core_privacy\local\request\transform;
+use \core_privacy\local\request\userlist;
 use \core_privacy\local\request\writer;
 use \tool_monitor\subscription_manager;
 use \tool_monitor\rule_manager;
@@ -39,7 +41,10 @@ use \tool_monitor\rule_manager;
  * @copyright  2018 Adrian Greeve <adrian@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\metadata\provider, \core_privacy\local\request\plugin\provider {
+class provider implements
+        \core_privacy\local\metadata\provider,
+        \core_privacy\local\request\core_userlist_provider,
+        \core_privacy\local\request\plugin\provider {
 
     /**
      * Get information about the user data stored by this plugin.
@@ -47,7 +52,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * @param  collection $collection An object for storing metadata.
      * @return collection The metadata.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $toolmonitorrules = [
             'description' => 'privacy:metadata:description',
             'name' => 'privacy:metadata:name',
@@ -85,7 +90,7 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
      * @param  int $userid The user ID.
      * @return contextlist The list of context IDs.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
         $params = ['useridrules' => $userid, 'useridsubscriptions' => $userid, 'contextuserrule' => CONTEXT_USER,
                 'contextusersub' => CONTEXT_USER];
         $sql = "SELECT DISTINCT ctx.id
@@ -99,6 +104,40 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
         $contextlist = new contextlist();
         $contextlist->add_from_sql($sql, $params);
         return $contextlist;
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if (!is_a($context, \context_user::class)) {
+            return;
+        }
+
+        $params = [
+            'contextid' => $context->id,
+            'contextuser' => CONTEXT_USER,
+        ];
+
+        $sql = "SELECT mr.userid
+                  FROM {context} ctx
+                  JOIN {tool_monitor_rules} mr ON ctx.instanceid = mr.userid
+                       AND ctx.contextlevel = :contextuser
+                 WHERE ctx.id = :contextid";
+
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        $sql = "SELECT ms.userid
+                  FROM {context} ctx
+             LEFT JOIN {tool_monitor_subscriptions} ms ON ctx.instanceid = ms.userid
+                       AND ctx.contextlevel = :contextuser
+                 WHERE ctx.id = :contextid";
+
+        $userlist->add_from_sql('userid', $sql, $params);
     }
 
     /**
@@ -143,11 +182,27 @@ class provider implements \core_privacy\local\metadata\provider, \core_privacy\l
     }
 
     /**
+     * Delete multiple users within a single context.
+     *
+     * @param   approved_userlist       $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        $context = $userlist->get_context();
+        $userids = $userlist->get_userids();
+        $userid = reset($userids);
+
+        // Only delete data for user context, which should be a single user.
+        if ($context->contextlevel == CONTEXT_USER && count($userids) == 1 && $userid == $context->instanceid) {
+            static::delete_user_data($userid);
+        }
+    }
+
+    /**
      * This does the deletion of user data for the event monitor.
      *
      * @param  int $userid The user ID
      */
-    protected static function delete_user_data($userid) {
+    protected static function delete_user_data(int $userid) {
         global $DB;
         // Delete this user's subscriptions first.
         subscription_manager::delete_user_subscriptions($userid);

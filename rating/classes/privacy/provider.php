@@ -25,6 +25,7 @@
 namespace core_rating\privacy;
 
 use \core_privacy\local\metadata\collection;
+use \core_privacy\local\request\userlist;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -45,7 +46,9 @@ class provider implements
         // as a result.
 
         // The ratings subsystem provides a data service to other components.
-        \core_privacy\local\request\subsystem\plugin_provider {
+        \core_privacy\local\request\subsystem\plugin_provider,
+        \core_privacy\local\request\shared_userlist_provider
+    {
 
     /**
      * Returns metadata about the ratings subsystem.
@@ -53,7 +56,7 @@ class provider implements
      * @param   collection     $collection The initialised collection to add items to.
      * @return  collection     A listing of user data stored through the subsystem.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         // The table 'rating' cotains data that a user has entered.
         // It stores the user-entered rating alongside a mapping to describe what was mapped.
         $collection->add_database_table('rating', [
@@ -84,13 +87,13 @@ class provider implements
      * @param   bool        $onlyuser Whether to only export ratings that the current user has made, or all ratings
      */
     public static function export_area_ratings(
-        $userid,
+        int $userid,
         \context $context,
         array $subcontext,
-        $component,
-        $ratingarea,
-        $itemid,
-        $onlyuser = true
+        string $component,
+        string $ratingarea,
+        int $itemid,
+        bool $onlyuser = true
     ) {
         global $DB;
 
@@ -174,8 +177,8 @@ class provider implements
      * @param  string $ratingarea Rating area to delete.
      * @param  int $itemid The item ID for use with deletion.
      */
-    public static function delete_ratings(\context $context, $component = null,
-            $ratingarea = null, $itemid = null) {
+    public static function delete_ratings(\context $context, string $component = null,
+            string $ratingarea = null, int $itemid = null) {
         global $DB;
 
         $options = ['contextid' => $context->id];
@@ -206,12 +209,37 @@ class provider implements
      *      and may not use named parameters called contextid, component or ratingarea.
      * @param array $params any query params used by $itemidstest.
      */
-    public static function delete_ratings_select(\context $context, $component,
-             $ratingarea, $itemidstest, $params = []) {
+    public static function delete_ratings_select(\context $context, string $component,
+             string $ratingarea, $itemidstest, $params = []) {
         global $DB;
         $params += ['contextid' => $context->id, 'component' => $component, 'ratingarea' => $ratingarea];
         $DB->delete_records_select('rating',
             'contextid = :contextid AND component = :component AND ratingarea = :ratingarea AND itemid ' . $itemidstest,
             $params);
+    }
+
+    /**
+     * Add the list of users who have rated in the specified constraints.
+     *
+     * @param   userlist    $userlist The userlist to add the users to.
+     * @param   string      $alias An alias prefix to use for rating selects to avoid interference with your own sql.
+     * @param   string      $component The component to check.
+     * @param   string      $area The rating area to check.
+     * @param   string      $insql The SQL to use in a sub-select for the itemid query.
+     * @param   array       $params The params required for the insql.
+     */
+    public static function get_users_in_context_from_sql(
+            userlist $userlist, string $alias, string $component, string $area, string $insql, $params) {
+        // Discussion authors.
+        $sql = "SELECT {$alias}.userid
+                  FROM {rating} {$alias}
+                 WHERE {$alias}.component = :{$alias}component
+                   AND {$alias}.ratingarea = :{$alias}ratingarea
+                   AND {$alias}.itemid IN ({$insql})";
+
+        $params["{$alias}component"] = $component;
+        $params["{$alias}ratingarea"] = $area;
+
+        $userlist->add_from_sql('userid', $sql, $params);
     }
 }

@@ -42,7 +42,7 @@ class provider implements \core_privacy\local\metadata\null_provider, \mod_works
      *
      * @return string
      */
-    public static function get_reason() {
+    public static function get_reason() : string {
         return 'privacy:metadata';
     }
 
@@ -54,7 +54,7 @@ class provider implements \core_privacy\local\metadata\null_provider, \mod_works
      * @param array $subcontext Subcontext within the context to export to
      * @param int $assessmentid ID of the assessment
      */
-    public static function export_assessment_form(\stdClass $user, \context $context, array $subcontext, $assessmentid) {
+    public static function export_assessment_form(\stdClass $user, \context $context, array $subcontext, int $assessmentid) {
         global $DB;
 
         if ($context->contextlevel != CONTEXT_MODULE) {

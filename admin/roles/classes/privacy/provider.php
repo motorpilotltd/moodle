@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Privacy Subsystem implementation for core_role.
  *
@@ -20,7 +21,9 @@
  * @copyright  2018 Carlos Escobedo <carlos@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace core_role\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
 use \core_privacy\local\metadata\collection;
@@ -28,6 +31,8 @@ use \core_privacy\local\request\contextlist;
 use \core_privacy\local\request\approved_contextlist;
 use \core_privacy\local\request\transform;
 use \core_privacy\local\request\writer;
+use \core_privacy\local\request\userlist;
+use \core_privacy\local\request\approved_userlist;
 
 /**
  * Privacy provider for core_role.
@@ -39,7 +44,8 @@ class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\subsystem\provider,
     \core_privacy\local\request\subsystem\plugin_provider,
-    \core_privacy\local\request\user_preference_provider {
+    \core_privacy\local\request\user_preference_provider,
+    \core_privacy\local\request\core_userlist_provider {
 
     /**
      * Get information about the user data stored by this plugin.
@@ -47,7 +53,7 @@ class provider implements
      * @param  collection $collection An object for storing metadata.
      * @return collection The metadata.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $rolecapabilities = [
             'roleid' => 'privacy:metadata:role_capabilities:roleid',
             'capability' => 'privacy:metadata:role_capabilities:capability',
@@ -78,7 +84,7 @@ class provider implements
      *
      * @param   int         $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
         $showadvanced = get_user_preferences('definerole_showadvanced', null, $userid);
         if ($showadvanced !== null) {
             writer::export_user_preference('core_role',
@@ -94,7 +100,7 @@ class provider implements
      * @param  int $userid The user ID.
      * @return contextlist The list of context IDs.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
         global $DB;
 
         $contextlist = new contextlist();
@@ -151,6 +157,50 @@ class provider implements
 
         return $contextlist;
     }
+
+    /**
+     * Get the list of users within a specific context.
+     *
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+
+        if (empty($userlist)) {
+            return;
+        }
+
+        $context = $userlist->get_context();
+
+        // Include users who created or modified role capabilities.
+        $sql = "SELECT modifierid as userid
+                  FROM {role_capabilities}
+                 WHERE contextid = :contextid";
+
+        $params = [
+            'contextid' => $context->id
+        ];
+
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        // Include users that have a role assigned to them.
+        $sql = "SELECT userid
+                  FROM {role_assignments}
+                 WHERE contextid = :contextid";
+
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        // Include users who created or modified the role assignment.
+        // Differentiate and exclude special cases where tool_cohortroles adds records through the
+        // "Assign user roles to cohort" feature into the role_assignments table.
+        // These records should be separately processed in tool_cohortroles.
+        $sql = "SELECT modifierid as userid
+                  FROM {role_assignments}
+                 WHERE contextid = :contextid
+                       AND component != 'tool_cohortroles'";
+
+        $userlist->add_from_sql('userid', $sql, $params);
+    }
+
     /**
      * Export all user data for the specified user, in the specified contexts.
      *
@@ -265,7 +315,7 @@ class provider implements
      *
      * @param  int $userid The user ID.
      */
-    public static function export_user_role_to_cohort($userid) {
+    public static function export_user_role_to_cohort(int $userid) {
         global $DB;
 
         $rolesnames = self::get_roles_name();
@@ -315,6 +365,32 @@ class provider implements
         // Remove data from role_assignments.
         $DB->delete_records('role_assignments', ['contextid' => $context->id]);
     }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        global $DB;
+
+        // Don't remove data from role_capabilities.
+        // Because this data affects the whole Moodle, there are override capabilities.
+        // Don't belong to the modifier user.
+        $context = $userlist->get_context();
+        $userids = $userlist->get_userids();
+
+        if (empty($userids)) {
+            return;
+        }
+        list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+        $params = ['contextid' => $context->id] + $userparams;
+
+        // Remove data from role_assignments.
+        $DB->delete_records_select('role_assignments',
+            "contextid = :contextid AND userid {$usersql}", $params);
+    }
+
     /**
      * Delete all user data for this user only.
      *
@@ -332,10 +408,14 @@ class provider implements
             return;
         }
         $userid = $contextlist->get_user()->id;
-        foreach ($contextlist->get_contexts() as $context) {
-            // Only delete the roles assignments where the user is assigned in all contexts.
-            $DB->delete_records('role_assignments', ['userid' => $userid, 'contextid' => $context->id]);
-        }
+        $contextids = $contextlist->get_contextids();
+
+        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextids, SQL_PARAMS_NAMED);
+        $params = ['userid' => $userid] + $contextparams;
+
+        // Only delete the roles assignments where the user is assigned in all contexts.
+        $DB->delete_records_select('role_assignments',
+            "userid = :userid AND contextid {$contextsql}", $params);
     }
     /**
      * Delete user entries in role_assignments related to the feature
@@ -343,7 +423,7 @@ class provider implements
      *
      * @param  int $userid The user ID.
      */
-    public static function delete_user_role_to_cohort($userid) {
+    public static function delete_user_role_to_cohort(int $userid) {
         global $DB;
 
         // Delete entries where userid is a mentor by tool_cohortroles.

@@ -57,7 +57,7 @@ class contextlist extends persistent {
      * @param \core_privacy\local\request\contextlist $contextlist the core privacy contextlist.
      * @return contextlist a contextlist persistent.
      */
-    public static function from_contextlist(\core_privacy\local\request\contextlist $contextlist) {
+    public static function from_contextlist(\core_privacy\local\request\contextlist $contextlist) : contextlist {
         $contextlistpersistent = new contextlist();
         return $contextlistpersistent->set('component', $contextlist->get_component());
     }

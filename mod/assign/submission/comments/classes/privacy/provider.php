@@ -41,7 +41,9 @@ use \mod_assign\privacy\assign_plugin_request_data;
  * @copyright  2018 Adrian Greeve <adrian@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements metadataprovider, \mod_assign\privacy\assignsubmission_provider {
+class provider implements metadataprovider,
+        \mod_assign\privacy\assignsubmission_provider,
+        \mod_assign\privacy\assignsubmission_user_provider {
 
     /**
      * Return meta data about this plugin.
@@ -49,7 +51,7 @@ class provider implements metadataprovider, \mod_assign\privacy\assignsubmission
      * @param  collection $collection A list of information to add to.
      * @return collection Return the collection after adding to it.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->link_subsystem('core_comment', 'privacy:metadata:commentpurpose');
         return $collection;
     }
@@ -61,7 +63,7 @@ class provider implements metadataprovider, \mod_assign\privacy\assignsubmission
      * @param  int $userid The user ID that we are finding contexts for.
      * @param  contextlist $contextlist A context list to add sql and params to for contexts.
      */
-    public static function get_context_for_userid_within_submission($userid, contextlist $contextlist) {
+    public static function get_context_for_userid_within_submission(int $userid, contextlist $contextlist) {
         $sql = "SELECT contextid
                   FROM {comments}
                  WHERE component = :component
@@ -87,6 +89,21 @@ class provider implements metadataprovider, \mod_assign\privacy\assignsubmission
                          WHERE c.userid = :commentuserid) aa ON aa.itemid = c.itemid
                  WHERE c.userid NOT IN (:commentuserid2)";
         $useridlist->add_from_sql($sql, $params);
+    }
+
+    /**
+     * If you have tables that contain userids and you can generate entries in your tables without creating an
+     * entry in the assign_submission table then please fill in this method.
+     *
+     * @param  \core_privacy\local\request\userlist $userlist The userlist object
+     */
+    public static function get_userids_from_context(\core_privacy\local\request\userlist $userlist) {
+        $context = $userlist->get_context();
+        if ($context->contextlevel != CONTEXT_MODULE) {
+            return;
+        }
+        comments_provider::get_users_in_context_from_sql($userlist, 'c', 'assignsubmission_comments', 'submission_comments',
+                $context->id);
     }
 
     /**
@@ -128,4 +145,20 @@ class provider implements metadataprovider, \mod_assign\privacy\assignsubmission
             [$exportdata->get_context()->id]);
         comments_provider::delete_comments_for_user($contextlist, 'assignsubmission_comments', 'submission_comments');
     }
+
+    /**
+     * Deletes all submissions for the submission ids / userids provided in a context.
+     * assign_plugin_request_data contains:
+     * - context
+     * - assign object
+     * - submission ids (pluginids)
+     * - user ids
+     * @param  assign_plugin_request_data $deletedata A class that contains the relevant information required for deletion.
+     */
+    public static function delete_submissions(assign_plugin_request_data $deletedata) {
+        $userlist = new \core_privacy\local\request\approved_userlist($deletedata->get_context(), 'assignsubmission_comments',
+                $deletedata->get_userids());
+        comments_provider::delete_comments_for_users($userlist, 'assignsubmission_comments', 'submission_comments');
+    }
+
 }

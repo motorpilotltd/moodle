@@ -26,8 +26,10 @@ namespace tool_policy\privacy;
 
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\moodle_content_writer;
+use core_privacy\local\request\userlist;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\writer;
 
@@ -43,6 +45,9 @@ class provider implements
         // This tool stores user data.
         \core_privacy\local\metadata\provider,
 
+        // This plugin is capable of determining which users have data within it.
+        \core_privacy\local\request\core_userlist_provider,
+
         // This tool may provide access to and deletion of user data.
         \core_privacy\local\request\plugin\provider {
 
@@ -52,7 +57,7 @@ class provider implements
      * @param   collection $collection The initialised collection to add items to.
      * @return  collection A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_database_table(
             'tool_policy_acceptances',
             [
@@ -99,7 +104,7 @@ class provider implements
      * @param int $userid The userid.
      * @return contextlist The list of contexts containing user info for the user.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
         $contextlist = new contextlist();
 
         // Policies a user has modified.
@@ -130,6 +135,33 @@ class provider implements
         $contextlist->add_from_sql($sql, $params);
 
         return $contextlist;
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        // Users that have modified any policies, if fetching for system context.
+        if (is_a($context, \context_system::class)) {
+            $sql = "SELECT v.usermodified AS userid
+                      FROM {tool_policy_versions} v";
+            $userlist->add_from_sql('userid', $sql, []);
+        }
+
+        // Users that have accepted any policies, if fetching for user context.
+        if (is_a($context, \context_user::class)) {
+            $sql = "SELECT a.userid, a.usermodified
+                      FROM {tool_policy_acceptances} a
+                     WHERE a.userid = :instanceid";
+            $params = ['instanceid' => $context->instanceid];
+
+            $userlist->add_from_sql('userid', $sql, $params);
+            $userlist->add_from_sql('usermodified', $sql, $params);
+        }
     }
 
     /**
@@ -170,6 +202,17 @@ class provider implements
      * @param approved_contextlist $contextlist A list of contexts approved for deletion.
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
+    }
+
+    /**
+     * Delete multiple users within a single context.
+     *
+     * We never delete user agreements to the policies because they are part of privacy data.
+     * We never delete policy versions because they are part of privacy data.
+     *
+     * @param   approved_userlist       $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
     }
 
     /**

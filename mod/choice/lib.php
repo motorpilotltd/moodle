@@ -312,7 +312,7 @@ function choice_modify_responses($userids, $answerids, $newoptionid, $choice, $c
  * Process user submitted answers for a choice,
  * and either updating them or saving new answers.
  *
- * @param int $formanswer users submitted answers.
+ * @param int|array $formanswer the id(s) of the user submitted choice options.
  * @param object $choice the selected choice.
  * @param int $userid user identifier.
  * @param object $course current course.
@@ -361,6 +361,12 @@ function choice_user_submit_response($formanswer, $choice, $userid, $course, $cm
     }
 
     $current = $DB->get_records('choice_answers', array('choiceid' => $choice->id, 'userid' => $userid));
+
+    // Array containing [answerid => optionid] mapping.
+    $existinganswers = array_map(function($answer) {
+        return $answer->optionid;
+    }, $current);
+
     $context = context_module::instance($cm->id);
 
     $choicesexceeded = false;
@@ -404,7 +410,13 @@ function choice_user_submit_response($formanswer, $choice, $userid, $course, $cm
                 }
             }
         }
+
         foreach ($countanswers as $opt => $count) {
+            // Ignore the user's existing answers when checking whether an answer count has been exceeded.
+            // A user may wish to update their response with an additional choice option and shouldn't be competing with themself!
+            if (in_array($opt, $existinganswers)) {
+                continue;
+            }
             if ($count >= $choice->maxanswers[$opt]) {
                 $choicesexceeded = true;
                 break;
@@ -418,10 +430,8 @@ function choice_user_submit_response($formanswer, $choice, $userid, $course, $cm
     if (!($choice->limitanswers && $choicesexceeded)) {
         if ($current) {
             // Update an existing answer.
-            $existingchoices = array();
             foreach ($current as $c) {
                 if (in_array($c->optionid, $formanswers)) {
-                    $existingchoices[] = $c->optionid;
                     $DB->set_field('choice_answers', 'timemodified', time(), array('id' => $c->id));
                 } else {
                     $deletedanswersnapshots[] = $c;
@@ -431,7 +441,7 @@ function choice_user_submit_response($formanswer, $choice, $userid, $course, $cm
 
             // Add new ones.
             foreach ($formanswers as $f) {
-                if (!in_array($f, $existingchoices)) {
+                if (!in_array($f, $existinganswers)) {
                     $newanswer = new stdClass();
                     $newanswer->optionid = $f;
                     $newanswer->choiceid = $choice->id;
@@ -460,14 +470,9 @@ function choice_user_submit_response($formanswer, $choice, $userid, $course, $cm
             }
         }
     } else {
-        // Check to see if current choice already selected - if not display error.
-        $currentids = array_keys($current);
-
-        if (array_diff($currentids, $formanswers) || array_diff($formanswers, $currentids) ) {
-            // Release lock before error.
-            $choicelock->release();
-            print_error('choicefull', 'choice', $continueurl);
-        }
+        // This is a choice with limited options, and one of the options selected has just run over its limit.
+        $choicelock->release();
+        print_error('choicefull', 'choice', $continueurl);
     }
 
     // Release lock.
@@ -754,6 +759,8 @@ function choice_reset_userdata($data) {
 
     /// updating dates - shift may be negative too
     if ($data->timeshift) {
+        // Any changes to the list of dates that needs to be rolled should be same during course restore and course reset.
+        // See MDL-9367.
         shift_course_mod_dates('choice', array('timeopen', 'timeclose'), $data->timeshift, $data->courseid);
         $status[] = array('component'=>$componentstr, 'item'=>get_string('datechanged'), 'error'=>false);
     }
@@ -1005,6 +1012,19 @@ function choice_print_overview($courses, &$htmlarray) {
 
 
 /**
+ * Get responses of a given user on a given choice.
+ *
+ * @param stdClass $choice Choice record
+ * @param int $userid User id
+ * @return array of choice answers records
+ * @since  Moodle 3.6
+ */
+function choice_get_user_response($choice, $userid) {
+    global $DB;
+    return $DB->get_records('choice_answers', array('choiceid' => $choice->id, 'userid' => $userid), 'optionid');
+}
+
+/**
  * Get my responses on a given choice.
  *
  * @param stdClass $choice Choice record
@@ -1012,8 +1032,8 @@ function choice_print_overview($courses, &$htmlarray) {
  * @since  Moodle 3.0
  */
 function choice_get_my_response($choice) {
-    global $DB, $USER;
-    return $DB->get_records('choice_answers', array('choiceid' => $choice->id, 'userid' => $USER->id), 'optionid');
+    global $USER;
+    return choice_get_user_response($choice, $USER->id);
 }
 
 
@@ -1209,12 +1229,25 @@ function choice_check_updates_since(cm_info $cm, $from, $filter = array()) {
  *
  * @param calendar_event $event
  * @param \core_calendar\action_factory $factory
+ * @param int $userid User id to use for all capability checks, etc. Set to 0 for current user (default).
  * @return \core_calendar\local\event\entities\action_interface|null
  */
 function mod_choice_core_calendar_provide_event_action(calendar_event $event,
-                                                       \core_calendar\action_factory $factory) {
+                                                       \core_calendar\action_factory $factory,
+                                                       int $userid = 0) {
+    global $USER;
 
-    $cm = get_fast_modinfo($event->courseid)->instances['choice'][$event->instance];
+    if (!$userid) {
+        $userid = $USER->id;
+    }
+
+    $cm = get_fast_modinfo($event->courseid, $userid)->instances['choice'][$event->instance];
+
+    if (!$cm->uservisible) {
+        // The module is not visible to the user for any reason.
+        return null;
+    }
+
     $now = time();
 
     if (!empty($cm->customdata['timeclose']) && $cm->customdata['timeclose'] < $now) {
@@ -1226,7 +1259,7 @@ function mod_choice_core_calendar_provide_event_action(calendar_event $event,
     // in the past.
     $actionable = (empty($cm->customdata['timeopen']) || $cm->customdata['timeopen'] <= $now);
 
-    if ($actionable && choice_get_my_response((object)['id' => $event->instance])) {
+    if ($actionable && choice_get_user_response((object)['id' => $event->instance], $userid)) {
         // There is no action if the user has already submitted their choice.
         return null;
     }
@@ -1237,6 +1270,117 @@ function mod_choice_core_calendar_provide_event_action(calendar_event $event,
         1,
         $actionable
     );
+}
+
+/**
+ * This function calculates the minimum and maximum cutoff values for the timestart of
+ * the given event.
+ *
+ * It will return an array with two values, the first being the minimum cutoff value and
+ * the second being the maximum cutoff value. Either or both values can be null, which
+ * indicates there is no minimum or maximum, respectively.
+ *
+ * If a cutoff is required then the function must return an array containing the cutoff
+ * timestamp and error string to display to the user if the cutoff value is violated.
+ *
+ * A minimum and maximum cutoff return value will look like:
+ * [
+ *     [1505704373, 'The date must be after this date'],
+ *     [1506741172, 'The date must be before this date']
+ * ]
+ *
+ * @param calendar_event $event The calendar event to get the time range for
+ * @param stdClass $choice The module instance to get the range from
+ */
+function mod_choice_core_calendar_get_valid_event_timestart_range(\calendar_event $event, \stdClass $choice) {
+    $mindate = null;
+    $maxdate = null;
+
+    if ($event->eventtype == CHOICE_EVENT_TYPE_OPEN) {
+        if (!empty($choice->timeclose)) {
+            $maxdate = [
+                $choice->timeclose,
+                get_string('openafterclose', 'choice')
+            ];
+        }
+    } else if ($event->eventtype == CHOICE_EVENT_TYPE_CLOSE) {
+        if (!empty($choice->timeopen)) {
+            $mindate = [
+                $choice->timeopen,
+                get_string('closebeforeopen', 'choice')
+            ];
+        }
+    }
+
+    return [$mindate, $maxdate];
+}
+
+/**
+ * This function will update the choice module according to the
+ * event that has been modified.
+ *
+ * It will set the timeopen or timeclose value of the choice instance
+ * according to the type of event provided.
+ *
+ * @throws \moodle_exception
+ * @param \calendar_event $event
+ * @param stdClass $choice The module instance to get the range from
+ */
+function mod_choice_core_calendar_event_timestart_updated(\calendar_event $event, \stdClass $choice) {
+    global $DB;
+
+    if (!in_array($event->eventtype, [CHOICE_EVENT_TYPE_OPEN, CHOICE_EVENT_TYPE_CLOSE])) {
+        return;
+    }
+
+    $courseid = $event->courseid;
+    $modulename = $event->modulename;
+    $instanceid = $event->instance;
+    $modified = false;
+
+    // Something weird going on. The event is for a different module so
+    // we should ignore it.
+    if ($modulename != 'choice') {
+        return;
+    }
+
+    if ($choice->id != $instanceid) {
+        return;
+    }
+
+    $coursemodule = get_fast_modinfo($courseid)->instances[$modulename][$instanceid];
+    $context = context_module::instance($coursemodule->id);
+
+    // The user does not have the capability to modify this activity.
+    if (!has_capability('moodle/course:manageactivities', $context)) {
+        return;
+    }
+
+    if ($event->eventtype == CHOICE_EVENT_TYPE_OPEN) {
+        // If the event is for the choice activity opening then we should
+        // set the start time of the choice activity to be the new start
+        // time of the event.
+        if ($choice->timeopen != $event->timestart) {
+            $choice->timeopen = $event->timestart;
+            $modified = true;
+        }
+    } else if ($event->eventtype == CHOICE_EVENT_TYPE_CLOSE) {
+        // If the event is for the choice activity closing then we should
+        // set the end time of the choice activity to be the new start
+        // time of the event.
+        if ($choice->timeclose != $event->timestart) {
+            $choice->timeclose = $event->timestart;
+            $modified = true;
+        }
+    }
+
+    if ($modified) {
+        $choice->timemodified = time();
+        // Persist the instance changes.
+        $DB->update_record('choice', $choice);
+        $event = \core\event\course_module_updated::create_from_cm($coursemodule, $context);
+        $event->trigger();
+    }
 }
 
 /**

@@ -82,7 +82,7 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group {
         $calendartype = \core_calendar\type_factory::get_calendar_instance();
 /* BEGIN CORE MOD */
         $this->_options = array('startyear' => $calendartype->get_min_year(), 'stopyear' => $calendartype->get_max_year(),
-            'defaulttime' => 0, 'timezone' => 99, 'step' => 5, 'optional' => false,
+            'defaulttime' => 0, 'timezone' => 99, 'step' => 1, 'optional' => false,
             'showtz' => false, 'timezones'=>array());
 /* END CORE MOD */
         // TODO MDL-52313 Replace with the call to parent::__construct().
@@ -253,7 +253,7 @@ class MoodleQuickForm_date_time_selector extends MoodleQuickForm_group {
                 }
                 break;
             case 'createElement':
-                if ($arg[2]['optional']) {
+                if (isset($arg[2]['optional']) && $arg[2]['optional']) {
                     // When using the function addElement, rather than createElement, we still
                     // enter this case, making this check necessary.
                     if ($this->_usedcreateelement) {

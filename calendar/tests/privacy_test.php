@@ -34,6 +34,7 @@ use \core_privacy\local\metadata\collection;
 use \core_privacy\local\request\approved_contextlist;
 use \core_privacy\local\request\writer;
 use \core_privacy\tests\provider_testcase;
+use \core_privacy\local\request\approved_userlist;
 
 /**
  * Unit tests for calendar/classes/privacy/provider
@@ -60,7 +61,8 @@ class core_calendar_privacy_testcase extends provider_testcase {
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
-        // Create Courses to assign Calendar Events and Subscriptions.
+        // Create a Category and Courses to assign Calendar Events and Subscriptions.
+        $category = $this->getDataGenerator()->create_category();
         $course1 = $this->getDataGenerator()->create_course();
         $course2 = $this->getDataGenerator()->create_course();
         $course3 = $this->getDataGenerator()->create_course();
@@ -72,17 +74,22 @@ class core_calendar_privacy_testcase extends provider_testcase {
 
         // Get contexts.
         $usercontext = context_user::instance($user->id);
+        $categorycontext = context_coursecat::instance($category->id);
         $course1context = context_course::instance($course1->id);
         $course2context = context_course::instance($course2->id);
         $course3context = context_course::instance($course3->id);
 
+        // Add Category Calendar Events for Category.
+        $this->create_test_standard_calendar_event('category', $user->id, time(), '', $category->id);
+        $this->create_test_standard_calendar_event('category', $user->id, time(), '', $category->id);
+
         // Add User Calendar Events for User.
         $this->create_test_standard_calendar_event('user', $user->id, time(), '');
-        $this->create_test_standard_calendar_event('user', $user->id, time(), '', $course1->id);
-        $this->create_test_standard_calendar_event('user', $user->id, time(), '', $course2->id);
+        $this->create_test_standard_calendar_event('user', $user->id, time(), '', 0, $course1->id);
+        $this->create_test_standard_calendar_event('user', $user->id, time(), '', 0, $course2->id);
 
         // Add a Course Calendar Event for Course 1.
-        $this->create_test_standard_calendar_event('course', $user->id, time(), '', $course1->id);
+        $this->create_test_standard_calendar_event('course', $user->id, time(), '', 0, $course1->id);
 
         // Add a Course Assignment Action Calendar Event for Course 2.
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_assign');
@@ -96,12 +103,13 @@ class core_calendar_privacy_testcase extends provider_testcase {
         $this->create_test_action_calendar_event('gradingduedate', $course2->id, $instance->id, 'assign', $user->id, time());
 
         // Add a Calendar Subscription and Group Calendar Event to Course 3.
-        $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user->id, $course3->id);
-        $this->create_test_standard_calendar_event('group', $user->id, time(), '', $course1->id, $course3group->id);
+        $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user->id, 0, $course3->id);
+        $this->create_test_standard_calendar_event('group', $user->id, time(), '', 0, $course3->id, $course3group->id);
 
         // The user will be in these contexts.
         $usercontextids = [
             $usercontext->id,
+            $categorycontext->id,
             $course1context->id,
             $modulecontext->id,
             $course3context->id
@@ -127,7 +135,8 @@ class core_calendar_privacy_testcase extends provider_testcase {
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
-        // Create a Course to test creating a Course Calendar Event.
+        // Create a Category to test creating a Category Calendar Event.
+        $category = $this->getDataGenerator()->create_category();
         $course1 = $this->getDataGenerator()->create_course();
         $course2 = $this->getDataGenerator()->create_course();
         $course3 = $this->getDataGenerator()->create_course();
@@ -140,10 +149,13 @@ class core_calendar_privacy_testcase extends provider_testcase {
         // Add User Calendar Events for User.
         $event1 = $this->create_test_standard_calendar_event('user', $user->id, time(), '');
 
+        // Add Category Calendar Events for Category.
+        $event2 = $this->create_test_standard_calendar_event('category', $user->id, time(), '', $category->id);
+
         // Add two Course Calendar Event for Course 1 and set the same time (1 day a head).
         $time = strtotime('+1 day', time());
-        $event3 = $this->create_test_standard_calendar_event('course', $user->id, $time, 'ABC', $course1->id);
-        $event4 = $this->create_test_standard_calendar_event('course', $user->id, $time, 'DEF', $course1->id);
+        $event3 = $this->create_test_standard_calendar_event('course', $user->id, $time, 'ABC', 0, $course1->id);
+        $event4 = $this->create_test_standard_calendar_event('course', $user->id, $time, 'DEF', 0, $course1->id);
 
         // Add a Course Assignment Action Calendar Event for Course 2.
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_assign');
@@ -156,8 +168,8 @@ class core_calendar_privacy_testcase extends provider_testcase {
         $event5 = $this->create_test_action_calendar_event('duedate', $course2->id, $instance->id, 'assign', $user->id, time());
 
         // Add a Calendar Subscription and Group Calendar Event to Course 3.
-        $subscription1 = $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user->id, $course3->id);
-        $event6 = $this->create_test_standard_calendar_event('group', $user->id, time(), '', $course3->id, $course3group->id);
+        $subscription1 = $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user->id, 0, $course3->id);
+        $event6 = $this->create_test_standard_calendar_event('group', $user->id, time(), '', 0, $course3->id, $course3group->id);
 
         // Retrieve the user's context ids.
         $contextlist = provider::get_contexts_for_userid($user->id);
@@ -181,6 +193,19 @@ class core_calendar_privacy_testcase extends provider_testcase {
                 $name = "user-event";
                 $data = $writer->get_related_data($subcontexts, $name);
                 $this->assertEquals('Standard Calendar Event user', $data->name);
+            }
+
+            // Test event 2 that was created for the test Category.
+            if ($context->instanceid == $category->id && $context->contextlevel == CONTEXT_COURSECAT) {
+                // Test the content contains Calendar Event category data.
+                $subcontexts = [
+                    get_string('calendar', 'calendar'),
+                    get_string('events', 'calendar'),
+                    date('c', $event2->timestart)
+                ];
+                $name = "category-event";
+                $data = $writer->get_related_data($subcontexts, $name);
+                $this->assertEquals('Standard Calendar Event category', $data->name);
             }
 
             // Test events 3, 4, and 5 that were created for the test Course 1.
@@ -285,7 +310,7 @@ class core_calendar_privacy_testcase extends provider_testcase {
         $user1 = $this->getDataGenerator()->create_user();
         $user2 = $this->getDataGenerator()->create_user();
 
-        // Create a Course to test creating a Course Calendar Event.
+        // Create a Course to test creating a Category Calendar Event.
         $course1 = $this->getDataGenerator()->create_course();
         $course2 = $this->getDataGenerator()->create_course();
 
@@ -295,19 +320,19 @@ class core_calendar_privacy_testcase extends provider_testcase {
 
         // Add a Course Calendar Event by User 1 for Course 1 and Course 2.
         $this->setUser($user1);
-        $this->create_test_standard_calendar_event('course', $user1->id, time(), '', $course1->id);
-        $this->create_test_standard_calendar_event('course', $user1->id, time(), '', $course2->id);
+        $this->create_test_standard_calendar_event('course', $user1->id, time(), '', 0, $course1->id);
+        $this->create_test_standard_calendar_event('course', $user1->id, time(), '', 0, $course2->id);
 
         // Add a Calendar Subscription by User 1 for Course 1.
-        $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user1->id, $course1->id);
+        $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user1->id, 0, $course1->id);
 
         // Add a Course Calendar Event by User 2 for Course 1 and Course 2.
         $this->setUser($user2);
-        $this->create_test_standard_calendar_event('course', $user2->id, time(), '', $course1->id);
-        $this->create_test_standard_calendar_event('course', $user2->id, time(), '', $course2->id);
+        $this->create_test_standard_calendar_event('course', $user2->id, time(), '', 0, $course1->id);
+        $this->create_test_standard_calendar_event('course', $user2->id, time(), '', 0, $course2->id);
 
         // Add a Calendar Subscription by User 2 for Course 2.
-        $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user2->id, $course2->id);
+        $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user2->id, 0, $course2->id);
 
         // Add a Course Assignment Action Calendar Event by User 2 for Course 2.
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_assign');
@@ -360,26 +385,30 @@ class core_calendar_privacy_testcase extends provider_testcase {
         $user1 = $this->getDataGenerator()->create_user();
         $user2 = $this->getDataGenerator()->create_user();
 
-        // Create Courses to test creating a Course Calendar Event.
+        // Create a Category and Courses to test creating a Category Calendar Event.
+        $category = $this->getDataGenerator()->create_category();
         $course1 = $this->getDataGenerator()->create_course();
         $course2 = $this->getDataGenerator()->create_course();
 
         // Add 5 Calendar Events for User 1 for various contexts.
         $this->setUser($user1);
         $this->create_test_standard_calendar_event('user', $user1->id, time(), '');
-        $this->create_test_standard_calendar_event('course', $user1->id, time(), '', $course1->id);
-        $this->create_test_standard_calendar_event('course', $user1->id, time(), '', $course2->id);
+        $this->create_test_standard_calendar_event('site', $user1->id, time(), '', 0, 1);
+        $this->create_test_standard_calendar_event('category', $user1->id, time(), '', $category->id);
+        $this->create_test_standard_calendar_event('course', $user1->id, time(), '', 0, $course1->id);
+        $this->create_test_standard_calendar_event('course', $user1->id, time(), '', 0, $course2->id);
 
         // Add 1 Calendar Subscription for User 1 at course context.
-        $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user1->id, $course2->id);
+        $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user1->id, 0, $course2->id);
 
         // Add 3 Calendar Events for User 2 for various contexts.
         $this->setUser($user2);
         $this->create_test_standard_calendar_event('user', $user2->id, time(), '');
-        $this->create_test_standard_calendar_event('course', $user2->id, time(), '', $course1->id);
+        $this->create_test_standard_calendar_event('category', $user2->id, time(), '', $category->id);
+        $this->create_test_standard_calendar_event('course', $user2->id, time(), '', 0, $course1->id);
 
         // Add 1 Calendar Subscription for User 2 at course context.
-        $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user2->id, $course2->id);
+        $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user2->id, 0, $course2->id);
 
         // Retrieve the user's context ids.
         $contextlist = provider::get_contexts_for_userid($user1->id);
@@ -396,9 +425,303 @@ class core_calendar_privacy_testcase extends provider_testcase {
 
         // Test all Calendar Events and Subscriptions for User 2 still exists and matches the same number created.
         $events = $DB->get_records('event', ['userid' => $user2->id]);
-        $this->assertCount(2, $events);
+        $this->assertCount(3, $events);
         $eventsubscriptions = $DB->get_records('event_subscriptions', ['userid' => $user2->id]);
         $this->assertCount(1, $eventsubscriptions);
+    }
+
+    /**
+     * Test that only users with a user context are fetched.
+     */
+    public function test_get_users_in_context() {
+        $component = 'core_calendar';
+
+        // Create user1 to create Calendar Events and Subscriptions.
+        $user1 = $this->getDataGenerator()->create_user();
+        $usercontext1 = context_user::instance($user1->id);
+        // Create user2 to create Calendar Events and Subscriptions.
+        $user2 = $this->getDataGenerator()->create_user();
+        $usercontext2 = context_user::instance($user2->id);
+        // Create user3 to create Calendar Events and Subscriptions.
+        $user3 = $this->getDataGenerator()->create_user();
+        $usercontext3 = context_user::instance($user3->id);
+
+        // Create a Category and Courses to assign Calendar Events and Subscriptions.
+        $category = $this->getDataGenerator()->create_category();
+        $categorycontext = context_coursecat::instance($category->id);
+        $course1 = $this->getDataGenerator()->create_course();
+        $course1context = context_course::instance($course1->id);
+        $course2 = $this->getDataGenerator()->create_course();
+        $course2context = context_course::instance($course2->id);
+        $course3 = $this->getDataGenerator()->create_course();
+        $course3context = context_course::instance($course3->id);
+        $grouprecord = (object)[
+            'courseid' => $course3->id,
+            'name' => 'test_group'
+        ];
+        $course3group = $this->getDataGenerator()->create_group($grouprecord);
+
+        // Add Category Calendar Events for Category.
+        $this->setUser($user1);
+        $this->create_test_standard_calendar_event('category', $user1->id, time(), '',
+                $category->id);
+        $this->setUser($user2);
+        $this->create_test_standard_calendar_event('category', $user2->id, time(), '',
+                $category->id);
+
+        // Add User Calendar Events for user1 and user2.
+        $this->setUser($user1);
+        $this->create_test_standard_calendar_event('user', $user1->id, time(), '');
+        $this->create_test_standard_calendar_event('user', $user1->id, time(), '',
+                0, $course1->id);
+        $this->create_test_standard_calendar_event('user', $user1->id, time(), '',
+                0, $course2->id);
+        $this->setUser($user2);
+        $this->create_test_standard_calendar_event('user', $user2->id, time(), '',
+            0, $course1->id);
+
+        // Add a Course Calendar Events for Course 1.
+        $this->setUser($user1);
+        $this->create_test_standard_calendar_event('course', $user1->id, time(), '',
+                0, $course1->id);
+        $this->setUser($user2);
+        $this->create_test_standard_calendar_event('course', $user2->id, time(), '',
+            0, $course1->id);
+
+        // Add a Course Assignment Action Calendar Event for Course 2.
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_assign');
+        $params['course'] = $course2->id;
+        $params['assignsubmission_onlinetext_enabled'] = 1;
+        $instance = $generator->create_instance($params);
+        $cm = get_coursemodule_from_instance('assign', $instance->id);
+        $modulecontext = context_module::instance($cm->id);
+        $assign = new assign($modulecontext, $cm, $course2);
+        $this->setUser($user2);
+        $this->create_test_action_calendar_event('duedate', $course2->id, $instance->id,
+                'assign', $user2->id, time());
+        $this->create_test_action_calendar_event('gradingduedate', $course2->id, $instance->id,
+                'assign', $user2->id, time());
+
+        // Add a Calendar Subscription and Group Calendar Event to Course 3.
+        $this->create_test_standard_calendar_event('group', $user2->id, time(), '', 0,
+                $course3->id, $course3group->id);
+        $this->setUser($user3);
+        $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user3->id,
+                0, $course3->id);
+
+        // The user list for usercontext1 should return user1.
+        $userlist1 = new \core_privacy\local\request\userlist($usercontext1, $component);
+        provider::get_users_in_context($userlist1);
+        $this->assertCount(1, $userlist1);
+        $this->assertTrue(in_array($user1->id, $userlist1->get_userids()));
+        // The user list for usercontext2 should return user2.
+        $userlist2 = new \core_privacy\local\request\userlist($usercontext2, $component);
+        provider::get_users_in_context($userlist2);
+        $this->assertCount(1, $userlist2);
+        $this->assertTrue(in_array($user2->id, $userlist2->get_userids()));
+        // The user list for course1context should return user1 and user2.
+        $userlist3 = new \core_privacy\local\request\userlist($course1context, $component);
+        provider::get_users_in_context($userlist3);
+        $this->assertCount(2, $userlist3);
+        $this->assertTrue(in_array($user1->id, $userlist3->get_userids()));
+        $this->assertTrue(in_array($user2->id, $userlist3->get_userids()));
+        // The user list for course2context should not return any users.
+        $userlist4 = new \core_privacy\local\request\userlist($course2context, $component);
+        provider::get_users_in_context($userlist4);
+        $this->assertCount(0, $userlist4);
+        // The user list for course3context should return user2 and user3.
+        $userlist5 = new \core_privacy\local\request\userlist($course3context, $component);
+        provider::get_users_in_context($userlist5);
+        $this->assertCount(2, $userlist5);
+        $this->assertTrue(in_array($user2->id, $userlist5->get_userids()));
+        $this->assertTrue(in_array($user3->id, $userlist5->get_userids()));
+        // The user list for categorycontext should return user1 and user2.
+        $userlist6 = new \core_privacy\local\request\userlist($categorycontext, $component);
+        provider::get_users_in_context($userlist6);
+        $this->assertCount(2, $userlist6);
+        $this->assertTrue(in_array($user1->id, $userlist6->get_userids()));
+        $this->assertTrue(in_array($user2->id, $userlist6->get_userids()));
+        // The user list for modulecontext should return user2.
+        $userlist7 = new \core_privacy\local\request\userlist($modulecontext, $component);
+        provider::get_users_in_context($userlist7);
+        $this->assertCount(1, $userlist7);
+        $this->assertTrue(in_array($user2->id, $userlist7->get_userids()));
+        // The user list for usercontext3 should not return any users.
+        $userlist8 = new \core_privacy\local\request\userlist($usercontext3, $component);
+        provider::get_users_in_context($userlist8);
+        $this->assertCount(0, $userlist8);
+    }
+
+    /**
+     * Test that data for users in approved userlist is deleted.
+     */
+    public function test_delete_data_for_users() {
+        $component = 'core_calendar';
+
+        // Create user1 to create Calendar Events and Subscriptions.
+        $user1 = $this->getDataGenerator()->create_user();
+        $usercontext1 = context_user::instance($user1->id);
+        // Create user2 to create Calendar Events and Subscriptions.
+        $user2 = $this->getDataGenerator()->create_user();
+        $usercontext2 = context_user::instance($user2->id);
+        // Create user3 to create Calendar Events and Subscriptions.
+        $user3 = $this->getDataGenerator()->create_user();
+        $usercontext3 = context_user::instance($user3->id);
+
+        // Create a Category and Courses to assign Calendar Events and Subscriptions.
+        $category = $this->getDataGenerator()->create_category();
+        $categorycontext = context_coursecat::instance($category->id);
+        $course1 = $this->getDataGenerator()->create_course();
+        $course1context = context_course::instance($course1->id);
+        $course2 = $this->getDataGenerator()->create_course();
+        $course2context = context_course::instance($course2->id);
+        $course3 = $this->getDataGenerator()->create_course();
+        $course3context = context_course::instance($course3->id);
+        $grouprecord = (object)[
+            'courseid' => $course3->id,
+            'name' => 'test_group'
+        ];
+        $course3group = $this->getDataGenerator()->create_group($grouprecord);
+
+        // Add Category Calendar Events for Category.
+        $this->setUser($user1);
+        $this->create_test_standard_calendar_event('category', $user1->id, time(), '',
+            $category->id);
+        $this->setUser($user2);
+        $this->create_test_standard_calendar_event('category', $user2->id, time(), '',
+            $category->id);
+
+        // Add User Calendar Events for user1 and user2.
+        $this->setUser($user1);
+        $this->create_test_standard_calendar_event('user', $user1->id, time(), '');
+        $this->create_test_standard_calendar_event('user', $user1->id, time(), '',
+            0, $course1->id);
+        $this->create_test_standard_calendar_event('user', $user1->id, time(), '',
+            0, $course2->id);
+        $this->setUser($user2);
+        $this->create_test_standard_calendar_event('user', $user2->id, time(), '',
+            0, $course1->id);
+
+        // Add a Course Calendar Events for Course 1.
+        $this->setUser($user1);
+        $this->create_test_standard_calendar_event('course', $user1->id, time(), '',
+            0, $course1->id);
+        $this->setUser($user2);
+        $this->create_test_standard_calendar_event('course', $user2->id, time(), '',
+            0, $course1->id);
+
+        // Add a Course Assignment Action Calendar Event for Course 2.
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_assign');
+        $params['course'] = $course2->id;
+        $params['assignsubmission_onlinetext_enabled'] = 1;
+        $instance = $generator->create_instance($params);
+        $cm = get_coursemodule_from_instance('assign', $instance->id);
+        $modulecontext = context_module::instance($cm->id);
+        $assign = new assign($modulecontext, $cm, $course2);
+        $this->setUser($user2);
+        $this->create_test_action_calendar_event('duedate', $course2->id, $instance->id,
+            'assign', $user2->id, time());
+        $this->create_test_action_calendar_event('gradingduedate', $course2->id, $instance->id,
+            'assign', $user2->id, time());
+
+        // Add a Calendar Subscription and Group Calendar Event to Course 3.
+        $this->create_test_standard_calendar_event('group', $user2->id, time(), '', 0,
+            $course3->id, $course3group->id);
+        $this->setUser($user3);
+        $this->create_test_calendar_subscription('course', 'https://calendar.google.com/', $user3->id,
+            0, $course3->id);
+
+        // The user list for usercontext1 should return user1.
+        $userlist1 = new \core_privacy\local\request\userlist($usercontext1, $component);
+        provider::get_users_in_context($userlist1);
+        $this->assertCount(1, $userlist1);
+        // The user list for usercontext2 should return user2.
+        $userlist2 = new \core_privacy\local\request\userlist($usercontext2, $component);
+        provider::get_users_in_context($userlist2);
+        $this->assertCount(1, $userlist2);
+        // The user list for course1context should return user1 and user2.
+        $userlist3 = new \core_privacy\local\request\userlist($course1context, $component);
+        provider::get_users_in_context($userlist3);
+        $this->assertCount(2, $userlist3);
+        // The user list for course2context should not return any users.
+        $userlist4 = new \core_privacy\local\request\userlist($course2context, $component);
+        provider::get_users_in_context($userlist4);
+        $this->assertCount(0, $userlist4);
+        // The user list for course3context should return user2 and user3.
+        $userlist5 = new \core_privacy\local\request\userlist($course3context, $component);
+        provider::get_users_in_context($userlist5);
+        $this->assertCount(2, $userlist5);
+        // The user list for categorycontext should return user1 and user2.
+        $userlist6 = new \core_privacy\local\request\userlist($categorycontext, $component);
+        provider::get_users_in_context($userlist6);
+        $this->assertCount(2, $userlist6);
+        // The user list for modulecontext should return user2.
+        $userlist7 = new \core_privacy\local\request\userlist($modulecontext, $component);
+        provider::get_users_in_context($userlist7);
+        $this->assertCount(1, $userlist7);
+        // The user list for usercontext3 should not return any users.
+        $userlist8 = new \core_privacy\local\request\userlist($usercontext3, $component);
+        provider::get_users_in_context($userlist8);
+        $this->assertCount(0, $userlist8);
+
+        // Convert $userlist1 into an approved_contextlist.
+        $approvedlist1 = new approved_userlist($usercontext1, $component, $userlist1->get_userids());
+        // Delete using delete_data_for_user.
+        provider::delete_data_for_users($approvedlist1);
+        // The user list for usercontext1 should not return any users.
+        $userlist1 = new \core_privacy\local\request\userlist($usercontext1, $component);
+        provider::get_users_in_context($userlist1);
+        $this->assertCount(0, $userlist1);
+        // The user list for usercontext2 should still return users2.
+        $userlist2 = new \core_privacy\local\request\userlist($usercontext2, $component);
+        provider::get_users_in_context($userlist2);
+        $this->assertCount(1, $userlist2);
+
+        // Convert $userlist3 into an approved_contextlist.
+        // Pass an empty array as a value for the approved user list.
+        $approvedlist2 = new approved_userlist($course1context, $component, []);
+        // Delete using delete_data_for_user.
+        provider::delete_data_for_users($approvedlist2);
+        // The user list for course1context should return user1 and user2.
+        $userlist3 = new \core_privacy\local\request\userlist($course1context, $component);
+        provider::get_users_in_context($userlist3);
+        $this->assertCount(2, $userlist3);
+        $this->assertTrue(in_array($user1->id, $userlist3->get_userids()));
+        $this->assertTrue(in_array($user2->id, $userlist3->get_userids()));
+
+        // Convert $userlist3 into an approved_contextlist.
+        // Pass the ID of user1 as a value for the approved user list.
+        $approvedlist2 = new approved_userlist($course1context, $component, [$user1->id]);
+        // Delete using delete_data_for_user.
+        provider::delete_data_for_users($approvedlist2);
+        // The user list for course1context should return user2.
+        $userlist3 = new \core_privacy\local\request\userlist($course1context, $component);
+        provider::get_users_in_context($userlist3);
+        $this->assertCount(1, $userlist3);
+        $this->assertTrue(in_array($user2->id, $userlist3->get_userids()));
+
+        // The user list for course3context should still return user2 and user3.
+        $userlist5 = new \core_privacy\local\request\userlist($course3context, $component);
+        provider::get_users_in_context($userlist5);
+        $this->assertCount(2, $userlist5);
+
+        // Convert $userlist6 into an approved_contextlist.
+        $approvedlist3 = new approved_userlist($categorycontext, $component, $userlist6->get_userids());
+        // Delete using delete_data_for_user.
+        provider::delete_data_for_users($approvedlist3);
+        // The user list for categorycontext should not return any users.
+        $userlist6 = new \core_privacy\local\request\userlist($categorycontext, $component);
+        provider::get_users_in_context($userlist6);
+        $this->assertCount(0, $userlist6);
+
+        // Convert $userlist7 into an approved_contextlist.
+        $approvedlist4 = new approved_userlist($modulecontext, $component, $userlist7->get_userids());
+        // Delete using delete_data_for_user.
+        provider::delete_data_for_users($approvedlist4);
+        // The user list for modulecontext should not return any users.
+        $userlist7 = new \core_privacy\local\request\userlist($modulecontext, $component);
+        provider::get_users_in_context($userlist7);
+        $this->assertCount(0, $userlist7);
     }
 
     // Start of helper functions.
@@ -410,12 +733,13 @@ class core_calendar_privacy_testcase extends provider_testcase {
      * @param int       $userid     User Id
      * @param int       $time       Timestamp value
      * @param string    $customname Custom name
+     * @param int       $categoryid Course Category Id
      * @param int       $courseid   Course Id
      * @param int       $groupid    Group Id
      * @return bool|calendar_event  Standard Calendar Event created.
      * @throws coding_exception
      */
-    protected function create_test_standard_calendar_event($eventtype, $userid, $time, $customname = '', $courseid = 0, $groupid = 0) {
+    protected function create_test_standard_calendar_event($eventtype, $userid, $time, $customname = '', $categoryid = 0, $courseid = 0, $groupid = 0) {
         // Create a standard calendar event.
         $name = "Standard Calendar Event $eventtype";
         if ($customname != '') {
@@ -424,6 +748,7 @@ class core_calendar_privacy_testcase extends provider_testcase {
 
         $event = (object)[
             'name' => $name,
+            'categoryid' => $categoryid,
             'courseid' => $courseid,
             'groupid' => $groupid,
             'userid' => $userid,
@@ -453,6 +778,7 @@ class core_calendar_privacy_testcase extends provider_testcase {
         // Create an action calendar event.
         $event = (object)[
             'name' => "Action Calendar Event $eventtype -- $modulename",
+            'categoryid' => 0,
             'courseid' => $courseid,
             'groupid' => 0,
             'userid' => $userid,
@@ -472,17 +798,18 @@ class core_calendar_privacy_testcase extends provider_testcase {
      * @param string    $eventtype  Calendar Subscription event type
      * @param string    $url        Calendar Subscription URL
      * @param int       $userid     User Id
+     * @param int       $categoryid Category Id
      * @param int       $courseid   Course Id
      * @param int       $groupid    Group Id
      * @return int  Calendar Subscription Id
      */
-    protected function create_test_calendar_subscription($eventtype, $url, $userid, $courseid = 0, $groupid = 0) {
+    protected function create_test_calendar_subscription($eventtype, $url, $userid, $categoryid = 0, $courseid = 0, $groupid = 0) {
         // Create a subscription calendar event.
         $subscription = (object)[
             'name' => "Calendar Subscription " . $eventtype,
             'url' => $url,
+            'categoryid' => $categoryid,
             'courseid' => $courseid,
-            'course' => $courseid,
             'groupid' => $groupid,
             'userid' => $userid,
             'eventtype' => $eventtype

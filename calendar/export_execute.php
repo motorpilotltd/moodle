@@ -187,6 +187,7 @@ $events = calendar_get_events($timestart, $timeend, $users, $groups, array_keys(
 
 $ical = new iCalendar;
 $ical->add_property('method', 'PUBLISH');
+$ical->add_property('prodid', '-//Moodle Pty Ltd//NONSGML Moodle Version ' . $CFG->version . '//EN');
 foreach($events as $event) {
     if (!empty($event->modulename)) {
         $instances = get_fast_modinfo($event->courseid, $userid)->get_instances_of($event->modulename);

@@ -24,6 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2017051550;
-$plugin->requires = 2017051505;        // Moodle 3.3.5 (Build: 20180319) and upwards.
-$plugin->component = 'tool_policy';
+$plugin->version   = 2018051400;         // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2018050800;         // Requires this Moodle version.
+$plugin->component = 'tool_policy';      // Full name of the plugin (used for diagnostics).

@@ -18,6 +18,7 @@
  * Privacy Subsystem implementation for core_message.
  *
  * @package    core_message
+ * @category   privacy
  * @copyright  2018 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,8 +26,10 @@ namespace core_message\privacy;
 
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
+use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\transform;
+use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
 
 defined('MOODLE_INTERNAL') || die();
@@ -40,7 +43,8 @@ defined('MOODLE_INTERNAL') || die();
 class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\subsystem\provider,
-    \core_privacy\local\request\user_preference_provider {
+    \core_privacy\local\request\user_preference_provider,
+    \core_privacy\local\request\core_userlist_provider {
 
     /**
      * Return the fields which contain personal data.
@@ -48,50 +52,41 @@ class provider implements
      * @param collection $items a reference to the collection to use to store the metadata.
      * @return collection the updated collection of metadata items.
      */
-    public static function get_metadata(collection $items) {
+    public static function get_metadata(collection $items) : collection {
         $items->add_database_table(
-            'message',
+            'messages',
             [
                 'useridfrom' => 'privacy:metadata:messages:useridfrom',
-                'useridto' => 'privacy:metadata:messages:useridto',
+                'conversationid' => 'privacy:metadata:messages:conversationid',
                 'subject' => 'privacy:metadata:messages:subject',
                 'fullmessage' => 'privacy:metadata:messages:fullmessage',
                 'fullmessageformat' => 'privacy:metadata:messages:fullmessageformat',
                 'fullmessagehtml' => 'privacy:metadata:messages:fullmessagehtml',
                 'smallmessage' => 'privacy:metadata:messages:smallmessage',
-                'notification' => 'privacy:metadata:messages:notification',
-                'contexturl' => 'privacy:metadata:messages:contexturl',
-                'contexturlname' => 'privacy:metadata:messages:contexturlname',
-                'component' => 'privacy:metadata:messages:component',
-                'eventtype' => 'privacy:metadata:messages:eventtype',
-                'timecreated' => 'privacy:metadata:messages:timecreated',
-                'timeuserfromdeleted' => 'privacy:metadata:messages:timeuserfromdeleted',
-                'timeusertodeleted' => 'privacy:metadata:messages:timeusertodeleted'
+                'timecreated' => 'privacy:metadata:messages:timecreated'
             ],
             'privacy:metadata:messages'
         );
 
         $items->add_database_table(
-            'message_read',
+            'message_user_actions',
             [
-                'useridfrom' => 'privacy:metadata:messages:useridfrom',
-                'useridto' => 'privacy:metadata:messages:useridto',
-                'subject' => 'privacy:metadata:messages:subject',
-                'fullmessage' => 'privacy:metadata:messages:fullmessage',
-                'fullmessageformat' => 'privacy:metadata:messages:fullmessageformat',
-                'fullmessagehtml' => 'privacy:metadata:messages:fullmessagehtml',
-                'smallmessage' => 'privacy:metadata:messages:smallmessage',
-                'notification' => 'privacy:metadata:messages:notification',
-                'contexturl' => 'privacy:metadata:messages:contexturl',
-                'contexturlname' => 'privacy:metadata:messages:contexturlname',
-                'component' => 'privacy:metadata:messages:component',
-                'eventtype' => 'privacy:metadata:messages:eventtype',
-                'timecreated' => 'privacy:metadata:messages:timecreated',
-                'timeread' => 'privacy:metadata:messages:timeread',
-                'timeuserfromdeleted' => 'privacy:metadata:messages:timeuserfromdeleted',
-                'timeusertodeleted' => 'privacy:metadata:messages:timeusertodeleted'
+                'userid' => 'privacy:metadata:message_user_actions:userid',
+                'messageid' => 'privacy:metadata:message_user_actions:messageid',
+                'action' => 'privacy:metadata:message_user_actions:action',
+                'timecreated' => 'privacy:metadata:message_user_actions:timecreated'
             ],
-            'privacy:metadata:messages'
+            'privacy:metadata:message_user_actions'
+        );
+
+        $items->add_database_table(
+            'message_conversation_members',
+            [
+                'conversationid' => 'privacy:metadata:message_conversation_members:conversationid',
+                'userid' => 'privacy:metadata:message_conversation_members:userid',
+                'timecreated' => 'privacy:metadata:message_conversation_members:timecreated',
+            ],
+            'privacy:metadata:message_conversation_members'
         );
 
         $items->add_database_table(
@@ -103,6 +98,30 @@ class provider implements
             ],
             'privacy:metadata:message_contacts'
         );
+
+        $items->add_database_table(
+            'notifications',
+            [
+                'useridfrom' => 'privacy:metadata:notifications:useridfrom',
+                'useridto' => 'privacy:metadata:notifications:useridto',
+                'subject' => 'privacy:metadata:notifications:subject',
+                'fullmessage' => 'privacy:metadata:notifications:fullmessage',
+                'fullmessageformat' => 'privacy:metadata:notifications:fullmessageformat',
+                'fullmessagehtml' => 'privacy:metadata:notifications:fullmessagehtml',
+                'smallmessage' => 'privacy:metadata:notifications:smallmessage',
+                'component' => 'privacy:metadata:notifications:component',
+                'eventtype' => 'privacy:metadata:notifications:eventtype',
+                'contexturl' => 'privacy:metadata:notifications:contexturl',
+                'contexturlname' => 'privacy:metadata:notifications:contexturlname',
+                'timeread' => 'privacy:metadata:notifications:timeread',
+                'timecreated' => 'privacy:metadata:notifications:timecreated',
+            ],
+            'privacy:metadata:notifications'
+        );
+
+        // Note - we are not adding the 'message' and 'message_read' tables
+        // as they are legacy tables. This information is moved to these
+        // new tables in a separate ad-hoc task. See MDL-61255.
 
         // Now add that we also have user preferences.
         $items->add_user_preference('core_message_messageprovider_settings',
@@ -116,7 +135,7 @@ class provider implements
      *
      * @param  int $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
         $preferences = get_user_preferences(null, null, $userid);
         foreach ($preferences as $name => $value) {
             if ((substr($name, 0, 16) == 'message_provider') || ($name == 'message_blocknoncontacts')) {
@@ -139,12 +158,63 @@ class provider implements
      * @param int $userid the userid.
      * @return contextlist the list of contexts containing user info for the user.
      */
-    public static function get_contexts_for_userid($userid) {
-        // Messages are in the system context.
+    public static function get_contexts_for_userid(int $userid) : contextlist {
+        global $DB;
+
         $contextlist = new contextlist();
-        $contextlist->add_system_context();
+
+        // Messages are in the user context.
+        // For the sake of performance, there is no need to call add_from_sql for each of the below cases.
+        // It is enough to add the user's context as soon as we come to the conclusion that the user has some data.
+        // Also, the order of checking is sorted by the probability of occurrence (just by guess).
+        // There is no need to check the message_user_actions table, as there needs to be a message in order to be a message action.
+        // So, checking messages table would suffice.
+
+        $hasdata = false;
+        $hasdata = $hasdata || $DB->record_exists_select('notifications', 'useridfrom = ? OR useridto = ?', [$userid, $userid]);
+        $hasdata = $hasdata || $DB->record_exists('message_conversation_members', ['userid' => $userid]);
+        $hasdata = $hasdata || $DB->record_exists('messages', ['useridfrom' => $userid]);
+        $hasdata = $hasdata || $DB->record_exists_select('message_contacts', 'userid = ? OR contactid = ?', [$userid, $userid]);
+
+        if ($hasdata) {
+            $contextlist->add_user_context($userid);
+        }
 
         return $contextlist;
+    }
+
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        global $DB;
+
+        $context = $userlist->get_context();
+
+        if (!$context instanceof \context_user) {
+            return;
+        }
+
+        $userid = $context->instanceid;
+
+        // Messages are in the user context.
+        // For the sake of performance, there is no need to call add_from_sql for each of the below cases.
+        // It is enough to add the user's context as soon as we come to the conclusion that the user has some data.
+        // Also, the order of checking is sorted by the probability of occurrence (just by guess).
+        // There is no need to check the message_user_actions table, as there needs to be a message in order to be a message action.
+        // So, checking messages table would suffice.
+
+        $hasdata = false;
+        $hasdata = $hasdata || $DB->record_exists_select('notifications', 'useridfrom = ? OR useridto = ?', [$userid, $userid]);
+        $hasdata = $hasdata || $DB->record_exists('message_conversation_members', ['userid' => $userid]);
+        $hasdata = $hasdata || $DB->record_exists('messages', ['useridfrom' => $userid]);
+        $hasdata = $hasdata || $DB->record_exists_select('message_contacts', 'userid = ? OR contactid = ?', [$userid, $userid]);
+
+        if ($hasdata) {
+            $userlist->add_user($userid);
+        }
     }
 
     /**
@@ -157,16 +227,16 @@ class provider implements
             return;
         }
 
-        // Remove non-system contexts. If it ends up empty then early return.
-        $contexts = array_filter($contextlist->get_contexts(), function($context) {
-            return $context->contextlevel == CONTEXT_SYSTEM;
+        $userid = $contextlist->get_user()->id;
+
+        // Remove non-user and invalid contexts. If it ends up empty then early return.
+        $contexts = array_filter($contextlist->get_contexts(), function($context) use($userid) {
+            return $context->contextlevel == CONTEXT_USER && $context->instanceid == $userid;
         });
 
         if (empty($contexts)) {
             return;
         }
-
-        $userid = $contextlist->get_user()->id;
 
         // Export the contacts.
         self::export_user_data_contacts($userid);
@@ -184,15 +254,9 @@ class provider implements
      * @param \context $context the context to delete in.
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
-        global $DB;
-
-        if (!$context instanceof \context_system) {
-            return;
+        if ($context instanceof \context_user) {
+            static::delete_user_data($context->instanceid);
         }
-
-        $DB->delete_records('message');
-        $DB->delete_records('message_read');
-        $DB->delete_records('message_contacts');
     }
 
     /**
@@ -201,28 +265,61 @@ class provider implements
      * @param approved_contextlist $contextlist a list of contexts approved for deletion.
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
-        global $DB;
-
         if (empty($contextlist->count())) {
             return;
         }
 
-        // Remove non-system contexts. If it ends up empty then early return.
-        $contexts = array_filter($contextlist->get_contexts(), function($context) {
-            return $context->contextlevel == CONTEXT_SYSTEM;
+        $userid = $contextlist->get_user()->id;
+
+        // Remove non-user and invalid contexts. If it ends up empty then early return.
+        $contexts = array_filter($contextlist->get_contexts(), function($context) use($userid) {
+            return $context->contextlevel == CONTEXT_USER && $context->instanceid == $userid;
         });
 
         if (empty($contexts)) {
             return;
         }
 
-        $userid = $contextlist->get_user()->id;
+        static::delete_user_data($userid);
+    }
 
-        $DB->delete_records_select('message', 'useridfrom = ? AND notification = 0', [$userid]);
-        $DB->delete_records_select('message_read', 'useridfrom = ? AND notification = 0', [$userid]);
-        $DB->delete_records_select('message', '(useridfrom = ? OR useridto = ?) AND notification = 1', [$userid, $userid]);
-        $DB->delete_records_select('message_read', '(useridfrom = ? OR useridto = ?) AND notification = 1', [$userid, $userid]);
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param   approved_userlist       $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if (!$context instanceof \context_user) {
+            return;
+        }
+
+        // Remove invalid users. If it ends up empty then early return.
+        $userids = array_filter($userlist->get_userids(), function($userid) use($context) {
+            return $context->instanceid == $userid;
+        });
+
+        if (empty($userids)) {
+            return;
+        }
+
+        static::delete_user_data($context->instanceid);
+    }
+
+    /**
+     * Delete all user data for the specified user.
+     *
+     * @param int $userid The user id
+     */
+    protected static function delete_user_data(int $userid) {
+        global $DB;
+
+        $DB->delete_records('messages', ['useridfrom' => $userid]);
+        $DB->delete_records('message_user_actions', ['userid' => $userid]);
+        $DB->delete_records('message_conversation_members', ['userid' => $userid]);
         $DB->delete_records_select('message_contacts', 'userid = ? OR contactid = ?', [$userid, $userid]);
+        $DB->delete_records_select('notifications', 'useridfrom = ? OR useridto = ?', [$userid, $userid]);
     }
 
     /**
@@ -230,10 +327,10 @@ class provider implements
      *
      * @param int $userid
      */
-    protected static function export_user_data_contacts($userid) {
+    protected static function export_user_data_contacts(int $userid) {
         global $DB;
 
-        $context = \context_system::instance();
+        $context = \context_user::instance($userid);
 
         // Get the user's contacts.
         if ($contacts = $DB->get_records('message_contacts', ['userid' => $userid], 'id ASC')) {
@@ -253,57 +350,51 @@ class provider implements
      *
      * @param int $userid
      */
-    protected static function export_user_data_messages($userid) {
+    protected static function export_user_data_messages(int $userid) {
         global $DB;
 
-        $context = \context_system::instance();
+        $context = \context_user::instance($userid);
 
-        $users = self::get_userids_in_conversation_with($userid);
-        if (!empty($users)) {
-            // Ok, let's get the other users details. Note - the user may no longer exist.
-            $userids = array_keys($users);
-            list($useridsql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+        $sql = "SELECT DISTINCT mcm.conversationid as id
+                  FROM {message_conversation_members} mcm
+                 WHERE mcm.userid = :userid";
+        if ($conversations = $DB->get_records_sql($sql, ['userid' => $userid])) {
+            // Ok, let's get the other users in the conversations.
+            $conversationids = array_keys($conversations);
+            list($conversationidsql, $conversationparams) = $DB->get_in_or_equal($conversationids, SQL_PARAMS_NAMED);
             $userfields = \user_picture::fields('u');
-            $userssql = "SELECT $userfields
+            $userssql = "SELECT mcm.conversationid, $userfields
                            FROM {user} u
-                          WHERE u.id $useridsql
+                     INNER JOIN {message_conversation_members} mcm
+                             ON u.id = mcm.userid
+                          WHERE mcm.conversationid $conversationidsql
+                            AND mcm.userid != :userid
                             AND u.deleted = 0";
-            $otherusers = $DB->get_records_sql($userssql, $userparams + ['userid' => $userid]);
-            foreach ($users as $user) {
+            $otherusers = $DB->get_records_sql($userssql, $conversationparams + ['userid' => $userid]);
+            foreach ($conversations as $conversation) {
                 $otheruserfullname = get_string('unknownuser', 'core_message');
 
-                // It's possible the other user may have been deleted.
-                if (isset($otherusers[$user->id])) {
-                    $otheruserfullname = fullname($otherusers[$user->id]);
+                // It's possible the other user has requested to be deleted, so might not exist
+                // as a conversation member, or they have just been deleted.
+                if (isset($otherusers[$conversation->id])) {
+                    $otheruserfullname = fullname($otherusers[$conversation->id]);
                 }
 
-                $sql = "SELECT id, useridfrom, useridto, subject, fullmessage, fullmessageformat,
-                               fullmessagehtml, smallmessage, notification, contexturl,
-                               contexturlname, timecreated, timeuserfromdeleted, timeusertodeleted,
-                               component, eventtype, 0 as timeread
-                          FROM {message} m
-                         WHERE notification = 0
-                           AND (useridfrom = ? AND useridto = ?) OR (useridfrom = ? AND useridto = ?)
-                     UNION ALL
-                        SELECT id, useridfrom, useridto, subject, fullmessage, fullmessageformat,
-                               fullmessagehtml, smallmessage, notification, contexturl,
-                               contexturlname, timecreated, timeuserfromdeleted, timeusertodeleted,
-                               component, eventtype, timeread
-                          FROM {message_read} mr
-                         WHERE notification = 0
-                           AND (useridfrom = ? AND useridto = ?) OR (useridfrom = ? AND useridto = ?)
-                      ORDER BY timecreated ASC";
-                $params = [$userid, $user->id, $user->id, $userid, $userid, $user->id, $user->id, $userid];
-                $messages = $DB->get_recordset_sql($sql, $params);
+                // Get all the messages for this conversation from start to finish.
+                $sql = "SELECT m.*, muadelete.timecreated as timedeleted, muaread.timecreated as timeread
+                          FROM {messages} m
+                     LEFT JOIN {message_user_actions} muadelete
+                            ON m.id = muadelete.messageid AND muadelete.action = :deleteaction
+                     LEFT JOIN {message_user_actions} muaread
+                            ON m.id = muaread.messageid AND muaread.action = :readaction
+                         WHERE conversationid = :conversationid
+                      ORDER BY m.timecreated ASC";
+                $messages = $DB->get_recordset_sql($sql, ['deleteaction' => \core_message\api::MESSAGE_ACTION_DELETED,
+                    'readaction' => \core_message\api::MESSAGE_ACTION_READ, 'conversationid' => $conversation->id]);
                 $messagedata = [];
                 foreach ($messages as $message) {
-                    $timeread = !empty($message->timeread) ? transform::datetime($message->timeread) : '-';
+                    $timeread = !is_null($message->timeread) ? transform::datetime($message->timeread) : '-';
                     $issender = $userid == $message->useridfrom;
-
-                    $timedeletedfield = 'timeusertodeleted';
-                    if ($issender) {
-                        $timedeletedfield = 'timeuserfromdeleted';
-                    }
 
                     $data = [
                         'sender' => transform::yesno($issender),
@@ -312,8 +403,8 @@ class provider implements
                         'timeread' => $timeread
                     ];
 
-                    if (!empty($message->$timedeletedfield)) {
-                        $data['timedeleted'] = transform::datetime($message->$timedeletedfield);
+                    if (!is_null($message->timedeleted)) {
+                        $data['timedeleted'] = transform::datetime($message->timedeleted);
                     }
 
                     $messagedata[] = (object) $data;
@@ -331,29 +422,16 @@ class provider implements
      *
      * @param int $userid
      */
-    protected static function export_user_data_notifications($userid) {
+    protected static function export_user_data_notifications(int $userid) {
         global $DB;
 
-        $context = \context_system::instance();
+        $context = \context_user::instance($userid);
 
         $notificationdata = [];
-        $sql = "SELECT id, useridfrom, useridto, subject, fullmessage, fullmessageformat,
-                       fullmessagehtml, smallmessage, notification, contexturl,
-                       contexturlname, timecreated, timeuserfromdeleted, timeusertodeleted,
-                       component, eventtype, 0 as timeread
-                  FROM {message} m
-                 WHERE notification = 1 AND useridfrom = ? OR useridto = ?
-             UNION ALL
-                SELECT id, useridfrom, useridto, subject, fullmessage, fullmessageformat,
-                       fullmessagehtml, smallmessage, notification, contexturl,
-                       contexturlname, timecreated, timeuserfromdeleted, timeusertodeleted,
-                       component, eventtype, timeread
-                  FROM {message_read} mr
-                 WHERE notification = 1 AND useridfrom = ? OR useridto = ?
-              ORDER BY timecreated DESC";
-        $notifications = $DB->get_recordset_sql($sql, [$userid, $userid, $userid, $userid]);
+        $select = "useridfrom = ? OR useridto = ?";
+        $notifications = $DB->get_recordset_select('notifications', $select, [$userid, $userid], 'timecreated ASC');
         foreach ($notifications as $notification) {
-            $timeread = !empty($notification->timeread) ? transform::datetime($notification->timeread) : '-';
+            $timeread = !is_null($notification->timeread) ? transform::datetime($notification->timeread) : '-';
 
             $data = (object) [
                 'subject' => $notification->subject,
@@ -372,38 +450,5 @@ class provider implements
         $notifications->close();
 
         writer::with_context($context)->export_data([get_string('notifications', 'core_message')], (object) $notificationdata);
-    }
-
-    /**
-     * Returns a list of users the given user is in a conversation with.
-     *
-     * @param int $userid
-     * @return array
-     * @throws \dml_exception
-     */
-    private static function get_userids_in_conversation_with($userid) {
-        global $DB;
-
-        $sql = "SELECT DISTINCT(useridfrom) as id
-                      FROM {message} m
-                     WHERE useridto = ?
-                       AND notification = 0
-                     UNION
-                    SELECT DISTINCT(useridfrom) as id
-                      FROM {message_read} m
-                     WHERE useridto = ?
-                       AND notification = 0";
-        $users = $DB->get_records_sql($sql, [$userid, $userid]);
-
-        $sql = "SELECT DISTINCT(useridto) as id
-                      FROM {message} m
-                     WHERE useridfrom = ?
-                       AND notification = 0
-                     UNION
-                    SELECT DISTINCT(useridto) as id
-                      FROM {message_read} m
-                     WHERE useridfrom = ?
-                       AND notification = 0";
-        return $users + $DB->get_records_sql($sql, [$userid, $userid]);
     }
 }

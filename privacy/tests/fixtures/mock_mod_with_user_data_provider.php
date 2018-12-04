@@ -39,7 +39,7 @@ class provider implements \core_privacy\local\metadata\null_provider, \core_priv
      *
      * @return  string
      */
-    public static function get_reason() {
+    public static function get_reason() : string {
         return 'notimplemented';
     }
 
@@ -48,7 +48,7 @@ class provider implements \core_privacy\local\metadata\null_provider, \core_priv
      *
      * @param   int         $userid The userid of the user whose data is to be exported.
      */
-    public static function export_user_preferences($userid) {
+    public static function export_user_preferences(int $userid) {
         writer::export_user_preference('mod_testcomponent4', 'mykey', 'myvalue', 'mydescription');
     }
 }

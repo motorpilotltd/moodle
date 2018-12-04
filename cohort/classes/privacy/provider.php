@@ -31,6 +31,8 @@ use core_privacy\local\request\contextlist;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\writer;
+use core_privacy\local\request\userlist;
+use core_privacy\local\request\approved_userlist;
 
 /**
  * Privacy class for requesting user data.
@@ -40,6 +42,7 @@ use core_privacy\local\request\writer;
  */
 class provider implements
         \core_privacy\local\metadata\provider,
+        \core_privacy\local\request\core_userlist_provider,
         \core_privacy\local\request\plugin\provider {
 
     /**
@@ -48,7 +51,7 @@ class provider implements
      * @param   collection $collection The initialised collection to add items to.
      * @return  collection A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $collection) {
+    public static function get_metadata(collection $collection) : collection {
         $collection->add_database_table('cohort_members', [
                 'cohortid' => 'privacy:metadata:cohort_members:cohortid',
                 'userid' => 'privacy:metadata:cohort_members:userid',
@@ -63,7 +66,7 @@ class provider implements
      * @param int $userid The user to search.
      * @return contextlist $contextlist The contextlist containing the list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid($userid) {
+    public static function get_contexts_for_userid(int $userid) : contextlist {
         $sql = "SELECT ctx.id
                   FROM {context} ctx
             INNER JOIN {cohort} c ON c.contextid = ctx.id
@@ -78,6 +81,37 @@ class provider implements
         $contextlist->add_from_sql($sql, $params);
 
         return $contextlist;
+    }
+
+    /**
+     * Get the list of users within a specific context.
+     *
+     * @param userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
+     */
+    public static function get_users_in_context(userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if (!$context instanceof \context_system && !$context instanceof \context_coursecat) {
+            return;
+        }
+
+        $params = [
+            'contextid' => $context->id,
+            'contextsystem' => CONTEXT_SYSTEM,
+            'contextcoursecat' => CONTEXT_COURSECAT,
+        ];
+
+        $sql = "SELECT cm.userid as userid
+                  FROM {cohort_members} cm
+                  JOIN {cohort} c
+                       ON cm.cohortid = c.id
+                  JOIN {context} ctx
+                       ON c.contextid = ctx.id
+                       AND (ctx.contextlevel = :contextsystem
+                            OR ctx.contextlevel = :contextcoursecat)
+                 WHERE ctx.id = :contextid";
+
+        $userlist->add_from_sql('userid', $sql, $params);
     }
 
     /**
@@ -151,6 +185,21 @@ class provider implements
     }
 
     /**
+     * Delete multiple users within a single context.
+     *
+     * @param approved_userlist $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist) {
+        $context = $userlist->get_context();
+
+        if ($context instanceof \context_system || $context instanceof \context_coursecat) {
+            foreach ($userlist->get_userids() as $userid) {
+                static::delete_data($context, $userid);
+            }
+        }
+    }
+
+    /**
      * Delete all user data for the specified user, in the specified contexts.
      *
      * @param approved_contextlist $contextlist The approved contexts and user information to delete information for.
@@ -175,7 +224,7 @@ class provider implements
      * @param context $context A context.
      * @param int $userid The user ID.
      */
-    protected static function delete_data(\context $context, $userid = null) {
+    protected static function delete_data(\context $context, int $userid = null) {
         global $DB;
 
         $cohortids = $DB->get_fieldset_select('cohort', 'id', 'contextid = :contextid', ['contextid' => $context->id]);

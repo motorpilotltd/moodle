@@ -41,7 +41,7 @@ trait gradingform_legacy_polyfill {
      * @param  int $instanceid The instance ID to export data for.
      * @param  array $subcontext The directory to export this data to.
      */
-    public static function export_gradingform_instance_data(\context $context, $instanceid, array $subcontext) {
+    public static function export_gradingform_instance_data(\context $context, int $instanceid, array $subcontext) {
         static::_export_gradingform_instance_data($context, $instanceid, $subcontext);
     }
 
@@ -66,7 +66,7 @@ trait gradingform_legacy_polyfill {
      *
      * @return stdClass The data to export.
      */
-    public static function get_gradingform_export_data(\context $context, $definition, $userid) {
+    public static function get_gradingform_export_data(\context $context, $definition, int $userid) {
         debugging('This method is deprecated. Please use the gradingform_provider_v2 interface', DEBUG_DEVELOPER);
         return static::_get_gradingform_export_data($context, $definition, $userid);
     }
@@ -93,7 +93,7 @@ trait gradingform_legacy_polyfill {
      * @param int $userid The user whose information is to be deleted.
      * @param context $context Context owner of the data.
      */
-    public static function delete_gradingform_for_userid($userid, \context $context) {
+    public static function delete_gradingform_for_userid(int $userid, \context $context) {
         debugging('This method is deprecated. Please use the gradingform_provider_v2 interface', DEBUG_DEVELOPER);
         static::_delete_gradingform_for_userid($userid, $context);
     }
