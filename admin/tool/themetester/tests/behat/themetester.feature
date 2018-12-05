@@ -30,6 +30,7 @@ Feature: The renderers are used in the theme tester, and don't throw warning or 
   Scenario: No warnings thrown from renderers
     Given I am on site homepage
     And I navigate to "Theme tester" node in "Site administration > Development"
+    And I close flat navigation drawer
     And I follow "Headings"
     And I should see "H1 Heading"
     And I should see "H2 Heading"
@@ -71,8 +72,9 @@ Feature: The renderers are used in the theme tester, and don't throw warning or 
 
     And I follow "Notifications"
     And I should see "This is an error notification" in the ".alert" "css_element"
+    And I should see "This is a warning notification" in the ".alert-warning" "css_element"
     And I should see "This is a success notification" in the ".alert-success" "css_element"
-    And I should see "This is a standard notification" in the ".alert-info" "css_element"
+    And I should see "This is an info notification" in the ".alert-info" "css_element"
     And I follow "Back to index"
 
     And I follow "Confirmation"
