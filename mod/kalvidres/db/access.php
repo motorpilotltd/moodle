@@ -33,12 +33,14 @@ $capabilities = array(
         'clonepermissionsfrom' => 'moodle/course:manageactivities'
     ),
 
+/* BEGIN CORE MOD */
     'mod/kalvidres:view' => array(
-            'captype' => 'read',
-            'contextlevel' => CONTEXT_MODULE,
-            'archetypes' => array(
-                    'user' => CAP_ALLOW,
-                    'guest' => CAP_ALLOW
-            )
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'user' => CAP_ALLOW,
+            'guest' => CAP_ALLOW
+        )
     ),
+/* END CORE MOD */
  );

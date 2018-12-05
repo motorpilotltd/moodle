@@ -66,13 +66,13 @@ function xmldb_kalvidres_upgrade($oldversion) {
         // Kalvidassign savepoint reached.
         upgrade_mod_savepoint(true, 2014023000.01, 'kalvidres');
     }
-
+/* BEGIN CORE MOD */
     if ($oldversion < 2017120639) {
         \mod_kalvidres\upgradelib::add_web_services();
 
         // Kalvidassign savepoint reached.
         upgrade_mod_savepoint(true, 2017120639, 'kalvidres');
     }
-
+/* END CORE MOD */
     return true;
 }

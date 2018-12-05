@@ -339,7 +339,7 @@ function local_kaltura_strip_querystring($endpoint, $params) {
  */
 function local_kaltura_request_lti_launch($ltirequest, $withblocks = true, $editor = null) {
     global $CFG, $USER;
-    
+
     if(is_null($editor))
     {
         $editor = 'tinymce';
@@ -738,6 +738,7 @@ function local_kaltura_build_kaf_uri($source_url) {
         $kaf_uri = parse_url($kaf_uri);
         $source_host_and_path = $parsed_source_url['host'] . $parsed_source_url['path'];
         $kaf_uri_host_and_path = $kaf_uri['host'] . (isset($kaf_uri['path']) ? $kaf_uri['path'] : '');
+
 /* BEGIN CORE MOD */
         // KALTURA_URI_TOKEN can remain in source url if, for example, just editing the activity name.
         $source_url = str_replace(array($kaf_uri_host_and_path, KALTURA_URI_TOKEN), '', $source_host_and_path);
@@ -747,7 +748,6 @@ function local_kaltura_build_kaf_uri($source_url) {
 
     return $source_url;
 }
-
 /* BEGIN CORE MOD */
 function arup_local_kaltura_get_kaltura_client($privileges = '', $expiry = '') {
     global $CFG, $USER;
@@ -792,5 +792,3 @@ function arup_local_kaltura_get_kaltura_client($privileges = '', $expiry = '') {
     return $client;
 }
 /* END CORE MOD */
-
-

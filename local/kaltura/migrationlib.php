@@ -16,7 +16,7 @@
 
 /**
  * Kaltura migration functions.  The migration consists of two parts.  The first part is retrieving all Kaltura media entries that were created anytime before
- * the current date; associate those entries to a different category structure used by the KAF instance.  The second part is to look at the metadata for the 
+ * the current date; associate those entries to a different category structure used by the KAF instance.  The second part is to look at the metadata for the
  * Kaltura entry and associate the entry to a category structure used by the KAF instance.  Some Kaltura entries may have been uploaded but never used within
  * a Moodle course, so this is the reason why we must initially retrieve all entries by created date and not by Kaltura category .
  *
@@ -161,9 +161,9 @@ function local_kaltura_get_categories() {
             asort($list);
         }
     }
-    
+
     local_kaltura_migration_log_data(__FUNCTION__, $list);
-    
+
     return $list;
 }
 
@@ -624,12 +624,12 @@ function local_kaltura_assign_entries_to_new_course_categories($client, $entries
  */
 function local_kaltura_get_channels_id($client, $rootcatid) {
     static $channelsCategoryObj = null;
-    
+
     if(!is_null($channelsCategoryObj))
     {
         return $channelsCategoryObj;
     }
-    
+
     // Retrieve the array of categories and get the name of the parent category.
     $catnames = local_kaltura_get_categories();
     $parentcatname = $catnames[$rootcatid];
@@ -644,7 +644,7 @@ function local_kaltura_get_channels_id($client, $rootcatid) {
         $category = new stdClass();
         $category->id = $result->objects[0]->id;
         $category->fullname = "$parentcatname>site>channels";
-        
+
         $channelsCategoryObj = $category;
         return $category;
     } else {
@@ -708,7 +708,7 @@ function local_kaltura_get_sharedrepo_id($client, $channelsid, $rootcatid) {
                 //throw $ex; // not throwing exception. always writing to log.
             }
         }
-        
+
 
         if ($result instanceof KalturaCategory) {
             $siterepocat->id = $result->id;
@@ -1040,9 +1040,9 @@ function local_kaltura_set_activities_entries_to_categories() {
 
 /**
  * This function makes sure that the entry of activity (assignment submission, resource, video-presentation resource) is assigned to the InContext category or the respective course.
- * This function is used in order to bridge the gap in cases where the moodle kaltura repository 
+ * This function is used in order to bridge the gap in cases where the moodle kaltura repository
  * was disabled in V3, or was enabled after resources have already been created which would make those resources to not be in the old category tree.
- * 
+ *
  * @param string $entryId
  * @param string $courseId
  */
@@ -1050,14 +1050,14 @@ function local_kaltura_set_activity_entry_to_incontext($entryId, $courseId)
 {
     $client = local_kaltura_get_kaltura_client();
     $channelCatData = local_kaltura_get_channels_id($client, local_kaltura_migration_progress::get_kafcategoryrootid());
-    
+
     $inContextCategoryName = $channelCatData->fullname . '>'. $courseId . '>InContext';
-    
+
     // check if the course channel and its InContext categories exists for the given course ID
     $filter = new KalturaCategoryFilter();
 
     $filter->fullNameStartsWith = $channelCatData->fullname . '>'. $courseId;
-    
+
     try
     {
         $result = $client->category->listAction($filter);
@@ -1066,7 +1066,7 @@ function local_kaltura_set_activity_entry_to_incontext($entryId, $courseId)
     {
         local_kaltura_migration_log_data(__FUNCTION__, array("could not list categories", $record->entry_id, $ex->getCode(), $ex->getMessage()));
     }
-    
+
     $inContextCategoryId = null;
     $courseCategoryId = null;
     foreach($result->objects as $category)
@@ -1080,7 +1080,7 @@ function local_kaltura_set_activity_entry_to_incontext($entryId, $courseId)
             $courseCategoryId = $category->id;
         }
     }
-    
+
     // if not - create the missing categories (channels>{courseID} and channels>{courseID}>InContext)
     if(is_null($inContextCategoryId))
     {
@@ -1092,17 +1092,17 @@ function local_kaltura_set_activity_entry_to_incontext($entryId, $courseId)
             $courseCategory = new KalturaCategory();
             $courseCategory->parentId = $channelCatData->id;
             $courseCategory->name = $courseId;
-            
+
             $client->category->add($courseCategory);
             $courseCategoryId = '{1:result:id}';
         }
-        
+
         $inContextCategory = new KalturaCategory();
         $inContextCategory->parentId = $courseCategoryId;
         $inContextCategory->name = 'InContext';
-        
+
         $res = $client->category->add($inContextCategory);
-        
+
         if($isMultiRequest)
         {
             $multiResponse = $client->doMultiRequest();
@@ -1116,7 +1116,7 @@ function local_kaltura_set_activity_entry_to_incontext($entryId, $courseId)
             $inContextCategoryId = $res->id;
         }
     }
-    
+
     // assign the entry to the InContext category
     if(is_null($inContextCategoryId))
     {
@@ -1127,11 +1127,11 @@ function local_kaltura_set_activity_entry_to_incontext($entryId, $courseId)
             'multi request response: '.  base64_encode(print_r($multiResponse, true)),
         ));
     }
-    
+
     $categoryEntry = new KalturaCategoryEntry();
     $categoryEntry->entryId = $entryId;
     $categoryEntry->categoryId = $inContextCategoryId;
-    
+
     try
     {
         $client->categoryEntry->add($categoryEntry);
@@ -1140,10 +1140,10 @@ function local_kaltura_set_activity_entry_to_incontext($entryId, $courseId)
         if($ex->getCode() == 'CATEGORY_ENTRY_ALREADY_EXISTS')
         {
             local_kaltura_migration_log_data(__FUNCTION__, array(
-                "failed edding entry to category - already exists", 
+                "failed edding entry to category - already exists",
                 $categoryEntry->entryId,
                 $categoryEntry->categoryId,
-                $ex->getCode(), 
+                $ex->getCode(),
                 $ex->getMessage(),
                 $ex->getTraceAsString(),
             ));
@@ -1151,10 +1151,10 @@ function local_kaltura_set_activity_entry_to_incontext($entryId, $courseId)
         else
         {
             local_kaltura_migration_log_data(__FUNCTION__, array(
-                "failed edding entry to category - reason unexpected", 
+                "failed edding entry to category - reason unexpected",
                 $categoryEntry->entryId,
                 $categoryEntry->categoryId,
-                $ex->getCode(), 
+                $ex->getCode(),
                 $ex->getMessage(),
                 $ex->getTraceAsString(),
             ));
