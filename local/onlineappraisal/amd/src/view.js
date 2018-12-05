@@ -195,7 +195,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
             if (page === 'leaderplan'
                     && parseInt($('#oa-ldp-islocked').val()) === 0
-                    && $('#oa-ldp-view').val() !== 'appraisee') {
+                    && $('#oa-ldp-view').val() === 'appraisee') {
                 // Add ldpstrength/ldpdevelopmentarea inputs.
                 // Reveal buttons.
                 $('.oa-add-repeating-element').show();
