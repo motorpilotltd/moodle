@@ -26,7 +26,7 @@ class theme_arup_core_calendar_renderer extends core_calendar_renderer {
      * @param int $year
      * @return string
      */
-    protected function add_event_button($courseid, $day = null, $month = null, $year = null, $time = null) {
+    public function add_event_button($courseid, $day = null, $month = null, $year = null, $time = null) {
         return ''; // Do not show any buttons.
     }
 
