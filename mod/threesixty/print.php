@@ -173,14 +173,6 @@ foreach ($aggregatescoretable->data as $rowindex => $row) {
         }
     }
 }
-$pdf->AddPage();
-$pdf->SetFont('times', '', 20);
-$pdf->setY(30);
-$title = '<p align="center">Your Influencing Spectrum<br />Summary</p>';
-$pdf->writeHTML($title);
-$pdf->setY($pdf->GetY() + 10);
-$pdf->SetFont('helvetica', '', 8);
-$pdf->writeHTML(html_writer::table($aggregatescoretable));
 
 $skillscoretable = print_skill_score_table($threesixty, $orderedskillnames, $selfscores, $selftypes, $respondentscores, $respondenttypes, $showrespondentaverage, true);
 $skillscoretable->cellpadding = '0.5mm';
@@ -207,14 +199,6 @@ foreach ($skillscoretable->data as $rowindex => $row) {
         }
     }
 }
-$pdf->AddPage();
-$pdf->SetFont('times', '', 20);
-$pdf->setY(30);
-$title = '<p align="center">Your Influencing Spectrum</p>';
-$pdf->writeHTML($title);
-$pdf->setY($pdf->GetY() + 10);
-$pdf->SetFont('helvetica', '', 8);
-$pdf->writeHTML(html_writer::table($skillscoretable));
 
 $spiderweburls = get_spiderweb_urls($cm->id, $threesixty, array_reverse($skillnames, true), $selfscores, $selftypes, $respondentscores, $respondenttypes, $showrespondentaverage, false);
 foreach ($spiderweburls as $spiderweburl) {
@@ -233,5 +217,23 @@ foreach ($spiderweburls as $spiderweburl) {
     $pdf->SetFont('helvetica', '', 8);
     $pdf->Image('@'.$imagestring, '', '', 0, 0, 'PNG', '', '', false, 150, 'C', false, false, 0, false, false, true, false, array());
 }
+
+$pdf->AddPage();
+$pdf->SetFont('times', '', 20);
+$pdf->setY(30);
+$title = '<p align="center">Your Influencing Spectrum<br />Summary</p>';
+$pdf->writeHTML($title);
+$pdf->setY($pdf->GetY() + 10);
+$pdf->SetFont('helvetica', '', 8);
+$pdf->writeHTML(html_writer::table($aggregatescoretable));
+
+$pdf->AddPage();
+$pdf->SetFont('times', '', 20);
+$pdf->setY(30);
+$title = '<p align="center">Your Influencing Spectrum</p>';
+$pdf->writeHTML($title);
+$pdf->setY($pdf->GetY() + 10);
+$pdf->SetFont('helvetica', '', 8);
+$pdf->writeHTML(html_writer::table($skillscoretable));
 
 $pdf->Output();
