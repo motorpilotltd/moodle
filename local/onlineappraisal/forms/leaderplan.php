@@ -173,7 +173,12 @@ class apform_leaderplan extends moodleform {
         $mform->disabledIf('ldpdevelopmentplan', 'islocked', 'eq', 1);
         $mform->disabledIf('ldpdevelopmentplan', 'view', 'neq', 'appraisee');
 
-        $mform->addElement('arupadvcheckbox', 'ldplocked', '', $this->str('ldplocked'), array('group' => 1), array(0, 1));
+        $attributes = ['group' => 1];
+        if ($data->appraisal->viewingas === 'appraisee') {
+            $attributes['data-toggle'] = 'tooltip';
+            $attributes['title'] = $this->str('ldplocked:tooltip');
+        }
+        $mform->addElement('advcheckbox', 'ldplocked', '', $this->str('ldplocked'), $attributes, [0, 1]);
         $mform->disabledIf('ldplocked', 'view', 'neq', 'appraiser');
         if (!$isformlocked) {
             $mform->disabledIf('ldplocked', 'islocked', 'eq', 1);
@@ -186,9 +191,6 @@ class apform_leaderplan extends moodleform {
             $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('form:save', 'local_onlineappraisal'), ['class' => ($isformlocked) ? 'oa-unlock-ldp' : '']);
             if ($isformlocked) {
                 $mform->disabledIf('submitbutton', 'ldplocked', 'eq', 1);
-            }
-            if (!$isformlocked) {
-                $buttonarray[] = &$mform->createElement('submit', 'submitcontinue', get_string('form:submitcontinue', 'local_onlineappraisal'));
             }
             $buttonarray[] = &$mform->createElement('cancel', 'cancelbutton', get_string('form:cancel', 'local_onlineappraisal'), array('class' => 'm-l-5'));
             $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
