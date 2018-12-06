@@ -58,12 +58,11 @@ class mod_facetoface_signup_form extends moodleform {
 
         if ($showdiscountcode) {
             $mform->addElement('text', 'discountcode', get_string('discountcode', 'facetoface'), 'size="6"');
-            $mform->addRule('discountcode', null, 'required', null, 'client');
-            $mform->setType('discountcode', PARAM_TEXT);
+            $mform->addHelpButton('discountcode', 'discountcodelearner', 'facetoface');
         } else {
             $mform->addElement('hidden', 'discountcode', '');
-            $mform->setType('discountcode', PARAM_TEXT);
         }
+        $mform->setType('discountcode', PARAM_TEXT);
 
 /* BEGIN CORE MOD */
         $options = array(

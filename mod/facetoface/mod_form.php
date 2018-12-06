@@ -73,6 +73,12 @@ class mod_facetoface_mod_form extends moodleform_mod {
         $mform->addElement('checkbox', 'approvalreqd', get_string('approvalreqd', 'facetoface'));
         $mform->addHelpButton('approvalreqd', 'approvalreqd', 'facetoface');
 
+        if (has_capability('mod/facetoface:configurecancellation', $this->context)) {
+            $mform->addElement('advcheckbox', 'allowcancellationsdefault', get_string('allowcancellationsdefault', 'facetoface'));
+            $mform->setDefault('allowcancellationsdefault', 1);
+            $mform->addHelpButton('allowcancellationsdefault', 'allowcancellationsdefault', 'facetoface');
+        }
+
         $mform->addElement('header', 'calendaroptions', get_string('calendaroptions', 'facetoface'));
 
         $calendaroptions = array(
@@ -219,7 +225,6 @@ class mod_facetoface_mod_form extends moodleform_mod {
             $defaultvalues['emailmanagercancellation'] = 1;
         }
     }
-
 /* BEGIN CORE MOD */
     public function get_data() {
         $data = parent::get_data();
