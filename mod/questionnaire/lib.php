@@ -42,8 +42,6 @@ function questionnaire_supports($feature) {
             return false;
         case FEATURE_GROUPINGS:
             return true;
-        case FEATURE_GROUPMEMBERSONLY:
-            return true;
         case FEATURE_GROUPS:
             return true;
         case FEATURE_MOD_INTRO:
@@ -114,6 +112,10 @@ function questionnaire_add_instance($questionnaire) {
                 // Even if they are *copies* of public or template questionnaires.
                 $DB->set_field('questionnaire_survey', 'realm', 'private', array('id' => $sid));
             }
+            // If the survey has dependency data, need to set the questionnaire to allow dependencies.
+            if ($DB->count_records('questionnaire_dependency', ['surveyid' => $sid]) > 0) {
+                $questionnaire->navigate = 1;
+            }
         }
         $questionnaire->sid = $sid;
     }
@@ -139,6 +141,10 @@ function questionnaire_add_instance($questionnaire) {
     }
 
     questionnaire_set_events($questionnaire);
+
+    $completiontimeexpected = !empty($questionnaire->completionexpected) ? $questionnaire->completionexpected : null;
+    \core_completion\api::update_completion_date_event($questionnaire->coursemodule, 'questionnaire',
+        $questionnaire->id, $completiontimeexpected);
 
     return $questionnaire->id;
 }
@@ -177,6 +183,10 @@ function questionnaire_update_instance($questionnaire) {
 
     questionnaire_set_events($questionnaire);
 
+    $completiontimeexpected = !empty($questionnaire->completionexpected) ? $questionnaire->completionexpected : null;
+    \core_completion\api::update_completion_date_event($questionnaire->coursemodule, 'questionnaire',
+        $questionnaire->id, $completiontimeexpected);
+
     return $DB->update_record("questionnaire", $questionnaire);
 }
 
@@ -193,6 +203,13 @@ function questionnaire_delete_instance($id) {
 
     $result = true;
 
+    if ($events = $DB->get_records('event', array("modulename" => 'questionnaire', "instance" => $questionnaire->id))) {
+        foreach ($events as $event) {
+            $event = calendar_event::load($event);
+            $event->delete();
+        }
+    }
+
     if (! $DB->delete_records('questionnaire', array('id' => $questionnaire->id))) {
         $result = false;
     }
@@ -201,13 +218,6 @@ function questionnaire_delete_instance($id) {
         // If this survey is owned by this course, delete all of the survey records and responses.
         if ($survey->courseid == $questionnaire->course) {
             $result = $result && questionnaire_delete_survey($questionnaire->sid, $questionnaire->id);
-        }
-    }
-
-    if ($events = $DB->get_records('event', array("modulename" => 'questionnaire', "instance" => $questionnaire->id))) {
-        foreach ($events as $event) {
-            $event = calendar_event::load($event);
-            $event->delete();
         }
     }
 
@@ -229,7 +239,7 @@ function questionnaire_user_outline($course, $user, $mod, $questionnaire) {
     require_once($CFG->dirroot . '/mod/questionnaire/locallib.php');
 
     $result = new stdClass();
-    if ($responses = questionnaire_get_user_responses($questionnaire->sid, $user->id, true)) {
+    if ($responses = questionnaire_get_user_responses($questionnaire->id, $user->id, true)) {
         $n = count($responses);
         if ($n == 1) {
             $result->info = $n.' '.get_string("response", "questionnaire");
@@ -255,7 +265,7 @@ function questionnaire_user_complete($course, $user, $mod, $questionnaire) {
     global $CFG;
     require_once($CFG->dirroot . '/mod/questionnaire/locallib.php');
 
-    if ($responses = questionnaire_get_user_responses($questionnaire->sid, $user->id, false)) {
+    if ($responses = questionnaire_get_user_responses($questionnaire->id, $user->id, false)) {
         foreach ($responses as $response) {
             if ($response->complete == 'y') {
                 echo get_string('submitted', 'questionnaire').' '.userdate($response->submitted).'<br />';
@@ -309,9 +319,9 @@ function questionnaire_get_user_grades($questionnaire, $userid=0) {
         $params[] = $userid;
     }
 
-    $sql = "SELECT a.id, u.id AS userid, r.grade AS rawgrade, r.submitted AS dategraded, r.submitted AS datesubmitted
-            FROM {user} u, {questionnaire_attempts} a, {questionnaire_response} r
-            WHERE u.id = a.userid AND a.qid = $questionnaire->id AND r.id = a.rid $usersql";
+    $sql = "SELECT r.id, u.id AS userid, r.grade AS rawgrade, r.submitted AS dategraded, r.submitted AS datesubmitted
+            FROM {user} u, {questionnaire_response} r
+            WHERE u.id = r.userid AND r.questionnaireid = $questionnaire->id AND r.complete = 'y' $usersql";
     return $DB->get_records_sql($sql, $params);
 }
 
@@ -590,6 +600,15 @@ function questionnaire_extend_settings_navigation(settings_navigation $settings,
         $questionnairenode->add_node($node, $beforekey);
     }
 
+    if (has_capability('mod/questionnaire:editquestions', $context) && $owner) {
+        $url = '/mod/questionnaire/feedback.php';
+        $node = navigation_node::create(get_string('feedback', 'questionnaire'),
+            new moodle_url($url, array('id' => $cmid)),
+            navigation_node::TYPE_SETTING, null, 'feedback',
+            new pix_icon('t/edit', ''));
+        $questionnairenode->add_node($node, $beforekey);
+    }
+
     if (has_capability('mod/questionnaire:preview', $context)) {
         $url = '/mod/questionnaire/preview.php';
         $node = navigation_node::create(get_string('preview_label', 'questionnaire'),
@@ -757,26 +776,29 @@ function questionnaire_get_recent_mod_activity(&$activities, &$index, $timestart
     if ($COURSE->id == $courseid) {
         $course = $COURSE;
     } else {
-        $course = $DB->get_record('course', array('id' => $courseid));
+        $course = $DB->get_record('course', ['id' => $courseid]);
     }
 
     $modinfo = get_fast_modinfo($course);
 
     $cm = $modinfo->cms[$cmid];
-    $questionnaire = $DB->get_record('questionnaire', array('id' => $cm->instance));
+    $questionnaire = $DB->get_record('questionnaire', ['id' => $cm->instance]);
+    $questionnaire = new questionnaire(0, $questionnaire, $course, $cm);
 
     $context = context_module::instance($cm->id);
     $grader = has_capability('mod/questionnaire:viewsingleresponse', $context);
 
     // If this is a copy of a public questionnaire whose original is located in another course,
     // current user (teacher) cannot view responses.
-    if ($grader && $survey = $DB->get_record('questionnaire_survey', array('id' => $questionnaire->sid))) {
+    if ($grader) {
         // For a public questionnaire, look for the original public questionnaire that it is based on.
-        if ($survey->realm == 'public' && $survey->courseid != $course->id) {
+        if (!$questionnaire->survey_is_public_master()) {
             // For a public questionnaire, look for the original public questionnaire that it is based on.
-            $originalquestionnaire = $DB->get_record('questionnaire', ['sid' => $survey->id, 'course' => $survey->courseid]);
-            $cmoriginal = get_coursemodule_from_instance("questionnaire", $originalquestionnaire->id, $survey->courseid);
-            $contextoriginal = context_course::instance($survey->courseid, MUST_EXIST);
+            $originalquestionnaire = $DB->get_record('questionnaire',
+                ['sid' => $questionnaire->survey->id, 'course' => $questionnaire->survey->courseid]);
+            $cmoriginal = get_coursemodule_from_instance("questionnaire", $originalquestionnaire->id,
+                $questionnaire->survey->courseid);
+            $contextoriginal = context_course::instance($questionnaire->survey->courseid, MUST_EXIST);
             if (!has_capability('mod/questionnaire:viewsingleresponse', $contextoriginal)) {
                 $tmpactivity = new stdClass();
                 $tmpactivity->type = 'questionnaire';
@@ -806,7 +828,7 @@ function questionnaire_get_recent_mod_activity(&$activities, &$index, $timestart
     }
 
     $params['timestart'] = $timestart;
-    $params['questionnaireid'] = $questionnaire->sid;
+    $params['questionnaireid'] = $questionnaire->id;
 
     $ufields = user_picture::fields('u', null, 'useridagain');
     if (!$attempts = $DB->get_records_sql("
@@ -816,7 +838,7 @@ function questionnaire_get_recent_mod_activity(&$activities, &$index, $timestart
                     JOIN {user} u ON u.id = qr.userid
                     $groupjoin
                     WHERE qr.submitted > :timestart
-                    AND qr.survey_id = :questionnaireid
+                    AND qr.questionnaireid = :questionnaireid
                     $userselect
                     $groupselect
                     ORDER BY qr.submitted ASC", $params)) {
@@ -1030,8 +1052,8 @@ function questionnaire_print_overview($courses, &$htmlarray) {
 
             // Deadline.
             $str .= $OUTPUT->box(get_string('closeson', 'questionnaire', userdate($questionnaire->closedate)), 'info');
-            $select = 'qid = '.$questionnaire->id.' AND userid = '.$USER->id;
-            $attempts = $DB->get_records_select('questionnaire_attempts', $select);
+            $attempts = $DB->get_records('questionnaire_response',
+                ['questionnaireid' => $questionnaire->id, 'userid' => $USER->id, 'complete' => 'y']);
             $nbattempts = count($attempts);
 
             // Do not display a questionnaire as due if it can only be sumbitted once and it has already been submitted!
@@ -1042,10 +1064,11 @@ function questionnaire_print_overview($courses, &$htmlarray) {
             // Attempt information.
             if (has_capability('mod/questionnaire:manage', context_module::instance($questionnaire->coursemodule))) {
                 // Number of user attempts.
-                $attempts = $DB->count_records('questionnaire_attempts', array('id' => $questionnaire->id));
+                $attempts = $DB->count_records('questionnaire_response',
+                    ['questionnaireid' => $questionnaire->id, 'complete' => 'y']);
                 $str .= $OUTPUT->box(get_string('numattemptsmade', 'questionnaire', $attempts), 'info');
             } else {
-                if ($responses = questionnaire_get_user_responses($questionnaire->sid, $USER->id, false)) {
+                if ($responses = questionnaire_get_user_responses($questionnaire->id, $USER->id, false)) {
                     foreach ($responses as $response) {
                         if ($response->complete == 'y') {
                             $str .= $OUTPUT->box($strattempted, 'info');
@@ -1096,8 +1119,7 @@ function questionnaire_reset_course_form_defaults($course) {
 
 /**
  * Actual implementation of the reset course functionality, delete all the
- * questionnaire responses for course $data->courseid, if $data->reset_questionnaire_attempts is
- * set and true.
+ * questionnaire responses for course $data->courseid.
  *
  * @param object $data the data submitted from the reset course.
  * @return array status array
@@ -1116,11 +1138,12 @@ function questionnaire_reset_userdata($data) {
         // Delete responses.
         foreach ($surveys as $survey) {
             // Get all responses for this questionnaire.
-            $sql = "SELECT R.id, R.survey_id, R.submitted, R.userid
-                 FROM {questionnaire_response} R
-                 WHERE R.survey_id = ?
-                 ORDER BY R.id";
-            $resps = $DB->get_records_sql($sql, array($survey->id));
+            $sql = "SELECT qr.id, qr.questionnaireid, qr.submitted, qr.userid, q.sid
+                 FROM {questionnaire} q
+                 INNER JOIN {questionnaire_response} qr ON q.id = qr.questionnaireid
+                 WHERE q.sid = ?
+                 ORDER BY qr.id";
+            $resps = $DB->get_records_sql($sql, [$survey->id]);
             if (!empty($resps)) {
                 $questionnaire = $DB->get_record("questionnaire", ["sid" => $survey->id, "course" => $survey->courseid]);
                 $questionnaire->course = $DB->get_record("course", array("id" => $questionnaire->course));
@@ -1172,10 +1195,40 @@ function questionnaire_get_completion_state($course, $cm, $userid, $type) {
 
     // If completion option is enabled, evaluate it and return true/false.
     if ($questionnaire->completionsubmit) {
-        $params = array('userid' => $userid, 'qid' => $questionnaire->id);
-        return $DB->record_exists('questionnaire_attempts', $params);
+        $params = ['userid' => $userid, 'questionnaireid' => $questionnaire->id, 'complete' => 'y'];
+        return $DB->record_exists('questionnaire_response', $params);
     } else {
         // Completion option is not enabled so just return $type.
         return $type;
     }
+}
+
+/**
+ * This function receives a calendar event and returns the action associated with it, or null if there is none.
+ *
+ * This is used by block_myoverview in order to display the event appropriately. If null is returned then the event
+ * is not displayed on the block.
+ *
+ * @param calendar_event $event
+ * @param \core_calendar\action_factory $factory
+ * @return \core_calendar\local\event\entities\action_interface|null
+ */
+function mod_questionnaire_core_calendar_provide_event_action(calendar_event $event,
+                                                            \core_calendar\action_factory $factory) {
+    $cm = get_fast_modinfo($event->courseid)->instances['questionnaire'][$event->instance];
+
+    $completion = new \completion_info($cm->get_course());
+
+    $completiondata = $completion->get_data($cm, false);
+
+    if ($completiondata->completionstate != COMPLETION_INCOMPLETE) {
+        return null;
+    }
+
+    return $factory->create_instance(
+            get_string('view'),
+            new \moodle_url('/mod/questionnaire/view.php', ['id' => $cm->id]),
+            1,
+            true
+    );
 }

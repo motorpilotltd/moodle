@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 
 class single extends base {
-    public function response_table() {
+    static public function response_table() {
         return 'questionnaire_resp_single';
     }
 
@@ -79,13 +79,17 @@ class single extends base {
         $record->question_id = $this->question->id;
         $record->choice_id = isset($val) ? $val : 0;
         if ($record->choice_id) {// If "no answer" then choice_id is empty (CONTRIB-846).
-            return $DB->insert_record($this->response_table(), $record);
+            try {
+                return $DB->insert_record(static::response_table(), $record);
+            } catch (\dml_write_exception $ex) {
+                return false;
+            }
         } else {
             return false;
         }
     }
 
-    protected function get_results($rids=false, $anonymous=false) {
+    public function get_results($rids=false, $anonymous=false) {
         global $DB;
 
         $rsql = '';
@@ -95,10 +99,11 @@ class single extends base {
             $params = array_merge($params, $rparams);
             $rsql = ' AND response_id ' . $rsql;
         }
+
         // Added qc.id to preserve original choices ordering.
         $sql = 'SELECT rt.id, qc.id as cid, qc.content ' .
                'FROM {questionnaire_quest_choice} qc, ' .
-               '{'.$this->response_table().'} rt ' .
+               '{'.static::response_table().'} rt ' .
                'WHERE qc.question_id= ? AND qc.content NOT LIKE \'!other%\' AND ' .
                      'rt.question_id=qc.question_id AND rt.choice_id=qc.id' . $rsql . ' ' .
                'ORDER BY qc.id';
@@ -125,23 +130,166 @@ class single extends base {
         return $rows;
     }
 
+    /**
+     * Provide the feedback scores for all requested response id's. This should be provided only by questions that provide feedback.
+     * @param array $rids
+     * @return array | boolean
+     */
+    public function get_feedback_scores(array $rids) {
+        global $DB;
+
+        $rsql = '';
+        $params = [$this->question->id];
+        if (!empty($rids)) {
+            list($rsql, $rparams) = $DB->get_in_or_equal($rids);
+            $params = array_merge($params, $rparams);
+            $rsql = ' AND response_id ' . $rsql;
+        }
+        $params[] = 'y';
+
+        $sql = 'SELECT response_id as rid, c.value AS score ' .
+            'FROM {'.$this->response_table().'} r ' .
+            'INNER JOIN {questionnaire_quest_choice} c ON r.choice_id = c.id ' .
+            'WHERE r.question_id= ? ' . $rsql . ' ' .
+            'ORDER BY response_id ASC';
+        return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * Provide a template for results screen if defined.
+     * @return mixed The template string or false/
+     */
+    public function results_template() {
+        return 'mod_questionnaire/results_choice';
+    }
+
+    /**
+     * Return the JSON structure required for the template.
+     *
+     * @param bool $rids
+     * @param string $sort
+     * @param bool $anonymous
+     * @return string
+     */
     public function display_results($rids=false, $sort='', $anonymous=false) {
-        return $this->display_response_choice_results($this->get_results($rids, $anonymous), $rids, $sort);
+        global $DB;
+
+        $rows = $this->get_results($rids, $anonymous);
+        if (is_array($rids)) {
+            $prtotal = 1;
+        } else if (is_int($rids)) {
+            $prtotal = 0;
+        }
+        $numresps = count($rids);
+
+        $responsecountsql = 'SELECT COUNT(DISTINCT r.response_id) ' .
+            'FROM {' . $this->response_table() . '} r ' .
+            'WHERE r.question_id = ? ';
+        $numrespondents = $DB->count_records_sql($responsecountsql, [$this->question->id]);
+
+        if ($rows) {
+            foreach ($rows as $idx => $row) {
+                if (strpos($idx, 'other') === 0) {
+                    $answer = $row->response;
+                    $ccontent = $row->content;
+                    $content = preg_replace(array('/^!other=/', '/^!other/'),
+                        array('', get_string('other', 'questionnaire')), $ccontent);
+                    $content .= ' ' . clean_text($answer);
+                    $textidx = $content;
+                    $this->counts[$textidx] = !empty($this->counts[$textidx]) ? ($this->counts[$textidx] + 1) : 1;
+                } else {
+                    $contents = questionnaire_choice_values($row->content);
+                    $this->choice = $contents->text.$contents->image;
+                    $textidx = $this->choice;
+                    $this->counts[$textidx] = !empty($this->counts[$textidx]) ? ($this->counts[$textidx] + 1) : 1;
+                }
+            }
+            $pagetags = $this->get_results_tags($this->counts, $numresps, $numrespondents, $prtotal, $sort);
+        } else {
+            $pagetags = new \stdClass();
+        }
+        return $pagetags;
+    }
+
+    /**
+     * Return an array of answers by question/choice for the given response. Must be implemented by the subclass.
+     *
+     * @param int $rid The response id.
+     * @param null $col Other data columns to return.
+     * @param bool $csvexport Using for CSV export.
+     * @param int $choicecodes CSV choicecodes are required.
+     * @param int $choicetext CSV choicetext is required.
+     * @return array
+     */
+    static public function response_select($rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1) {
+        global $DB;
+
+        $values = [];
+        $sql = 'SELECT q.id '.$col.', q.type_id as q_type, c.content as ccontent,c.id as cid '.
+            'FROM {'.static::response_table().'} a, {questionnaire_question} q, {questionnaire_quest_choice} c '.
+            'WHERE a.response_id = ? AND a.question_id=q.id AND a.choice_id=c.id ';
+        $records = $DB->get_records_sql($sql, [$rid]);
+        foreach ($records as $qid => $row) {
+            $cid = $row->cid;
+            if ($csvexport) {
+                static $i = 1;
+                $qrecords = $DB->get_records('questionnaire_quest_choice', ['question_id' => $qid]);
+                foreach ($qrecords as $value) {
+                    if ($value->id == $cid) {
+                        $contents = questionnaire_choice_values($value->content);
+                        if ($contents->modname) {
+                            $row->ccontent = $contents->modname;
+                        } else {
+                            $content = $contents->text;
+                            if (preg_match('/^!other/', $content)) {
+                                $row->ccontent = get_string('other', 'questionnaire');
+                            } else if (($choicecodes == 1) && ($choicetext == 1)) {
+                                $row->ccontent = "$i : $content";
+                            } else if ($choicecodes == 1) {
+                                $row->ccontent = "$i";
+                            } else {
+                                $row->ccontent = $content;
+                            }
+                        }
+                        $i = 1;
+                        break;
+                    }
+                    $i++;
+                }
+            }
+            unset($row->id);
+            unset($row->cid);
+            unset($row->q_type);
+            $arow = get_object_vars($row);
+            $newrow = [];
+            foreach ($arow as $key => $val) {
+                if (!is_numeric($key)) {
+                    $newrow[] = $val;
+                }
+            }
+            if (preg_match('/^!other/', $row->ccontent)) {
+                $newrow[] = 'other_' . $cid;
+            } else {
+                $newrow[] = (int)$cid;
+            }
+            $values[$qid] = $newrow;
+        }
+
+        return $values;
     }
 
     /**
      * Return sql and params for getting responses in bulk.
      * @author Guy Thomas
-     * @param int $surveyid
+     * @param int|array $questionnaireids One id, or an array of ids.
      * @param bool|int $responseid
      * @param bool|int $userid
      * @return array
      */
-    public function get_bulk_sql($surveyid, $responseid = false, $userid = false, $groupid = false) {
+    public function get_bulk_sql($questionnaireids, $responseid = false, $userid = false, $groupid = false, $showincompletes = 0) {
         global $DB;
 
-        $sql = $this->bulk_sql($surveyid, $responseid, $userid);
-        $params = [];
+        $sql = $this->bulk_sql();
         if (($groupid !== false) && ($groupid > 0)) {
             $groupsql = ' INNER JOIN {groups_members} gm ON gm.groupid = ? AND gm.userid = qr.userid ';
             $gparams = [$groupid];
@@ -149,13 +297,28 @@ class single extends base {
             $groupsql = '';
             $gparams = [];
         }
+
+        if (is_array($questionnaireids)) {
+            list($qsql, $params) = $DB->get_in_or_equal($questionnaireids);
+        } else {
+            $qsql = ' = ? ';
+            $params = [$questionnaireids];
+        }
+        if ($showincompletes == 1) {
+            $showcompleteonly = '';
+        } else {
+            $showcompleteonly = 'AND qr.complete = ? ';
+            $params[] = 'y';
+        }
+
         $sql .= "
-            AND qr.survey_id = ? AND qr.complete = ?
+            AND qr.questionnaireid $qsql $showcompleteonly
       LEFT JOIN {questionnaire_response_other} qro ON qro.response_id = qr.id AND qro.choice_id = qrs.choice_id
       LEFT JOIN {user} u ON u.id = qr.userid
       $groupsql
         ";
-        $params = array_merge([$surveyid, 'y'], $gparams);
+        $params = array_merge($params, $gparams);
+
         if ($responseid) {
             $sql .= " WHERE qr.id = ?";
             $params[] = $responseid;
@@ -176,15 +339,15 @@ class single extends base {
         global $DB;
 
         $userfields = $this->user_fields_sql();
-        $extraselect = 'qrs.choice_id, ' . $DB->sql_order_by_text('qro.response', 1000) . ' AS response, 0 AS rank';
         $alias = 'qrs';
+        $extraselect = 'qrs.choice_id, ' . $DB->sql_order_by_text('qro.response', 1000) . ' AS response, 0 AS rankvalue';
 
         return "
             SELECT " . $DB->sql_concat_join("'_'", ['qr.id', "'".$this->question->helpname()."'", $alias.'.id']) . " AS id,
                    qr.submitted, qr.complete, qr.grade, qr.userid, $userfields, qr.id AS rid, $alias.question_id,
                    $extraselect
               FROM {questionnaire_response} qr
-              JOIN {".$this->response_table()."} $alias ON $alias.response_id = qr.id
+              JOIN {".static::response_table()."} $alias ON $alias.response_id = qr.id
         ";
     }
 }

@@ -42,6 +42,11 @@ class restore_questionnaire_activity_structure_step extends restore_activity_str
      */
     protected $olddependchoices = [];
 
+    /**
+     * @var array $olddependencies Contains the old id's from the dependencies array.
+     */
+    protected $olddependencies = [];
+
     protected function define_structure() {
 
         $paths = array();
@@ -57,29 +62,51 @@ class restore_questionnaire_activity_structure_step extends restore_activity_str
                         '/activity/questionnaire/surveys/survey/questions/question');
         $paths[] = new restore_path_element('questionnaire_quest_choice',
                         '/activity/questionnaire/surveys/survey/questions/question/quest_choices/quest_choice');
+        $paths[] = new restore_path_element('questionnaire_dependency',
+                '/activity/questionnaire/surveys/survey/questions/question/quest_dependencies/quest_dependency');
 
         if ($userinfo) {
-            $paths[] = new restore_path_element('questionnaire_attempt', '/activity/questionnaire/attempts/attempt');
-            $paths[] = new restore_path_element('questionnaire_response',
-                            '/activity/questionnaire/attempts/attempt/responses/response');
-            $paths[] = new restore_path_element('questionnaire_response_bool',
-                            '/activity/questionnaire/attempts/attempt/responses/response/response_bools/response_bool');
-            $paths[] = new restore_path_element('questionnaire_response_date',
-                            '/activity/questionnaire/attempts/attempt/responses/response/response_dates/response_date');
-            $paths[] = new restore_path_element('questionnaire_response_multiple',
-                            '/activity/questionnaire/attempts/attempt/responses/response/response_multiples/response_multiple');
-            $paths[] = new restore_path_element('questionnaire_response_other',
-                            '/activity/questionnaire/attempts/attempt/responses/response/response_others/response_other');
-            $paths[] = new restore_path_element('questionnaire_response_rank',
-                            '/activity/questionnaire/attempts/attempt/responses/response/response_ranks/response_rank');
-            $paths[] = new restore_path_element('questionnaire_response_single',
-                            '/activity/questionnaire/attempts/attempt/responses/response/response_singles/response_single');
-            $paths[] = new restore_path_element('questionnaire_response_text',
-                            '/activity/questionnaire/attempts/attempt/responses/response/response_texts/response_text');
+            if ($this->task->get_old_moduleversion() < 2018050102) {
+                // Old system.
+                $paths[] = new restore_path_element('questionnaire_attempt', '/activity/questionnaire/attempts/attempt');
+                $paths[] = new restore_path_element('questionnaire_response',
+                    '/activity/questionnaire/attempts/attempt/responses/response');
+                $paths[] = new restore_path_element('questionnaire_response_bool',
+                    '/activity/questionnaire/attempts/attempt/responses/response/response_bools/response_bool');
+                $paths[] = new restore_path_element('questionnaire_response_date',
+                    '/activity/questionnaire/attempts/attempt/responses/response/response_dates/response_date');
+                $paths[] = new restore_path_element('questionnaire_response_multiple',
+                    '/activity/questionnaire/attempts/attempt/responses/response/response_multiples/response_multiple');
+                $paths[] = new restore_path_element('questionnaire_response_other',
+                    '/activity/questionnaire/attempts/attempt/responses/response/response_others/response_other');
+                $paths[] = new restore_path_element('questionnaire_response_rank',
+                    '/activity/questionnaire/attempts/attempt/responses/response/response_ranks/response_rank');
+                $paths[] = new restore_path_element('questionnaire_response_single',
+                    '/activity/questionnaire/attempts/attempt/responses/response/response_singles/response_single');
+                $paths[] = new restore_path_element('questionnaire_response_text',
+                    '/activity/questionnaire/attempts/attempt/responses/response/response_texts/response_text');
 /* BEGIN CORE MOD */
-            $paths[] = new restore_path_element('questionnaire_response_hash',
+                $paths[] = new restore_path_element('questionnaire_response_hash',
                             '/activity/questionnaire/attempts/attempt/responses/response/response_hashes/response_hash');
 /* END CORE MOD */
+            } else {
+                // New system.
+                $paths[] = new restore_path_element('questionnaire_response', '/activity/questionnaire/responses/response');
+                $paths[] = new restore_path_element('questionnaire_response_bool',
+                    '/activity/questionnaire/responses/response/response_bools/response_bool');
+                $paths[] = new restore_path_element('questionnaire_response_date',
+                    '/activity/questionnaire/responses/response/response_dates/response_date');
+                $paths[] = new restore_path_element('questionnaire_response_multiple',
+                    '/activity/questionnaire/responses/response/response_multiples/response_multiple');
+                $paths[] = new restore_path_element('questionnaire_response_other',
+                    '/activity/questionnaire/responses/response/response_others/response_other');
+                $paths[] = new restore_path_element('questionnaire_response_rank',
+                    '/activity/questionnaire/responses/response/response_ranks/response_rank');
+                $paths[] = new restore_path_element('questionnaire_response_single',
+                    '/activity/questionnaire/responses/response/response_singles/response_single');
+                $paths[] = new restore_path_element('questionnaire_response_text',
+                    '/activity/questionnaire/responses/response/response_texts/response_text');
+            }
         }
 
         // Return the paths wrapped into standard activity structure.
@@ -109,6 +136,11 @@ class restore_questionnaire_activity_structure_step extends restore_activity_str
         $oldid = $data->id;
         $data->courseid = $this->get_courseid();
 
+        // Check for a 'feedbacksections' value larger than 2, and limit it to 2. As of 3.5.1 this has a different meaning.
+        if ($data->feedbacksections > 2) {
+            $data->feedbacksections = 2;
+        }
+
         // Insert the questionnaire_survey record.
         $newitemid = $DB->insert_record('questionnaire_survey', $data);
         $this->set_mapping('questionnaire_survey', $oldid, $newitemid, true);
@@ -122,15 +154,15 @@ class restore_questionnaire_activity_structure_step extends restore_activity_str
 
         $data = (object)$data;
         $oldid = $data->id;
-        $data->survey_id = $this->get_new_parentid('questionnaire_survey');
+        $data->surveyid = $this->get_new_parentid('questionnaire_survey');
 
         // Insert the questionnaire_question record.
         $newitemid = $DB->insert_record('questionnaire_question', $data);
         $this->set_mapping('questionnaire_question', $oldid, $newitemid, true);
 
-        if (isset($data->dependquestion)) {
-            // We'll need to process dependent questions in after_execute, after we have processed all questions,
-            // to ensure the id's are available. See CONTRIB-6787.
+        if (isset($data->dependquestion) && ($data->dependquestion > 0)) {
+            // Questions using the old dependency system will need to be processed and restored using the new system.
+            // See CONTRIB-6787.
             $this->olddependquestions[$newitemid] = $data->dependquestion;
             $this->olddependchoices[$newitemid] = $data->dependchoice;
         }
@@ -146,15 +178,15 @@ class restore_questionnaire_activity_structure_step extends restore_activity_str
 
         $data = (object)$data;
         $oldid = $data->id;
-        $data->survey_id = $this->get_new_parentid('questionnaire_survey');
+        $data->surveyid = $this->get_new_parentid('questionnaire_survey');
 
         // If this questionnaire has separate sections feedbacks.
         if (isset($data->scorecalculation)) {
             $scorecalculation = unserialize($data->scorecalculation);
             $newscorecalculation = array();
-            foreach ($scorecalculation as $key => $qid) {
-                $newqid = $this->get_mappingid('questionnaire_question', $key);
-                $newscorecalculation[$newqid] = null;
+            foreach ($scorecalculation as $qid => $val) {
+                $newqid = $this->get_mappingid('questionnaire_question', $qid);
+                $newscorecalculation[$newqid] = $val;
             }
             $data->scorecalculation = serialize($newscorecalculation);
         }
@@ -169,7 +201,7 @@ class restore_questionnaire_activity_structure_step extends restore_activity_str
 
         $data = (object)$data;
         $oldid = $data->id;
-        $data->section_id = $this->get_new_parentid('questionnaire_fb_sections');
+        $data->sectionid = $this->get_new_parentid('questionnaire_fb_sections');
 
         // Insert the questionnaire_feedback record.
         $newitemid = $DB->insert_record('questionnaire_feedback', $data);
@@ -200,17 +232,20 @@ class restore_questionnaire_activity_structure_step extends restore_activity_str
         $this->set_mapping('questionnaire_quest_choice', $oldid, $newitemid);
     }
 
-    protected function process_questionnaire_attempt($data) {
-        global $DB;
-
+    protected function process_questionnaire_dependency($data) {
         $data = (object)$data;
-        $oldid = $data->id;
-        $data->qid = $this->get_new_parentid('questionnaire');
-        $data->userid = $this->get_mappingid('user', $data->userid);
 
-        // Insert the questionnaire_attempts record.
-        $newitemid = $DB->insert_record('questionnaire_attempts', $data);
-        $this->set_mapping('questionnaire_attempt', $oldid, $newitemid);
+        $data->questionid = $this->get_new_parentid('questionnaire_question');
+        $data->surveyid = $this->get_new_parentid('questionnaire_survey');
+
+        if (isset($data)) {
+            $this->olddependencies[] = $data;
+        }
+    }
+
+    protected function process_questionnaire_attempt($data) {
+        // New structure will be completed in process_questionnaire_response. Nothing to do here any more.
+        return true;
     }
 
     protected function process_questionnaire_response($data) {
@@ -224,16 +259,12 @@ class restore_questionnaire_activity_structure_step extends restore_activity_str
         }
 
         $oldid = $data->id;
-        $data->survey_id = $this->get_mappingid('questionnaire_survey', $data->survey_id);
+        $data->questionnaireid = $this->get_new_parentid('questionnaire');
         $data->userid = $this->get_mappingid('user', $data->userid);
 
         // Insert the questionnaire_response record.
         $newitemid = $DB->insert_record('questionnaire_response', $data);
         $this->set_mapping('questionnaire_response', $oldid, $newitemid);
-
-        // Update the questionnaire_attempts record we just created with the new response id.
-        $DB->set_field('questionnaire_attempts', 'rid', $newitemid,
-                        array('id' => $this->get_new_parentid('questionnaire_attempt')));
     }
 
     protected function process_questionnaire_response_bool($data) {
@@ -286,6 +317,12 @@ class restore_questionnaire_activity_structure_step extends restore_activity_str
         global $DB;
 
         $data = (object)$data;
+
+        // Older versions of questionnaire used 'rank' instead of 'rankvalue'. If 'rank' exists, change it to 'rankvalue'.
+        if (isset($data->rank) && !isset($data->rankvalue)) {
+            $data->rankvalue = $data->rank;
+        }
+
         $data->response_id = $this->get_new_parentid('questionnaire_response');
         $data->question_id = $this->get_mappingid('questionnaire_question', $data->question_id);
         $data->choice_id = $this->get_mappingid('questionnaire_quest_choice', $data->choice_id);
@@ -334,18 +371,36 @@ class restore_questionnaire_activity_structure_step extends restore_activity_str
 
         // Process any question dependencies after all questions and choices have already been processed to ensure we have all of
         // the new id's.
+
+        // First, process any old system question dependencies into the new system.
         foreach ($this->olddependquestions as $newid => $olddependid) {
-            $newdependid = $this->get_mappingid('questionnaire_question', $olddependid);
-            $DB->set_field('questionnaire_question', 'dependquestion', $newdependid, ['id' => $newid]);
-            // Dependchoice.
+            $newrec = new stdClass();
+            $newrec->questionid = $newid;
+            $newrec->surveyid = $this->get_new_parentid('questionnaire_survey');
+            $newrec->dependquestionid = $this->get_mappingid('questionnaire_question', $olddependid);
             // Only change mapping for RADIO and DROP question types, not for YESNO question.
-            $dependquestion = $DB->get_record('questionnaire_question', array('id' => $newdependid), 'type_id');
-            if (is_object($dependquestion)) {
-                if ($dependquestion->type_id != 1) {
-                    $newdependchoice = $this->get_mappingid('questionnaire_quest_choice', $this->olddependchoices[$newid]);
-                    $DB->set_field('questionnaire_question', 'dependchoice', $newdependchoice, ['id' => $newid]);
-                }
+            $dependqtype = $DB->get_field('questionnaire_question', 'type_id', ['id' => $newrec->dependquestionid]);
+            if (($dependqtype !== false) && ($dependqtype != 1)) {
+                $newrec->dependchoiceid = $this->get_mappingid('questionnaire_quest_choice',
+                    $this->olddependchoices[$newid]);
+            } else {
+                $newrec->dependchoiceid = $this->olddependchoices[$newid];
             }
+            $newrec->dependlogic = 1; // Set to "answer given", previously the only option.
+            $newrec->dependandor = 'and'; // Not used previously.
+            $DB->insert_record('questionnaire_dependency', $newrec);
+        }
+
+        // Next process all new system dependencies.
+        foreach ($this->olddependencies as $data) {
+            $data->dependquestionid = $this->get_mappingid('questionnaire_question', $data->dependquestionid);
+
+            // Only change mapping for RADIO and DROP question types, not for YESNO question.
+            $dependqtype = $DB->get_field('questionnaire_question', 'type_id', ['id' => $data->dependquestionid]);
+            if (($dependqtype !== false) && ($dependqtype != 1)) {
+                $data->dependchoiceid = $this->get_mappingid('questionnaire_quest_choice', $data->dependchoiceid);
+            }
+            $DB->insert_record('questionnaire_dependency', $data);
         }
 
         // Add questionnaire related files, no need to match by itemname (just internally handled context).

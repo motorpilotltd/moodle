@@ -110,7 +110,7 @@ class numerical extends base {
         $choice->name = 'q'.$this->id;
         $choice->maxlength = $this->length;
         $choice->value = (isset($data->{'q'.$this->id}) ? $data->{'q'.$this->id} : '');
-        $choice->id = $this->type . $this->id;
+        $choice->id = self::qtypename($this->type_id) . $this->id;
         $questiontags->qelements = new \stdClass();
         $questiontags->qelements->choice = $choice;
         return $questiontags;
@@ -138,7 +138,9 @@ class numerical extends base {
      */
     public function response_valid($responsedata) {
         if (isset($responsedata->{'q'.$this->id})) {
-            return (($responsedata->{'q'.$this->id} == '') || is_numeric($responsedata->{'q'.$this->id}));
+            // If commas are present, replace them with periods, in case that was meant as the European decimal place.
+            $responseval = str_replace(',', '.', $responsedata->{'q'.$this->id});
+            return (($responseval == '') || is_numeric($responseval));
         } else {
             return parent::response_valid($responsedata);
         }

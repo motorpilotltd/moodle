@@ -47,7 +47,9 @@ abstract class base {
      *
      * @return string response table name.
      */
-    abstract public function response_table();
+    static public function response_table() {
+        return 'Must be implemented!';
+    }
 
     /**
      * Insert a provided response to the question.
@@ -65,7 +67,7 @@ abstract class base {
      * @param boolean $anonymous - Whether or not responses are anonymous.
      * @return array - Array of data records.
      */
-    abstract protected function get_results($rids=false, $anonymous=false);
+    abstract public function get_results($rids=false, $anonymous=false);
 
     /**
      * Provide the result information for the specified result records.
@@ -77,36 +79,141 @@ abstract class base {
      */
     abstract public function display_results($rids=false, $sort='', $anonymous=false);
 
-    protected function display_response_choice_results($rows, $rids, $sort) {
-        $output = '';
-        if (is_array($rids)) {
-            $prtotal = 1;
-        } else if (is_int($rids)) {
-            $prtotal = 0;
-        }
-        if ($rows) {
-            foreach ($rows as $idx => $row) {
-                if (strpos($idx, 'other') === 0) {
-                    $answer = $row->response;
-                    $ccontent = $row->content;
-                    $content = preg_replace(array('/^!other=/', '/^!other/'),
-                            array('', get_string('other', 'questionnaire')), $ccontent);
-                    $content .= ' ' . clean_text($answer);
-                    $textidx = $content;
-                    $this->counts[$textidx] = !empty($this->counts[$textidx]) ? ($this->counts[$textidx] + 1) : 1;
-                } else {
-                    $contents = questionnaire_choice_values($row->content);
-                    $this->choice = $contents->text.$contents->image;
-                    $textidx = $this->choice;
-                    $this->counts[$textidx] = !empty($this->counts[$textidx]) ? ($this->counts[$textidx] + 1) : 1;
-                }
+    /**
+     * If the choice id needs to be transformed into a different value, override this in the child class.
+     * @param $choiceid
+     * @return mixed
+     */
+    public function transform_choiceid($choiceid) {
+        return $choiceid;
+    }
+
+    /**
+     * Provide a template for results screen if defined.
+     * @return mixed The template string or false/
+     */
+    public function results_template() {
+        return false;
+    }
+
+    /**
+     * Gets the results tags for templates for questions with defined choices (single, multiple, boolean).
+     *
+     * @param $weights
+     * @param $participants Number of questionnaire participants.
+     * @param $respondents Number of question respondents.
+     * @param $showtotals
+     * @param string $sort
+     * @return \stdClass
+     * @throws \coding_exception
+     */
+    public function get_results_tags($weights, $participants, $respondents, $showtotals = 1, $sort = '') {
+        global $CFG;
+
+        $pagetags = new \stdClass();
+        $precision = 0;
+        $alt = '';
+        $imageurl = $CFG->wwwroot.'/mod/questionnaire/images/';
+
+        if (!empty($weights) && is_array($weights)) {
+            $pos = 0;
+            switch ($sort) {
+                case 'ascending':
+                    asort($weights);
+                    break;
+                case 'descending':
+                    arsort($weights);
+                    break;
             }
-            $output .= \mod_questionnaire\response\display_support::mkrespercent($this->counts, count($rids),
-                $this->question->precise, $prtotal, $sort);
-        } else {
-            $output .= '<p class="generaltable">&nbsp;'.get_string('noresponsedata', 'questionnaire').'</p>';
+
+            reset ($weights);
+            $pagetags->responses = [];
+            foreach ($weights as $content => $num) {
+                $response = new \stdClass();
+                $response->text = format_text($content, FORMAT_HTML, ['noclean' => true]);
+                if ($num > 0) {
+                    $percent = round((float)$num / (float)$respondents * 100.0);
+                } else {
+                    $percent = 0;
+                }
+                if ($percent > 100) {
+                    $percent = 100;
+                }
+                if ($num) {
+                    if (!right_to_left()) {
+                        $response->alt1 = $alt;
+                        $response->image1 = $imageurl . 'hbar_l.gif';
+                        $response->alt3 = $alt;
+                        $response->image3 = $imageurl . 'hbar_r.gif';
+                    } else {
+                        $response->alt1 = $alt;
+                        $response->image1 = $imageurl . 'hbar_r.gif';
+                        $response->alt3 = $alt;
+                        $response->image3 = $imageurl . 'hbar_l.gif';
+                    }
+                    $response->alt2 = $alt;
+                    $response->width2 = $percent * 1.4;
+                    $response->image2 = $imageurl . 'hbar.gif';
+                    $response->percent = sprintf('&nbsp;%.'.$precision.'f%%', $percent);
+                }
+                $response->total = $num;
+                $pagetags->responses[] = (object)['response' => $response];
+                $pos++;
+            } // End while.
+
+            if ($showtotals) {
+                $pagetags->total = new \stdClass();
+                if ($respondents > 0) {
+                    $percent = round((float)$respondents / (float)$participants * 100.0);
+                } else {
+                    $percent = 0;
+                }
+                if ($percent > 100) {
+                    $percent = 100;
+                }
+                if (!right_to_left()) {
+                    $pagetags->total->alt1 = $alt;
+                    $pagetags->total->image1 = $imageurl . 'thbar_l.gif';
+                    $pagetags->total->alt3 = $alt;
+                    $pagetags->total->image3 = $imageurl . 'thbar_r.gif';
+                } else {
+                    $pagetags->total->alt1 = $alt;
+                    $pagetags->total->image1 = $imageurl . 'thbar_r.gif';
+                    $pagetags->total->alt3 = $alt;
+                    $pagetags->total->image3 = $imageurl . 'thbar_l.gif';
+                }
+                $pagetags->total->alt2 = $alt;
+                $pagetags->total->width2 = $percent * 1.4;
+                $pagetags->total->image2 = $imageurl . 'thbar.gif';
+                $pagetags->total->percent = sprintf('&nbsp;%.'.$precision.'f%%', $percent);
+                $pagetags->total->total = "$respondents/$participants";
+            }
         }
-        return $output;
+
+        return $pagetags;
+    }
+
+    /**
+     * Provide the feedback scores for all requested response id's. This should be provided only by questions that provide feedback.
+     * @param array $rids
+     * @return array | boolean
+     */
+    public function get_feedback_scores(array $rids) {
+        return false;
+    }
+
+    /**
+     * Return an array of answers by question/choice for the given response. Must be implemented by the subclass.
+     *
+     * @param int $rid The response id.
+     * @param null $col Other data columns to return.
+     * @param bool $csvexport Using for CSV export.
+     * @param int $choicecodes CSV choicecodes are required.
+     * @param int $choicetext CSV choicetext is required.
+     * @return array
+     */
+    static public function response_select($rid, $col = null, $csvexport = false, $choicecodes = 0, $choicetext = 1) {
+        return [];
     }
 
     /**
@@ -123,24 +230,23 @@ abstract class base {
             $userfields .= $userfields === '' ? '' : ', ';
             $userfields .= 'u.'.$field;
         }
-        $userfields .= ', u.id as uid';
+        $userfields .= ', u.id as usrid';
         return $userfields;
     }
 
     /**
      * Return sql and params for getting responses in bulk.
      * @author Guy Thomas
-     * @param int $surveyid
+     * @param int|array $questionnaireids One id, or an array of ids.
      * @param bool|int $responseid
      * @param bool|int $userid
      * @param bool|int $groupid
      * @return array
      */
-    public function get_bulk_sql($surveyid, $responseid = false, $userid = false, $groupid = false) {
+    public function get_bulk_sql($questionnaireids, $responseid = false, $userid = false, $groupid = false, $showincompletes = 0) {
         global $DB;
 
-        $sql = $this->bulk_sql($surveyid, $responseid, $userid);
-        $params = [];
+        $sql = $this->bulk_sql();
         if (($groupid !== false) && ($groupid > 0)) {
             $groupsql = ' INNER JOIN {groups_members} gm ON gm.groupid = ? AND gm.userid = qr.userid ';
             $gparams = [$groupid];
@@ -148,12 +254,27 @@ abstract class base {
             $groupsql = '';
             $gparams = [];
         }
+
+        if (is_array($questionnaireids)) {
+            list($qsql, $params) = $DB->get_in_or_equal($questionnaireids);
+        } else {
+            $qsql = ' = ? ';
+            $params = [$questionnaireids];
+        }
+        if ($showincompletes == 1) {
+            $showcompleteonly = '';
+        } else {
+            $showcompleteonly = 'AND qr.complete = ? ';
+            $params[] = 'y';
+        }
+
         $sql .= "
-            AND qr.survey_id = ? AND qr.complete = ?
+            AND qr.questionnaireid $qsql $showcompleteonly
       LEFT JOIN {user} u ON u.id = qr.userid
       $groupsql
         ";
-        $params = array_merge([$surveyid, 'y'], $gparams);
+        $params = array_merge($params, $gparams);
+
         if ($responseid) {
             $sql .= " WHERE qr.id = ?";
             $params[] = $responseid;

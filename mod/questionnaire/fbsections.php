@@ -14,253 +14,273 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Manage feedback sections.
+ *
+ * @package mod_questionnaire
+ * @copyright  2016 onward Mike Churchward (mike.churchward@poetgroup.org)
+ * @author Joseph Rezeau
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ */
+
 require_once("../../config.php");
 require_once($CFG->dirroot.'/mod/questionnaire/questionnaire.class.php');
 
-$id     = optional_param('id', 0, PARAM_INT);
-$sid    = optional_param('sid', 0, PARAM_INT);
+$id = required_param('id', PARAM_INT);    // Course module ID.
+$section = optional_param('section', 1, PARAM_INT);
+if ($section == 0) {
+    $section = 1;
+}
+$currentgroupid = optional_param('group', 0, PARAM_INT); // Groupid.
+$action = optional_param('action', '', PARAM_ALPHA);
+$sectionid = optional_param('sectionid', 0, PARAM_INT);
 
-if ($id) {
-    if (! $cm = get_coursemodule_from_id('questionnaire', $id)) {
-        print_error('invalidcoursemodule');
-    }
-    if (! $course = $DB->get_record("course", array("id" => $cm->course))) {
-        print_error('coursemisconf');
-    }
-    if (! $questionnaire = $DB->get_record("questionnaire", array("id" => $cm->instance))) {
-        print_error('invalidcoursemodule');
-    }
+if (! $cm = get_coursemodule_from_id('questionnaire', $id)) {
+    print_error('invalidcoursemodule');
 }
 
-// Check login and get context.
-require_login($course->id, false, $cm);
-$context = $cm ? context_module::instance($cm->id) : false;
-
-$url = new moodle_url('/mod/questionnaire/fbsections.php');
-if ($id !== 0) {
-    $url->param('id', $id);
-}
-if ($sid) {
-    $url->param('sid', $sid);
-}
-$questionnaire = new questionnaire(0, $questionnaire, $course, $cm);
-$questions = $questionnaire->questions;
-$sid = $questionnaire->survey->id;
-$viewform = data_submitted($CFG->wwwroot."/mod/questionnaire/fbsections.php");
-$feedbacksections = $questionnaire->survey->feedbacksections;
-$errormsg = '';
-
-// Check if there are any feedbacks stored in database already to use them to check
-// the radio buttons on select questions in sections page.
-if ($fbsections = $DB->get_records('questionnaire_fb_sections',
-        array('survey_id' => $sid)) ) {
-    $scorecalculation = '';
-    $questionsinsections = array();
-    for ($section = 1; $section <= $feedbacksections; $section++) {
-        // Retrieve the scorecalculation formula and the section heading only once.
-        foreach ($fbsections as $fbsection) {
-            if (isset($fbsection->scorecalculation) && $fbsection->section == $section) {
-                $scorecalculation = unserialize($fbsection->scorecalculation);
-                foreach ($scorecalculation as $qid => $key) {
-                    $questionsinsections[$qid] = $section;
-                }
-                break;
-            }
-        }
-    }
-    // If Global Feedback (only 1 section) and no questions have yet been put in section 1 check all questions.
-    if (!empty($questionsinsections)) {
-        $vf = $questionsinsections;
-    }
-}
-if (data_submitted()) {
-    $vf = (array)$viewform;
-    if (isset($vf['savesettings'])) {
-        $action = 'savesettings';
-        unset($vf['savesettings']);
-    }
-    $scorecalculation = array();
-    $submittedvf = array();
-    foreach ($vf as $qs) {
-        $sectionqid = explode("_", $qs);
-        if ($sectionqid[0] != 0) {
-            $scorecalculation[$sectionqid[0]][$sectionqid[1]] = null;
-            $submittedvf[$sectionqid[1]] = $sectionqid[0];
-        }
-    }
-    $c = count($scorecalculation);
-    if ($c < $feedbacksections) {
-        $sectionsnotset = '';
-        for ($section = 1; $section <= $feedbacksections; $section++) {
-            if (!isset($scorecalculation[$section])) {
-                $sectionsnotset .= $section.'&nbsp;';
-            }
-        }
-        $errormsg = get_string('sectionsnotset', 'questionnaire', $sectionsnotset);
-        $vf = $submittedvf;
-    } else {
-        for ($section = 1; $section <= $feedbacksections; $section++) {
-            $fbcalculation[$section] = serialize($scorecalculation[$section]);
-        }
-
-        $sections = $DB->get_records('questionnaire_fb_sections',
-            array('survey_id' => $questionnaire->survey->id), 'section DESC');
-        // Delete former feedbacks if number of feedbacksections has been reduced.
-        foreach ($sections as $section) {
-            if ($section->section > $feedbacksections) {
-                // Delete section record.
-                $DB->delete_records('questionnaire_fb_sections', array('survey_id' => $sid, 'section' => $section->section));
-                // Delete associated feedback records.
-                $DB->delete_records('questionnaire_feedback', array('section_id' => $section->section));
-            }
-        }
-
-        // Check if the number of feedback sections has been increased and insert new ones
-        // must also insert section heading!
-        for ($section = 1; $section <= $feedbacksections; $section++) {
-            if ($existsection = $DB->get_record('questionnaire_fb_sections',
-                        array('survey_id' => $sid, 'section' => $section), '*', IGNORE_MULTIPLE) ) {
-                $DB->set_field('questionnaire_fb_sections', 'scorecalculation', serialize($scorecalculation[$section]),
-                        array('survey_id' => $sid, 'section' => $section));
-            } else {
-                $feedbacksection = new stdClass();
-                $feedbacksection->survey_id = $sid;
-                $feedbacksection->section = $section;
-                $feedbacksection->scorecalculation = serialize($scorecalculation[$section]);
-                $feedbacksection->id = $DB->insert_record('questionnaire_fb_sections', $feedbacksection);
-            }
-        }
-
-        $currentsection = 1;
-        $SESSION->questionnaire->currentfbsection = 1;
-        redirect ($CFG->wwwroot.'/mod/questionnaire/fbsettings.php?id='.
-            $questionnaire->cm->id.'&currentsection='.$currentsection, '', 0);
-    }
+if (! $course = $DB->get_record("course", ["id" => $cm->course])) {
+    print_error('coursemisconf');
 }
 
+if (! $questionnaire = $DB->get_record("questionnaire", ["id" => $cm->instance])) {
+    print_error('invalidcoursemodule');
+}
+
+// Needed here for forced language courses.
+require_course_login($course, true, $cm);
+$context = context_module::instance($cm->id);
+
+$url = new moodle_url('/mod/questionnaire/fbsections.php', ['id' => $id]);
 $PAGE->set_url($url);
-// Print the page header.
-$PAGE->set_title(get_string('feedbackeditingsections', 'questionnaire'));
-$PAGE->set_heading(format_string($course->fullname));
-$PAGE->navbar->add(get_string('feedbackeditingsections', 'questionnaire'));
+$PAGE->set_context($context);
+if (!isset($SESSION->questionnaire)) {
+    $SESSION->questionnaire = new stdClass();
+}
+
+$questionnaire = new questionnaire(0, $questionnaire, $course, $cm);
+
+if ($sectionid) {
+    // Get the specified section by its id.
+    $feedbacksection = new mod_questionnaire\feedback\section(['id' => $sectionid], $questionnaire->questions);
+
+} else if (!$DB->count_records('questionnaire_fb_sections', ['surveyid' => $questionnaire->sid])) {
+    // There are no sections currently, so create one.
+    if ($questionnaire->survey->feedbacksections == 1) {
+        $sectionlabel = get_string('feedbackglobal', 'questionnaire');
+    } else {
+        $sectionlabel = get_string('feedbackdefaultlabel', 'questionnaire');
+    }
+    $feedbacksection = mod_questionnaire\feedback\section::new_section($questionnaire->sid, $sectionlabel);
+
+} else {
+    // Get the specified section by section number.
+    $feedbacksection = new mod_questionnaire\feedback\section(['surveyid' => $questionnaire->survey->id, 'sectionnum' => $section],
+        $questionnaire->questions);
+}
+
+// Get all questions that are valid feedback questions.
+$validquestions = [];
+foreach ($questionnaire->questions as $question) {
+    if ($question->valid_feedback()) {
+        $validquestions[$question->id] = $question->name;
+    }
+}
 
 // Add renderer and page objects to the questionnaire object for display use.
 $questionnaire->add_renderer($PAGE->get_renderer('mod_questionnaire'));
-$questionnaire->add_page(new \mod_questionnaire\output\fbsectionspage());
+$questionnaire->add_page(new \mod_questionnaire\output\feedbackpage());
 
-$feedbacksections = $questionnaire->survey->feedbacksections + 1;
+$SESSION->questionnaire->current_tab = 'feedback';
 
-if ($errormsg != '') {
-    $questionnaire->page->add_to_page('notifications', $questionnaire->renderer->notification($errormsg));
+if (!$questionnaire->capabilities->editquestions) {
+    print_error('nopermissions', 'error', 'mod:questionnaire:editquestions');
 }
-$n = 0;
-$bg = 'c0';
 
-$questionnaire->page->add_to_page('formarea', $questionnaire->renderer->box_start());
+// Handle confirmed actions that impact display immediately.
+if ($action == 'removequestion') {
+    $sectionid = required_param('sectionid', PARAM_INT);
+    $qid = required_param('qid', PARAM_INT);
+    $feedbacksection->remove_question($qid);
 
-$questionnaire->page->add_to_page('formarea', $questionnaire->renderer->help_icon('feedbacksectionsselect', 'questionnaire'));
-$questionnaire->page->add_to_page('formarea', '<b>Sections:</b><br /><br />');
-$formdata = new stdClass();
-$descendantsdata = array();
-
-foreach ($questionnaire->questions as $question) {
-    $qtype = $question->type_id;
-    $qname = $question->name;
-    $qprecise = $question->precise;
-    $required = $question->required;
-    $qid = $question->id;
-
-    // Questions to be included in feedback sections must be required, have a name
-    // and must not be child of a parent question.
-    if ($qtype != QUESPAGEBREAK && $qtype != QUESSECTIONTEXT) {
-        $n++;
+} else if ($action == 'deletesection') {
+    $sectionid = required_param('sectionid', PARAM_INT);
+    if ($sectionid == $feedbacksection->id) {
+        $feedbacksection->delete();
+        redirect(new moodle_url('/mod/questionnaire/fbsections.php', ['id' => $cm->id]));
     }
+}
 
-    $cannotuse = false;
-    $strcannotuse = '';
-    if ($qtype != QUESSECTIONTEXT && $qtype != QUESPAGEBREAK
-                    && ($qtype != QUESYESNO && $qtype != QUESRADIO && $qtype != QUESRATE
-                    || $required != 'y' || $qname == '' || $question->dependquestion != 0)) {
-        $cannotuse = true;
-        $qn = '<strong>'.$n.'</strong>';
-        if ($qname == '') {
-            $strcannotuse = get_string('missingname', 'questionnaire', $qn);
+$customdata = new stdClass();
+$customdata->feedbacksection = $feedbacksection;
+$customdata->validquestions = $validquestions;
+$customdata->survey = $questionnaire->survey;
+$customdata->sectionselect = $DB->get_records_menu('questionnaire_fb_sections', ['surveyid' => $questionnaire->survey->id],
+    'section', 'id,sectionlabel');
+
+$feedbackform = new \mod_questionnaire\feedback_section_form('fbsections.php', $customdata);
+$sdata = clone($feedbacksection);
+$sdata->sid = $questionnaire->survey->id;
+$sdata->sectionid = $feedbacksection->id;
+$sdata->id = $cm->id;
+
+$draftideditor = file_get_submitted_draft_itemid('sectionheading');
+$currentinfo = file_prepare_draft_area($draftideditor, $context->id, 'mod_questionnaire', 'sectionheading',
+    $feedbacksection->id, ['subdirs' => true], $feedbacksection->sectionheading);
+$sdata->sectionheading = ['text' => $currentinfo, 'format' => FORMAT_HTML, 'itemid' => $draftideditor];
+
+$feedbackform->set_data($sdata);
+
+if ($feedbackform->is_cancelled()) {
+    redirect(new moodle_url('/mod/questionnaire/feedback.php', ['id' => $cm->id]));
+}
+
+if ($settings = $feedbackform->get_data()) {
+    // Because formslib doesn't support 'numeric' or 'image' inputs, the results won't show up in the $feedbackform object.
+    $fullform = data_submitted();
+
+    if (isset($settings->gotosection)) {
+        if ($settings->navigatesections != $feedbacksection->id) {
+            redirect(new moodle_url('/mod/questionnaire/fbsections.php',
+                ['id' => $cm->id, 'sectionid' => $settings->navigatesections]));
         }
-        if ($required != 'y') {
-            if ($qname == '') {
-                $strcannotuse = get_string('missingnameandrequired', 'questionnaire', $qn);
+
+    } else if (isset($settings->addnewsection)) {
+        $newsection = mod_questionnaire\feedback\section::new_section($questionnaire->survey->id, $settings->newsectionlabel);
+        redirect(new moodle_url('/mod/questionnaire/fbsections.php', ['id' => $cm->id, 'sectionid' => $newsection->id]));
+
+    } else if (isset($fullform->confirmdeletesection)) {
+        redirect(new moodle_url('/mod/questionnaire/fbsections.php',
+            ['id' => $cm->id, 'sectionid' => $feedbacksection->id, 'action' => 'confirmdeletesection']));
+
+    } else if (isset($fullform->confirmremovequestion)) {
+        $qid = key($fullform->confirmremovequestion);
+        redirect(new moodle_url('/mod/questionnaire/fbsections.php',
+            ['id' => $cm->id, 'sectionid' => $settings->sectionid, 'action' => 'confirmremovequestion', 'qid' => $qid]));
+
+    } else if (isset($settings->addquestion)) {
+        $scorecalculation = [];
+        // Check for added question.
+        if (isset($settings->addquestionselect) && ($settings->addquestionselect != 0)) {
+            if ($questionnaire->questions[$settings->addquestionselect]->supports_feedback_scores()) {
+                $scorecalculation[$settings->addquestionselect] = 1;
             } else {
-                $strcannotuse = get_string('missingrequired', 'questionnaire', $qn);
+                $scorecalculation[$settings->addquestionselect] = -1;
             }
         }
-        if ($question->dependquestion != 0) {
-            continue;
+        // Get all current asigned questions.
+        if (isset($fullform->weight)) {
+            foreach ($fullform->weight as $qid => $value) {
+                $scorecalculation[$qid] = $value;
+            }
         }
+        // Update the section with question weights.
+        $feedbacksection->set_new_scorecalculation($scorecalculation);
+
+    } else if (isset($settings->submitbutton)) {
+        if (isset($fullform->weight)) {
+            $feedbacksection->scorecalculation = $fullform->weight;
+        } else {
+            $feedbacksection->scorecalculation = [];
+        }
+        $feedbacksection->sectionlabel = $settings->sectionlabel;
+        $feedbacksection->sectionheading = file_save_draft_area_files((int)$settings->sectionheading['itemid'], $context->id,
+            'mod_questionnaire', 'sectionheading', $feedbacksection->id, ['subdirs' => false, 'maxfiles' => -1, 'maxbytes' => 0],
+            $settings->sectionheading['text']);
+        $feedbacksection->sectionheadingformat = $settings->sectionheading['format'];
+
+        // May have changed the section label and weights, so update the data.
+        $customdata->sectionselect[$feedbacksection->id] = $settings->sectionlabel;
+        if (isset($fullform->weight)) {
+            $customdata->feedbacksection->scorecalculation = $fullform->weight;
+        }
+
+        // Save current section's feedbacks
+        // first delete all existing feedbacks for this section - if any - because we never know whether editing feedbacks will
+        // have more or less texts, so it's easiest to delete all and start afresh.
+        $feedbacksection->delete_sectionfeedback();
+
+        $i = 0;
+        while (!empty($settings->feedbackboundaries[$i])) {
+            $boundary = trim($settings->feedbackboundaries[$i]);
+            if (strlen($boundary) > 0 && $boundary[strlen($boundary) - 1] == '%') {
+                $boundary = trim(substr($boundary, 0, -1));
+            }
+            $settings->feedbackboundaries[$i] = $boundary;
+            $i += 1;
+        }
+        $numboundaries = $i;
+        $settings->feedbackboundaries[-1] = 101;
+        $settings->feedbackboundaries[$numboundaries] = 0;
+        $settings->feedbackboundarycount = $numboundaries;
+
+        // Now set up new section feedback records for each saved boundary.
+        for ($i = 0; $i <= $settings->feedbackboundarycount; $i++) {
+            $feedback = new stdClass();
+            $feedback->sectionid = $feedbacksection->id;
+            if (isset($settings->feedbacklabel[$i])) {
+                $feedback->feedbacklabel = $settings->feedbacklabel[$i];
+            } else {
+                $feedback->feedbacklabel = null;
+            }
+            $feedback->feedbacktext = '';
+            $feedback->feedbacktextformat = $settings->feedbacktext[$i]['format'];
+            $feedback->minscore = $settings->feedbackboundaries[$i];
+            $feedback->maxscore = $settings->feedbackboundaries[$i - 1];
+
+            $fbid = $feedbacksection->load_sectionfeedback($feedback);
+
+            $feedbacktext = file_save_draft_area_files((int)$settings->feedbacktext[$i]['itemid'],
+                $context->id, 'mod_questionnaire', 'feedback', $fbid, ['subdirs' => false, 'maxfiles' => -1, 'maxbytes' => 0],
+                $settings->feedbacktext[$i]['text']);
+            $feedbacksection->sectionfeedback[$fbid]->feedbacktext = $feedbacktext;
+        }
+
+        // Update all feedback data.
+        $feedbacksection->update();
     }
-
-    $qhasvalues = false;
-    if (!$cannotuse) {
-        if ($qtype == QUESRADIO || $qtype == QUESDROP) {
-            if ($choices = $DB->get_records('questionnaire_quest_choice', array('question_id' => $qid = $question->id))) {
-                foreach ($choices as $choice) {
-                    if ($choice->value != null) {
-                        $qhasvalues = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        // Valid questions in feedback sections can be of QUESNO type
-        // or of QUESRATE "normal" option type (i.e. not N/A nor nodupes).
-        if ($qtype == QUESYESNO || ($qtype == QUESRATE && ($qprecise == 0 || $qprecise == 3)) ) {
-            $qhasvalues = true;
-        }
-
-        if ($qhasvalues) {
-            $emptyisglobalfeedback = $questionnaire->survey->feedbacksections == 1 && empty($questionsinsections);
-            $questionnaire->page->add_to_page('formarea', '<div style="margin-bottom:5px;">['.$qname.']</div>');
-            for ($i = 0; $i < $feedbacksections; $i++) {
-                $output = '<div style="float:left; padding-right:5px;">';
-                if ($i != 0) {
-                    $output .= '<div class="'.$bg.'"><input type="radio" name="'.$n.'" id="'.$qid.'_'.$i.'" value="'.$i.'_'.
-                        $qid.'"';
-                } else {
-                    $output .= '<div class="'.$bg.'"><input type="radio" name="'.$n.'" id="'.$i.'" value="'.$i.'"';
-                }
-                if ($i == 0) {
-                    $output .= ' checked="checked"';
-                }
-                // Question already present in this section OR this is a Global feedback and questions are not set yet.
-                if ((isset($vf[$qid]) && $vf[$qid] == $i) || $emptyisglobalfeedback) {
-                    $output .= ' checked="checked"';
-                }
-                $output .= ' />';
-                $output .= '<label for="'.$qid.'_'.$i.'">'.'<div style="padding-left: 2px;">'.$i.'</div>'.'</label></div></div>';
-                $questionnaire->page->add_to_page('formarea', $output);
-                if ($bg == 'c0') {
-                    $bg = 'c1';
-                } else {
-                    $bg = 'c0';
-                }
-            }
-        }
-        if ($qhasvalues || $qtype == QUESSECTIONTEXT) {
-            $questionnaire->page->add_to_page('formarea',
-                $questionnaire->renderer->question_output($question, $formdata, '', $n, true));
-        }
-    } else {
-        $questionnaire->page->add_to_page('formarea', '<div class="notifyproblem">');
-        $questionnaire->page->add_to_page('formarea', $strcannotuse);
-        $questionnaire->page->add_to_page('formarea', '</div>');
-        $questionnaire->page->add_to_page('formarea', '<div class="qn-question">'.$question->content.'</div>');
-    }
+    $feedbackform = new \mod_questionnaire\feedback_section_form('fbsections.php', $customdata);
 }
-// Submit/Cancel buttons.
-$url = $CFG->wwwroot.'/mod/questionnaire/view.php?id='.$cm->id;
-$questionnaire->page->add_to_page('formarea', '<div><input type="submit" name="savesettings" value="'.
-    get_string('feedbackeditmessages', 'questionnaire').'" /><a href="'.$url.'">'.get_string('cancel').'</a></div>');
-$questionnaire->page->add_to_page('formarea', $questionnaire->renderer->box_end());
+
+// Print the page header.
+$PAGE->set_title(get_string('editingfeedback', 'questionnaire'));
+$PAGE->set_heading(format_string($course->fullname));
+$PAGE->navbar->add(get_string('editingfeedback', 'questionnaire'));
 echo $questionnaire->renderer->header();
+require('tabs.php');
+
+// Handle confirmations differently.
+if ($action == 'confirmremovequestion') {
+    $sectionid = required_param('sectionid', PARAM_INT);
+    $qid = required_param('qid', PARAM_INT);
+    $msgargs = new stdClass();
+    $msgargs->qname = $questionnaire->questions[$qid]->name;
+    $msgargs->sname = $feedbacksection->sectionlabel;
+    $msg = '<div class="warning centerpara"><p>' . get_string('confirmremovequestion', 'questionnaire', $msgargs) . '</p></div>';
+    $args = ['id' => $questionnaire->cm->id, 'sectionid' => $sectionid];
+    $urlno = new moodle_url('/mod/questionnaire/fbsections.php', $args);
+    $args['action'] = 'removequestion';
+    $args['qid'] = $qid;
+    $urlyes = new moodle_url('/mod/questionnaire/fbsections.php', $args);
+    $buttonyes = new single_button($urlyes, get_string('yes'));
+    $buttonno = new single_button($urlno, get_string('no'));
+    $questionnaire->page->add_to_page('formarea', $questionnaire->renderer->confirm($msg, $buttonyes, $buttonno));
+
+} else if ($action == 'confirmdeletesection') {
+    $sectionid = required_param('sectionid', PARAM_INT);
+    $msg = '<div class="warning centerpara"><p>' .
+        get_string('confirmdeletesection', 'questionnaire', $feedbacksection->sectionlabel) . '</p></div>';
+    $args = ['id' => $questionnaire->cm->id, 'sectionid' => $sectionid];
+    $urlno = new moodle_url('/mod/questionnaire/fbsections.php', $args);
+    $args['action'] = 'deletesection';
+    $urlyes = new moodle_url('/mod/questionnaire/fbsections.php', $args);
+    $buttonyes = new single_button($urlyes, get_string('yes'));
+    $buttonno = new single_button($urlno, get_string('no'));
+    $questionnaire->page->add_to_page('formarea', $questionnaire->renderer->confirm($msg, $buttonyes, $buttonno));
+
+} else {
+    $questionnaire->page->add_to_page('formarea', $feedbackform->render());
+}
+
 echo $questionnaire->renderer->render($questionnaire->page);
 echo $questionnaire->renderer->footer($course);

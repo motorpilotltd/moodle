@@ -60,8 +60,8 @@ if (!$questionnaire->capabilities->editquestions) {
     print_error('nopermissions', 'error', 'mod:questionnaire:edit');
 }
 
-$questionnairehasdependencies = questionnaire_has_dependencies($questionnaire->questions);
-$haschildren = array();
+$questionnairehasdependencies = $questionnaire->has_dependencies();
+$haschildren = [];
 if (!isset($SESSION->questionnaire)) {
     $SESSION->questionnaire = new stdClass();
 }
@@ -76,18 +76,16 @@ if ($delq) {
     $sid = $questionnaire->survey->id;
     $questionnaireid = $questionnaire->id;
 
-    // Does the question to be deleted have any child questions?
-    if ($questionnairehasdependencies) {
-        $haschildren  = questionnaire_get_descendants ($questionnaire->questions, $qid);
-    }
-
     // Need to reload questions before setting deleted question to 'y'.
-    $questions = $DB->get_records('questionnaire_question', array('survey_id' => $sid, 'deleted' => 'n'), 'id');
-    $DB->set_field('questionnaire_question', 'deleted', 'y', array('id' => $qid, 'survey_id' => $sid));
+    $questions = $DB->get_records('questionnaire_question', ['surveyid' => $sid, 'deleted' => 'n'], 'id');
+    $DB->set_field('questionnaire_question', 'deleted', 'y', ['id' => $qid, 'surveyid' => $sid]);
+
+    // Delete all dependency records for this question.
+    questionnaire_delete_dependencies($qid);
 
     // Just in case the page is refreshed (F5) after a question has been deleted.
     if (isset($questions[$qid])) {
-        $select = 'survey_id = '.$sid.' AND deleted = \'n\' AND position > '.
+        $select = 'surveyid = '.$sid.' AND deleted = \'n\' AND position > '.
                         $questions[$qid]->position;
     } else {
         redirect($CFG->wwwroot.'/mod/questionnaire/questions.php?id='.$questionnaire->cm->id);
@@ -99,42 +97,22 @@ if ($delq) {
         }
     }
     // Delete section breaks without asking for confirmation.
-    $qtype = $questionnaire->questions[$qid]->type_id;
     // No need to delete responses to those "question types" which are not real questions.
-    if ($qtype == QUESPAGEBREAK || $qtype == QUESSECTIONTEXT) {
+    if (!$questionnaire->questions[$qid]->supports_responses()) {
         $reload = true;
     } else {
         // Delete responses to that deleted question.
         questionnaire_delete_responses($qid);
 
-        // The deleted question was a parent, so now we must delete its child question(s).
-        if (count($haschildren) !== 0) {
-            foreach ($haschildren as $qid => $child) {
-                // Need to reload questions first.
-                $questions = $DB->get_records('questionnaire_question', array('survey_id' => $sid, 'deleted' => 'n'), 'id');
-                $DB->set_field('questionnaire_question', 'deleted', 'y', array('id' => $qid, 'survey_id' => $sid));
-                $select = 'survey_id = '.$sid.' AND deleted = \'n\' AND position > '.
-                                $questions[$qid]->position;
-                if ($records = $DB->get_records_select('questionnaire_question', $select, null, 'position ASC')) {
-                    foreach ($records as $record) {
-                        $DB->set_field('questionnaire_question', 'position', $record->position - 1, array('id' => $record->id));
-                    }
-                }
-                // Delete responses to that deleted question.
-                questionnaire_delete_responses($qid);
-            }
-        }
-
-        // If no questions left in this questionnaire, remove all attempts and responses.
-        if (!$questions = $DB->get_records('questionnaire_question', array('survey_id' => $sid, 'deleted' => 'n'), 'id') ) {
-            $DB->delete_records('questionnaire_response', array('survey_id' => $sid));
-            $DB->delete_records('questionnaire_attempts', array('qid' => $questionnaireid));
+        // If no questions left in this questionnaire, remove all responses.
+        if ($DB->count_records('questionnaire_question', ['surveyid' => $sid, 'deleted' => 'n']) == 0) {
+            $DB->delete_records('questionnaire_response', ['questionnaireid' => $qid]);
         }
     }
 
     // Log question deleted event.
     $context = context_module::instance($questionnaire->cm->id);
-    $questiontype = \mod_questionnaire\question\base::qtypename($qtype);
+    $questiontype = \mod_questionnaire\question\base::qtypename($questionnaire->questions[$qid]->type_id);
     $params = array(
                     'context' => $context,
                     'courseid' => $questionnaire->course->id,
@@ -150,7 +128,7 @@ if ($delq) {
 }
 
 if ($action == 'main') {
-    $questionsform = new mod_questionnaire_questions_form('questions.php', $moveq);
+    $questionsform = new \mod_questionnaire\questions_form('questions.php', $moveq);
     $sdata = clone($questionnaire->survey);
     $sdata->sid = $questionnaire->survey->id;
     $sdata->id = $cm->id;
@@ -197,7 +175,9 @@ if ($action == 'main') {
                 redirect($CFG->wwwroot.'/mod/questionnaire/questions.php?id='.$questionnaire->cm->id.'&amp;delq='.$qid);
             }
             if ($questionnairehasdependencies) {
-                $haschildren  = questionnaire_get_descendants ($questionnaire->questions, $qid);
+                // Important: due to possibly multiple parents per question
+                // just remove the dependency and inform the user about it.
+                $haschildren = $questionnaire->get_all_dependants($qid);
             }
             if (count($haschildren) != 0) {
                 $action = "confirmdelquestionparent";
@@ -218,7 +198,7 @@ if ($action == 'main') {
             // value in the <input> tag.
 
             $qid = key($qformdata->requiredbutton);
-            if ($questionnaire->questions[$qid]->required == 'y') {
+            if ($questionnaire->questions[$qid]->required()) {
                 $questionnaire->questions[$qid]->set_required(false);
 
             } else {
@@ -230,7 +210,7 @@ if ($action == 'main') {
         } else if (isset($qformdata->addqbutton)) {
             if ($qformdata->type_id == QUESPAGEBREAK) { // Adding section break is handled right away....
                 $questionrec = new stdClass();
-                $questionrec->survey_id = $qformdata->sid;
+                $questionrec->surveyid = $qformdata->sid;
                 $questionrec->type_id = QUESPAGEBREAK;
                 $questionrec->content = 'break';
                 $question = \mod_questionnaire\question\base::question_builder(QUESPAGEBREAK);
@@ -278,7 +258,7 @@ if ($action == 'main') {
 
 } else if ($action == 'question') {
     $question = questionnaire_prep_for_questionform($questionnaire, $qid, $qtype);
-    $questionsform = new mod_questionnaire_edit_question_form('questions.php');
+    $questionsform = new \mod_questionnaire\edit_question_form('questions.php');
     $questionsform->set_data($question);
     if ($questionsform->is_cancelled()) {
         // Switch to main screen.
@@ -297,12 +277,8 @@ if ($action == 'main') {
         if (!isset($qformdata->required)) {
             $qformdata->required = 'n';
         }
-        // Need to reload questions.
-        $questions = $DB->get_records('questionnaire_question', array('survey_id' => $sid, 'deleted' => 'n'), 'id');
-        $questionnairehasdependencies = questionnaire_has_dependencies($questions);
-        if (questionnaire_has_dependencies($questions)) {
-            questionnaire_check_page_breaks($questionnaire);
-        }
+
+        questionnaire_check_page_breaks($questionnaire);
         $SESSION->questionnaire->required = $qformdata->required;
         $SESSION->questionnaire->type_id = $qformdata->type_id;
         // Switch to main screen.
@@ -334,7 +310,7 @@ if ($reload) {
     $questionnaire->add_renderer($PAGE->get_renderer('mod_questionnaire'));
     $questionnaire->add_page(new \mod_questionnaire\output\questionspage());
     if ($action == 'main') {
-        $questionsform = new mod_questionnaire_questions_form('questions.php', $moveq);
+        $questionsform = new \mod_questionnaire\questions_form('questions.php', $moveq);
         $sdata = clone($questionnaire->survey);
         $sdata->sid = $questionnaire->survey->id;
         $sdata->id = $cm->id;
@@ -348,7 +324,7 @@ if ($reload) {
         $questionsform->set_data($sdata);
     } else if ($action == 'question') {
         $question = questionnaire_prep_for_questionform($questionnaire, $qid, $qtype);
-        $questionsform = new mod_questionnaire_edit_question_form('questions.php');
+        $questionsform = new \mod_questionnaire\edit_question_form('questions.php');
         $questionsform->set_data($question);
     }
 }
@@ -416,20 +392,12 @@ if ($action == "confirmdelquestion" || $action == "confirmdelquestionparent") {
     if ($action == "confirmdelquestionparent") {
         $strnum = get_string('position', 'questionnaire');
         $qid = key($qformdata->removebutton);
-        $msg .= '<div class="warning">'.get_string('confirmdelchildren', 'questionnaire').'</div><br />';
-        foreach ($haschildren as $child) {
-            $childname = '';
-            if ($child['name']) {
-                $childname = ' ('.$child['name'].')';
-            }
-            $msg .= '<div class = "qn-container">'.$strnum.' '.$child['position'].$childname.'<span class="qdepend"><strong>'.
-                            get_string('dependquestion', 'questionnaire').'</strong>'.
-                            ' ('.$strnum.' '.$child['parentposition'].') '.
-                            '&nbsp;:&nbsp;'.$child['parent'].'</span>'.
-                            '<div class="qn-question">'.
-                            $child['content'].
-                            '</div></div>';
-        }
+        // Show the dependencies and inform about the dependencies to be removed.
+        // Split dependencies in direct and indirect ones to separate for the confirm-dialogue. Only direct ones will be deleted.
+        // List direct dependencies.
+        $msg .= $questionnaire->renderer->dependency_warnings($haschildren->directs, 'directwarnings', $strnum);
+        // List indirect dependencies.
+        $msg .= $questionnaire->renderer->dependency_warnings($haschildren->indirects, 'indirectwarnings', $strnum);
     }
     $questionnaire->page->add_to_page('formarea', $questionnaire->renderer->confirm($msg, $buttonyes, $buttonno));
 
