@@ -26,15 +26,20 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 require_once(dirname(__FILE__) . '/view_form.php');
 require_once($CFG->libdir . '/adminlib.php');
-require_once($CFG->libdir . '/validateurlsyntax.php');
 
 $id = required_param('id', PARAM_INT);
+$urlparams = ['id' => $id];
 $report = $DB->get_record('report_customsql_queries', array('id' => $id));
 if (!$report) {
     print_error('invalidreportid', 'report_customsql', report_customsql_url('index.php'), $id);
 }
 
-require_login();
+// Setup the page.
+admin_externalpage_setup('report_customsql', '', $urlparams,
+        '/report/customsql/view.php');
+$PAGE->set_title(format_string($report->displayname));
+$PAGE->navbar->add(format_string($report->displayname));
+
 $context = context_system::instance();
 if (!empty($report->capability)) {
     require_capability($report->capability, $context);
@@ -52,9 +57,6 @@ if ($report->runable == 'manual') {
             $queryparams[substr($queryparam, 1)] = 'queryparam'.substr($queryparam, 1);
         }
 
-        $PAGE->set_url(new moodle_url('/report/customsql/view.php'));
-        $PAGE->set_context($context);
-        $PAGE->set_title($report->displayname);
         $relativeurl = 'view.php?id=' . $id;
         $mform = new report_customsql_view_form(report_customsql_url($relativeurl), $queryparams);
 
@@ -74,9 +76,10 @@ if ($report->runable == 'manual') {
             }
         } else {
 
-            admin_externalpage_setup('report_customsql');
-            $PAGE->set_title($report->displayname);
-            $PAGE->navbar->add($report->displayname);
+            admin_externalpage_setup('report_customsql', '', $urlparams,
+                    '/report/customsql/view.php');
+            $PAGE->set_title(format_string($report->displayname));
+            $PAGE->navbar->add(format_string($report->displayname));
             echo $OUTPUT->header();
             echo $OUTPUT->heading(format_string($report->displayname));
             if (!html_is_blank($report->description)) {
@@ -106,12 +109,10 @@ if ($report->runable == 'manual') {
     }
 } else {
     $csvtimestamp = optional_param('timestamp', time(), PARAM_INT);
+    $urlparams['timestamp'] = $csvtimestamp;
 }
 
-// Start the page.
-admin_externalpage_setup('report_customsql');
-$PAGE->set_title($report->displayname);
-$PAGE->navbar->add($report->displayname);
+// Output.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($report->displayname));
 
@@ -146,18 +147,11 @@ if (is_null($csvtimestamp)) {
         }
 
         $table = new html_table();
-        $table->head = fgetcsv($handle);
+        $table->id = 'report_customsql_results';
+        list($table->head, $linkcolumns) = report_customsql_get_table_headers(fgetcsv($handle));
 
         while ($row = fgetcsv($handle)) {
-            $rowdata = array();
-            foreach ($row as $value) {
-                if (validateUrlSyntax($value, 's+H?S?F?E?u-P-a?I?p?f?q?r?')) {
-                    $rowdata[] = '<a href="' . $value . '">' . $value . '</a>';
-                } else {
-                    $rowdata[] = $value;
-                }
-            }
-            $table->data[] = $rowdata;
+            $table->data[] = report_customsql_display_row($row, $linkcolumns);
             $count += 1;
         }
 
@@ -168,7 +162,11 @@ if (is_null($csvtimestamp)) {
             echo html_writer::tag('p', get_string('recordlimitreached', 'report_customsql',
                                                   REPORT_CUSTOMSQL_MAX_RECORDS),
                                                   array('class' => 'admin_note'));
+        } else {
+            echo html_writer::tag('p', get_string('recordcount', 'report_customsql', $count),
+                    array('class' => 'admin_note'));
         }
+
         echo report_customsql_time_note($report, 'p').
              html_writer::start_tag('p').
              html_writer::tag('a', get_string('downloadthisreportascsv', 'report_customsql'),
