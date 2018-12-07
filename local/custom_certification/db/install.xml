@@ -79,7 +79,7 @@
         <FIELD NAME="uservisible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Visibility of certification to users"/>
         <FIELD NAME="reportvisible" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Visibility of certification on reports"/>
         <FIELD NAME="recertificationdatetype" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="0=Use cert expiry date 1=Use cert completion date"/>
-        <FIELD NAME="courseid" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS course IDs"/>
+        <FIELD NAME="courseid" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Linked Moodle course IDs"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -152,7 +152,6 @@
         <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Due date"/>
         <FIELD NAME="progress" TYPE="int" LENGTH="3" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Progress in %"/>
         <FIELD NAME="cronchecked" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Batch cron task"/>
-        <FIELD NAME="tapsenrolmentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS enrolment ID"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT=""/>
       </FIELDS>
       <KEYS>
@@ -176,7 +175,6 @@
         <FIELD NAME="timewindowsopens" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
         <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Due date"/>
         <FIELD NAME="timearchived" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
-        <FIELD NAME="tapsenrolmentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Linked TAPS enrolment ID"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

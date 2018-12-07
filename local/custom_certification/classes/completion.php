@@ -407,8 +407,8 @@ class completion
 
         // Pre-load ready to override if completed in TAPS.
         $progress = self::get_user_progress($certification, $userid);
-        $tapsenrolmentid = null;
         $timecompleted = null;
+
 
         // Handle a current complete certification vs not complete/non-existent..
         if ($completionrecord
@@ -430,19 +430,9 @@ class completion
                     self::check_completion($completionrecord->certifid, $completionrecord->userid, $newcertifpath);
                 }
             }
-        } else {
-            // Are we linked to a old TAPS course? And this user already been linked to an enrolment?
-            list($tapsenrolmentid, $timecompleted) = self::check_taps_completion($certification, $userid, $completionrecord);
-            // Override status if applicable (TAPS completion found).
-            if (!is_null($timecompleted)) {
-                // Override status and progress.
-                $status = self::COMPLETION_STATUS_COMPLETED;
-                $progress['certification'] = 100;
-                $progress['recertification'] = 100;
-            }
         }
 
-        if (!$completionrecord) {
+        if(!$completionrecord){
             $completionrecord = new \stdClass();
             $completionrecord->userid = $userid;
             $completionrecord->certifid = $certification->id;
@@ -450,12 +440,10 @@ class completion
             $completionrecord->status = $status;
             $completionrecord->timeassigned = time();
             $completionrecord->cronchecked = 1;
-            $completionrecord->tapsenrolmentid = $tapsenrolmentid;
 
             if ($status == self::COMPLETION_STATUS_COMPLETED) {
                 $firecompletionevent = true;
-                $completionrecord->timecompleted =
-                        (is_null($timecompleted) ? self::get_completion_time($certification, $userid, $certifpath) : $timecompleted);
+                $completionrecord->timecompleted = self::get_completion_time($certification, $userid, $certifpath);
                 /**
                  * If certification has recertification path then calculate time expire and window open time
                  */
@@ -482,14 +470,13 @@ class completion
             $completionrecord->id = $DB->insert_record('certif_completions', $completionrecord, true);
         } else {
             // Record already exists.
-            if ($status == self::COMPLETION_STATUS_COMPLETED && $completionrecord->status != self::COMPLETION_STATUS_COMPLETED) {
-                $completionrecord->tapsenrolmentid =
-                        (is_null($completionrecord->tapsenrolmentid) ? $tapsenrolmentid : $completionrecord->tapsenrolmentid);
+            if ($status == self::COMPLETION_STATUS_COMPLETED && $completionrecord->status != self::COMPLETION_STATUS_COMPLETED){
                 $completionrecord->timecompleted =
                         (is_null($timecompleted) ? self::get_completion_time($certification, $userid, $certifpath) : $timecompleted);
-
-                // If certification has recertification path then calculate time expire and window open time.
-                if ($certification->has_recertification()) {
+                /**
+                 * If certification has recertification path then calculate time expire and window open time
+                 */
+                if($certification->has_recertification()){
                     $completionrecord->timeexpires = self::get_expiration_time($certification, $userid, $completionrecord->timecompleted);
                     $datetime = new \DateTime();
                     $datetime->setTimestamp($completionrecord->timeexpires);
@@ -532,61 +519,6 @@ class completion
             $event = event\certification_completed::create($params);
             $event->trigger();
         }
-    }
-
-    public static function check_taps_completion($certification, $userid, $completionrecord) {
-        global $DB;
-
-        // 0 => enrolmentid, 1 => timecompleted
-        $return = [0 => null, 1 => null];
-
-        if (empty($certification->linkedtapscourseid)) {
-            // Certificate not linked to TAPS.
-            return $return;
-        } else if (!empty($completionrecord->tapsenrolmentid) && !empty($completionrecord->timecompleted)) {
-            // Already exists, maintain state.
-            $return[0] = $completionrecord->tapsenrolmentid;
-            $return[1] = $completionrecord->timecompleted;
-            return $return;
-        }
-
-        $archived = $DB->get_records_select(
-                'certif_completions_archive',
-                'certifid = :certifid AND userid = :userid',
-                ['certifid' => $certification->id, 'userid' => $userid]
-            );
-        if (!empty($archived)) {
-            // Archived completion found so don't override.
-            return $return;
-        }
-
-        // Does this user have a completed old TAPS course enrolment?
-        $taps = new \mod_tapsenrol\taps();
-        list($insql1, $params1) = $DB->get_in_or_equal(explode(',', $certification->courseid), SQL_PARAMS_NAMED, 'courseid');
-        list($insql2, $params2) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
-        $sql = <<<EOS
-SELECT
-    enrolmentid, completiontime
-FROM
-    {local_taps_enrolment}
-WHERE
-    staffid = :staffid
-    AND courseid {$insql1}
-    AND {$DB->sql_compare_text('bookingstatus')} {$insql2}
-    AND (archived IS NULL OR archived = 0)
-EOS;
-        $params = array_merge($params1, $params2);
-        $params['staffid'] = $DB->get_field('user', 'idnumber', ['id' => $userid]);
-
-        $completions = $DB->get_records_sql_menu($sql, $params);
-
-        if (empty($completions)) {
-            return $return;
-        }
-
-        $return[1] = max($completions);
-        $return[0] = array_search($return[1], $completions);
-        return $return;
     }
 
     /**
@@ -675,18 +607,6 @@ EOS;
                 foreach($courseset->courses as $course){
                     self::reset_course_for_user($course->courseid, $completionrecord->userid);
                     $resetcourses[] = $course->courseid;
-                }
-            }
-            // Update linked enrolment if still needs resetting (i.e. if 'faked' certification completion from historical TAPS data.
-            // Only necessary if related (Moodle) course is one of the ones being reset.
-            if ($insertrecord->tapsenrolmentid
-                    && $enrolment = $DB->get_record('local_taps_enrolment', ['enrolmentid' => $insertrecord->tapsenrolmentid, 'active' => 1])) {
-                // Check it relates to a reset Moodle course.
-                $mdlcourseid = $DB->get_field('course', 'id', ['idnumber' => $enrolment->courseid]);
-                if (in_array($mdlcourseid, $resetcourses)) {
-                    $enrolment->active = 0;
-                    $enrolment->timemodifed = time();
-                    $DB->update_record('local_taps_enrolment', $enrolment);
                 }
             }
             self::check_completion($completionrecord->certifid, $completionrecord->userid);
