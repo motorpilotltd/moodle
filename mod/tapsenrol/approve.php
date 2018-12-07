@@ -38,7 +38,12 @@ if ($id) {
 if ($id && !$loaderror) {
     // Now know enrolment is loaded OK.
     $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
-    $tapsenrol = $DB->get_record('tapsenrol', array('course' => $enrolment->courseid));
+    $tapsenrol = $DB->get_record_sql(
+            'SELECT te.* FROM {tapsenrol} te
+                  INNER JOIN {local_taps_class} ltc ON ltc.courseid = te.courseid
+                  WHERE ltc.classid = :classid',
+            ['classid' => $enrolment->classid]
+    );
     if (!$user || !$tapsenrol) {
         $loaderror = 'User or activity not found.';
     }
@@ -131,14 +136,12 @@ if ($loaderror) {
                 ));
                 $event->trigger();
                 $title .= get_string('separator', 'tapsenrol') . $course->fullname;
-                if (!isset($enrolment->trainingcenter)) {
-                    // Needed for renderer.
-                    $class = $tapsenrolclass->taps->get_class_by_id($enrolment->classid);
-                    $enrolment->price = $class ? $class->price : null;
-                    $enrolment->currencycode = $class ? $class->currencycode : null;
-                    $enrolment->trainingcenter = $class ? $class->trainingcenter : null;
-                }
-                echo $output->review_approval($title, $info, $iwtrack, $user, $enrolment, $tapsenrolclass->course);
+                // Needed for renderer.
+                $class = $tapsenrolclass->taps->get_class_by_id($enrolment->classid);
+                $enrolment->price = $class ? $class->price : null;
+                $enrolment->currencycode = $class ? $class->currencycode : null;
+
+                echo $output->review_approval($title, $info, $iwtrack, $user, $enrolment, $tapsenrolclass->course, $class);
                 $form->display();
                 $showall = false;
             }
@@ -162,12 +165,14 @@ if ($showall) {
 SELECT
     tit.*,
     {$usernamefields},
-    lte.coursename, lte.classname
+    c.fullname as coursename, ltc.classname
 FROM
     {tapsenrol_iw_tracking} tit
 JOIN
     {local_taps_enrolment} lte
     ON lte.enrolmentid = tit.enrolmentid
+INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
+INNER JOIN {course} c ON c.id = ltc.courseid
 JOIN
     {tapsenrol} t
     ON t.course = lte.courseid

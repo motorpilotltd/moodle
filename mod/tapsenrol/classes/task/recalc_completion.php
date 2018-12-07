@@ -78,7 +78,7 @@ FROM {local_taps_enrolment} lte
 JOIN {user} u
     ON u.idnumber = lte.staffid
 JOIN {tapsenrol} t
-    ON t.course = lte.courseid
+    ON t.course = ltc.courseid
 JOIN {course_modules} cm
     ON cm.instance = t.id
 JOIN {course} c
@@ -86,6 +86,7 @@ JOIN {course} c
 JOIN {modules} m
     ON m.id = cm.module
 
+INNER JOIN {local_taps_class} ltc.classid = lte.classid
 JOIN {user_enrolments} ue
     ON ue.userid = u.id
 JOIN {enrol} e
@@ -104,7 +105,7 @@ WHERE
     AND e.status = :enabled
     AND ue.timestart < :now1
     AND (ue.timeend = 0 OR ue.timeend > :now2)
-    AND lte.classstarttime < :now3
+    AND ltc.classstarttime < :now3
     AND lte.active = 1
     AND (lte.archived = 0 OR lte.archived IS NULL)
     AND {$compare} {$instatement}

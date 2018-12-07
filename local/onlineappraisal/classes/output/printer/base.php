@@ -112,13 +112,15 @@ abstract class base implements renderable, templatable {
         list($usql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
         $sql = <<<EOS
 SELECT
-    lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.completiontime, lte.duration, lte.durationunits,
-        lte.expirydate, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
-        lte.healthandsafetycategory, lte.usedtimezone,
-    lte.courseid as course,
+    lte.id, ltc.classtype, ltc.classname, c.fullname as coursename, ltc.classcategory, lte.completiontime, ltc.duration, ltc.durationunits,
+        lte.expirydate, ltc.classsuppliername, ltc.location, ltc.classstartdate, lte.certificateno, lte.learningdesc,
+        ltc.healthandsafetycategory, ltc.usedtimezone,
+    ltc.courseid as course,
     cat.id as categoryid, cat.name as categoryname
 FROM
     {local_taps_enrolment} lte
+INNER JOIN
+    {local_taps_class} ltc ON ltc.classid = lte.classid
 LEFT JOIN
     {course} c
     ON c.id = lte.course

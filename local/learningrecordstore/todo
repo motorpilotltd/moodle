@@ -18,6 +18,8 @@ pricebasis
 timemodified (consolidation of timemodified as lastupdatedate)
 expirydate
 classtype (currently learning method)
+starttime take from classstarttime in tapsenrol
+endtime take from classendtime in tapsenrol
 
 New tapsenrol_class_enrolments table:
 classid
@@ -41,29 +43,31 @@ personid (absent in last 97k records and not referenced anywhere in Moodle) DELE
 courseobjectives duplicated from taps course table (now metadata field, only different in 6 cases) DELETED
 
 duplicated on local_taps_class so can be removed:
-trainingcenter (never different)
-classname (never different)
-classtype (never different)
-classstartdate (one difference)
-classenddate (two differences)
-classstarttime (one difference)
-classendtime (one difference)
-duration/classduration (never different)
-location (never different)
-durationunits/classdurationunits (never different - ignoring change in format...)
-durationunitscode (never different)
+trainingcenter (never different) DONE
+classname (never different) DONE
+classtype (never different) DONE
+classstartdate (one difference) DONE
+classenddate (two differences) DONE
+classstarttime (one difference) DONE (DROPPED FROM ENROLMENT TABLE BUT RETAINED AS starttime IN LRS)
+classendtime (one difference) DONE (DROPPED FROM ENROLMENT TABLE BUT RETAINED AS endtime IN LRS)
+duration/classduration (never different) DONE
+location (never different) DONE
+durationunits/classdurationunits (never different - ignoring change in format...) DONE
+durationunitscode (never different) DONE
 timezone (never different)
 usedtimezone (never different)
 archived
 price
+provider/classsuppliername  DONE (stays as provider for cpd records, becomes classsuppliername
+courseid DONE
 
 local_taps_class:
 rename usedtimezone to timezone
 drop date columns where a corresponding time exists
 
+Should replace classid with PK from class table
 
-
-
+((\$enrolment->)|(lte.))courseid
 
 to confirm:
 price and currencycode _may_ be able to be dropped. There were multiple cost/currency fields in TAPS to represent cost to the company vs cost to attendee. The requirement to distinguish was not continued after the initial migration so I'd imagine can be removed.

@@ -28,6 +28,7 @@ try {
     $taps = new \mod_tapsenrol\taps();
 
     $enrolment = $DB->get_record('local_taps_enrolment', array('id' => $id, 'staffid' => $USER->idnumber));
+    $class = $this->taps->get_class_by_id($enrolment->classid);
     if ($enrolment) {
         $timezone = new DateTimeZone($enrolment->usedtimezone);
 
@@ -35,19 +36,19 @@ try {
 
         echo html_writer::start_tag('div', array('class' => 'modal-upper'));
         $modalupper = array();
-        if ($enrolment->classtype) {
-            $classtypegroup = $taps->get_classtype_type($enrolment->classtype);
+        if ($class->classtype) {
+            $classtypegroup = $taps->get_classtype_type($class->classtype);
             if ($classtypegroup != 'cpd' && get_string_manager()->string_exists($classtypegroup, 'block_arup_mylearning')) {
                 $data = get_string($classtypegroup, 'block_arup_mylearning');
             } else {
-                $data = $enrolment->classtype;
+                $data = $class->classtype;
             }
             $modalupper[] = html_writer::tag('strong', get_string('modal:classtype', 'block_arup_mylearning').': ') .
                 $data;
         }
-        if ($enrolment->classstartdate) {
+        if ($class->classstartdate) {
             $date = new DateTime(null, $timezone);
-            $date->setTimestamp($enrolment->classstartdate);
+            $date->setTimestamp($class->classstartdate);
             $data = $date->format('d M Y');
             $modalupper[] = html_writer::tag('strong', get_string('modal:classstartdate', 'block_arup_mylearning').': ') .
                 $data;
@@ -71,8 +72,8 @@ try {
 
         echo html_writer::start_tag('div', array('class' => 'modal-upper'));
         $modalupper = array();
-        if ($enrolment->duration) {
-            $data = (float)$enrolment->duration.' '.$enrolment->durationunits;
+        if ($class->duration) {
+            $data = (float)$class->duration.' '.$class->durationunits;
             $modalupper[] = html_writer::tag('strong', get_string('modal:duration', 'block_arup_mylearning').': ') .
                 $data;
         }
@@ -83,9 +84,9 @@ try {
             $modalupper[] = html_writer::tag('strong', get_string('modal:completiontime', 'block_arup_mylearning').': ') .
                 $data;
         }
-        if ($enrolment->location) {
+        if ($class->location) {
             $modalupper[] = html_writer::tag('strong', get_string('modal:location', 'block_arup_mylearning').': ') .
-                $enrolment->location;
+                    $class->location;
         }
         if ($enrolment->expirydate) {
             $date = new DateTime(null, $timezone);

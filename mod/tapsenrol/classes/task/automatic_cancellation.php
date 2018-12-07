@@ -66,16 +66,17 @@ class automatic_cancellation extends \core\task\scheduled_task {
             $taps->get_classtypes('classroom'),
             SQL_PARAMS_NAMED, 'type'
         );
-        $compare2 = $DB->sql_compare_text('lte.classtype');
+        $compare2 = $DB->sql_compare_text('ltc.classtype');
 
         $from = <<<EOS
     {local_taps_enrolment} lte
 JOIN
     {tapsenrol_iw_tracking} iwt
     ON iwt.enrolmentid = lte.enrolmentid
+INNER JOIN {local_taps_class} ltc.classid = lte.classid
 JOIN
     {tapsenrol} t
-    ON t.course = lte.courseid
+    ON t.course = ltc.courseid
 JOIN
     {tapsenrol_iw} iw
     ON iw.id = t.internalworkflowid
@@ -94,9 +95,9 @@ EOS;
         )
         OR
         (
-            lte.classstarttime != 0
+            ltc.classstarttime != 0
             AND iw.cancelbefore > 0
-            AND lte.classstarttime < ({$now} + iw.cancelbefore)
+            AND ltc.classstarttime < ({$now} + iw.cancelbefore)
             AND {$compare2} {$in2}
         )
     )

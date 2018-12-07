@@ -226,9 +226,12 @@ EOS;
                 FROM {local_taps_enrolment} lte
                 JOIN {user} u
                     ON u.idnumber = lte.staffid
+                INNER JOIN
+                    {local_taps_class} ltc
+                    ON ltc.classid = lte.classid
                 WHERE
                     u.id = :userid
-                    AND lte.courseid = :courseid
+                    AND ltc.courseid = :courseid
                     AND lte.active = 1
                     AND (lte.archived = 0 OR lte.archived IS NULL)
                     AND {$compare} {$instatement}";
@@ -255,7 +258,8 @@ EOS;
         // We need to update course completion time if applicable.
         // Use completed field (stores enrolmentid), ignore if 1 for legacy (actual enrolmentid 1 is historic).
         if (!empty($enrolment->classendtime) && $tapsenrol->tapsenrol->completiontimetype  == \tapsenrol::$completiontimetypes['classendtime'] ) {
-            $completiontime = $enrolment->classendtime;
+            $class = $tapsenrol->taps->get_class_by_id($enrolment->classid);
+            $completiontime = $class->classendtime;
             // Update Moodle course completion date.
             // Record should exist as we're observing course completion.
             $ccompletion->timecompleted = $completiontime;

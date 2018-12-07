@@ -50,7 +50,8 @@ class csvimport {
         "durationunits",
         "certificateno",
         "expirydate",
-        "classstarttime",
+        "starttime",
+        "endtime",
         "healthandsafetycategory",
         "classcost",
         "classcostcurrency",
@@ -360,9 +361,14 @@ class csvimport {
             }
         }
         // Check if the Class start time uses a valid date string.
-        if (!empty($data['classstarttime'])) {
-            if (strtotime($data['classstarttime'] . ' UTC') === false) {
-                $status['classstarttime'] = $this->mkwarn('classstarttime');
+        if (!empty($data['starttime'])) {
+            if (strtotime($data['starttime'] . ' UTC') === false) {
+                $status['starttime'] = $this->mkwarn('starttime');
+            }
+        }
+        if (!empty($data['endtime'])) {
+            if (strtotime($data['endtime'] . ' UTC') === false) {
+                $status['endtime'] = $this->mkwarn('endtime');
             }
         }
         // Check if the Class start time uses a valid date string.

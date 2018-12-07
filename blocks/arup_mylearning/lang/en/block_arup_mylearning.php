@@ -75,7 +75,6 @@ $string['cpd:completiontime'] = 'Completion date';
 $string['cpd:classcost'] = 'Cost';
 $string['cpd:classcostcurrency'] = 'Currency';
 $string['cpd:classname'] = 'Class name';
-$string['cpd:classstartdate'] = 'Start date';
 $string['cpd:classtype'] = 'Learning method';
 $string['cpd:duration'] = 'Duration';
 $string['cpd:durationunitscode'] = 'Duration units';

@@ -231,7 +231,7 @@ if ($type == 'future' || $type == 'past') {
             $cancelresult = $tapsenrol->cancel_enrolment($enrolment->enrolmentid, $status);
             if ($cancelresult->success) {
                 // Variable $enrolment will have original booking status which is required.
-                $email = $enrolment->classstarttime < time() ? null : 'cancellation_admin';
+                $email = $class->classstarttime < time() ? null : 'cancellation_admin';
                 $tapsenrol->cancel_workflow($enrolment, "ADMIN: {$status}", $email);
                 $a .= "<br />SUCCESS: [{$username}] Enrolment cancelled. Status: '{$status}'";
             } else {

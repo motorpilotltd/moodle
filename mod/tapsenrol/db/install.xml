@@ -212,10 +212,7 @@
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="coursename" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="location" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classtype" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classcategory" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classstartdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classenddate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="duration" TYPE="float" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="durationunits" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="durationunitscode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
@@ -225,8 +222,6 @@
         <FIELD NAME="expirydate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="bookingstatus" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="personid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classstarttime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classendtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="completiontime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="healthandsafetycategory" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classcost" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>

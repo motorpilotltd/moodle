@@ -208,9 +208,10 @@ FROM
 JOIN
     {local_taps_enrolment} lte
     ON lte.enrolmentid = tit.enrolmentid
+INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 JOIN
     {tapsenrol} t
-    ON t.course = lte.courseid
+    ON t.course = ltc.courseid
 JOIN
     {tapsenrol_iw} ti
     ON ti.id = t.internalworkflowid
@@ -265,13 +266,14 @@ EOS;
         list($usql, $params) = $DB->get_in_or_equal($statuses, SQL_PARAMS_NAMED, 'status');
         $sql = <<<EOS
 SELECT
-    lte.id, lte.coursename, lte.classtype, lte.bookingstatus,
+    lte.id, c.fullname as coursename, ltc.classtype, lte.bookingstatus,
     c.id as course,
     c.fullname, c.shortname, c.visible
 FROM
     {local_taps_enrolment} lte
+INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 JOIN
-    {course} c ON c.id = lte.courseid
+    {course} c ON c.id = ltc.courseid
 WHERE
     lte.staffid = :staffid
     AND lte.active = 1

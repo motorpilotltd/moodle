@@ -167,10 +167,10 @@ class daterangelearning extends base {
             'actualregion' => 'staff.REGION_NAME',
             'georegion' => 'staff.GEO_REGION',
             'staffid' => 'lte.staffid',
-            'classname' => 'lte.classname',
+            'classname' => 'ltc.classname',
             'coursename' => 'lte.coursename',
-            'provider' => 'lte.provider',
-            'location' => 'lte.location',
+            'provider' => 'ltc.classsuppliername',
+            'location' => 'ltc.location',
             'location_name' => 'staff.LOCATION_NAME',
             'groupname' => 'staff.GROUP_NAME',
             'leaver_flag' => 'staff.LEAVER_FLAG',
@@ -178,8 +178,8 @@ class daterangelearning extends base {
             'centre_code' => 'staff.CENTRE_CODE',
             'timemodified' => 'lte.timemodified',
             'completiontime' => 'lte.completiontime',
-            'classenddate' => 'lte.classenddate',
-            'classtype' => 'lte.classtype',
+            'classenddate' => 'ltc.classenddate',
+            'classtype' => 'ltc.classtype',
             'bookingstatus' => 'lte.bookingstatus'
         );
 
@@ -345,15 +345,20 @@ class daterangelearning extends base {
         // echo '<pre>' . print_r($params, true) . '</pre>';
         // $wherestring = '';
 
-        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltc.jobnumber, ltco.coursecode, ltco.courseregion
+        $remotetagidconcat = \local_mssql\dbshim::sql_group_concat('reg.name', ',', true);
+
+        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltc.jobnumber, c.shortname as coursecode, $remotetagidconcat as courseregion
                   FROM {local_taps_enrolment} as lte
                   JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
              LEFT JOIN {local_taps_class} as ltc
                     ON ltc.classid = lte.classid
-             LEFT JOIN {local_taps_course} as ltco
-                    ON lte.courseid = ltco.courseid
+             LEFT JOIN {course} as c
+                    ON ltc.courseid = c.id
+                LEFT JOIN {local_regions_reg_cou} regcou ON regcou.courseid = c.id
+                LEFT JOIN {local_regions_reg} reg ON reg.id = regcou.regionid
                        $wherestring
+                      
               ORDER BY " . $this->sort . ' ' . $this->direction;
 
         // Leave out the joins for taps_class and taps_course to speed up this query

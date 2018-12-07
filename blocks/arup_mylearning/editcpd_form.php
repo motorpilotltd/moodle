@@ -69,9 +69,6 @@ class block_arup_mylearning_editcpd_form extends moodleform {
                 );
         $mform->setAdvanced('healthandsafetycategory');
 
-        $mform->addElement('date_selector', 'classstartdate', get_string('cpd:classstartdate', 'block_arup_mylearning'), array('optional' => true, 'timezone' => 0));
-        $mform->setAdvanced('classstartdate');
-
         $mform->addElement('text', 'certificateno', get_string('cpd:certificateno', 'block_arup_mylearning'));
         $mform->setType('certificateno', PARAM_TEXT);
         $mform->setAdvanced('certificateno');

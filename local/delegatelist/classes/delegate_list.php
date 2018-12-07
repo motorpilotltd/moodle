@@ -116,16 +116,16 @@ class delegate_list {
             $classesinlast = self::CLASSES_IN_LAST;
         }
 
-        $where = 'courseid = :courseid';
+        $where = 'ltc.courseid = :courseid';
         $params = array('courseid' => $this->_course->id);
         if ($classesinlast && !$this->has_capability('manager')) {
-            $where .= ' AND (classendtime > :classendtime OR classendtime = 0)';
+            $where .= ' AND (ltc.classendtime > :classendtime OR ltc.classendtime = 0)';
             $params['classendtime'] = strtotime("{$classesinlast} days ago");
         }
 
         if ($this->has_capability('student')) {
-            $where .= ' AND staffid = :staffid';
-            $params['staffid'] = $USER->idnumber;
+            $where .= ' AND lte.userid = :userid';
+            $params['userid'] = $USER->id;
 
             $statuses = array_merge($this->_taps->get_statuses('placed'), $this->_taps->get_statuses('attended'));
             if (!empty($statuses)) {
@@ -140,24 +140,26 @@ class delegate_list {
 
             $activeclasses = array();
         } else {
-            $activewhere = "{$where} AND (classhidden = 0 OR classhidden IS NULL) AND (archived = 0 OR archived IS NULL)";
-            $activeclasses = $DB->get_records_select('local_taps_class', $activewhere, $params, '', 'classid, classname, classendtime');
+            $activewhere = "{$where} AND (ltc.classhidden = 0 OR ltc.classhidden IS NULL) AND (ltc.archived = 0 OR ltc.archived IS NULL) AND (lte.archived = 0 OR lte.archived IS NULL)";
+            $activeclasses = $DB->get_records_select('local_taps_class', $activewhere, $params, '', 'ltc.classid, ltc.classname, ltc.classendtime');
         }
 
-        $classname = $DB->sql_compare_text('classname', 32);
-        $classtype = $DB->sql_compare_text('classtype', 32);
+        $classname = $DB->sql_compare_text('ltc.classname', 32);
+        $classtype = $DB->sql_compare_text('ltc.classtype', 32);
         // This may not be DB agnostic... Tested against MSSQL
         $sql = <<<EOS
 SELECT
-    classid, MAX({$classname}) as classname, MAX(classendtime) as classendtime, MAX({$classtype}) as classtype
+    ltc.classid, MAX({$classname}) as classname, MAX(ltc.classendtime) as classendtime, MAX({$classtype}) as classtype
 FROM
-    {local_taps_enrolment}
+    {local_taps_enrolment} lte
+INNER JOIN {local_taps_class} ltc.classid = lte.classid
 WHERE
     {$where}
-    AND active = 1
-    AND (archived = 0 OR archived IS NULL)
+    AND ltc.active = 1
+    AND (ltc.archived = 0 OR ltc.archived IS NULL)
+    AND (lte.archived = 0 OR lte.archived IS NULL)
 GROUP BY
-    classid
+    ltc.classid
 EOS;
         $extraclasses = $DB->get_records_sql($sql, $params);
 

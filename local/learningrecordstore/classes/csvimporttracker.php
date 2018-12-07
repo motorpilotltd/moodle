@@ -51,7 +51,8 @@ class csvimporttracker {
         "healthandsafetycategory",
         "classcost",
         "classcostcurrency",
-        "classstarttime",
+        "starttime",
+        "endtime",
         "certificateno",
         "expirydate",
         "learningdesc"

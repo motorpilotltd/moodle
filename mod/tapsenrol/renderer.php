@@ -80,6 +80,12 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
     public function enrolment_history($tapsenrol, $enrolments, $classes, $cmid) {
         global $DB, $SESSION, $OUTPUT, $USER;
 
+        $classeskeyonclassid = [];
+        foreach ($classes as $class) {
+            $classeskeyonclassid[$class->classid] = $class;
+        }
+
+
         $overallclasstype = 'unknown';
         $classtypes = [];
         foreach (['classes', 'enrolments'] as $var) {
@@ -110,6 +116,8 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         if ($enrolments) {
             $hideadvert = true;
             foreach ($enrolments as $enrolment) {
+                $class = $classeskeyonclassid[$enrolment->classid];
+
                 $delegateurl->param('classid', $enrolment->classid);
                 $delegatebutton = html_writer::link($delegateurl, $delegateicon, array('class' => 'delegate-button'));
                 $enrolmentstatustype = $tapsenrol->taps->get_status_type($enrolment->bookingstatus);
@@ -129,8 +137,8 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                 }
 
                 $cells = array();
-                $cells[] = $enrolment->classname;
-                $enrolmentclasstype = $tapsenrol->taps->get_classtype_type($enrolment->classtype);
+                $cells[] = $class->classname;
+                $enrolmentclasstype = $tapsenrol->taps->get_classtype_type($class->classtype);
                 $classtype = $enrolmentclasstype ? $enrolmentclasstype : 'unknown';
                 if ($classtype == 'elearning') {
                     $cells[] = get_string('online', 'tapsenrol');
@@ -139,8 +147,8 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                         $cells[] = '-';
                     }
                 } else {
-                    $cells[] = $enrolment->location ? $enrolment->location : get_string('tbc', 'tapsenrol');
-                    if ($enrolment->classstarttime) {
+                    $cells[] = $class->location ? $class->location : get_string('tbc', 'tapsenrol');
+                    if ($class->classstarttime) {
                         try {
                             $timezone = new DateTimeZone($enrolment->usedtimezone);
                         } catch (Exception $e) {
@@ -148,16 +156,16 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                         }
 
                         $startdatetime = new DateTime(null, $timezone);
-                        $startdatetime->setTimestamp($enrolment->classstarttime);
+                        $startdatetime->setTimestamp($class->classstarttime);
                         $enddatetime = new DateTime(null, $timezone);
-                        $enddatetime->setTimestamp($enrolment->classendtime);
+                        $enddatetime->setTimestamp($class->classendtime);
 
                         if ($enddatetime->format('Ymd') > $startdatetime->format('Ymd')) {
                             $cells[] = $startdatetime->format('d M Y').' - '.$enddatetime->format('d M Y');
                         } else {
                             $cells[] = $startdatetime->format('d M Y');
                         }
-                        if ($enrolment->classstarttime != $enrolment->classstartdate) {
+                        if ($class->classstarttime != $class->classstartdate) {
                             $to = get_string('to', 'tapsenrol');
                             $time = $startdatetime->format('H:i')." {$to} ".$enddatetime->format('H:i T');
                             // Show UTC as GMT for clarity.
@@ -171,7 +179,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                         $cells[] = $cell;
                     }
                 }
-                $cells[] = $enrolment->duration ? (float) $enrolment->duration.' '.$enrolment->durationunits : '-';
+                $cells[] = $class->duration ? (float) $class->duration.' '.$class->durationunits : '-';
                 $classseatsremaining = isset($seatsremaining[$enrolment->classid]) ? $seatsremaining[$enrolment->classid] : 0;
                 $cells[] = ($classseatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $classseatsremaining) . $delegatebutton;
                 if (!isset($enrolment->price)) {
@@ -493,7 +501,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         return $html;
     }
 
-    public function cancel_enrolment($tapsenrol, $enrolment) {
+    public function cancel_enrolment($tapsenrol, $enrolment, $class) {
         try {
             $timezone = new DateTimeZone($enrolment->usedtimezone);
         } catch (Exception $e) {
@@ -501,28 +509,28 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         }
 
         $startdatetime = new DateTime(null, $timezone);
-        $startdatetime->setTimestamp($enrolment->classstarttime);
+        $startdatetime->setTimestamp($class->classstarttime);
 
         $html = '';
         $html .= html_writer::tag('p', get_string('cancelenrolment:areyousure', 'tapsenrol'));
         $html .= html_writer::start_tag('div', array('class' => 'tapsenrol_review_info mform'));
 
         $classname = html_writer::tag('div', get_string('classname', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $classname .= html_writer::tag('div', $enrolment->classname, array('class' => 'felement'));
+        $classname .= html_writer::tag('div', $class->classname, array('class' => 'felement'));
         $html .= html_writer::tag('div', $classname, array('class' => 'fitem'));
 
         $duration = html_writer::tag('div', get_string('duration', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $durationvalue = ($enrolment->duration) ? (float) $enrolment->duration . ' ' . $enrolment->durationunits : get_string('tbc', 'tapsenrol');
+        $durationvalue = ($class->duration) ? (float) $class->duration . ' ' . $class->durationunits : get_string('tbc', 'tapsenrol');
         $duration .= html_writer::tag('div', $durationvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $duration, array('class' => 'fitem'));
 
-        if ($tapsenrol->taps->is_classtype($enrolment->classtype, 'classroom')) {
+        if ($tapsenrol->taps->is_classtype($class->classtype, 'classroom')) {
             $date = html_writer::tag('div', get_string('date', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-            if (!$enrolment->classstarttime) {
+            if (!$class->classstarttime) {
                 $datevalue = get_string('waitinglist:classroom', 'tapsenrol');
             } else {
                 $datevalue = $startdatetime->format('d M Y');
-                $datevalue .= ($enrolment->classstarttime != $enrolment->classstartdate) ? $startdatetime->format(' H:i T') : '';
+                $datevalue .= ($class->classstarttime != $class->classstartdate) ? $startdatetime->format(' H:i T') : '';
                 // Show UTC as GMT for clarity.
                 $datevalue = str_replace('UTC', 'GMT', $datevalue);
             }
@@ -531,17 +539,17 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         }
 
         $location = html_writer::tag('div', get_string('location', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        if ($tapsenrol->taps->is_classtype($enrolment->classtype, 'elearning')) {
+        if ($tapsenrol->taps->is_classtype($class->classtype, 'elearning')) {
             $locationvalue = get_string('online', 'tapsenrol');
         } else {
-            $locationvalue = $enrolment->location ? $enrolment->location : get_string('tbc', 'tapsenrol');
+            $locationvalue = $class->location ? $class->location : get_string('tbc', 'tapsenrol');
         }
         $location .= html_writer::tag('div', $locationvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $location, array('class' => 'fitem'));
 
-        if ($enrolment->trainingcenter) {
+        if ($class->trainingcenter) {
             $trainingcenter = html_writer::tag('div', get_string('trainingcenter', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-            $trainingcenter .= html_writer::tag('div', $enrolment->trainingcenter, array('class' => 'felement'));
+            $trainingcenter .= html_writer::tag('div', $class->trainingcenter, array('class' => 'felement'));
             $html .= html_writer::tag('div', $trainingcenter, array('class' => 'fitem'));
         }
 
@@ -750,7 +758,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         }
     }
 
-    public function enrolments_for_approval($enrolments) {
+    public function enrolments_for_approval($enrolmentswithclassnameandcoursename) {
         global $OUTPUT;
 
         $canviewall = has_capability('mod/tapsenrol:viewallapprovals', context_system::instance());
@@ -769,7 +777,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         }
         $table->head[] = get_string('approve:actions', 'tapsenrol');
 
-        if (empty($enrolments)) {
+        if (empty($enrolmentswithclassnameandcoursename)) {
             $cells = array();
             $cell = new html_table_cell();
             $cell->colspan = count($table->head);
@@ -778,48 +786,48 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
 
             $table->data[] = new html_table_row($cells);
         } else {
-            foreach ($enrolments as $enrolment) {
+            foreach ($enrolmentswithclassnameandcoursename as $enrolmentwithclassnameandcoursename) {
                 $cells = array();
                 $cell = new html_table_cell();
 
                 // Name.
-                $cell->text = fullname($enrolment);
+                $cell->text = fullname($enrolmentwithclassnameandcoursename);
                 $cell->attributes['class'] = 'text-left nowrap';
                 $cells[] = clone($cell);
 
                 // Class.
-                $cell->text = "{$enrolment->coursename} ({$enrolment->classname})";
+                $cell->text = "{$enrolmentwithclassnameandcoursename->coursename} ({$enrolmentwithclassnameandcoursename->classname})";
                 $cell->attributes['class'] = 'text-left';
                 $cells[] = clone($cell);
 
                 // Request comments.
-                $cell->text = $enrolment->requestcomments;
+                $cell->text = $enrolmentwithclassnameandcoursename->requestcomments;
                 $cell->attributes['class'] = 'text-left tapsenrol-request-comments';
                 $cells[] = clone($cell);
 
                 // Date of request.
-                $cell->text = gmdate('d M Y', $enrolment->timeenrolled);
+                $cell->text = gmdate('d M Y', $enrolmentwithclassnameandcoursename->timeenrolled);
                 $cell->attributes['class'] = 'text-left tapsenrol-request-comments';
                 $cells[] = clone($cell);
 
                 if ($canviewall) {
                     // Sponsor name.
-                    $cell->text = "{$enrolment->sponsorfirstname} {$enrolment->sponsorlastname}";
+                    $cell->text = "{$enrolmentwithclassnameandcoursename->sponsorfirstname} {$enrolmentwithclassnameandcoursename->sponsorlastname}";
                     $cell->attributes['class'] = 'text-left nowrap';
                     $cells[] = clone($cell);
 
                     // Sponsor email.
-                    $cell->text = $enrolment->sponsoremail;
+                    $cell->text = $enrolmentwithclassnameandcoursename->sponsoremail;
                     $cell->attributes['class'] = 'text-left';
                     $cells[] = clone($cell);
                 }
 
                 // Actions.
                 $actions = array();
-                $approveurl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolment->enrolmentid, 'action' => 'approve'));
+                $approveurl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolmentwithclassnameandcoursename->enrolmentid, 'action' => 'approve'));
                 $actions[] = html_writer::link($approveurl, get_string('approve:approve', 'tapsenrol'));
 
-                $rejecturl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolment->enrolmentid, 'action' => 'reject'));
+                $rejecturl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolmentwithclassnameandcoursename->enrolmentid, 'action' => 'reject'));
                 $actions[] = html_writer::link($rejecturl, get_string('approve:reject', 'tapsenrol'));
 
                 $cell->attributes['class'] = 'text-center nowrap';
@@ -871,15 +879,20 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         $leavers = $table->show_leavers();
 
         $usernamefields = get_all_user_name_fields(true, 'u');
-        $fields = "tit.*, u.id as userid, u.suspended, {$usernamefields}, lte.coursename, lte.classname, lte.classstarttime, lte.usedtimezone, lte.bookingstatus";
+        $fields = "tit.*, u.id as userid, u.suspended, {$usernamefields}, c.fullname as coursename, ltc.classname, ltc.classstarttime, lte.usedtimezone, lte.bookingstatus";
         $from = <<<EOF
     {tapsenrol_iw_tracking} tit
 JOIN
     {local_taps_enrolment} lte
     ON lte.enrolmentid = tit.enrolmentid
+INNER JOIN
+    {local_taps_class} ltc
+    ON ltc.classid = lte.classid
+INNER JOIN
+    {course} c ON c.id = ltc.courseid
 JOIN
     {tapsenrol} t
-    ON t.course = lte.courseid
+    ON t.course = ltc.courseid
 JOIN
     {tapsenrol_iw} ti
     ON ti.id = t.internalworkflowid
@@ -904,7 +917,7 @@ EOF;
         $table->out(10, false);
     }
 
-    public function review_approval($title, $info, $iwtrack, $user, $enrolment, $course) {
+    public function review_approval($title, $info, $iwtrack, $user, $enrolment, $course, $class) {
         global $OUTPUT;
 
         try {
@@ -914,7 +927,7 @@ EOF;
         }
 
         $startdatetime = new DateTime(null, $timezone);
-        $startdatetime->setTimestamp($enrolment->classstarttime);
+        $startdatetime->setTimestamp($class->classstarttime);
 
         $html = $OUTPUT->heading($title, 2);
 
@@ -934,20 +947,20 @@ EOF;
         $html .= html_writer::tag('div', $course, array('class' => 'fitem'));
 
         $classname = html_writer::tag('div', get_string('classname', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $classname .= html_writer::tag('div', $enrolment->classname, array('class' => 'felement'));
+        $classname .= html_writer::tag('div', $class->classname, array('class' => 'felement'));
         $html .= html_writer::tag('div', $classname, array('class' => 'fitem'));
 
         $duration = html_writer::tag('div', get_string('duration', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $durationvalue = ($enrolment->duration) ? (float) $enrolment->duration . ' ' . $enrolment->durationunits : get_string('tbc', 'tapsenrol');
+        $durationvalue = ($class->duration) ? (float) $class->duration . ' ' . $class->durationunits : get_string('tbc', 'tapsenrol');
         $duration .= html_writer::tag('div', $durationvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $duration, array('class' => 'fitem'));
 
         $date = html_writer::tag('div', get_string('date', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        if (!$enrolment->classstarttime) {
+        if (!$class->classstarttime) {
             $datevalue = get_string('waitinglist:classroom', 'tapsenrol');
         } else {
             $datevalue = $startdatetime->format('d M Y');
-            $datevalue .= ($enrolment->classstarttime != $enrolment->classstartdate) ? $startdatetime->format(' H:i T') : '';
+            $datevalue .= ($class->classstarttime != $class->classstartdate) ? $startdatetime->format(' H:i T') : '';
             // Show UTC as GMT for clarity.
             $datevalue = str_replace('UTC', 'GMT', $datevalue);
         }
@@ -955,13 +968,13 @@ EOF;
         $html .= html_writer::tag('div', $date, array('class' => 'fitem'));
 
         $location = html_writer::tag('div', get_string('location', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $locationvalue = $enrolment->location ? $enrolment->location : get_string('tbc', 'tapsenrol');
+        $locationvalue = $class->location ? $class->location : get_string('tbc', 'tapsenrol');
         $location .= html_writer::tag('div', $locationvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $location, array('class' => 'fitem'));
 
-        if ($enrolment->trainingcenter) {
+        if ($class->trainingcenter) {
             $trainingcenter = html_writer::tag('div', get_string('trainingcenter', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-            $trainingcenter .= html_writer::tag('div', $enrolment->trainingcenter, array('class' => 'felement'));
+            $trainingcenter .= html_writer::tag('div', $class->trainingcenter, array('class' => 'felement'));
             $html .= html_writer::tag('div', $trainingcenter, array('class' => 'fitem'));
         }
 

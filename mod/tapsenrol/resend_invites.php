@@ -74,12 +74,13 @@ SELECT
     COUNT(lte.id) AS enrolments
 FROM
     {local_taps_enrolment} lte
+INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.classid
 JOIN
     {tapsenrol_iw_tracking} tit
     ON tit.enrolmentid = lte.enrolmentid
 WHERE
-    lte.courseid = :courseid
-    AND lte.classstarttime > :now
+    ltc.courseid = :courseid
+    AND ltc.classstarttime > :now
     AND (lte.archived = 0 OR lte.archived IS NULL)
     AND {$compare} {$in}
 GROUP BY
@@ -111,6 +112,7 @@ SELECT
     {$usernamefields}
 FROM
     {local_taps_enrolment} lte
+INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.classid
 JOIN
     {tapsenrol_iw_tracking} tit
     ON tit.enrolmentid = lte.enrolmentid
@@ -119,7 +121,7 @@ JOIN
     ON u.idnumber = lte.staffid
 WHERE
     classid = :classid
-    AND classstarttime > :now
+    AND ltc.classstarttime > :now
     AND (lte.archived = 0 OR lte.archived IS NULL)
     AND {$compare} {$in}
 EOS;

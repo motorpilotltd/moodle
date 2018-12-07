@@ -65,7 +65,6 @@ if ($action == 'edit') {
 
     // Mapping for specific form select options that are not returned as keys.
     $cpd->classcategory = array_search($cpd->classcategory, $taps->get_classcategory());
-    $cpd->classtype = array_search($cpd->classtype, $taps->get_classtypes('cpd'));
     $learningdesc = $cpd->learningdesc;
     $cpd->learningdesc = ['text' => $learningdesc , 'format' => FORMAT_HTML];
 } else {
@@ -117,7 +116,6 @@ if ($form->is_cancelled()) {
                     'p_subject_catetory' => $data->classcategory,
                     'p_course_cost' => $data->classcost,
                     'p_course_cost_currency' => $data->classcostcurrency,
-                    'p_course_start_date' => $data->classstartdate,
                     'p_certificate_number' => $data->certificateno,
                     'p_certificate_expiry_date' => $data->expirydate,
                     'p_learning_desc' => $data->learningdesc['text'],
@@ -141,7 +139,6 @@ if ($form->is_cancelled()) {
                     'p_subject_catetory' => $data->classcategory,
                     'p_course_cost' => $data->classcost,
                     'p_course_cost_currency' => $data->classcostcurrency,
-                    'p_course_start_date' => $data->classstartdate,
                     'p_certificate_number' => $data->certificateno,
                     'p_certificate_expiry_date' => $data->expirydate,
                     'p_learning_desc' => $data->learningdesc['text'],

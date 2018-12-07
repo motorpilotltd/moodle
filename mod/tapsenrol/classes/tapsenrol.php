@@ -276,6 +276,8 @@ class tapsenrol {
         $return->message = '';
 
         $enrolment = $this->taps->get_enrolment_by_id($enrolmentid);
+        $class = $this->taps->get_class_by_id($enrolment->classid);
+        $course = get_course($class->courseid);
 
         if (!$enrolment) {
             $return->status = 'INVALID_ENROLMENT';
@@ -287,8 +289,8 @@ class tapsenrol {
         $result->message = '';
 
         $a = new stdClass();
-        $a->classname = $enrolment->classname;
-        $a->coursename = $enrolment->coursename;
+        $a->classname = $class->classname;
+        $a->coursename = $course->fullname;
 
         if ($result->success) {
             $this->enrolment_check($enrolment->staffid, false);
@@ -336,13 +338,14 @@ class tapsenrol {
         $iscancelled = false;
         $groupsforuser = array();
         foreach ($enrolments as $enrolment) {
+            $class = $this->taps->get_class_by_id($enrolment->classid);
             $enrolmentstatustype = $this->taps->get_status_type($enrolment->bookingstatus);
             switch ($enrolmentstatustype) {
                 case 'placed' :
                     $isactive = true;
                     $shouldbeenrolled = true;
                     $shouldbecomplete = false;
-                    $groupsforuser[] = trim($enrolment->classname);
+                    $groupsforuser[] = trim($class->classname);
                     break;
                 case 'requested' :
                     $isactive = true;
@@ -350,14 +353,14 @@ class tapsenrol {
                 case 'waitlisted' :
                     $isactive = true;
                     $shouldbeenrolled = true;
-                    $groupsforuser[] = trim($enrolment->classname);
+                    $groupsforuser[] = trim($class->classname);
                     break;
                 case 'attended' :
                     // Enrolled, activity complete.
                     $isattended = true;
                     $shouldbeenrolled = true;
                     $shouldbecomplete = true;
-                    $groupsforuser[] = trim($enrolment->classname);
+                    $groupsforuser[] = trim($class->classname);
                     break;
                 case 'cancelled' :
                     $iscancelled = true;
@@ -549,6 +552,8 @@ EOS;
                 $iwtrack->timecreated = $iwtrack->timeenrolled;
                 $iwtrack->id = $DB->insert_record('tapsenrol_iw_tracking', $iwtrack);
 
+                $class = $this->taps->get_class_by_id($enrolment->classid);
+
                 // Send confirmation to applicant.
                 $data = array(
                     'applicant' => $this->_applicant_data($user),
@@ -573,16 +578,16 @@ EOS;
                 $data['approveurls'] = $this->_approve_urls($enrolment);
                 $data['comments:applicant'] = $iwtrack->requestcomments;
                 $approvebytimestamp = $iwtrack->timeenrolled + $this->iw->cancelafter;
-                if ($this->taps->is_classtype($enrolment->classtype, 'classroom')) {
+                if ($this->taps->is_classtype($class->classtype, 'classroom')) {
                     // Need approval before auto cancellation prior to class start.
-                    $classstarttime = $enrolment->classstarttime - $this->iw->cancelbefore;
-                    if ($approvebytimestamp > $classstarttime && $enrolment->classstarttime != 0) {
+                    $classstarttime = $class->classstarttime - $this->iw->cancelbefore;
+                    if ($approvebytimestamp > $classstarttime && $class->classstarttime != 0) {
                         $approvebytimestamp = $classstarttime;
                     }
                 } else {
                     // Need approval before class ends.
-                    if ($approvebytimestamp > $enrolment->classendtime && $enrolment->classendtime != 0) {
-                        $approvebytimestamp = $enrolment->classendtime;
+                    if ($approvebytimestamp > $class->classendtime && $class->classendtime != 0) {
+                        $approvebytimestamp = $class->classendtime;
                     }
                 }
                 $approvebytime = new DateTime(null, $approvertimezone);
@@ -645,6 +650,8 @@ EOS;
         if ($enrolment) {
             $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
             if ($user) {
+                $class = $this->taps->get_class_by_id($enrolment->classid);
+
                 // Setup tracking.
                 $iwtrack = new stdClass();
                 $iwtrack->enrolmentid = $enrolment->enrolmentid;
@@ -669,9 +676,9 @@ EOS;
                 $this->_check_region_mismatch($user, $data);
 
                 $a = new stdClass();
-                $a->classname = $enrolment->classname;
-                $a->coursename = $enrolment->coursename;
-                $classtype = $this->taps->get_classtype_type($enrolment->classtype);
+                $a->classname = $class->classname;
+                $a->coursename = $class->coursename;
+                $classtype = $this->taps->get_classtype_type($class->classtype);
                 $statustype = $this->taps->get_status_type($this->taps->get_enrolment_status($enrolment->enrolmentid));
                 if (!$classtype || !$statustype || !get_string_manager()->string_exists('status:'.$classtype.':'.$statustype, 'tapsenrol')) {
                     $a->message = get_string('enrol:error:unavailable', 'tapsenrol');
@@ -782,11 +789,10 @@ EOS;
         list($from, $subject, $emailhtml, $emailtext) = $this->_get_email($email, $data, $this->iw->approvalrequired);
         $this->_send_email($user, $from, $subject, $emailhtml, $emailtext, $cc);
 
-        if ($email == 'approved' && $status == 'Approved Place' && $this->taps->is_classtype($enrolment->classtype, 'classroom')) {
+        if ($email == 'approved' && $status == 'Approved Place' && $this->taps->is_classtype($class->classtype, 'classroom')) {
             // Only send invite for 'Approved Place' statuses on classroom based class, i.e. not to users on waiting lists/elearning.
             $data['update:extrainfo'] = ''; // Not updating.
             list($from, $subject, $emailhtml, $emailtext) = $this->_get_email('approved_invite', $data, $this->iw->approvalrequired);
-            $enrolment->trainingcenter = empty($enrolment->trainingcenter) ? $data['class']['classtrainingcenter'] : $enrolment->trainingcenter;
             $this->_send_invite($user, $from, $enrolment, $subject, $emailtext, $emailhtml);
         }
 
@@ -822,6 +828,7 @@ EOS;
 
         $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
         $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolment->enrolmentid));
+        $class = $this->taps->get_class_by_id($enrolment->id);
         if ($user && $iwtrack) {
             $iwtrack->cancelcomments = $comments;
             $iwtrack->timecancelled = time();
@@ -859,10 +866,9 @@ EOS;
                 // Also necessary to be separate as copied email to sponsor.
                 if (0 === strpos($email, 'cancellation')
                         && $this->taps->is_status($enrolment->bookingstatus, 'placed')
-                        && $this->taps->is_classtype($enrolment->classtype, 'classroom')) {
+                        && $this->taps->is_classtype($class->classtype, 'classroom')) {
                     // Only send if original bookingstatus was 'placed' and a classroom based class, i.e. not on a waiting list/elearning.
                     list($from, $subject, $emailhtml, $emailtext) = $this->_get_email($email.'_invite', $data, $this->iw->approvalrequired);
-                    $enrolment->trainingcenter = empty($enrolment->trainingcenter) ? $data['class']['classtrainingcenter'] : $enrolment->trainingcenter;
                     $this->_send_invite($user, $from, $enrolment, $subject, $emailtext, $emailhtml, 'CANCEL');
                 }
             }
@@ -885,13 +891,8 @@ EOS;
         $enrolmentnew->classid = $targetclass->classid;
         $enrolmentnew->classname = $targetclass->classname;
         $enrolmentnew->location = $targetclass->location;
-        $enrolmentnew->trainingcenter = $targetclass->trainingcenter;
         $enrolmentnew->classtype = $targetclass->classtype;
         // classcategory : Don't have at present.
-        $enrolmentnew->classstartdate = $targetclass->classstartdate;
-        $enrolmentnew->classstarttime = $targetclass->classstarttime;
-        $enrolmentnew->classenddate = $targetclass->classenddate;
-        $enrolmentnew->classendtime = $targetclass->classendtime;
         $enrolmentnew->duration = $targetclass->classduration;
         $enrolmentnew->durationunits = $targetclass->classdurationunits;
         $enrolmentnew->durationunitscode = $targetclass->classdurationunitscode;
@@ -958,7 +959,7 @@ EOS;
 
             // Do we need to cancel an old invite?
             if ($this->taps->is_status($enrolment->bookingstatus, 'placed')
-                    && $this->taps->is_classtype($enrolment->classtype, 'classroom')) {
+                    && $this->taps->is_classtype($class->classtype, 'classroom')) {
                 $cancelinvite = true;
             }
         } else {
@@ -1008,7 +1009,6 @@ EOS;
             // Cancel old invite if needed.
             if ($cancelinvite) {
                 list($from, $subject, $emailhtml, $emailtext) = $this->_get_email('moved_cancel_invite', $data, $this->iw->approvalrequired);
-                $enrolment->trainingcenter = empty($enrolment->trainingcenter) ? $data['class:old']['classtrainingcenter:old'] : $enrolment->trainingcenter;
                 $this->_send_invite($user, $from, $enrolment, $subject, $emailtext, $emailhtml, 'CANCEL');
             }
 
@@ -1042,14 +1042,14 @@ EOS;
                 $approvebytimestamp = $iwtrack->timeenrolled + $this->iw->cancelafter;
                 if ($this->taps->is_classtype($enrolmentnew->classtype, 'classroom')) {
                     // Need approval before auto cancellation prior to class start.
-                    $classstarttime = $enrolmentnew->classstarttime - $this->iw->cancelbefore;
-                    if ($approvebytimestamp > $classstarttime && $enrolmentnew->classstarttime != 0) {
+                    $classstarttime = $targetclass->classstarttime - $this->iw->cancelbefore;
+                    if ($approvebytimestamp > $classstarttime && $targetclass->classstarttime != 0) {
                         $approvebytimestamp = $classstarttime;
                     }
                 } else {
                     // Need approval before class ends.
-                    if ($approvebytimestamp > $enrolmentnew->classendtime && $enrolmentnew->classendtime != 0) {
-                        $approvebytimestamp = $enrolmentnew->classendtime;
+                    if ($approvebytimestamp > $targetclass->classendtime && $targetclass->classendtime != 0) {
+                        $approvebytimestamp = $targetclass->classendtime;
                     }
                 }
                 $approvebytime = new DateTime(null, $approvertimezone);
@@ -1158,7 +1158,6 @@ EOS;
             // Cancel old invite if needed.
             if ($cancelinvite) {
                 list($from, $subject, $emailhtml, $emailtext) = $this->_get_email('deleted_cancel_invite', $data, $this->iw->approvalrequired);
-                $enrolment->trainingcenter = empty($enrolment->trainingcenter) ? $data['class']['classtrainingcenter'] : $enrolment->trainingcenter;
                 $this->_send_invite($user, $from, $enrolment, $subject, $emailtext, $emailhtml, 'CANCEL');
             }
         }
@@ -1241,13 +1240,9 @@ EOS;
     }
 
     protected function _class_data($enrolment, $old = false) {
-        if (!isset($enrolment->trainingcenter)) {
-            // Merge in data from class record (if needed/available).
-            $class = $this->taps->get_class_by_id($enrolment->classid);
-            $enrolment->price = $class ? $class->price : null;
-            $enrolment->currencycode = $class ? $class->currencycode : null;
-            $enrolment->trainingcenter = $class ? $class->trainingcenter : null;
-        }
+        $class = $this->taps->get_class_by_id($enrolment->classid);
+        $enrolment->price = $class ? $class->price : null;
+        $enrolment->currencycode = $class ? $class->currencycode : null;
 
         try {
             $timezone = new DateTimeZone($enrolment->usedtimezone);
@@ -1260,24 +1255,23 @@ EOS;
         $classarray = array(
             'coursename' => $this->course->fullname,
             'courseurl' => $courseurl->out(false),
-            'classname' => $enrolment->classname,
-            'classlocation' => $enrolment->location ? $enrolment->location : get_string('tbc', 'tapsenrol'),
-            'classtrainingcenter' => $enrolment->trainingcenter,
+            'classname' => $class->classname,
+            'classlocation' => $class->location ? $class->location : get_string('tbc', 'tapsenrol'),
+            'classtrainingcenter' => $class->trainingcenter,
         );
 
-        if ($enrolment->classstarttime == 0) {
+        if ($class->classstarttime == 0) {
             $classarray['classdate'] = get_string('tbc', 'tapsenrol');
         } else {
             $startdatetime = new DateTime(null, $timezone);
-            $startdatetime->setTimestamp($enrolment->classstarttime);
+            $startdatetime->setTimestamp($class->classstarttime);
             $enddatetime = new DateTime(null, $timezone);
-            $enddatetime->setTimestamp($enrolment->classendtime);
+            $enddatetime->setTimestamp($class->classendtime);
 
-            $startformat = '';
             $endformat = '';
             $starttz = false;
 
-            if ($enrolment->classstartdate == $enrolment->classstarttime) {
+            if ($class->classstartdate == $class->classstarttime) {
                 $startformat = 'd M Y';
             } else {
                 $startformat = 'd M Y H:i';
@@ -1285,13 +1279,13 @@ EOS;
             }
 
             if ($enddatetime->format('Ymd') > $startdatetime->format('Ymd')) {
-                if ($enrolment->classenddate == $enrolment->classendtime) {
+                if ($class->classenddate == $class->classendtime) {
                     $endformat = 'd M Y';
                 } else {
                     $endformat = 'd M Y H:i T';
                     $starttz = false;
                 }
-            } else if ($enrolment->classenddate != $enrolment->classendtime) {
+            } else if ($class->classenddate != $class->classendtime) {
                 $endformat = 'H:i T';
                 $starttz = false;
             }
@@ -1308,8 +1302,8 @@ EOS;
             $classarray['classdate'] = str_replace('UTC', 'GMT', $classarray['classdate']);
         }
 
-        if (!empty($enrolment->duration)) {
-            $classarray['classduration'] = (float) $enrolment->duration . ' ' . $enrolment->durationunits;
+        if (!empty($class->duration)) {
+            $classarray['classduration'] = (float) $class->duration . ' ' . $class->durationunits;
         } else {
             $classarray['classduration'] = '-';
         }
@@ -1470,6 +1464,7 @@ EOS;
 
     protected function _send_invite($to, $from, $enrolment, $subject, $emailtext, $emailhtml, $method = 'REQUEST') {
         global $CFG;
+        $class = $this->taps->get_class_by_id($enrolment->classid);
 
         // Are we sending emails?
         if (!empty($this->iw->emailsoff)) {
@@ -1480,8 +1475,8 @@ EOS;
 
         require_once($CFG->dirroot . '/local/invites/requester.php');
 
-        $room = empty($enrolment->trainingcenter) ? '' : " | {$enrolment->trainingcenter}";
-        $location = $enrolment->location ? $enrolment->location.$room : get_string('tbc', 'tapsenrol');
+        $room = empty($class->trainingcenter) ? '' : " | {$class->trainingcenter}";
+        $location = $class->location ? $class->location.$room : get_string('tbc', 'tapsenrol');
         $courseurl = new moodle_url('/course/view.php', array('id' => $this->course->id));
 
         if (empty($emailhtml)) {
@@ -1496,10 +1491,10 @@ EOS;
         $invite->set_url($courseurl->out(false));
 
         $starttime = new DateTime();
-        $starttime->setTimestamp($enrolment->classstarttime);
+        $starttime->setTimestamp($class->classstarttime);
         $starttime->setTimezone(new DateTimeZone('UTC')); // Send the vcal in UTC.
         $endtime = new DateTime();
-        $endtime->setTimestamp($enrolment->classendtime);
+        $endtime->setTimestamp($class->classendtime);
         $endtime->setTimezone(new DateTimeZone('UTC'));
         $invite->set_date(
                 $starttime,
@@ -1557,6 +1552,7 @@ EOS;
 
         $enrolment = $DB->get_record('local_taps_enrolment', array('enrolmentid' => $enrolmentid));
         $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolmentid));
+        $class = $this->taps->get_class_by_id($enrolment->classid);
 
         if (!$enrolment || !$iwtrack) {
             return false;
@@ -1579,16 +1575,16 @@ EOS;
             $totimezone = new DateTimeZone(date_default_timezone_get());
         }
         $approvebytimestamp = $iwtrack->timeenrolled + $this->iw->cancelafter;
-        if ($this->taps->is_classtype($enrolment->classtype, 'classroom')) {
+        if ($this->taps->is_classtype($class->classtype, 'classroom')) {
             // Need approval before auto cancellation prior to class start.
-            $classstarttime = $enrolment->classstarttime - $this->iw->cancelbefore;
-            if ($approvebytimestamp > $classstarttime && $enrolment->classstarttime != 0) {
+            $classstarttime = $class->classstarttime - $this->iw->cancelbefore;
+            if ($approvebytimestamp > $classstarttime && $class->classstarttime != 0) {
                 $approvebytimestamp = $classstarttime;
             }
         } else {
             // Need approval before class ends.
-            if ($approvebytimestamp > $enrolment->classendtime && $enrolment->classendtime != 0) {
-                $approvebytimestamp = $enrolment->classendtime;
+            if ($approvebytimestamp > $class->classendtime && $class->classendtime != 0) {
+                $approvebytimestamp = $class->classendtime;
             }
         }
         $approvebytime = new DateTime(null, $totimezone);
@@ -1627,9 +1623,6 @@ EOS;
 
         // Merge class data with enrolment data to ensure up-to-date.
         $enrolment = (object)array_merge((array)$userenrolment, (array)$class);
-        $enrolment->duration = $enrolment->classduration;
-        $enrolment->durationunits = $enrolment->classdurationunits;
-        $enrolment->durationunitscode = $enrolment->classdurationunitscode;
 
         $data = array();
         $data['update:extrainfo'] = nl2br($extrainfo);
@@ -1672,9 +1665,9 @@ EOS;
         global $DB;
 
         $return = new stdClass();
-        $return->attended = false;
-        $return->completions = [];
-        $return->certifications = [];
+        $return->attended = false; // Has the user attended a session on the currently set course
+        $return->completions = []; // All certification completion records related to the current course
+        $return->certifications = []; // A list of certicications relating to this course that have been completed by this user
 
         // Does user have an 'attended' active enrolment?
         list($attendedin, $attendedinparams) = $DB->get_in_or_equal(
@@ -1760,12 +1753,13 @@ EOS;
                 'courseid' => $this->cm->course
         );
 
-        $distinctclassname = $DB->sql_compare_text('lte.classname');
+        $distinctclassname = $DB->sql_compare_text('ltc.classname');
         $classlistsql = "SELECT DISTINCT lte.classid, {$distinctclassname} as classname
             FROM {local_taps_enrolment} lte
+            INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
             JOIN {user} u ON u.idnumber = lte.staffid
             WHERE
-                lte.courseid = :course
+                ltc.courseid = :course
                 AND (lte.archived = 0 OR lte.archived IS NULL)
                 AND lte.active = 1
                 AND {$statuscompare} {$statusin}
@@ -1781,11 +1775,12 @@ EOS;
             $params['classid'] = $classid;
         }
 
-        $sql = "SELECT lte.enrolmentid, lte.classid, lte.classname, u.*
+        $sql = "SELECT lte.enrolmentid, lte.classid, ltc.classname, u.*
             FROM {local_taps_enrolment} lte
+            INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
             JOIN {user} u ON u.idnumber = lte.staffid
             WHERE
-                lte.courseid = :course
+                ltc.courseid = :course
                 AND (lte.archived = 0 OR lte.archived IS NULL)
                 AND lte.active = 1
                 AND {$statuscompare} {$statusin}

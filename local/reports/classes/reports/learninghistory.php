@@ -157,10 +157,10 @@ class learninghistory extends base {
             'actualregion' => 'staff.REGION_NAME',
             'georegion' => 'staff.GEO_REGION',
             'staffid' => 'lte.staffid',
-            'classname' => 'lte.classname',
-            'coursename' => 'lte.coursename',
-            'provider' => 'lte.provider',
-            'location' => 'lte.location',
+            'classname' => 'ltc.classname',
+            'coursename' => 'c.fullname',
+            'provider' => 'ltc.classsuppliername',
+            'location' => 'ltc.location',
             'location_name' => 'staff.LOCATION_NAME',
             'groupname' => 'staff.GROUP_NAME',
             'leaver_flag' => 'staff.LEAVER_FLAG',
@@ -271,8 +271,8 @@ class learninghistory extends base {
             }
         }
 
-        //echo $wherestring;
-        //$wherestring = '';
+
+        $remotetagidconcat = \local_mssql\dbshim::sql_group_concat('reg.name', ',', true);
 
         $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode, ltco.courseregion
                   FROM {local_taps_enrolment} as lte
@@ -280,8 +280,10 @@ class learninghistory extends base {
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
              LEFT JOIN {local_taps_class} as ltc
                     ON ltc.classid = lte.classid
-             LEFT JOIN {local_taps_course} as ltco
-                    ON lte.courseid = ltco.courseid
+             LEFT JOIN {course} as c
+                    ON ltc.courseid = c.id
+                LEFT JOIN {local_regions_reg_cou} regcou ON regcou.courseid = c.id
+                LEFT JOIN {local_regions_reg} reg ON reg.id = regcou.regionid
                        $wherestring
               ORDER BY " . $this->sort . ' ' . $this->direction;
 

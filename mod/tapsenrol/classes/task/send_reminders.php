@@ -76,9 +76,10 @@ class send_reminders extends \core\task\scheduled_task {
 JOIN
     {local_taps_enrolment} lte
     ON lte.enrolmentid = iwt.enrolmentid AND (lte.archived = 0 OR lte.archived IS NULL)
+INNER JOIN {local_taps_class} ltc.classid = lte.classid
 JOIN
     {tapsenrol} t
-    ON t.course = lte.courseid
+    ON t.course = ltc.courseid
 JOIN
     {tapsenrol_iw} iw
     ON iw.id = t.internalworkflowid
@@ -98,7 +99,7 @@ EOS;
         AND {$compare} {$in}
         AND iwt.timeenrolled < ({$now} - iw.approvalreminder)
         AND iwt.timeenrolled > ({$now} - (iw.approvalreminder + 24*60*60))
-        AND (lte.classstarttime > {$now} OR lte.classstarttime = 0)
+        AND (ltc.classstarttime > {$now} OR ltc.classstarttime = 0)
     )
 EOS;
         // Requires the first reminder to be sent to applicant.
@@ -113,8 +114,8 @@ EOS;
         AND {$compare2} {$in2}
         AND iwt.timeenrolled < ({$now} - iw.noreminder)
         AND iwt.timeapproved < ({$now} - iw.noreminder)
-        AND lte.classstarttime < ({$now} + iw.firstreminder)
-        AND lte.classstarttime > ({$now} + (iw.firstreminder - 24*60*60))
+        AND ltc.classstarttime < ({$now} + iw.firstreminder)
+        AND ltc.classstarttime > ({$now} + (iw.firstreminder - 24*60*60))
     )
 EOS;
         // Requires the second reminder to be sent to applicant.
@@ -129,8 +130,8 @@ EOS;
         AND {$compare3} {$in3}
         AND iwt.timeenrolled < ({$now} - iw.noreminder)
         AND iwt.timeapproved < ({$now} - iw.noreminder)
-        AND lte.classstarttime < ({$now} + iw.secondreminder)
-        AND lte.classstarttime > ({$now} + (iw.secondreminder - 24*60*60))
+        AND ltc.classstarttime < ({$now} + iw.secondreminder)
+        AND ltc.classstarttime > ({$now} + (iw.secondreminder - 24*60*60))
     )
 EOS;
 
@@ -141,8 +142,8 @@ EOS;
 SELECT
     iwt.*,
     t.id as tid,
-    lte.classstarttime as lteclassstarttime,
-    lte.classtype as lteclasstype,
+    ltc.classstarttime as classstarttime,
+    ltc.classtype as ltcclasstype,
     iw.firstreminder as iwfirstreminder,
     iw.secondreminder as iwsecondreminder
 FROM
@@ -170,10 +171,10 @@ EOS;
                 $email = 'approval_request_reminder';
                 $record->remindersent = 1;
                 $emailsent = $tapsenrol->send_sponsor_reminder($record->enrolmentid, $email);
-            } else if ($tapsenrol->taps->is_classtype($record->lteclasstype, 'classroom')) {
+            } else if ($tapsenrol->taps->is_classtype($record->ltcclasstype, 'classroom')) {
                 // Only send reminders for classroom based classes.
-                $firstreminder = $record->iwfirstreminder && $record->lteclassstarttime > ($now + ($record->iwfirstreminder - (24 * 60 * 60)));
-                $secondreminder = $record->iwsecondreminder && $record->lteclassstarttime > ($now + ($record->iwsecondreminder - (24 * 60 * 60)));
+                $firstreminder = $record->iwfirstreminder && $record->classstarttime > ($now + ($record->iwfirstreminder - (24 * 60 * 60)));
+                $secondreminder = $record->iwsecondreminder && $record->classstarttime > ($now + ($record->iwsecondreminder - (24 * 60 * 60)));
                 if ($firstreminder && ($record->remindersent < 2 || is_null($record->remindersent))) {
                     $email = 'reminder_first';
                     $record->remindersent = 2;

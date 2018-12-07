@@ -17,6 +17,8 @@
         <FIELD NAME="completiontime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="certificateno" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="starttime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="endtime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
 
 
 
@@ -27,15 +29,12 @@
         <FIELD NAME="location" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classtype" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classcategory" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classstartdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classenddate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="durationunitscode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="courseobjectives" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="expirydate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="bookingstatus" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="personid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classstarttime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classendtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+
         <FIELD NAME="classcost" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
         <FIELD NAME="classcostcurrency" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="learningdesccont1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
@@ -45,7 +44,6 @@
         <FIELD NAME="pricebasis" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="currencycode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="price" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
-        <FIELD NAME="trainingcenter" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="bookingplaceddate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="active" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="archived" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>

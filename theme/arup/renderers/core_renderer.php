@@ -535,9 +535,12 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
             JOIN
                 {local_taps_enrolment} lte
                 ON lte.enrolmentid = tit.enrolmentid
+            INNER JOIN
+                {local_taps_class} ltc
+                ON ltc.classid = lte.classid
             JOIN
                 {tapsenrol} t
-                ON t.tapscourse = lte.courseid
+                ON t.tapscourse = ltc.courseid
             JOIN
                 {tapsenrol_iw} ti
                 ON ti.id = t.internalworkflowid

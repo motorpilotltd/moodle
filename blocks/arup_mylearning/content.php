@@ -386,23 +386,7 @@ class block_arup_mylearning_content {
 
             $cells = array();
 
-            if ($th->classtypegroup) {
-                if ($th->classtypegroup != 'cpd' && get_string_manager()->string_exists($th->classtypegroup, 'block_arup_mylearning')) {
-                    $alttitle = get_string($th->classtypegroup, 'block_arup_mylearning');
-                } else {
-                    $alttitle = $th->classtype;
-                }
-                $cell->text = html_writer::empty_tag(
-                    'img',
-                    array(
-                        'src' => $OUTPUT->image_url($th->classtypegroup, 'block_arup_mylearning'),
-                        'alt' => $alttitle,
-                        'title' => $alttitle
-                    )
-                );
-            } else {
-                $cell->text = '';
-            }
+            $cell->text = '';
             $cell->attributes['class'] = 'text-center';
             $cells[] = clone($cell);
 
@@ -550,7 +534,6 @@ class block_arup_mylearning_content {
         $this->_worksheets[0] = $this->_workbook->add_worksheet(get_string('worksheet:history', 'block_arup_mylearning'));
 
         $fields = array(
-            'classtype' => get_string('methodology', 'block_arup_mylearning'),
             'coursename' => get_string('course'),
             'classcategory' => get_string('category'),
             'healthandsafetycategory' => get_string('cpd:healthandsafetycategory', 'block_arup_mylearning'),
@@ -579,13 +562,6 @@ class block_arup_mylearning_content {
             $timezone = new DateTimeZone($th->usedtimezone);
             foreach ($fields as $field => $fieldname) {
                 switch ($field) {
-                    case 'classtype' :
-                        if ($th->classtypegroup != 'cpd' && get_string_manager()->string_exists($th->classtypegroup, 'block_arup_mylearning')) {
-                            $data = get_string($th->classtypegroup, 'block_arup_mylearning');
-                        } else {
-                            $data = $th->classtype;
-                        }
-                        break;
                     case 'coursename' :
                         $data = $th->coursename ? $th->coursename : $th->classname;
                         break;
@@ -836,9 +812,10 @@ class block_arup_mylearning_content {
         list($usql, $params) = $DB->get_in_or_equal($taps->get_statuses('cancelled'), SQL_PARAMS_NAMED, 'status', false);
         $sql = <<<EOS
 SELECT
-    lte.id, lte.bookingstatus, lte.completiontime, lte.courseid as course
+    lte.id, lte.bookingstatus, lte.completiontime, ltc.courseid as course
 FROM
     {local_taps_enrolment} lte
+INNER JOIN {local_taps_class} ltc on lte.classid = ltc.classid
 WHERE
     lte.staffid = :staffid
     AND lte.active = 1
@@ -867,16 +844,17 @@ EOS;
         list($usql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
         $sql = <<<EOS
 SELECT
-    lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.completiontime, lte.duration, lte.durationunits,
-        lte.expirydate, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
-        lte.healthandsafetycategory, lte.usedtimezone, lte.locked,
-    lte.courseid as course,
+    lte.id, ltc.classname, c.fullname as coursename, ltc.classcategory, ltc.completiontime, ltc.duration, ltc.durationunits,
+        lte.expirydate, ltc.classsuppliername as provider, ltc.location, ltc.classstartdate, lte.certificateno, lte.learningdesc,
+        lte.healthandsafetycategory, ltc.usedtimezone, lte.locked,
+    ltc.courseid as course,
     cat.id as categoryid, cat.name as categoryname
 FROM
     {local_taps_enrolment} lte
+INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 LEFT JOIN
     {course} c
-    ON c.id = lte.courseid
+    ON c.id = ltc.courseid
 LEFT JOIN
     {course_categories} cat
     ON cat.id = c.category
@@ -894,15 +872,6 @@ EOS;
         $params['primaryflag'] = 'Y';
 
         $tapshistory = $DB->get_records_sql($sql, $params);
-
-        foreach ($tapshistory as $index => $value) {
-            $classtypegroup = $taps->get_classtype_type($value->classtype);
-            if ($classtypegroup) {
-                $tapshistory[$index]->classtypegroup = $classtypegroup;
-            } else {
-                $tapshistory[$index]->classtypegroup = '';
-            }
-        }
 
         return $tapshistory;
     }

@@ -499,16 +499,14 @@ class taps {
         $cpd->classcategory = (isset($optional['p_subject_catetory']) ? $this->_classcategory[$optional['p_subject_catetory']] : null);
         $cpd->classcost = (isset($optional['p_course_cost']) ? round($optional['p_course_cost'], 2) : null);
         $cpd->classcostcurrency = (isset($optional['p_course_cost_currency']) ? $optional['p_course_cost_currency'] : null);
-        $cpd->classstarttime = (isset($optional['p_course_start_date']) ? $optional['p_course_start_date'] : 0);
+        $cpd->starttime = (isset($optional['p_course_start_date']) ? $optional['p_course_start_date'] : 0);
+        $cpd->endtime = (isset($optional['p_course_start_date']) ? $optional['p_course_start_date'] : 0);
         $cpd->certificateno = (isset($optional['p_certificate_number']) ? $optional['p_certificate_number'] : null);
         $cpd->expirydate = (isset($optional['p_certificate_expiry_date']) ? $optional['p_certificate_expiry_date'] : 0);
         $cpd->learningdesc = (isset($optional['p_learning_desc']) ? $optional['p_learning_desc'] : null);
         $cpd->healthandsafetycategory = (isset($optional['p_health_and_safety_category']) ? $this->_healthandsafetycategory[$optional['p_health_and_safety_category']] : null);
 
         $cpd->completiontime = usergetmidnight($completiontime, new DateTimeZone('UTC')); // Midnight on day (UTC).
-
-        $cpd->classstartdate = $cpd->classstarttime;
-        $cpd->classenddate = $cpd->classendtime = ($cpd->completiontime + (24 * 60 * 60) - 1); // End of completion day
 
         $cpd->timemodified = time();
 
@@ -550,7 +548,8 @@ class taps {
         $cpd->classcategory = (isset($optional['p_subject_catetory']) ? $this->_classcategory[$optional['p_subject_catetory']] : null);
         $cpd->classcost = (isset($optional['p_course_cost']) ? round($optional['p_course_cost'], 2) : null);
         $cpd->classcostcurrency = (isset($optional['p_course_cost_currency']) ? $optional['p_course_cost_currency'] : null);
-        $cpd->classstarttime = (isset($optional['p_course_start_date']) ? $optional['p_course_start_date'] : 0);
+        $cpd->starttime = (isset($optional['p_course_start_date']) ? $optional['p_course_start_date'] : 0);
+        $cpd->endtime = (isset($optional['p_course_start_date']) ? $optional['p_course_start_date'] : 0);
         $cpd->certificateno = (isset($optional['p_certificate_number']) ? $optional['p_certificate_number'] : null);
         $cpd->expirydate = (isset($optional['p_certificate_expiry_date']) ? $optional['p_certificate_expiry_date'] : 0);
         $cpd->learningdesc = (isset($optional['p_learning_desc']) ? $optional['p_learning_desc'] : null);
@@ -558,9 +557,6 @@ class taps {
         $cpd->healthandsafetycategory = (isset($optional['p_health_and_safety_category']) ? $this->_healthandsafetycategory[$optional['p_health_and_safety_category']] : null);
 
         $cpd->completiontime = usergetmidnight($completiontime, new DateTimeZone('UTC')); // Midnight on day (UTC).
-
-        $cpd->classstartdate = $cpd->classstarttime;
-        $cpd->classenddate = $cpd->classendtime = ($cpd->completiontime + (24 * 60 * 60) - 1); // End of completion day
 
         $cpd->timemodified = time();
 
@@ -653,22 +649,11 @@ class taps {
             $result->status = 'CLASS_FULL';
         }
 
-        $enrolment->classname = $class->classname;
-        $enrolment->courseid = $class->courseid;
         $enrolment->coursename = $class->coursename;
-        $enrolment->location = $class->location;
         $enrolment->classtype = $class->classtype;
         $enrolment->classcategory = null; // Could be Health and Safety; but we don't have this information.
-        $enrolment->classstartdate = $class->classstartdate;
-        $enrolment->classenddate = $class->classenddate;
-        $enrolment->duration = $class->classduration;
-        $enrolment->durationunits = $class->classdurationunits;
-        $enrolment->durationunitscode = $class->classdurationunitscode;
-        $enrolment->provider = null; // Could be Internal?; but we don't have this information.
         $enrolment->certificateno = null; // CPD only.
         $enrolment->expirydate = null; // CPD only.
-        $enrolment->classstarttime = $class->classstarttime;
-        $enrolment->classendtime = $class->classendtime;
         $enrolment->completiontime = null;
         $enrolment->healthandsafetycategory = null; // CPD only.
         $enrolment->classcost = $class->classcost;
@@ -679,7 +664,6 @@ class taps {
         $enrolment->pricebasis = $class->pricebasis;
         $enrolment->currencycode = $class->currencycode;
         $enrolment->price = $class->price;
-        $enrolment->trainingcenter = $class->trainingcenter;
         // Field bookingplaceddate is a new field from migration data.
         $enrolment->bookingplaceddate = $enrolment->timemodified = time();
 

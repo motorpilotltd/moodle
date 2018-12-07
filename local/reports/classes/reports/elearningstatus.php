@@ -232,7 +232,7 @@ class elearningstatus extends base {
 
         }
 
-        $enrolmentswhere = "WHERE ( lte.archived = '' OR lte.archived IS NULL ) AND lte.classtype = 'Self Paced' ";
+        $enrolmentswhere = "WHERE ( ltc.archived = '' OR ltc.archived IS NULL ) AND ltc.classtype = 'Self Paced' ";
         $waitlisted = $this->taps->get_statuses('waitlisted');
         $placed = $this->taps->get_statuses('placed');
         $attended = $this->taps->get_statuses('attended');
@@ -324,14 +324,18 @@ class elearningstatus extends base {
             }
         }
 
-        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode, ltco.courseregion
+        $remotetagidconcat = \local_mssql\dbshim::sql_group_concat('reg.name', ',', true);
+
+        $sql = "SELECT lte.*, staff.*, ltc.classstatus, c.shortname as coursecode, $remotetagidconcat, ltco.courseregion
                   FROM {local_taps_enrolment} as lte
              LEFT JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
              LEFT JOIN {local_taps_class} as ltc
                     ON ltc.classid = lte.classid
-             LEFT JOIN {local_taps_course} as ltco
-                    ON lte.courseid = ltco.courseid
+             LEFT JOIN {course} as c
+                    ON ltc.courseid = c.id
+                LEFT JOIN {local_regions_reg_cou} regcou ON regcou.courseid = c.id
+                LEFT JOIN {local_regions_reg} reg ON reg.id = regcou.regionid
                        $enrolmentswhere
                        $wherestring
               ORDER BY " . $this->sort . ' ' . $this->direction;
@@ -347,7 +351,6 @@ class elearningstatus extends base {
                             $enrolmentswhere
                             $wherestring";
 
-        //$DB->set_debug(1);
         $enrolments = array();
         $all = array();
         $this->errors = array();
