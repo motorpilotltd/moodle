@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'langconfig', language 'vi', branch 'MOODLE_33_STABLE'
+ * Strings for component 'langconfig', language 'vi', branch 'MOODLE_35_STABLE'
  *
  * @package   langconfig
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
@@ -34,7 +34,7 @@ $string['iso6392'] = 'vie';
 $string['labelsep'] = ':';
 $string['listsep'] = ';';
 $string['locale'] = 'vi_VN.UTF-8';
-$string['localewin'] = 'Vietnamese_Vietnam.1258';
+$string['localewin'] = 'Vietnamese_Viet Nam.1258';
 $string['localewincharset'] = 'WINDOWS-1258';
 $string['oldcharset'] = 'UTF-8';
 $string['strftimedate'] = '%d %B %Y';
