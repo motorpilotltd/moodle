@@ -85,7 +85,7 @@ $string['toplevel'] = 'Top Level';
 $string['subcategories'] = 'Sub Categories';
 $string['subcategory'] = 'Sub Category';
 $string['parent'] = 'Parent';
-$string['pleasesettimezone'] = 'Please set your <a href={$a}>timezone</a>';
+$string['pleasesettimezone'] = 'Please set your <a href="{$a}">timezone</a>';
 $string['notice'] = 'Notice';
 $string['noticedesc'] = 'Notice text for important server messages';
 $string['noticeid'] = 'Notice id';

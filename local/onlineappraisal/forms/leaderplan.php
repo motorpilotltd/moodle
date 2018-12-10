@@ -91,7 +91,6 @@ class apform_leaderplan extends moodleform {
 
         $answers = [];
         $class = 'select2-general';
-        $dataattrs = ['data-tags' => true];
         $i = 1;
         $answerstring = "ldppotential:answer:{$i}";
         while ($this->str_exists($answerstring)) {
@@ -112,10 +111,22 @@ class apform_leaderplan extends moodleform {
                 }
             }
         }
-        $element = $mform->addElement('select', 'ldppotential', $this->str('ldppotential'), $answers, ['class' => $class] + $dataattrs);
+        $element = $mform->addElement('select', 'ldppotential', $this->str('ldppotential'), $answers, ['class' => $class]);
         $element->setMultiple(true);
         $mform->disabledIf('ldppotential', 'islocked', 'eq', 1);
         $mform->disabledIf('ldppotential', 'view', 'neq', 'appraisee');
+        if (!$islocked && $data->appraisal->viewingas === 'appraisee') {
+            $html = '
+                <div class="form-group">
+                    <label class="sr-only" for="ldppotentialnew">Add alternative...</label>
+                    <div class="input-group ldppotentialnew">
+                    <input type="text" class="form-control" id="ldppotentialnew" placeholder="Add alternative...">
+                    <div class="input-group-addon" id="ldppotentialnew-add"><button>+</button></div>
+                    </div>
+                </div>
+                ';
+            $mform->addElement('html', $html);
+        }
 
         $strengths = [
             2,

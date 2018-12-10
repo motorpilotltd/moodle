@@ -395,6 +395,24 @@
 .path-local-onlineappraisal .mform .input-group {
   max-width: 300px;
 }
+.path-local-onlineappraisal .mform .input-group.ldppotentialnew {
+  max-width: 505px;
+}
+.path-local-onlineappraisal .mform .input-group.ldppotentialnew input {
+  max-width: 100%;
+  width: 100%;
+}
+.path-local-onlineappraisal .mform .input-group.ldppotentialnew div.input-group-addon {
+  padding: 0;
+}
+.path-local-onlineappraisal .mform .input-group.ldppotentialnew button {
+  border: none;
+  margin: 0;
+  background: transparent;
+  padding: 0;
+  width: 33px;
+  height: 28px;
+}
 .path-local-onlineappraisal .mform .fitem .fitemtitle,
 .path-local-onlineappraisal .mform .fitem .felement {
   float: none;
