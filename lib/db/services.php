@@ -1123,6 +1123,14 @@ $functions = array(
         'loginrequired' => false,
         'ajax' => true,
     ),
+    'core_output_load_template_with_dependencies' => array(
+        'classname' => 'core\output\external',
+        'methodname' => 'load_template_with_dependencies',
+        'description' => 'Load a template and its dependencies for a renderable',
+        'type' => 'read',
+        'loginrequired' => false,
+        'ajax' => true,
+    ),
     'core_output_load_fontawesome_icon_map' => array(
         'classname' => 'core\output\external',
         'methodname' => 'load_fontawesome_icon_map',
