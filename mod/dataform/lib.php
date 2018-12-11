@@ -750,31 +750,31 @@ function dataform_extend_settings_navigation(settings_navigation $settings, navi
         }
 
         // Manage.
-        $manage = $dfnode->add(get_string('manage', 'dataform'));
+        $manage = $dfnode;
 
         if ($manager['views']) {
             $params = array('id' => $PAGE->cm->id);
-            $manage->add(get_string('views', 'dataform'), new moodle_url('/mod/dataform/view/index.php', $params));
+            $manage->add(get_string('dataform:manageviews', 'dataform'), new moodle_url('/mod/dataform/view/index.php', $params));
         }
 
         if ($manager['fields']) {
             $params = array('id' => $PAGE->cm->id);
-            $manage->add(get_string('fields', 'dataform'), new moodle_url('/mod/dataform/field/index.php', $params));
+            $manage->add(get_string('dataform:managefields', 'dataform'), new moodle_url('/mod/dataform/field/index.php', $params));
         }
 
         if ($manager['filters']) {
             $params = array('id' => $PAGE->cm->id);
-            $manage->add(get_string('filters', 'dataform'), new moodle_url('/mod/dataform/filter/index.php', $params));
+            $manage->add(get_string('dataform:managefilters', 'dataform'), new moodle_url('/mod/dataform/filter/index.php', $params));
         }
 
         if ($manager['access']) {
             $params = array('id' => $PAGE->cm->id);
-            $manage->add(get_string('access', 'dataform'), new moodle_url('/mod/dataform/access/index.php', $params));
+            $manage->add(get_string('dataform:manageaccess', 'dataform'), new moodle_url('/mod/dataform/access/index.php', $params));
         }
 
         if ($manager['notifications']) {
             $params = array('id' => $PAGE->cm->id);
-            $manage->add(get_string('notifications'), new moodle_url('/mod/dataform/notification/index.php', $params));
+            $manage->add(get_string('dataform:managenotifications', 'dataform'), new moodle_url('/mod/dataform/notification/index.php', $params));
         }
 
         if ($manager['css']) {
@@ -957,6 +957,68 @@ function dataform_user_complete($course, $user, $mod, $dataform) {
         $view->section = '##entries##';
         $viewcontent = $view->display();
         echo $viewcontent;
+    }
+    return true;
+}
+
+/**
+ * Generates overview info for instances in the specified courses. An instance
+ * has an overview for a user if the instance contains a view of type
+ * 'overview' (dataformview_overview) that is accessible by the user. The content
+ * of the overview is the content of that view.
+ *
+ * @param mixed $courses The list of courses to genenrate the overview for.
+ * @param array $htmlarray The array of html to return.
+ *
+ * @return true
+ */
+function dataform_print_overview($courses, &$htmlarray) {
+    global $CFG, $DB;
+
+    if (empty($courses) || !is_array($courses) || count($courses) == 0) {
+        return true;
+    }
+
+    if (!$dataforms = get_all_instances_in_courses('dataform', $courses)) {
+        return true;
+    }
+
+    // Collate overview info into $htmlarray.
+    foreach ($dataforms as $dataform) {
+        $overview = '';
+
+        // Get the instance overview views.
+        $df = new \mod_dataform_dataform($dataform->id);
+        if ($views = $df->view_manager->get_views_by_instanceof('mod_dataform\interfaces\overview')) {
+            // Remove unpermitted.
+            foreach ($views as $viewid => $view) {
+                $params = array('dataformid' => $dataform->id, 'viewid' => $viewid);
+                if (!mod_dataform\access\view_access::validate($params)) {
+                    continue;
+                }
+
+                $params = array(
+                        'css' => true,
+                        'nologin' => true,
+                );
+                $pageoutput = $df->set_page('external', $params);
+
+                $viewcontent = $view->display();
+                $overview .= "$pageoutput\n$viewcontent";
+            }
+        }
+
+        if (!$overview) {
+            continue;
+        }
+
+        if (empty($htmlarray[$dataform->course])) {
+            $htmlarray[$dataform->course] = array();
+        }
+        if (empty($htmlarray[$dataform->course]['dataform'])) {
+            $htmlarray[$dataform->course]['dataform'] = '';
+        }
+        $htmlarray[$dataform->course]['dataform'] .= $overview;
     }
     return true;
 }

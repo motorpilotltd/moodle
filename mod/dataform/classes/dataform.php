@@ -104,6 +104,7 @@ class mod_dataform_dataform {
         $data->intervalcount = 1;
         $data->grade = 0;
         $data->gradeitems = null;
+        $data->entrytypes = null;
         $data->maxentries = -1;
         $data->entriesrequired = 0;
         $data->grouped = 0;
@@ -391,6 +392,9 @@ class mod_dataform_dataform {
 
         // EDITING (not on external pages).
         $this->set_page_editing_mode($pagefile, $urlparams);
+
+        // SETTINGS MENU.
+        $PAGE->force_settings_menu();
 
         // AUTO REFRESH.
         if (!empty($urlparams['refresh']) and !$externalpage) {

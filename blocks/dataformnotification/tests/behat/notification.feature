@@ -1,4 +1,4 @@
-@javascript @block @block_dataformnotification @mod_dataform @dataformrule @dataformnotificationtest
+@javascript @block @block_dataformnotification @set_dataform @dataformrule @dataformnotificationtest
 Feature: Dataform notifications
   In order to monitor events and receive Dataform notifications
   As a user
@@ -15,6 +15,14 @@ Feature: Dataform notifications
             | name     | type      | dataform  | default   |
             | View 01  | aligned   | dataform1 | 1         |
 
+        And view "View 01" in dataform "1" has the following entry template:
+            """
+            [[ENT:id]]
+            [[Field 01]]
+            [[EAC:edit]]
+            [[EAC:delete]]
+            """
+
         And the following dataform "views" exist:
             | name     | type      | dataform  | submission |
             | View 02  | grid   | dataform1 |            |
@@ -28,10 +36,14 @@ Feature: Dataform notifications
         And view "View 02" in dataform "1" has the following entry template:
             """
             <div class="entry">
-                <h2>[[EAU:name]]</h2>
-                This entry has been updated to [[Field 01]].
+                [[Field 01]] updated.
             </div>
             """
+        # Make sure the popup notifications are enabled for assignments.
+        And the following config values are set as admin:
+          | popup_provider_mod_dataform_dataform_notification_permitted | permitted | message |
+          | message_provider_mod_dataform_dataform_notification_loggedin | popup | message |
+          | message_provider_mod_dataform_dataform_notification_loggedoff | popup | message |
 
     #Section: Notify recipients on entry created
     Scenario: Notify recipients on entry created
@@ -43,9 +55,9 @@ Feature: Dataform notifications
             | to            |                                           |
             | views         |                                           |
             | events        | entry_created                             |
-            | messagetype   | 1                                         |
+            | messagetype   | 0                                         |
             | subject       | Test notification - New entry added       |
-            | contenttext   | This entry has been created.              |
+            | contenttext   | New entry created.              |
             | contentview   |                                           |
             | messageformat |                                           |
             | sender        |                                           |
@@ -57,33 +69,29 @@ Feature: Dataform notifications
             | recipientemail    |                                           |
             #| permission1   | student Allow mod/dataform:viewaccess     |
 
-        And I log in as "teacher1"
-        And I follow "Course 1"
-        And I follow "Test Dataform Notification Rules"
+        And I am in dataform "Test Dataform Notification Rules" "Course 1" as "teacher1"
 
         When I follow "Add a new entry"
         And I press "Save"
-        And I follow "Messages" in the user menu
-        And I follow "Do not reply to this email (1)"
-        Then I see "This entry has been created."
+        And I click on ".popover-region-notifications" "css_element"
+        Then I see "Test notification - New entry added"
+        And I follow "View full notification"
+        And I see "New entry created"
         And I log out
 
         When I log in as "student1"
-        And I follow "Messages" in the user menu
-        And I follow "Do not reply to this email (1)"
-        Then I see "This entry has been created."
+        And I click on ".popover-region-notifications" "css_element"
+        Then I see "Test notification - New entry added"
         And I log out
 
         When I log in as "assistant1"
-        And I follow "Messages" in the user menu
-        And I follow "Do not reply to this email (1)"
-        Then I see "This entry has been created."
+        And I click on ".popover-region-notifications" "css_element"
+        Then I see "Test notification - New entry added"
         And I log out
 
         When I log in as "admin"
-        And I follow "Messages" in the user menu
-        And I follow "Do not reply to this email (1)"
-        Then I see "This entry has been created."
+        And I click on ".popover-region-notifications" "css_element"
+        Then I see "Test notification - New entry added"
         And I log out
 
     #:Section
@@ -104,7 +112,7 @@ Feature: Dataform notifications
             | views         |                                           |
             | events        | entry_updated                             |
             | messagetype   | 1                                         |
-            | subject       | Test notification - entry updated         |
+            | subject       | Test message - entry updated         |
             | contenttext   |                                           |
             | contentview   | View 02                                   |
             | messageformat | 1                                          |
@@ -117,30 +125,26 @@ Feature: Dataform notifications
             | recipientemail    |                                           |
             #| permission1   | student Allow mod/dataform:viewaccess     |
 
-        And I log in as "teacher1"
-        And I follow "Course 1"
-        And I follow "Test Dataform Notification Rules"
+        And I am in dataform "Test Dataform Notification Rules" "Course 1" as "teacher1"
         
-        When I follow "id_editentry1"
+        When I click on "Edit" "link" in the "1" "table_row"
         And I set the field "field_1_1" to "the big bang theory"
         And I press "Save"
 
         And I follow "Messages" in the user menu
-        And I follow "Student 2 (1)"
-        Then I see "Number of entries: 1"
-        And I see "This entry has been updated to the big bang theory."
+        And I see "Student 2"
+        And I see "the big bang theory updated"
         And I log out
 
         When I log in as "student1"
-        And I follow "Messages" in the user menu
-        And I follow "Student 2 (1)"
-        Then I see "Number of entries: 1"
-        And I see "This entry has been updated to the big bang theory."
+        And I click on ".popover-region-messages" "css_element"
+        And I see "Student 2"
+        And I see "the big bang theory updated"
         And I log out
 
     #:Section
 
-    #Section: Notify recipients on entry created with specific content
+    #Section: Converse recipients on entry created with specific content
     Scenario: Notify recipients on entry created
         Given the following dataform notification rule exists:
             | name          | New entry                                 |
@@ -152,10 +156,10 @@ Feature: Dataform notifications
             | events        | entry_created                             |
             | messagetype   | 1                                         |
             | subject       | Test notification - New entry added       |
-            | contenttext   | This entry has been created.              |
+            | contenttext   | Author says that this entry has been created.              |
             | contentview   |                                           |
             | messageformat |                                           |
-            | sender        |                                           |
+            | sender        | author                                        |
             | recipientadmin    |                                           |
             | recipientsupport  |                                           |
             | recipientauthor   |  1                                        |
@@ -165,23 +169,19 @@ Feature: Dataform notifications
             #| permission1   | student Allow mod/dataform:viewaccess     |
             | search1           | AND#1,content##=#Choose me   |
 
-        And I log in as "teacher1"
-        And I follow "Course 1"
-        And I follow "Test Dataform Notification Rules"
+        And I am in dataform "Test Dataform Notification Rules" "Course 1" as "teacher1"
 
         When I follow "Add a new entry"
         And I press "Save"
         And I follow "Messages" in the user menu
-        Then I do not see "Do not reply to this email (1)"
+        Then I do not see "Author says that this entry has been created."
 
-        And I am on homepage
-        And I follow "Course 1"
+        And I am on "Course 1" course homepage
         And I follow "Test Dataform Notification Rules"
         When I follow "Add a new entry"
         And I set the field "field_1_-1" to "Choose me"
         And I press "Save"
         And I follow "Messages" in the user menu
-        And I follow "Do not reply to this email (1)"
-        Then I see "This entry has been created."
+        Then I see "Author says that this entry has been created."
 
     #:Section

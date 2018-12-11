@@ -119,6 +119,7 @@ class dataformview {
     public function set_viewfilter(array $options = array()) {
         $fm = \mod_dataform_filter_manager::instance($this->dataid);
 
+        $filterid = 0;
         $forcedfilter = null;
         $filterfromid = null;
         $filterfromoptions = null;
@@ -127,6 +128,7 @@ class dataformview {
         // Get forced filter if set.
         if ($this->filterid) {
             $forcedfilter = $fm->get_filter_by_id($this->filterid, array('view' => $this));
+            $filterid = $forcedfilter->id;
         }
 
         // Get filter from id option.
@@ -134,11 +136,15 @@ class dataformview {
             $fid = $options['id'];
             if ($fid != $this->filterid) {
                 $filterfromid = $fm->get_filter_by_id($fid, array('view' => $this));
+                $filterid = $filterfromid->id;
             }
             unset($options['id']);
         }
 
         // Get filter from other options.
+        if ($this->entrytype) {
+            $options['entrytype'] = $this->entrytype;
+        }
         if ($this->perpage and empty($options['perpage'])) {
             $options['perpage'] = $this->perpage;
         }
@@ -159,6 +165,7 @@ class dataformview {
         if ($filterspecified) {
             $filter = $forcedfilter ? $forcedfilter : $fm->get_filter_blank();
             $filter->append(array($filterfromid, $filterfromoptions, $filterfromurl));
+            $filter->id = $filterid;
         } else {
             // If no filter specified and there is default filter, use default.
             $fid = $this->df->defaultfilter ? $this->df->defaultfilter : 0;
@@ -169,6 +176,8 @@ class dataformview {
         if ($patternfields = $this->get_pattern_set('field')) {
             $filter->contentfields = array_keys($patternfields);
         }
+
+        $filter->view = $this->id;
 
         $this->_filter = $filter;
     }
@@ -322,7 +331,8 @@ class dataformview {
     protected function set_entries_content(array $options) {
         $this->entry_manager->set_content($options);
         // Adjust page in case changed by selection method (e.g. random selection).
-        $this->filter->page = $this->entry_manager->page;
+        // Currently commented out; see CONTRIB-6122.
+        // $this->filter->page = $this->entry_manager->page;
     }
 
     /**
@@ -1350,9 +1360,11 @@ class dataformview {
             foreach ($matches[0] as $pattern) {
                 $cleanpattern = trim($pattern, '%');
                 list($fid, $formula) = explode(':=', $cleanpattern, 2);
+                // Remove decimals from formula.
+                list($formula, ) = explode(';', $formula);
                 // Skip an empty formula.
-                if (empty($formula) and $formula !== 0) {
-                    continue;
+                if (empty($formula)) {
+                    $formula = 0;
                 }
                 isset($formulas[$fid]) or $formulas[$fid] = array();
                 // Enclose formula in brackets to preserve precedence.
@@ -1399,24 +1411,21 @@ class dataformview {
 
             // Calculate.
             foreach ($replacements as $pattern => $formula) {
-                // Number of decimals can be set as ;n at the end of the formula.
-                $decimals = null;
-                if (strpos($formula, ';')) {
-                    list($formula, $decimals) = explode(';', $formula);
-                }
                 $calc = new \calc_formula("=$formula");
                 $result = $calc->evaluate();
                 if ($result === false) {
                     // False as result indicates some problem.
                     // We remove the formula altogether.
-                    $replacements[$pattern] = '';
+                    $replacement = '';
                 } else {
-                    // Set decimals.
+                    // Number of decimals can be set as ;n at the end of the pattern.
+                    list(, $decimals) = array_pad(explode(';', trim($pattern, '%')), 2, 0);
                     if (is_numeric($decimals)) {
                         $result = sprintf("%4.{$decimals}f", $result);
                     }
-                    $replacements[$pattern] = $result;
+                    $replacement = $result;
                 }
+                $replacements[$pattern] = $replacement;
             }
 
             $text = str_replace(array_keys($replacements), $replacements, $text);
@@ -1816,6 +1825,7 @@ class dataformview {
         $this->name = !empty($data->name) ? trim($data->name) : $this->type;
         $this->description = !empty($data->description) ? $data->description : '';
         $this->visible = !empty($data->visible) ? $data->visible : 0;
+        $this->entrytype = !empty($data->entrytype) ? $data->entrytype : '';
         $this->perpage = !empty($data->perpage) ? $data->perpage : 0;
         $this->groupby = !empty($data->groupby) ? $data->groupby : '';
         $this->filterid = !empty($data->filterid) ? $data->filterid : 0;

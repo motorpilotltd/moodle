@@ -1,4 +1,4 @@
-@javascript @block @block_dataformnotification @mod_dataform @dataformrule @dataformnotification
+@javascript @block @block_dataformnotification @set_dataform @dataformrule @dataformnotification
 Feature: Block dataform notification
 
     Scenario: Manage notification rule

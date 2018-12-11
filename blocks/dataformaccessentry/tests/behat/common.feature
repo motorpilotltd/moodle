@@ -1,4 +1,4 @@
-@block @block_dataformaccessentry @mod_dataform @dataformrule
+@block @block_dataformaccessentry @set_dataform @dataformrule
 Feature: Block dataform access entry
 
     @javascript
