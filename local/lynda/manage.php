@@ -42,7 +42,8 @@ $showallpagesize = 5000;
 $defaultpagesize = 50;
 
 $downloadformat = optional_param('download', false, PARAM_ALPHA);
-$showall        = optional_param('showall', false, PARAM_BOOL);
+$treset         = optional_param('treset', false, PARAM_BOOL);
+$showall        = !$treset && ($downloadformat || optional_param('showall', false, PARAM_BOOL));
 $context        = \context_system::instance();
 
 $form     = new \local_lynda\managecourses_filterform();
@@ -62,8 +63,8 @@ if ($formdata) {
 
         $urlparams[$selectname] = $formdata->$selectname;
     }
-    $url       = $PAGE->url;
-    $url = \local_lynda\lib::appendurlparamswitharray($url->out(), $urlparams);
+    $url = $PAGE->url;
+    $url = \local_lynda\lib::appendurlparamswitharray($url, $urlparams);
 
     redirect($url);
 }
@@ -86,9 +87,10 @@ $baseurl = $PAGE->url;
 if ($showall) {
     $baseurl->param('showall', true);
 }
-$baseurl = \local_lynda\lib::appendurlparamswitharray($baseurl->out(), (array)$data);
+$baseurl = \local_lynda\lib::appendurlparamswitharray($baseurl, (array)$data);
 
 $table = new \local_lynda\managecourses_table($data, $data->tsort);
+$baseurl->remove_params($table->request); // Remove table params to avoid them being changed every request!
 $table->define_baseurl($baseurl);
 
 if (!empty($downloadformat)) {
