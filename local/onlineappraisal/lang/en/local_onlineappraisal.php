@@ -107,7 +107,7 @@ $string['summaries'] = 'Summaries';
 $string['checkin'] = 'Check-in';
 $string['help'] = 'Help';
 $string['successionplan'] = 'Succession Development Plan';
-$string['leaderplan'] = 'Leadership Development Plan';
+$string['leaderplan'] = 'Leadership Development Plan (Beta)';
 
 // General alerts.
 $string['alert:language:notdefault'] = '<strong>Warning</strong>: You are not using the default language to view this appraisal. Please ensure you provide answers to the questions in the most appropriate language for everyone involved.';
@@ -232,7 +232,7 @@ $string['comment'] = 'Comment';
 $string['comment:adddots'] = 'Add a comment...';
 $string['comment:addingdots'] = 'Adding...';
 $string['comment:addnewdots'] = 'Add a new comment...';
-$string['comment:ldp:locking'] = ' Leadership Development Plan has been locked by {$a->relateduser}';
+$string['comment:ldp:locking'] = ' Leadership Development Plan has been marked as complete by {$a->relateduser}';
 $string['comment:ldp:unlocking'] = 'Leadership Development Plan has been unlocked by {$a->relateduser}';
 $string['comment:sdp:locking'] = ' Succession Development Plan has been locked by {$a->relateduser}';
 $string['comment:sdp:unlocking'] = 'Succession Development Plan has been unlocked by {$a->relateduser}';
@@ -1221,7 +1221,7 @@ $string['form:successionplan:confirm:unlock:yes'] = 'Yes, unlock it';
 $string['form:successionplan:confirm:unlock:no'] = 'No, leave it locked';
 
 // Leadership plan.
-$string['form:leaderplan:title'] = 'Leadership Development Plan';
+$string['form:leaderplan:title'] = 'Leadership Development Plan (Beta)';
 $string['form:leaderplan:intro'] = 'This section informs the leadership plan. This will be shared with region board, management board as appropriate. ';
 $string['form:leaderplan:ldppotential'] = 'Potential Future Roles (Choose and/or add alternative)';
 $string['form:leaderplan:ldppotential:answer:1'] = 'Business Leader';
@@ -1237,8 +1237,9 @@ $string['form:leaderplan:ldpdevelopmentareas'] = 'Areas for development';
 $string['form:leaderplan:ldpdevelopmentareas:add'] = 'Add another area for development';
 $string['form:leaderplan:ldpdevelopmentareas:add:noscript'] = 'Save to add another area for development input';
 $string['form:leaderplan:ldpdevelopmentplan'] = 'Leadership Development Plan';
-$string['form:leaderplan:ldplocked'] = 'Toggle to indicate that this plan is complete and ready for review (this will lock the fields and prevent changes being made). It can be easily unlocked again at any time.';
-$string['form:leaderplan:islocked'] = 'Leadership Development Plan has been locked and cannot be edited unless unlocked.';
+$string['form:leaderplan:ldplocked'] = 'Tick here to indicate that the Leadership Development Plan has been reviewed and is complete. This will lock the fields and prevent further changes being made. To enable editing, untick the box at any time.';
+$string['form:leaderplan:ldplocked:tooltip'] = 'To be completed by the supervisor (appraiser)';
+$string['form:leaderplan:islocked'] = 'Leadership Development Plan has been marked as complete and cannot be edited unless unlocked.';
 $string['form:leaderplan:confirm:unlock:title'] = 'Unlock Leadership Development Plan';
 $string['form:leaderplan:confirm:unlock:question'] = 'Are you sure you wish to unlock this Leadership Development Plan?';
 $string['form:leaderplan:confirm:unlock:yes'] = 'Yes, unlock it';
@@ -1583,7 +1584,7 @@ $string['pdf:helddate'] = 'Appraisal Date';
 
 $string['pdf:leaderplan:appraiser'] = 'Current performance summary (as per appraisal)';
 $string['pdf:leaderplan:comments'] = 'Career aspiration and next steps (as per appraisal)<br>Appraiser comments';
-$string['pdf:leaderplan:ldplocked'] = 'Has this plan been locked?';
+$string['pdf:leaderplan:ldplocked'] = 'Has this plan been marked as complete?';
 $string['pdf:leaderplan:progress'] = 'Career aspiration and next steps (as per appraisal)<br>Appraisee comments';
 $string['pdf:learninghistory:classroom'] = 'Classroom';
 $string['pdf:learninghistory:elearning'] = 'Classroom';

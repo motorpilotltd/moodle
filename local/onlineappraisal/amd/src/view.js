@@ -41,6 +41,10 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
             // Select2 initialisation.
             $('select.select2-general').select2();
+            $('select.select2-general').on('select2:opening select2:closing', function() {
+                var $searchfield = $(this).parent().find('.select2-search__field');
+                $searchfield.prop('disabled', true);
+            });
 
             if (page === 'userinfo' && (view === 'appraisee' || view === 'appraiser') && statusid < 5) {
                 var classes, graderefresh, jobtitlerefresh;
@@ -195,7 +199,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
             if (page === 'leaderplan'
                     && parseInt($('#oa-ldp-islocked').val()) === 0
-                    && $('#oa-ldp-view').val() !== 'appraisee') {
+                    && $('#oa-ldp-view').val() === 'appraisee') {
                 // Add ldpstrength/ldpdevelopmentarea inputs.
                 // Reveal buttons.
                 $('.oa-add-repeating-element').show();
@@ -215,6 +219,17 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     input.prop('name', type+'['+newindex+']');
                     input.val('');
                     clone.insertBefore(that);
+                });
+
+                // Adding alterntaive potential future role.
+                $('#ldppotentialnew-add button').click(function(e) {
+                    e.preventDefault();
+                    var input = $(this).parent().prev('input');
+                    var inputval = input.val();
+                    if (inputval !== '') {
+                        $('select#id_ldppotential').append($('<option>', {text: inputval, value: inputval, selected: true}));
+                        input.val('');
+                    }
                 });
             }
 

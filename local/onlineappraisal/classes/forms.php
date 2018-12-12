@@ -75,10 +75,6 @@ class forms {
         $GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES']['dateselect'] = array();
         $GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES']['dateselect'][] = $CFG->dirroot . '/local/onlineappraisal/forms/dateselect.php';
         $GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES']['dateselect'][] = 'MoodleQuickForm_dateselect';
-
-        $GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES']['arupadvcheckbox'] = array();
-        $GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES']['arupadvcheckbox'][] = $CFG->dirroot . '/local/onlineappraisal/forms/advcheckbox.php';
-        $GLOBALS['HTML_QUICKFORM_ELEMENT_TYPES']['arupadvcheckbox'][] = 'MoodleQuickForm_arupadvcheckbox';
     }
 
 

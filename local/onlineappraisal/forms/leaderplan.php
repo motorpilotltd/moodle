@@ -66,11 +66,6 @@ class apform_leaderplan extends moodleform {
         $mform->addElement('hidden', 'islocked', $islocked, ['id' => 'oa-ldp-islocked']); // For locking other fields as checkbox will be frozen.
         $mform->setType('islocked', PARAM_INT);
 
-        $islockedattr = '';
-        if ($islocked) {
-            $islockedattr = ' locked="yes"';
-        }
-
         // Hidden fields to be set from HUB data.
         $mform->addElement('hidden', 'group', $this->userdata['group']);
         $mform->setType('group', PARAM_TEXT);
@@ -96,7 +91,6 @@ class apform_leaderplan extends moodleform {
 
         $answers = [];
         $class = 'select2-general';
-        $dataattrs = ['data-tags' => true];
         $i = 1;
         $answerstring = "ldppotential:answer:{$i}";
         while ($this->str_exists($answerstring)) {
@@ -117,10 +111,22 @@ class apform_leaderplan extends moodleform {
                 }
             }
         }
-        $element = $mform->addElement('select', 'ldppotential', $this->str('ldppotential'), $answers, ['class' => $class] + $dataattrs);
+        $element = $mform->addElement('select', 'ldppotential', $this->str('ldppotential'), $answers, ['class' => $class]);
         $element->setMultiple(true);
         $mform->disabledIf('ldppotential', 'islocked', 'eq', 1);
-        $mform->disabledIf('ldppotential', 'view', 'eq', 'appraisee');
+        $mform->disabledIf('ldppotential', 'view', 'neq', 'appraisee');
+        if (!$islocked && $data->appraisal->viewingas === 'appraisee') {
+            $html = '
+                <div class="form-group">
+                    <label class="sr-only" for="ldppotentialnew">Add alternative...</label>
+                    <div class="input-group ldppotentialnew">
+                    <input type="text" class="form-control" id="ldppotentialnew" placeholder="Add alternative...">
+                    <div class="input-group-addon" id="ldppotentialnew-add"><button>+</button></div>
+                    </div>
+                </div>
+                ';
+            $mform->addElement('html', $html);
+        }
 
         $strengths = [
             2,
@@ -128,7 +134,7 @@ class apform_leaderplan extends moodleform {
             !empty($_POST['ldpstrengths']) ? count($_POST['ldpstrengths']) : 0
         ];
         $maxstrengths = max($strengths);
-        if ($islocked || $data->appraisal->viewingas === 'appraisee') {
+        if ($islocked || $data->appraisal->viewingas !== 'appraisee') {
             $maxstrengths = (!empty($data->ldpstrengths) ? count($data->ldpstrengths) : 1);
         }
         for ($i = 0; $i < $maxstrengths; $i++) {
@@ -136,7 +142,7 @@ class apform_leaderplan extends moodleform {
             $mform->addElement('text', "ldpstrengths[{$i}]", $label, ['class' => 'oa-repeating-element']);
             $mform->setType("ldpstrengths[{$i}]", PARAM_TEXT);
             $mform->disabledIf("ldpstrengths[{$i}]", 'islocked', 'eq', 1);
-            $mform->disabledIf("ldpstrengths[{$i}]", 'view', 'eq', 'appraisee');
+            $mform->disabledIf("ldpstrengths[{$i}]", 'view', 'neq', 'appraisee');
         }
         $noscript = "<p class=\"visibleifnotjs\">{$this->str('ldpstrengths:add:noscript')}</p>";
         $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="ldpstrengths">'.$this->str('ldpstrengths:add').'</button>';
@@ -151,7 +157,7 @@ class apform_leaderplan extends moodleform {
             !empty($_POST['ldpdevelopmentareas']) ? count($_POST['ldpdevelopmentareas']) : 0
         ];
         $maxdevelopmentareas = max($developmentareas);
-        if ($islocked || $data->appraisal->viewingas === 'appraisee') {
+        if ($islocked || $data->appraisal->viewingas === 'appraiser') {
             $maxdevelopmentareas = (!empty($data->ldpdevelopmentareas) ? count($data->ldpdevelopmentareas) : 1);
         }
         for ($i = 0; $i < $maxdevelopmentareas; $i++) {
@@ -159,7 +165,7 @@ class apform_leaderplan extends moodleform {
             $mform->addElement('text', "ldpdevelopmentareas[{$i}]", $label, ['class' => 'oa-repeating-element']);
             $mform->setType("ldpdevelopmentareas[{$i}]", PARAM_TEXT);
             $mform->disabledIf("ldpdevelopmentareas[{$i}]", 'islocked', 'eq', 1);
-            $mform->disabledIf("ldpdevelopmentareas[{$i}]", 'view', 'eq', 'appraisee');
+            $mform->disabledIf("ldpdevelopmentareas[{$i}]", 'view', 'neq', 'appraisee');
         }
         $noscript = "<p class=\"visibleifnotjs\">{$this->str('ldpdevelopmentareas:add:noscript')}</p>";
         $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="ldpdevelopmentareas">'.$this->str('ldpdevelopmentareas:add').'</button>';
@@ -168,11 +174,23 @@ class apform_leaderplan extends moodleform {
                 $button.$noscript
                 );
 
+
+        $islockedattr = '';
+        if ($islocked || $data->appraisal->viewingas !== 'appraisee') {
+            $islockedattr = ' locked="yes"';
+        }
         $mform->addElement('textarearup', 'ldpdevelopmentplan', $this->str('ldpdevelopmentplan'), 'rows="3" cols="70"' . $islockedattr, '', '');
         $mform->setType('ldpdevelopmentplan', PARAM_RAW);
+        $mform->disabledIf('ldpdevelopmentplan', 'islocked', 'eq', 1);
+        $mform->disabledIf('ldpdevelopmentplan', 'view', 'neq', 'appraisee');
 
-        $mform->addElement('arupadvcheckbox', 'ldplocked', '', $this->str('ldplocked'), array('group' => 1), array(0, 1));
-        $mform->disabledIf('ldplocked', 'view', 'eq', 'appraisee');
+        $attributes = ['group' => 1];
+        if ($data->appraisal->viewingas === 'appraisee') {
+            $attributes['data-toggle'] = 'tooltip';
+            $attributes['title'] = $this->str('ldplocked:tooltip');
+        }
+        $mform->addElement('advcheckbox', 'ldplocked', '', $this->str('ldplocked'), $attributes, [0, 1]);
+        $mform->disabledIf('ldplocked', 'view', 'neq', 'appraiser');
         if (!$isformlocked) {
             $mform->disabledIf('ldplocked', 'islocked', 'eq', 1);
         } else {
@@ -184,9 +202,6 @@ class apform_leaderplan extends moodleform {
             $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('form:save', 'local_onlineappraisal'), ['class' => ($isformlocked) ? 'oa-unlock-ldp' : '']);
             if ($isformlocked) {
                 $mform->disabledIf('submitbutton', 'ldplocked', 'eq', 1);
-            }
-            if (!$isformlocked) {
-                $buttonarray[] = &$mform->createElement('submit', 'submitcontinue', get_string('form:submitcontinue', 'local_onlineappraisal'));
             }
             $buttonarray[] = &$mform->createElement('cancel', 'cancelbutton', get_string('form:cancel', 'local_onlineappraisal'), array('class' => 'm-l-5'));
             $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
@@ -223,23 +238,43 @@ class apform_leaderplan extends moodleform {
 
     public function get_data() {
         $data = parent::get_data();
-        // Clear empty inputs.
-        if (isset($data->ldpstrengths)) {
-            $data->ldpstrengths = array_values(array_filter($data->ldpstrengths));
-        }
-        if (isset($data->ldpdevelopmentareas)) {
-            $data->ldpdevelopmentareas = array_values(array_filter($data->ldpdevelopmentareas));
-        }
-        // Handle empty multi select, but only if unlocked.
-        if (!isset($data->ldppotential) && !$data->islocked) {
-            $data->ldppotential = [];
-        }
-        // Locking or unlocking?
-        if (!$data->islocked && $data->ldplocked) {
-            $this->locking = true;
-        }
-        if ($data->islocked && !$data->ldplocked) {
-            $this->unlocking = true;
+        switch ($this->_customdata->appraisal->viewingas) {
+            case 'appraisee' :
+                // Handle empty multi select, but only if unlocked.
+                if (!isset($data->ldppotential) && !$data->islocked) {
+                    $data->ldppotential = [];
+                }
+                // Clear empty inputs.
+                if (isset($data->ldpstrengths)) {
+                    $data->ldpstrengths = array_values(array_filter($data->ldpstrengths));
+                }
+                if (isset($data->ldpdevelopmentareas)) {
+                    $data->ldpdevelopmentareas = array_values(array_filter($data->ldpdevelopmentareas));
+                }
+                // Remove non-appraisee field.
+                if (isset($data->ldplocked)) {
+                    unset($ldplocked);
+                }
+                break;
+            case 'appraiser' :
+                // Remove non-appraiser fields.
+                foreach (['ldppotential', 'ldpstrengths', 'ldpdevelopmentareas', 'ldpdevelopmentplan'] as $field) {
+                    if (isset($data->{$field})) {
+                        unset ($data->{$field});
+                    }
+                }
+                // Locking or unlocking?
+                if (!$data->islocked && $data->ldplocked) {
+                    $this->locking = true;
+                }
+                if ($data->islocked && !$data->ldplocked) {
+                    $this->unlocking = true;
+                }
+                break;
+            default:
+                // Remove all fields.
+                $data = new stdClass();
+                break;
         }
         // Tidy up control fields.
         if (isset($data->islocked)) {
