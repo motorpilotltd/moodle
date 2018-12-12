@@ -248,7 +248,7 @@ function deleteMessage(element) {
             data: {
                 action: 'delete',
                 messageid: messageid,
-                certifid, certifid
+                certifid: certifid
             },
             success: function () {
             }
