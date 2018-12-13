@@ -60,5 +60,5 @@ if ($ADMIN->fulltree) {
             get_string('activate_ticker_report_desc', 'block_certification_report'),
             0
         )
-    )
+    );
 }
