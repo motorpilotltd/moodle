@@ -193,7 +193,7 @@ class block_certification_report_renderer extends plugin_renderer_base {
                 } else {
                     $cell = $certification['progress'] . '%';
                     if ($certification['completiondate'] > 0) {
-                        $cell .= ' (' . strtoupper(userdate($certification['completiondate'], get_string('strftimedatefull', 'block_certification_report'))) . ')';
+                        $cell .= ' (' . userdate($certification['completiondate'], get_string('strftimedatefullshort')) . ')';
                     }
                     if ($this->canreset && $certification['currentcompletiondate'] > 0) {
                         $reset = html_writer::tag(
