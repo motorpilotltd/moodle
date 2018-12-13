@@ -54,6 +54,12 @@ class export_reports extends \core\task\scheduled_task {
     public function execute() {
         global $CFG, $USER;
 
+        // Should we even be running?
+        $tickeractive = get_config('block_certification_report', 'ticker_active');
+        if (!$tickeractive) {
+            return;
+        }
+
         // Set up for correct view when getting data.
         define('BLOCK_CERTIFICATION_REPORT_EXPORT', true);
         $_POST['exportview'] = 'users';
