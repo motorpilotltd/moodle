@@ -62,7 +62,7 @@ try {
             array('classid' => $class->classid),
             $inparams
         );
-        $a->enrolments = $DB->count_records_select('local_taps_enrolment', "classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}", $params);
+        $a->enrolments = $DB->count_records_select('tapsenrol_class_enrolments', "classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}", $params);
     }
     echo json_encode($a);
     exit;

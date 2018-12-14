@@ -121,7 +121,7 @@ SELECT
 FROM
     {tapsenrol_iw_tracking} iwt
 JOIN
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
     ON lte.enrolmentid = iwt.enrolmentid
 WHERE
     lte.staffid = :staffid

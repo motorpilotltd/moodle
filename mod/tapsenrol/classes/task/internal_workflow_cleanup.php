@@ -56,7 +56,7 @@ SELECT
 FROM
     {tapsenrol_iw_tracking} tit
 LEFT JOIN
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
     ON lte.enrolmentid = tit.enrolmentid
 WHERE
     lte.id IS NULL

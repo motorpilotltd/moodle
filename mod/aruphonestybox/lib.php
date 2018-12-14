@@ -186,34 +186,25 @@ function aruphonestybox_sendtotaps($id, $user, &$debug=array()) {
 
     $data = $DB->get_record('aruphonestybox', array('id' => $id));
 
-    $midnight = usergetmidnight(time(), new DateTimeZone('UTC'));
-    $params = array (
-        'p_organization_name' => null,
-        'p_location' => $data->location,
-        'p_learning_method' => $data->classtype,
-        'p_subject_catetory' => $data->classcategory,
-        'p_course_cost' => $data->classcost,
-        'p_course_cost_currency' => $data->classcostcurrency,
-        'p_course_start_date' => $midnight,
-        'p_certificate_number' => $data->certificateno,
-        'p_certificate_expiry_date' => empty($data->expirydate) ? null : $data->expirydate,
-        'p_learning_desc' => $data->learningdesc,
-        'p_health_and_safety_category' => $data->healthandsafetycategory
-    );
+    $lrsrecord = new \local_learningrecordstore\lrsentry();
 
-    $taps = new \mod_tapsenrol\taps();
-    $result = $taps->add_cpd_record(
-            $user->idnumber,
-            $data->classname,
-            $data->provider,
-            $midnight,
-            $data->duration,
-            $data->durationunitscode,
-            $params
-    );
-    $debug[] = 'added cpd record: ' . "{$user->idnumber}, {$data->classname}, {$data->provider}, ".
-        strtoupper(date('d-M-Y')) . ", {$data->duration}, {$data->durationunitscode}," .
-        print_r($params, true);
+    $lrsrecord->staffid = $user->idnumber; // Set staffid (Only used to add CPD).
+    $lrsrecord->coursename = $data->classname;
+    $lrsrecord->provider = $data->provider;
+    $lrsrecord->starttime = $lrsrecord->completiontime = usergetmidnight(time(), new DateTimeZone('UTC'));
+    $lrsrecord->duration = $data->duration;
+    $lrsrecord->durationunits = $data->durationunitscode;
+    $lrsrecord->location = $data->location;
+    $lrsrecord->classcost = $data->classcost;
+    $lrsrecord->classcostcurrency = $data->classcostcurrency;
+    $lrsrecord->certificateno = $data->certificateno;
+    $lrsrecord->expirydate = empty($data->expirydate) ? null : $data->expirydate;
+    $lrsrecord->description = $data->learningdesc;
+    $lrsrecord->healthandsafetycategory = $data->healthandsafetycategory;
 
-    return $result;
+    $lrsrecord->insert();
+
+    $debug[] = 'added cpd record: ' . print_r($lrsrecord, true);
+
+    return $lrsrecord->id;
 }

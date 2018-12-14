@@ -67,7 +67,7 @@ class classoverview_table extends \table_sql {
                 'classid'];
         $fieldsstring = 'c.' . implode(',c.', $fields) . ",  count(e.classid) as attending";
         $from = "{local_taps_class} c
-                      LEFT OUTER JOIN {local_taps_enrolment} e
+                      LEFT OUTER JOIN {tapsenrol_class_enrolments} e
                       ON c.classid = e.classid
                         AND (e.archived = 0 OR e.archived IS NULL)
                         AND {$DB->sql_compare_text('e.bookingstatus')} {$insql}";

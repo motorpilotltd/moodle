@@ -436,7 +436,7 @@ class taps {
 
         $activewhere = $activeonly ? ' AND active = 1' : '';
         $archivedwhere = $archived ? '' : ' AND (archived = 0 OR archived IS NULL)';
-        $enrolments = $DB->get_records_select('local_taps_enrolment', "staffid = :staffid{$courseidwhere}{$activewhere}{$archivedwhere}", $params);
+        $enrolments = $DB->get_records_select('tapsenrol_class_enrolments', "staffid = :staffid{$courseidwhere}{$activewhere}{$archivedwhere}", $params);
 
         return $enrolments;
     }
@@ -451,7 +451,7 @@ class taps {
     public function get_enrolment_by_id($enrolmentid) {
         global $DB;
 
-        return $DB->get_record('local_taps_enrolment', array('enrolmentid' => $enrolmentid));
+        return $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
     }
 
     /**
@@ -463,116 +463,7 @@ class taps {
     public function get_enrolment_status($enrolmentid) {
         global $DB;
 
-        return $DB->get_field('local_taps_enrolment', 'bookingstatus', array('enrolmentid' => $enrolmentid));
-    }
-
-    /**
-     * Add CPD record.
-     *
-     * @global \moodle_database $DB
-     * @param int $staffid
-     * @param string $classtitle
-     * @param string $providername
-     * @param int $completiontime
-     * @param float $duration
-     * @param string $durationunitscode
-     * @param array $optional
-     * @return mixed
-     */
-    public function add_cpd_record($staffid, $classtitle, $providername, $completiontime, $duration, $durationunitscode, $optional = array()) {
-        global $DB;
-
-        if (empty($staffid)) {
-            return false;
-        }
-
-        $cpd = new stdClass();
-        $cpd->staffid = $staffid;
-        $cpd->classname = $classtitle;
-        $cpd->provider = $providername;
-        $cpd->completiontime = $completiontime;
-        $cpd->duration = $duration;
-        $cpd->durationunitscode = $durationunitscode;
-        $cpd->durationunits = $this->_durationunitscode[$durationunitscode];
-        $cpd->location = (isset($optional['p_location']) ? $optional['p_location'] : null);
-        $cpd->classtype = (isset($optional['p_learning_method']) ? $this->_classtypes['cpd'][$optional['p_learning_method']] : null);
-        $cpd->classcategory = (isset($optional['p_subject_catetory']) ? $this->_classcategory[$optional['p_subject_catetory']] : null);
-        $cpd->classcost = (isset($optional['p_course_cost']) ? round($optional['p_course_cost'], 2) : null);
-        $cpd->classcostcurrency = (isset($optional['p_course_cost_currency']) ? $optional['p_course_cost_currency'] : null);
-        $cpd->starttime = (isset($optional['p_course_start_date']) ? $optional['p_course_start_date'] : 0);
-        $cpd->endtime = (isset($optional['p_course_start_date']) ? $optional['p_course_start_date'] : 0);
-        $cpd->certificateno = (isset($optional['p_certificate_number']) ? $optional['p_certificate_number'] : null);
-        $cpd->expirydate = (isset($optional['p_certificate_expiry_date']) ? $optional['p_certificate_expiry_date'] : 0);
-        $cpd->learningdesc = (isset($optional['p_learning_desc']) ? $optional['p_learning_desc'] : null);
-        $cpd->healthandsafetycategory = (isset($optional['p_health_and_safety_category']) ? $this->_healthandsafetycategory[$optional['p_health_and_safety_category']] : null);
-
-        $cpd->completiontime = usergetmidnight($completiontime, new DateTimeZone('UTC')); // Midnight on day (UTC).
-
-        $cpd->timemodified = time();
-
-        $cpd->id = $DB->insert_record('local_taps_enrolment', $cpd);
-
-        return $cpd->id;
-    }
-
-    /**
-     * Edit CPD record.
-     *
-     * @global \moodle_database $DB
-     * @param int $id
-     * @param string $classtitle
-     * @param string $providername
-     * @param int $completiontime
-     * @param float $duration
-     * @param string $durationunitscode
-     * @param array $optional
-     * @return bool
-     */
-    public function edit_cpd_record($id, $classtitle, $providername, $completiontime, $duration, $durationunitscode, $optional = array()) {
-        global $DB;
-
-        $cpd = $DB->get_record('local_taps_enrolment', array('id' => $id));
-
-        if (!$cpd) {
-            return false;
-        }
-
-        $cpd->classname = $classtitle;
-        $cpd->provider = $providername;
-        $cpd->completiontime = $completiontime;
-        $cpd->duration = $duration;
-        $cpd->durationunitscode = $durationunitscode;
-        $cpd->durationunits = $this->_durationunitscode[$durationunitscode];
-        $cpd->location = (isset($optional['p_location']) ? $optional['p_location'] : null);
-        $cpd->classtype = (isset($optional['p_learning_method']) ? $this->_classtypes['cpd'][$optional['p_learning_method']] : null);
-        $cpd->classcategory = (isset($optional['p_subject_catetory']) ? $this->_classcategory[$optional['p_subject_catetory']] : null);
-        $cpd->classcost = (isset($optional['p_course_cost']) ? round($optional['p_course_cost'], 2) : null);
-        $cpd->classcostcurrency = (isset($optional['p_course_cost_currency']) ? $optional['p_course_cost_currency'] : null);
-        $cpd->starttime = (isset($optional['p_course_start_date']) ? $optional['p_course_start_date'] : 0);
-        $cpd->endtime = (isset($optional['p_course_start_date']) ? $optional['p_course_start_date'] : 0);
-        $cpd->certificateno = (isset($optional['p_certificate_number']) ? $optional['p_certificate_number'] : null);
-        $cpd->expirydate = (isset($optional['p_certificate_expiry_date']) ? $optional['p_certificate_expiry_date'] : 0);
-        $cpd->learningdesc = (isset($optional['p_learning_desc']) ? $optional['p_learning_desc'] : null);
-
-        $cpd->healthandsafetycategory = (isset($optional['p_health_and_safety_category']) ? $this->_healthandsafetycategory[$optional['p_health_and_safety_category']] : null);
-
-        $cpd->completiontime = usergetmidnight($completiontime, new DateTimeZone('UTC')); // Midnight on day (UTC).
-
-        $cpd->timemodified = time();
-
-        return $DB->update_record('local_taps_enrolment', $cpd);
-    }
-
-    /**
-     * Delete CPD record.
-     *
-     * @global \moodle_database $DB
-     * @param int $id
-     * @return bool
-     */
-    public function delete_cpd_record($id) {
-        global $DB;
-        return $DB->delete_records('local_taps_enrolment', array('id' => $id));
+        return $DB->get_field('tapsenrol_class_enrolments', 'bookingstatus', array('enrolmentid' => $enrolmentid));
     }
 
     /**
@@ -624,7 +515,7 @@ class taps {
             $inparams
         );
         $select = "staffid = :staffid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND active = 1 AND {$compare} {$in}";
-        $existingenrolments = $DB->count_records_select('local_taps_enrolment', $select, $params);
+        $existingenrolments = $DB->count_records_select('tapsenrol_class_enrolments', $select, $params);
         if ($existingenrolments) {
             $result->success = false;
             $result->status = 'ALREADY_ENROLLED';
@@ -667,7 +558,7 @@ class taps {
         // Field bookingplaceddate is a new field from migration data.
         $enrolment->bookingplaceddate = $enrolment->timemodified = time();
 
-        $maxenrolmentid = $DB->get_field_sql('SELECT MAX(enrolmentid) FROM {local_taps_enrolment}');
+        $maxenrolmentid = $DB->get_field_sql('SELECT MAX(enrolmentid) FROM {tapsenrol_class_enrolments}');
 
         $enrolment->id = false;
 
@@ -676,13 +567,13 @@ class taps {
         do {
             try {
                 $enrolment->enrolmentid = ++$maxenrolmentid; // Pre-increment.
-                $enrolment->id = $DB->insert_record('local_taps_enrolment', $enrolment);
+                $enrolment->id = $DB->insert_record('tapsenrol_class_enrolments', $enrolment);
             } catch (\dml_write_exception $e) {
                 if (debugging()) {
                     throw($e);
                 }
             }
-        } while (!$enrolment->id && $DB->get_record('local_taps_enrolment', array('enrolmentid' => $enrolment->enrolmentid)));
+        } while (!$enrolment->id && $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolment->enrolmentid)));
 
         $result->success = (bool) $enrolment->id;
         $result->enrolment = $enrolment;
@@ -761,7 +652,7 @@ class taps {
 
         $enrolment->timemodified = time();
 
-        if (!$DB->update_record('local_taps_enrolment', $enrolment)) {
+        if (!$DB->update_record('tapsenrol_class_enrolments', $enrolment)) {
             $result->success = false;
             $result->status = 'UPDATE_FAILED';
         }
@@ -792,7 +683,7 @@ class taps {
             array('classid' => $classid),
             $inparams
         );
-        $enrolments = $DB->count_records_select('local_taps_enrolment', "classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}", $params);
+        $enrolments = $DB->count_records_select('tapsenrol_class_enrolments', "classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}", $params);
 
         return max(array(0, $class->maximumattendees - $enrolments));
     }
@@ -814,7 +705,7 @@ class taps {
                 $inparams
         );
         $sql = "SELECT classid, COUNT(enrolmentid)
-                  FROM {local_taps_enrolment}
+                  FROM {tapsenrol_class_enrolments}
                  WHERE courseid = :courseid AND (archived = 0 OR archived IS NULL) AND bookingstatus {$in}
               GROUP BY classid
               ORDER BY classid ASC";

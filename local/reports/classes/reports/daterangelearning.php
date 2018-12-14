@@ -341,20 +341,21 @@ class daterangelearning extends base {
             }
         }
 
-        // echo '<pre>' . $wherestring . '</pre>';
-        // echo '<pre>' . print_r($params, true) . '</pre>';
-        // $wherestring = '';
-
         $remotetagidconcat = \local_mssql\dbshim::sql_group_concat('reg.name', ',', true);
 
-        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltc.jobnumber, c.shortname as coursecode, $remotetagidconcat as courseregion
-                  FROM {local_taps_enrolment} as lte
+        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltc.jobnumber, c.shortname as coursecode, r.regions as courseregion
+                  FROM {tapsenrol_class_enrolments} as lte
                   JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
              LEFT JOIN {local_taps_class} as ltc
                     ON ltc.classid = lte.classid
              LEFT JOIN {course} as c
                     ON ltc.courseid = c.id
+             LEFT JOIN (
+                SELECT regcou.courseid, $remotetagidconcat as regions 
+                FROM {local_regions_reg_cou} regcou
+                INNER JOIN {local_regions_reg} reg ON reg.id = regcou.regionid
+             ) AS r ON r.courseid = c.id
                 LEFT JOIN {local_regions_reg_cou} regcou ON regcou.courseid = c.id
                 LEFT JOIN {local_regions_reg} reg ON reg.id = regcou.regionid
                        $wherestring
@@ -363,7 +364,7 @@ class daterangelearning extends base {
 
         // Leave out the joins for taps_class and taps_course to speed up this query
         $sqlcount = "SELECT count(lte.id) as recnum
-                  FROM {local_taps_enrolment} as lte
+                  FROM {tapsenrol_class_enrolments} as lte
                   JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON lte.staffid = staff.EMPLOYEE_NUMBER
                        $wherestring";
@@ -385,7 +386,7 @@ class daterangelearning extends base {
                     $this->numrecords = $all->recnum;
                 }
             } else {
-                $this->numrecords = $DB->count_records('local_taps_enrolment');
+                $this->numrecords = $DB->count_records('tapsenrol_class_enrolments');
             }
             // For the UI.
              try {

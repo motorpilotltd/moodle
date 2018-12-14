@@ -118,7 +118,7 @@ class lyndacourse_test extends advanced_testcase {
 
         $this->assertLessThanOrEqual(time(), get_config('local_lynda', 'lastruntimecompletion_' . 3));
 
-        $cpdrecords = $DB->get_records('local_taps_enrolment');
+        $cpdrecords = $DB->get_records('local_learningrecordstore');
         $this->assertEquals(6, count($cpdrecords));
 
         $record1 = reset($cpdrecords);
@@ -134,7 +134,7 @@ class lyndacourse_test extends advanced_testcase {
         $this->assertEquals('padded0', $record1->staffid);
 
         $api->synccoursecompletion();
-        $cpdrecords = $DB->get_records('local_taps_enrolment');
+        $cpdrecords = $DB->get_records('local_learningrecordstore');
         $this->assertEquals(6, count($cpdrecords));
     }
 
@@ -146,13 +146,13 @@ class lyndacourse_test extends advanced_testcase {
 
         $api->synccoursecompletion(time(), time());
 
-        $cpdrecords = $DB->get_records('local_taps_enrolment');
+        $cpdrecords = $DB->get_records('local_learningrecordstore');
         $record1 = reset($cpdrecords);
         $this->assertEquals('', $record1->learningdesc);
         $this->assertEquals(180212, $record1->providerid);
 
         $api->synccourses();
-        $cpdrecords = $DB->get_records('local_taps_enrolment');
+        $cpdrecords = $DB->get_records('local_learningrecordstore');
         $this->assertEquals(6, count($cpdrecords));
         $record1 = reset($cpdrecords);
         $this->assertEquals("David Rivers has been recording elearning courses for lynda.com for over a decade. He's one of our star authors! In this interview (conducted from his home recording studio in Canada), he offers lessons from his 100-course journey with lynda.com. David shares his process for creating and recording course content, and provides inspiration for other authors who want to turn their knowledge into tutorials for the emerging elearning market.", $record1->learningdesc);
@@ -238,7 +238,7 @@ class lyndacourse_test extends advanced_testcase {
         $api->mode = \local_lynda\lyndaapimockuserresolution::MATCHONLYONEMAIL;
         $api->synccoursecompletion();
 
-        $cpdrecords = $DB->get_records('local_taps_enrolment');
+        $cpdrecords = $DB->get_records('local_learningrecordstore');
         $this->assertEquals(1, count($cpdrecords));
 
         $events = $sink->get_events();
@@ -254,7 +254,7 @@ class lyndacourse_test extends advanced_testcase {
         $api->mode = \local_lynda\lyndaapimockuserresolution::MATCHONNOTHING;
         $api->synccoursecompletion();
 
-        $cpdrecords = $DB->get_records('local_taps_enrolment');
+        $cpdrecords = $DB->get_records('local_learningrecordstore');
         $this->assertEquals(0, count($cpdrecords));
 
         $events = $sink->get_events();
@@ -272,7 +272,7 @@ class lyndacourse_test extends advanced_testcase {
         $api->mode = \local_lynda\lyndaapimockuserresolution::MATCHUSERIDANDFIRSTNAME;
         $api->synccoursecompletion();
 
-        $cpdrecords = $DB->get_records('local_taps_enrolment');
+        $cpdrecords = $DB->get_records('local_learningrecordstore');
         $this->assertEquals(1, count($cpdrecords));
 
         $events = $sink->get_events();

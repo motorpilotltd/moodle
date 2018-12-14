@@ -7,7 +7,7 @@ providerid (could be a classid, moodle courseid, lynda video id etc.)
 staffid
 duration
 durationunits
-completiontime (consolidation of classcompletiontime as classcompletiondate)
+completiontime (consolidation of classcompletiontime as classcompletiondate, needs turning into timestamp)
 description (currently learningdesc)
 certificateno
 coursename

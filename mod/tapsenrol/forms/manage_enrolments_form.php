@@ -49,9 +49,9 @@ class mod_tapsenrol_manage_enrolments_form extends moodleform {
 
     protected function _get_class_placeholder($classid) {
         global $DB;
-        
+
         $hide = ' hide';
-        
+
         $class = ($classid ? $DB->get_record('local_taps_class', array('classid' => $classid)) : false);
 
         if ($class) {
@@ -87,7 +87,7 @@ class mod_tapsenrol_manage_enrolments_form extends moodleform {
                 array('classid' => $class->classid),
                 $inparams
             );
-            $class->enrolments = $DB->count_records_select('local_taps_enrolment', "classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}", $params);
+            $class->enrolments = $DB->count_records_select('tapsenrol_class_enrolments', "classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}", $params);
         }
 
         $html = html_writer::start_tag('div', array('class' => "tapsenrol_manage_enrolments_class mform{$hide}"));

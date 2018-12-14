@@ -151,7 +151,7 @@ class delegate_list {
 SELECT
     ltc.classid, MAX({$classname}) as classname, MAX(ltc.classendtime) as classendtime, MAX({$classtype}) as classtype
 FROM
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
 INNER JOIN {local_taps_class} ltc.classid = lte.classid
 WHERE
     {$where}
@@ -213,7 +213,7 @@ EOS;
         }
 
         $enrolments = $DB->get_records_select(
-            'local_taps_enrolment',
+            'tapsenrol_class_enrolments',
             $where,
             $params,
             '',
@@ -384,7 +384,7 @@ EOS;
                 . 'u.email, tit.sponsorfirstname, tit.sponsorlastname, tit.sponsoremail, tit.timeenrolled, ua.timeaccess';
 
         $from = <<<EOF
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
 JOIN
     {user} u
     ON u.idnumber = lte.staffid

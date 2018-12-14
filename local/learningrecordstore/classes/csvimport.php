@@ -163,25 +163,26 @@ class csvimport {
                     $data['completiontime'] = usergetmidnight($completiontime, new DateTimeZone('UTC'));
                 }
             }
-            $result = $this->taps->add_cpd_record(
-                $data['staffid'],
-                $data['classname'],
-                $data['provider'],
-                $data['completiontime'],
-                $data['duration'],
-                $data['durationunits'],
-                array(
-                    'p_location' => $data['location'],
-                    'p_learning_method' => $data['classtype'],
-                    'p_subject_catetory' => $data['classcategory'],
-                    'p_course_cost' => $data['classcost'],
-                    'p_course_cost_currency' => $data['classcostcurrency'],
-                    'p_certificate_number' => $data['certificateno'],
-                    'p_certificate_expiry_date' => $data['expirydate'],
-                    'p_learning_desc' => $data['learningdesc'],
-                    'p_health_and_safety_category' => $data['healthandsafetycategory']
-                )
-            );
+
+            $lrsrecord = new \local_learningrecordstore\lrsentry();
+
+            $lrsrecord->staffid = $data['staffid']; // Set staffid (Only used to add CPD).
+            $lrsrecord->coursename = $data['classname'];
+            $lrsrecord->provider = $data['provider'];
+            $lrsrecord->completiontime = $data['completiontime'];
+            $lrsrecord->duration = $data['duration'];
+            $lrsrecord->durationunits = $data['durationunits'];
+            $lrsrecord->location = $data['location'];
+            $lrsrecord->classtype = $data['classtype'];
+            $lrsrecord->classcategory = $data['classcategory'];
+            $lrsrecord->classcost = $data['classcost'];
+            $lrsrecord->classcostcurrency = $data['classcostcurrency'];
+            $lrsrecord->certificateno = $data['certificateno'];
+            $lrsrecord->expirydate = $data['expirydate'];
+            $lrsrecord->description = $data['learningdesc'];
+            $lrsrecord->healthandsafetycategory = $data['healthandsafetycategory'];
+
+            $lrsrecord->insert();
         }
     }
 

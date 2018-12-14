@@ -134,7 +134,7 @@ class eventobservers {
 SELECT
     DISTINCT u.id
 FROM
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
 JOIN
     {user} u
     ON u.idnumber = lte.staffid
@@ -223,7 +223,7 @@ EOS;
         $compare = $DB->sql_compare_text('lte.bookingstatus');
         $sql = "SELECT
                     lte.*
-                FROM {local_taps_enrolment} lte
+                FROM {tapsenrol_class_enrolments} lte
                 JOIN {user} u
                     ON u.idnumber = lte.staffid
                 INNER JOIN

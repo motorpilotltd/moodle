@@ -18,7 +18,7 @@
  * Library of interface functions and constants for module arupevidence.
  *
  * @package    mod_arupevidence
- * @copyright  2017 Xantico Ltd 
+ * @copyright  2017 Xantico Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -304,36 +304,26 @@ function arupevidence_sendtotaps($id, $user, &$debug=array()) {
         return false;
     }
 
-    $midnight = usergetmidnight(time(), new DateTimeZone('UTC'));
-    $params = array (
-        'p_organization_name' => null,
-        'p_location' => $arupevidence_user->location,
-        'p_learning_method' => '',
-        'p_subject_catetory' => '',
-        'p_course_cost' => $arupevidence_user->classcost,
-        'p_course_cost_currency' => $arupevidence_user->classcostcurrency,
-        'p_course_start_date' => $midnight,
-        'p_certificate_number' => $arupevidence_user->certificateno,
-        'p_certificate_expiry_date' => $arupevidence_user->expirydate,
-        'p_learning_desc' => $data->learningdesc,
-        'locked' => true,
-    );
+    $lrsrecord = new \local_learningrecordstore\lrsentry();
 
-    $taps = new \local_taps\taps();
-    $result = $taps->add_cpd_record(
-            $user->idnumber,
-            $data->classname,
-            $data->provider,
-            $midnight,
-            $data->duration,
-            $data->durationunitscode,
-            $params
-    );
-    $debug[] = 'added cpd record: ' . "{$user->idnumber}, {$data->classname}, {$data->provider}, ".
-        strtoupper(date('d-M-Y')) . ", {$data->duration}, {$data->durationunitscode}," .
-        print_r($params, true);
+    $lrsrecord->staffid = $user->idnumber; // Set staffid (Only used to add CPD).
+    $lrsrecord->coursename = $data->classname;
+    $lrsrecord->provider = $data->provider;
+    $lrsrecord->starttime = $lrsrecord->completiontime = usergetmidnight(time(), new DateTimeZone('UTC'));
+    $lrsrecord->duration = $data->duration;
+    $lrsrecord->durationunits = $data->durationunitscode;
+    $lrsrecord->location = $arupevidence_user->location;
+    $lrsrecord->classcost = $arupevidence_user->classcost;
+    $lrsrecord->classcostcurrency = $arupevidence_user->classcostcurrency;
+    $lrsrecord->certificateno = $arupevidence_user->certificateno;
+    $lrsrecord->expirydate = $arupevidence_user->expirydate;
+    $lrsrecord->description = $data->learningdesc;
 
-    return $result;
+    $lrsrecord->insert();
+
+    $debug[] = 'added cpd record: ' . print_r($lrsrecord, true);
+
+    return $lrsrecord->id;
 }
 
 /**

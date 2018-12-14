@@ -21,12 +21,12 @@
             </tr>
             {{#learninghistory}}
             <tr>
-                <td style="border-bottom: 1px solid black;">{{{course}}}</td>
-                <td style="border-bottom: 1px solid black;">{{{type}}}</td>
-                <td style="border-bottom: 1px solid black;">{{{category}}}</td>
+                <td style="border-bottom: 1px solid black;">{{{coursename}}}</td>
+                <td style="border-bottom: 1px solid black;">{{{classtype}}}</td>
+                <td style="border-bottom: 1px solid black;">{{{classcategory}}}</td>
                 <td style="border-bottom: 1px solid black;">{{{duration}}}</td>
-                <td style="border-bottom: 1px solid black;">{{{completiondate}}}</td>
-                <td style="border-bottom: 1px solid black;">{{{expirydate}}}</td>
+                <td style="border-bottom: 1px solid black;">{{#userdate}} {{completiontime}}, {{#str}} strftimedatefullshort {{/str}} {{/userdate}}</td>
+                <td style="border-bottom: 1px solid black;">{{#userdate}} {{expirydate}}, {{#str}} strftimedatefullshort {{/str}} {{/userdate}}</td>
             </tr>
             {{/learninghistory}}
         </table>

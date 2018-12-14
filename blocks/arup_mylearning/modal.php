@@ -27,43 +27,27 @@ try {
 
     $taps = new \mod_tapsenrol\taps();
 
-    $enrolment = $DB->get_record('local_taps_enrolment', array('id' => $id, 'staffid' => $USER->idnumber));
-    $class = $this->taps->get_class_by_id($enrolment->classid);
-    if ($enrolment) {
-        $timezone = new DateTimeZone($enrolment->usedtimezone);
-
+    $lrsentry = \local_learningrecordstore\lrsentry::fetch(['id' => $id, 'staffid' => $USER->idnumber]);
+    if ($lrsentry) {
         echo html_writer::start_tag('div', array('class' => 'modal-upper-wrapper clearfix'));
 
         echo html_writer::start_tag('div', array('class' => 'modal-upper'));
         $modalupper = array();
-        if ($class->classtype) {
-            $classtypegroup = $taps->get_classtype_type($class->classtype);
-            if ($classtypegroup != 'cpd' && get_string_manager()->string_exists($classtypegroup, 'block_arup_mylearning')) {
-                $data = get_string($classtypegroup, 'block_arup_mylearning');
-            } else {
-                $data = $class->classtype;
-            }
+        if (!empty($lrsentry->classtype)) {
             $modalupper[] = html_writer::tag('strong', get_string('modal:classtype', 'block_arup_mylearning').': ') .
-                $data;
+                    $lrsentry->classtype;
         }
-        if ($class->classstartdate) {
-            $date = new DateTime(null, $timezone);
-            $date->setTimestamp($class->classstartdate);
-            $data = $date->format('d M Y');
-            $modalupper[] = html_writer::tag('strong', get_string('modal:classstartdate', 'block_arup_mylearning').': ') .
-                $data;
-        }
-        if ($enrolment->provider) {
+        if ($lrsentry->provider) {
             $modalupper[] = html_writer::tag('strong', get_string('modal:provider', 'block_arup_mylearning').': ') .
-                $enrolment->provider;
+                $lrsentry->provider;
         }
-        if ($enrolment->certificateno) {
+        if ($lrsentry->certificateno) {
             $modalupper[] = html_writer::tag('strong', get_string('modal:certificateno', 'block_arup_mylearning').': ') .
-                $enrolment->certificateno;
+                $lrsentry->certificateno;
         }
-        if ($enrolment->classcategory) {
+        if ($lrsentry->classcategory) {
             $modalupper[] = html_writer::tag('strong', get_string('modal:classcategory', 'block_arup_mylearning').': ') .
-                $enrolment->classcategory;
+                $lrsentry->classcategory;
         }
         if ($modalupper) {
             echo html_writer::tag('p', implode(html_writer::empty_tag('br'), $modalupper));
@@ -73,27 +57,20 @@ try {
         echo html_writer::start_tag('div', array('class' => 'modal-upper'));
         $modalupper = array();
         if ($class->duration) {
-            $data = (float)$class->duration.' '.$class->durationunits;
             $modalupper[] = html_writer::tag('strong', get_string('modal:duration', 'block_arup_mylearning').': ') .
-                $data;
+                $lrsentry->formatduration();
         }
-        if ($enrolment->completiontime) {
-            $date = new DateTime(null, $timezone);
-            $date->setTimestamp($enrolment->completiontime);
-            $data = $date->format('d M Y');
+        if ($lrsentry->completiontime) {
             $modalupper[] = html_writer::tag('strong', get_string('modal:completiontime', 'block_arup_mylearning').': ') .
-                $data;
+                userdate($lrsentry->completiontime, get_string('strftimedate', 'langconfig'));
         }
         if ($class->location) {
             $modalupper[] = html_writer::tag('strong', get_string('modal:location', 'block_arup_mylearning').': ') .
                     $class->location;
         }
-        if ($enrolment->expirydate) {
-            $date = new DateTime(null, $timezone);
-            $date->setTimestamp($enrolment->expirydate);
-            $data = $date->format('d M Y');
+        if ($lrsentry->expirydate) {
             $modalupper[] = html_writer::tag('strong', get_string('modal:expirydate', 'block_arup_mylearning').': ') .
-                $data;
+                    userdate($lrsentry->expirydate, get_string('strftimedate', 'langconfig'));
         }
         if ($modalupper) {
             echo html_writer::tag('p', implode(html_writer::empty_tag('br'), $modalupper));
@@ -103,10 +80,10 @@ try {
         echo html_writer::end_tag('div'); // End div modal-upper-wrapper.
 
         echo html_writer::start_tag('div', array('class' => 'modal-lower'));
-        if ($enrolment->learningdesc) {
-            $data = html_writer::empty_tag('br') .
-                $enrolment->learningdesc;
-            echo html_writer::tag('p', html_writer::tag('strong', get_string('modal:learningdesc', 'block_arup_mylearning').':').$data);
+        if ($lrsentry->description) {
+            echo html_writer::tag('p', html_writer::tag('strong', get_string('modal:learningdesc', 'block_arup_mylearning') . ':') .
+                    html_writer::empty_tag('br') .
+                    $lrsentry->description);
         }
         echo html_writer::end_tag('div'); // End div modal-lower.
     } else {

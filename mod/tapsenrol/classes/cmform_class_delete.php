@@ -25,7 +25,7 @@ class cmform_class_delete extends \moodleform {
         global $DB;
 
         $enrolments = $DB->count_records_select(
-                'local_taps_enrolment',
+                'tapsenrol_class_enrolments',
                 'classid = :classid AND (archived is NULL OR archived = 0)',
                 ['classid' => $this->class->classid]
         );
@@ -62,10 +62,10 @@ class cmform_class_delete extends \moodleform {
         global $DB;
 
         if ($this->is_forcedelete_required()) {
-            $enrolments = $DB->get_records('local_taps_enrolment', array('classid' => $this->class->classid));
+            $enrolments = $DB->get_records('tapsenrol_class_enrolments', array('classid' => $this->class->classid));
             foreach ($enrolments as $enrolment) {
                 $enrolment->archived = 1;
-                $DB->update_record('local_taps_enrolment', $enrolment);
+                $DB->update_record('tapsenrol_class_enrolments', $enrolment);
             }
         }
 

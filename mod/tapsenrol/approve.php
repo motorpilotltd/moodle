@@ -29,7 +29,7 @@ require_login();
 
 $loaderror = false;
 if ($id) {
-    $enrolment = $DB->get_record('local_taps_enrolment', array('enrolmentid' => $id));
+    $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $id));
     $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $id));
     if (!$enrolment || !$iwtrack) {
         $loaderror = 'Enrolment or tracking data not found.';
@@ -169,7 +169,7 @@ SELECT
 FROM
     {tapsenrol_iw_tracking} tit
 JOIN
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
     ON lte.enrolmentid = tit.enrolmentid
 INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 INNER JOIN {course} c ON c.id = ltc.courseid

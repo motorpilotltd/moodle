@@ -27,12 +27,11 @@ namespace local_onlineappraisal\output\printer;
 
 defined('MOODLE_INTERNAL') || die();
 
+use local_learningrecordstore\lrsentry;
 use renderable;
 use templatable;
 use renderer_base;
 use stdClass;
-use DateTimeZone;
-use DateTime;
 
 abstract class base implements renderable, templatable {
     /**
@@ -94,9 +93,8 @@ abstract class base implements renderable, templatable {
      * @return void
      */
     protected function get_learning_history() {
-        global $DB;
+        global $OUTPUT;
 
-        $this->data->learninghistory = array();
 
         $staffid = $this->appraisal->appraisee->idnumber;
 
@@ -107,73 +105,13 @@ abstract class base implements renderable, templatable {
             return;
         }
 
-        $taps = new \mod_tapsenrol\taps();
+        $records = lrsentry::fetchbystaffid($staffid, time() - 3 * 365 * DAYSECS);
 
-        list($usql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
-        $sql = <<<EOS
-SELECT
-    lte.id, ltc.classtype, ltc.classname, c.fullname as coursename, ltc.classcategory, lte.completiontime, ltc.duration, ltc.durationunits,
-        lte.expirydate, ltc.classsuppliername, ltc.location, ltc.classstartdate, lte.certificateno, lte.learningdesc,
-        ltc.healthandsafetycategory, ltc.usedtimezone,
-    ltc.courseid as course,
-    cat.id as categoryid, cat.name as categoryname
-FROM
-    {local_taps_enrolment} lte
-INNER JOIN
-    {local_taps_class} ltc ON ltc.classid = lte.classid
-LEFT JOIN
-    {course} c
-    ON c.id = lte.course
-LEFT JOIN
-    {course_categories} cat
-    ON cat.id = c.category
-WHERE
-    lte.staffid = :staffid
-    AND (lte.archived = 0 OR lte.archived IS NULL)
-    AND lte.completiontime > :threeyearsago
-    AND (
-        {$DB->sql_compare_text('lte.bookingstatus')} {$usql}
-        OR lte.bookingstatus IS NULL
-    )
-ORDER BY
-    lte.completiontime DESC
-EOS;
-        $params['staffid'] = $staffid;
-        $params['primaryflag'] = 'Y';
-        $params['threeyearsago'] = strtotime('3 years ago');
-
-        $records = $DB->get_records_sql($sql, $params);
-
+        $this->data->learninghistory = [];
         foreach ($records as $record) {
-            $timezone = new DateTimeZone($record->usedtimezone);
-
-            $learninghistory = new stdClass();
-
-            $learninghistory->course = format_string($record->coursename ? $record->coursename : $record->classname);
-            $type = $taps->get_classtype_type($record->classtype);
-            $typestr = "pdf:learninghistory:type:{$type}";
-            if ($type && $type != 'cpd' && get_string_manager()->string_exists($typestr, 'local_onlineappraisal')) {
-                $learninghistory->type = get_string($typestr, 'local_onlineappraisal');
-            }
-            if (!empty($record->course)) {
-                $learninghistory->category = format_string($record->categoryname);
-            } else {
-                $learninghistory->category = format_string($record->classcategory);
-            }
-            $learninghistory->duration = $record->duration ? (float) $record->duration . '&nbsp;' . $record->durationunits : '';
-            if ($record->completiontime) {
-                $date = new DateTime(null, $timezone);
-                $date->setTimestamp($record->completiontime);
-                $learninghistory->completiondate = $date->format('d M Y');
-            }
-            if ($record->expirydate) {
-                $date = new DateTime(null, $timezone);
-                $date->setTimestamp($record->expirydate);
-                $learninghistory->expirydate = $date->format('d M Y');
-            }
-
-            $this->data->learninghistory[] = clone($learninghistory);
+            $this->data->learninghistory[] = $record->export_for_template($OUTPUT);
         }
+
         $this->data->haslearninghistory = (bool) count($this->data->learninghistory);
     }
 }

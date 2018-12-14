@@ -814,7 +814,7 @@ class block_arup_mylearning_content {
 SELECT
     lte.id, lte.bookingstatus, lte.completiontime, ltc.courseid as course
 FROM
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
 INNER JOIN {local_taps_class} ltc on lte.classid = ltc.classid
 WHERE
     lte.staffid = :staffid
@@ -850,7 +850,7 @@ SELECT
     ltc.courseid as course,
     cat.id as categoryid, cat.name as categoryname
 FROM
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
 INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 LEFT JOIN
     {course} c

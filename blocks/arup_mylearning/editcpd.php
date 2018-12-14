@@ -46,7 +46,7 @@ $taps = new \mod_tapsenrol\taps();
 $cpd = new stdClass();
 if ($action == 'edit') {
     require_capability('block/arup_mylearning:editcpd', $context);
-    $cpd = $DB->get_record('local_taps_enrolment', array('id' => $id));
+    $cpd = \local_learningrecordstore\lrsentry::fetch(['id' => $id]);
     if (!$cpd) {
         // No CPD to edit.
         $SESSION->block_arup_mylearning->alert = new stdClass();
@@ -62,13 +62,9 @@ if ($action == 'edit') {
         redirect($redirecturl);
         exit;
     }
-
-    // Mapping for specific form select options that are not returned as keys.
-    $cpd->classcategory = array_search($cpd->classcategory, $taps->get_classcategory());
-    $learningdesc = $cpd->learningdesc;
-    $cpd->learningdesc = ['text' => $learningdesc , 'format' => FORMAT_HTML];
 } else {
     require_capability('block/arup_mylearning:addcpd', $context);
+    $cpd = new \local_learningrecordstore\lrsentry();
 }
 
 $PAGE->requires->js_call_amd('block_arup_mylearning/enhance', 'initialise');
@@ -99,54 +95,30 @@ if ($form->is_cancelled()) {
             $data->$name = null;
         }
     }
-    $data->staffid = $USER->idnumber; // Set staffid (Only used to add CPD).
+
+    $cpd->staffid = $USER->idnumber; // Set staffid (Only used to add CPD).
+    $cpd->coursename = $data->classname;
+    $cpd->provider = $data->provider;
+    $cpd->completiontime = $data->completiontime;
+    $cpd->duration = $data->duration;
+    $cpd->durationunits = $data->durationunitscode;
+    $cpd->location = $data->location;
+    $cpd->classtype = $data->classtype;
+    $cpd->classcategory = $data->classcategory;
+    $cpd->classcost = $data->classcost;
+    $cpd->classcostcurrency = $data->classcostcurrency;
+    $cpd->certificateno = $data->certificateno;
+    $cpd->expirydate = $data->expirydate;
+    $cpd->description = $data->learningdesc['text'];
+    $cpd->healthandsafetycategory = $data->healthandsafetycategory;
+    $cpd->location = $data->location;
 
     switch ($action) {
         case 'add' :
-            $result = $taps->add_cpd_record(
-                $data->staffid,
-                $data->classname,
-                $data->provider,
-                $data->completiontime,
-                $data->duration,
-                $data->durationunitscode,
-                array(
-                    'p_location' => $data->location,
-                    'p_learning_method' => $data->classtype,
-                    'p_subject_catetory' => $data->classcategory,
-                    'p_course_cost' => $data->classcost,
-                    'p_course_cost_currency' => $data->classcostcurrency,
-                    'p_certificate_number' => $data->certificateno,
-                    'p_certificate_expiry_date' => $data->expirydate,
-                    'p_learning_desc' => $data->learningdesc['text'],
-                    'p_learning_desc_cont_1' => '',
-                    'p_learning_desc_cont_2' => '',
-                    'p_health_and_safety_category' => $data->healthandsafetycategory
-                )
-            );
+            $cpd->insert();
             break;
         case 'edit' :
-            $result = $taps->edit_cpd_record(
-                $data->id,
-                $data->classname,
-                $data->provider,
-                $data->completiontime,
-                $data->duration,
-                $data->durationunitscode,
-                array(
-                    'p_location' => $data->location,
-                    'p_learning_method' => $data->classtype,
-                    'p_subject_catetory' => $data->classcategory,
-                    'p_course_cost' => $data->classcost,
-                    'p_course_cost_currency' => $data->classcostcurrency,
-                    'p_certificate_number' => $data->certificateno,
-                    'p_certificate_expiry_date' => $data->expirydate,
-                    'p_learning_desc' => $data->learningdesc['text'],
-                    'p_learning_desc_cont_1' => '',
-                    'p_learning_desc_cont_2' => '',
-                    'p_health_and_safety_category' => $data->healthandsafetycategory
-                )
-            );
+            $cpd->update();
             break;
     }
 
@@ -164,7 +136,12 @@ echo $OUTPUT->heading(get_string($action.'cpd', 'block_arup_mylearning'), 2);
 
 echo html_writer::tag('p', get_string($action.'cpd_help', 'block_arup_mylearning'));
 
-$form->set_data($cpd); // Variable $cpd will be empty if adding.
+// Mapping for specific form select options that are not returned as keys.
+$formdata = clone($cpd);
+$formdata->classcategory = array_search($cpd->classcategory, $taps->get_classcategory());
+$formdata->learningdesc = ['text' => $cpd->description , 'format' => FORMAT_HTML];
+
+$form->set_data($formdata); // Variable $cpd will be empty if adding.
 echo $form->display();
 
 echo $OUTPUT->footer();

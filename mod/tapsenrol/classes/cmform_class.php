@@ -296,7 +296,7 @@ abstract class cmform_class extends \moodleform {
             $taps = new \mod_tapsenrol\taps();
             list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
             $sql = "SELECT COUNT(id)
-                  FROM {local_taps_enrolment}
+                  FROM {tapsenrol_class_enrolments}
                   WHERE
                     classid = :classid
                     AND (archived = 0 OR archived IS NULL)
@@ -402,7 +402,7 @@ abstract class cmform_class extends \moodleform {
             // Check for attended enrolments and unset duration/time fields so they are not updated.
             list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
             $sql = "SELECT COUNT(id)
-                  FROM {local_taps_enrolment}
+                  FROM {tapsenrol_class_enrolments}
                   WHERE
                     classid = :classid
                     AND (archived = 0 OR archived IS NULL)
@@ -457,7 +457,7 @@ abstract class cmform_class extends \moodleform {
             $statuses = array_merge($taps->get_statuses('placed'));
             list($insql, $inparams) = $DB->get_in_or_equal($statuses, SQL_PARAMS_NAMED, 'status');
             $sql = "SELECT COUNT(*)
-                          FROM {local_taps_enrolment}
+                          FROM {tapsenrol_class_enrolments}
                           WHERE classid = :classid AND {$DB->sql_compare_text('bookingstatus')} {$insql}";
             $inparams['classid'] = $data->classid;
             if ($DB->count_records_sql($sql, $inparams)) {

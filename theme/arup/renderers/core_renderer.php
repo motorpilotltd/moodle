@@ -533,7 +533,7 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
             FROM
                 {tapsenrol_iw_tracking} tit
             JOIN
-                {local_taps_enrolment} lte
+                {tapsenrol_class_enrolments} lte
                 ON lte.enrolmentid = tit.enrolmentid
             INNER JOIN
                 {local_taps_class} ltc

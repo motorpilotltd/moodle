@@ -73,7 +73,7 @@ SELECT
     lte.classid,
     COUNT(lte.id) AS enrolments
 FROM
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
 INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.classid
 JOIN
     {tapsenrol_iw_tracking} tit
@@ -111,7 +111,7 @@ SELECT
     lte.*,
     {$usernamefields}
 FROM
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
 INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.classid
 JOIN
     {tapsenrol_iw_tracking} tit

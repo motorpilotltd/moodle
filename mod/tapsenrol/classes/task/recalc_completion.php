@@ -74,7 +74,7 @@ SELECT
     c.id as cid,
     tc.id as tcid, tc.completed as tccompleted,
     cmc.completionstate as cmccompletionstate
-FROM {local_taps_enrolment} lte
+FROM {tapsenrol_class_enrolments} lte
 JOIN {user} u
     ON u.idnumber = lte.staffid
 JOIN {tapsenrol} t

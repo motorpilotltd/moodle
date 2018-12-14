@@ -883,7 +883,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         $from = <<<EOF
     {tapsenrol_iw_tracking} tit
 JOIN
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
     ON lte.enrolmentid = tit.enrolmentid
 INNER JOIN
     {local_taps_class} ltc

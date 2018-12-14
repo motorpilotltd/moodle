@@ -69,7 +69,7 @@ class automatic_cancellation extends \core\task\scheduled_task {
         $compare2 = $DB->sql_compare_text('ltc.classtype');
 
         $from = <<<EOS
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
 JOIN
     {tapsenrol_iw_tracking} iwt
     ON iwt.enrolmentid = lte.enrolmentid

@@ -48,7 +48,7 @@ $PAGE->set_heading(get_string('deletecpd', 'block_arup_mylearning'));
 
 $confirmurl = new moodle_url('/blocks/arup_mylearning/deletecpd.php', array('tab' => $tab, 'instance' => $instance, 'id' => $id, 'confirm' => 1));
 
-$cpd = $DB->get_record('local_taps_enrolment', array('id' => $id, 'staffid' => $USER->idnumber));
+$cpd = \local_learningrecordstore\lrsentry::fetch(['id' => $id, 'staffid' => $USER->idnumber]);
 
 if (!$cpd) {
     $SESSION->block_arup_mylearning->alert = new stdClass();
@@ -57,11 +57,9 @@ if (!$cpd) {
     redirect($redirecturl);
     exit;
 } else if ($confirm) {
-    $taps = new \mod_tapsenrol\taps();
-
     $SESSION->block_arup_mylearning->alert = new stdClass();
 
-    if ($taps->delete_cpd_record($id)) {
+    if ($cpd->delete()) {
         $SESSION->block_arup_mylearning->alert->message = get_string('alert:success:delete', 'block_arup_mylearning');
         $SESSION->block_arup_mylearning->alert->type = 'alert-success';
     } else {
@@ -80,7 +78,7 @@ echo $OUTPUT->heading(get_string('deletecpd', 'block_arup_mylearning'), 2);
 $continue = html_writer::link($confirmurl, get_string('deletecpd:save', 'block_arup_mylearning'), array('class' => 'btn btn-primary'));
 $cancel = html_writer::link($redirecturl, get_string('cancel'), array('class' => 'btn btn-default m-l-10'));
 
-echo html_writer::tag('p', get_string('confirmdeletecpd', 'block_arup_mylearning', $cpd->classname));
+echo html_writer::tag('p', get_string('confirmdeletecpd', 'block_arup_mylearning', $cpd->coursename));
 echo html_writer::tag('div', $continue . $cancel, array('class' => 'buttons'));
 
 echo $OUTPUT->footer();

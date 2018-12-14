@@ -119,7 +119,7 @@ abstract class mod_tapsenrol_manage_enrolments_step2_form extends moodleform {
             $inparams
         );
         $enrolmentstext =
-            $DB->count_records_select('local_taps_enrolment', "classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}", $params);
+            $DB->count_records_select('tapsenrol_class_enrolments', "classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}", $params);
         $enrolments .= html_writer::tag('div', $enrolmentstext, array('class' => 'felement'));
         $html .= html_writer::tag('div', $enrolments, array('class' => 'enrolments fitem'));
 
@@ -137,7 +137,7 @@ abstract class mod_tapsenrol_manage_enrolments_step2_form extends moodleform {
         $fields = "lte.*, u.id as userid, {$usernamefields}, u.phone1, u.icq, u.department, u.address, tit.timeenrolled";
 
         $from = <<<EOF
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
 JOIN
     {user} u
     ON u.idnumber = lte.staffid
@@ -363,7 +363,7 @@ class mod_tapsenrol_manage_enrolments_enrol_form extends mod_tapsenrol_manage_en
         );
         $excludeusersql = "SELECT DISTINCT u.id
                              FROM {user} u
-                             JOIN {local_taps_enrolment} lte ON lte.staffid = u.idnumber
+                             JOIN {tapsenrol_class_enrolments} lte ON lte.staffid = u.idnumber
                             WHERE classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}";
         $mform->addElement('html', $this->_get_user_selector_html($excludeusersql, $excludeuserparams));
 

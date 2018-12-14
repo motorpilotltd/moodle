@@ -85,7 +85,7 @@ function xmldb_local_admin_upgrade($oldversion) {
     }
 
     if ($oldversion < 2015111609) {
-        $tablecols = ['user' => 'idnumber', 'local_admin_user_update_log' => 'staffid', 'local_taps_enrolment' => 'staffid'];
+        $tablecols = ['user' => 'idnumber', 'local_admin_user_update_log' => 'staffid', 'tapsenrol_class_enrolments' => 'staffid'];
 
         foreach ($tablecols as $table => $col) {
             $DB->execute("UPDATE {{$table}} SET $col = REPLACE(LTRIM(REPLACE($col, '0', ' ')), ' ', '0')");

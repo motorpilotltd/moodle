@@ -356,43 +356,23 @@ EOS;
     }
 
     public static function add_cpd(lunchandlearn $session, $user, $extra=null) {
-        $taps = new \mod_tapsenrol\taps();
+        $lrsrecord = new \local_learningrecordstore\lrsentry();
 
-        $desc =!empty($extra->p_learning_desc['text']) ? $extra->p_learning_desc['text'] : $session->get_summary();
+        $lrsrecord->staffid = $user->idnumber; // Set staffid (Only used to add CPD).
+        $lrsrecord->coursename = $session->get_name();
+        $lrsrecord->provider = $session->get_supplier();
+        $lrsrecord->completiontime = $session->scheduler->get_date();
+        $lrsrecord->duration = $session->scheduler->get_duration();
+        $lrsrecord->durationunits = 'MIN';
+        $lrsrecord->location = $session->scheduler->get_office();
+        $lrsrecord->classtype = isset($extra->p_learning_method) ? $extra->p_learning_method : 'LUNCH_AND_LEARN';
+        $lrsrecord->classcategory = 'PD';
+        $lrsrecord->starttime = $session->scheduler->get_date();
+        $lrsrecord->description =
+                !empty($extra->p_learning_desc['text']) ? $extra->p_learning_desc['text'] : $session->get_summary();
 
-        $cpdparams = array(
-                'p_organization_name' => null,
-                'p_location' => $session->scheduler->get_office(),
-                'p_learning_method' => isset($extra->p_learning_method) ? $extra->p_learning_method : 'LUNCH_AND_LEARN',
-                'p_subject_catetory' => 'PD',
-                'p_course_start_date' => $session->scheduler->get_date(),
-                'p_learning_desc' => $desc,
-                'p_health_and_safety_category' => null
-        );
+        $lrsrecord->insert();
 
-        $result = $taps->add_cpd_record(
-            $user->idnumber,
-            $session->get_name(),
-            $session->get_supplier(),
-            $session->scheduler->get_date(),
-            $session->scheduler->get_duration(),
-            'MIN',
-            $cpdparams
-        );
-
-        if ($result === false) {
-            // Inputs.
-            debugging('INPUTS: '. print_r(array(
-                'user id: ' => $user->idnumber,
-                'class name: ' => $session->get_name(),
-                'provider: ' => $session->get_supplier(),
-                'date: ' => strtoupper(date('d-M-Y')),
-                'duration' => $session->scheduler->get_duration()
-            ), true)
-            . print_r($cpdparams, true), DEBUG_DEVELOPER);
-            // Outputs.
-            debugging('RESULT: '.print_r($result, true), DEBUG_DEVELOPER);
-            throw new Exception('CPD add failed for user '.$user->idnumber);
-        }
+        debugging('INPUTS: ' . print_r($lrsrecord, true), DEBUG_DEVELOPER);
     }
 }

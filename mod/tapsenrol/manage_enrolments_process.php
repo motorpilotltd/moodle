@@ -132,7 +132,7 @@ if ($type == 'future' || $type == 'past') {
                 $inparams
             );
             $select = "staffid = :staffid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}";
-            $existingenrolments = $DB->count_records_select('local_taps_enrolment', $select, $params);
+            $existingenrolments = $DB->count_records_select('tapsenrol_class_enrolments', $select, $params);
             if ($existingenrolments) {
                 $a .= "<br />FAILED: [{$username}] Could not enrol: ALREADY_ENROLLED.";
                 continue;
@@ -217,7 +217,7 @@ if ($type == 'future' || $type == 'past') {
         $status = $fromform->status;
 
         foreach ($enrolments as $enrolmentid) {
-            $enrolment = $DB->get_record('local_taps_enrolment', array('enrolmentid' => $enrolmentid));
+            $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
             if (!$enrolment || $enrolment->archived) {
                 $a .= "<br />FAILED: Enrolment ({$enrolmentid}) could not be loaded.";
                 continue;
@@ -289,7 +289,7 @@ EOJ;
         }
 
         foreach ($enrolments as $enrolmentid) {
-            $enrolment = $DB->get_record('local_taps_enrolment', array('enrolmentid' => $enrolmentid));
+            $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
             $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolmentid));
             if (!$enrolment || $enrolment->archived || !$iwtrack) {
                 $a .= "<br />FAILED: Application ({$enrolmentid}) could not be loaded.";
@@ -407,7 +407,7 @@ EOJ;
 
         if ($process) {
             foreach ($enrolments as $enrolmentid) {
-                $enrolment = $DB->get_record('local_taps_enrolment', array('enrolmentid' => $enrolmentid));
+                $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
                 if (!$enrolment || $enrolment->archived) {
                     $a .= "<br />FAILED: Enrolment ({$enrolmentid}) could not be loaded.";
                     continue;
@@ -427,7 +427,7 @@ EOJ;
 
                 $where .= " AND {$compare} {$in}";
                 $sql = "SELECT id
-                          FROM {local_taps_enrolment}
+                          FROM {tapsenrol_class_enrolments}
                          WHERE staffid = :staffid
                                AND classid = :classid
                                AND (archived = 0 OR archived IS NULL) AND active = 1
@@ -510,7 +510,7 @@ EOJ;
 
         if ($process) {
             foreach ($enrolments as $enrolmentid) {
-                $enrolment = $DB->get_record('local_taps_enrolment', array('enrolmentid' => $enrolmentid));
+                $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
                 if (!$enrolment || $enrolment->archived) {
                     $a .= "<br />FAILED: Enrolment ({$enrolmentid}) could not be loaded.";
                     continue;

@@ -206,10 +206,10 @@ SELECT
 FROM
     {tapsenrol_iw_tracking} tit
 JOIN
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
     ON lte.enrolmentid = tit.enrolmentid
 INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
-JOIN
+INNER JOIN
     {tapsenrol} t
     ON t.course = ltc.courseid
 JOIN
@@ -270,7 +270,7 @@ SELECT
     c.id as course,
     c.fullname, c.shortname, c.visible
 FROM
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
 INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 JOIN
     {course} c ON c.id = ltc.courseid

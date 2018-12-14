@@ -22,6 +22,7 @@
 
 namespace local_lynda;
 
+use local_learningrecordstore\lrsentry;
 use local_lynda\event\unmatchedrecord_received;
 
 class lyndaapi {
@@ -277,34 +278,25 @@ class lyndaapi {
                 $datetime = \DateTime::createFromFormat('m/d/Y H:i:s', $raw->CompleteDate, $tz);
                 $timestamp = $datetime->getTimestamp();
 
-                $classnamecompare = $DB->sql_compare_text('classname', 64);
-                $classnamevaluecompare = $DB->sql_compare_text(':classname', 64);
-                $providercompare = $DB->sql_compare_text('provider');
-                $sql =
-                        "SELECT * FROM {local_taps_enrolment} WHERE staffid = :staffid AND $classnamecompare = $classnamevaluecompare AND $providercompare = :providername";
-                if ($DB->record_exists_sql($sql,
-                        ['staffid' => $user->idnumber, 'classname' => $raw->CourseName, 'providername' => 'Lynda.com'])
-                ) {
+                $lrsentry = lrsentry::fetchbyproviderid('Lynda.com', $raw->CourseID, $user->idnumber);
+
+                if ($lrsentry) {
                     continue;
                 }
                 $lyndacourse = lyndacourse::fetchbyremotecourseid($raw->CourseID);
 
-                if ($lyndacourse) {
-                    $description = $lyndacourse->description;
-                } else {
-                    $description = '';
-                }
+                $lrsentry = new lrsentry();
+                $lrsentry->staffid = $user->idnumber;
+                $lrsentry->providerid = $raw->CourseID;
+                $lrsentry->provider = 'Lynda.com';
+                $lrsentry->completiontime = $timestamp;
+                $lrsentry->duration = $raw->CourseDuration;
+                $lrsentry->durationunits = 'MIN';
+                $lrsentry->description = isset($lyndacourse) ? $lyndacourse->description : '';
+                $lrsentry->classtype = 'ECO';
+                $lrsentry->classcategory = 'PD';
+                $lrsentry->insert();
 
-                $taps->add_cpd_record(
-                        $user->idnumber,
-                        $raw->CourseName,
-                        'Lynda.com',
-                        $timestamp,
-                        $raw->CourseDuration,
-                        'MIN',
-                        ['p_learning_method' => 'ECO', 'p_subject_catetory' => 'PD', 'p_learning_desc' => $description,
-                         'p_providerid'      => $raw->CourseID]
-                );
                 mtrace('Created CPD record for ' . $raw->Username);
             }
 
@@ -334,9 +326,7 @@ class lyndaapi {
 
             if (!isset($coursehashes[$course->remotecourseid])) {
                 $course->insert();
-                $sql =
-                        "UPDATE {local_taps_enrolment} SET learningdesc = :coursedescription WHERE provider = 'Lynda.com' AND providerid = :remotecourseid";
-                $DB->execute($sql, ['coursedescription' => $course->description, 'remotecourseid' => $course->remotecourseid]);
+                lrsentry::bulkupdatedescription('Lynda.com', $course->remotecourseid, $course->description);
             } else if (!empty($course->deletedbylynda) || $course->lyndadatahash != $coursehashes[$course->remotecourseid]) {
                 $course->deletedbylynda = false;
                 $course->update();

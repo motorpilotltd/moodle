@@ -521,7 +521,7 @@ class tapsenrol {
 SELECT
     lte.*
 FROM
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
 LEFT JOIN
     {tapsenrol_iw_tracking} tit
     ON tit.enrolmentid = lte.enrolmentid
@@ -631,7 +631,7 @@ EOS;
 SELECT
     lte.*
 FROM
-    {local_taps_enrolment} lte
+    {tapsenrol_class_enrolments} lte
 LEFT JOIN
     {tapsenrol_iw_tracking} tit
     ON tit.enrolmentid = lte.enrolmentid
@@ -922,7 +922,7 @@ EOS;
             $enrolmentnew->bookingstatus = ($targetclass->classstatus == 'Normal' ? 'Approved Place' : 'W:Wait Listed');
         }
 
-        $DB->update_record('local_taps_enrolment', $enrolmentnew);
+        $DB->update_record('tapsenrol_class_enrolments', $enrolmentnew);
 
         // If approved cancel original invite (if resend emails on).
         // Send relevant emails (if resend emails on), i.e. approval required or invite
@@ -1101,7 +1101,7 @@ EOS;
 
         $enrolment->archived = 1;
         $enrolment->timemodified = $time;
-        $DB->update_record('local_taps_enrolment', $enrolment);
+        $DB->update_record('tapsenrol_class_enrolments', $enrolment);
 
         $notificationemail = false;
         $cancelinvite = false;
@@ -1530,7 +1530,7 @@ EOS;
     public function send_applicant_reminder($enrolmentid, $email) {
         global $DB;
 
-        $enrolment = $DB->get_record('local_taps_enrolment', array('enrolmentid' => $enrolmentid));
+        $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
         $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
 
         if (!$user) {
@@ -1550,7 +1550,7 @@ EOS;
     public function send_sponsor_reminder($enrolmentid, $email) {
         global $DB;
 
-        $enrolment = $DB->get_record('local_taps_enrolment', array('enrolmentid' => $enrolmentid));
+        $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
         $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolmentid));
         $class = $this->taps->get_class_by_id($enrolment->classid);
 
@@ -1606,7 +1606,7 @@ EOS;
     public function resend_invite($enrolmentid, $class, $extrainfo) {
         global $DB;
 
-        $userenrolment = $DB->get_record('local_taps_enrolment', array('enrolmentid' => $enrolmentid));
+        $userenrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
         if (!$userenrolment) {
             return false;
         }
@@ -1683,7 +1683,7 @@ EOS;
 SELECT
     COUNT(id)
 FROM
-    {local_taps_enrolment}
+    {tapsenrol_class_enrolments}
 WHERE
     courseid = :courseid
     AND staffid = :staffid
@@ -1755,7 +1755,7 @@ EOS;
 
         $distinctclassname = $DB->sql_compare_text('ltc.classname');
         $classlistsql = "SELECT DISTINCT lte.classid, {$distinctclassname} as classname
-            FROM {local_taps_enrolment} lte
+            FROM {tapsenrol_class_enrolments} lte
             INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
             JOIN {user} u ON u.idnumber = lte.staffid
             WHERE
@@ -1776,7 +1776,7 @@ EOS;
         }
 
         $sql = "SELECT lte.enrolmentid, lte.classid, ltc.classname, u.*
-            FROM {local_taps_enrolment} lte
+            FROM {tapsenrol_class_enrolments} lte
             INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
             JOIN {user} u ON u.idnumber = lte.staffid
             WHERE

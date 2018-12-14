@@ -14,7 +14,7 @@ class activityreset {
 	 */
 	function feedback_archive_completion($userid, $courseid) {
 		global $DB;
-		
+
 		$sql = "SELECT fc.*
             FROM {feedback_completed} fc
             INNER JOIN {feedback} f ON f.id = fc.feedback AND f.course = :courseid
@@ -39,7 +39,7 @@ class activityreset {
 	 */
 	function certificate_archive_completion($userid, $courseid) {
 		global $DB;
-		
+
 		$sql = "SELECT ci.*
               FROM {certificate_issues} ci
               JOIN {certificate} c ON c.id = ci.certificateid AND c.course = :courseid
@@ -304,7 +304,7 @@ class activityreset {
      */
     function scorm_archive_completion($userid, $courseid) {
         global $DB;
-        
+
         $sql = 'SELECT s.*
             FROM {scorm} s
             WHERE s.course = :courseid
@@ -371,12 +371,12 @@ class activityreset {
                 'courseid' => $te->course,
                 'active' => 1
             ];
-            $enrolments = $DB->get_records_select('local_taps_enrolment', "staffid = :staffid AND courseid = :courseid AND active = :active AND {$compare} {$in}", array_merge($params, $inparams));
+            $enrolments = $DB->get_records_select('tapsenrol_class_enrolments', "staffid = :staffid AND courseid = :courseid AND active = :active AND {$compare} {$in}", array_merge($params, $inparams));
 
             foreach ($enrolments as $enrolment) {
                 $enrolment->active = 0;
                 $enrolment->timemodified = $now;
-                $DB->update_record('local_taps_enrolment', $enrolment);
+                $DB->update_record('tapsenrol_class_enrolments', $enrolment);
             }
         }
     }
