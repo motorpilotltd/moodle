@@ -247,7 +247,6 @@ $string['form:class:restrictedflag'] = 'Restricted';
 $string['form:class:secureflag'] = 'Secure';
 $string['form:class:selectclasstype'] = 'Select class type';
 $string['form:class:selectstatustype'] = 'Select status type';
-$string['form:class:pricebasis'] = 'Price basis';
 $string['form:class:currencycode'] = 'Currency Code';
 $string['form:class:price'] = 'Price';
 $string['form:class:priceerror'] = 'Only a dot notation for the price is allowed';

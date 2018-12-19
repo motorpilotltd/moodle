@@ -150,7 +150,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                     $cells[] = $class->location ? $class->location : get_string('tbc', 'tapsenrol');
                     if ($class->classstarttime) {
                         try {
-                            $timezone = new DateTimeZone($enrolment->usedtimezone);
+                            $timezone = new DateTimeZone($class->usedtimezone);
                         } catch (Exception $e) {
                             $timezone = new DateTimeZone(date_default_timezone_get());
                         }
@@ -182,12 +182,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                 $cells[] = $class->duration ? (float) $class->duration.' '.$class->durationunits : '-';
                 $classseatsremaining = isset($seatsremaining[$enrolment->classid]) ? $seatsremaining[$enrolment->classid] : 0;
                 $cells[] = ($classseatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $classseatsremaining) . $delegatebutton;
-                if (!isset($enrolment->price)) {
-                    $class = $tapsenrol->taps->get_class_by_id($enrolment->classid);
-                    $enrolment->price = $class ? $class->price : null;
-                    $enrolment->currencycode = $class ? $class->currencycode : null;
-                }
-                $cells[] = $enrolment->price ? $enrolment->price.' '.$enrolment->currencycode : '-';
+                $cells[] = $class->price ? $class->price.' '.$class->currencycode : '-';
 
                 $status = $tapsenrol->taps->get_status_type($enrolment->bookingstatus);
                 switch ($status) {
@@ -503,7 +498,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
 
     public function cancel_enrolment($tapsenrol, $enrolment, $class) {
         try {
-            $timezone = new DateTimeZone($enrolment->usedtimezone);
+            $timezone = new DateTimeZone($class->usedtimezone);
         } catch (Exception $e) {
             $timezone = new DateTimeZone(date_default_timezone_get());
         }
@@ -554,7 +549,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         }
 
         $cost = html_writer::tag('div', get_string('cost', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $costvalue = $enrolment->price ? $enrolment->price.' '.$enrolment->currencycode : '-';
+        $costvalue = $class->price ? $class->price . ' ' . $class->currencycode : '-';
         $cost .= html_writer::tag('div', $costvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $cost, array('class' => 'fitem'));
 
@@ -879,7 +874,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         $leavers = $table->show_leavers();
 
         $usernamefields = get_all_user_name_fields(true, 'u');
-        $fields = "tit.*, u.id as userid, u.suspended, {$usernamefields}, c.fullname as coursename, ltc.classname, ltc.classstarttime, lte.usedtimezone, lte.bookingstatus";
+        $fields = "tit.*, u.id as userid, u.suspended, {$usernamefields}, c.fullname as coursename, ltc.classname, ltc.classstarttime, ltc.usedtimezone, lte.bookingstatus";
         $from = <<<EOF
     {tapsenrol_iw_tracking} tit
 JOIN
@@ -921,7 +916,7 @@ EOF;
         global $OUTPUT;
 
         try {
-            $timezone = new DateTimeZone($enrolment->usedtimezone);
+            $timezone = new DateTimeZone($class->usedtimezone);
         } catch (Exception $e) {
             $timezone = new DateTimeZone(date_default_timezone_get());
         }
@@ -979,7 +974,7 @@ EOF;
         }
 
         $cost = html_writer::tag('div', get_string('cost', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $costvalue = $enrolment->price ? $enrolment->price.' '.$enrolment->currencycode : '-';
+        $costvalue = $class->price ? $class->price . ' ' . $class->currencycode : '-';
         $cost .= html_writer::tag('div', $costvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $cost, array('class' => 'fitem'));
 

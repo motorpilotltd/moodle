@@ -522,23 +522,9 @@ class taps {
             $result->status = 'CLASS_FULL';
         }
 
-        $enrolment->coursename = $class->coursename;
-        $enrolment->classtype = $class->classtype;
-        $enrolment->classcategory = null; // Could be Health and Safety; but we don't have this information.
-        $enrolment->certificateno = null; // CPD only.
-        $enrolment->expirydate = null; // CPD only.
         $enrolment->completiontime = null;
-        $enrolment->healthandsafetycategory = null; // CPD only.
-        $enrolment->classcost = $class->classcost;
-        $enrolment->classcostcurrency = $class->classcostcurrency;
-        $enrolment->learningdesc = null;
-        $enrolment->timezone = $class->timezone;
-        $enrolment->usedtimezone = $class->usedtimezone;
-        $enrolment->pricebasis = $class->pricebasis;
-        $enrolment->currencycode = $class->currencycode;
-        $enrolment->price = $class->price;
         // Field bookingplaceddate is a new field from migration data.
-        $enrolment->bookingplaceddate = $enrolment->timemodified = time();
+        $enrolment->timemodified = time();
         $enrolment->id = $DB->insert_record('tapsenrol_class_enrolments', $enrolment);
 
         $result->success = (bool) $enrolment->id;

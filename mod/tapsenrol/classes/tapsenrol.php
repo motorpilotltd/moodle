@@ -901,7 +901,6 @@ EOS;
         $enrolmentnew->classcost = $targetclass->classcost;
         $enrolmentnew->classcostcurrency = $targetclass->classcostcurrency;
         $enrolmentnew->price = $targetclass->price;
-        $enrolmentnew->pricebasis = $targetclass->pricebasis;
         $enrolmentnew->currencycode = $targetclass->currencycode;
         $enrolmentnew->timezone = $targetclass->timezone;
         $enrolmentnew->usedtimezone = $targetclass->usedtimezone;
@@ -1242,11 +1241,9 @@ EOS;
 
     protected function _class_data($enrolment, $old = false) {
         $class = $this->taps->get_class_by_id($enrolment->classid);
-        $enrolment->price = $class ? $class->price : null;
-        $enrolment->currencycode = $class ? $class->currencycode : null;
 
         try {
-            $timezone = new DateTimeZone($enrolment->usedtimezone);
+            $timezone = new DateTimeZone($class->usedtimezone);
         } catch (Exception $e) {
             $timezone = new DateTimeZone(date_default_timezone_get());
         }
@@ -1310,7 +1307,7 @@ EOS;
         }
 
         if (!empty($enrolment->price)) {
-            $classarray['classcost'] = $enrolment->price . ' ' . $enrolment->currencycode;
+            $classarray['classcost'] = $class->price . ' ' . $class->currencycode;
         } else {
             $classarray['classcost'] = '-';
         }

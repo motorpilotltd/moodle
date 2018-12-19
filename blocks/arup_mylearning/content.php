@@ -845,8 +845,8 @@ EOS;
         $sql = <<<EOS
 SELECT
     lte.id, ltc.classname, c.fullname as coursename, ltc.classcategory, ltc.completiontime, ltc.duration, ltc.durationunits,
-        lte.expirydate, ltc.classsuppliername as provider, ltc.location, ltc.classstartdate, lte.certificateno, lte.learningdesc,
-        lte.healthandsafetycategory, ltc.usedtimezone, lte.locked,
+        ltc.classsuppliername as provider, ltc.location, ltc.classstartdate,
+        ltc.usedtimezone,
     ltc.courseid as course,
     cat.id as categoryid, cat.name as categoryname
 FROM

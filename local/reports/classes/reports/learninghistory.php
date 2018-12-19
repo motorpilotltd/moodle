@@ -115,7 +115,6 @@ class learninghistory extends base {
             'learningdesc',
             'classcategory',
             'classtype',
-            'bookingplaceddate',
             'coursecode',
             'provider',
             'expirydate',
@@ -513,11 +512,6 @@ class learninghistory extends base {
         }
 
         if ($key == 'classstartdate') {
-            // e-Learning records use bookingplaceddate instead of classstartdate
-            if ($row->classtype == 'Self Paced') {
-                return $this->myuserdate($row->bookingplaceddate, $row);
-            }
-            // Default
             return $this->myuserdate($row->$key, $row);
         }
 
@@ -553,9 +547,7 @@ class learninghistory extends base {
         }
 
         if ($key == 'classcost') {
-            if ($row->pricebasis == 'No Charge') {
-                return '';
-            } else if (!empty($row->price)) {
+            if (!empty($row->price)) {
                 return $row->price;
             } else {
                 return $row->$key;

@@ -119,7 +119,6 @@ class elearningstatus extends base {
             'learningdesc',
             'classcategory',
             'classtype',
-            'bookingplaceddate',
             'coursecode',
             'provider',
             'expirydate',
@@ -226,7 +225,6 @@ class elearningstatus extends base {
                 'classcost' => $classinfo->classcost,
                 'classcostcurrency' => $classinfo->classcostcurrency,
                 'bookingstatus' => 'No Enrolment',
-                'bookingplaceddate' => '',
                 'completiontime' => ''
             );
 
@@ -559,10 +557,6 @@ class elearningstatus extends base {
         }
 
         if ($key == 'classstartdate') {
-            // e-Learning records use bookingplaceddate instead of classstartdate
-            if ($row->classtype == 'Self Paced') {
-                return $this->myuserdate($row->bookingplaceddate, $row);
-            }
             // Default
             return $this->myuserdate($row->$key, $row);
         }
@@ -597,9 +591,7 @@ class elearningstatus extends base {
         }
 
         if ($key == 'classcost') {
-            if (isset($row->pricebasis) && $row->pricebasis == 'No Charge') {
-                return '';
-            } else if (!empty($row->price)) {
+            if (!empty($row->price)) {
                 return $row->price;
             } else {
                 return $row->$key;
@@ -607,9 +599,7 @@ class elearningstatus extends base {
         }
 
         if ($key == 'classcostcurrency') {
-            if (isset($row->pricebasis) && $row->pricebasis == 'No Charge') {
-                return '';
-            } else if (!empty($row->price)) {
+            if (!empty($row->price)) {
                 return $row->currencycode;
             } else if (!empty($row->classcost)) {
                 return $row->$key;

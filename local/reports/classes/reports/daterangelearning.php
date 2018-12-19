@@ -119,7 +119,6 @@ class daterangelearning extends base {
             'learningdesc',
             'classcategory',
             'classtype',
-            'bookingplaceddate',
             'coursecode',
             'provider',
             'expirydate',
@@ -168,7 +167,7 @@ class daterangelearning extends base {
             'georegion' => 'staff.GEO_REGION',
             'staffid' => 'staff.EMPLOYEE_NUMBER',
             'classname' => 'ltc.classname',
-            'coursename' => 'lte.coursename',
+            'coursename' => 'c.fullname',
             'provider' => 'ltc.classsuppliername',
             'location' => 'ltc.location',
             'location_name' => 'staff.LOCATION_NAME',
@@ -591,11 +590,7 @@ class daterangelearning extends base {
         }
 
         if ($key == 'classstartdate') {
-            // e-Learning records use bookingplaceddate instead of classstartdate
-            if ($row->classtype == 'Self Paced') {
-                return $this->myuserdate($row->bookingplaceddate, $row);
-            }
-            // Default
+
             return $this->myuserdate($row->$key, $row);
         }
 
@@ -634,13 +629,7 @@ class daterangelearning extends base {
         }
 
         if ($key == 'classcost') {
-            if ($row->pricebasis == 'No Charge') {
-                return '';
-            } else if (!empty($row->price)) {
-                return $row->price;
-            } else {
-                return $row->$key;
-            }
+            return $row->$key;
         }
 
         if ($key == 'classcostcurrency') {

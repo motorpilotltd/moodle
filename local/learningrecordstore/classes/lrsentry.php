@@ -30,7 +30,6 @@ class lrsentry extends \data_object implements \templatable {
     public $classcategory;
     public $classcost;
     public $classcostcurrency;
-    public $pricebasis;
     public $timemodified;
     public $expirydate;
     public $classtype;
