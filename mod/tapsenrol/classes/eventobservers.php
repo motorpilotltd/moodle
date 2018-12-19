@@ -132,12 +132,9 @@ class eventobservers {
             );
             $sql = <<<EOS
 SELECT
-    DISTINCT u.id
+    DISTINCT lte.userid
 FROM
     {tapsenrol_class_enrolments} lte
-JOIN
-    {user} u
-    ON u.idnumber = lte.staffid
 WHERE
     lte.classid = :classid
     AND (lte.archived = 0 OR lte.archived IS NULL)
@@ -182,7 +179,7 @@ EOS;
         $instances = $DB->get_records('tapsenrol', array('course' => $event->courseid));
         foreach ($instances as $instance) {
             $tapsenrol = new \tapsenrol($instance->id, 'instance');
-            $tapsenrol->enrolment_check($user->idnumber);
+            $tapsenrol->enrolment_check($user->id);
         }
     }
 
@@ -224,8 +221,8 @@ EOS;
         $sql = "SELECT
                     lte.*
                 FROM {tapsenrol_class_enrolments} lte
-                JOIN {user} u
-                    ON u.idnumber = lte.staffid
+                INNER JOIN {user} u
+                    ON u.id = lte.userid
                 INNER JOIN
                     {local_taps_class} ltc
                     ON ltc.classid = lte.classid

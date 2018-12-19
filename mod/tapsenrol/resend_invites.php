@@ -118,7 +118,7 @@ JOIN
     ON tit.enrolmentid = lte.enrolmentid
 JOIN
     {user} u
-    ON u.idnumber = lte.staffid
+    ON u.id = lte.userid
 WHERE
     classid = :classid
     AND ltc.classstarttime > :now

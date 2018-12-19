@@ -546,7 +546,7 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
                 ON ti.id = t.internalworkflowid
             JOIN
                 {user} u
-                ON u.idnumber = lte.staffid
+                ON u.id = lte.userid
             WHERE
                 tit.approved IS NULL
                 AND timecancelled IS NULL

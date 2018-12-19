@@ -196,10 +196,6 @@ EOS;
     public function find_active_class() {
         global $USER, $DB;
 
-        if ($this->has_capability('student')) {
-            $staffid = $USER->idnumber;
-        }
-
         list($in, $params) = $DB->get_in_or_equal(
             array_keys($this->_classes),
             SQL_PARAMS_NAMED, 'classid'
@@ -207,9 +203,10 @@ EOS;
 
         $where = "active = 1 AND (archived = 0 OR archived IS NULL) AND classid {$in}";
 
-        if (isset($staffid)) {
-            $where .= ' AND staffid = :staffid';
-            $params['staffid'] = $staffid;
+
+        if ($this->has_capability('student')) {
+            $where .= ' AND userid = :userid';
+            $params['userid'] = $USER->id;
         }
 
         $enrolments = $DB->get_records_select(
@@ -387,7 +384,7 @@ EOS;
     {tapsenrol_class_enrolments} lte
 JOIN
     {user} u
-    ON u.idnumber = lte.staffid
+    ON u.id = lte.userid
 LEFT JOIN
     {user_lastaccess} ua
     ON ua.userid = u.id

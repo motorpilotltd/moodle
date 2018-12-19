@@ -37,7 +37,7 @@ if ($id) {
 }
 if ($id && !$loaderror) {
     // Now know enrolment is loaded OK.
-    $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
+    $user = core_user::get_user($enrolment->userid);
     $tapsenrol = $DB->get_record_sql(
             'SELECT te.* FROM {tapsenrol} te
                   INNER JOIN {local_taps_class} ltc ON ltc.courseid = te.courseid
@@ -125,7 +125,7 @@ if ($loaderror) {
                 }
                 $other = array(
                     'enrolmentid' => $enrolment->enrolmentid,
-                    'staffid' => $enrolment->staffid,
+                    'staffid' => $user->idnumber,
                     'classid' => $enrolment->classid,
                     'action' => $action ? $action : 'approve/reject',
                 );
@@ -181,7 +181,7 @@ JOIN
     ON ti.id = t.internalworkflowid
 JOIN
     {user} u
-    ON u.idnumber = lte.staffid
+    ON u.id = lte.userid
 WHERE
     tit.approved IS NULL
     AND (lte.archived = 0 OR lte.archived IS NULL)

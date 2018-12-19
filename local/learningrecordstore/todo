@@ -31,6 +31,7 @@ active
 timemodified (consolidation of timemodified as lastupdatedate)
 
 to remove:
+stadffid - remap to userid on tapsenrol, leave for lrs
 lastupdatedate (use timemodified) DONE
 classcompletiondate (just going to use classcompletiontime renamed to completiontime from now) DONE
 classcontext (appears to only ever be null or 'health and safety') DELETED

@@ -51,7 +51,7 @@ if (!$tapsenrol->check_installation()) {
     if (($USER->idnumber != '') || is_siteadmin()) {
         $canview = true;
 
-        echo $tapsenrol->enrolment_check($USER->idnumber, true);
+        echo $tapsenrol->enrolment_check($USER->id, true);
 
         $region = $DB->get_records_menu('tapsenrol_region', array('tapsenrolid' => $tapsenrol->tapsenrol->id), '', 'regionid as id, regionid as id2');
         if (empty($region)) {
@@ -68,7 +68,7 @@ if (!$tapsenrol->check_installation()) {
 
     if ($canview) {
         $classes = $tapsenrol->get_tapsclasses($canviewclasses);
-        $enrolments = $tapsenrol->taps->get_enroled_classes($USER->idnumber, $tapsenrol->course->id, false, false);
+        $enrolments = $tapsenrol->taps->get_enroled_classes($USER->id, $tapsenrol->course->id, false, false);
         $enrolmentoutput = $output->enrolment_history($tapsenrol, $enrolments, $classes, $tapsenrol->cm->id);
     }
 

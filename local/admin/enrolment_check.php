@@ -31,9 +31,11 @@ if ($fromform) {
     // Process and check enrolments...
     $tapsenrol = new tapsenrol($fromform->cm);
     $staffids = explode("\n", $fromform->staffids);
-    foreach ($staffids as $staffid) {
-        $tapsenrol->enrolment_check($staffid, false);
-        $processingresults[] = get_string('enrolmentcheck:processed', 'local_admin', $staffid);
+
+    $users = $DB->get_records_list('user', 'idnumber', $staffids);
+    foreach ($users as $user) {
+        $tapsenrol->enrolment_check($user->id, false);
+        $processingresults[] = get_string('enrolmentcheck:processed', 'local_admin', $user->idnumber);
     }
     $processingresults[] = '';
     $a = new stdClass();

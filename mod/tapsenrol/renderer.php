@@ -898,7 +898,7 @@ JOIN
     ON ti.id = t.internalworkflowid
 JOIN
     {user} u
-    ON u.idnumber = lte.staffid
+    ON u.id = lte.userid
 EOF;
         $where = '(lte.archived = 0 OR lte.archived IS NULL) AND tit.approved IS NOT null AND u.deleted = 0';
         if (!$leavers) {

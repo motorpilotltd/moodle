@@ -355,7 +355,6 @@ class activityreset {
         $taps = new \mod_tapsenrol\taps();
 
         $tes = $DB->get_records('tapsenrol', ['course' => $courseid]);
-        $staffid = $DB->get_field('user', 'idnumber', ['id' => $userid]);
         foreach ($tes as $te) {
             // Delete completion records.
             $DB->delete_records('tapsenrol_completion', ['tapsenrolid' => $te->id, 'userid' => $userid]);
@@ -367,11 +366,11 @@ class activityreset {
             );
             $compare = $DB->sql_compare_text('bookingstatus');
             $params = [
-                'staffid' => $staffid,
+                'userid' => $userid,
                 'courseid' => $te->course,
                 'active' => 1
             ];
-            $enrolments = $DB->get_records_select('tapsenrol_class_enrolments', "staffid = :staffid AND courseid = :courseid AND active = :active AND {$compare} {$in}", array_merge($params, $inparams));
+            $enrolments = $DB->get_records_select('tapsenrol_class_enrolments', "userid = :userid AND courseid = :courseid AND active = :active AND {$compare} {$in}", array_merge($params, $inparams));
 
             foreach ($enrolments as $enrolment) {
                 $enrolment->active = 0;

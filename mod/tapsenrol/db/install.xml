@@ -205,7 +205,7 @@
     <TABLE NAME="tapsenrol_class_enrolments" COMMENT="Cache for TAPS enrolments">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="staffid" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="enrolmentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
@@ -247,7 +247,7 @@
         <KEY NAME="enrolmentid" TYPE="unique" FIELDS="enrolmentid"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="staffid" UNIQUE="false" FIELDS="staffid"/>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
   </TABLES>

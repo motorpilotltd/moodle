@@ -236,14 +236,14 @@ class tapsenrol {
      * @param bool $approve
      * @return \stdClass
      */
-    public function enrol_employee($classid, $staffid, $approved = false) {
-        $result = $this->taps->enrol($classid, $staffid, $approved);
+    public function enrol_employee($classid, $userid, $approved = false) {
+        $result = $this->taps->enrol($classid, $userid, $approved);
         $result->message = '';
 
         $a = new stdClass();
 
         if ($result->success) {
-            $this->enrolment_check($staffid, false);
+            $this->enrolment_check($userid, false);
             $classtype = $this->taps->get_classtype_type($result->enrolment->classtype);
             $statustype = $this->taps->get_status_type($result->enrolment->bookingstatus);
             if (!$classtype || !get_string_manager()->string_exists('status:'.$classtype.':'.$statustype, 'tapsenrol')) {
@@ -293,7 +293,7 @@ class tapsenrol {
         $a->coursename = $course->fullname;
 
         if ($result->success) {
-            $this->enrolment_check($enrolment->staffid, false);
+            $this->enrolment_check($enrolment->userid, false);
             $result->message = get_string('cancel:alert:success', 'tapsenrol', $a);
         } else {
             $a->message = $result->status;
@@ -303,14 +303,14 @@ class tapsenrol {
         return $result;
     }
 
-    public function enrolment_check($staffid, $redirect = false) {
+    public function enrolment_check($userid, $redirect = false) {
         global $CFG, $DB, $PAGE, $SESSION, $USER;
 
         // Cheapest checks first.
-        if ($USER->idnumber == $staffid) {
+        if ($USER->id == $userid) {
             $user = $USER;
         } else {
-            $user = $DB->get_record('user', array('idnumber' => $staffid));
+            $user = core_user::get_user($userid);
         }
 
         if (!$user) {
@@ -329,7 +329,7 @@ class tapsenrol {
             $this->_set_enrol_data();
         }
 
-        $enrolments = $this->taps->get_enroled_classes($user->idnumber, $this->course->id, true, false);
+        $enrolments = $this->taps->get_enroled_classes($user->id, $this->course->id, true, false);
 
         $shouldbeenrolled = false;
         $shouldbecomplete = false;
@@ -538,7 +538,7 @@ EOS;
         );
 
         if ($enrolment) {
-            $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
+            $user = $DB->get_record('user', array('idnumber' => $enrolment->userid));
             if ($user) {
                 // Setup tracking.
                 $iwtrack = new stdClass();
@@ -605,7 +605,7 @@ EOS;
                 $this->_check_region_mismatch($user, $data);
             } else {
                 // User not found.
-                debugging("tapsenrol::trigger_workflow()\n\tUser with staff ID {$enrolment->staffid} not found.\n\tEnrolment ID: {$enrolmentid}\n"
+                debugging("tapsenrol::trigger_workflow()\n\tUser with user ID {$enrolment->userid} not found.\n\tEnrolment ID: {$enrolmentid}\n"
                         . "\tSponsor: {$formdata->sponsorfirstname} {$formdata->sponsorlastname} ({$formdata->sponsoremail})");
             }
         } else {
@@ -648,7 +648,7 @@ EOS;
         );
 
         if ($enrolment) {
-            $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
+            $user = core_user::get_user($enrolment->userid);
             if ($user) {
                 $class = $this->taps->get_class_by_id($enrolment->classid);
 
@@ -688,7 +688,7 @@ EOS;
                 $message = get_string('enrol:alert:success', 'tapsenrol', $a);
             } else {
                 // User not found.
-                debugging("tapsenrol::trigger_workflow_no_approval()\n\tUser with staff ID {$enrolment->staffid} not found.\n"
+                debugging("tapsenrol::trigger_workflow_no_approval()\n\tUser with user ID {$enrolment->userid} not found.\n"
                         . "\tEnrolment ID: {$enrolmentid}\n\tSponsor: {$formdata->sponsorfirstname} {$formdata->sponsorlastname} ({$formdata->sponsoremail})");
             }
         } else {
@@ -777,7 +777,7 @@ EOS;
         $iwtrack->timemodified = $iwtrack->timeapproved;
         $DB->update_record('tapsenrol_iw_tracking', $iwtrack);
 
-        $this->enrolment_check($enrolment->staffid, false);
+        $this->enrolment_check($enrolment->userid, false);
 
         // Email.
         if ($this->iw->approvalrequired && ($email == 'class_full' || $email == 'rejected')) {
@@ -798,7 +798,7 @@ EOS;
 
         $other = array(
             'enrolmentid' => $enrolment->enrolmentid,
-            'staffid' => $enrolment->staffid,
+            'user' => $user->idnumber,
             'classid' => $enrolment->classid,
             'status' => $status,
             'email' => $email,
@@ -808,6 +808,7 @@ EOS;
                 'objectid' => $iwtrack->id,
                 'other' => $other,
                 'context' => $this->context->cm,
+                'relateduser' => $user->id,
             ));
         } else {
             $event = \mod_tapsenrol\event\enrolment_request_rejected::create(array(
@@ -826,7 +827,7 @@ EOS;
     public function cancel_workflow($enrolment, $comments, $email = 'cancellation') {
         global $DB;
 
-        $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
+        $user = core_user::get_user($enrolment->userid);
         $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolment->enrolmentid));
         $class = $this->taps->get_class_by_id($enrolment->id);
         if ($user && $iwtrack) {
@@ -1064,7 +1065,7 @@ EOS;
         }
 
         // Run an enrolment check to update groups.
-        $this->enrolment_check($enrolmentnew->staffid, false);
+        $this->enrolment_check($enrolmentnew->userid, false);
 
         return true;
     }
@@ -1163,7 +1164,7 @@ EOS;
         }
 
         // Run an enrolment check to update groups.
-        $this->enrolment_check($enrolment->staffid, false);
+        $this->enrolment_check($enrolment->userid, false);
 
         return true;
     }
@@ -1531,7 +1532,7 @@ EOS;
         global $DB;
 
         $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
-        $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
+        $user = core_user::get_user($enrolment->userid);
 
         if (!$user) {
             return false;
@@ -1558,7 +1559,7 @@ EOS;
             return false;
         }
 
-        $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
+        $user = core_user::get_user($enrolment->userid);
 
         if (!$user) {
             return false;
@@ -1611,7 +1612,7 @@ EOS;
             return false;
         }
 
-        $user = $DB->get_record('user', array('idnumber' => $userenrolment->staffid));
+        $user = core_user::get_user($enrolment->userid);
         if (!$user) {
             return false;
         }
@@ -1677,7 +1678,7 @@ EOS;
         $attendedcompare = $DB->sql_compare_text('bookingstatus');
         $attendedparams = array(
             'courseid' => $this->course->id,
-            'staffid' => $user->idnumber
+            'userid' => $user->id
         );
         $attendedsql = <<<EOS
 SELECT
@@ -1686,7 +1687,7 @@ FROM
     {tapsenrol_class_enrolments}
 WHERE
     courseid = :courseid
-    AND staffid = :staffid
+    AND userid = :userid
     AND (archived = 0 OR archived IS NULL)
     AND active = 1
     AND {$attendedcompare} {$attendedin}
@@ -1757,13 +1758,12 @@ EOS;
         $classlistsql = "SELECT DISTINCT lte.classid, {$distinctclassname} as classname
             FROM {tapsenrol_class_enrolments} lte
             INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
-            JOIN {user} u ON u.idnumber = lte.staffid
             WHERE
                 ltc.courseid = :course
                 AND (lte.archived = 0 OR lte.archived IS NULL)
                 AND lte.active = 1
                 AND {$statuscompare} {$statusin}
-                AND u.id {$userin}
+                AND lte.userid {$userin}
             ORDER BY
                 lte.classid
             ";
@@ -1778,13 +1778,13 @@ EOS;
         $sql = "SELECT lte.enrolmentid, lte.classid, ltc.classname, u.*
             FROM {tapsenrol_class_enrolments} lte
             INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
-            JOIN {user} u ON u.idnumber = lte.staffid
+            INNER JOIN {user} u ON u.id = lte.userid
             WHERE
                 ltc.courseid = :course
                 AND (lte.archived = 0 OR lte.archived IS NULL)
                 AND lte.active = 1
                 AND {$statuscompare} {$statusin}
-                AND u.id {$userin}
+                AND lte.userid {$userin}
                 {$classidwhere}
             ORDER BY
                 lte.classid

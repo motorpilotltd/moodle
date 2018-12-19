@@ -134,13 +134,13 @@ abstract class mod_tapsenrol_manage_enrolments_step2_form extends moodleform {
         $table = new tapsenrol_enrolments_table_sql('tapsenrol-current-enrolments');
 
         $usernamefields = get_all_user_name_fields(true, 'u');
-        $fields = "lte.*, u.id as userid, {$usernamefields}, u.phone1, u.icq, u.department, u.address, tit.timeenrolled";
+        $fields = "lte.*, u.id as userid, {$usernamefields}, u.phone1, u.icq, u.department, u.address, tit.timeenrolled, u.idnumber as staffid";
 
         $from = <<<EOF
     {tapsenrol_class_enrolments} lte
 JOIN
     {user} u
-    ON u.idnumber = lte.staffid
+    ON u.id = lte.userid
 LEFT JOIN
     {tapsenrol_iw_tracking} tit
     ON tit.enrolmentid = lte.enrolmentid
@@ -363,7 +363,7 @@ class mod_tapsenrol_manage_enrolments_enrol_form extends mod_tapsenrol_manage_en
         );
         $excludeusersql = "SELECT DISTINCT u.id
                              FROM {user} u
-                             JOIN {tapsenrol_class_enrolments} lte ON lte.staffid = u.idnumber
+                             JOIN {tapsenrol_class_enrolments} lte ON lte.id = u.id
                             WHERE classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}";
         $mform->addElement('html', $this->_get_user_selector_html($excludeusersql, $excludeuserparams));
 

@@ -160,7 +160,7 @@ class elearningstatus extends base {
             'classname' => 'lte.classid',
             'actualregion' => 'staff.REGION_NAME',
             'georegion' => 'staff.GEO_REGION',
-            'staffid' => 'lte.staffid',
+            'staffid' => 'staff.EMPLOYEE_NUMBER',
             'full_name' => 'staff.FULL_NAME',
             'location_name' => 'staff.LOCATION_NAME',
             'groupname' => 'staff.GROUP_NAME',
@@ -197,7 +197,7 @@ class elearningstatus extends base {
         raise_memory_limit(MEMORY_HUGE);
 
         if (empty($this->sort)) {
-            $this->sort = 'lte.staffid';
+            $this->sort = 'staff.EMPLOYEE_NUMBER';
         }
 
         // Catching the booking status filter and unsetting it
@@ -326,10 +326,11 @@ class elearningstatus extends base {
 
         $remotetagidconcat = \local_mssql\dbshim::sql_group_concat('reg.name', ',', true);
 
-        $sql = "SELECT lte.*, staff.*, ltc.classstatus, c.shortname as coursecode, r.regions as courseregion
+        $sql = "SELECT lte.*, staff.*, ltc.classstatus, c.shortname as coursecode, r.regions as courseregion, u.idnumber
                   FROM {tapsenrol_class_enrolments} as lte
-             LEFT JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
-                    ON lte.staffid = staff.EMPLOYEE_NUMBER
+                  INNER JOIN {user} u ON lte.userid = u.id
+                  INNER JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
+                    ON u.idnumber = staff.EMPLOYEE_NUMBER
              LEFT JOIN {local_taps_class} as ltc
                     ON ltc.classid = lte.classid
              LEFT JOIN {course} as c
@@ -347,8 +348,9 @@ class elearningstatus extends base {
         // Leave out the joins for taps_class and taps_course to speed up this query
         $sqlcount = "SELECT count(lte.id) as recnum
                   FROM {tapsenrol_class_enrolments} as lte
+                  INNER JOIN {user} u ON lte.userid = u.id
              LEFT JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
-                    ON lte.staffid = staff.EMPLOYEE_NUMBER
+                    ON u.idnumber = staff.EMPLOYEE_NUMBER
              LEFT JOIN {local_taps_class} as ltc
                     ON ltc.classid = lte.classid
                        $enrolmentswhere
@@ -372,8 +374,8 @@ class elearningstatus extends base {
             }
             // Unset allstaff records that have an enrolment.
             foreach ($enrolments as $enrolment) {
-                if (array_key_exists(intval($enrolment->staffid), $allstaff)) {
-                    unset($allstaff[intval($enrolment->staffid)]);
+                if (array_key_exists(intval($enrolment->idnumber), $allstaff)) {
+                    unset($allstaff[intval($enrolment->idnumber)]);
                 }
             }
 

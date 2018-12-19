@@ -128,10 +128,10 @@ if ($type == 'future' || $type == 'past') {
             );
             $compare = $DB->sql_compare_text('bookingstatus');
             $params = array_merge(
-                array('staffid' => $user->idnumber, 'classid' => $fromform->classid),
+                array('userid' => $user->id, 'classid' => $fromform->classid),
                 $inparams
             );
-            $select = "staffid = :staffid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}";
+            $select = "userid = :userid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}";
             $existingenrolments = $DB->count_records_select('tapsenrol_class_enrolments', $select, $params);
             if ($existingenrolments) {
                 $a .= "<br />FAILED: [{$username}] Could not enrol: ALREADY_ENROLLED.";
@@ -154,7 +154,7 @@ if ($type == 'future' || $type == 'past') {
                 $completioncache->delete("{$user->id}_{$tapsenrol->course->id}");
             }
 
-            $enrolresult = $tapsenrol->enrol_employee($fromform->classid, $user->idnumber);
+            $enrolresult = $tapsenrol->enrol_employee($fromform->classid, $user->id);
             if ($enrolresult->success) {
                 $iwtrack = new stdClass();
                 $iwtrack->enrolmentid = $enrolresult->enrolment->enrolmentid;
@@ -178,7 +178,7 @@ if ($type == 'future' || $type == 'past') {
                         $completiontime = time();
                     }
                     $statusresult = $tapsenrol->taps->set_status($enrolresult->enrolment->enrolmentid, 'Full Attendance', $completiontime);
-                    $tapsenrol->enrolment_check($user->idnumber, false);
+                    $tapsenrol->enrolment_check($user->id, false);
                 }
                 $enrolmentstatus = $tapsenrol->taps->get_enrolment_status($enrolresult->enrolment->enrolmentid);
                 $a .= "<br />SUCCESS: [{$username}] Enrolled with status '{$enrolmentstatus}'.";
@@ -222,9 +222,9 @@ if ($type == 'future' || $type == 'past') {
                 $a .= "<br />FAILED: Enrolment ({$enrolmentid}) could not be loaded.";
                 continue;
             }
-            $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
+            $user = core_user::get_user($enrolment->userid);
             if (!$user) {
-                $a .= "<br />FAILED: User (Staff ID: {$enrolment->staffid}) not found.";
+                $a .= "<br />FAILED: User (User ID: {$enrolment->userid}) not found.";
                 continue;
             }
             $username = fullname($user);
@@ -295,9 +295,9 @@ EOJ;
                 $a .= "<br />FAILED: Application ({$enrolmentid}) could not be loaded.";
                 continue;
             }
-            $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
+            $user = core_user::get_user($enrolment->userid);
             if (!$user) {
-                $a .= "<br />FAILED: User (Staff ID: {$enrolment->staffid}) not found.";
+                $a .= "<br />FAILED: User (User ID: {$enrolment->userid}) not found.";
                 continue;
             }
             $username = fullname($user);
@@ -412,9 +412,9 @@ EOJ;
                     $a .= "<br />FAILED: Enrolment ({$enrolmentid}) could not be loaded.";
                     continue;
                 }
-                $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
+                $user = core_user::get_user($enrolment->userid);
                 if (!$user) {
-                    $a .= "<br />FAILED: User (Staff ID: {$enrolment->staffid}) not found.";
+                    $a .= "<br />FAILED: User (User ID: {$enrolment->userid}) not found.";
                     continue;
                 }
                 $username = fullname($user);
@@ -428,12 +428,12 @@ EOJ;
                 $where .= " AND {$compare} {$in}";
                 $sql = "SELECT id
                           FROM {tapsenrol_class_enrolments}
-                         WHERE staffid = :staffid
+                         WHERE userid = :userid
                                AND classid = :classid
                                AND (archived = 0 OR archived IS NULL) AND active = 1
                                AND {$compare} {$in}";
                 $params = array_merge(
-                        array('staffid' => $enrolment->staffid, 'classid' => $targetclass->classid),
+                        array('userid' => $enrolment->userid, 'classid' => $targetclass->classid),
                         $inparams
                         );
                 if ($DB->get_records_sql($sql, $params)) {
@@ -515,9 +515,9 @@ EOJ;
                     $a .= "<br />FAILED: Enrolment ({$enrolmentid}) could not be loaded.";
                     continue;
                 }
-                $user = $DB->get_record('user', array('idnumber' => $enrolment->staffid));
+                $user = core_user::get_user($enrolment->userid);
                 if (!$user) {
-                    $a .= "<br />FAILED: User (Staff ID: {$enrolment->staffid}) not found.";
+                    $a .= "<br />FAILED: User (User ID: {$enrolment->userid}) not found.";
                     continue;
                 }
                 $username = fullname($user);

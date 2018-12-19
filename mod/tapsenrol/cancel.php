@@ -82,14 +82,16 @@ if ($mform->is_cancelled()) {
     redirect($redirecturl);
     exit;
 } else if ($fromform = $mform->get_data()) {
+    $user = core_user::get_user($enrolment->userid);
     $other = array(
         'enrolmentid' => $enrolment->enrolmentid,
-        'staffid' => $enrolment->staffid,
+        'staffid' => $user->idnumber,
         'classid' => $enrolment->classid,
     );
     $event = \mod_tapsenrol\event\enrolment_cancelled::create(array(
         'objectid' => $tapsenrol->tapsenrol->id,
         'context' => $tapsenrol->context->cm,
+        'relateduserid' => $enrolment->userid,
         'other' => $other,
     ));
     $event->trigger();

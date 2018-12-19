@@ -149,7 +149,7 @@ function tapsenrol_cm_info_view(cm_info $cm) {
         if ($USER->idnumber != '') {
             $canview = true;
 
-            $output .= $tapsenrol->enrolment_check($USER->idnumber, true);
+            $output .= $tapsenrol->enrolment_check($USER->id, true);
 
             $regionselect = 'id IN (SELECT regionid FROM {tapsenrol_region} WHERE tapsenrolid = :tapsenrolid)';
             $regions = $DB->get_records_select_menu('local_regions_reg', $regionselect, array('tapsenrolid' => $tapsenrol->tapsenrol->id), '', 'id, name');
@@ -171,7 +171,7 @@ function tapsenrol_cm_info_view(cm_info $cm) {
         $enrolmentoutput = '';
         if ($canview) {
             $classes = $tapsenrol->get_tapsclasses($canviewclasses);
-            $enrolments = $tapsenrol->taps->get_enroled_classes($USER->idnumber, $tapsenrol->tapsenrol->course, false, false);
+            $enrolments = $tapsenrol->taps->get_enroled_classes($USER->id, $tapsenrol->tapsenrol->course, false, false);
             $enrolmentoutput = $renderer->enrolment_history($tapsenrol, $enrolments, $classes, $tapsenrol->cm->id);
         }
 

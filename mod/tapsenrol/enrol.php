@@ -113,25 +113,6 @@ if ($tapsenrol->iw) {
     }
 
     $tapsenrol->iw->declarations = $DB->get_records('tapsenrol_iw_declaration', array('internalworkflowid' => $tapsenrol->iw->id), 'declarationid ASC');
-/* Temporarily disable setting latest sponsor.
-    // Doesn't matter if archived or not here.
-    $sql = <<<EOS
-SELECT
-    iwt.id, iwt.sponsoremail
-FROM
-    {tapsenrol_iw_tracking} iwt
-JOIN
-    {tapsenrol_class_enrolments} lte
-    ON lte.enrolmentid = iwt.enrolmentid
-WHERE
-    lte.staffid = :staffid
-ORDER BY
-    iwt.timecreated DESC
-EOS;
-    $params = array('staffid' => $USER->idnumber);
-    $records = $DB->get_records_sql($sql, $params, 0, 1);
-    $tapsenrol->iw->latestsponsor = array_pop($records);
-*/
 }
 $customdata = array(
     'enrolmentkey' => $enrolmentkey,
@@ -172,7 +153,7 @@ if ((!$enrolmentkey && $passthru) || $fromform = $mform->get_data()) {
 
     if ($passthru) {
         // Auto approve if no workflow.
-        $enrolresult = $tapsenrol->enrol_employee($classid, $USER->idnumber, !$tapsenrol->iw);
+        $enrolresult = $tapsenrol->enrol_employee($classid, $USER->id, !$tapsenrol->iw);
         if ($enrolresult->success && $tapsenrol->iw) {
             // Need form with some empty, but not null, fields for tracking.
             $fromform = new stdClass();
@@ -185,7 +166,7 @@ if ((!$enrolmentkey && $passthru) || $fromform = $mform->get_data()) {
             }
         }
     } else {
-        $enrolresult = $tapsenrol->enrol_employee($classid, $USER->idnumber);
+        $enrolresult = $tapsenrol->enrol_employee($classid, $USER->id);
         if ($enrolresult->success) {
             // New enrolment created.
             if ($tapsenrol->iw && !$tapsenrol->iw->approvalrequired) {

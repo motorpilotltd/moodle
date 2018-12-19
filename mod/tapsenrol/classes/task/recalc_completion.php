@@ -76,7 +76,7 @@ SELECT
     cmc.completionstate as cmccompletionstate
 FROM {tapsenrol_class_enrolments} lte
 JOIN {user} u
-    ON u.idnumber = lte.staffid
+    ON u.id = lte.userid
 JOIN {tapsenrol} t
     ON t.course = ltc.courseid
 JOIN {course_modules} cm

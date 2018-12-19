@@ -166,7 +166,7 @@ class daterangelearning extends base {
         $this->filtertodb = array(
             'actualregion' => 'staff.REGION_NAME',
             'georegion' => 'staff.GEO_REGION',
-            'staffid' => 'lte.staffid',
+            'staffid' => 'staff.EMPLOYEE_NUMBER',
             'classname' => 'ltc.classname',
             'coursename' => 'lte.coursename',
             'provider' => 'ltc.classsuppliername',
@@ -215,7 +215,7 @@ class daterangelearning extends base {
         raise_memory_limit(MEMORY_HUGE);
 
         if (empty($this->sort)) {
-            $this->sort = 'lte.staffid';
+            $this->sort = 'staff.EMPLOYEE_NUMBER';
         }
 
         $params = array();
@@ -345,8 +345,9 @@ class daterangelearning extends base {
 
         $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltc.jobnumber, c.shortname as coursecode, r.regions as courseregion
                   FROM {tapsenrol_class_enrolments} as lte
-                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
-                    ON lte.staffid = staff.EMPLOYEE_NUMBER
+                  INNER JOIN {user} u ON lte.userid = u.id
+                  INNER JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
+                    ON u.idnumber = staff.EMPLOYEE_NUMBER
              LEFT JOIN {local_taps_class} as ltc
                     ON ltc.classid = lte.classid
              LEFT JOIN {course} as c
@@ -365,8 +366,9 @@ class daterangelearning extends base {
         // Leave out the joins for taps_class and taps_course to speed up this query
         $sqlcount = "SELECT count(lte.id) as recnum
                   FROM {tapsenrol_class_enrolments} as lte
-                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
-                    ON lte.staffid = staff.EMPLOYEE_NUMBER
+                  INNER JOIN {user} u ON lte.userid = u.id
+                  INNER JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
+                    ON u.idnumber = staff.EMPLOYEE_NUMBER
                        $wherestring";
 
         //$DB->set_debug(1);

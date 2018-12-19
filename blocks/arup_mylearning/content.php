@@ -817,12 +817,12 @@ FROM
     {tapsenrol_class_enrolments} lte
 INNER JOIN {local_taps_class} ltc on lte.classid = ltc.classid
 WHERE
-    lte.staffid = :staffid
+    lte.userid = :userid
     AND lte.active = 1
     AND (lte.archived = 0 OR lte.archived IS NULL)
     AND {$DB->sql_compare_text('lte.bookingstatus')} {$usql}
 EOS;
-        $params['staffid'] = $USER->idnumber;
+        $params['userid'] = $USER->id;
         $tapsenrolments = $DB->get_records_sql($sql, $params);
         foreach ($tapsenrolments as $tapsenrolment) {
             $return[$tapsenrolment->course][$tapsenrolment->id] = array($taps->get_status_type($tapsenrolment->bookingstatus) => $tapsenrolment->completiontime);
@@ -859,7 +859,7 @@ LEFT JOIN
     {course_categories} cat
     ON cat.id = c.category
 WHERE
-    lte.staffid = :staffid
+    lte.userid = :userid
     AND (lte.archived = 0 OR lte.archived IS NULL)
     AND (
         {$DB->sql_compare_text('lte.bookingstatus')} {$usql}
@@ -868,7 +868,7 @@ WHERE
 ORDER BY
     lte.completiontime DESC
 EOS;
-        $params['staffid'] = $USER->idnumber;
+        $params['userid'] = $USER->id;
         $params['primaryflag'] = 'Y';
 
         $tapshistory = $DB->get_records_sql($sql, $params);

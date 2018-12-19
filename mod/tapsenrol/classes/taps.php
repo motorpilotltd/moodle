@@ -419,15 +419,15 @@ class taps {
     /**
      * Get employee's enrolled classes.
      *
-     * @param int $staffid
+     * @param int $userid
      * @param mixed $courseid
      * @return mixed
      */
-    public function get_enroled_classes($staffid, $courseid = null, $activeonly = false, $archived = false) {
+    public function get_enroled_classes($userid, $courseid = null, $activeonly = false, $archived = false) {
         global $DB;
 
         $params = array();
-        $params['staffid'] = $staffid;
+        $params['userid'] = $userid;
         $courseidwhere = '';
         if (!is_null($courseid)) {
             $params['courseid'] = $courseid;
@@ -436,7 +436,7 @@ class taps {
 
         $activewhere = $activeonly ? ' AND active = 1' : '';
         $archivedwhere = $archived ? '' : ' AND (archived = 0 OR archived IS NULL)';
-        $enrolments = $DB->get_records_select('tapsenrol_class_enrolments', "staffid = :staffid{$courseidwhere}{$activewhere}{$archivedwhere}", $params);
+        $enrolments = $DB->get_records_select('tapsenrol_class_enrolments', "userid = :userid{$courseidwhere}{$activewhere}{$archivedwhere}", $params);
 
         return $enrolments;
     }
@@ -470,38 +470,20 @@ class taps {
      * Enrol employee.
      *
      * @param int $classid
-     * @param int $staffid
+     * @param int $userid
      * @param bool $approved
      * @return mixed
      */
-    public function enrol($classid, $staffid, $approved = false) {
+    public function enrol($classid, $userid, $approved = false) {
         global $DB;
 
-        // Setup result object.
         $result = new stdClass();
-        $result->success = true;
-        $result->status = 'ENROLMENT_SUCCESSFUL';
-        $result->enrolment = null;
-
-        if (empty($staffid)) {
-            $result->success = false;
-            $result->status = 'INVALID_STAFFID';
-            return $result;
-        }
-
         // Get class and course info.
         $class = $this->get_class_by_id($classid);
-        if (!$class) {
-            $result->success = false;
-            $result->status = 'INVALID_CLASS';
-            return $result;
-        }
-
-        $metadata = new arupmetadata(['course' => $class->courseid]);
 
         // Setup enrolment object.
         $enrolment = new stdClass();
-        $enrolment->staffid = $staffid;
+        $enrolment->userid = $userid;
         $enrolment->classid = $classid;
 
         // Does a not cancelled enrolment exist?.
@@ -511,10 +493,10 @@ class taps {
         );
         $compare = $DB->sql_compare_text('bookingstatus');
         $params = array_merge(
-            array('staffid' => $enrolment->staffid, 'classid' => $enrolment->classid),
+            array('userid' => $enrolment->userid, 'classid' => $enrolment->classid),
             $inparams
         );
-        $select = "staffid = :staffid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND active = 1 AND {$compare} {$in}";
+        $select = "userid = :userid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND active = 1 AND {$compare} {$in}";
         $existingenrolments = $DB->count_records_select('tapsenrol_class_enrolments', $select, $params);
         if ($existingenrolments) {
             $result->success = false;
@@ -744,7 +726,7 @@ class taps {
             return false;
         }
 
-        $enrolments = $taps->get_enroled_classes($user->idnumber, $modinfo->courseid, true, false);
+        $enrolments = $taps->get_enroled_classes($user->id, $modinfo->courseid, true, false);
 
         foreach ($enrolments as $enrolment) {
             $statusstype = $taps->get_status_type($enrolment->bookingstatus);

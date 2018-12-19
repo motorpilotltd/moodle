@@ -217,7 +217,7 @@ JOIN
     ON ti.id = t.internalworkflowid
 JOIN
     {user} u
-    ON u.idnumber = lte.staffid
+    ON u.id = lte.userid
 WHERE
     tit.approved IS NULL
     AND timecancelled IS NULL
@@ -275,12 +275,12 @@ INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 JOIN
     {course} c ON c.id = ltc.courseid
 WHERE
-    lte.staffid = :staffid
+    lte.userid = :userid
     AND lte.active = 1
     AND (lte.archived = 0 OR lte.archived IS NULL)
     AND {$DB->sql_compare_text('lte.bookingstatus')} {$usql}
 EOS;
-        $params['staffid'] = $USER->idnumber;
+        $params['userid'] = $USER->id;
         $tapsenrolments = $DB->get_records_sql($sql, $params);
         $return = array();
         foreach ($tapsenrolments as $tapsenrolment) {
