@@ -175,7 +175,7 @@ INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 INNER JOIN {course} c ON c.id = ltc.courseid
 JOIN
     {tapsenrol} t
-    ON t.course = lte.courseid
+    ON ltc.classid = lte.classid
 JOIN
     {tapsenrol_iw} ti
     ON ti.id = t.internalworkflowid
