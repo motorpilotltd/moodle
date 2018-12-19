@@ -196,7 +196,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                         $cells[] = $this->dropdown(get_string("status:{$classtype}:requested", 'tapsenrol'),
                             array(
                                 array(
-                                    'url' => new moodle_url('/mod/tapsenrol/cancel.php', array('id' => $cmid, 'enrolmentid' => $enrolment->enrolmentid)),
+                                    'url' => new moodle_url('/mod/tapsenrol/cancel.php', array('id' => $cmid, 'enrolmentid' => $enrolment->id)),
                                     'title' => get_string("status:dropdown:cancel", 'tapsenrol')
                                     )
                             ),
@@ -206,7 +206,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                         }
                         $iwtrack = false;
                         if ($tapsenrol->tapsenrol->internalworkflowid) {
-                            $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolment->enrolmentid));
+                            $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolment->id));
                         }
                         if ($iwtrack) {
                             $a = new stdClass();
@@ -230,7 +230,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                         $cells[] = $this->dropdown(get_string("status:{$classtype}:waitlisted", 'tapsenrol'),
                             array(
                                 array(
-                                    'url' => new moodle_url('/mod/tapsenrol/cancel.php', array('id' => $cmid, 'enrolmentid' => $enrolment->enrolmentid)),
+                                    'url' => new moodle_url('/mod/tapsenrol/cancel.php', array('id' => $cmid, 'enrolmentid' => $enrolment->id)),
                                     'title' => get_string("status:dropdown:cancel:waitlisted", 'tapsenrol')
                                     )
                             ),
@@ -239,7 +239,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                     case 'placed' :
                         $cells[] = $this->dropdown(get_string("status:{$classtype}:placed", 'tapsenrol'),
                             array(
-                                array('url' => new moodle_url('/mod/tapsenrol/cancel.php', array('id' => $cmid, 'enrolmentid' => $enrolment->enrolmentid)),
+                                array('url' => new moodle_url('/mod/tapsenrol/cancel.php', array('id' => $cmid, 'enrolmentid' => $enrolment->id)),
                                     'title' => get_string("status:dropdown:cancel", 'tapsenrol')
                                     )
                             ),
@@ -824,10 +824,10 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
 
                 // Actions.
                 $actions = array();
-                $approveurl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolmentwithclassnameandcoursename->enrolmentid, 'action' => 'approve'));
+                $approveurl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolmentwithclassnameandcoursename->id, 'action' => 'approve'));
                 $actions[] = html_writer::link($approveurl, get_string('approve:approve', 'tapsenrol'));
 
-                $rejecturl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolmentwithclassnameandcoursename->enrolmentid, 'action' => 'reject'));
+                $rejecturl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolmentwithclassnameandcoursename->id, 'action' => 'reject'));
                 $actions[] = html_writer::link($rejecturl, get_string('approve:reject', 'tapsenrol'));
 
                 $cell->attributes['class'] = 'text-center nowrap';
@@ -884,7 +884,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
     {tapsenrol_iw_tracking} tit
 JOIN
     {tapsenrol_class_enrolments} lte
-    ON lte.enrolmentid = tit.enrolmentid
+    ON lte.id = tit.enrolmentid
 INNER JOIN
     {local_taps_class} ltc
     ON ltc.classid = lte.classid

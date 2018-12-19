@@ -124,7 +124,7 @@ if ($loaderror) {
                         break;
                 }
                 $other = array(
-                    'enrolmentid' => $enrolment->enrolmentid,
+                    'enrolmentid' => $enrolment->id,
                     'staffid' => $user->idnumber,
                     'classid' => $enrolment->classid,
                     'action' => $action ? $action : 'approve/reject',
@@ -170,7 +170,7 @@ FROM
     {tapsenrol_iw_tracking} tit
 JOIN
     {tapsenrol_class_enrolments} lte
-    ON lte.enrolmentid = tit.enrolmentid
+    ON lte.id = tit.enrolmentid
 INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 INNER JOIN {course} c ON c.id = ltc.courseid
 JOIN

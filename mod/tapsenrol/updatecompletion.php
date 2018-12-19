@@ -106,7 +106,7 @@ if (isset($_POST['submit'])) {
 
         switch ($status) {
             case 'No Show':
-                $cancelresult = $tapsenrol->cancel_enrolment($enrolment->enrolmentid, 'No Show');
+                $cancelresult = $tapsenrol->cancel_enrolment($enrolment->id, 'No Show');
                 if (!$cancelresult->success) {
                     $a->errormessage = $cancelresult->status;
                     echo html_writer::tag('p', get_string('completionfailed', 'tapsenrol', $a));

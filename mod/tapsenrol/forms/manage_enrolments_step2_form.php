@@ -143,7 +143,7 @@ JOIN
     ON u.id = lte.userid
 LEFT JOIN
     {tapsenrol_iw_tracking} tit
-    ON tit.enrolmentid = lte.enrolmentid
+    ON tit.enrolmentid = lte.id
 EOF;
         $where = '(lte.archived = 0 OR lte.archived IS NULL) AND lte.classid = :classid';
         $params = array('classid' => $this->_class->classid);

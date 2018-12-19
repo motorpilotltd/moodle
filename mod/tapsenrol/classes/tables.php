@@ -130,7 +130,7 @@ class tapsenrol_enrolments_table_sql extends table_sql {
                     'class' => 'tapsenrol-checkbox',
                     'type' => 'checkbox',
                     'name' => 'enrolmentid[]',
-                    'value' => $row->enrolmentid
+                    'value' => $row->id
                 );
                 if ($column == 'waitlist') {
                     $attributes['disabled'] = 'disabled';

@@ -1,5 +1,8 @@
 local_taps_enrolment
 
+tapsenrol_iw_tracking
+map enrolmentid to tapsenrol_class_enrolments.id
+
 New local_learningrecordstore table:
 provider
 healthandsafetycategory
@@ -31,7 +34,7 @@ active
 timemodified (consolidation of timemodified as lastupdatedate)
 
 to remove:
-stadffid - remap to userid on tapsenrol, leave for lrs
+stadffid - remap to userid on tapsenrol, leave for lrs (DONE)
 lastupdatedate (use timemodified) DONE
 classcompletiondate (just going to use classcompletiontime renamed to completiontime from now) DONE
 classcontext (appears to only ever be null or 'health and safety') DELETED

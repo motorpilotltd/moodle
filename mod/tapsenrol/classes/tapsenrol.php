@@ -285,7 +285,7 @@ class tapsenrol {
             return $return;
         }
 
-        $result = $this->taps->set_status($enrolment->enrolmentid, $status);
+        $result = $this->taps->set_status($enrolment->id, $status);
         $result->message = '';
 
         $a = new stdClass();
@@ -524,9 +524,9 @@ FROM
     {tapsenrol_class_enrolments} lte
 LEFT JOIN
     {tapsenrol_iw_tracking} tit
-    ON tit.enrolmentid = lte.enrolmentid
+    ON tit.enrolmentid = lte.id
 WHERE
-    lte.enrolmentid = :enrolmentid
+    lte.id = :enrolmentid
     AND (lte.archived = 0 OR lte.archived IS NULL)
     AND lte.active = 1
     AND {$compare} {$in}
@@ -542,7 +542,7 @@ EOS;
             if ($user) {
                 // Setup tracking.
                 $iwtrack = new stdClass();
-                $iwtrack->enrolmentid = $enrolment->enrolmentid;
+                $iwtrack->enrolmentid = $enrolment->id;
                 $iwtrack->sponsoremail = strtolower($formdata->sponsoremail);
                 $iwtrack->sponsorfirstname = $formdata->sponsorfirstname;
                 $iwtrack->sponsorlastname = $formdata->sponsorlastname;
@@ -634,9 +634,9 @@ FROM
     {tapsenrol_class_enrolments} lte
 LEFT JOIN
     {tapsenrol_iw_tracking} tit
-    ON tit.enrolmentid = lte.enrolmentid
+    ON tit.enrolmentid = lte.id
 WHERE
-    lte.enrolmentid = :enrolmentid
+    lte.id = :enrolmentid
     AND (lte.archived = 0 OR lte.archived IS NULL)
     AND lte.active = 1
     AND {$compare} {$in}
@@ -654,7 +654,7 @@ EOS;
 
                 // Setup tracking.
                 $iwtrack = new stdClass();
-                $iwtrack->enrolmentid = $enrolment->enrolmentid;
+                $iwtrack->enrolmentid = $enrolment->id;
                 $iwtrack->sponsoremail = strtolower($formdata->sponsoremail);
                 $iwtrack->sponsorfirstname = $formdata->sponsorfirstname;
                 $iwtrack->sponsorlastname = $formdata->sponsorlastname;
@@ -679,7 +679,7 @@ EOS;
                 $a->classname = $class->classname;
                 $a->coursename = $class->coursename;
                 $classtype = $this->taps->get_classtype_type($class->classtype);
-                $statustype = $this->taps->get_status_type($this->taps->get_enrolment_status($enrolment->enrolmentid));
+                $statustype = $this->taps->get_status_type($this->taps->get_enrolment_status($enrolment->id));
                 if (!$classtype || !$statustype || !get_string_manager()->string_exists('status:'.$classtype.':'.$statustype, 'tapsenrol')) {
                     $a->message = get_string('enrol:error:unavailable', 'tapsenrol');
                 } else {
@@ -763,7 +763,7 @@ EOS;
             }
         }
 
-        $result = $this->taps->set_status($enrolment->enrolmentid, $status);
+        $result = $this->taps->set_status($enrolment->id, $status);
 
         if (!$result->success) {
             $result->message = 'FAILED: '.$result->status;
@@ -797,7 +797,7 @@ EOS;
         }
 
         $other = array(
-            'enrolmentid' => $enrolment->enrolmentid,
+            'enrolmentid' => $enrolment->id,
             'user' => $user->idnumber,
             'classid' => $enrolment->classid,
             'status' => $status,
@@ -828,7 +828,7 @@ EOS;
         global $DB;
 
         $user = core_user::get_user($enrolment->userid);
-        $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolment->enrolmentid));
+        $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolment->id));
         $class = $this->taps->get_class_by_id($enrolment->id);
         if ($user && $iwtrack) {
             $iwtrack->cancelcomments = $comments;
@@ -882,7 +882,7 @@ EOS;
         $time = time();
 
         // Load tracking record, if exists.
-        $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolment->enrolmentid));
+        $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolment->id));
 
         // Move enrolment to new class (update relevant fields).
         // Clone new enrolment as need old info too.
@@ -968,7 +968,7 @@ EOS;
             // Sponsor will be down as (current) admin user if approval required.
             // Setup tracking.
             $iwtrack = new stdClass();
-            $iwtrack->enrolmentid = $enrolment->enrolmentid;
+            $iwtrack->enrolmentid = $enrolment->id;
             $iwtrack->sponsoremail = $this->iw->approvalrequired ? $USER->email : '';
             $iwtrack->sponsorfirstname = $this->iw->approvalrequired ? $USER->firstname : '';
             $iwtrack->sponsorlastname = $this->iw->approvalrequired ? $USER->lastname : '';
@@ -1098,7 +1098,7 @@ EOS;
         }
 
         // Load tracking record, if exists.
-        $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolment->enrolmentid));
+        $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolment->id));
 
         $enrolment->archived = 1;
         $enrolment->timemodified = $time;
@@ -1328,8 +1328,8 @@ EOS;
     }
 
     protected function _approve_urls($enrolment) {
-        $approveurl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolment->enrolmentid, 'action' => 'approve'));
-        $rejecturl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolment->enrolmentid, 'action' => 'reject'));
+        $approveurl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolment->id, 'action' => 'approve'));
+        $rejecturl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolment->id, 'action' => 'reject'));
 
         $urls = array(
             'approveurl' => $approveurl->out(false),
@@ -1348,7 +1348,7 @@ EOS;
     }
 
     protected function _cancel_url($enrolment) {
-        $cancelurl = new moodle_url('/mod/tapsenrol/cancel.php', array('id' => $this->cm->id, 'enrolmentid' => $enrolment->enrolmentid));
+        $cancelurl = new moodle_url('/mod/tapsenrol/cancel.php', array('id' => $this->cm->id, 'enrolmentid' => $enrolment->id));
         return $cancelurl->out(false);
     }
 
@@ -1485,9 +1485,9 @@ EOS;
         }
         $invite = new invite($location, $subject, $emailhtml, $emailtext);
         if (!empty($enrolment->moved)) {
-            $invite->set_id('ORACLE-ENROL-'.$enrolment->enrolmentid.'-'.$enrolment->moved);
+            $invite->set_id('ORACLE-ENROL-'.$enrolment->id.'-'.$enrolment->moved);
         } else {
-            $invite->set_id('ORACLE-ENROL-'.$enrolment->enrolmentid);
+            $invite->set_id('ORACLE-ENROL-'.$enrolment->id);
         }
         $invite->set_url($courseurl->out(false));
 
@@ -1531,7 +1531,7 @@ EOS;
     public function send_applicant_reminder($enrolmentid, $email) {
         global $DB;
 
-        $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
+        $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('id' => $enrolmentid));
         $user = core_user::get_user($enrolment->userid);
 
         if (!$user) {
@@ -1551,7 +1551,7 @@ EOS;
     public function send_sponsor_reminder($enrolmentid, $email) {
         global $DB;
 
-        $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
+        $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('id' => $enrolmentid));
         $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolmentid));
         $class = $this->taps->get_class_by_id($enrolment->classid);
 
@@ -1607,7 +1607,7 @@ EOS;
     public function resend_invite($enrolmentid, $class, $extrainfo) {
         global $DB;
 
-        $userenrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
+        $userenrolment = $DB->get_record('tapsenrol_class_enrolments', array('id' => $enrolmentid));
         if (!$userenrolment) {
             return false;
         }
@@ -1775,7 +1775,7 @@ EOS;
             $params['classid'] = $classid;
         }
 
-        $sql = "SELECT lte.enrolmentid, lte.classid, ltc.classname, u.*
+        $sql = "SELECT lte.id as enrolmentid, lte.classid, ltc.classname, u.*
             FROM {tapsenrol_class_enrolments} lte
             INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
             INNER JOIN {user} u ON u.id = lte.userid

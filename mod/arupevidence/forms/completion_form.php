@@ -53,7 +53,7 @@ class mod_arupevidence_completion_form extends moodleform
                     $class = $taps->get_class_by_id($enrolment->classid);
 
                     if ($taps->is_status($enrolment->bookingstatus, 'placed')) {
-                        $classchoices[$enrolment->enrolmentid] = $class->classname;
+                        $classchoices[$enrolment->id] = $class->classname;
                         $hasplacedenrolment = true;
                     }
                 }

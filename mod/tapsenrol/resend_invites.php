@@ -77,7 +77,7 @@ FROM
 INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.classid
 JOIN
     {tapsenrol_iw_tracking} tit
-    ON tit.enrolmentid = lte.enrolmentid
+    ON tit.enrolmentid = lte.id
 WHERE
     ltc.courseid = :courseid
     AND ltc.classstarttime > :now
@@ -115,7 +115,7 @@ FROM
 INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.classid
 JOIN
     {tapsenrol_iw_tracking} tit
-    ON tit.enrolmentid = lte.enrolmentid
+    ON tit.enrolmentid = lte.id
 JOIN
     {user} u
     ON u.id = lte.userid

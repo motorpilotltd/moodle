@@ -322,8 +322,6 @@ class daterangelearning extends base {
                         $wherestring .= ' OR (
                             lte.id IS NOT NULL
                             AND
-                            lte.enrolmentid IS NULL
-                            AND
                             lte.bookingstatus IS NULL
                         )';
                     }

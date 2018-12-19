@@ -160,7 +160,7 @@ if ((!$enrolmentkey && $passthru) || $fromform = $mform->get_data()) {
             foreach (array('sponsoremail', 'sponsorfirstname', 'sponsorlastname', 'comments') as $empty) {
                 $fromform->{$empty} = '';
             }
-            $message = $tapsenrol->trigger_workflow_no_approval($enrolresult->enrolment->enrolmentid, $fromform);
+            $message = $tapsenrol->trigger_workflow_no_approval($enrolresult->enrolment->id, $fromform);
             if (!empty($message)) {
                 $enrolresult->message = $message;
             }
@@ -171,12 +171,12 @@ if ((!$enrolmentkey && $passthru) || $fromform = $mform->get_data()) {
             // New enrolment created.
             if ($tapsenrol->iw && !$tapsenrol->iw->approvalrequired) {
                 // Need alternative message.
-                $message = $tapsenrol->trigger_workflow_no_approval($enrolresult->enrolment->enrolmentid, $fromform);
+                $message = $tapsenrol->trigger_workflow_no_approval($enrolresult->enrolment->id, $fromform);
                 if (!empty($message)) {
                     $enrolresult->message = $message;
                 }
             } else if ($tapsenrol->iw) {
-                $tapsenrol->trigger_workflow($enrolresult->enrolment->enrolmentid, $fromform);
+                $tapsenrol->trigger_workflow($enrolresult->enrolment->id, $fromform);
             }
         }
     }
@@ -184,7 +184,7 @@ if ((!$enrolmentkey && $passthru) || $fromform = $mform->get_data()) {
         $other = array(
             'staffid' => $USER->idnumber,
             'classid' => $classid,
-            'enrolmentid' => $enrolresult->enrolment->enrolmentid,
+            'enrolmentid' => $enrolresult->enrolment->id,
         );
         $event = \mod_tapsenrol\event\enrolment_created::create(array(
             'objectid' => $tapsenrol->tapsenrol->id,

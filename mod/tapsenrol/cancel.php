@@ -72,7 +72,7 @@ if (!$enrolment && has_capability('moodle/block:edit', $tapsenrol->context->cm))
     exit;
 }
 
-$formaction = new moodle_url('/mod/tapsenrol/cancel.php', array('id' => $id, 't' => $t, 'enrolmentid' => $enrolment->enrolmentid));
+$formaction = new moodle_url('/mod/tapsenrol/cancel.php', array('id' => $id, 't' => $t, 'enrolmentid' => $enrolment->id));
 $mform = new mod_tapsenrol_cancel_form($formaction, array('iw' => $tapsenrol->iw));
 
 if ($mform->is_cancelled()) {
@@ -84,7 +84,7 @@ if ($mform->is_cancelled()) {
 } else if ($fromform = $mform->get_data()) {
     $user = core_user::get_user($enrolment->userid);
     $other = array(
-        'enrolmentid' => $enrolment->enrolmentid,
+        'enrolmentid' => $enrolment->id,
         'staffid' => $user->idnumber,
         'classid' => $enrolment->classid,
     );
@@ -96,7 +96,7 @@ if ($mform->is_cancelled()) {
     ));
     $event->trigger();
     $SESSION->tapsenrol->alert = new stdClass();
-    $cancelresult = $tapsenrol->cancel_enrolment($enrolment->enrolmentid);
+    $cancelresult = $tapsenrol->cancel_enrolment($enrolment->id);
 
     if ($cancelresult->success) {
         if ($tapsenrol->tapsenrol->internalworkflowid) {

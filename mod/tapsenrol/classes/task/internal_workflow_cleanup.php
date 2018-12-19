@@ -57,7 +57,7 @@ FROM
     {tapsenrol_iw_tracking} tit
 LEFT JOIN
     {tapsenrol_class_enrolments} lte
-    ON lte.enrolmentid = tit.enrolmentid
+    ON lte.id = tit.enrolmentid
 WHERE
     lte.id IS NULL
 EOS;

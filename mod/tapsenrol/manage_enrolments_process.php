@@ -157,7 +157,7 @@ if ($type == 'future' || $type == 'past') {
             $enrolresult = $tapsenrol->enrol_employee($fromform->classid, $user->id);
             if ($enrolresult->success) {
                 $iwtrack = new stdClass();
-                $iwtrack->enrolmentid = $enrolresult->enrolment->enrolmentid;
+                $iwtrack->enrolmentid = $enrolresult->enrolment->id;
                 $iwtrack->sponsoremail = $USER->email;
                 $iwtrack->sponsorfirstname = $USER->firstname;
                 $iwtrack->sponsorlastname = $USER->lastname;
@@ -177,10 +177,10 @@ if ($type == 'future' || $type == 'past') {
                     } else {
                         $completiontime = time();
                     }
-                    $statusresult = $tapsenrol->taps->set_status($enrolresult->enrolment->enrolmentid, 'Full Attendance', $completiontime);
+                    $statusresult = $tapsenrol->taps->set_status($enrolresult->enrolment, 'Full Attendance', $completiontime);
                     $tapsenrol->enrolment_check($user->id, false);
                 }
-                $enrolmentstatus = $tapsenrol->taps->get_enrolment_status($enrolresult->enrolment->enrolmentid);
+                $enrolmentstatus = $tapsenrol->taps->get_enrolment_status($enrolresult->enrolment->id);
                 $a .= "<br />SUCCESS: [{$username}] Enrolled with status '{$enrolmentstatus}'.";
             } else {
                 $a .= "<br />FAILED: [{$username}] Could not enrol: {$enrolresult->status}.";
@@ -217,7 +217,7 @@ if ($type == 'future' || $type == 'past') {
         $status = $fromform->status;
 
         foreach ($enrolments as $enrolmentid) {
-            $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
+            $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('id' => $enrolmentid));
             if (!$enrolment || $enrolment->archived) {
                 $a .= "<br />FAILED: Enrolment ({$enrolmentid}) could not be loaded.";
                 continue;
@@ -228,7 +228,7 @@ if ($type == 'future' || $type == 'past') {
                 continue;
             }
             $username = fullname($user);
-            $cancelresult = $tapsenrol->cancel_enrolment($enrolment->enrolmentid, $status);
+            $cancelresult = $tapsenrol->cancel_enrolment($enrolment->id, $status);
             if ($cancelresult->success) {
                 // Variable $enrolment will have original booking status which is required.
                 $email = $class->classstarttime < time() ? null : 'cancellation_admin';
@@ -289,7 +289,7 @@ EOJ;
         }
 
         foreach ($enrolments as $enrolmentid) {
-            $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
+            $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('id' => $enrolmentid));
             $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolmentid));
             if (!$enrolment || $enrolment->archived || !$iwtrack) {
                 $a .= "<br />FAILED: Application ({$enrolmentid}) could not be loaded.";
@@ -407,7 +407,7 @@ EOJ;
 
         if ($process) {
             foreach ($enrolments as $enrolmentid) {
-                $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
+                $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('id' => $enrolmentid));
                 if (!$enrolment || $enrolment->archived) {
                     $a .= "<br />FAILED: Enrolment ({$enrolmentid}) could not be loaded.";
                     continue;
@@ -510,7 +510,7 @@ EOJ;
 
         if ($process) {
             foreach ($enrolments as $enrolmentid) {
-                $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
+                $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('id' => $enrolmentid));
                 if (!$enrolment || $enrolment->archived) {
                     $a .= "<br />FAILED: Enrolment ({$enrolmentid}) could not be loaded.";
                     continue;

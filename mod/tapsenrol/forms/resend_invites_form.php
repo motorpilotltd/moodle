@@ -40,7 +40,7 @@ class mod_tapsenrol_resend_invites_form extends moodleform {
         $mform->addHelpButton('extrainfo', 'resendinvites:extrainfo', 'tapsenrol');
 
         foreach ($enrolments as $enrolment) {
-            $mform->addElement('advcheckbox', "enrolment[{$enrolment->enrolmentid}]", fullname($enrolment), null, array('group' => 1));
+            $mform->addElement('advcheckbox', "enrolment[{$enrolment->id}]", fullname($enrolment), null, array('group' => 1));
         }
         $this->add_checkbox_controller(1, null);
 

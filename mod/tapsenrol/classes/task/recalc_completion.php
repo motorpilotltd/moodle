@@ -67,7 +67,7 @@ class recalc_completion extends \core\task\scheduled_task {
         $sql = <<<EOS
 SELECT
     DISTINCT
-    lte.enrolmentid,
+    lte.id,
     u.id as uid,
     t.id as tid,
     cm.id as cmid,
@@ -115,7 +115,7 @@ WHERE
     AND c.enablecompletion = :enablecompletion
     AND cm.completion = :completion
 ORDER BY
-    c.id ASC, lte.enrolmentid DESC
+    c.id ASC, lte.id DESC
 EOS;
         $now = time();
         $params = [
@@ -144,13 +144,13 @@ EOS;
                 $record = new \stdClass();
                 $record->tapsenrolid = $validenrolment->tid;
                 $record->userid = $validenrolment->uid;
-                $record->completed = $validenrolment->enrolmentid;
+                $record->completed = $validenrolment->id;
                 $record->timemodified = time();
                 $DB->insert_record('tapsenrol_completion', $record);
             } else if (!$validenrolment->tccompleted) {
                 $record = new \stdClass();
                 $record->id = $validenrolment->tcid;
-                $record->completed = $validenrolment->enrolmentid;
+                $record->completed = $validenrolment->id;
                 $record->timemodified = time();
                 $DB->update_record('tapsenrol_completion', $record);
             }

@@ -75,7 +75,7 @@ class send_reminders extends \core\task\scheduled_task {
     {tapsenrol_iw_tracking} iwt
 JOIN
     {tapsenrol_class_enrolments} lte
-    ON lte.enrolmentid = iwt.enrolmentid AND (lte.archived = 0 OR lte.archived IS NULL)
+    ON lte.id = iwt.enrolmentid AND (lte.archived = 0 OR lte.archived IS NULL)
 INNER JOIN {local_taps_class} ltc.classid = lte.classid
 JOIN
     {tapsenrol} t

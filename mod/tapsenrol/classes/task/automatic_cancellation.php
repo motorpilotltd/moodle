@@ -72,7 +72,7 @@ class automatic_cancellation extends \core\task\scheduled_task {
     {tapsenrol_class_enrolments} lte
 JOIN
     {tapsenrol_iw_tracking} iwt
-    ON iwt.enrolmentid = lte.enrolmentid
+    ON iwt.enrolmentid = lte.id
 INNER JOIN {local_taps_class} ltc.classid = lte.classid
 JOIN
     {tapsenrol} t
@@ -128,7 +128,7 @@ EOS;
                 $prevtapsenrolid = $record->tid;
             }
 
-            $cancelresult = $tapsenrol->cancel_enrolment($record->enrolmentid);
+            $cancelresult = $tapsenrol->cancel_enrolment($record->id);
             if ($cancelresult->success) {
                 // Variable $record will have original booking status which is required.
                 $isclassroom = $taps->get_classtype_type($record->classtype) == 'classroom';

@@ -22,7 +22,6 @@
 
 
 
-        <FIELD NAME="enrolmentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="coursename" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
@@ -53,7 +52,6 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="enrolmentid_cpdid" TYPE="unique" FIELDS="enrolmentid"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="staffid" UNIQUE="false" FIELDS="staffid"/>

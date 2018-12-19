@@ -451,7 +451,7 @@ class taps {
     public function get_enrolment_by_id($enrolmentid) {
         global $DB;
 
-        return $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolmentid));
+        return $DB->get_record('tapsenrol_class_enrolments', array('id' => $enrolmentid));
     }
 
     /**
@@ -463,7 +463,7 @@ class taps {
     public function get_enrolment_status($enrolmentid) {
         global $DB;
 
-        return $DB->get_field('tapsenrol_class_enrolments', 'bookingstatus', array('enrolmentid' => $enrolmentid));
+        return $DB->get_field('tapsenrol_class_enrolments', 'bookingstatus', array('id' => $enrolmentid));
     }
 
     /**
@@ -539,23 +539,7 @@ class taps {
         $enrolment->price = $class->price;
         // Field bookingplaceddate is a new field from migration data.
         $enrolment->bookingplaceddate = $enrolment->timemodified = time();
-
-        $maxenrolmentid = $DB->get_field_sql('SELECT MAX(enrolmentid) FROM {tapsenrol_class_enrolments}');
-
-        $enrolment->id = false;
-
-        // Use a while loop in case another thread beats us to the next enrolmentid.
-        // Checks if failure was due to existing enrolmentid.
-        do {
-            try {
-                $enrolment->enrolmentid = ++$maxenrolmentid; // Pre-increment.
-                $enrolment->id = $DB->insert_record('tapsenrol_class_enrolments', $enrolment);
-            } catch (\dml_write_exception $e) {
-                if (debugging()) {
-                    throw($e);
-                }
-            }
-        } while (!$enrolment->id && $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $enrolment->enrolmentid)));
+        $enrolment->id = $DB->insert_record('tapsenrol_class_enrolments', $enrolment);
 
         $result->success = (bool) $enrolment->id;
         $result->enrolment = $enrolment;
@@ -686,7 +670,7 @@ class taps {
                 array('courseid' => $courseid),
                 $inparams
         );
-        $sql = "SELECT classid, COUNT(enrolmentid)
+        $sql = "SELECT classid, COUNT(lte.id)
                   FROM {tapsenrol_class_enrolments}
                  WHERE courseid = :courseid AND (archived = 0 OR archived IS NULL) AND bookingstatus {$in}
               GROUP BY classid
