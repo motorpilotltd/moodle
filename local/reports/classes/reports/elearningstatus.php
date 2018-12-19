@@ -555,22 +555,8 @@ class elearningstatus extends base {
 
         // Show classname in coursename column for CPD records
         if ($key == 'coursename') {
-            if (!empty($row->cpdid)) {
-                return $row->classname;
-            } else {
-                return $row->coursename;
-            }
+            return $row->coursename;
         }
-
-        // Display rows with a cpdid as a CPD records, others as a LMS record
-        if ($key == 'cpd') {
-            if (!empty($row->cpdid)) {
-                return $this->mystr('cpd');
-            } else {
-                return $this->mystr('lms');
-            }
-        }
-
 
         if ($key == 'classstartdate') {
             // e-Learning records use bookingplaceddate instead of classstartdate
@@ -587,19 +573,12 @@ class elearningstatus extends base {
                 $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->completiontime);
                 return $this->myuserdate($date, $row);
             }
-            if (!empty($row->cpdid)) {
-                return $this->myuserdate($row->completiontime, $row);
-            }
             // Default
             return $this->myuserdate($row->$key, $row);
         }
 
         if ($key == 'bookingstatus') {
-            if (!empty($row->cpdid)) {
-                return 'Full Attendance';
-            } else {
-                return $row->bookingstatus;
-            }
+            return $row->bookingstatus;
         }
 
         if ($key == 'classtype') {
@@ -614,11 +593,7 @@ class elearningstatus extends base {
 
         // Show classcategory for CPD records
         if ($key == 'classcategory') {
-            if (!empty($row->cpdid)) {
-                return $row->$key;
-            } else {
-                return '';
-            }
+            return $row->$key;
         }
 
         if ($key == 'classcost') {

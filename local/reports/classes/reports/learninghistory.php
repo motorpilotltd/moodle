@@ -239,14 +239,6 @@ class learninghistory extends base {
                     }
                     continue;
                 }
-                if ($filter->field == 'cpd') {
-                    if ($filtervalue == 'cpd') {
-                        $wherestring .= "cpdid > ''";
-                    } else if ($filtervalue == 'lms') {
-                        $wherestring .= "( cpdid = '' OR cpdid IS NULL )";
-                    }
-                    continue;
-                }
                 if (in_array($filter->field, $this->datefields)) {
                     $minoneday = $filtervalue - (60 * 60 * 24);
                     $plusoneday = $filtervalue + (60 * 60 * 24);
@@ -517,22 +509,8 @@ class learninghistory extends base {
 
         // Show classname in coursename column for CPD records
         if ($key == 'coursename') {
-            if (!empty($row->cpdid)) {
-                return $row->classname;
-            } else {
-                return $row->coursename;
-            }
+            return $row->coursename;
         }
-
-        // Display rows with a cpdid as a CPD records, others as a LMS record
-        if ($key == 'cpd') {
-            if (!empty($row->cpdid)) {
-                return $this->mystr('cpd');
-            } else {
-                return $this->mystr('lms');
-            }
-        }
-
 
         if ($key == 'classstartdate') {
             // e-Learning records use bookingplaceddate instead of classstartdate
@@ -549,20 +527,14 @@ class learninghistory extends base {
                 $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->completiontime);
                 return $this->myuserdate($date, $row);
             }
-            if (!empty($row->cpdid)) {
-                return $this->myuserdate($row->completiontime, $row);
-            }
+
             // Default
             return $this->myuserdate($row->$key, $row);
         }
 
         // Always show Full Attendance on in the Booking Status column when there is a cpdid.
         if ($key == 'bookingstatus') {
-            if (!empty($row->cpdid)) {
-                return 'Full Attendance';
-            } else {
-                return $row->bookingstatus;
-            }
+            return $row->bookingstatus;
         }
 
         if ($key == 'classtype') {
@@ -577,11 +549,7 @@ class learninghistory extends base {
 
         // Show classcategory for CPD records
         if ($key == 'classcategory') {
-            if (!empty($row->cpdid)) {
-                return $row->$key;
-            } else {
-                return '';
-            }
+            return $row->$key;
         }
 
         if ($key == 'classcost') {

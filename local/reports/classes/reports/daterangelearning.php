@@ -590,15 +590,6 @@ class daterangelearning extends base {
             return $row->coursename;
         }
 
-        // Display rows with a cpdid as a CPD records, others as a LMS record
-        if ($key == 'cpd') {
-            if (!empty($row->cpdid)) {
-                return $this->mystr('cpd');
-            } else {
-                return $this->mystr('lms');
-            }
-        }
-
         if ($key == 'classstartdate') {
             // e-Learning records use bookingplaceddate instead of classstartdate
             if ($row->classtype == 'Self Paced') {
@@ -614,20 +605,13 @@ class daterangelearning extends base {
                 $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->completiontime);
                 return $this->myuserdate($date, $row);
             }
-            if (!empty($row->cpdid)) {
-                return $this->myuserdate($row->completiontime, $row);
-            }
             // Default
             return $this->myuserdate($row->$key, $row);
         }
 
         // Always show Full Attendance on in the Booking Status column when there is a cpdid.
         if ($key == 'bookingstatus') {
-            if (!empty($row->cpdid)) {
-                return 'Full Attendance';
-            } else {
-                return $row->bookingstatus;
-            }
+            return $row->bookingstatus;
         }
 
         if ($key == 'classtype') {
@@ -641,20 +625,12 @@ class daterangelearning extends base {
         }
 
         if ($key == 'completiontime') {
-            // Only display if 'attended' or CPD.
-            if (!empty($row->cpdid) || $this->taps->is_status($row->bookingstatus, ['attended'])) {
-                return $this->myuserdate($row->$key, $row);
-            }
-            return '';
+            return $this->myuserdate($row->$key, $row);
         }
 
         // Show classcategory for CPD records
         if ($key == 'classcategory') {
-            if (!empty($row->cpdid)) {
-                return $row->$key;
-            } else {
-                return '';
-            }
+            return $row->$key;
         }
 
         if ($key == 'classcost') {
