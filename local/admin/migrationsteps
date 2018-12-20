@@ -35,6 +35,8 @@ mod/arupadvert/cli/migrate.php --domigration
 filter/arupmetadata/cli/migrate.php --domigration
 php local/coursemanager/cli/migrate.php --domigration
 php mod/tapscompletion/cli/migrate.php --domigration
+php php mod/tapsenrol/cli/migrate.php --domigration
+php local/learningrecordstore/cli/migrate.php --domigration
 
 uninstall plugins:
 mod_arupadvert

@@ -188,7 +188,7 @@ function xmldb_tapsenrol_upgrade($oldversion) {
         }
 
         // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2015111614, 'local', 'tapsenrol');
+        upgrade_mod_savepoint(true, 2015111614, 'tapsenrol');
     }
 
     if ($oldversion < 2015111615) {
@@ -203,7 +203,35 @@ function xmldb_tapsenrol_upgrade($oldversion) {
         }
 
         // Taps savepoint reached.
-        upgrade_plugin_savepoint(true, 2015111615, 'local', 'taps');
+        upgrade_mod_savepoint(true, 2015111615, 'tapsenrol');
+    }
+
+    if ($oldversion < 2017051508) {
+
+        // Define table tapsenrol_class_enrolments to be created.
+        $table = new xmldb_table('tapsenrol_class_enrolments');
+
+        // Adding fields to table oauth2_user_field_mapping.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('classid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('bookingstatus', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+        $table->add_field('completiontime', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('active', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('archived', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table oauth2_user_field_mapping.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for oauth2_user_field_mapping.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Main savepoint reached.
+        upgrade_mod_savepoint(true, 2017051508, 'tapsenrol');
     }
 
     return true;
