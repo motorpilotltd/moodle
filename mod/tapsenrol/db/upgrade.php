@@ -180,5 +180,16 @@ function xmldb_tapsenrol_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015111613, 'tapsenrol');
     }
 
+    if ($oldversion < 2015111614) {
+        $tablecols = ['local_taps_enrolment' => 'staffid'];
+
+        foreach ($tablecols as $table => $col) {
+            $DB->execute("UPDATE {{$table}} SET $col = REPLACE(LTRIM(REPLACE($col, '0', ' ')), ' ', '0')");
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111614, 'local', 'tapsenrol');
+    }
+
     return true;
 }
