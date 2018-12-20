@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_coursemetadatafield_arup_install() {
     global $CFG, $DB;
 
+    require_once("$CFG->dirroot/local/coursemetadata/lib.php");
     require_once("$CFG->dirroot/local/coursemetadata/classes/define_base.php");
     require_once("$CFG->dirroot/local/coursemetadata/field/arup/define.class.php");
     $formfield = new coursemetadata_define_arup();

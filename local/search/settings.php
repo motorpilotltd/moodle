@@ -61,7 +61,7 @@ EOS;
                 'local_search/regions_position',
                 get_string('search_show_regions_position', 'local_search'),
                 get_string('search_show_regions_position_desc', 'local_search'),
-                (bool) $regionsinstalled,
+                1,
                 array_combine(range(1, $possiblepositions), range(1, $possiblepositions))
             )
         );
