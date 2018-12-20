@@ -48,8 +48,8 @@ class vcal_requester {
         $mail->Ical = ($this->wrap_vevent($invite, $method));
         $mail->IcalMethod = $method;
 
-        if (!validate_email($mail->from)) {
-            debugging('local_invite: Invalid from-email '.s($mail->from).' - not sending');
+        if (!validate_email($mail->From)) {
+            debugging('local_invite: Invalid from-email '.s($mail->From).' - not sending');
             return false;
         }
 
