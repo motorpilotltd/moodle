@@ -60,4 +60,4 @@ if (!$options['domigration']) {
     exit(0);
 }
 
-\local_coursemanager\migrate::deprecate_coursemanager();
+\local_learningrecordstore\migrate::migrate_lrs_data();

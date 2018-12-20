@@ -32,9 +32,9 @@ Update logstore_standard_log - mod/tapscompletion/cli/migrate.php
 
 
 mod/arupadvert/cli/migrate.php --domigration
-filter/arupmetadata/cli/migrate.php
-local/coursemanager/cli/migrate.php
-mod/tapscompletion/cli/migrate.php
+filter/arupmetadata/cli/migrate.php --domigration
+php local/coursemanager/cli/migrate.php --domigration
+php mod/tapscompletion/cli/migrate.php --domigration
 
 uninstall plugins:
 mod_arupadvert

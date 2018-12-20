@@ -9,18 +9,49 @@
 namespace local_learningrecordstore;
 
 class migrate {
-    public static function deprecate_coursemanager() {
+    public static function migrate_lrs_data() {
         global $DB;
-
-        $events = [
-                '\local_coursemanager\event\class_created' => '\mod_tapsenrol\event\class_created',
-                '\local_coursemanager\event\class_updated' => '\mod_tapsenrol\event\class_updated'
-        ];
-
-        foreach ($events as $from => $to) {
-            $DB->execute("update {logstore_standard_log} set eventname = :to where eventname = :from",
-                    ['from' => $from, 'to' => $to]
-            );
-        }
+        $DB->execute("
+insert into {local_learningrecordstore} (provider,
+                                           healthandsafetycategory,
+                                           location,
+                                           providerid,
+                                           staffid,
+                                           duration,
+                                           durationunits,
+                                           completiontime,
+                                           description,
+                                           certificateno,
+                                           providername,
+                                           classcategory,
+                                           classcost,
+                                           classcostcurrency,
+                                           timemodified,
+                                           expirydate,
+                                           classtype,
+                                           starttime,
+                                           endtime)
+SELECT provider,
+       healthandsafetycategory,
+       location,
+       coalesce(providerid, courseid),
+       staffid,
+       duration,
+       durationunits,
+       classcompletiontime as completiontime,
+       learningdesc        as description,
+       certificateno,
+       coursename,
+       classcategory,
+       classcost,
+       classcostcurrency,
+       timemodified,
+       expirydate,
+       classtype,
+       classstarttime,
+       classendtime
+FROM {local_taps_enrolment}
+WHERE cpdid is not null
+");
     }
 }

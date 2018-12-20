@@ -191,5 +191,20 @@ function xmldb_tapsenrol_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111614, 'local', 'tapsenrol');
     }
 
+    if ($oldversion < 2015111615) {
+
+        // Define field archived to be added to local_taps_enrolment.
+        $table = new xmldb_table('local_taps_enrolment');
+        $field = new xmldb_field('providerid', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'classcontext');
+
+        // Conditionally launch add field archived.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Taps savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111615, 'local', 'taps');
+    }
+
     return true;
 }
