@@ -134,10 +134,19 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
         return array_merge($this->required_fields, array_keys($this->optional_fields));
     }
 
+    /**
+     * @param $params
+     * @return \coursemetadatafield_arup\arupmetadata
+     */
     public static function fetch($params) {
         return self::fetch_helper('coursemetadata_arup', __CLASS__, $params);
     }
 
+    /**
+     * @param array $params
+     * @param bool $sort
+     * @return \coursemetadatafield_arup\arupmetadata[]
+     */
     public static function fetch_all($params, $sort = false) {
         $ret = self::fetch_all_helper('coursemetadata_arup', __CLASS__, $params);
         if (!$ret) {

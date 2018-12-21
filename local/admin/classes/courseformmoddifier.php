@@ -39,8 +39,16 @@ class courseformmoddifier {
             $mform->registerNoSubmitButton('updatearupdefaultcourse');
             $mform->addElement('submit', 'updatearupdefaultcourse', get_string('updatearupdefaultcourse', 'local_admin'));
 
-            $default = $mform->getElementValue('arupdefaultcourse');
-            if (isset($default[0]) && !empty($default[0])) {
+            if ($mform->_flagSubmitted) {
+                $default = $mform->getElementValue('arupdefaultcourse');
+                $arupdefault = isset($default[0]) && !empty($default[0]);
+            } else if (!empty($courseid)) {
+                $arupdefault = false;
+            } else {
+                $arupdefault = true;
+            }
+
+            if ($arupdefault) {
                 if (empty($courseid)) {
                     self::addarupelements($mform);
                 }
@@ -55,13 +63,14 @@ class courseformmoddifier {
         global $DB;
 
         if (isset($data)) {
+            if ($data->arupdefaultcourse == false) {
+                return;
+            }
+
             $internalworkflowid = $data->internalworkflowid == -1 ? 0 : $data->internalworkflowid;
             $enrolmentregion = !empty($data->enrolmentregion) ? $data->enrolmentregion : array();
             $enrolmentrole = $data->enrolmentrole;
 
-            if ($data->arupdefaultcourse == false) {
-                return;
-            }
         } else {
             $internalworkflowid = 0;
             $enrolmentregion = [];

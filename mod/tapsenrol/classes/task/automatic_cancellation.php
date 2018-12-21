@@ -73,7 +73,7 @@ class automatic_cancellation extends \core\task\scheduled_task {
 JOIN
     {tapsenrol_iw_tracking} iwt
     ON iwt.enrolmentid = lte.id
-INNER JOIN {local_taps_class} ltc.classid = lte.classid
+INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 JOIN
     {tapsenrol} t
     ON t.course = ltc.courseid

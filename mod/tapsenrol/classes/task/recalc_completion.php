@@ -86,7 +86,7 @@ JOIN {course} c
 JOIN {modules} m
     ON m.id = cm.module
 
-INNER JOIN {local_taps_class} ltc.classid = lte.classid
+INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 JOIN {user_enrolments} ue
     ON ue.userid = u.id
 JOIN {enrol} e
