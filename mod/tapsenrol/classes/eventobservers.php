@@ -191,6 +191,8 @@ EOS;
      */
     public static function course_completed(\core\event\course_completed $event) {
         global $CFG, $DB;
+        require_once($CFG->libdir . '/completionlib.php');
+        require_once("$CFG->dirroot/mod/tapsenrol/classes/tapsenrol.php");
 
         $cms = get_fast_modinfo($event->courseid, -1)->get_instances_of('tapsenrol');
 
@@ -199,7 +201,6 @@ EOS;
             return;
         }
 
-        require_once($CFG->libdir . '/completionlib.php');
 
         if (count($cms) > 1) {
             print_error('Multiple instances of mod_tapsenrol are not currently supported');

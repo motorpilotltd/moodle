@@ -93,27 +93,7 @@ class migrate {
                             isset($tapscourse->accreditationgivendate) ? $tapscourse->accreditationgivendate : 0;
                     $arupmetadata->timecreated = $tapscourse->timemodified;
                     $arupmetadata->duration = $tapscourse->duration;
-
-                    switch ($tapscourse->durationunitscode) {
-                        case 'D':
-                            $arupmetadata->durationunits = 'days';
-                            break;
-                        case 'H':
-                            $arupmetadata->durationunits = 'hours';
-                            break;
-                        case 'M':
-                            $arupmetadata->durationunits = 'months';
-                            break;
-                        case 'MIN':
-                            $arupmetadata->durationunits = 'minutes';
-                            break;
-                        case 'W':
-                            $arupmetadata->durationunits = 'weeks';
-                            break;
-                        case 'Y':
-                            $arupmetadata->durationunits = 'years';
-                            break;
-                    }
+                    $arupmetadata->durationunits = $tapscourse->durationunitscode;
 
                     // Update the moodle course.
                     $course->startdate = $tapscourse->startdate;
@@ -257,27 +237,7 @@ class migrate {
                         isset($tapscourse->accreditationgivendate) ? $tapscourse->accreditationgivendate : 0;
                 $arupmetadata->timecreated = $tapscourse->timemodified;
                 $arupmetadata->duration = $tapscourse->duration;
-
-                switch ($tapscourse->durationunitscode) {
-                    case 'D':
-                        $arupmetadata->durationunits = 'days';
-                        break;
-                    case 'H':
-                        $arupmetadata->durationunits = 'hours';
-                        break;
-                    case 'M':
-                        $arupmetadata->durationunits = 'months';
-                        break;
-                    case 'MIN':
-                        $arupmetadata->durationunits = 'minutes';
-                        break;
-                    case 'W':
-                        $arupmetadata->durationunits = 'weeks';
-                        break;
-                    case 'Y':
-                        $arupmetadata->durationunits = 'years';
-                        break;
-                }
+                $arupmetadata->durationunits = $tapscourse->durationunitscode;
 
                 // Link local_taps_class to the moodle course.
                 $DB->execute('UPDATE {local_taps_class} SET courseid = :moodlecourseid WHERE courseid = :tapscourseid',

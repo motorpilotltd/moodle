@@ -367,15 +367,23 @@ class activityreset {
             $compare = $DB->sql_compare_text('bookingstatus');
             $params = [
                 'userid' => $userid,
-                'courseid' => $te->course,
                 'active' => 1
             ];
-            $enrolments = $DB->get_records_select('tapsenrol_class_enrolments', "userid = :userid AND courseid = :courseid AND active = :active AND {$compare} {$in}", array_merge($params, $inparams));
+            $params = array_merge($params, $inparams);
 
-            foreach ($enrolments as $enrolment) {
-                $enrolment->active = 0;
-                $enrolment->timemodified = $now;
-                $DB->update_record('tapsenrol_class_enrolments', $enrolment);
+            $classes = $taps->get_course_classes($courseid);
+
+            foreach ($classes as $class) {
+                $params['classid'] = $class->classid;
+                $enrolments = $DB->get_records_select('tapsenrol_class_enrolments',
+                        "userid = :userid AND classid = :classid AND active = :active AND {$compare} {$in}",
+                        $params);
+
+                foreach ($enrolments as $enrolment) {
+                    $enrolment->active = 0;
+                    $enrolment->timemodified = $now;
+                    $DB->update_record('tapsenrol_class_enrolments', $enrolment);
+                }
             }
         }
     }

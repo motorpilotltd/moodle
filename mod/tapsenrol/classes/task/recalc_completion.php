@@ -77,6 +77,7 @@ SELECT
 FROM {tapsenrol_class_enrolments} lte
 JOIN {user} u
     ON u.id = lte.userid
+INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 JOIN {tapsenrol} t
     ON t.course = ltc.courseid
 JOIN {course_modules} cm
@@ -86,7 +87,6 @@ JOIN {course} c
 JOIN {modules} m
     ON m.id = cm.module
 
-INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 JOIN {user_enrolments} ue
     ON ue.userid = u.id
 JOIN {enrol} e
