@@ -81,6 +81,9 @@ class courseformmoddifier {
         self::add_default_enrols($course, $enrolmentrole);
 
         self::add_default_activities_complation($course, $internalworkflowid, $enrolmentregion);
+
+        $DB->execute("update {course_sections} set summary = concat('[[arupmetadata]]', summary) where section = 0 and course = :courseid", ['courseid' => $course->id]);
+
         $transaction->allow_commit();
     }
 
