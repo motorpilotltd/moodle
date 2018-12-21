@@ -145,27 +145,23 @@ function tapsenrol_cm_info_view(cm_info $cm) {
     if (!$tapsenrol->check_installation()) {
         $output .= $renderer->alert(html_writer::tag('p', get_string('installationissue', 'tapsenrol')), 'alert-danger', false);
     } else {
-        $canview = $canviewclasses = $PAGE->user_is_editing();
-        if ($USER->idnumber != '') {
-            $canview = true;
+        $canviewclasses = $PAGE->user_is_editing();
+        $canview = true;
 
-            $output .= $tapsenrol->enrolment_check($USER->id, true);
+        $output .= $tapsenrol->enrolment_check($USER->id, true);
 
-            $regionselect = 'id IN (SELECT regionid FROM {tapsenrol_region} WHERE tapsenrolid = :tapsenrolid)';
-            $regions = $DB->get_records_select_menu('local_regions_reg', $regionselect, array('tapsenrolid' => $tapsenrol->tapsenrol->id), '', 'id, name');
-            if (empty($regions)) {
-                $canviewclasses = true;
-            } else {
-                local_regions_load_data_user($USER);
-                if (isset($USER->regions_field_geotapsregionid) && array_key_exists($USER->regions_field_geotapsregionid, $regions)) {
-                    $canviewclasses = true;
-                }
-            }
-            if ($canviewclasses) {
-               $canviewclasses = $cm->uservisible;
-            }
+        $regionselect = 'id IN (SELECT regionid FROM {tapsenrol_region} WHERE tapsenrolid = :tapsenrolid)';
+        $regions = $DB->get_records_select_menu('local_regions_reg', $regionselect, array('tapsenrolid' => $tapsenrol->tapsenrol->id), '', 'id, name');
+        if (empty($regions)) {
+            $canviewclasses = true;
         } else {
-            debugging('User has no ID Number');
+            local_regions_load_data_user($USER);
+            if (isset($USER->regions_field_geotapsregionid) && array_key_exists($USER->regions_field_geotapsregionid, $regions)) {
+                $canviewclasses = true;
+            }
+        }
+        if ($canviewclasses) {
+           $canviewclasses = $cm->uservisible;
         }
 
         $enrolmentoutput = '';

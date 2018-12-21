@@ -78,7 +78,7 @@ echo $OUTPUT->heading(get_string('deletecpd', 'block_arup_mylearning'), 2);
 $continue = html_writer::link($confirmurl, get_string('deletecpd:save', 'block_arup_mylearning'), array('class' => 'btn btn-primary'));
 $cancel = html_writer::link($redirecturl, get_string('cancel'), array('class' => 'btn btn-default m-l-10'));
 
-echo html_writer::tag('p', get_string('confirmdeletecpd', 'block_arup_mylearning', $cpd->coursename));
+echo html_writer::tag('p', get_string('confirmdeletecpd', 'block_arup_mylearning', $cpd->providername));
 echo html_writer::tag('div', $continue . $cancel, array('class' => 'buttons'));
 
 echo $OUTPUT->footer();

@@ -56,7 +56,7 @@ try {
 
         echo html_writer::start_tag('div', array('class' => 'modal-upper'));
         $modalupper = array();
-        if ($class->duration) {
+        if ($lrsentry->duration) {
             $modalupper[] = html_writer::tag('strong', get_string('modal:duration', 'block_arup_mylearning').': ') .
                 $lrsentry->formatduration();
         }
@@ -64,13 +64,13 @@ try {
             $modalupper[] = html_writer::tag('strong', get_string('modal:completiontime', 'block_arup_mylearning').': ') .
                 userdate($lrsentry->completiontime, get_string('strftimedate', 'langconfig'));
         }
-        if ($class->location) {
+        if ($lrsentry->location) {
             $modalupper[] = html_writer::tag('strong', get_string('modal:location', 'block_arup_mylearning').': ') .
                     $class->location;
         }
         if ($lrsentry->expirydate) {
             $modalupper[] = html_writer::tag('strong', get_string('modal:expirydate', 'block_arup_mylearning').': ') .
-                    userdate($lrsentry->expirydate, get_string('strftimedate', 'langconfig'));
+                    $lrsentry->formatexpirydate();
         }
         if ($modalupper) {
             echo html_writer::tag('p', implode(html_writer::empty_tag('br'), $modalupper));
@@ -81,7 +81,7 @@ try {
 
         echo html_writer::start_tag('div', array('class' => 'modal-lower'));
         if ($lrsentry->description) {
-            echo html_writer::tag('p', html_writer::tag('strong', get_string('modal:learningdesc', 'block_arup_mylearning') . ':') .
+            echo html_writer::tag('p', html_writer::tag('strong', get_string('modal:description', 'block_arup_mylearning') . ':') .
                     html_writer::empty_tag('br') .
                     $lrsentry->description);
         }

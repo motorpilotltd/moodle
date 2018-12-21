@@ -85,7 +85,6 @@ class daterangelearning extends base {
 
         $this->get_filters();
         $this->set_filter();
-
         // Fix array for usage in mustache.
         foreach ($this->setfilters as $filter) {
             $this->showfilters[] = $filter;
@@ -94,7 +93,7 @@ class daterangelearning extends base {
 
     private function reportfields() {
         $this->displayfields = array(
-            'staffid',
+            'idnumber',
             'first_name',
             'last_name',
             'email_address',
@@ -115,13 +114,9 @@ class daterangelearning extends base {
             'classcost',
             'classcostcurrency',
             'jobnumber',
-            'cpd',
-            'learningdesc',
-            'classcategory',
             'classtype',
             'coursecode',
-            'provider',
-            'expirydate',
+            'classsuppliername',
             'location',
             'region_name',
             'geo_region',
@@ -135,16 +130,13 @@ class daterangelearning extends base {
             'classname');
 
         $this->specialfields = array(
-            'cpd',
             'classstartdate',
             'classenddate',
             'bookingstatus',
             'coursename',
             'completiontime',
-            'classcategory',
             'classcost',
-            'classcostcurrency',
-            'learningdesc');
+            'classcostcurrency');
 
         $this->textfilterfields = array(
             'startdate' => 'date',
@@ -152,11 +144,10 @@ class daterangelearning extends base {
             'bookingstatus' => 'dropdownmulti',
             'actualregion' => 'dropdown',
             'georegion' => 'dropdown',
-            'cpd' => 'dropdown',
             'coursename' => 'char',
             'classname' => 'char',
             'location_name' => 'char',
-            'staffid' => 'int',
+            'idnumber' => 'int',
             'costcentre' => 'costcentre',
             'groupname' => 'char',
             'leaver_flag' => 'yn'
@@ -165,10 +156,10 @@ class daterangelearning extends base {
         $this->filtertodb = array(
             'actualregion' => 'staff.REGION_NAME',
             'georegion' => 'staff.GEO_REGION',
-            'staffid' => 'staff.EMPLOYEE_NUMBER',
+            'idnumber' => 'u.idnumber',
             'classname' => 'ltc.classname',
             'coursename' => 'c.fullname',
-            'provider' => 'ltc.classsuppliername',
+            'classsuppliername' => 'ltc.classsuppliername',
             'location' => 'ltc.location',
             'location_name' => 'staff.LOCATION_NAME',
             'groupname' => 'staff.GROUP_NAME',
@@ -186,7 +177,6 @@ class daterangelearning extends base {
             'classstartdate',
             'classenddate',
             'bookingplaceddate',
-            'expirydate',
             'completiontime',
             'startdate',
             'timemodified',
@@ -194,7 +184,7 @@ class daterangelearning extends base {
             );
 
         $this->numericfields = array(
-            'staffid',
+            'idnumber',
             'company_code',
             'centre_code');
     }
@@ -273,7 +263,7 @@ class daterangelearning extends base {
                         if (!empty($end)) {
                             $enddate = $end->value[0];
                             $classenddatestring = " AND {$classenddate} <= $enddate";
-                            $classcompletiondendstring = " AND {completiontime} <= $enddate";
+                            $classcompletiondendstring = " AND completiontime <= $enddate";
                         }
 
                         $wherestring .= "
@@ -340,35 +330,39 @@ class daterangelearning extends base {
 
         $remotetagidconcat = \local_mssql\dbshim::sql_group_concat('reg.name', ',', true);
 
-        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltc.jobnumber, c.shortname as coursecode, r.regions as courseregion
+        $sql = "SELECT 
+                  lte.*, 
+                  staff.*, 
+                  ltc.classstatus,ltc.classduration as duration, ltc.classdurationunits as durationunits, ltc.classstartdate, ltc.classenddate, ltc.classtype, ltc.classcost, ltc.classcostcurrency, ltc.pricebasis, ltc.classname, ltc.jobnumber, ltc.classsuppliername, ltc.location,  
+                  c.shortname as coursecode, c.fullname as coursename, 
+                  u.idnumber, r.regions as courseregion
                   FROM {tapsenrol_class_enrolments} as lte
                   INNER JOIN {user} u ON lte.userid = u.id
                   INNER JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON u.idnumber = staff.EMPLOYEE_NUMBER
-             LEFT JOIN {local_taps_class} as ltc
+             INNER JOIN {local_taps_class} as ltc
                     ON ltc.classid = lte.classid
-             LEFT JOIN {course} as c
+             INNER JOIN {course} as c
                     ON ltc.courseid = c.id
              LEFT JOIN (
                 SELECT regcou.courseid, $remotetagidconcat as regions 
                 FROM {local_regions_reg_cou} regcou
                 INNER JOIN {local_regions_reg} reg ON reg.id = regcou.regionid
+                GROUP BY regcou.courseid
              ) AS r ON r.courseid = c.id
-                LEFT JOIN {local_regions_reg_cou} regcou ON regcou.courseid = c.id
-                LEFT JOIN {local_regions_reg} reg ON reg.id = regcou.regionid
                        $wherestring
-                      
               ORDER BY " . $this->sort . ' ' . $this->direction;
 
         // Leave out the joins for taps_class and taps_course to speed up this query
         $sqlcount = "SELECT count(lte.id) as recnum
                   FROM {tapsenrol_class_enrolments} as lte
+                 INNER JOIN {local_taps_class} as ltc
+                        ON ltc.classid = lte.classid
                   INNER JOIN {user} u ON lte.userid = u.id
                   INNER JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON u.idnumber = staff.EMPLOYEE_NUMBER
                        $wherestring";
 
-        //$DB->set_debug(1);
         $enrolments = array();
         $all = array();
         $this->errors = array();
@@ -573,7 +567,6 @@ class daterangelearning extends base {
         }
     }
 
-
     /**
      * Get values for fields that are not really in the DB results and are derived from
      * some other values
@@ -584,18 +577,15 @@ class daterangelearning extends base {
      */
     private function specialfield($key, $row) {
 
-        // Show classname in coursename column for CPD records
         if ($key == 'coursename') {
             return $row->coursename;
         }
 
         if ($key == 'classstartdate') {
-
             return $this->myuserdate($row->$key, $row);
         }
 
         if ($key == 'classenddate') {
-            // CPD records use completiontime instead of classenddate
             if ($row->classtype == 'Self Paced') {
                 $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->completiontime);
                 return $this->myuserdate($date, $row);
@@ -604,7 +594,6 @@ class daterangelearning extends base {
             return $this->myuserdate($row->$key, $row);
         }
 
-        // Always show Full Attendance on in the Booking Status column when there is a cpdid.
         if ($key == 'bookingstatus') {
             return $row->bookingstatus;
         }
@@ -623,13 +612,12 @@ class daterangelearning extends base {
             return $this->myuserdate($row->$key, $row);
         }
 
-        // Show classcategory for CPD records
-        if ($key == 'classcategory') {
-            return $row->$key;
-        }
-
         if ($key == 'classcost') {
-            return $row->$key;
+            if (!empty($row->price)) {
+                return $row->price;
+            } else {
+                return $row->$key;
+            }
         }
 
         if ($key == 'classcostcurrency') {
@@ -643,22 +631,11 @@ class daterangelearning extends base {
                 return '';
             }
         }
-
-        if ($key == 'learningdesc') {
-            return html_to_text($row->$key);
-        }
     }
 
     public function get_dropdown($field) {
         if ($field == 'actualregion' || $field == 'georegion') {
             return $this->get_regions($field);
-        }
-        if ($field == 'cpd') {
-            $options = array();
-            $options[''] = $this->mystr('cpdandlms');
-            $options['cpd'] = $this->mystr('cpd');
-            $options['lms'] = $this->mystr('lms');
-            return $options;
         }
 
         if ($field == 'bookingstatus') {

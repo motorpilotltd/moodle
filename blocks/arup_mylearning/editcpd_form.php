@@ -27,9 +27,9 @@ class block_arup_mylearning_editcpd_form extends moodleform {
 
         $mform->addElement('header', 'cpdheader', get_string('cpd:header', 'block_arup_mylearning'));
 
-        $mform->addElement('text', 'classname', get_string('cpd:classname', 'block_arup_mylearning'));
-        $mform->setType('classname', PARAM_TEXT);
-        $mform->addRule('classname', null, 'required', null, 'client');
+        $mform->addElement('text', 'providername', get_string('cpd:providername', 'block_arup_mylearning'));
+        $mform->setType('providername', PARAM_TEXT);
+        $mform->addRule('providername', null, 'required', null, 'client');
 
         $mform->addElement('select', 'classtype', get_string('cpd:classtype', 'block_arup_mylearning'), $taps->get_classtypes('cpd'));
         $mform->addRule('classtype', null, 'required', null, 'client');
@@ -46,8 +46,8 @@ class block_arup_mylearning_editcpd_form extends moodleform {
         $mform->addRule('duration', null, 'required', null, 'client');
         $mform->addRule('duration', null, 'numeric', null, 'client');
 
-        $mform->addElement('select', 'durationunitscode', get_string('cpd:durationunitscode', 'block_arup_mylearning'), $taps->get_durationunitscode());
-        $mform->addRule('durationunitscode', null, 'required', null, 'client');
+        $mform->addElement('select', 'durationunits', get_string('cpd:durationunits', 'block_arup_mylearning'), $taps->get_durationunitscode());
+        $mform->addRule('durationunits', null, 'required', null, 'client');
 
         $mform->addElement('text', 'location', get_string('cpd:location', 'block_arup_mylearning'));
         $mform->setType('location', PARAM_TEXT);
@@ -76,8 +76,8 @@ class block_arup_mylearning_editcpd_form extends moodleform {
         $mform->addElement('date_selector', 'expirydate', get_string('cpd:expirydate', 'block_arup_mylearning'), array('optional' => true, 'timezone' => 0));
         $mform->setAdvanced('expirydate');
 
-        $mform->addElement('editor', 'learningdesc', get_string('cpd:learningdesc', 'block_arup_mylearning'));
-        $mform->setType('learningdesc', PARAM_CLEANHTML);
+        $mform->addElement('editor', 'description', get_string('cpd:description', 'block_arup_mylearning'));
+        $mform->setType('description', PARAM_CLEANHTML);
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);

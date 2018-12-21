@@ -10,11 +10,34 @@ namespace local_learningrecordstore;
 
 use renderer_base;
 
+require_once("$CFG->dirroot/completion/data_object.php");
+
 class lrsentry extends \data_object implements \templatable {
     public $table = 'local_learningrecordstore';
 
     public $required_fields = ['id'];
-    public $optional_fields = [];
+    public $optional_fields = [
+            'provider' => null,
+            'healthandsafetycategory' => null,
+            'location' => null,
+            'providerid' => null,
+            'staffid' => null,
+            'duration' => null,
+            'durationunits' => null,
+            'completiontime' => null,
+            'description' => null,
+            'certificateno' => null,
+            'providername' => null,
+            'classcategory' => null,
+            'classcost' => null,
+            'classcostcurrency' => null,
+            'timemodified' => null,
+            'expirydate' => null,
+            'classtype' => null,
+            'starttime' => null,
+            'endtime' => null,
+            'locked' => null,
+    ];
 
     public $provider;
     public $healthandsafetycategory;
@@ -26,7 +49,7 @@ class lrsentry extends \data_object implements \templatable {
     public $completiontime;
     public $description;
     public $certificateno;
-    public $coursename;
+    public $providername;
     public $classcategory;
     public $classcost;
     public $classcostcurrency;
@@ -35,15 +58,38 @@ class lrsentry extends \data_object implements \templatable {
     public $classtype;
     public $starttime;
     public $endtime;
+    public $locked;
+
+    public function generateurl() {
+        switch ($this->provider) {
+            case "moodle":
+                return new \moodle_url('/course/view.php', array('id' => $this->providerid));
+                break;
+            case "Lynda.com":
+                return new \moodle_url('local/lynda/launch.php', array('lyndacourseid' => $this->providerid));
+                break;
+            default:
+                return false;
+                break;
+        }
+    }
+
+    public function formatexpirydate() {
+        if (!empty($this->expirydate)) {
+            return userdate($this->expirydate);
+        } else {
+            return '';
+        }
+    }
 
     public function formatduration() {
-        return $data = (float)$this->duration.' '.$this->durationunits;
+        return $data = (float) $this->duration . ' ' . \mod_tapsenrol\taps::resolvedurationunit($this->durationunits);
     }
 
     public function export_for_template(renderer_base $output) {
         $obj = new \stdClass();
         $obj->duration = $this->formatduration();
-        $obj->coursename = format_string($this->coursename);
+        $obj->coursename = format_string($this->providername);
         $obj->classtype = format_string($this->classtype);
         $obj->classcategory = format_string($this->classcategory);
         $obj->completiontime = $this->completiontime;
@@ -78,7 +124,7 @@ class lrsentry extends \data_object implements \templatable {
         if ($datas = $DB->get_records_select('local_learningrecordstore', $where, $params)) {
 
             $results = [];
-            foreach($datas as $data) {
+            foreach ($datas as $data) {
                 $instance = new self();
                 self::set_properties($instance, $data);
                 $results[$instance->id] = $instance;

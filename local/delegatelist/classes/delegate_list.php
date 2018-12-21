@@ -140,8 +140,12 @@ class delegate_list {
 
             $activeclasses = array();
         } else {
-            $activewhere = "{$where} AND (ltc.classhidden = 0 OR ltc.classhidden IS NULL) AND (ltc.archived = 0 OR ltc.archived IS NULL) AND (lte.archived = 0 OR lte.archived IS NULL)";
-            $activeclasses = $DB->get_records_select('local_taps_class', $activewhere, $params, '', 'ltc.classid, ltc.classname, ltc.classendtime');
+            $activewhere = "{$where} AND (ltc.classhidden = 0 OR ltc.classhidden IS NULL) AND (ltc.archived = 0 OR ltc.archived IS NULL)";
+
+            $sql = "SELECT ltc.classid, ltc.classname, ltc.classendtime FROM {local_taps_class} ltc
+                    WHERE $activewhere";
+
+            $activeclasses = $DB->get_records_sql($sql, $params);
         }
 
         $classname = $DB->sql_compare_text('ltc.classname', 32);
@@ -152,10 +156,10 @@ SELECT
     ltc.classid, MAX({$classname}) as classname, MAX(ltc.classendtime) as classendtime, MAX({$classtype}) as classtype
 FROM
     {tapsenrol_class_enrolments} lte
-INNER JOIN {local_taps_class} ltc.classid = lte.classid
+INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
 WHERE
     {$where}
-    AND ltc.active = 1
+    AND lte.active = 1
     AND (ltc.archived = 0 OR ltc.archived IS NULL)
     AND (lte.archived = 0 OR lte.archived IS NULL)
 GROUP BY
@@ -377,7 +381,7 @@ EOS;
         $table = new delegatetable('delegate_list', $this, $this->_function);
         $usernamefields = get_all_user_name_fields(true, 'u');
         $fields = "lte.*, u.id as userid, {$usernamefields}, u.picture,"
-                . 'u.idnumber as imagealt, u.phone1, u.department, u.icq, u.address,'
+                . 'u.idnumber as imagealt, u.idnumber as idnumber, u.phone1, u.department, u.icq, u.address,'
                 . 'u.email, tit.sponsorfirstname, tit.sponsorlastname, tit.sponsoremail, tit.timeenrolled, ua.timeaccess';
 
         $from = <<<EOF

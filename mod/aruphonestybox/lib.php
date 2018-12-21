@@ -189,7 +189,7 @@ function aruphonestybox_sendtotaps($id, $user, &$debug=array()) {
     $lrsrecord = new \local_learningrecordstore\lrsentry();
 
     $lrsrecord->staffid = $user->idnumber; // Set staffid (Only used to add CPD).
-    $lrsrecord->coursename = $data->classname;
+    $lrsrecord->providername = $data->classname;
     $lrsrecord->provider = $data->provider;
     $lrsrecord->starttime = $lrsrecord->completiontime = usergetmidnight(time(), new DateTimeZone('UTC'));
     $lrsrecord->duration = $data->duration;

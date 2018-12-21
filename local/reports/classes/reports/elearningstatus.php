@@ -95,7 +95,7 @@ class elearningstatus extends base {
 
     private function reportfields() {
         $this->displayfields = array(
-            'staffid',
+            'idnumber',
             'first_name',
             'last_name',
             'email_address',
@@ -115,18 +115,17 @@ class elearningstatus extends base {
             'bookingstatus',
             'classcost',
             'classcostcurrency',
-            'cpd',
-            'learningdesc',
-            'classcategory',
+            'jobnumber',
             'classtype',
             'coursecode',
-            'provider',
-            'expirydate',
+            'classsuppliername',
             'location',
             'region_name',
             'geo_region',
             'company_code',
             'centre_code',
+            'timemodified',
+            'completiontime',
             'courseregion');
 
         $this->sortfields = array(
@@ -149,7 +148,7 @@ class elearningstatus extends base {
             'classname' => 'autocomplete',
             'exclusion' => 'dropdown',
             'location_name' => 'char',
-            'staffid' => 'int',
+            'idnumber' => 'int',
             'costcentre' => 'costcentre',
             'groupname' => 'char',
             'leaver_flag' => 'yn',
@@ -159,7 +158,7 @@ class elearningstatus extends base {
             'classname' => 'lte.classid',
             'actualregion' => 'staff.REGION_NAME',
             'georegion' => 'staff.GEO_REGION',
-            'staffid' => 'staff.EMPLOYEE_NUMBER',
+            'idnumber' => 'u.idnumber',
             'full_name' => 'staff.FULL_NAME',
             'location_name' => 'staff.LOCATION_NAME',
             'groupname' => 'staff.GROUP_NAME',
@@ -171,12 +170,11 @@ class elearningstatus extends base {
             'classstartdate',
             'classenddate',
             'bookingplaceddate',
-            'expirydate',
             'completiontime'
             );
 
         $this->numericfields = array(
-            'staffid',
+            'idnumber',
             'company_code',
             'centre_code');
     }
@@ -324,33 +322,38 @@ class elearningstatus extends base {
 
         $remotetagidconcat = \local_mssql\dbshim::sql_group_concat('reg.name', ',', true);
 
-        $sql = "SELECT lte.*, staff.*, ltc.classstatus, c.shortname as coursecode, r.regions as courseregion, u.idnumber
+        $sql = "SELECT 
+                  lte.*, 
+                  staff.*, 
+                  ltc.classstatus,ltc.classduration as duration, ltc.classdurationunits as durationunits, ltc.classstartdate, ltc.classenddate, ltc.classtype, ltc.classcost, ltc.classcostcurrency, ltc.pricebasis, ltc.classname, ltc.jobnumber, ltc.classsuppliername, ltc.location,  
+                  c.shortname as coursecode, c.fullname as coursename, 
+                  u.idnumber, r.regions as courseregion
                   FROM {tapsenrol_class_enrolments} as lte
                   INNER JOIN {user} u ON lte.userid = u.id
                   INNER JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON u.idnumber = staff.EMPLOYEE_NUMBER
-             LEFT JOIN {local_taps_class} as ltc
+             INNER JOIN {local_taps_class} as ltc
                     ON ltc.classid = lte.classid
-             LEFT JOIN {course} as c
+             INNER JOIN {course} as c
                     ON ltc.courseid = c.id
              LEFT JOIN (
                 SELECT regcou.courseid, $remotetagidconcat as regions 
                 FROM {local_regions_reg_cou} regcou
                 INNER JOIN {local_regions_reg} reg ON reg.id = regcou.regionid
+                GROUP BY regcou.courseid
              ) AS r ON r.courseid = c.id
                        $enrolmentswhere
                        $wherestring
               ORDER BY " . $this->sort . ' ' . $this->direction;
 
-
         // Leave out the joins for taps_class and taps_course to speed up this query
         $sqlcount = "SELECT count(lte.id) as recnum
                   FROM {tapsenrol_class_enrolments} as lte
+                 INNER JOIN {local_taps_class} as ltc
+                        ON ltc.classid = lte.classid
                   INNER JOIN {user} u ON lte.userid = u.id
-             LEFT JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
+                  INNER JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON u.idnumber = staff.EMPLOYEE_NUMBER
-             LEFT JOIN {local_taps_class} as ltc
-                    ON ltc.classid = lte.classid
                        $enrolmentswhere
                        $wherestring";
 
@@ -551,18 +554,16 @@ class elearningstatus extends base {
      */
     private function specialfield($key, $row) {
 
-        // Show classname in coursename column for CPD records
         if ($key == 'coursename') {
             return $row->coursename;
         }
 
         if ($key == 'classstartdate') {
-            // Default
+
             return $this->myuserdate($row->$key, $row);
         }
 
         if ($key == 'classenddate') {
-            // CPD records use completiontime instead of classenddate
             if ($row->classtype == 'Self Paced') {
                 $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->completiontime);
                 return $this->myuserdate($date, $row);
@@ -585,11 +586,6 @@ class elearningstatus extends base {
             }
         }
 
-        // Show classcategory for CPD records
-        if ($key == 'classcategory') {
-            return $row->$key;
-        }
-
         if ($key == 'classcost') {
             if (!empty($row->price)) {
                 return $row->price;
@@ -599,17 +595,15 @@ class elearningstatus extends base {
         }
 
         if ($key == 'classcostcurrency') {
-            if (!empty($row->price)) {
+            if ($row->pricebasis == 'No Charge') {
+                return '';
+            } else if (!empty($row->price)) {
                 return $row->currencycode;
             } else if (!empty($row->classcost)) {
                 return $row->$key;
             } else {
                 return '';
             }
-        }
-
-        if ($key == 'learningdesc' && isset($row->$key)) {
-            return html_to_text($row->$key);
         }
     }
 

@@ -74,14 +74,14 @@ $string['cpd:classcategory'] = 'Subject category';
 $string['cpd:completiontime'] = 'Completion date';
 $string['cpd:classcost'] = 'Cost';
 $string['cpd:classcostcurrency'] = 'Currency';
-$string['cpd:classname'] = 'Class name';
+$string['cpd:providername'] = 'Class name';
 $string['cpd:classtype'] = 'Learning method';
 $string['cpd:duration'] = 'Duration';
 $string['cpd:durationunitscode'] = 'Duration units';
 $string['cpd:expirydate'] = 'Expiry date';
 $string['cpd:header'] = 'Details';
 $string['cpd:healthandsafetycategory'] = 'Health and safety category';
-$string['cpd:learningdesc'] = 'Learning description';
+$string['cpd:description'] = 'Learning description';
 $string['cpd:location'] = 'Location';
 $string['cpd:provider'] = 'Provider';
 
@@ -112,7 +112,7 @@ $string['halogen:score'] = 'Score';
 $string['halogen:title'] = 'Learning Activity';
 $string['halogen:viewhistory'] = 'View your Halogen learning history';
 
-$string['learningdescription'] = 'Learning description';
+$string['descriptionription'] = 'Learning description';
 $string['location'] = 'Location';
 
 $string['methodology'] = 'Type';
@@ -123,7 +123,7 @@ $string['modal:classtype'] = 'Method';
 $string['modal:completiontime'] = 'Completion date';
 $string['modal:duration'] = 'Duration';
 $string['modal:expirydate'] = 'Expiry date';
-$string['modal:learningdesc'] = 'Learning description';
+$string['modal:description'] = 'Learning description';
 $string['modal:location'] = 'Location';
 $string['modal:provider'] = 'Provider';
 $string['more'] = 'More';

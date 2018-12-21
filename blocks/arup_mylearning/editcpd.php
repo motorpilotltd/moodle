@@ -96,22 +96,9 @@ if ($form->is_cancelled()) {
         }
     }
 
+    \local_learningrecordstore\lrsentry::set_properties($cpd, $data);
     $cpd->staffid = $USER->idnumber; // Set staffid (Only used to add CPD).
-    $cpd->coursename = $data->classname;
-    $cpd->provider = $data->provider;
-    $cpd->completiontime = $data->completiontime;
-    $cpd->duration = $data->duration;
-    $cpd->durationunits = $data->durationunitscode;
-    $cpd->location = $data->location;
-    $cpd->classtype = $data->classtype;
-    $cpd->classcategory = $data->classcategory;
-    $cpd->classcost = $data->classcost;
-    $cpd->classcostcurrency = $data->classcostcurrency;
-    $cpd->certificateno = $data->certificateno;
-    $cpd->expirydate = $data->expirydate;
-    $cpd->description = $data->learningdesc['text'];
-    $cpd->healthandsafetycategory = $data->healthandsafetycategory;
-    $cpd->location = $data->location;
+    $cpd->description = $data->description['text'];
 
     switch ($action) {
         case 'add' :
@@ -139,7 +126,7 @@ echo html_writer::tag('p', get_string($action.'cpd_help', 'block_arup_mylearning
 // Mapping for specific form select options that are not returned as keys.
 $formdata = clone($cpd);
 $formdata->classcategory = array_search($cpd->classcategory, $taps->get_classcategory());
-$formdata->learningdesc = ['text' => $cpd->description , 'format' => FORMAT_HTML];
+$formdata->description = ['text' => $cpd->description , 'format' => FORMAT_HTML];
 
 $form->set_data($formdata); // Variable $cpd will be empty if adding.
 echo $form->display();

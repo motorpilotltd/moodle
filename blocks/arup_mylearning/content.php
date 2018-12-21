@@ -42,7 +42,7 @@ class block_arup_mylearning_content {
 
     public function has_content($tab) {
         if (!isset($this->_hascontent[$tab])) {
-            $function = '_has_content_'.$tab;
+            $function = '_has_content_' . $tab;
             if (method_exists($this, $function)) {
                 $this->_hascontent[$tab] = call_user_func(array($this, $function));
             } else {
@@ -53,7 +53,7 @@ class block_arup_mylearning_content {
     }
 
     public function get_content($tab) {
-        $function = '_get_'.$tab.'_html';
+        $function = '_get_' . $tab . '_html';
         if (method_exists($this, $function)) {
             return call_user_func(array($this, $function));
         } else {
@@ -62,7 +62,7 @@ class block_arup_mylearning_content {
     }
 
     public function get_export($tab) {
-        $function = '_get_'.$tab.'_export';
+        $function = '_get_' . $tab . '_export';
         if (method_exists($this, $function)) {
             call_user_func(array($this, $function));
         } else {
@@ -90,12 +90,13 @@ class block_arup_mylearning_content {
     protected function _get_overview_html() {
         global $CFG, $DB, $USER;
 
-        require_once($CFG->libdir.'/completionlib.php');
+        require_once($CFG->libdir . '/completionlib.php');
 
         $content = '';
 
         $content .= html_writer::tag('p', get_string('overview:intro', 'block_arup_mylearning'));
-        $content .= html_writer::tag('p', get_string('overview:history', 'block_arup_mylearning', get_string('myhistory', 'block_arup_mylearning')));
+        $content .= html_writer::tag('p',
+                get_string('overview:history', 'block_arup_mylearning', get_string('myhistory', 'block_arup_mylearning')));
 
         $courses = array();
         $moodleenrolments = enrol_get_my_courses(null, 'visible DESC, fullname ASC');
@@ -133,7 +134,7 @@ class block_arup_mylearning_content {
                         foreach ($statuses as $status => $completiontime) {
                             if (in_array($status, array('placed', 'requested', 'waitlisted'))) {
                                 // Should only ever be one of these active...
-                                $course->status = get_string('status:'.$status, 'block_arup_mylearning');
+                                $course->status = get_string('status:' . $status, 'block_arup_mylearning');
                             }
                         }
                     }
@@ -164,9 +165,9 @@ class block_arup_mylearning_content {
 
         $table->head = array();
         $headers = array(
-            array('text' => get_string('course'), 'class' => 'text-left'),
-            array('text' => get_string('category'), 'class' => 'text-left'),
-            array('text' => get_string('status', 'block_arup_mylearning'), 'class' => 'text-left'),
+                array('text' => get_string('course'), 'class' => 'text-left'),
+                array('text' => get_string('category'), 'class' => 'text-left'),
+                array('text' => get_string('status', 'block_arup_mylearning'), 'class' => 'text-left'),
         );
         if ($this->_has_methodologies()) {
             array_unshift($headers, array('text' => get_string('methodology', 'block_arup_mylearning'), 'class' => 'text-center'));
@@ -204,8 +205,8 @@ class block_arup_mylearning_content {
                 $cell->attributes['class'] = 'text-left';
 
                 $cell->text = html_writer::link(
-                    new moodle_url('/course/view.php', array('id' => $course->id)),
-                    format_string($course->fullname)
+                        new moodle_url('/course/view.php', array('id' => $course->id)),
+                        format_string($course->fullname)
                 );
                 $cells[] = clone($cell);
 
@@ -262,10 +263,10 @@ class block_arup_mylearning_content {
 
         $table->head = array();
         $headers = array(
-            array('text' => get_string('course'), 'class' => 'text-left'),
-            array('text' => get_string('category'), 'class' => 'text-left'),
-            array('text' => get_string('enrolments', 'block_arup_mylearning'), 'class' => 'text-center'),
-            array('text' => get_string('open', 'block_arup_mylearning'), 'class' => 'text-center'),
+                array('text' => get_string('course'), 'class' => 'text-left'),
+                array('text' => get_string('category'), 'class' => 'text-left'),
+                array('text' => get_string('enrolments', 'block_arup_mylearning'), 'class' => 'text-center'),
+                array('text' => get_string('open', 'block_arup_mylearning'), 'class' => 'text-center'),
         );
         if ($this->_has_methodologies()) {
             array_unshift($headers, array('text' => get_string('methodology', 'block_arup_mylearning'), 'class' => 'text-center'));
@@ -303,8 +304,8 @@ class block_arup_mylearning_content {
                 $cell->attributes['class'] = 'text-left';
 
                 $cell->text = html_writer::link(
-                    new moodle_url('/course/view.php', array('id' => $course->id)),
-                    format_string($course->fullname)
+                        new moodle_url('/course/view.php', array('id' => $course->id)),
+                        format_string($course->fullname)
                 );
                 $cells[] = clone($cell);
 
@@ -338,11 +339,11 @@ class block_arup_mylearning_content {
     }
 
     protected function _get_myhistory_html() {
-        global $OUTPUT;
+        global $OUTPUT, $USER;
 
         $hascapabilities = array('addcpd' => false, 'editcpd' => false, 'deletecpd' => false);
         foreach ($hascapabilities as $capability => &$hascapability) {
-            $hascapability = has_capability('block/arup_mylearning:'.$capability, $this->_block->context);
+            $hascapability = has_capability('block/arup_mylearning:' . $capability, $this->_block->context);
         }
 
         $content = '';
@@ -352,23 +353,23 @@ class block_arup_mylearning_content {
         if ($this->has_content('halogen')) {
             $content .= html_writer::tag('p', get_string('halogen:historyavailable', 'block_arup_mylearning'));
             $halogenurl = new moodle_url('/my/index.php', array('tab' => 'halogen'));
-            $halogenlink = html_writer::link($halogenurl, get_string('halogen:viewhistory', 'block_arup_mylearning'), array('class' => 'btn btn-info'));
+            $halogenlink = html_writer::link($halogenurl, get_string('halogen:viewhistory', 'block_arup_mylearning'),
+                    array('class' => 'btn btn-info'));
             $content .= html_writer::tag('p', $halogenlink, array('class' => 'block_arup_mylearning_tabs'));
         }
 
-        $tapshistory = $this->_get_taps_history();
+        $tapshistory = \local_learningrecordstore\lrsentry::fetchbystaffid($USER->idnumber);
 
         $table = new html_table();
 
         $table->head = array();
         $headers = array(
-            array('text' => get_string('methodology', 'block_arup_mylearning'), 'class' => 'text-center'),
-            array('text' => get_string('course'), 'class' => 'text-left'),
-            array('text' => get_string('category'), 'class' => 'text-left'),
-            array('text' => get_string('date', 'block_arup_mylearning'), 'class' => 'text-left'),
-            array('text' => get_string('duration', 'block_arup_mylearning'), 'class' => 'text-left'),
-            array('text' => get_string('date:expiry', 'block_arup_mylearning'), 'class' => 'text-left'),
-            array('text' => get_string('actions', 'block_arup_mylearning'), 'class' => 'text-left actions'),
+                array('text' => get_string('methodology', 'block_arup_mylearning'), 'class' => 'text-center'),
+                array('text' => get_string('course'), 'class' => 'text-left'),
+                array('text' => get_string('date', 'block_arup_mylearning'), 'class' => 'text-left'),
+                array('text' => get_string('duration', 'block_arup_mylearning'), 'class' => 'text-left'),
+                array('text' => get_string('date:expiry', 'block_arup_mylearning'), 'class' => 'text-left'),
+                array('text' => get_string('actions', 'block_arup_mylearning'), 'class' => 'text-left actions'),
         );
         foreach ($headers as $col => $header) {
             $table->head[$col] = new html_table_cell(str_ireplace(' ', '&nbsp;', $header['text']));
@@ -382,90 +383,64 @@ class block_arup_mylearning_content {
         // Base cell for reuse.
         $cell = new html_table_cell();
         foreach ($tapshistory as $th) {
-            $timezone = new DateTimeZone($th->usedtimezone);
-
             $cells = array();
 
-            $cell->text = '';
+            $cell->text = $th->classtype;
             $cell->attributes['class'] = 'text-center';
             $cells[] = clone($cell);
 
             $cell->attributes['class'] = 'text-left';
 
-            $courseurl = false;
-            if (!empty($th->course)) {
-                $courseurl = new moodle_url('/course/view.php', array('id' => $th->course));
-            }
-            $coursename = format_string($th->coursename ? $th->coursename : $th->classname, true, ['escape' => false]);
-            $courselink = '';
+            $courseurl = $th->generateurl();
             if ($courseurl) {
-                $courselink = html_writer::link($courseurl, $coursename);
-            }
-            $cell->text = $courselink ? $courselink : $coursename;
-            $cells[] = clone($cell);
-
-            if (!empty($th->course)) {
-                $categoryurl = new moodle_url('/course/category.php', array('id' => $th->categoryid));
-                $cell->text = html_writer::link($categoryurl, format_string($th->categoryname));
+                $cell->text = html_writer::link($courseurl, format_string($th->providername));
             } else {
-                $cell->text = format_string($th->classcategory);
+                $cell->text = format_string($th->providername);
             }
+
             $cells[] = clone($cell);
 
-            if ($th->completiontime) {
-                $date = new DateTime(null, $timezone);
-                $date->setTimestamp($th->completiontime);
-                $data = str_ireplace(' ', '&nbsp;', $date->format('d M Y'));
-            } else {
-                $data = '';
-            }
-            $cell->text = $data;
+            $cell->text = userdate($th->completiontime);
             $cells[] = clone($cell);
 
-            $cell->text = $th->duration ? (float) $th->duration.'&nbsp;'.$th->durationunits : '';
+            $cell->text = $th->formatduration();
             $cells[] = clone($cell);
 
-            if ($th->expirydate) {
-                $date = new DateTime(null, $timezone);
-                $date->setTimestamp($th->expirydate);
-                $data = str_ireplace(' ', '&nbsp;', $date->format('d M Y'));
-            } else {
-                $data = '';
-            }
-            $cell->text = $data;
+            $cell->text = $th->formatexpirydate();
             $cells[] = clone($cell);
 
             $actions = array();
-            $modalurl = new moodle_url('/blocks/arup_mylearning/modal.php', array('id' => $th->id, 'instance' => $this->_block->instance->id));
+            $modalurl = new moodle_url('/blocks/arup_mylearning/modal.php',
+                    array('id' => $th->id, 'instance' => $this->_block->instance->id));
             $actions[] = $OUTPUT->action_icon(
-                '#',
-                new pix_icon(
-                    'icon_plus',
-                    get_string('more', 'block_arup_mylearning'),
-                    'block_arup_mylearning'
-                ),
-                null,
-                array(
-                    'data-toggle' => 'modal',
-                    'data-target' => '#info-modal',
-                    'data-label' => $coursename,
-                    'data-url' => $modalurl->out(false),
-                )
+                    '#',
+                    new pix_icon(
+                            'icon_plus',
+                            get_string('more', 'block_arup_mylearning'),
+                            'block_arup_mylearning'
+                    ),
+                    null,
+                    array(
+                            'data-toggle' => 'modal',
+                            'data-target' => '#info-modal',
+                            'data-label'  => $th->providername,
+                            'data-url'    => $modalurl->out(false),
+                    )
             );
 
             if ($hascapabilities['editcpd'] && !$th->locked) {
                 $editcpdurl = new moodle_url(
                         '/blocks/arup_mylearning/editcpd.php',
                         array('id' => $th->id, 'tab' => 'myhistory', 'instance' => $this->_block->instance->id)
-                        );
+                );
                 $actions[] = $OUTPUT->action_icon(
-                    $editcpdurl,
-                    new pix_icon(
-                        't/editstring',
-                        get_string('editcpd', 'block_arup_mylearning')
-                    ),
-                    null,
-                    array('class' => 'action-icon extra-action')
+                        $editcpdurl,
+                        new pix_icon(
+                                't/editstring',
+                                get_string('editcpd', 'block_arup_mylearning')
+                        ),
+                        null,
+                        array('class' => 'action-icon extra-action')
                 );
             }
 
@@ -473,16 +448,16 @@ class block_arup_mylearning_content {
                 $deletecpdurl = new moodle_url(
                         '/blocks/arup_mylearning/deletecpd.php',
                         array('id' => $th->id, 'tab' => 'myhistory', 'instance' => $this->_block->instance->id)
-                        );
+                );
                 $actions[] = $OUTPUT->action_icon(
-                    $deletecpdurl,
-                    new pix_icon(
-                        'icon_delete',
-                        get_string('deletecpd', 'block_arup_mylearning'),
-                        'block_arup_mylearning'
-                    ),
-                    null,
-                    array('class' => 'action-icon extra-action')
+                        $deletecpdurl,
+                        new pix_icon(
+                                'icon_delete',
+                                get_string('deletecpd', 'block_arup_mylearning'),
+                                'block_arup_mylearning'
+                        ),
+                        null,
+                        array('class' => 'action-icon extra-action')
                 );
             }
 
@@ -520,7 +495,7 @@ class block_arup_mylearning_content {
     }
 
     protected function _get_myhistory_export() {
-        global $CFG;
+        global $CFG, $USER;
 
         require_once("$CFG->libdir/excellib.class.php");
 
@@ -534,18 +509,18 @@ class block_arup_mylearning_content {
         $this->_worksheets[0] = $this->_workbook->add_worksheet(get_string('worksheet:history', 'block_arup_mylearning'));
 
         $fields = array(
-            'coursename' => get_string('course'),
-            'classcategory' => get_string('category'),
-            'healthandsafetycategory' => get_string('cpd:healthandsafetycategory', 'block_arup_mylearning'),
-            'provider' => get_string('provider', 'block_arup_mylearning'),
-            'location' => get_string('location', 'block_arup_mylearning'),
-            'duration' => get_string('duration', 'block_arup_mylearning'),
-            'durationunits' => get_string('durationunits', 'block_arup_mylearning'),
-            'classstartdate' => get_string('date:start', 'block_arup_mylearning'),
-            'completiontime' => get_string('date:completion', 'block_arup_mylearning'),
-            'certificateno' => get_string('certificateno', 'block_arup_mylearning'),
-            'expirydate' => get_string('date:expiry', 'block_arup_mylearning'),
-            'learningdescription' => get_string('learningdescription', 'block_arup_mylearning'),
+                'coursename'              => get_string('course'),
+                'classcategory'           => get_string('category'),
+                'healthandsafetycategory' => get_string('cpd:healthandsafetycategory', 'block_arup_mylearning'),
+                'provider'                => get_string('provider', 'block_arup_mylearning'),
+                'location'                => get_string('location', 'block_arup_mylearning'),
+                'duration'                => get_string('duration', 'block_arup_mylearning'),
+                'durationunits'           => get_string('durationunits', 'block_arup_mylearning'),
+                'starttime'          => get_string('date:start', 'block_arup_mylearning'),
+                'completiontime'          => get_string('date:completion', 'block_arup_mylearning'),
+                'certificateno'           => get_string('certificateno', 'block_arup_mylearning'),
+                'expirydate'              => get_string('date:expiry', 'block_arup_mylearning'),
+                'description'     => get_string('descriptionription', 'block_arup_mylearning'),
         );
 
         $col = 0;
@@ -554,40 +529,29 @@ class block_arup_mylearning_content {
             $col++;
         }
 
-        $tapshistory = $this->_get_taps_history();
+        $tapshistory = \local_learningrecordstore\lrsentry::fetchbystaffid($USER->idnumber);
 
         $row = 1;
         foreach ($tapshistory as $th) {
             $col = 0;
-            $timezone = new DateTimeZone($th->usedtimezone);
             foreach ($fields as $field => $fieldname) {
                 switch ($field) {
                     case 'coursename' :
-                        $data = $th->coursename ? $th->coursename : $th->classname;
+                        $data = $th->providername;
                         break;
                     case 'classcategory' :
-                        if (!empty($th->course)) {
-                            $data = format_string($th->categoryname);
-                        } else {
-                            $data = format_string($th->classcategory);
-                        }
+                        $data = format_string($th->classcategory);
                         break;
-                    case 'classstartdate' :
+                    case 'starttime' :
                     case 'completiontime' :
                     case 'expirydate' :
-                        if ($th->{$field} != 0) {
-                            $date = new DateTime(null, $timezone);
-                            $date->setTimestamp($th->{$field});
-                            $data = $date->format('d M Y');
-                        } else {
-                            $data = '';
-                        }
+                        $data = userdate($th->{$field});
                         break;
                     case 'duration' :
-                        $data = $th->duration ? (float) $th->duration : '';
+                        $data = $th->formatduration();
                         break;
-                    case 'learningdescription' :
-                        $data = $th->learningdesc;
+                    case 'descriptionription' :
+                        $data = $th->description;
                         break;
                     default :
                         $data = $th->{$field};
@@ -615,7 +579,8 @@ class block_arup_mylearning_content {
         global $OUTPUT;
         $content = '';
         $content .= $OUTPUT->heading(get_string('bookmarked', 'block_arup_mylearning'));
-        $content .= html_writer::tag('p', 'Coming soon, the ability to add modules you are interested in, but not ready to enrol on, to your wishlist for ease of access later.');
+        $content .= html_writer::tag('p',
+                'Coming soon, the ability to add modules you are interested in, but not ready to enrol on, to your wishlist for ease of access later.');
         return $content;
     }
 
@@ -683,7 +648,8 @@ class block_arup_mylearning_content {
         $halogenhistory = array();
         if ($dbman->table_exists('block_arup_mylearning_halogen')) {
             $isrecordset = true;
-            $halogenhistory = $DB->get_recordset('block_arup_mylearning_halogen', array('staffid' => $USER->idnumber), 'status_date DESC');
+            $halogenhistory =
+                    $DB->get_recordset('block_arup_mylearning_halogen', array('staffid' => $USER->idnumber), 'status_date DESC');
         }
 
         $content = '';
@@ -691,17 +657,18 @@ class block_arup_mylearning_content {
         $content .= html_writer::tag('p', get_string('halogen:intro', 'block_arup_mylearning'));
 
         $myhistoryurl = new moodle_url('/my/index.php', array('tab' => 'myhistory'));
-        $myhistorylink = html_writer::link($myhistoryurl, get_string('halogen:back', 'block_arup_mylearning'), array('class' => 'btn btn-primary'));
+        $myhistorylink = html_writer::link($myhistoryurl, get_string('halogen:back', 'block_arup_mylearning'),
+                array('class' => 'btn btn-primary'));
         $content .= html_writer::tag('p', $myhistorylink, array('class' => 'block_arup_mylearning_tabs actions'));
 
         $table = new html_table();
 
         $table->head = array();
         $headers = array(
-            array('text' => get_string('halogen:title', 'block_arup_mylearning'), 'class' => 'text-left'),
-            array('text' => get_string('halogen:completed', 'block_arup_mylearning'), 'class' => 'text-center'),
-            array('text' => get_string('halogen:score', 'block_arup_mylearning'), 'class' => 'text-center'),
-            array('text' => get_string('halogen:passfail', 'block_arup_mylearning'), 'class' => 'text-center'),
+                array('text' => get_string('halogen:title', 'block_arup_mylearning'), 'class' => 'text-left'),
+                array('text' => get_string('halogen:completed', 'block_arup_mylearning'), 'class' => 'text-center'),
+                array('text' => get_string('halogen:score', 'block_arup_mylearning'), 'class' => 'text-center'),
+                array('text' => get_string('halogen:passfail', 'block_arup_mylearning'), 'class' => 'text-center'),
         );
         foreach ($headers as $col => $header) {
             $table->head[$col] = new html_table_cell(str_ireplace(' ', '&nbsp;', $header['text']));
@@ -737,7 +704,7 @@ class block_arup_mylearning_content {
                     // Convert to percentage.
                     $hh->score = $hh->score * 100;
                 }
-                $cell->text = $hh->score.'%';
+                $cell->text = $hh->score . '%';
             } else {
                 $cell->text = '';
             }
@@ -792,8 +759,8 @@ class block_arup_mylearning_content {
 
         require_once("{$CFG->dirroot}/local/coursemetadata/lib.php");
         require_once("{$CFG->dirroot}/local/coursemetadata/field/{$this->_methodologyfield->datatype}/field.class.php");
-        $fieldclassname = 'coursemetadata_field_'.$this->_methodologyfield->datatype;
-        $fieldclass = new $fieldclassname($this->_methodologyfield->id, $courseid);
+        $fieldprovidername = 'coursemetadata_field_' . $this->_methodologyfield->datatype;
+        $fieldclass = new $fieldprovidername($this->_methodologyfield->id, $courseid);
 
         return $fieldclass->display_data();
     }
@@ -825,67 +792,25 @@ EOS;
         $params['userid'] = $USER->id;
         $tapsenrolments = $DB->get_records_sql($sql, $params);
         foreach ($tapsenrolments as $tapsenrolment) {
-            $return[$tapsenrolment->course][$tapsenrolment->id] = array($taps->get_status_type($tapsenrolment->bookingstatus) => $tapsenrolment->completiontime);
+            $return[$tapsenrolment->course][$tapsenrolment->id] =
+                    array($taps->get_status_type($tapsenrolment->bookingstatus) => $tapsenrolment->completiontime);
         }
         return $return;
     }
     /* OVERVIEW/MYTEACHING FUNCTIONS - END */
-
-    /* HISTORY FUNCTIONS - START */
-    protected function _get_taps_history() {
-        global $DB, $USER;
-
-        if (!$USER->idnumber) {
-            return array();
-        }
-
-        $taps = new \mod_tapsenrol\taps();
-
-        list($usql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
-        $sql = <<<EOS
-SELECT
-    lte.id, ltc.classname, c.fullname as coursename, ltc.classcategory, ltc.completiontime, ltc.duration, ltc.durationunits,
-        ltc.classsuppliername as provider, ltc.location, ltc.classstartdate,
-        ltc.usedtimezone,
-    ltc.courseid as course,
-    cat.id as categoryid, cat.name as categoryname
-FROM
-    {tapsenrol_class_enrolments} lte
-INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
-LEFT JOIN
-    {course} c
-    ON c.id = ltc.courseid
-LEFT JOIN
-    {course_categories} cat
-    ON cat.id = c.category
-WHERE
-    lte.userid = :userid
-    AND (lte.archived = 0 OR lte.archived IS NULL)
-    AND (
-        {$DB->sql_compare_text('lte.bookingstatus')} {$usql}
-        OR lte.bookingstatus IS NULL
-    )
-ORDER BY
-    lte.completiontime DESC
-EOS;
-        $params['userid'] = $USER->id;
-        $params['primaryflag'] = 'Y';
-
-        $tapshistory = $DB->get_records_sql($sql, $params);
-
-        return $tapshistory;
-    }
     /* HISTORY FUNCTIONS - END */
 
     /* UTILITY FUNCTIONS - START */
 
     protected function _get_export_button($tab) {
-        $url = new moodle_url('/blocks/arup_mylearning/export.php', array('tab' => $tab, 'instance' => $this->_block->instance->id));
+        $url = new moodle_url('/blocks/arup_mylearning/export.php',
+                array('tab' => $tab, 'instance' => $this->_block->instance->id));
         return html_writer::link($url, get_string('export:excel', 'block_arup_mylearning'), array('class' => 'btn'));
     }
 
     protected function _get_add_cpd_button($tab) {
-        $url = new moodle_url('/blocks/arup_mylearning/editcpd.php', array('tab' => $tab, 'instance' => $this->_block->instance->id));
+        $url = new moodle_url('/blocks/arup_mylearning/editcpd.php',
+                array('tab' => $tab, 'instance' => $this->_block->instance->id));
         $link = html_writer::tag('span', get_string('addcpd', 'block_arup_mylearning'));
         return html_writer::link($url, $link, array('class' => 'btn btn-primary'));
     }

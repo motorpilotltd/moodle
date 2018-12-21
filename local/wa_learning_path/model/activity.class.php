@@ -305,7 +305,7 @@ class activity {
                     $lrsrecord = new \local_learningrecordstore\lrsentry();
 
                     $lrsrecord->staffid = $DB->get_field('user', 'idnumber', array('id' => $userid));
-                    $lrsrecord->coursename = $activity->title;
+                    $lrsrecord->providername = $activity->title;
                     $lrsrecord->provider = $activity->provider;
                     $lrsrecord->completiontime = strtoupper(date('d-M-Y'));
                     $lrsrecord->duration = $activity->duration;

@@ -30,28 +30,49 @@ insert into {local_learningrecordstore} (provider,
                                            expirydate,
                                            classtype,
                                            starttime,
-                                           endtime)
-SELECT provider,
+                                           endtime,
+       locked)
+       SELECT (CASE WHEN mc.id IS NOT NULL
+      THEN 'moodle'
+      ELSE mlte.provider
+ END),
        healthandsafetycategory,
        location,
-       coalesce(providerid, courseid),
+       coalesce (providerid, courseid),
        staffid,
-       duration,
-       durationunits,
+       coalesce(mlte.duration, mca.duration),
+       coalesce(mlte.durationunits, mca.durationunits),
        classcompletiontime as completiontime,
-       learningdesc        as description,
+       coalesce (mlte.learningdesc, mca.description)        as description,
        certificateno,
-       coursename,
-       classcategory,
+       coalesce(coursename, mc.fullname, classname, learningdesc),
+       coalesce (classcategory, mcc.name),
        classcost,
        classcostcurrency,
-       timemodified,
+       mlte.timemodified,
        expirydate,
        classtype,
        classstarttime,
-       classendtime
-FROM {local_taps_enrolment}
-WHERE cpdid is not null
+       classendtime,
+       locked
+FROM {local_taps_enrolment} mlte
+left join {course} mc on mc.id = mlte.courseid
+left join {course_categories} mcc on mcc.id = mc.category
+left join {coursemetadata_arup} mca on mca.course = mlte.courseid
+WHERE cpdid is not null OR mlte.bookingstatus = 'Full Attendance'
 ");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'D' where durationunits = 'Day(s)'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'H' where durationunits = 'Hour(s)'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'HPM' where durationunits = 'Hour(s) Per Month'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'HPW' where durationunits = 'Hour(s) Per Week'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'M' where durationunits = 'Month(s)'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'MIN' where durationunits = 'Minute(s)'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'Q' where durationunits = 'Quarter Hour(s)'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'W' where durationunits = 'Week(s)'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'Y' where durationunits = 'Year(s)'");
+
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'D' where durationunits = 'days'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'H' where durationunits = 'hours'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'MIN' where durationunits = 'minutes'");
     }
 }

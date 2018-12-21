@@ -12,7 +12,7 @@ class certification_details_form extends \moodleform
     function definition()
     {
         global $DB;
-        
+
         $mform =& $this->_form;
         $editoroptions = $this->_customdata['editoroptions'];
         $overviewfilesoptions = $this->_customdata['overviewfilesoptions'];
@@ -98,16 +98,20 @@ class certification_details_form extends \moodleform
 
         $remotetagidconcat = dbshim::sql_group_concat('reg.name', ',', true);
 
-        $sql = "SELECT c.id as courseid, c.fullname as coursename, $remotetagidconcat as courseregion, c.shortname
+        $sql = "SELECT c.id as courseid, c.fullname as coursename, r.regions as courseregion, c.shortname
                 FROM {course} c 
-                LEFT JOIN {local_regions_reg_cou} regcou ON regcou.courseid = c.id
-                LEFT JOIN {local_regions_reg} reg ON reg.id = regcou.regionid
+                LEFT JOIN (
+                    SELECT regcou.courseid, $remotetagidconcat as regions 
+                    FROM {local_regions_reg_cou} regcou
+                    INNER JOIN {local_regions_reg} reg ON reg.id = regcou.regionid
+                    GROUP BY regcou.courseid
+                 ) AS r ON r.courseid = c.id
                 WHERE c.enddate = 0 OR c.enddate > :now AND c.visible = 1
                 GROUP BY c.id, c.fullname, c.shortname 
                 ORDER BY c.fullname ASC, shortname ASC, $remotetagidconcat ASC";
 
         $params = ['now' => time()];
-        
+
         $courses = $DB->get_records_sql($sql, $params);
 
         $selectoptions = [];
@@ -146,7 +150,7 @@ class certification_details_form extends \moodleform
         if (!empty($data['idnumber']) && $DB->get_record_sql('SELECT * FROM {certif} WHERE idnumber = ? AND id != ? AND deleted = ?', $params)) {
             $errors['idnumber'] = get_string('error:idnumberexists', 'local_custom_certification');
         }
-        
+
         $params = [];
         $params[] = $data['shortname'];
         $params[] = ($data['edit'] ? $certif->id : 0);

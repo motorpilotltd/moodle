@@ -119,7 +119,7 @@ class taps {
     );
 
     /** @var array duration units. */
-    private $_durationunitscode = array(
+    private static $_durationunitscode = array(
         '' => null,
         'D' => 'Day(s)',
         'H' => 'Hour(s)',
@@ -352,7 +352,11 @@ class taps {
      * @return array
      */
     public function get_durationunitscode() {
-        return $this->_durationunitscode;
+        return self::$_durationunitscode;
+    }
+
+    public static function resolvedurationunit($unit) {
+        return self::$_durationunitscode[$unit];
     }
 
     /**
@@ -434,9 +438,13 @@ class taps {
             $courseidwhere = ' AND courseid = :courseid';
         }
 
-        $activewhere = $activeonly ? ' AND active = 1' : '';
-        $archivedwhere = $archived ? '' : ' AND (archived = 0 OR archived IS NULL)';
-        $enrolments = $DB->get_records_select('tapsenrol_class_enrolments', "userid = :userid{$courseidwhere}{$activewhere}{$archivedwhere}", $params);
+        $activewhere = $activeonly ? ' AND lte.active = 1' : '';
+        $archivedwhere = $archived ? '' : ' AND (ltc.archived = 0 OR ltc.archived IS NULL)';
+        $sql = "SELECT * 
+                FROM {tapsenrol_class_enrolments} lte 
+                INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.id
+                WHERE userid = :userid $courseidwhere $activewhere $archivedwhere";
+        $enrolments = $DB->get_records_sql($sql, $params);
 
         return $enrolments;
     }

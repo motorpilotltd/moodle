@@ -359,7 +359,7 @@ EOS;
         $lrsrecord = new \local_learningrecordstore\lrsentry();
 
         $lrsrecord->staffid = $user->idnumber; // Set staffid (Only used to add CPD).
-        $lrsrecord->coursename = $session->get_name();
+        $lrsrecord->providername = $session->get_name();
         $lrsrecord->provider = $session->get_supplier();
         $lrsrecord->completiontime = $session->scheduler->get_date();
         $lrsrecord->duration = $session->scheduler->get_duration();

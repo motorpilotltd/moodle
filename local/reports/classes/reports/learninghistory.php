@@ -91,7 +91,7 @@ class learninghistory extends base {
 
     private function reportfields() {
         $this->displayfields = array(
-            'staffid',
+            'idnumber',
             'first_name',
             'last_name',
             'email_address',
@@ -111,13 +111,10 @@ class learninghistory extends base {
             'bookingstatus',
             'classcost',
             'classcostcurrency',
-            'cpd',
-            'learningdesc',
-            'classcategory',
+            'jobnumber',
             'classtype',
             'coursecode',
-            'provider',
-            'expirydate',
+            'classsuppliername',
             'location',
             'region_name',
             'geo_region',
@@ -129,36 +126,33 @@ class learninghistory extends base {
             'classname');
 
         $this->specialfields = array(
-            'cpd',
             'classstartdate',
             'classenddate',
             'bookingstatus',
             'coursename',
-            'classcategory',
+            'completiontime',
             'classcost',
-            'classcostcurrency',
-            'learningdesc');
+            'classcostcurrency');
 
         $this->textfilterfields = array(
             'actualregion' => 'dropdown',
             'georegion' => 'dropdown',
-            'cpd' => 'dropdown',
             'coursename' => 'char',
             'classname' => 'char',
             'location_name' => 'char',
-            'staffid' => 'int',
+            'idnumber' => 'int',
             'costcentre' => 'costcentre',
             'groupname' => 'char',
-            'leaver_flag' => 'yn',
+            'leaver_flag' => 'yn'
             );
 
         $this->filtertodb = array(
             'actualregion' => 'staff.REGION_NAME',
             'georegion' => 'staff.GEO_REGION',
-            'staffid' => 'staff.EMPLOYEE_NUMBER',
+            'idnumber' => 'u.idnumber',
             'classname' => 'ltc.classname',
             'coursename' => 'c.fullname',
-            'provider' => 'ltc.classsuppliername',
+            'classsuppliername' => 'ltc.classsuppliername',
             'location' => 'ltc.location',
             'location_name' => 'staff.LOCATION_NAME',
             'groupname' => 'staff.GROUP_NAME',
@@ -170,12 +164,11 @@ class learninghistory extends base {
             'classstartdate',
             'classenddate',
             'bookingplaceddate',
-            'expirydate',
             'completiontime'
             );
 
         $this->numericfields = array(
-            'staffid',
+            'idnumber',
             'company_code',
             'centre_code');
     }
@@ -265,19 +258,25 @@ class learninghistory extends base {
 
         $remotetagidconcat = \local_mssql\dbshim::sql_group_concat('reg.name', ',', true);
 
-        $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode, r.regions as courseregion
+        $sql = "SELECT 
+                  lte.*, 
+                  staff.*, 
+                  ltc.classstatus,ltc.classduration as duration, ltc.classdurationunits as durationunits, ltc.classstartdate, ltc.classenddate, ltc.classtype, ltc.classcost, ltc.classcostcurrency, ltc.pricebasis, ltc.classname, ltc.jobnumber, ltc.classsuppliername, ltc.location,  
+                  c.shortname as coursecode, c.fullname as coursename, 
+                  u.idnumber, r.regions as courseregion
                   FROM {tapsenrol_class_enrolments} as lte
                   INNER JOIN {user} u ON lte.userid = u.id
                   INNER JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON u.idnumber = staff.EMPLOYEE_NUMBER
-             LEFT JOIN {local_taps_class} as ltc
+             INNER JOIN {local_taps_class} as ltc
                     ON ltc.classid = lte.classid
-             LEFT JOIN {course} as c
+             INNER JOIN {course} as c
                     ON ltc.courseid = c.id
              LEFT JOIN (
                 SELECT regcou.courseid, $remotetagidconcat as regions 
                 FROM {local_regions_reg_cou} regcou
                 INNER JOIN {local_regions_reg} reg ON reg.id = regcou.regionid
+                GROUP BY regcou.courseid
              ) AS r ON r.courseid = c.id
                        $wherestring
               ORDER BY " . $this->sort . ' ' . $this->direction;
@@ -285,12 +284,13 @@ class learninghistory extends base {
         // Leave out the joins for taps_class and taps_course to speed up this query
         $sqlcount = "SELECT count(lte.id) as recnum
                   FROM {tapsenrol_class_enrolments} as lte
+                 INNER JOIN {local_taps_class} as ltc
+                        ON ltc.classid = lte.classid
                   INNER JOIN {user} u ON lte.userid = u.id
-                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
+                  INNER JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON u.idnumber = staff.EMPLOYEE_NUMBER
                        $wherestring";
 
-        //$DB->set_debug(1);
         $enrolments = array();
         $all = array();
         $this->errors = array();
@@ -495,7 +495,6 @@ class learninghistory extends base {
         }
     }
 
-
     /**
      * Get values for fields that are not really in the DB results and are derived from
      * some other values
@@ -506,7 +505,6 @@ class learninghistory extends base {
      */
     private function specialfield($key, $row) {
 
-        // Show classname in coursename column for CPD records
         if ($key == 'coursename') {
             return $row->coursename;
         }
@@ -516,17 +514,14 @@ class learninghistory extends base {
         }
 
         if ($key == 'classenddate') {
-            // CPD records use completiontime instead of classenddate
             if ($row->classtype == 'Self Paced') {
                 $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->completiontime);
                 return $this->myuserdate($date, $row);
             }
-
             // Default
             return $this->myuserdate($row->$key, $row);
         }
 
-        // Always show Full Attendance on in the Booking Status column when there is a cpdid.
         if ($key == 'bookingstatus') {
             return $row->bookingstatus;
         }
@@ -539,11 +534,6 @@ class learninghistory extends base {
             } else {
                 return $row->$key;
             }
-        }
-
-        // Show classcategory for CPD records
-        if ($key == 'classcategory') {
-            return $row->$key;
         }
 
         if ($key == 'classcost') {
@@ -565,22 +555,11 @@ class learninghistory extends base {
                 return '';
             }
         }
-
-        if ($key == 'learningdesc') {
-            return html_to_text($row->$key);
-        }
     }
 
     public function get_dropdown($field) {
         if ($field == 'actualregion' || $field == 'georegion') {
             return $this->get_regions($field);
-        }
-        if ($field == 'cpd') {
-            $options = array();
-            $options[''] = $this->mystr('cpdandlms');
-            $options['cpd'] = $this->mystr('cpd');
-            $options['lms'] = $this->mystr('lms');
-            return $options;
         }
     }
 
