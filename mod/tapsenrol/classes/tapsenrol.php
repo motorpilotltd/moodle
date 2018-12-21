@@ -1679,14 +1679,15 @@ EOS;
         );
         $attendedsql = <<<EOS
 SELECT
-    COUNT(id)
+    COUNT(lte.id)
 FROM
-    {tapsenrol_class_enrolments}
+    {tapsenrol_class_enrolments} lte
+              INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.classid
 WHERE
-    courseid = :courseid
+    ltc.courseid = :courseid
     AND userid = :userid
-    AND (archived = 0 OR archived IS NULL)
-    AND active = 1
+    AND (lte.archived = 0 OR lte.archived IS NULL)
+    AND lte.active = 1
     AND {$attendedcompare} {$attendedin}
 EOS;
         $return->attended = $DB->count_records_sql(

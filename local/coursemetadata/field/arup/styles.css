@@ -25,3 +25,9 @@ div.av_metadata {
 div.arupavcminfo {
     display: inline-block;
 }
+div.arupavcminfo {
+    width: 100%
+}
+div.course-content div.arupavcminfo .avblock.to-right {
+    overflow: visible;
+}

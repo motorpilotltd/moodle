@@ -664,11 +664,12 @@ class taps {
                 array('courseid' => $courseid),
                 $inparams
         );
-        $sql = "SELECT classid, COUNT(lte.id)
-                  FROM {tapsenrol_class_enrolments}
-                 WHERE courseid = :courseid AND (archived = 0 OR archived IS NULL) AND bookingstatus {$in}
-              GROUP BY classid
-              ORDER BY classid ASC";
+        $sql = "SELECT ltc.classid, COUNT(lte.id)
+                  FROM {tapsenrol_class_enrolments} lte
+                  INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.classid
+                 WHERE ltc.courseid = :courseid AND (ltc.archived = 0 OR ltc.archived IS NULL) AND bookingstatus {$in}
+              GROUP BY ltc.classid
+              ORDER BY ltc.classid ASC";
         $enrolments = $DB->get_records_sql_menu($sql, $params);
 
         foreach ($classes as $class) {
