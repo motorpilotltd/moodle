@@ -234,5 +234,22 @@ function xmldb_tapsenrol_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017051508, 'tapsenrol');
     }
 
+    if ($oldversion < 2017051509) {
+        $table = new xmldb_table('tapsenrol_class_enrolments');
+
+        $field = new xmldb_field('completiontime', XMLDB_TYPE_INTEGER, '10', null, false, null, null);
+        $dbman->change_field_notnull($table, $field);
+
+
+        $field = new xmldb_field('active', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1);
+        $dbman->change_field_notnull($table, $field);
+
+        $field = new xmldb_field('archived', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0);
+        $dbman->change_field_notnull($table, $field);
+
+        // Main savepoint reached.
+        upgrade_mod_savepoint(true, 2017051509, 'tapsenrol');
+    }
+
     return true;
 }
