@@ -134,11 +134,11 @@ if (isset($_POST['submit'])) {
                             $record = new stdClass();
                             $record->tapsenrolid = $tapsenrol->tapsenrol->id;
                             $record->userid = $user->id;
-                            $record->completed = $enrolmentid;
+                            $record->completed = true;
                             $record->timemodified = time();
                             $DB->insert_record('tapsenrol_completion', $record);
                         } else if (!$record->completed) {
-                            $record->completed = $enrolmentid;
+                            $record->completed = true;
                             $record->timemodified = time();
                             $DB->update_record('tapsenrol_completion', $record);
                         }

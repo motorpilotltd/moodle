@@ -242,11 +242,11 @@ EOS;
             $record = new \stdClass();
             $record->tapsenrolid = $tapsenrol->tapsenrol->id;
             $record->userid = $event->relateduserid;
-            $record->completed = $enrolment->id;
+            $record->completed = true;
             $record->timemodified = time();
             $DB->insert_record('tapsenrol_completion', $record);
         } else if (!$tccompletion->completed) {
-            $tccompletion->completed = $enrolment->id;
+            $tccompletion->completed = true;
             $tccompletion->timemodified = time();
             $DB->update_record('tapsenrol_completion', $tccompletion);
         }

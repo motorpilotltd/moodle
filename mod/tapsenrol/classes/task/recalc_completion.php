@@ -144,13 +144,13 @@ EOS;
                 $record = new \stdClass();
                 $record->tapsenrolid = $validenrolment->tid;
                 $record->userid = $validenrolment->uid;
-                $record->completed = $validenrolment->id;
+                $record->completed = true;
                 $record->timemodified = time();
                 $DB->insert_record('tapsenrol_completion', $record);
             } else if (!$validenrolment->tccompleted) {
                 $record = new \stdClass();
                 $record->id = $validenrolment->tcid;
-                $record->completed = $validenrolment->id;
+                $record->completed = true;
                 $record->timemodified = time();
                 $DB->update_record('tapsenrol_completion', $record);
             }
