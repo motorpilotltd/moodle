@@ -213,12 +213,21 @@ class theme_arup_format_topics_renderer extends format_topics_renderer {
             }
         }
 
+        if ($section->section == 0 && !empty($section->name)) {
+            $sectiontitle = format_string($section->name, true,
+                    array('context' => context_course::instance($course->id)));
+        } else if ($section->section == 0) {
+            $sectiontitle = '';
+        } else {
+            $sectiontitle = $this->section_title($section, $course);
+        }
+
         $o.= html_writer::start_tag('li', array('id' => 'section-'.$section->section,
             'class' => 'section main clearfix'.$sectionstyle, 'role'=>'region',
             'aria-label'=> get_section_name($course, $section)));
 
         // Create a span that contains the section title to be used to create the keyboard section move menu.
-        $o .= html_writer::tag('span', $this->section_title($section, $course), array('class' => 'hidden sectionname'));
+        $o .= html_writer::tag('span', $sectiontitle, array('class' => 'hidden sectionname'));
 
         $leftcontent = $this->section_left_content($section, $course, $onsectionpage);
         $o.= html_writer::tag('div', $leftcontent, array('class' => 'left side'));
@@ -242,7 +251,7 @@ class theme_arup_format_topics_renderer extends format_topics_renderer {
                 $availability.= $this->section_availability_message($section,
                         has_capability('moodle/course:viewhiddensections', $context));
             }
-            $o.= $this->output->heading($this->section_title($section, $course) . $availability, 3, 'sectionname');
+            $o.= $this->output->heading($sectiontitle . $availability, 3, 'sectionname');
         }
 
         $o.= html_writer::start_tag('div', array('class' => 'summary'));
