@@ -82,8 +82,6 @@ class courseformmoddifier {
 
         self::add_default_activities_complation($course, $internalworkflowid, $enrolmentregion);
 
-        $DB->execute("update {course_sections}mod/tapsenrol/classes/taps.php set summary = concat('[[arupmetadata]]', summary) where section = 0 and course = :courseid", ['courseid' => $course->id]);
-
         $transaction->allow_commit();
     }
 
@@ -219,6 +217,8 @@ class courseformmoddifier {
                 )
         );
         $event->trigger();
+
+        $DB->execute("update {course_sections} set summary = concat('[[arupmetadata]]', summary) where section = 0 and course = :courseid", ['courseid' => $course->id]);
 
         rebuild_course_cache($course->id);
     }
