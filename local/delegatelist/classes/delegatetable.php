@@ -271,7 +271,7 @@ class delegatetable extends table_sql {
                 $content =  html_writer::start_div('col-xs-12 p-0');
                 $content .=  html_writer::div($OUTPUT->user_picture($user, array('size' => 100, 'link' => false)), 'picture pull-left');
                 $content .= fullname($row) . html_writer::empty_tag('br');
-                $content .= $row->idnumber;mod/tapsenrol/classes/tapsenrol.php
+                $content .= $row->idnumber;
                 if (!empty($row->icq) || !empty($row->department)) {
                     $content .= html_writer::empty_tag('br') . $row->icq . ' ' . $row->department;
                 }
