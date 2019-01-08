@@ -288,6 +288,15 @@ abstract class cmform_class extends \moodleform {
         return $group;
     }
 
+    public function set_data($default_values) {
+        if (is_object($default_values)) {
+            $default_values = (array)$default_values;
+        }
+
+        $default_values['unlimitedattendees'] = $default_values['maximumattendees'] == -1;
+        parent::set_data($default_values);
+    }
+
     public function definition_after_data() {
         global $DB;
         $mform = $this->_form;
@@ -392,7 +401,7 @@ abstract class cmform_class extends \moodleform {
                 $data->classenddate = 0;
             }
         }
-        if (isset($data->unlimitedattendees) && $data->unlimitedattendees == 1) {
+        if (!empty($data->unlimitedattendees)) {
             $data->maximumattendees = -1;
         }
 
