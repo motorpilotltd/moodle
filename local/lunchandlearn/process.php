@@ -43,9 +43,9 @@ $url = new moodle_url('/local/lunchandlearn/process.php', array('action' => $act
 if ($eventid != 0) {
     $url->param('id', $eventid);
 }
-if ($courseid != SITEID) {
-    $url->param('course', $courseid);
-}
+
+$url->param('course', $course->id);
+
 if ($cal_y !== 0) {
     $url->param('cal_y', $cal_y);
 }

@@ -40,6 +40,9 @@ interface raw_event_retrieval_strategy_interface {
      * @param array|null    $groupsfilter    Array of groups to retrieve events for.
      * @param array|null    $coursesfilter   Array of courses to retrieve events for.
      * @param array|null    $categoriesfilter Array of categories to retrieve events for.
+* BEGIN CORE MOD *
+     * @param bool          $lunchlearn      Include lunchandlearn events.
+* END CORE MOD *
      * @param array|null    $whereconditions Array of where conditions to restrict results.
      * @param array|null    $whereparams     Array of parameters for $whereconditions.
      * @param string|null   $ordersql        SQL to order results.
@@ -53,6 +56,9 @@ interface raw_event_retrieval_strategy_interface {
         array $groupsfilter = null,
         array $coursesfilter = null,
         array $categoriesfilter = null,
+/* BEGIN CORE MOD */
+        $lunchlearn = true,
+/* END CORE MOD */
         array $whereconditions = null,
         array $whereparams = null,
         $ordersql = null,

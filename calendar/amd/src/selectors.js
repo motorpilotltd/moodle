@@ -30,6 +30,9 @@ define([], function() {
             course: "[data-eventtype-course]",
             group: "[data-eventtype-group]",
             user: "[data-eventtype-user]",
+/* BEGIN CORE MOD */
+            lunchandlearn: "[data-eventtype-lunchandlearn]",
+/* END CORE MOD */
         },
         popoverType: {
             site: "[data-popover-eventtype-site]",
@@ -37,6 +40,9 @@ define([], function() {
             course: "[data-popover-eventtype-course]",
             group: "[data-popover-eventtype-group]",
             user: "[data-popover-eventtype-user]",
+/* BEGIN CORE MOD */
+            lunchandlearn: "[data-eventtype-lunchandlearn]",
+/* END CORE MOD */
         },
         calendarPeriods: {
             month: "[data-period='month']",

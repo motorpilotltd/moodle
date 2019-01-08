@@ -98,6 +98,9 @@ class event_vault implements event_vault_interface {
         array $groupsfilter = null,
         array $coursesfilter = null,
         array $categoriesfilter = null,
+/* BEGIN CORE MOD */
+        $lunchlearn = true,
+/* END CORE MOD */
         $withduration = true,
         $ignorehidden = true,
         callable $filter = null
@@ -166,6 +169,9 @@ class event_vault implements event_vault_interface {
             $groupsfilter,
             $coursesfilter,
             $categoriesfilter,
+/* BEGIN CORE MOD */
+            $lunchlearn,
+/* END CORE MOD */
             $where,
             $params,
             "COALESCE(e.timesort, e.timestart) ASC, e.id ASC",

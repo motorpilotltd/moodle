@@ -427,26 +427,34 @@ class theme_arup_core_calendar_renderer extends core_calendar_renderer {
 
     public function fake_block_threemonths(calendar_information $calendar) {
         global $CFG;
-        require_once($CFG->dirroot . '/local/lunchandlearn/lib.php');
 
+        require_once($CFG->dirroot . '/local/lunchandlearn/lib.php');
         // Get the calendar type we are using.
         $calendartype = \core_calendar\type_factory::get_calendar_instance();
-
-        $date = $calendartype->timestamp_to_date_array($calendar->time);
-
-        $nextmonth = calendar_add_month($date['mon'], $date['year']);
-        $nextmonthtime = $calendartype->convert_to_gregorian($nextmonth[1], $nextmonth[0], 1);
-        $nextmonthtime = make_timestamp($nextmonthtime['year'], $nextmonthtime['month'], $nextmonthtime['day'],
-            $nextmonthtime['hour'], $nextmonthtime['minute']);
+        $time = $calendartype->timestamp_to_date_array($calendar->time);
 
         $content  = html_writer::start_tag('div', array('class' => 'minicalendarblock'));
-        $content .= calendar_get_mini($calendar->courses, $calendar->groups, $calendar->users, false, false, 'display', $calendar->courseid, $calendar->time);
+        $current = $calendar->time;
+        $calendar->set_time($current);
+        list($currenttime, $template) = calendar_get_view($calendar, 'minithree', false, false);
+        $content .= $this->render_from_template($template, $currenttime);
         $content .= html_writer::end_tag('div');
         $content .= html_writer::start_tag('div', array('class' => 'minicalendarblock'));
-        $content .= calendar_get_mini($calendar->courses, $calendar->groups, $calendar->users, false, false, 'display', $calendar->courseid, $nextmonthtime);
+
+
+        $nextmonthyear = $calendartype->get_next_month($time['year'], $time['mon']);
+        $next = $calendartype->convert_to_timestamp(
+            $nextmonthyear[1],
+            $nextmonthyear[0],
+            1
+        );
+        $calendar->set_time($next);
+        list($nextmonth, $template) = calendar_get_view($calendar, 'minithree', false, false);
+
+        $content .= $this->render_from_template($template, $nextmonth);
         $content .= html_writer::end_tag('div');
         $content .= html_writer::empty_tag('hr');
-        $content .= html_writer::div($this->navigation_node(lunchandlearn_add_event_key(), array('class' => 'block_tree list')), 'block_navigation block block_lal_ek');
+        $content .= html_writer::div($this->event_filter(), 'block_navigation block_lal_ek');
 
         return $content;
     }

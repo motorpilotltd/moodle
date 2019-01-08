@@ -153,6 +153,9 @@ $string['eventtypecourse'] = 'course';
 $string['eventtypemodule'] = 'module';
 $string['eventtypegroup'] = 'group';
 $string['eventtypeuser'] = 'user';
+/* BEGIN CORE MOD*/
+$string['eventtypelunchandlearn'] = 'lunchandlearn';
+/* END CORE MOD*/
 $string['hideeventtype'] = 'Hide {$a} events';
 $string['showeventtype'] = 'Show {$a} events';
 $string['hourly'] = 'Hourly';

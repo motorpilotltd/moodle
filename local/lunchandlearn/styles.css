@@ -405,3 +405,21 @@ table.event .bottom-bar span.attendance {
 .block_navigation.block_lal_ek .hasicon img {
 	display: inline-block;
 }
+
+.block_navigation.block_lal_ek li a {
+    text-decoration: none;
+    color: #3c3c3b;
+}
+
+.block_navigation.block_lal_ek li:hover {
+    background-color: #EEE;
+    font-weight: normal!important;
+}
+
+.block_navigation.block_lal_ek li span img.icon {
+    margin-right: -3px;
+    width: 22px;
+}
+.block_navigation.block_lal_ek li span {
+    margin-right: 7px;
+}

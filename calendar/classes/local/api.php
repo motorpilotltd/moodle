@@ -54,6 +54,9 @@ class api {
      * @param array|null    $usersfilter           Return only events for these users.
      * @param array|null    $groupsfilter          Return only events for these groups.
      * @param array|null    $coursesfilter         Return only events for these courses.
+* BEGIN CORE MOD *
+     * @param bool          $lunchlearn            If true, eventype lunchandlearn will be included
+* END CORE MOD *
      * @param bool          $withduration          If true return only events starting within specified
      *                                             timestart otherwise return in progress events as well.
      * @param bool          $ignorehidden          If true don't return hidden events.
@@ -72,6 +75,9 @@ class api {
         array $groupsfilter = null,
         array $coursesfilter = null,
         array $categoriesfilter = null,
+/* BEGIN CORE MOD */
+        $lunchlearn = true,
+/* END CORE MOD */
         $withduration = true,
         $ignorehidden = true,
         callable $filter = null
@@ -104,6 +110,9 @@ class api {
             $groupsfilter,
             $coursesfilter,
             $categoriesfilter,
+/* BEGIN CORE MOD */
+            $lunchlearn,
+/* END CORE MOD */
             $withduration,
             $ignorehidden,
             $filter

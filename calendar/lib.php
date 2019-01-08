@@ -1016,7 +1016,10 @@ class calendar_information {
 
     /** @var int A course id */
     public $courseid = null;
-
+/* BEGIN CORE MOD */
+    /** @var bool To display lunchandlearn event*/
+    public $lunchlearn = true;
+/* END CORE MOD */
     /** @var array An array of categories */
     public $categories = array();
 
@@ -3538,7 +3541,6 @@ function calendar_get_view(\calendar_information $calendar, $view, $includenavig
     // We need to extract 1 second to ensure that we don't get into the next day.
     $date->modify('-1 second');
     $tend = $date->getTimestamp();
-
     list($userparam, $groupparam, $courseparam, $categoryparam) = array_map(function($param) {
         // If parameter is true, return null.
         if ($param === true) {
@@ -3575,6 +3577,9 @@ function calendar_get_view(\calendar_information $calendar, $view, $includenavig
             $groupparam,
             $courseparam,
             $categoryparam,
+/* BEGIN CORE MOD */
+            $calendar->lunchlearn,
+/* END CORE MOD */
             true,
             true,
             function ($event) {
@@ -3810,6 +3815,9 @@ function calendar_get_filter_types() {
         'course',
         'group',
         'user',
+/* BEGIN CORE MOD */
+        'lunchandlearn'
+/* END CORE MOD */
     ];
 
     return array_map(function($type) {
@@ -3833,6 +3841,9 @@ function calendar_is_valid_eventtype($type) {
         'course',
         'category',
         'site',
+/* BEGIN CORE MOD */
+        'lunchandlearn'
+/* END CORE MOD */
     ];
     return in_array($type, $validtypes);
 }
@@ -3852,7 +3863,10 @@ function calendar_get_allowed_event_types(int $courseid = null) {
         'site' => false,
         'course' => false,
         'group' => false,
-        'category' => false
+        'category' => false,
+/* BEGIN CORE MOD */
+        'lunchandlearn' => false
+/* END CORE MOD */
     ];
 
     if (!empty($courseid) && $courseid != SITEID) {

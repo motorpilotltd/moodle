@@ -41,6 +41,9 @@ class raw_event_retrieval_strategy implements raw_event_retrieval_strategy_inter
         array $groupsfilter = null,
         array $coursesfilter = null,
         array $categoriesfilter = null,
+/* BEGIN CORE MOD */
+        $lunchlearn = true,
+/* END CORE MOD */
         array $whereconditions = null,
         array $whereparams = null,
         $ordersql = null,
@@ -53,6 +56,9 @@ class raw_event_retrieval_strategy implements raw_event_retrieval_strategy_inter
             !is_null($groupsfilter) ? $groupsfilter : true,
             !is_null($coursesfilter) ? $coursesfilter : true,
             !is_null($categoriesfilter) ? $categoriesfilter : true,
+/* BEGIN CORE MOD */
+            $lunchlearn,
+/* END CORE MOD */
             $whereconditions,
             $whereparams,
             $ordersql,
@@ -68,6 +74,9 @@ class raw_event_retrieval_strategy implements raw_event_retrieval_strategy_inter
      * @param array|int|boolean $users array of users, user id or boolean for all/no user events
      * @param array|int|boolean $groups array of groups, group id or boolean for all/no group events
      * @param array|int|boolean $courses array of courses, course id or boolean for all/no course events
+* BEGIN CORE MOD *
+     * @param bool $lunchlearn include lunchandlearn events
+* END CORE MOD *
      * @param string $whereconditions The conditions in the WHERE clause.
      * @param array $whereparams The parameters for the WHERE clause.
      * @param string $ordersql The ORDER BY clause.
@@ -81,6 +90,9 @@ class raw_event_retrieval_strategy implements raw_event_retrieval_strategy_inter
         $groups,
         $courses,
         $categories,
+/* BEGIN CORE MOD */
+        $lunchlearn,
+/* END CORE MOD */
         $whereconditions,
         $whereparams,
         $ordersql,
@@ -275,7 +287,12 @@ class raw_event_retrieval_strategy implements raw_event_retrieval_strategy_inter
             $subqueryconditions[] = "(ev.groupid = 0 AND ev.courseid = 0 AND ev.categoryid $incategories)";
             $subqueryparams = array_merge($subqueryparams, $incategoriesparams);
         }
-
+/* BEGIN CORE MOD */
+        // Includes lunchandlearn eventys
+        if ($lunchlearn === true) {
+            $subqueryconditions[] = "(ev.eventtype = 'lunchandlearn')";
+        }
+/* END CORE MOD */
         // Build the WHERE condition for the sub-query.
         if (!empty($subqueryconditions)) {
             $subquerywhere = 'WHERE ' . implode(" OR ", $subqueryconditions);
