@@ -266,6 +266,6 @@ EOS;
             $completiontime = time();
         }
 
-        $tapsenrol->taps->set_status($enrolment->id, 'Full Attendance', $completiontime);
+        $tapsenrol->taps->set_status($enrolment, 'Full Attendance', $completiontime);
     }
 }

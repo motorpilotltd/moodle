@@ -241,21 +241,21 @@ class tapsenrol {
         $result->message = '';
 
         $a = new stdClass();
+        $class = $this->taps->get_class_by_id($classid);
 
         if ($result->success) {
             $this->enrolment_check($userid, false);
-            $classtype = $this->taps->get_classtype_type($result->enrolment->classtype);
+            $classtype = $this->taps->get_classtype_type($class->classtype);
             $statustype = $this->taps->get_status_type($result->enrolment->bookingstatus);
             if (!$classtype || !get_string_manager()->string_exists('status:'.$classtype.':'.$statustype, 'tapsenrol')) {
                 $a->message = get_string('enrol:error:unavailable', 'tapsenrol');
             } else {
                 $a->message = get_string('status:'.$classtype.':'.$statustype, 'tapsenrol');
             }
-            $a->classname = $result->enrolment->classname;
-            $a->coursename = $result->enrolment->coursename;
+            $a->classname = $class->classname;
+            $a->coursename = $class->coursename;
             $result->message = get_string('enrol:alert:success', 'tapsenrol', $a);
         } else {
-            $class = $this->taps->get_class_by_id($classid);
             $a->classname = empty($class->classname) ? '?' : $class->classname;
             $a->coursename = empty($class->coursename) ? '?' : $class->coursename;
             $a->message = $result->status;
@@ -285,7 +285,7 @@ class tapsenrol {
             return $return;
         }
 
-        $result = $this->taps->set_status($enrolment->id, $status);
+        $result = $this->taps->set_status($enrolment, $status);
         $result->message = '';
 
         $a = new stdClass();
@@ -763,7 +763,7 @@ EOS;
             }
         }
 
-        $result = $this->taps->set_status($enrolment->id, $status);
+        $result = $this->taps->set_status($enrolment, $status);
 
         if (!$result->success) {
             $result->message = 'FAILED: '.$result->status;
