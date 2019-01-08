@@ -17,44 +17,91 @@
 namespace local_admin;
 
 class courseformmoddifier {
+    public static function getcurrentenrolmentroleid($courseid) {
+        $instances = enrol_get_instances($courseid, false);
+
+        foreach ($instances as $instance) {
+            if ($instance->enrol == 'manual' || $instance->enrol == 'self') {
+                return $instance->roleid;
+            }
+        }
+    }
+
+    public static function iseditableasarupdefault($courseid) {
+        global $DB;
+
+        if (empty($courseid)) {
+            return true;
+        }
+
+        // Check enrolments are set as expected.
+        $instances = enrol_get_instances($courseid, false);
+
+        if (count($instances) != 3) {
+            return false;
+        }
+
+        $manualenrol = null;
+        $guestenrol = null;
+        $selfenrol = null;
+
+        foreach ($instances as $instance) {
+            if ($instance->enrol == 'manual') {
+                $manualenrol = $instance;
+            }
+            if ($instance->enrol == 'guest') {
+                $guestenrol = $instance;
+            }
+            if ($instance->enrol == 'self') {
+                $selfenrol = $instance;
+            }
+        }
+
+        if (is_null($guestenrol) || is_null($selfenrol) || is_null($manualenrol)) {
+            return false;
+        }
+
+        if ($manualenrol->roleid !== $selfenrol->roleid) {
+            return false;
+        }
+
+        // Check tapsenrol activity exists.
+        $taps = $DB->get_record('tapsenrol', ['course' => $courseid]);
+
+        if (!$taps) {
+            return false;
+        }
+
+        return true;
+    }
+
     public static function alter_definition(\MoodleQuickForm $mform) {
         global $PAGE;
 
         $PAGE->requires->js_call_amd('local_admin/enhance', 'initialise');
 
         $courseid = $mform->getElementValue('id');
-
         $systemcontext = \context_system::instance();
-        if (!has_capability("local/coursemetadata:accessall", $systemcontext)) {
-            self::freezeandhideunwantedelements($mform);
+        $arupdefault = true;
 
-            if (empty($courseid)) {
-                self::addarupelements($mform);
-            }
-        } else {
-            $arupdefaultcourse = $mform->createElement('selectyesno', 'arupdefaultcourse', get_string('arupdefaultcourse', 'local_admin'));
+        if (has_capability("local/coursemetadata:accessall", $systemcontext)) {
+            $arupdefaultcourse =
+                    $mform->createElement('selectyesno', 'arupdefaultcourse', get_string('arupdefaultcourse', 'local_admin'));
             $mform->insertElementBefore($arupdefaultcourse, 'fullname');
             $mform->setDefault('arupdefaultcourse', true);
 
             $mform->registerNoSubmitButton('updatearupdefaultcourse');
             $mform->addElement('submit', 'updatearupdefaultcourse', get_string('updatearupdefaultcourse', 'local_admin'));
 
-            if ($mform->_flagSubmitted) {
-                $default = $mform->getElementValue('arupdefaultcourse');
-                $arupdefault = isset($default[0]) && !empty($default[0]);
-            } else if (!empty($courseid)) {
-                $arupdefault = false;
-            } else {
-                $arupdefault = true;
+            $arupdefault = !$mform->_flagSubmitted || !empty($mform->getElementValue('arupdefaultcourse'));
+        }
+
+        if ($arupdefault) {
+            if (empty($courseid) || self::iseditableasarupdefault($courseid)) {
+                self::addarupelements($mform, $courseid);
             }
 
-            if ($arupdefault) {
-                if (empty($courseid)) {
-                    self::addarupelements($mform);
-                }
-
-                self::freezeandhideunwantedelements($mform);
-            }
+            self::freezeandhideunwantedelements($mform);
         }
     }
 
@@ -83,6 +130,36 @@ class courseformmoddifier {
         self::add_default_activities_complation($course, $internalworkflowid, $enrolmentregion);
 
         $transaction->allow_commit();
+    }
+
+    public static function post_update($course, $data = null) {
+        global $DB, $CFG;
+
+        require_once("$CFG->dirroot/mod/tapsenrol/lib.php");
+
+        if (!isset($data) || $data->arupdefaultcourse == false || !self::iseditableasarupdefault($course->id)) {
+            return;
+        }
+
+        $instances = enrol_get_instances($course->id, false);
+
+        foreach ($instances as $instance) {
+            $instance->roleid = $data->enrolmentrole;
+            if ($instance->enrol == 'manual') {
+                $enrolself = enrol_get_plugin('self');
+                $enrolself->update_instance($instance, $instance);
+            }
+            if ($instance->enrol == 'self') {
+                $enrolself = enrol_get_plugin('self');
+                $enrolself->update_instance($instance, $instance);
+            }
+        }
+
+        $taps = $DB->get_record('tapsenrol', ['course' => $course->id]);
+        $taps->internalworkflowid = $data->internalworkflowid;
+        $taps->region = $data->enrolmentregion;
+        $taps->instance = $taps->id;
+        tapsenrol_update_instance($taps, null);
     }
 
     private static function add_default_enrols($course, $enrolmentrole) {
@@ -218,7 +295,8 @@ class courseformmoddifier {
         );
         $event->trigger();
 
-        $DB->execute("update {course_sections} set summary = concat('[[arupmetadata]]', summary) where section = 0 and course = :courseid", ['courseid' => $course->id]);
+        $DB->execute("update {course_sections} set summary = concat('[[arupmetadata]]', summary) where section = 0 and course = :courseid",
+                ['courseid' => $course->id]);
 
         rebuild_course_cache($course->id);
     }
@@ -265,7 +343,7 @@ class courseformmoddifier {
      * @param \MoodleQuickForm $mform
      * @param $DB
      */
-    private static function addarupelements(\MoodleQuickForm $mform) {
+    private static function addarupelements(\MoodleQuickForm $mform, $courseid) {
         global $DB;
 
         $mform->addElement('html', \html_writer::tag('div', ' ', ['class' => 'hidden', 'id' => 'id_updatecourseformat']));
@@ -279,13 +357,14 @@ class courseformmoddifier {
         $mform->insertElementBefore($enrolmentrole, 'courseformathdr');
         $mform->addRule('enrolmentrole', null, 'required', null, 'client');
         $mform->addHelpButton('enrolmentrole', 'enrolmentrole', 'local_admin');
-        $mform->setDefault('enrolmentrole', get_config('local_admin', 'default_enrolment_role'));
 
-        $dbregionoptions =
-                $DB->get_records_select_menu('local_regions_reg', 'userselectable = 1', array(), 'name DESC', 'id, name');
-        $regionoptions = array(0 => get_string('global', 'local_regions')) + $dbregionoptions;
-        $size = min(array(count($regionoptions), 10));
-        $regionattributes = array('size' => $size, 'style' => 'min-width:200px');
+        if (!empty($courseid)) {
+            $defaultenrolmentroleid = \local_admin\courseformmoddifier::getcurrentenrolmentroleid($courseid);
+        } else {
+            $defaultenrolmentroleid = get_config('local_admin', 'default_enrolment_role');
+        }
+
+        $mform->setDefault('enrolmentrole', $defaultenrolmentroleid);
 
         $internalworkflowhdr =
                 $mform->createElement('header', 'internalworkflowhdr', get_string('internalworkflowhdr', 'local_admin'));
@@ -299,10 +378,25 @@ class courseformmoddifier {
         $mform->addRule('internalworkflowid', null, 'required', null, 'client');
         $mform->addHelpButton('internalworkflowid', 'internalworkflow', 'tapsenrol');
 
+        $dbregionoptions =
+                $DB->get_records_select_menu('local_regions_reg', 'userselectable = 1', array(), 'name DESC', 'id, name');
+        $regionoptions = array(0 => get_string('global', 'local_regions')) + $dbregionoptions;
+        $size = min(array(count($regionoptions), 10));
+        $regionattributes = array('size' => $size, 'style' => 'min-width:200px');
+
         $enrolmentregion = $mform->createElement('select', 'enrolmentregion', get_string('enrolment_region_mapping', 'tapsenrol'),
                 $regionoptions, $regionattributes);
         $mform->insertElementBefore($enrolmentregion, 'courseformathdr');
+
         $enrolmentregion->setMultiple(true);
+        if (!empty($courseid)) {
+            $taps = $DB->get_record('tapsenrol', ['course' => $courseid]);
+            $mform->setDefault('internalworkflowid', $taps->internalworkflowid);
+
+            $regions = $DB->get_records_menu('tapsenrol_region', array('tapsenrolid' => $taps->id), 'id', 'regionid as id, regionid as id2');
+            $mform->setDefaults(['enrolmentregion' => $regions]);
+        }
+
         $enrolmenthint = \html_writer::tag('div', get_string('overrideregions', 'tapsenrol'), array('class' => 'felement fselect'));
         $enrolmenthint = $mform->createElement('html', \html_writer::tag('div', $enrolmenthint, array('class' => 'fitem')));
         $mform->insertElementBefore($enrolmenthint, 'courseformathdr');

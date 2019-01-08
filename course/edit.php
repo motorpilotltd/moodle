@@ -209,6 +209,7 @@ if ($editform->is_cancelled()) {
 /* END CORE MOD - /local/regions */
 /* BEGIN CORE MOD - /local/coursemetadata */
         coursemetadata_save_data($data);
+        \local_admin\courseformmoddifier::post_update($course, $data);
 /* END CORE MOD - /local/coursemetadata */
         // Set the URL to take them too if they choose save and display.
         $courseurl = new moodle_url('/course/view.php', array('id' => $course->id));
