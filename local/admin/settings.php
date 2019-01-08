@@ -32,6 +32,17 @@ $systemcontext = context_system::instance();
 if ($hassiteconfig
         || has_capability('local/admin:testemails', $systemcontext)) {
 
+    $buildcategoryid = $DB->get_field('course_categories', 'id', ['idnumber' => 'build']);
+    if ($buildcategoryid) {
+        $ADMIN->add('courses',
+                new admin_externalpage('buildnewcourse', new lang_string('buildnewcourse', 'local_admin'),
+                        new moodle_url('/course/edit.php', ['category' => $buildcategoryid]),
+                        array('moodle/course:create')
+                ),
+                'coursemgmt'
+        );
+    }
+
     $ADMIN->add(
             'local_admin',
             new admin_externalpage(

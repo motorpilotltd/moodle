@@ -27,6 +27,8 @@ $string['admin:testemails'] = 'Test emails';
 $string['adminfunctions'] = 'Admin functions';
 $string['arupdefaultcourse'] = 'Pre-configure standard Arup course';
 
+$string['buildnewcourse'] = 'Build new course';
+
 $string['default_enrolment_role'] = 'Default enrolment role';
 
 $string['enrolment'] = 'Enrolment details';
