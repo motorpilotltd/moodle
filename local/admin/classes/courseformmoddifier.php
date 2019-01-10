@@ -93,7 +93,7 @@ class courseformmoddifier {
             $mform->registerNoSubmitButton('updatearupdefaultcourse');
             $mform->addElement('submit', 'updatearupdefaultcourse', get_string('updatearupdefaultcourse', 'local_admin'));
 
-            $arupdefault = !$mform->_flagSubmitted || !empty($mform->getElementValue('arupdefaultcourse'));
+            $arupdefault = !$mform->_flagSubmitted || !empty($mform->getElementValue('arupdefaultcourse')[0]);
         }
 
         if ($arupdefault) {
