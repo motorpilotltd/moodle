@@ -95,6 +95,10 @@ if (empty($collapsetocwinsize)) {
     $collapsetocwinsize = intval($collapsetocwinsize);
 }
 
+/* BEGIN CORE MOD */
+$document_domain = scorm_get_document_domain($scorm);
+/* END CORE MOD */
+
 require_login($course, false, $cm);
 
 $strscorms = get_string('modulenameplural', 'scorm');
@@ -195,6 +199,15 @@ $PAGE->requires->string_for_js('hide', 'moodle');
 $PAGE->requires->string_for_js('show', 'moodle');
 $PAGE->requires->string_for_js('popupsblocked', 'scorm');
 
+/* BEGIN CORE MOD */
+if(!empty($document_domain) && $document_domain) {
+?>
+    <script type="text/javascript">
+        document.domain = "<?php echo $document_domain;?>";
+    </script>
+<?php
+}
+/* END CORE MOD */
 $name = false;
 
 echo html_writer::start_div('', array('id' => 'scormpage'));

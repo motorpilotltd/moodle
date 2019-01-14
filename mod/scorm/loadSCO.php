@@ -46,6 +46,9 @@ if (!empty($id)) {
 } else {
     print_error('missingparameter');
 }
+/* BEGIN CORE MOD */
+$document_domain = scorm_get_document_domain($scorm);
+/* END CORE MOD */
 
 $PAGE->set_url('/mod/scorm/loadSCO.php', array('scoid' => $scoid, 'id' => $cm->id));
 
@@ -96,6 +99,16 @@ $lmsapi = (scorm_version_check($scorm->version, SCORM_12) || empty($scorm->versi
 echo html_writer::start_tag('html');
 echo html_writer::start_tag('head');
 echo html_writer::tag('title', 'LoadSCO');
+
+/* BEGIN CORE MOD */
+if(!empty($document_domain) && $document_domain) {
+?>
+    <script type="text/javascript">
+        document.domain = "<?php echo $document_domain;?>";
+    </script>
+<?php
+}
+/* END CORE MOD */
 ?>
     <script type="text/javascript">
     //<![CDATA[
