@@ -478,7 +478,7 @@ class index {
         $appraiseefilter = '';
         $cyclejoin = '';
         $cyclefilter = '';
-        $orderby = 'u.lastname ASC, u.firstname ASC';
+        $orderby = 'u.lastname ASC, u.firstname ASC, aa.created_date DESC';
 
         if (!$appraiseeid) {
             // Only applicable if not searching for a specific aprpaisee.

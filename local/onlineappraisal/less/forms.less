@@ -1,6 +1,27 @@
 .mform {
     .input-group {
         max-width: 300px;
+        &.ldppotentialnew {
+            max-width: 505px;
+
+            input {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            div.input-group-addon {
+                padding: 0;
+            }
+
+            button {
+                border: none;
+                margin: 0;
+                background: transparent;
+                padding: 0;
+                width: 33px;
+                height: 28px;
+            }
+        }
     }
     .fitem {
         .fitemtitle,
@@ -90,10 +111,12 @@
             padding: 4px 12px;
             min-height: 70px;
         }
-        .fcheckbox > span > label {
+        .fcheckbox > span > label,
+        .fadvcheckbox > span > label {
             display: inline;
         }
-        &.fitem_fcheckbox .fitemtitle {
+        &.fitem_fcheckbox .fitemtitle,
+        &.fitem_fadvcheckbox .fitemtitle {
             display: none;
         }
         &.oa-repeating-element .felement .oa-repeating-element {
