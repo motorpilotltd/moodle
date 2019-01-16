@@ -1665,6 +1665,7 @@ $string['itadmin:deletefeedback'] = 'Delete Feedback';
 $string['itadmin:feedbackdeleted'] = 'Feedback Deleted';
 $string['itadmin:faqcontent'] = '<h4>How do I change the status of an appraisal?</h4>
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ullamcorper, metus laoreet efficitur maximus, elit lorem egestas justo, sed lacinia nisl urna a nibh. Vestibulum vel nunc massa. Cras sit amet turpis accumsan, luctus felis sed, elementum diam. Sed eu metus tempor turpis auctor scelerisque at vel lectus. Pellentesque odio turpis, venenatis id nulla in, eleifend maximus sem. Aliquam vitae vestibulum felis. Integer ultrices neque vitae odio aliquam, nec tristique enim vulputate. Pellentesque porta sagittis diam vitae facilisis. Duis eleifend iaculis neque, non luctus turpis cursus sed. In eget nibh quis enim finibus pharetra vel fringilla arcu. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.';
+$string['itadmin:feedbackstatus:draft'] = "DRAFT";
 
 // Fake blocks.
 $string['navigation'] = 'Navigation';
