@@ -1520,9 +1520,7 @@ class certification_report {
                 if (isset($data['viewtotal']['certifications'][$certificationid]) && $data['viewtotal']['certifications'][$certificationid]['progress'] !== null) {
                     if (isset($certification['exemptionid']) && $certification['exemptionid'] > 0) {
                         $line[] = get_string('notrequired', 'block_certification_report');
-                        if ($view != 'users') {
-                            $line[] = get_string('notrequired', 'block_certification_report');
-                        }
+                        $line[] = get_string('notrequired', 'block_certification_report');
                     } elseif ($view == 'users') {
                         // Progreess cell
                         $line[] = (!empty($certification['progress']))? $certification['progress'] . '%' : get_string('na', 'block_certification_report');
