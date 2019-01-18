@@ -1522,14 +1522,19 @@ class certification_report {
                         $line[] = get_string('notrequired', 'block_certification_report');
                         $line[] = get_string('notrequired', 'block_certification_report');
                     } elseif ($view == 'users') {
-                        // Progreess cell
-                        $line[] = (!empty($certification['progress']))? $certification['progress'] . '%' : get_string('na', 'block_certification_report');
 
-                        // Completion date cell
-                        if (isset($certification['completiondate']) && $certification['completiondate'] > 0) {
-                            $line[] = strtoupper(userdate($certification['completiondate'], get_string('strftimedatefull', 'block_certification_report')));
-                        } else {
+                        if ($certification['progress'] === null) {
                             $line[] = get_string('na', 'block_certification_report');
+                            $line[] = get_string('na', 'block_certification_report');
+                        } else {
+                            // Progress cell.
+                            $line[] = $certification['progress'] . '%';
+                            // Completion date cell.
+                            if (empty($certification['completiondate'])) {
+                                $line[] = '';
+                            } else {
+                                $line[] = strtoupper(userdate($certification['completiondate'], get_string('strftimedatefull', 'block_certification_report')));
+                            }
                         }
                     } else {
                         $line[] = round(($certification['progress']/100) * $certification['userscounter']);
