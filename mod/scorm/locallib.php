@@ -2474,7 +2474,7 @@ function scorm_get_document_domain(stdClass $scorm) {
 
     $doc_dom_url = new moodle_url($doc_dom);
     $doc_dom_url->set_scheme('http');
-    if (url_appears_valid_url($doc_dom_url->out())) {
+    if (scorm_url_appears_valid_url($doc_dom_url->out())) {
         return $doc_dom;
     }
     return null;
@@ -2487,7 +2487,7 @@ function scorm_get_document_domain(stdClass $scorm) {
  * @param $url
  * @return bool true is seems valid, false if definitely not valid URL
  */
-function url_appears_valid_url($url) {
+function scorm_url_appears_valid_url($url) {
     if (preg_match('/^(\/|https?:|ftp:)/i', $url)) {
         // note: this is not exact validation, we look for severely malformed URLs only
         return (bool)preg_match('/^[a-z]+:\/\/([^:@\s]+:[^@\s]+@)?[a-z0-9_\.\-]+(:[0-9]+)?(\/[^#]*)?(#.*)?$/i', $url);
