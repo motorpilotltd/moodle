@@ -265,6 +265,9 @@ class certification
         }
         switch ($assignment->assignmenttype) {
             case self::ASSIGNMENT_TYPE_AUDIENCE:
+                if (!$DB->record_exists('cohort', ['id' => $assignment->assignmenttypeid, 'visible' => 1])) {
+                    return [];
+                }
                 $cohortmembersresult = \core_cohort_external::get_cohort_members([$assignment->assignmenttypeid]);
                 $cohortmembers = array_shift($cohortmembersresult);
                 $users = $cohortmembers['userids'];
@@ -418,6 +421,7 @@ class certification
             SELECT
                 c.id,
                 c.name,
+                c.visible,
                 ca.id as assignmentid,
                 (SELECT
                   COUNT(1)
@@ -432,6 +436,7 @@ class certification
             GROUP BY
               c.id,
               c.name,
+              c.visible,
               ca.id
         ';
 
