@@ -725,7 +725,7 @@ class certification
      * @param $body - body
      * @param $triggertime - number of seconds before action, when message should be send (i.e. X days before duedate)
      */
-    public static function set_message_details($id, $certifid, $messagetype, $recipient, $recipientemail, $subject, $body, $triggertime)
+    public static function set_message_details($id, $certifid, $messagetype, $recipient, $recipientemail, $subject, $body, $triggertime, $donotsendtime)
     {
         global $DB;
         $message = new \stdClass();
@@ -736,6 +736,7 @@ class certification
         $message->recipient = $recipient;
         $message->recipientemail = $recipientemail;
         $message->triggertime = $triggertime;
+        $message->donotsendtime = $donotsendtime;
         if ($id > 0) {
             $message->id = $id;
             $DB->update_record('certif_messages', $message);
@@ -1036,7 +1037,8 @@ class certification
                 $message->recipientemail,
                 $message->subject,
                 $message->body,
-                $message->triggertime
+                $message->triggertime,
+                $message->donotsendtime
             );
         }
 

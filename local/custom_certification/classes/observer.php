@@ -29,7 +29,7 @@ class local_custom_certification_observer {
      * @param \local_custom_certification\event\user_assignment_created $event
      */
     public static function user_assignment_created(\local_custom_certification\event\user_assignment_created $event) {
-        $messages = local_custom_certification\message::get_message_templates($event->other['certifid'], local_custom_certification\message::TYPE_ENROLLMENT);
+        $messages = local_custom_certification\message::get_message_templates($event->other['certifid'], local_custom_certification\message::TYPE_ENROLMENT);
         foreach($messages as $message){
             local_custom_certification\message::add_message($message->id, $event->other['userid']);
         }
@@ -40,7 +40,7 @@ class local_custom_certification_observer {
      * @param \local_custom_certification\event\user_assignment_deleted $event
      */
     public static function user_assignment_deleted(\local_custom_certification\event\user_assignment_deleted $event) {
-        $messages = local_custom_certification\message::get_message_templates($event->other['certifid'], local_custom_certification\message::TYPE_UNENROLLMENT);
+        $messages = local_custom_certification\message::get_message_templates($event->other['certifid'], local_custom_certification\message::TYPE_UNENROLMENT);
         foreach($messages as $message){
             local_custom_certification\message::add_message($message->id, $event->other['userid']);
         }
@@ -52,19 +52,7 @@ class local_custom_certification_observer {
      * @param \local_custom_certification\event\certification_completed $event
      */
     public static function certification_completed(\local_custom_certification\event\certification_completed $event) {
-        $messages = local_custom_certification\message::get_message_templates($event->other['certifid'], local_custom_certification\message::TYPE_CERTIFICATION_COMPLETED);
-        foreach($messages as $message){
-            local_custom_certification\message::add_message($message->id, $event->other['userid']);
-        }
-    }
-
-    /**
-     * Triggered via certification_expired event.
-     *
-     * @param \local_custom_certification\event\certification_expired $event
-     */
-    public static function certification_expired(\local_custom_certification\event\certification_expired $event) {
-        $messages = local_custom_certification\message::get_message_templates($event->other['certifid'], local_custom_certification\message::TYPE_CERTIFICATION_EXPIRED);
+        $messages = local_custom_certification\message::get_message_templates($event->other['certifid'], local_custom_certification\message::TYPE_COMPLETED);
         foreach($messages as $message){
             local_custom_certification\message::add_message($message->id, $event->other['userid']);
         }
@@ -80,13 +68,13 @@ class local_custom_certification_observer {
 
         $query = "
             SELECT
-                DISTINCT 
+                DISTINCT
                 cua.userid,
-                cua.certifid 
+                cua.certifid
             FROM {certif_user_assignments} cua
             JOIN {certif_courseset_courses} ccc ON ccc.certifid = cua.certifid
             JOIN {certif} c ON c.id = cua.certifid
-            WHERE cua.userid = :userid 
+            WHERE cua.userid = :userid
             AND ccc.courseid = :courseid
             AND c.visible = :visible
             AND c.deleted = :deleted

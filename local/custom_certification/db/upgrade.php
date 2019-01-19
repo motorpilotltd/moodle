@@ -134,5 +134,27 @@ function xmldb_local_custom_certification_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018022802, 'local', 'custom_certification');
     }
 
+    if ($oldversion < 2018022803) {
+        // Update to add donotsend timeframe to messages table.
+        $table = new xmldb_table('certif_messages');
+        $field = new xmldb_field('donotsendtime', XMLDB_TYPE_INTEGER, 10, null, XMLDB_NOTNULL, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Remove deprecated message type.
+        $DB->delete_records('certif_messages', ['messagetype' => 4]);
+
+        // Update to add messagetypeid to messages log table.
+        $table = new xmldb_table('certif_messages_log');
+        $field = new xmldb_field('messagetypeid', XMLDB_TYPE_INTEGER, 10, null, XMLDB_NOTNULL, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2018022803, 'local', 'custom_certification');
+    }
+
     return true;
 }
