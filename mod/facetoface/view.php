@@ -102,7 +102,6 @@ $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
 
 echo $OUTPUT->header();
-
 /* BEGIN CORE MOD */
 if (empty($cm->visible) and !has_capability('mod/facetoface:viewemptyactivities', $context)) {
     notice(get_string('activityiscurrentlyhidden'), "$CFG->wwwroot/course/view.php?id=$course->id");
@@ -115,16 +114,15 @@ if ($facetoface->intro) {
     echo $OUTPUT->box_start('generalbox', 'description');
     echo format_module_intro('facetoface', $facetoface, $cm->id);
     echo $OUTPUT->box_end();
+} else {
+    echo html_writer::empty_tag('br');
 }
-
 $locations = get_locations($facetoface->id);
 if (count($locations) > 2) {
-
-    echo html_writer::start_tag('form', array('action' => 'view.php', 'method' => 'get'));
+    echo html_writer::start_tag('form', array('action' => 'view.php', 'method' => 'get', 'class' => 'formlocation'));
     echo html_writer::start_tag('div');
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'f', 'value' => $facetoface->id));
-    echo html_writer::select($locations, 'location', $location, '');
-    echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => get_string('showbylocation', 'facetoface')));
+    echo html_writer::select($locations, 'location', $location, '', array('onchange' => 'this.form.submit();'));
     echo html_writer::end_tag('div'). html_writer::end_tag('form');
 }
 
