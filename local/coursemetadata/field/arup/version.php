@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111606;
+$plugin->version   = 2015111607;
 $plugin->requires  = 2015111600; // Moodle 3.0.
 $plugin->component = 'coursemetadatafield_arup';
 $plugin->maturity  = MATURITY_STABLE;
