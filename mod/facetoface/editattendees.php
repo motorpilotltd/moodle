@@ -89,15 +89,19 @@ if (optional_param('add', false, PARAM_BOOL) && confirm_sesskey()) {
             // Make sure that the user is enroled in the course.
             if (!has_capability('moodle/course:view', $context, $adduser)) {
                 $user = $DB->get_record('user', array('id' => $adduser));
+                // Make sure that the user is enroled in the course.
+                if (!is_enrolled($context, $user)) {
 /* BEGIN CORE MOD */
-                $instances = $DB->get_records('enrol', array('enrol'=>'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder,id ASC');
-                $instance = reset($instances);
-                $roleid = $instance ? $instance->roleid : null;
-                if (!enrol_try_internal_enrol($course->id, $user->id, $roleid)) {
+                    // Ensure we assign the default role too.
+                    $instances = $DB->get_records('enrol', array('enrol'=>'manual', 'courseid' => $course->id, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder,id ASC');
+                    $instance = reset($instances);
+                    $roleid = $instance ? $instance->roleid : null;
+                    if (!enrol_try_internal_enrol($course->id, $user->id, $roleid)) {
 /* END CORE MOD */
-                    $errors[] = get_string('error:enrolmentfailed', 'facetoface', fullname($user));
-                    $errors[] = get_string('error:addattendee', 'facetoface', fullname($user));
-                    continue; // Don't sign the user up.
+                        $errors[] = get_string('error:enrolmentfailed', 'facetoface', fullname($user));
+                        $errors[] = get_string('error:addattendee', 'facetoface', fullname($user));
+                        continue; // Don't sign the user up.
+                    }
                 }
             }
 

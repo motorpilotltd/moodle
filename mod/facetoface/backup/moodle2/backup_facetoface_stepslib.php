@@ -40,12 +40,12 @@ class backup_facetoface_activity_structure_step extends backup_activity_structur
         // Define each element separated.
         $facetoface = new backup_nested_element('facetoface', array('id'), array(
             'name', 'intro', 'introformat', 'thirdparty', 'thirdpartywaitlist', 'display',
+            'timecreated', 'timemodified', 'shortname', 'showoncalendar', 'usercalentry',
             'confirmationsubject', 'confirmationinstrmngr', 'confirmationmessage', 'waitlistedsubject', 'waitlistedmessage',
             'cancellationsubject', 'cancellationinstrmngr', 'cancellationmessage', 'remindersubject', 'reminderinstrmngr',
             'remindermessage', 'reminderperiod', 'requestsubject', 'requestinstrmngr', 'requestmessage',
 /* BEGIN CORE MOD */
-            'timecreated', 'timemodified', 'shortname', 'description', 'showoncalendar', 'approvalreqd',
-            'usercalentry', 'completionattended', 'completionbooked'));
+            'approvalreqd', 'allowcancellationsdefault', 'completionattended', 'completionbooked'));
 /* END CORE MOD */
 
         $sessions = new backup_nested_element('sessions');

@@ -214,6 +214,7 @@
         <FIELD NAME="subject" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT=""/>
         <FIELD NAME="body" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT=""/>
         <FIELD NAME="triggertime" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
+        <FIELD NAME="nosendtime" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
         <FIELD NAME="recipient" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT=""/>
         <FIELD NAME="recipientemail" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT=""/>
       </FIELDS>
@@ -229,6 +230,7 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="messageid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Message id"/>
         <FIELD NAME="messagetype" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Message type"/>
+        <FIELD NAME="messagetypeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Message type id"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Userid"/>
         <FIELD NAME="subject" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Subject of message"/>
         <FIELD NAME="body" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Message"/>

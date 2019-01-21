@@ -321,7 +321,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
         return $output;
     }
 
-    
+
     public function display_coursesetbox_summary($coursesets){
         $output = '';
         if(count($coursesets) > 0){
@@ -366,7 +366,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
         return $output;
     }
 
-    public function display_message_box($messageid, $messagename, $messagetype, $certifid, $recipient = 0, $recipientemail = null, $messagesubject = null, $messagebody = null, $messagetriggertime = null, $canmanage = true)
+    public function display_message_box($messageid, $messagename, $messagetype, $certifid, $recipient = 0, $recipientemail = null, $messagesubject = null, $messagebody = null, $messagetriggertime = null, $messagedonotsendtime = null, $canmanage = true)
     {
         global $OUTPUT;
         $output = '';
@@ -402,13 +402,28 @@ class local_custom_certification_renderer extends \plugin_renderer_base
         }
         $output .= html_writer::tag('textarea', $bodyvalue, $attr);
 
-        if (($messagetype == message::TYPE_RECERTIFICATION_WINDOW_OPEN) || ($messagetype == message::TYPE_CERTIFICATION_BEFORE_EXPIRATION)) {
+        // Trigger time.
+        if (in_array($messagetype, [message::TYPE_BEFORE_EXPIRY, message::TYPE_OVERDUE_REMINDER])) {
             $output .= html_writer::start_div('helpbox');
-            $output .= html_writer::tag('span', get_string('daysbeforelabel', 'local_custom_certification'), ['class' => 'message-label']);
-            $output .= $OUTPUT->help_icon('before', 'local_custom_certification');
+            $output .= html_writer::tag('span', get_string("triggertimelabel:{$messagetype}", 'local_custom_certification'), ['class' => 'message-label']);
+            $output .= $OUTPUT->help_icon("triggertimehelp:{$messagetype}", 'local_custom_certification');
             $output .= html_writer::end_div();
-            !empty($messagetriggertime) ? $daysvalue = date('z', $messagetriggertime) : $daysvalue = 0;
+            $daysvalue = !empty($messagetriggertime) ? date('z', $messagetriggertime) : 0;
             $attr = ['class' => 'messagetriggertime', 'type' => 'text', 'value' => $daysvalue];
+            if(!$canmanage){
+                $attr['disabled'] = 'disabled';
+            }
+            $output .= html_writer::tag('input', '', $attr);
+        }
+
+        // Do not send time.
+        if (in_array($messagetype, [message::TYPE_EXPIRED, message::TYPE_BEFORE_EXPIRY, message::TYPE_OVERDUE])) {
+            $output .= html_writer::start_div('helpbox');
+            $output .= html_writer::tag('span', get_string("donotsendtimelabel:{$messagetype}", 'local_custom_certification'), ['class' => 'message-label']);
+            $output .= $OUTPUT->help_icon("donotsendtimehelp:{$messagetype}", 'local_custom_certification');
+            $output .= html_writer::end_div();
+            $daysvalue = !empty($messagedonotsendtime) ? date('z', $messagedonotsendtime) : 0;
+            $attr = ['class' => 'messagedonotsendtime', 'type' => 'text', 'value' => $daysvalue];
             if(!$canmanage){
                 $attr['disabled'] = 'disabled';
             }
@@ -463,7 +478,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
         if(count($certifications) == 0){
             $output .= html_writer::div(get_string('nocertificationfound', 'local_custom_certification'));
         }
-        
+
         $output .= html_writer::start_tag('table', ['class' => 'generaltable certifications-table']);
 
         $output .= html_writer::start_tag('tr', []);

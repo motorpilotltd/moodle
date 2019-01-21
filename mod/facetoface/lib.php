@@ -716,6 +716,7 @@ function facetoface_delete_session($session, $facetoface, $course, $cm) {
 
     // Remove entry from course calendar.
     facetoface_remove_session_from_calendar($session, $facetoface->course);
+
     // Remove entry from site-wide calendar.
     facetoface_remove_session_from_calendar($session, SITEID);
 
@@ -1500,7 +1501,7 @@ function facetoface_write_activity_attendance(&$worksheet, $startingrow, $faceto
         if (!empty($sessionsignups[$session->id])) {
             foreach ($sessionsignups[$session->id] as $attendee) {
                 $i++;
-                $j = facetoface_write_activity_attendance_helper($worksheet, $i, $session, $customsessionfields, $status, $dateformat);
+                $j = facetoface_write_activity_attendance_helper($worksheet, $i, $session, $customsessionfields, $status, $dateformat, $starttime, $finishtime);
                 if ($trainerroles) {
                     foreach (array_keys($trainerroles) as $roleid) {
                         if (!empty($sessiontrainers[$roleid])) {
@@ -1546,7 +1547,7 @@ function facetoface_write_activity_attendance(&$worksheet, $startingrow, $faceto
             // No one is sign-up, so let's just print the basic info.
             $i++;
             // helper
-            $j = facetoface_write_activity_attendance_helper($worksheet, $i, $session, $customsessionfields, $status, $dateformat);
+            $j = facetoface_write_activity_attendance_helper($worksheet, $i, $session, $customsessionfields, $status, $dateformat, $starttime, $finishtime);
 
             foreach ($userfields as $unused) {
                 $worksheet->write_string($i, $j++, '-');
@@ -1575,21 +1576,10 @@ function facetoface_write_activity_attendance(&$worksheet, $startingrow, $faceto
  * @return int The next Column in the sheet.
  */
 
-function facetoface_write_activity_attendance_helper(&$worksheet, $i, $session, $customsessionfields, $status, $dateformat) {
-    global $DB;
-
-    $customdata = $DB->get_records('facetoface_session_data', array('sessionid' => $session->id), '', 'fieldid, data');
+function facetoface_write_activity_attendance_helper(&$worksheet, $i, $session, $customsessionfields, $status, $dateformat, $starttime, $finishtime) {
     $j = 0;
 
-    $starttime   = get_string('wait-listed', 'facetoface');
-    $finishtime  = get_string('wait-listed', 'facetoface');
-
-    if ($session->datetimeknown) {
-        $sessiondate = (int)$session->timestart;
-        $starttime   = userdate($session->timestart, get_string('strftimetime', 'langconfig'));
-        $finishtime  = userdate($session->timefinish, get_string('strftimetime', 'langconfig'));
-    }
-
+    // Custom session fields.
     foreach ($customsessionfields as $field) {
         if (empty($field->showinsummary)) {
             continue; // Skip.
@@ -1609,7 +1599,11 @@ function facetoface_write_activity_attendance_helper(&$worksheet, $i, $session, 
     if (empty($sessiondate)) {
         $worksheet->write_string($i, $j++, $status); // Session date.
     } else {
-        $worksheet->write_date($i, $j++, $sessiondate, $dateformat);
+        if (method_exists($worksheet, 'write_date')) {
+            $worksheet->write_date($i, $j++, $sessiondate, $dateformat);
+        } else {
+            $worksheet->write_string($i, $j++, $sessiondate);
+        }
     }
     $worksheet->write_string($i, $j++, $starttime);
     $worksheet->write_string($i, $j++, $finishtime);
@@ -2585,7 +2579,6 @@ function facetoface_take_individual_attendance($submissionid, $grading, $complet
         }
     }
 /* END CORE MOD */
-
     return facetoface_grade_item_update($record, $grade);
 }
 /**
@@ -2628,6 +2621,11 @@ function facetoface_format_session_times($start, $end, $tz) {
  * @global class $CFG used to get the path to the module
  */
 function facetoface_cm_info_view(cm_info $coursemodule) {
+/* BEGIN CORE MOD */
+    // Call custom version of this function.
+    facetoface_cm_info_view_custom($coursemodule);
+    return null;
+/* END CORE MOD */
     global $USER, $DB;
     $output = '';
 
@@ -2649,14 +2647,10 @@ function facetoface_cm_info_view(cm_info $coursemodule) {
         'mod/facetoface:takeattendance'), $contextmodule);
 
     $timenow = time();
-/* BEGIN CORE MOD */
+
     $strviewallsessions = get_string('viewallsessions', 'facetoface');
-    $htmlviewallsessions = html_writer::link(
-        new moodle_url('/mod/facetoface/view.php', array('f' => $facetoface->id)),
-        $strviewallsessions,
-        array('title' => $strviewallsessions)
-    );
-/* END CORE MOD */
+    $sessionsurl = new moodle_url('/mod/facetoface/view.php', array('f' => $facetoface->id));
+    $htmlviewallsessions = html_writer::link($sessionsurl, $strviewallsessions, array('class' => 'f2fsessionlinks f2fviewallsessions', 'title' => $strviewallsessions));
 
     if ($submissions = facetoface_get_user_submissions($facetoface->id, $USER->id)) {
         // User has signedup for the instance.
@@ -2965,20 +2959,21 @@ VERSION:2.0
 METHOD:{$icalmethod}
 BEGIN:VTIMEZONE
 TZID:Europe/London
-BEGIN:DAYLIGHT
-TZOFFSETFROM:+0000
-TZOFFSETTO:+0100
-DTSTART:19810329T010000
-RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
-TZNAME:BST
-END:DAYLIGHT
+X-LIC-LOCATION:Europe/London
 BEGIN:STANDARD
-TZOFFSETFROM:+0100
-TZOFFSETTO:+0000
+TZNAME:GMT
 DTSTART:19961027T020000
 RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
-TZNAME:GMT
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0000
 END:STANDARD
+BEGIN:DAYLIGHT
+TZNAME:BST
+DTSTART:19810329T010000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+TZOFFSETFROM:+0000
+TZOFFSETTO:+0100
+END:DAYLIGHT
 END:VTIMEZONE
 {$vevents}
 END:VCALENDAR
@@ -3307,9 +3302,7 @@ function facetoface_user_complete($course, $user, $mod, $facetoface) {
  */
 function facetoface_add_session_to_calendar($session, $facetoface, $calendartype='none', $userid=0, $eventtype='session') {
     global $CFG, $DB;
-/* BEGIN CORE MOD */
-    require_once($CFG->dirroot . '/calendar/lib.php');
-/* END CORE MOD */
+
     if (empty($session->datetimeknown)) {
         return true; // Date unkown, can't add to calendar.
     }
@@ -4357,6 +4350,9 @@ function facetoface_get_completion_state($course, $cm, $userid, $type) {
     return $result;
 }
 
+/**
+ * Dummy facebook user class .
+ */
 class facetoface_user extends \core_user {
     public static function get_dummy_facetoface_user($email = '', $firstname = '', $lastname = '') {
         $user = self::get_dummy_user_record();
@@ -4369,5 +4365,219 @@ class facetoface_user extends \core_user {
         $user->timezone = date_default_timezone_get();
         return $user;
     }
+}
+
+/**
+ * Customised *_cm_info_view() function.
+ *
+ * @param cm_info $cm
+ * @return void
+ */
+function facetoface_cm_info_view_custom(cm_info $cm) {
+    global $CFG, $USER, $DB, $OUTPUT;
+
+    $contextmodule = context_module::instance($cm->id);
+    if (!has_capability('mod/facetoface:view', $contextmodule)) {
+        return ''; // Not allowed to view this activity.
+    }
+
+    $timenow = time();
+    $facetoface = $DB->get_record('facetoface', array('id' => $cm->instance));
+    if (!$facetoface) {
+        error_log("mod/facetoface: ask to print coursemodule info for a non-existent activity ($cm->instance)");
+        return '';
+    }
+
+    // View all sessions link.
+    $strviewallsessions = get_string('viewallsessions', 'facetoface');
+    $htmlviewallsessions = html_writer::link(
+        new moodle_url('/mod/facetoface/view.php', array('f' => $facetoface->id)),
+        $strviewallsessions,
+        array('title' => $strviewallsessions)
+    );
+
+    $table = new html_table();
+    if ($submissions = facetoface_get_user_submissions($facetoface->id, $USER->id)) {
+        $submission = array_shift($submissions); // First submission.
+
+        // User has signedup for the instance.
+        if ($session = facetoface_get_session($submission->sessionid)) {
+            $sessiondate = '';
+            $sessiontime = '';
+            if ($session->datetimeknown) {
+                foreach ($session->sessiondates as $date) {
+                    if (!empty($sessiondate)) {
+                        $sessiondate .= html_writer::empty_tag('br');
+                    }
+                    $sessiondate .= userdate($date->timestart, get_string('strftimedate'));
+                    if (!empty($sessiontime)) {
+                        $sessiontime .= html_writer::empty_tag('br');
+                    }
+                    $sessiontime .= userdate($date->timestart, get_string('strftimetime')) .
+                        ' - ' . userdate($date->timefinish, get_string('strftimetime'));
+                }
+            } else {
+                $sessiondate = get_string('wait-listed', 'facetoface');
+                $sessiontime = get_string('wait-listed', 'facetoface');
+            }
+
+            $customfielddata = facetoface_get_customfielddata($session->id);
+            $customfields = array();
+            foreach ($customfielddata as $fielddata) {
+                $customfields[$fielddata->shortname] = new stdClass();
+                $customfields[$fielddata->shortname]->name = $fielddata->name;
+                $customfields[$fielddata->shortname]->data = $fielddata->data;
+            }
+
+            $actions = array();
+            $strmoreinfo = get_string('moreinfo', 'facetoface');
+            $actions[] = html_writer::link(new moodle_url('/mod/facetoface/signup.php', array('s' => $session->id)), $strmoreinfo, array('title' => $strmoreinfo));
+            // Don't include the link to view attendees if user is lacking capability.
+            if (has_capability('mod/facetoface:viewattendees', context_course::instance($cm->course))) {
+                $strattendees = get_string('seeattendees', 'facetoface');
+                $actions[] = html_writer::link(new moodle_url('/mod/facetoface/attendees.php', array('s' => $session->id)), $strattendees, array('title' => $strattendees));
+            }
+            // Don't include the link to cancel a session if it has already occurred.
+            if (!facetoface_has_session_started($session, $timenow)) {
+                $strcancelbooking = get_string('cancelbooking', 'facetoface');
+                $actions[] = html_writer::link(new moodle_url('/mod/facetoface/cancelsignup.php', array('s' => $session->id)), $strcancelbooking, array('title' => $strcancelbooking));
+            }
+
+            // Add table data.
+            $head = array(get_string('date', 'facetoface'), get_string('time', 'facetoface'), get_string('duration', 'facetoface'));
+            $data = array($sessiondate, $sessiontime, format_duration($session->duration));
+            foreach ($customfields as $customfield) {
+                $head[] = $customfield->name;
+                $data[] = $customfield->data;
+            }
+            $head[] = get_string('actions');
+            $data[] = implode('<br />', $actions);
+
+            $table->head = $head;
+            $table->data[] = $data;
+
+            $cell = new html_table_cell();
+            $cell->colspan = count($table->head);
+            $cell->text = $htmlviewallsessions;
+            $row = new html_table_row();
+            $row->cells[] = $cell;
+            $table->data[] = $row;
+        }
+        $cm->set_after_link(html_writer::table($table));
+        return;
+    } else if ($facetoface->display > 0 && ($sessions = facetoface_get_sessions($facetoface->id))) {
+        $customfields = array();
+        $customfielddetails = $DB->get_records('facetoface_session_field', array(), 'name', 'shortname, name');
+        foreach ($customfielddetails as $fielddetails) {
+            $customfields[$fielddetails->shortname] = new stdClass();
+            $customfields[$fielddetails->shortname]->name = $fielddetails->name;
+        }
+
+        $head = array(get_string('date', 'facetoface'), get_string('time', 'facetoface'), get_string('duration', 'facetoface'));
+        foreach ($customfields as $customfield) {
+            $head[] = $customfield->name;
+        }
+
+        $head[] = get_string('cost', 'facetoface');
+        if ($cm->uservisible) {
+            $head[] = get_string('actions');
+        }
+        $table->head = $head;
+        $count = 0;
+        foreach ($sessions as $session) {
+
+            // Don't display past or in-progress sessions.
+            if ($session->datetimeknown && (facetoface_has_session_started($session, $timenow))) {
+                continue;
+            }
+
+            // Don't diisplay full sessions.
+            if (!facetoface_session_has_capacity($session, $contextmodule)) {
+                continue;
+            }
+
+            // Check display count.
+            $count++;
+            if ($count > $facetoface->display) {
+                break;
+            }
+
+            $multiday    = '';
+            $sessiondate = '';
+            $sessiontime = '';
+            if ($session->datetimeknown) {
+                if (empty($session->sessiondates)) {
+                    $sessiondate = get_string('unknowndate', 'facetoface');
+                    $sessiontime = get_string('unknowntime', 'facetoface');
+                } else {
+                    $sessiondate = userdate($session->sessiondates[0]->timestart, get_string('strftimedate'));
+                    $sessiontime = userdate($session->sessiondates[0]->timestart, get_string('strftimetime')) .
+                        ' - ' . userdate($session->sessiondates[0]->timefinish, get_string('strftimetime'));
+
+                    if (count($session->sessiondates) > 1) {
+                        $multiday = ' (' . get_string('multiday', 'facetoface') . ')';
+                    }
+                }
+            } else {
+                $sessiondate = get_string('wait-listed', 'facetoface');
+            }
+
+            $customfielddata = facetoface_get_customfielddata($session->id);
+            $data = array($sessiondate, $sessiontime.$multiday, format_duration($session->duration));
+
+            foreach ($customfields as $fieldname => $fielddata) {
+                if (!empty($customfielddata[$fieldname])) {
+                    $data[] = $customfielddata[$fieldname]->data;
+                } else {
+                    $data[] = '&nbsp;';
+                }
+            }
+
+            $data[] = format_cost($session->normalcost);
+
+            if ($cm->uservisible) {
+                $data[] = html_writer::link(new moodle_url('/mod/facetoface/signup.php', array('s' => $session->id)), 'Book');
+            }
+
+            $table->data[] = $data;
+        }
+        if ($cm->uservisible && !empty($table->data)) {
+            $cell = new html_table_cell();
+            $cell->colspan = count($table->head);
+            $cell->text = $htmlviewallsessions;
+            $row = new html_table_row();
+            $row->cells[] = $cell;
+            $table->data[] = $row;
+        }
+
+        $return = '';
+        if ($cm->uservisible && !empty($table->data)) {
+            $return .= html_writer::tag('p', get_string('signupforsession', 'facetoface').':');
+        }
+        if (!empty($table->data)) {
+            $return .= html_writer::table($table);
+        } elseif (has_capability('mod/facetoface:viewemptyactivities', $contextmodule)) {
+            $return .= html_writer::tag(
+                'p',
+                $htmlviewallsessions
+            );
+        } else {
+            $return .= get_string('noupcoming', 'facetoface');
+        }
+
+        $cm->set_after_link($return);
+        return;
+    } elseif (has_capability('mod/facetoface:viewemptyactivities', $contextmodule)) {
+        $cm->set_after_link(
+            html_writer::tag(
+                'p',
+                $htmlviewallsessions
+            )
+        );
+        return;
+    }
+
+    // Nothing to display to this user.
+    return;
 }
 /* END CORE MOD */

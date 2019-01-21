@@ -102,7 +102,6 @@ $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
 
 echo $OUTPUT->header();
-
 /* BEGIN CORE MOD */
 if (empty($cm->visible) and !has_capability('mod/facetoface:viewemptyactivities', $context)) {
     notice(get_string('activityiscurrentlyhidden'), "$CFG->wwwroot/course/view.php?id=$course->id");

@@ -63,7 +63,6 @@ class mod_facetoface_signup_form extends moodleform {
             $mform->addElement('hidden', 'discountcode', '');
         }
         $mform->setType('discountcode', PARAM_TEXT);
-
 /* BEGIN CORE MOD */
         $options = array(
             MDL_F2F_ICAL => get_string('notificationical', 'facetoface'),
