@@ -293,8 +293,33 @@ abstract class cmform_class extends \moodleform {
             $default_values = (array)$default_values;
         }
 
-        $default_values['unlimitedattendees'] = $default_values['maximumattendees'] == -1;
+        if (isset($default_values['maximumattendees']) && $default_values['maximumattendees'] == -1) {
+            $default_values['unlimitedattendees'] = true;
+        }
+
+        $default_values['classstarttime'] = $this->shift_timestamp_to_timezone(
+                $default_values['classstarttime'],
+                empty($default_values['usedtimezone']) ? date_default_timezone_get() : $default_values['usedtimezone']
+        );
+        $default_values['classendtime'] = $this->shift_timestamp_to_timezone(
+                $default_values['classendtime'],
+                empty($default_values['usedtimezone']) ? date_default_timezone_get() : $default_values['usedtimezone']
+        );
+
+        // Date based on timezone
+        // Output
+        // Parse out timestamp
+
         parent::set_data($default_values);
+    }
+
+    private function shift_timestamp_to_timezone($timestamp, $timezone) {
+        $timezone = new \DateTimeZone($timezone);
+        $date = new \DateTime();
+        $date->setTimestamp($timestamp);
+        $date->setTimezone($timezone);
+        $shifteddate = \DateTime::createFromFormat('Y-m-d H:i', $date->format('Y-m-d H:i'));
+        return $shifteddate->getTimestamp();
     }
 
     public function definition_after_data() {

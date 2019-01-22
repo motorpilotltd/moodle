@@ -82,14 +82,14 @@ class classoverview_table extends \table_sql {
         if (empty($class->classstarttime)) {
             return '';
         }
-        return userdate($class->classstarttime);
+        return userdate($class->classstarttime, '', $class->usedtimezone);
     }
 
     public function col_classendtime($class) {
         if (empty($class->classendtime)) {
             return '';
         }
-        return userdate($class->classendtime);
+        return userdate($class->classendtime, '', $class->usedtimezone);
     }
 
     public function col_actions($class) {
