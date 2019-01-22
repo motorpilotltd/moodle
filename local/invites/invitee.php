@@ -39,7 +39,7 @@ class invitee {
             $this->email = $CFG->divertallemailsto;
             $this->divert = true;
         }
-        $this->name = $name;
+        $this->name = trim($name);
     }
 
     private function add_moodle_user($user) {
@@ -56,7 +56,7 @@ class invitee {
     }
 
     public function __toString() {
-        return "ATTENDEE;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=\"{$this->name}\":mailto:{$this->email}";
+        return "ATTENDEE;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=\"{$this->name}\":mailto:{$this->realemail}";
     }
 
     public function __get($name) {

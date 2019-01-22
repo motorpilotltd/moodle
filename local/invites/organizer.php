@@ -37,6 +37,6 @@ class organizer extends invitee {
     }
 
     public function __toString() {
-        return "ORGANIZER;CN=\"{$this->name}\":mailto:{$this->email}";
+        return "ORGANIZER;CN=\"{$this->name}\":mailto:{$this->realemail}";
     }
 }
