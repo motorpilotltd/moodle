@@ -297,14 +297,18 @@ abstract class cmform_class extends \moodleform {
             $default_values['unlimitedattendees'] = true;
         }
 
-        $default_values['classstarttime'] = $this->shift_timestamp_to_timezone(
-                $default_values['classstarttime'],
-                empty($default_values['usedtimezone']) ? date_default_timezone_get() : $default_values['usedtimezone']
-        );
-        $default_values['classendtime'] = $this->shift_timestamp_to_timezone(
-                $default_values['classendtime'],
-                empty($default_values['usedtimezone']) ? date_default_timezone_get() : $default_values['usedtimezone']
-        );
+        if (!empty($default_values['classstarttime'])) {
+            $default_values['classstarttime'] = $this->shift_timestamp_to_timezone(
+                    $default_values['classstarttime'],
+                    empty($default_values['usedtimezone']) ? date_default_timezone_get() : $default_values['usedtimezone']
+            );
+        }
+        if (!empty($default_values['classendtime'])) {
+            $default_values['classendtime'] = $this->shift_timestamp_to_timezone(
+                    $default_values['classendtime'],
+                    empty($default_values['usedtimezone']) ? date_default_timezone_get() : $default_values['usedtimezone']
+            );
+        }
 
         // Date based on timezone
         // Output
