@@ -208,7 +208,7 @@ function kalvidpres_cm_info_view(cm_info $cm) {
 
     if(!$metadata) {
         debugging("kalvidpres: Could not load metadata or metadata empty ($kalvidpresid)");
-        return;
+        // Keep going as need a link to the vid!
     }
 
     if (!$cm->uservisible) {
