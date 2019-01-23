@@ -364,7 +364,7 @@ class block_arup_mylearning_content {
 
         $table->head = array();
         $headers = array(
-                array('text' => get_string('methodology', 'block_arup_mylearning'), 'class' => 'text-center'),
+                array('text' => get_string('cpd:classcategory', 'block_arup_mylearning'), 'class' => 'text-center'),
                 array('text' => get_string('course'), 'class' => 'text-left'),
                 array('text' => get_string('date', 'block_arup_mylearning'), 'class' => 'text-left'),
                 array('text' => get_string('duration', 'block_arup_mylearning'), 'class' => 'text-left'),
@@ -385,7 +385,7 @@ class block_arup_mylearning_content {
         foreach ($tapshistory as $th) {
             $cells = array();
 
-            $cell->text = $th->classtype;
+            $cell->text = $th->classcategory;
             $cell->attributes['class'] = 'text-center';
             $cells[] = clone($cell);
 
