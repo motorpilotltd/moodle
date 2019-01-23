@@ -1734,6 +1734,7 @@ EOS;
         $users = get_enrolled_users(\context_course::instance($this->cm->course), '', 0, 'u.id', null, 0, 0, true);
 
         if (empty($users)) {
+            $this->users = [];
             return;
         }
 
