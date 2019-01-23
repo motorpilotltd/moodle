@@ -808,7 +808,7 @@ EOS;
                 'objectid' => $iwtrack->id,
                 'other' => $other,
                 'context' => $this->context->cm,
-                'relateduser' => $user->id,
+                'relateduserid' => $user->id,
             ));
         } else {
             $event = \mod_tapsenrol\event\enrolment_request_rejected::create(array(
