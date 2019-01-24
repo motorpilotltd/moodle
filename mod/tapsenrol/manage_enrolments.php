@@ -63,14 +63,15 @@ if (!$tapsenrol->tapsenrol->internalworkflowid) {
     $classtypes = array('waitlist', 'future', 'past', 'cancel', 'move', /*'update',*/ 'delete');
     // Option to update enrolments (next step, at class level).
     $now = time();
+    $wherebase = 'courseid = :courseid AND (archived IS NULL OR archived = 0)';
     $wheres = array(
-        'waitlist' => 'courseid = :courseid',
-        'future' => 'courseid = :courseid AND (enrolmentenddate = 0 OR enrolmentenddate > :now) AND (classstarttime > :now2 OR classstarttime = 0)',
-        'past' => 'courseid = :courseid AND (enrolmentenddate = 0 OR enrolmentenddate > :now) AND classstarttime <= :now2 AND classstarttime != 0',
-        'cancel' => 'courseid = :courseid',
-        'move' => 'courseid = :courseid AND (classstarttime > :now2 OR classstarttime = 0)',
-        'update' => 'courseid = :courseid',
-        'delete' => 'courseid = :courseid',
+        'waitlist' => $wherebase,
+        'future' => "{$wherebase} AND (enrolmentenddate = 0 OR enrolmentenddate > :now) AND (classstarttime > :now2 OR classstarttime = 0)",
+        'past' => "$wherebase AND (enrolmentenddate = 0 OR enrolmentenddate > :now) AND classstarttime <= :now2 AND classstarttime != 0",
+        'cancel' => $wherebase,
+        'move' => "{$wherebase} AND (classstarttime > :now2 OR classstarttime = 0)",
+        'update' => $wherebase,
+        'delete' => $wherebase,
     );
     $params = array(
         'courseid' => $tapsenrol->tapsenrol->tapscourse,
