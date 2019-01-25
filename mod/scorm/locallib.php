@@ -2462,20 +2462,31 @@ function scorm_update_calendar(stdClass $scorm, $cmid) {
  * @return null|string
  */
 function scorm_get_document_domain(stdClass $scorm) {
+    if ($scorm->scormtype !== SCORM_TYPE_EXTERNAL) {
+        return null;
+    }
+    $refurl = new moodle_url($scorm->reference);
+    $refurl = explode('/', $scorm->reference);
+    unset($refurl[count($refurl) - 1]);
 
-    $ref_url = new moodle_url($scorm->reference);
-    $ref_url = explode('/', $scorm->reference);
-    unset($ref_url[count($ref_url) - 1]);
+    $docurl = new moodle_url(implode('/', $refurl));
+    $docurl->set_slashargument('/document_domain.txt');
 
-    $doc_url = new moodle_url(implode('/', $ref_url));
-    $doc_url->set_slashargument('/document_domain.txt');
+    if (!file_exists($docurl)) {
+        return null;
+    }
 
-    $doc_dom= ($content = file_get_contents($doc_url)) ? trim($content) : false;
+    $docdom = @file_get_contents($docurl);
+    if (!$docdom) {
+        return null;
+    } else {
+        $docdom = trim($docdom);
+    }
 
-    $doc_dom_url = new moodle_url($doc_dom);
-    $doc_dom_url->set_scheme('http');
-    if (scorm_url_appears_valid_url($doc_dom_url->out())) {
-        return $doc_dom;
+    $docdomurl = new moodle_url($docdom);
+    $docdomurl->set_scheme('http');
+    if (scorm_url_appears_valid_url($docdomurl->out())) {
+        return $docdom;
     }
     return null;
 }

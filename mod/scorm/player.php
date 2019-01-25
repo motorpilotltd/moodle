@@ -96,7 +96,7 @@ if (empty($collapsetocwinsize)) {
 }
 
 /* BEGIN CORE MOD */
-$document_domain = scorm_get_document_domain($scorm);
+$documentdomain = scorm_get_document_domain($scorm);
 /* END CORE MOD */
 
 require_login($course, false, $cm);
@@ -200,10 +200,10 @@ $PAGE->requires->string_for_js('show', 'moodle');
 $PAGE->requires->string_for_js('popupsblocked', 'scorm');
 
 /* BEGIN CORE MOD */
-if(!empty($document_domain) && $document_domain) {
+if(!empty($documentdomain)) {
 ?>
     <script type="text/javascript">
-        document.domain = "<?php echo $document_domain;?>";
+        document.domain = "<?php echo $documentdomain;?>";
     </script>
 <?php
 }

@@ -47,7 +47,7 @@ if (!empty($id)) {
     print_error('missingparameter');
 }
 /* BEGIN CORE MOD */
-$document_domain = scorm_get_document_domain($scorm);
+$documentdomain = scorm_get_document_domain($scorm);
 /* END CORE MOD */
 
 $PAGE->set_url('/mod/scorm/loadSCO.php', array('scoid' => $scoid, 'id' => $cm->id));
@@ -101,10 +101,10 @@ echo html_writer::start_tag('head');
 echo html_writer::tag('title', 'LoadSCO');
 
 /* BEGIN CORE MOD */
-if(!empty($document_domain) && $document_domain) {
+if(!empty($documentdomain)) {
 ?>
     <script type="text/javascript">
-        document.domain = "<?php echo $document_domain;?>";
+        document.domain = "<?php echo $documentdomain;?>";
     </script>
 <?php
 }
