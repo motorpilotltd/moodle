@@ -2472,10 +2472,6 @@ function scorm_get_document_domain(stdClass $scorm) {
     $docurl = new moodle_url(implode('/', $refurl));
     $docurl->set_slashargument('/document_domain.txt');
 
-    if (!file_exists($docurl)) {
-        return null;
-    }
-
     $docdom = @file_get_contents($docurl);
     if (!$docdom) {
         return null;
