@@ -103,7 +103,11 @@
             <td>
                 {{datesend}}
             </td>
-            <td class="text-center w-1">{{#received}}<i class="fa fa-check {{^confidential}}text-success{{/confidential}}" title="{{#confidential}}{{#str}}feedbackrequests:received:confidential, local_onlineappraisal{{/str}}{{/confidential}}{{^confidential}}{{#str}}feedbackrequests:received:nonconfidential, local_onlineappraisal{{/str}}{{/confidential}}"></i>{{/received}}
+            <td class="text-center w-1">
+                {{#received_status}}<span class="text-left d-block">{{received_status}}</span>{{/received_status}}
+                {{#received}}
+                    <i class="fa fa-check {{^confidential}}text-success{{/confidential}}" title="{{#confidential}}{{#str}}feedbackrequests:received:confidential, local_onlineappraisal{{/str}}{{/confidential}}{{^confidential}}{{#str}}feedbackrequests:received:nonconfidential, local_onlineappraisal{{/str}}{{/confidential}}"></i>
+                {{/received}}
             </td>
             <td>
                 {{#received}}<a href="{{{removeurl}}}" class="btn btn-warning">{{#str}}itadmin:remove, local_onlineappraisal{{/str}}</a>
@@ -119,7 +123,7 @@
     {{{deletefeedbackform}}}
     </div>
 {{/deletefeedbackform}}
-        
+
 {{/appraisals}}
 
 <h2>{{#str}}itadmin:faqs, local_onlineappraisal{{/str}}</h2>
