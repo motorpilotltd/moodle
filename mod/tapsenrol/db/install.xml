@@ -154,7 +154,6 @@
     <TABLE NAME="local_taps_class" COMMENT="Cache for TAPS classes">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="classid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="classname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="coursename" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
@@ -198,7 +197,6 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="classid" TYPE="unique" FIELDS="classid"/>
       </KEYS>
     </TABLE>
     <TABLE NAME="tapsenrol_class_enrolments" COMMENT="Cache for TAPS enrolments">

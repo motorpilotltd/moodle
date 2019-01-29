@@ -128,7 +128,7 @@ class eventobservers {
             );
             $compare = $DB->sql_compare_text('lte.bookingstatus');
             $params = array(
-                    'classid' => $class->classid,
+                    'classid' => $class->id,
             );
             $sql = <<<EOS
 SELECT
@@ -226,7 +226,7 @@ EOS;
                     ON u.id = lte.userid
                 INNER JOIN
                     {local_taps_class} ltc
-                    ON ltc.classid = lte.classid
+                    ON ltc.id = lte.classid
                 WHERE
                     u.id = :userid
                     AND ltc.courseid = :courseid

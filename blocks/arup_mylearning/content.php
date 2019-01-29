@@ -782,7 +782,7 @@ SELECT
     lte.id, lte.bookingstatus, lte.completiontime, ltc.courseid as course
 FROM
     {tapsenrol_class_enrolments} lte
-INNER JOIN {local_taps_class} ltc on lte.classid = ltc.classid
+INNER JOIN {local_taps_class} ltc on lte.classid = ltc.id
 WHERE
     lte.userid = :userid
     AND lte.active = 1

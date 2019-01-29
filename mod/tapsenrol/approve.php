@@ -29,7 +29,7 @@ require_login();
 
 $loaderror = false;
 if ($id) {
-    $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('enrolmentid' => $id));
+    $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('id' => $id));
     $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $id));
     if (!$enrolment || !$iwtrack) {
         $loaderror = 'Enrolment or tracking data not found.';
@@ -40,8 +40,8 @@ if ($id && !$loaderror) {
     $user = core_user::get_user($enrolment->userid);
     $tapsenrol = $DB->get_record_sql(
             'SELECT te.* FROM {tapsenrol} te
-                  INNER JOIN {local_taps_class} ltc ON ltc.courseid = te.courseid
-                  WHERE ltc.classid = :classid',
+                  INNER JOIN {local_taps_class} ltc ON ltc.courseid = te.course
+                  WHERE ltc.id = :classid',
             ['classid' => $enrolment->classid]
     );
     if (!$user || !$tapsenrol) {
@@ -164,22 +164,13 @@ SELECT
     tit.*,
     {$usernamefields},
     c.fullname as coursename, ltc.classname
-FROM
-    {tapsenrol_iw_tracking} tit
-JOIN
-    {tapsenrol_class_enrolments} lte
-    ON lte.id = tit.enrolmentid
-INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
+FROM {tapsenrol_iw_tracking} tit
+INNER JOIN {tapsenrol_class_enrolments} lte ON lte.id = tit.enrolmentid
+INNER JOIN {local_taps_class} ltc ON ltc.id = lte.classid
 INNER JOIN {course} c ON c.id = ltc.courseid
-JOIN
-    {tapsenrol} t
-    ON ltc.classid = lte.classid
-JOIN
-    {tapsenrol_iw} ti
-    ON ti.id = t.internalworkflowid
-JOIN
-    {user} u
-    ON u.id = lte.userid
+INNER JOIN {tapsenrol} t ON t.course = c.id
+INNER JOIN {tapsenrol_iw} ti ON ti.id = t.internalworkflowid
+INNER JOIN {user} u ON u.id = lte.userid
 WHERE
     tit.approved IS NULL
     AND (lte.archived = 0 OR lte.archived IS NULL)

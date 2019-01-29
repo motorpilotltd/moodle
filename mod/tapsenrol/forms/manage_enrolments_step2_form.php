@@ -42,7 +42,7 @@ abstract class mod_tapsenrol_manage_enrolments_step2_form extends moodleform {
             '/mod/tapsenrol/manage_enrolments_process.php',
             array(
                 'id' => $this->_customdata['id'],
-                'classid' => $this->_class->classid,
+                'classid' => $this->_class->id,
                 'type' => $this->_customdata['type'],
             )
         );
@@ -92,8 +92,8 @@ abstract class mod_tapsenrol_manage_enrolments_step2_form extends moodleform {
         $html .= html_writer::tag('div', $date, array('class' => 'date fitem'));
 
         $duration = html_writer::tag('div', get_string('duration', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $this->_class->duration = ($this->_class->classduration) ? (float) $this->_class->classduration . ' ' . $this->_class->classdurationunits : get_string('tbc', 'tapsenrol');
-        $duration .= html_writer::tag('div', $this->_class->duration, array('class' => 'felement'));
+        $this->_class->classduration = ($this->_class->classduration) ? (float) $this->_class->classduration . ' ' . $this->_class->classdurationunits : get_string('tbc', 'tapsenrol');
+        $duration .= html_writer::tag('div', $this->_class->classduration, array('class' => 'felement'));
         $html .= html_writer::tag('div', $duration, array('class' => 'duration fitem'));
 
         $cost = html_writer::tag('div', get_string('cost', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
@@ -101,7 +101,7 @@ abstract class mod_tapsenrol_manage_enrolments_step2_form extends moodleform {
         $cost .= html_writer::tag('div', $this->_class->cost, array('class' => 'felement'));
         $html .= html_writer::tag('div', $cost, array('class' => 'cost fitem'));
 
-        $tempseatsremaining = $this->_taps->get_seats_remaining($this->_class->classid);
+        $tempseatsremaining = $this->_taps->get_seats_remaining($this->_class->id);
         $seatsremainingtext = ($tempseatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $tempseatsremaining);
         $seatsremaining = html_writer::tag('div', get_string('seatsremaining', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
         $seatsremaining .= html_writer::tag('div', $seatsremainingtext, array('class' => 'felement'));
@@ -115,7 +115,7 @@ abstract class mod_tapsenrol_manage_enrolments_step2_form extends moodleform {
         );
         $compare = $DB->sql_compare_text('bookingstatus');
         $params = array_merge(
-            array('classid' => $this->_class->classid),
+            array('classid' => $this->_class->id),
             $inparams
         );
         $enrolmentstext =
@@ -146,7 +146,7 @@ LEFT JOIN
     ON tit.enrolmentid = lte.id
 EOF;
         $where = '(lte.archived = 0 OR lte.archived IS NULL) AND lte.classid = :classid';
-        $params = array('classid' => $this->_class->classid);
+        $params = array('classid' => $this->_class->id);
 
         switch ($type) {
             case 'cancel':
@@ -327,7 +327,7 @@ class mod_tapsenrol_manage_enrolments_enrol_form extends mod_tapsenrol_manage_en
         $mform->addElement('hidden', 'id', $this->_customdata['id']);
         $mform->setType('id', PARAM_INT);
 
-        $mform->addElement('hidden', 'classid', $this->_class->classid);
+        $mform->addElement('hidden', 'classid', $this->_class->id);
         $mform->setType('classid', PARAM_INT);
 
         $mform->addElement('hidden', 'type', $this->_customdata['type']);
@@ -358,7 +358,7 @@ class mod_tapsenrol_manage_enrolments_enrol_form extends mod_tapsenrol_manage_en
         );
         $compare = $DB->sql_compare_text('bookingstatus');
         $excludeuserparams = array_merge(
-            array('classid' => $this->_class->classid),
+            array('classid' => $this->_class->id),
             $inparams
         );
         $excludeusersql = "SELECT DISTINCT u.id
@@ -385,7 +385,7 @@ class mod_tapsenrol_manage_enrolments_cancel_form extends mod_tapsenrol_manage_e
         $mform->addElement('hidden', 'id', $this->_customdata['id']);
         $mform->setType('id', PARAM_INT);
 
-        $mform->addElement('hidden', 'classid', $this->_class->classid);
+        $mform->addElement('hidden', 'classid', $this->_class->id);
         $mform->setType('classid', PARAM_INT);
 
         $mform->addElement('hidden', 'type', $this->_customdata['type']);
@@ -427,7 +427,7 @@ class mod_tapsenrol_manage_enrolments_waitlist_form extends mod_tapsenrol_manage
         $mform->addElement('hidden', 'id', $this->_customdata['id']);
         $mform->setType('id', PARAM_INT);
 
-        $mform->addElement('hidden', 'classid', $this->_class->classid);
+        $mform->addElement('hidden', 'classid', $this->_class->id);
         $mform->setType('classid', PARAM_INT);
 
         $mform->addElement('hidden', 'type', $this->_customdata['type']);
@@ -441,7 +441,7 @@ class mod_tapsenrol_manage_enrolments_waitlist_form extends mod_tapsenrol_manage
         $mform->addElement('header', 'header-waitlist', get_string('manageenrolments:waitlist:header', 'tapsenrol'));
         $mform->setExpanded('header-waitlist', true);
 
-        $seatsremaining = $this->_taps->get_seats_remaining($this->_class->classid);
+        $seatsremaining = $this->_taps->get_seats_remaining($this->_class->id);
         $a = new stdClass();
         $a->value = $seatsremaining;
         $a->text = ($seatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $seatsremaining);
@@ -478,7 +478,7 @@ class mod_tapsenrol_manage_enrolments_move_form extends mod_tapsenrol_manage_enr
         $mform->addElement('hidden', 'id', $this->_customdata['id']);
         $mform->setType('id', PARAM_INT);
 
-        $mform->addElement('hidden', 'classid', $this->_class->classid);
+        $mform->addElement('hidden', 'classid', $this->_class->id);
         $mform->setType('classid', PARAM_INT);
 
         $mform->addElement('hidden', 'type', $this->_customdata['type']);
@@ -572,7 +572,7 @@ class mod_tapsenrol_manage_enrolments_delete_form extends mod_tapsenrol_manage_e
         $mform->addElement('hidden', 'id', $this->_customdata['id']);
         $mform->setType('id', PARAM_INT);
 
-        $mform->addElement('hidden', 'classid', $this->_class->classid);
+        $mform->addElement('hidden', 'classid', $this->_class->id);
         $mform->setType('classid', PARAM_INT);
 
         $mform->addElement('hidden', 'type', $this->_customdata['type']);

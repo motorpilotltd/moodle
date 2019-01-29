@@ -368,13 +368,13 @@ $('.tapsenrol-current-enrolments .tapsenrol-checkbox').prop('disabled', false);
 EOJ;
     $PAGE->requires->js_init_code($jscode, true);
 } else if ($type == 'move') {
-    $where = 'courseid = :courseid AND (classstarttime > :now OR classstarttime = 0) AND classid != :classid';
+    $where = 'courseid = :courseid AND (classstarttime > :now OR classstarttime = 0) AND id != :classid';
     $params = array(
         'courseid' => $tapsenrol->course->id,
         'now' => time(),
-        'classid' => $class->classid,
+        'classid' => $class->id,
     );
-    $customdata['classes'] = $DB->get_records_select_menu('local_taps_class', $where, $params, '', 'classid, classname');
+    $customdata['classes'] = $DB->get_records_select_menu('local_taps_class', $where, $params, '', 'id, classname');
     $mform = new mod_tapsenrol_manage_enrolments_move_form($actionurl, $customdata);
 
     if ($mform->is_cancelled()) {
@@ -433,7 +433,7 @@ EOJ;
                                AND (archived = 0 OR archived IS NULL) AND active = 1
                                AND {$compare} {$in}";
                 $params = array_merge(
-                        array('userid' => $enrolment->userid, 'classid' => $targetclass->classid),
+                        array('userid' => $enrolment->userid, 'classid' => $targetclass->id),
                         $inparams
                         );
                 if ($DB->get_records_sql($sql, $params)) {

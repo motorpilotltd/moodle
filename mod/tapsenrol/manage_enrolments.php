@@ -83,7 +83,7 @@ if (!$tapsenrol->tapsenrol->internalworkflowid) {
     $customdata['classid'] = optional_param('classid', 0, PARAM_INT);
     $customdata['classes'] = new stdClass();
     foreach ($classtypes as $classtype) {
-        $customdata['classes']->{$classtype} = $DB->get_records_select_menu('local_taps_class', $wheres[$classtype], $params, '', 'classid, classname');
+        $customdata['classes']->{$classtype} = $DB->get_records_select_menu('local_taps_class', $wheres[$classtype], $params, '', 'id, classname');
     }
 
     require_once($CFG->dirroot.'/mod/tapsenrol/forms/manage_enrolments_form.php');

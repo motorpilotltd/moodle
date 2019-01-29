@@ -329,7 +329,7 @@ class tapsenrol {
             $this->_set_enrol_data();
         }
 
-        $enrolments = $this->taps->get_enroled_classes($user->id, $this->course->id, true, false);
+        $enrolments = $this->taps->get_enrolments($user->id, $this->course->id, true, false);
 
         $shouldbeenrolled = false;
         $shouldbecomplete = false;
@@ -538,7 +538,7 @@ EOS;
         );
 
         if ($enrolment) {
-            $user = $DB->get_record('user', array('idnumber' => $enrolment->userid));
+            $user = $DB->get_record('user', array('id' => $enrolment->userid));
             if ($user) {
                 // Setup tracking.
                 $iwtrack = new stdClass();
@@ -889,7 +889,7 @@ EOS;
         $enrolmentnew = clone($enrolment);
         // Update new enrolment.
         // Only need to do class fields as not moving between courses.
-        $enrolmentnew->classid = $targetclass->classid;
+        $enrolmentnew->classid = $targetclass->id;
         $enrolmentnew->classname = $targetclass->classname;
         $enrolmentnew->location = $targetclass->location;
         $enrolmentnew->classtype = $targetclass->classtype;
@@ -1300,8 +1300,8 @@ EOS;
             $classarray['classdate'] = str_replace('UTC', 'GMT', $classarray['classdate']);
         }
 
-        if (!empty($class->duration)) {
-            $classarray['classduration'] = (float) $class->duration . ' ' . $class->durationunits;
+        if (!empty($class->classduration)) {
+            $classarray['classduration'] = (float) $class->classduration . ' ' . $class->classdurationunits;
         } else {
             $classarray['classduration'] = '-';
         }
@@ -1609,7 +1609,7 @@ EOS;
             return false;
         }
 
-        $user = core_user::get_user($enrolment->userid);
+        $user = core_user::get_user($userenrolment->userid);
         if (!$user) {
             return false;
         }
@@ -1682,7 +1682,7 @@ SELECT
     COUNT(lte.id)
 FROM
     {tapsenrol_class_enrolments} lte
-              INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.classid
+              INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.id
 WHERE
     ltc.courseid = :courseid
     AND userid = :userid
@@ -1756,7 +1756,7 @@ EOS;
         $distinctclassname = $DB->sql_compare_text('ltc.classname');
         $classlistsql = "SELECT DISTINCT lte.classid, {$distinctclassname} as classname
             FROM {tapsenrol_class_enrolments} lte
-            INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
+            INNER JOIN {local_taps_class} ltc ON ltc.id = lte.classid
             WHERE
                 ltc.courseid = :course
                 AND (lte.archived = 0 OR lte.archived IS NULL)
@@ -1776,7 +1776,7 @@ EOS;
 
         $sql = "SELECT lte.id as enrolmentid, lte.classid, ltc.classname, u.*
             FROM {tapsenrol_class_enrolments} lte
-            INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
+            INNER JOIN {local_taps_class} ltc ON ltc.id = lte.classid
             INNER JOIN {user} u ON u.id = lte.userid
             WHERE
                 ltc.courseid = :course

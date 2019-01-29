@@ -68,7 +68,7 @@ class classoverview_table extends \table_sql {
         $fieldsstring = 'c.' . implode(',c.', $fields) . ",  count(e.classid) as attending";
         $from = "{local_taps_class} c
                       LEFT OUTER JOIN {tapsenrol_class_enrolments} e
-                      ON c.classid = e.classid
+                      ON c.id = e.classid
                         AND (e.archived = 0 OR e.archived IS NULL)
                         AND {$DB->sql_compare_text('e.bookingstatus')} {$insql}";
         $where = "c.courseid = :courseid AND (c.archived is NULL OR c.archived = 0)
@@ -104,7 +104,7 @@ class classoverview_table extends \table_sql {
         // Delegate list.
         // TODO Bring local_delegatelist into this plugin.
         $coursecontext = $this->context->get_parent_context();
-        $params = array('contextid' => $coursecontext->id, 'classid' => $class->classid);
+        $params = array('contextid' => $coursecontext->id, 'classid' => $class->id);
         if (has_any_capability(["local/delegatelist:managerview", "local/delegatelist:teacherview", "local/delegatelist:studentview"], $coursecontext)) {
             $urldelegate = new \moodle_url('/local/delegatelist/index.php', $params);
             $delegates = $OUTPUT->action_icon($urldelegate, new \pix_icon('i/users', get_string('users')));

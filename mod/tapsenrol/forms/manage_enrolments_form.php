@@ -52,7 +52,7 @@ class mod_tapsenrol_manage_enrolments_form extends moodleform {
 
         $hide = ' hide';
 
-        $class = ($classid ? $DB->get_record('local_taps_class', array('classid' => $classid)) : false);
+        $class = ($classid ? $DB->get_record('local_taps_class', array('id' => $classid)) : false);
 
         if ($class) {
             $hide = '';
@@ -73,7 +73,7 @@ class mod_tapsenrol_manage_enrolments_form extends moodleform {
                 // Show UTC as GMT for clarity.
                 $class->date = str_replace('UTC', 'GMT', $class->date);
             }
-            $class->duration = ($class->classduration) ? (float) $class->classduration . ' ' . $class->classdurationunits : get_string('tbc', 'tapsenrol');
+            $class->classduration = ($class->classduration) ? (float) $class->classduration . ' ' . $class->classdurationunits : get_string('tbc', 'tapsenrol');
             $class->cost = $class->price ? $class->price.' '.$class->currencycode : '-';
             $tempseatsremaining = $taps->get_seats_remaining($classid);
             $class->seatsremaining = ($tempseatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $tempseatsremaining);
@@ -84,7 +84,7 @@ class mod_tapsenrol_manage_enrolments_form extends moodleform {
             );
             $compare = $DB->sql_compare_text('bookingstatus');
             $params = array_merge(
-                array('classid' => $class->classid),
+                array('classid' => $class->id),
                 $inparams
             );
             $class->enrolments = $DB->count_records_select('tapsenrol_class_enrolments', "classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}", $params);
@@ -110,7 +110,7 @@ class mod_tapsenrol_manage_enrolments_form extends moodleform {
         $html .= html_writer::tag('div', $date, array('class' => 'date fitem'));
 
         $duration = html_writer::tag('div', get_string('duration', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $duration .= html_writer::tag('div', ($class ? $class->duration : ''), array('class' => 'felement'));
+        $duration .= html_writer::tag('div', ($class ? $class->classduration : ''), array('class' => 'felement'));
         $html .= html_writer::tag('div', $duration, array('class' => 'duration fitem'));
 
         $cost = html_writer::tag('div', get_string('cost', 'tapsenrol'). ':', array('class' => 'fitemtitle'));

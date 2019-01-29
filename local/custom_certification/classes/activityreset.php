@@ -374,9 +374,9 @@ class activityreset {
             $classes = $taps->get_course_classes($courseid);
 
             foreach ($classes as $class) {
-                $params['classid'] = $class->classid;
+                $params['classid'] = $class->id;
                 $enrolments = $DB->get_records_select('tapsenrol_class_enrolments',
-                        "userid = :userid AND classid = :classid AND active = :active AND {$compare} {$in}",
+                        "userid = :userid AND id = :classid AND active = :active AND {$compare} {$in}",
                         $params);
 
                 foreach ($enrolments as $enrolment) {

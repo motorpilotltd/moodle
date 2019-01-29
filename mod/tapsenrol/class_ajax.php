@@ -24,7 +24,7 @@ try {
 
     require_sesskey();
 
-    $class = $DB->get_record('local_taps_class', array('classid' => $classid));
+    $class = $DB->get_record('local_taps_class', array('id' => $classid));
 
     if ($class) {
         $taps = new \mod_tapsenrol\taps();
@@ -59,7 +59,7 @@ try {
         );
         $compare = $DB->sql_compare_text('bookingstatus');
         $params = array_merge(
-            array('classid' => $class->classid),
+            array('classid' => $class->id),
             $inparams
         );
         $a->enrolments = $DB->count_records_select('tapsenrol_class_enrolments', "classid = :classid AND (archived = 0 OR archived IS NULL) AND {$compare} {$in}", $params);

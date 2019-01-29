@@ -108,7 +108,7 @@ class cmclass {
         global $DB;
 
         $classinfo = new stdClass();
-        
+
         $classinfo->type = '';
         $classinfo->status = 'none';
         $classinfo->hasattendedenrolments = false;
@@ -151,7 +151,7 @@ class cmclass {
                         AND (archived = 0 OR archived IS NULL)
                         AND {$DB->sql_compare_text('bookingstatus')} {$insql}";
 
-                $params['classid'] = $classrecord->classid;
+                $params['classid'] = $classrecord->id;
                 $classinfo->hasattendedenrolments = (bool) $DB->count_records_sql($sql, $params);
             }
 
@@ -173,7 +173,7 @@ class cmclass {
                         } else {
                             $this->coursemanager->set_page($classinfo->status);
                         }
-                    } 
+                    }
                 }
             } else if ($this->coursemanager->page == 'class_scheduled') {
                 $classinfo->type = 'class_scheduled';
@@ -194,7 +194,7 @@ class cmclass {
         }
 
         return $classinfo;
-        
+
     }
 
     public function str($string) {

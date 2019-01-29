@@ -192,7 +192,7 @@ class coursemanager {
                 $enrolments = $DB->count_records_select(
                         'local_taps_enrolment',
                         'classid = :classid AND (archived is NULL OR archived = 0)',
-                        ['classid' => $this->cmclass->classid]
+                        ['classid' => $this->cmclass->id]
                         );
                 if ($enrolments > 0) {
                     $this->pendingdeleteclass = $this->cmclass->id;
@@ -206,7 +206,7 @@ class coursemanager {
                 if (!$this->check_permission('local/coursemanager:deleteclass')) {
                     return false;
                 }
-                $enrolments = $DB->get_records('local_taps_enrolment', array('classid' => $this->cmclass->classid));
+                $enrolments = $DB->get_records('local_taps_enrolment', array('classid' => $this->cmclass->id));
                 foreach ($enrolments as $enrolment) {
                     $enrolment->archived = 1;
                     $DB->update_record('local_taps_enrolment', $enrolment);
@@ -567,7 +567,7 @@ class coursemanager {
             $sql = "SELECT c.". implode(', c.', $showfields) .",  count(e.classid) as attending
                       FROM {local_taps_class} c
                       LEFT OUTER JOIN {local_taps_enrolment} e
-                      ON c.classid = e.classid
+                      ON c.id = e.classid
                         AND (e.archived = 0 OR e.archived IS NULL)
                         AND {$DB->sql_compare_text('e.bookingstatus')} {$insql}
                       WHERE c.courseid = :courseid

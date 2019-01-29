@@ -142,7 +142,7 @@ class delegate_list {
         } else {
             $activewhere = "{$where} AND (ltc.classhidden = 0 OR ltc.classhidden IS NULL) AND (ltc.archived = 0 OR ltc.archived IS NULL)";
 
-            $sql = "SELECT ltc.classid, ltc.classname, ltc.classendtime FROM {local_taps_class} ltc
+            $sql = "SELECT ltc.id, ltc.classname, ltc.classendtime FROM {local_taps_class} ltc
                     WHERE $activewhere";
 
             $activeclasses = $DB->get_records_sql($sql, $params);
@@ -153,17 +153,17 @@ class delegate_list {
         // This may not be DB agnostic... Tested against MSSQL
         $sql = <<<EOS
 SELECT
-    ltc.classid, MAX({$classname}) as classname, MAX(ltc.classendtime) as classendtime, MAX({$classtype}) as classtype
+    ltc.id, MAX({$classname}) as classname, MAX(ltc.classendtime) as classendtime, MAX({$classtype}) as classtype
 FROM
     {tapsenrol_class_enrolments} lte
-INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
+INNER JOIN {local_taps_class} ltc ON ltc.id = lte.classid
 WHERE
     {$where}
     AND lte.active = 1
     AND (ltc.archived = 0 OR ltc.archived IS NULL)
     AND (lte.archived = 0 OR lte.archived IS NULL)
 GROUP BY
-    ltc.classid
+    ltc.id
 EOS;
         $extraclasses = $DB->get_records_sql($sql, $params);
 
@@ -187,9 +187,9 @@ EOS;
             if ($this->has_capability('student') && $this->_taps->is_classtype($class->classtype, 'elearning')) {
                 continue;
             }
-            $this->_classes[$class->classid] = new stdClass();
-            $this->_classes[$class->classid]->classname = $class->classname;
-            $this->_classes[$class->classid]->classendtime = $class->classendtime;
+            $this->_classes[$class->id] = new stdClass();
+            $this->_classes[$class->id]->classname = $class->classname;
+            $this->_classes[$class->id]->classendtime = $class->classendtime;
         }
 
         if (empty($this->_classes)) {
@@ -247,7 +247,7 @@ EOS;
 
         if (!$this->_activeclass) {
             $this->_activeclass = new stdClass();
-            $this->_activeclass->classid = $classid;
+            $this->_activeclass->id = $classid;
             $this->_activeclass->classname = isset($this->_classes[$classid]) ? $this->_classes[$classid]->classname : '';
             $this->_activeclass->classduration = 0;
             $this->_activeclass->classdurationunits = '';
@@ -359,7 +359,7 @@ EOS;
     public function get_url($ignore='') {
         $params = array('contextid'=>$this->_context->id);
         if (!empty($this->_activeclass) && $ignore !== 'classid') {
-            $params['classid'] = $this->_activeclass->classid;
+            $params['classid'] = $this->_activeclass->id;
         }
         foreach (optional_param_array('filters', array(), PARAM_ALPHA) as $filter => $value) {
             if ($filter===$ignore) {
@@ -401,7 +401,7 @@ EOF;
 
         $params = array(
             'courseid' => $this->_course->id,
-            'classid' => $this->_activeclass->classid
+            'classid' => $this->_activeclass->id
         );
 
         $this->_process_filters($where, $params);
@@ -503,6 +503,6 @@ EOF;
         }
         return new moodle_url(
                 '/mod/tapsenrol/manage_enrolments.php',
-                ['id' => $this->_tapsenrolcm->id, 'classid' => $this->_activeclass->classid]);
+                ['id' => $this->_tapsenrolcm->id, 'classid' => $this->_activeclass->id]);
     }
 }

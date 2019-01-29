@@ -518,7 +518,7 @@ class delegatetable extends table_sql {
             $url = new moodle_url(str_ireplace('/index.php', '/download.php', $this->baseurl));
             $activeclass = $this->_delegatelist->get_active_class();
             $params = $url->params();
-            $params['classid'] = (empty($activeclass)? 0 : $activeclass->classid);
+            $params['classid'] = (empty($activeclass)? 0 : $activeclass->id);
             // Remove filters as will break output due to being nested.
             unset($params['filters']);
             // Rebuild filters params.

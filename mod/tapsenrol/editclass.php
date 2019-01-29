@@ -29,7 +29,6 @@ if (!empty($id)) {
     $duplicate = optional_param('duplicate', false, PARAM_BOOL);
     if ($duplicate) {
         unset($class->id);
-        unset($class->classid);
     }
 } else {
     $cmid = required_param('cmid', PARAM_INT);

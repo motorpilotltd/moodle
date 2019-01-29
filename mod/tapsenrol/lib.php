@@ -167,7 +167,7 @@ function tapsenrol_cm_info_view(cm_info $cm) {
         $enrolmentoutput = '';
         if ($canview) {
             $classes = $tapsenrol->get_tapsclasses($canviewclasses);
-            $enrolments = $tapsenrol->taps->get_enroled_classes($USER->id, $tapsenrol->tapsenrol->course, false, false);
+            $enrolments = $tapsenrol->taps->get_enrolments($USER->id, $tapsenrol->tapsenrol->course, false, false);
             $enrolmentoutput = $renderer->enrolment_history($tapsenrol, $enrolments, $classes, $tapsenrol->cm->id);
         }
 

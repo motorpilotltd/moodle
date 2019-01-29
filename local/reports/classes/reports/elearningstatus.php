@@ -87,7 +87,7 @@ class elearningstatus extends base {
         // Fix array for usage in mustache.
         foreach ($this->setfilters as $filter) {
             if ($filter->field == 'classname') {
-                $filter->displayvalue = $DB->get_field('local_taps_class', 'classname', array('classid' => $filter->value[0]));
+                $filter->displayvalue = $DB->get_field('local_taps_class', 'classname', array('id' => $filter->value[0]));
             }
             $this->showfilters[] = $filter;
         }
@@ -212,7 +212,7 @@ class elearningstatus extends base {
         $exclusionmissingfields = array ();
         if ($exclusion && isset($this->setfilters['classname'])) {
             $filter = $this->setfilters['classname'];
-            $classinfo = $DB->get_record('local_taps_class', array('classid' => $filter->value[0]));
+            $classinfo = $DB->get_record('local_taps_class', array('id' => $filter->value[0]));
 
             $exclusionmissingfields = array (
                 'coursename' => $classinfo->coursename,
@@ -333,7 +333,7 @@ class elearningstatus extends base {
                   INNER JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON u.idnumber = staff.EMPLOYEE_NUMBER
              INNER JOIN {local_taps_class} as ltc
-                    ON ltc.classid = lte.classid
+                    ON ltc.id = lte.classid
              INNER JOIN {course} as c
                     ON ltc.courseid = c.id
              LEFT JOIN (
@@ -350,7 +350,7 @@ class elearningstatus extends base {
         $sqlcount = "SELECT count(lte.id) as recnum
                   FROM {tapsenrol_class_enrolments} as lte
                  INNER JOIN {local_taps_class} as ltc
-                        ON ltc.classid = lte.classid
+                        ON ltc.id = lte.classid
                   INNER JOIN {user} u ON lte.userid = u.id
                   INNER JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON u.idnumber = staff.EMPLOYEE_NUMBER
@@ -625,10 +625,10 @@ class elearningstatus extends base {
             return $options;
         }
         if ($field == 'classname') {
-            $sql = "SELECT classid, classname from {local_taps_class} where classtype = ? ORDER BY classname ASC";
+            $sql = "SELECT id, classname from {local_taps_class} where classtype = ? ORDER BY classname ASC";
             $classes = $DB->get_records_sql($sql, array('Self Paced'));
             foreach ($classes as $class) {
-                $options[$class->classid] = $class->classname;
+                $options[$class->id] = $class->classname;
             }
             return ['0' => ''] + $options;
         }

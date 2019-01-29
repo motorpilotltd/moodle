@@ -44,8 +44,6 @@ abstract class cmform_class extends \moodleform {
 
         $mform->addElement("hidden", "id");
         $mform->setType('id', PARAM_INT);
-        $mform->addElement("hidden", "classid");
-        $mform->setType('classid', PARAM_INT);
         $mform->addElement("hidden", "courseid");
         $mform->setType('courseid', PARAM_INT);
         $mform->addElement("hidden", "cmid");
@@ -293,8 +291,10 @@ abstract class cmform_class extends \moodleform {
             $default_values = (array)$default_values;
         }
 
-        if (isset($default_values['maximumattendees']) && $default_values['maximumattendees'] == -1) {
+        if (!isset($default_values['maximumattendees']) || $default_values['maximumattendees'] == -1) {
             $default_values['unlimitedattendees'] = true;
+        } else {
+            $default_values['unlimitedattendees'] = false;
         }
 
         if (!empty($default_values['classstarttime'])) {
@@ -309,7 +309,6 @@ abstract class cmform_class extends \moodleform {
                     empty($default_values['usedtimezone']) ? date_default_timezone_get() : $default_values['usedtimezone']
             );
         }
-
         // Date based on timezone
         // Output
         // Parse out timestamp
@@ -340,7 +339,7 @@ abstract class cmform_class extends \moodleform {
                     AND (archived = 0 OR archived IS NULL)
                     AND {$DB->sql_compare_text('bookingstatus')} {$insql}";
 
-            $params['classid'] = $this->_customdata->classid;
+            $params['classid'] = $this->_customdata->id;
             $this->hasattendedenrolments = $DB->count_records_sql($sql, $params);
             if ($this->hasattendedenrolments) {
                 $elements = [
@@ -436,7 +435,7 @@ abstract class cmform_class extends \moodleform {
 
         $update = !empty($data->id);
 
-        if ($update && $data->classid > 0) {
+        if ($update && $data->id > 0) {
             // Check for attended enrolments and unset duration/time fields so they are not updated.
             list($insql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
             $sql = "SELECT COUNT(id)
@@ -446,7 +445,7 @@ abstract class cmform_class extends \moodleform {
                     AND (archived = 0 OR archived IS NULL)
                     AND {$DB->sql_compare_text('bookingstatus')} {$insql}";
 
-            $params['classid'] = $data->classid;
+            $params['classid'] = $data->id;
             $hasattendedenrolments = $DB->count_records_sql($sql, $params);
             if (!empty($hasattendedenrolments)) {
                 unset($data->classtype);
@@ -474,12 +473,9 @@ abstract class cmform_class extends \moodleform {
             $DB->update_record('local_taps_class', $record);
         } else {
             $data->timemodified = time();
-            $sqlmax = "SELECT max(classid) as maxid from {local_taps_class}";
-            $max = $DB->get_record_sql($sqlmax);
-            $data->classid = $max->maxid + 1;
             $data->id = $DB->insert_record('local_taps_class', $data);
         }
-        $this->classid = $data->classid;
+        $this->classid = $data->id;
 
         if ($record) {
             // Reset required unset data from DB record;
@@ -497,16 +493,15 @@ abstract class cmform_class extends \moodleform {
             $sql = "SELECT COUNT(*)
                           FROM {tapsenrol_class_enrolments}
                           WHERE classid = :classid AND {$DB->sql_compare_text('bookingstatus')} {$insql}";
-            $inparams['classid'] = $data->classid;
+            $inparams['classid'] = $data->id;
             if ($DB->count_records_sql($sql, $inparams)) {
-                $params['resendinvites'] = $data->classid;
                 $this->alertrequired = true;
             }
         }
 
         $eventdata = [
                 'objectid' => $data->id,
-                'other'    => ['classid' => $data->classid, 'oldfields' => $oldfields]
+                'other'    => ['classid' => $data->id, 'oldfields' => $oldfields]
         ];
         if (!isset($data->id)) {
             $event = class_created::create($eventdata);

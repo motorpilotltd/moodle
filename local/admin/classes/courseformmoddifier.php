@@ -157,7 +157,12 @@ class courseformmoddifier {
 
         $taps = $DB->get_record('tapsenrol', ['course' => $course->id]);
         $taps->internalworkflowid = $data->internalworkflowid;
-        $taps->region = $data->enrolmentregion;
+
+        if (!empty($data->enrolmentregion)) {
+            $taps->region = $data->enrolmentregion;
+        } else {
+            $taps->region = [];
+        }
         $taps->instance = $taps->id;
         tapsenrol_update_instance($taps, null);
     }
@@ -393,7 +398,8 @@ class courseformmoddifier {
             $taps = $DB->get_record('tapsenrol', ['course' => $courseid]);
             $mform->setDefault('internalworkflowid', $taps->internalworkflowid);
 
-            $regions = $DB->get_records_menu('tapsenrol_region', array('tapsenrolid' => $taps->id), 'id', 'regionid as id, regionid as id2');
+            $regions = $DB->get_records_menu('tapsenrol_region', array('tapsenrolid' => $taps->id), 'id',
+                    'regionid as id, regionid as id2');
             $mform->setDefaults(['enrolmentregion' => $regions]);
         }
 

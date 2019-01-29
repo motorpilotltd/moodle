@@ -341,7 +341,7 @@ class daterangelearning extends base {
                   INNER JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON u.idnumber = staff.EMPLOYEE_NUMBER
              INNER JOIN {local_taps_class} as ltc
-                    ON ltc.classid = lte.classid
+                    ON ltc.id = lte.classid
              INNER JOIN {course} as c
                     ON ltc.courseid = c.id
              LEFT JOIN (
@@ -357,7 +357,7 @@ class daterangelearning extends base {
         $sqlcount = "SELECT count(lte.id) as recnum
                   FROM {tapsenrol_class_enrolments} as lte
                  INNER JOIN {local_taps_class} as ltc
-                        ON ltc.classid = lte.classid
+                        ON ltc.id = lte.classid
                   INNER JOIN {user} u ON lte.userid = u.id
                   INNER JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
                     ON u.idnumber = staff.EMPLOYEE_NUMBER

@@ -208,7 +208,7 @@ FROM
 JOIN
     {tapsenrol_class_enrolments} lte
     ON lte.id = tit.enrolmentid
-INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
+INNER JOIN {local_taps_class} ltc ON ltc.id = lte.classid
 INNER JOIN
     {tapsenrol} t
     ON t.course = ltc.courseid
@@ -271,7 +271,7 @@ SELECT
     c.fullname, c.shortname, c.visible
 FROM
     {tapsenrol_class_enrolments} lte
-INNER JOIN {local_taps_class} ltc ON ltc.classid = lte.classid
+INNER JOIN {local_taps_class} ltc ON ltc.id = lte.classid
 JOIN
     {course} c ON c.id = ltc.courseid
 WHERE

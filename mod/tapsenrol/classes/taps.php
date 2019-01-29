@@ -417,7 +417,7 @@ class taps {
     public function get_class_by_id($id) {
         global $DB;
 
-        return $DB->get_record('local_taps_class', array('classid' => $id));
+        return $DB->get_record('local_taps_class', array('id' => $id));
     }
 
     /**
@@ -427,7 +427,7 @@ class taps {
      * @param mixed $courseid
      * @return mixed
      */
-    public function get_enroled_classes($userid, $courseid = null, $activeonly = false, $archived = false) {
+    public function get_enrolments($userid, $courseid = null, $activeonly = false, $archived = false) {
         global $DB;
 
         $params = array();
@@ -440,7 +440,7 @@ class taps {
 
         $activewhere = $activeonly ? ' AND lte.active = 1' : '';
         $archivedwhere = $archived ? '' : ' AND (ltc.archived = 0 OR ltc.archived IS NULL)';
-        $sql = "SELECT * 
+        $sql = "SELECT lte.* 
                 FROM {tapsenrol_class_enrolments} lte 
                 INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.id
                 WHERE userid = :userid $courseidwhere $activewhere $archivedwhere";
@@ -483,11 +483,26 @@ class taps {
      * @return mixed
      */
     public function enrol($classid, $userid, $approved = false) {
-        global $DB;
-
+        global $DB, $CFG;
         $result = new stdClass();
-        // Get class and course info.
+
+        require_once("$CFG->dirroot/lib/enrollib.php");
+
         $class = $this->get_class_by_id($classid);
+
+        $coursecontext = \context_course::instance($class->courseid);
+        $user = \core_user::get_user($userid);
+        if(!is_enrolled($coursecontext, $user)) {
+            $instances = $DB->get_records('enrol', array('enrol'=>'manual', 'courseid' => $class->courseid, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder,id ASC');
+            $instance = reset($instances);
+            $roleid = $instance ? $instance->roleid : null;
+
+            if (!enrol_try_internal_enrol($class->courseid, $user->id,$roleid)) {
+                $result->success = false;
+                $result->status = 'MOODLE_ENROLMENT_FAILED';
+                return $result;
+            }
+        }
 
         // Setup enrolment object.
         $enrolment = new stdClass();
@@ -554,6 +569,8 @@ class taps {
     public function set_status($enrolment, $status, $completiontime = null) {
         global $DB;
 
+        $class = $this->get_class_by_id($enrolment->classid);
+
         // Setup result object.
         $result = new \stdClass();
         $result->success = true;
@@ -593,7 +610,7 @@ class taps {
             $status = 'W:Wait Listed';
         }
         // Check for full class if trying to place.
-        if ($this->is_status($status, 'placed') && !$this->is_status($enrolment->bookingstatus, 'placed') && $this->get_seats_remaining($class->classid) === 0) {
+        if ($this->is_status($status, 'placed') && !$this->is_status($enrolment->bookingstatus, 'placed') && $this->get_seats_remaining($class->id) === 0) {
             // Trying to place and no seats.
             $status = 'W:Wait Listed';
             $result->status = 'CLASS_FULL';
@@ -603,7 +620,7 @@ class taps {
         if ($this->is_status($status, 'attended')) {
             $enrolment->completiontime = (empty($completiontime) ? time() : $completiontime);
             try {
-                $usedtimezone = new DateTimeZone($enrolment->usedtimezone);
+                $usedtimezone = new DateTimeZone($class->usedtimezone);
             } catch (\Exception $e) {
                 $usedtimezone = new DateTimeZone('UTC');
             }
@@ -653,7 +670,7 @@ class taps {
 
         $seatsremaining = [];
 
-        $classes = $this->get_course_classes($courseid, false, false, 'classid, maximumattendees');
+        $classes = $this->get_course_classes($courseid, false, false, 'id, maximumattendees');
 
         // Placed and attended count as taking seats.
         list($in, $inparams) = $DB->get_in_or_equal(
@@ -664,21 +681,21 @@ class taps {
                 array('courseid' => $courseid),
                 $inparams
         );
-        $sql = "SELECT ltc.classid, COUNT(lte.id)
+        $sql = "SELECT ltc.id, COUNT(lte.id)
                   FROM {tapsenrol_class_enrolments} lte
-                  INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.classid
+                  INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.id
                  WHERE ltc.courseid = :courseid AND (ltc.archived = 0 OR ltc.archived IS NULL) AND bookingstatus {$in}
-              GROUP BY ltc.classid
-              ORDER BY ltc.classid ASC";
+              GROUP BY ltc.id
+              ORDER BY ltc.id ASC";
         $enrolments = $DB->get_records_sql_menu($sql, $params);
 
         foreach ($classes as $class) {
             if (!($class->maximumattendees > 0)) {
-                $seatsremaining[$class->classid] = -1;
-            } else if (!isset($enrolments[$class->classid])) {
-                $seatsremaining[$class->classid] = $class->maximumattendees;
+                $seatsremaining[$class->id] = -1;
+            } else if (!isset($enrolments[$class->id])) {
+                $seatsremaining[$class->id] = $class->maximumattendees;
             } else {
-                $seatsremaining[$class->classid] = max(array(0, $class->maximumattendees - $enrolments[$class->classid]));
+                $seatsremaining[$class->id] = max(array(0, $class->maximumattendees - $enrolments[$class->id]));
             }
         }
 
@@ -705,7 +722,7 @@ class taps {
             return false;
         }
 
-        $enrolments = $taps->get_enroled_classes($user->id, $modinfo->courseid, true, false);
+        $enrolments = $taps->get_enrolments($user->id, $modinfo->courseid, true, false);
 
         foreach ($enrolments as $enrolment) {
             $statusstype = $taps->get_status_type($enrolment->bookingstatus);

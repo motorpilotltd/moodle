@@ -7,7 +7,7 @@ if (!defined('MOODLE_INTERNAL')) {
 require_once 'lib.php';
 
 class local_delegatelist_renderer extends plugin_renderer_base {
-    
+
     public function navigation_buttons(delegate_list $dl) {
         if (!$dl->has_capability('manager', 'teacher')) {
             return '';
@@ -21,7 +21,7 @@ class local_delegatelist_renderer extends plugin_renderer_base {
         $items[] = $this->printregister_button($dl->get_print_url(), $dl->get_active_class());
         return html_writer::alist($items, array('class'=>'navigationbuttons'));
     }
-    
+
     public function navbutton(moodle_url $url, $text, $icon, $data = array()) {
         $params = array('class'=>$icon);
         foreach($data as $key=>$value) {
@@ -29,27 +29,27 @@ class local_delegatelist_renderer extends plugin_renderer_base {
         }
         return html_writer::link($url, html_writer::tag('i', '', array('class' => 'fa fa-lg fa-'.$icon)) . $text, $params);
     }
-    
+
     public function activitycompletion_button(moodle_url $url) {
         return $this->navbutton($url, get_string('button:activitycompletion', 'local_delegatelist'), 'line-chart');
     }
-    
+
     public function markattendance_button(moodle_url $url) {
         return $this->navbutton($url, get_string('button:markattendance', 'local_delegatelist'), 'check-square-o');
     }
-    
+
     public function printregister_button(moodle_url $url, $currentclass) {
         $data = array();
         if (!empty($currentclass)) {
-            $data['classid'] = $currentclass->classid;
+            $data['classid'] = $currentclass->id;
         }
         $button = $this->navbutton($url, get_string('button:printregister', 'local_delegatelist'), 'print', $data);
         return str_replace('/index.php', '/print.php', $button);
     }
-    
+
     public function delegate_list(delegate_list $delegatelist) {
         $activeclass = $delegatelist->get_active_class();
-        $activeclassid = empty($activeclass)? 0 : $activeclass->classid;
+        $activeclassid = empty($activeclass)? 0 : $activeclass->id;
         if (!empty($activeclass) && $delegatelist->get_function() == 'display' && $delegatelist->has_capability('manager', 'teacher')) {
             echo $this->manage_enrolments($delegatelist);
             echo $this->filters($delegatelist);
@@ -70,7 +70,7 @@ class local_delegatelist_renderer extends plugin_renderer_base {
             echo html_writer::end_div();
         }
     }
-    
+
     public function summary(delegate_list $delegatelist) {
         $rows  = $this->render_course_row($delegatelist->get_course_name());
         if ($delegatelist->get_function() == 'print') {
@@ -95,7 +95,7 @@ class local_delegatelist_renderer extends plugin_renderer_base {
                 get_string('manageenrolments', 'tapsenrol'),
                 ['class' => 'btn btn-primary']);
     }
-    
+
     public function filters(delegate_list $delegatelist) {
         $filters = $delegatelist->get_filters();
         $filterselected = empty($filters['bookingstatus']) ? '' : $filters['bookingstatus'];
@@ -105,15 +105,15 @@ class local_delegatelist_renderer extends plugin_renderer_base {
         $filter->set_label(get_string('label:filterbookingstatus', 'local_delegatelist'));
         return $this->render_single_select($filter);
     }
-    
+
     public function render_course_row($coursename) {
         $cols  = html_writer::div(get_string('course'), 'col-xs-3 mdl-right');
         $cols .= html_writer::div($coursename, 'col-xs-9 mdl-left');
         return html_writer::div($cols, 'row-fluid');
     }
-    
+
     public function render_groups_row($classes, $currentclass, $url) {
-        $classid = empty($currentclass) ? 0 : $currentclass->classid;
+        $classid = empty($currentclass) ? 0 : $currentclass->id;
         $select = new single_select($url, 'classid', $classes, $classid, array('' => 'choosedots'), 'formchangeclass');
         $select->attributes['autocomplete'] = 'off';
         $cols  = html_writer::div(get_string('class', 'local_delegatelist'), 'col-xs-3 mdl-right');
@@ -126,13 +126,13 @@ class local_delegatelist_renderer extends plugin_renderer_base {
         $cols .= html_writer::div($currentclass->classname, 'col-xs-9 mdl-left');
         return html_writer::div($cols, 'row-fluid');
     }
-    
+
     public function render_dates_row($dates) {
         $cols  = html_writer::div(get_string('dates', 'local_delegatelist'), 'col-xs-3 mdl-right');
         $cols .= html_writer::div($dates, 'col-xs-9 mdl-left', array('id' => 'delegate-list-class-dates'));
         return html_writer::div($cols, 'row-fluid');
     }
-    
+
     public function render_duration_row($duration) {
         $cols  = html_writer::div(get_string('duration', 'local_delegatelist'), 'col-xs-3 mdl-right');
         $cols .= html_writer::div($duration, 'col-xs-9 mdl-left', array('id' => 'delegate-list-class-duration'));

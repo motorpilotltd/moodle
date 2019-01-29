@@ -80,21 +80,15 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
     public function enrolment_history($tapsenrol, $enrolments, $classes, $cmid) {
         global $DB, $SESSION, $OUTPUT, $USER;
 
-        $classeskeyonclassid = [];
-        foreach ($classes as $class) {
-            $classeskeyonclassid[$class->classid] = $class;
-        }
-
-
         $overallclasstype = 'unknown';
         $classtypes = [];
-        foreach (['classes', 'enrolments'] as $var) {
-            foreach ($$var as $value) {
-                $classtypes[] = $overallclasstype = $tapsenrol->taps->get_classtype_type($value->classtype);
-                if (count(array_unique($classtypes)) > 1) {
-                    $overallclasstype = 'mixed';
-                    break 2;
-                }
+
+        $classeskeyonclassid = [];
+        foreach ($classes as $class) {
+            $classeskeyonclassid[$class->id] = $class;
+            $classtypes[] = $overallclasstype = $tapsenrol->taps->get_classtype_type($class->classtype);
+            if (count(array_unique($classtypes)) > 1) {
+                $overallclasstype = 'mixed';
             }
         }
 
@@ -179,7 +173,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                         $cells[] = $cell;
                     }
                 }
-                $cells[] = $class->duration ? (float) $class->duration.' '.$class->durationunits : '-';
+                $cells[] = $class->classduration ? (float) $class->classduration.' '.$class->classdurationunits : '-';
                 $classseatsremaining = isset($seatsremaining[$enrolment->classid]) ? $seatsremaining[$enrolment->classid] : 0;
                 $cells[] = ($classseatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $classseatsremaining) . $delegatebutton;
                 $cells[] = $class->price ? $class->price.' '.$class->currencycode : '-';
@@ -256,10 +250,10 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
             foreach ($classes as $index => $class) {
                 $classclasstype = $tapsenrol->taps->get_classtype_type($class->classtype);
                 $classtype = $classclasstype ? $classclasstype : 'unknown';
-                $delegateurl->param('classid', $class->classid);
+                $delegateurl->param('classid', $class->id);
                 $delegatebutton = html_writer::link($delegateurl, $delegateicon, array('class' => 'delegate-button'));
                 // Allow completed if elearning.
-                if (($classtype != 'elearning' && in_array($class->classid, $completedclasses)) || in_array($class->classid, $enrolledclasses)) {
+                if (($classtype != 'elearning' && in_array($class->id, $completedclasses)) || in_array($class->id, $enrolledclasses)) {
                     unset($classes[$index]);
                     continue;
                 }
@@ -305,7 +299,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                     }
                 }
                 $cells[] = $class->classduration ? (float) $class->classduration.' '.$class->classdurationunits : '-';
-                $classseatsremaining = isset($seatsremaining[$class->classid]) ? $seatsremaining[$class->classid] : 0;
+                $classseatsremaining = isset($seatsremaining[$class->id]) ? $seatsremaining[$class->id] : 0;
                 $cells[] = ($classseatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $classseatsremaining) . $delegatebutton;
                 $cells[] = $class->price ? $class->price.' '.$class->currencycode : '-';
                 if ($classtype == 'classroom'
@@ -316,18 +310,18 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                     $helpicon = $OUTPUT->help_icon('enrol:closed', 'tapsenrol');
                     $cells[] = html_writer::tag('span', get_string('enrol:closed', 'tapsenrol') . '&nbsp;' . $helpicon, array('class' => 'nowrap'));
                 } else if ($classseatsremaining == 0) {
-                    $enrolurl = new moodle_url('/mod/tapsenrol/enrol.php', array('id' => $cmid, 'classid' => $class->classid));
+                    $enrolurl = new moodle_url('/mod/tapsenrol/enrol.php', array('id' => $cmid, 'classid' => $class->id));
                     $enroltext = get_string('enrol:waitinglist', 'tapsenrol') . ' ' . html_writer::tag('span', '', array('class' => 'caret caret-right'));
                     $cells[] = get_string('classfull', 'tapsenrol') .
                         html_writer::empty_tag('br') .
                         html_writer::link($enrolurl, $enroltext, array('class' => 'btn btn-small btn-default'));
                 } else if (!$class->classstarttime) {
-                    $enrolurl = new moodle_url('/mod/tapsenrol/enrol.php', array('id' => $cmid, 'classid' => $class->classid));
+                    $enrolurl = new moodle_url('/mod/tapsenrol/enrol.php', array('id' => $cmid, 'classid' => $class->id));
                     $enroltext = get_string('enrol:planned', 'tapsenrol') . ' ' . html_writer::tag('span', '', array('class' => 'caret caret-right'));
                     $cells[] = html_writer::link($enrolurl, $enroltext, array('class' => 'btn btn-small btn-default'));
                 } else {
-                    $enrolstring = ($classtype == 'elearning' && in_array($class->classid, $completedclasses)) ? 'enrol:reenrol' : 'enrol';
-                    $enrolurl = new moodle_url('/mod/tapsenrol/enrol.php', array('id' => $cmid, 'classid' => $class->classid));
+                    $enrolstring = ($classtype == 'elearning' && in_array($class->id, $completedclasses)) ? 'enrol:reenrol' : 'enrol';
+                    $enrolurl = new moodle_url('/mod/tapsenrol/enrol.php', array('id' => $cmid, 'classid' => $class->id));
                     $enroltext = get_string($enrolstring, 'tapsenrol') . ' ' . html_writer::tag('span', '', array('class' => 'caret caret-right'));
                     $cells[] = html_writer::link($enrolurl, $enroltext, array('class' => 'btn btn-primary btn-small'));
                 }
@@ -396,8 +390,8 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
 
         if ($classes && $checkseats) {
             foreach ($classes as $class) {
-                if ($class->classid == $checkseats->classid) {
-                    $classseatsremaining = isset($seatsremaining[$class->classid]) ? $seatsremaining[$class->classid] : 0;
+                if ($class->id == $checkseats->id) {
+                    $classseatsremaining = isset($seatsremaining[$class->id]) ? $seatsremaining[$class->id] : 0;
                     if ($classseatsremaining == 0 && $status == 'requested') {
                         $html .= $this->alert(get_string('status:requested:fullclass', 'tapsenrol'), 'alert-warning');
                     } else if ($classseatsremaining == 0 && $status == 'waitlisted') {
@@ -515,7 +509,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         $html .= html_writer::tag('div', $classname, array('class' => 'fitem'));
 
         $duration = html_writer::tag('div', get_string('duration', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $durationvalue = ($class->duration) ? (float) $class->duration . ' ' . $class->durationunits : get_string('tbc', 'tapsenrol');
+        $durationvalue = ($class->classduration) ? (float) $class->classduration . ' ' . $class->classdurationunits : get_string('tbc', 'tapsenrol');
         $duration .= html_writer::tag('div', $durationvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $duration, array('class' => 'fitem'));
 
@@ -819,10 +813,10 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
 
                 // Actions.
                 $actions = array();
-                $approveurl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolmentwithclassnameandcoursename->id, 'action' => 'approve'));
+                $approveurl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolmentwithclassnameandcoursename->enrolmentid, 'action' => 'approve'));
                 $actions[] = html_writer::link($approveurl, get_string('approve:approve', 'tapsenrol'));
 
-                $rejecturl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolmentwithclassnameandcoursename->id, 'action' => 'reject'));
+                $rejecturl = new moodle_url('/mod/tapsenrol/approve.php', array('id' => $enrolmentwithclassnameandcoursename->enrolmentid, 'action' => 'reject'));
                 $actions[] = html_writer::link($rejecturl, get_string('approve:reject', 'tapsenrol'));
 
                 $cell->attributes['class'] = 'text-center nowrap';
@@ -882,7 +876,7 @@ JOIN
     ON lte.id = tit.enrolmentid
 INNER JOIN
     {local_taps_class} ltc
-    ON ltc.classid = lte.classid
+    ON ltc.id = lte.classid
 INNER JOIN
     {course} c ON c.id = ltc.courseid
 JOIN
@@ -946,7 +940,7 @@ EOF;
         $html .= html_writer::tag('div', $classname, array('class' => 'fitem'));
 
         $duration = html_writer::tag('div', get_string('duration', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $durationvalue = ($class->duration) ? (float) $class->duration . ' ' . $class->durationunits : get_string('tbc', 'tapsenrol');
+        $durationvalue = ($class->classduration) ? (float) $class->classduration . ' ' . $class->classdurationunits : get_string('tbc', 'tapsenrol');
         $duration .= html_writer::tag('div', $durationvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $duration, array('class' => 'fitem'));
 
@@ -1061,7 +1055,7 @@ EOF;
 
                 $cells[] = $class->enrolments;
 
-                $resendurl = new moodle_url('/mod/tapsenrol/resend_invites.php', array('id' => $tapsenrol->cm->id, 'classid' => $class->classid));
+                $resendurl = new moodle_url('/mod/tapsenrol/resend_invites.php', array('id' => $tapsenrol->cm->id, 'classid' => $class->id));
                 $resendtext = get_string('resendinvites', 'tapsenrol') . ' ' . html_writer::tag('span', '', array('class' => 'caret caret-right'));
                 $cells[] = html_writer::link($resendurl, $resendtext, array('class' => 'btn btn-success btn-small'));
 
