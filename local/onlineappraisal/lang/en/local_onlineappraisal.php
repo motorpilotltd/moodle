@@ -385,6 +385,7 @@ $string['error:appraisalcycle:closed'] = 'This appraisal cycle is closed, you ca
 $string['error:appraisalcycle:groupcohort'] = 'Invalid group or appraisal cycle information submitted.';
 $string['error:appraisalcycle:nameexist'] = 'Appraisal cycle name <b>{$a}</b> was already exist.';
 $string['error:appraisalcycle:namenotempty'] = 'Appraisal cycle name cannot be empty.';
+$string['error:appraisalcycle:invalideavailablefrom'] = 'Invalid <i>available from</i> date.';
 $string['error:appraisalexists'] = 'There is already an active appraisal for this user.';
 $string['error:appraiseeassuperior'] = 'The appraisee cannot also be the appraiser, sign off or leader.';
 $string['error:appraisernotvalid'] = 'The chosen appraiser is not valid for this group.';

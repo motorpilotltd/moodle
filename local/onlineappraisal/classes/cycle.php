@@ -27,16 +27,15 @@ namespace local_onlineappraisal;
 
 defined('MOODLE_INTERNAL') || die();
 
-use gradereport_singleview\local\ui\empty_element;
-use Horde\Socket\Client\Exception;
 use stdClass;
 use moodle_url;
+use moodle_exception;
 
 class cycle
 {
 
     private $permittedactions = ['add', 'update'];
-
+    private $cycleurl = '';
     /**
      * Constructor.
      *
@@ -45,6 +44,8 @@ class cycle
     public function __construct(\local_onlineappraisal\admin $admin)
     {
         $this->admin = $admin;
+        $url = new moodle_url('/local/onlineappraisal/admin.php', ['page' => 'cycle']);
+        $this->cycleurl = $url->out(false);
     }
 
     /**
@@ -69,16 +70,21 @@ class cycle
             $id = optional_param('id', 0, PARAM_INT);
             $cyclename = required_param('name', PARAM_ALPHANUM);
             $availablefrom = required_param('availablefrom', PARAM_INT);
-            $result = $this->{$action}($cyclename, $availablefrom, $id);
 
+            if ($this->isfuturedate($availablefrom)) {
+                $result = $this->{$action}($cyclename, $availablefrom, $id);
+            } else {
+                $result = new stdClass();
+                $result->message = get_string('error:appraisalcycle:invalideavailablefrom', 'local_onlineappraisal');
+                $result->success = false;
+
+            }
             $alerttype = $result->success? 'success' : 'danger';
             appraisal::set_alert($result->message, $alerttype);
-
-
-        } catch (Exception $e) {
+        } catch (moodle_exception $e) {
             appraisal::set_alert($e->getMessage(), 'danger');
         }
-        redirect($result->url);
+        redirect($this->cycleurl);
     }
 
     /**
@@ -100,8 +106,6 @@ class cycle
         $cohort->timemodified = $cohort->timecreated = time();
 
         $return = new stdClass();
-        $url = new moodle_url('/local/onlineappraisal/admin.php', ['page' => 'cycle']);
-        $return->url = $url->out(false);
         $return->success = true;
 
         if ($DB->count_records('local_appraisal_cohorts', ['name' => $cohort->name])) {
@@ -138,8 +142,6 @@ class cycle
         $cohort->timemodified = time();
 
         $return = new stdClass();
-        $url = new moodle_url('/local/onlineappraisal/admin.php', ['page' => 'cycle']);
-        $return->url = $url->out(false);
         $return->success = true;
 
         $sql = "
@@ -164,5 +166,22 @@ class cycle
         }
 
         return $return;
+    }
+
+    private function isfuturedate ($datedata) {
+        $utctimezone = new \DateTimeZone('UTC');
+
+        $availfromdate = new \DateTime();
+        $availfromdate->setTimestamp($datedata);
+        $availfromdate->setTimezone($utctimezone);
+
+        $nowdate = new \DateTime('now', $utctimezone);
+
+        $availdiff = $availfromdate->diff($nowdate);
+
+        if ($availdiff->invert == 0 && $availdiff->days > 0) {
+            return false;
+        }
+        return true;
     }
 }

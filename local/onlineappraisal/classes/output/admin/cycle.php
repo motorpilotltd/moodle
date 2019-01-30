@@ -48,7 +48,6 @@ class cycle extends base
             $cohort->availablefromdate = userdate($cohort->availablefrom, get_string('strftimedate', 'core_langconfig'), $utctimezone);
 
             // For disabling editing of passed dates in days counting
-            $datetimeFormat = 'Y-m-d';
             $availfromdate = new \DateTime();
             $availfromdate->setTimestamp($cohort->availablefrom);
             $availfromdate->setTimezone($utctimezone);
