@@ -98,6 +98,8 @@ class classoverview_table extends \table_sql {
         if (has_capability('mod/tapsenrol:editclass', $this->context)) {
             $urledit = new \moodle_url('/mod/tapsenrol/editclass.php', ['id' => $class->id]);
             $edit = $OUTPUT->action_icon($urledit, new \pix_icon('i/edit', get_string('edit')));
+        } else {
+            $edit = '';
         }
 
         // Delegate list.
