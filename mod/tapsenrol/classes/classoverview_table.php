@@ -63,16 +63,15 @@ class classoverview_table extends \table_sql {
                 'usedtimezone', // Needed to format start/end time correctly.
                 'classstarttime',
                 'classendtime',
-                'maximumattendees',
-                'classid'];
-        $fieldsstring = 'c.' . implode(',c.', $fields) . ",  count(e.classid) as attending";
+                'maximumattendees'];
+        $fieldsstring = 'c.' . implode(',c.', $fields) . ",  count(e.classid) as attending, e.classid";
         $from = "{local_taps_class} c
                       LEFT OUTER JOIN {tapsenrol_class_enrolments} e
                       ON c.id = e.classid
                         AND (e.archived = 0 OR e.archived IS NULL)
                         AND {$DB->sql_compare_text('e.bookingstatus')} {$insql}";
         $where = "c.courseid = :courseid AND (c.archived is NULL OR c.archived = 0)
-                      GROUP BY ". 'c.' . implode(',c.', $fields);
+                      GROUP BY e.classid, ". 'c.' . implode(',c.', $fields);
         $params['courseid'] = $cm->course;
         $this->set_sql($fieldsstring, $from, $where, $params);
         $this->set_count_sql('SELECT COUNT(id) FROM {local_taps_class} c WHERE c.courseid = :courseid', ['courseid' => $cm->course]);
