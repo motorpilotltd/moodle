@@ -829,7 +829,7 @@ EOS;
 
         $user = core_user::get_user($enrolment->userid);
         $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolment->id));
-        $class = $this->taps->get_class_by_id($enrolment->id);
+        $class = $this->taps->get_class_by_id($enrolment->classid);
         if ($user && $iwtrack) {
             $iwtrack->cancelcomments = $comments;
             $iwtrack->timecancelled = time();
