@@ -94,12 +94,11 @@ class classoverview_table extends \table_sql {
     public function col_actions($class) {
         global $OUTPUT;
 
+        $retval = '';
         // Edit.
         if (has_capability('mod/tapsenrol:editclass', $this->context)) {
             $urledit = new \moodle_url('/mod/tapsenrol/editclass.php', ['id' => $class->id]);
-            $edit = $OUTPUT->action_icon($urledit, new \pix_icon('i/edit', get_string('edit')));
-        } else {
-            $edit = '';
+            $retval .= $OUTPUT->action_icon($urledit, new \pix_icon('i/edit', get_string('edit')));
         }
 
         // Delegate list.
@@ -108,21 +107,21 @@ class classoverview_table extends \table_sql {
         $params = array('contextid' => $coursecontext->id, 'classid' => $class->id);
         if (has_any_capability(["local/delegatelist:managerview", "local/delegatelist:teacherview", "local/delegatelist:studentview"], $coursecontext)) {
             $urldelegate = new \moodle_url('/local/delegatelist/index.php', $params);
-            $delegates = $OUTPUT->action_icon($urldelegate, new \pix_icon('i/users', get_string('users')));
+            $retval .= $OUTPUT->action_icon($urldelegate, new \pix_icon('i/users', get_string('users')));
         }
 
         // Duplicate
         if (has_capability('mod/tapsenrol:createclass', $this->context)) {
             $urledit = new \moodle_url('/mod/tapsenrol/editclass.php', ['id' => $class->id, 'duplicate' => true]);
-            $duplicate = $OUTPUT->action_icon($urledit, new \pix_icon('e/copy', get_string('duplicate')));
+            $retval .= $OUTPUT->action_icon($urledit, new \pix_icon('e/copy', get_string('duplicate')));
         }
 
         // Delete.
         if (has_capability('mod/tapsenrol:deleteclass', $this->context)) {
             $urldelete = new \moodle_url('/mod/tapsenrol/deleteclass.php', ['id' => $class->id]);
-            $delete = $OUTPUT->action_icon($urldelete, new \pix_icon('t/delete', get_string('delete')));
+            $retval .= $OUTPUT->action_icon($urldelete, new \pix_icon('t/delete', get_string('delete')));
         }
 
-        return $edit . $delegates . $duplicate . $delete;
+        return $retval;
     }
 }
