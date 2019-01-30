@@ -134,15 +134,20 @@ class cycle
      */
     public function update($cyclename, $availablefrom, $id) {
         global $DB;
-
+        $return = new stdClass();
+        $return->success = true;
 
         $cohort = $DB->get_record('local_appraisal_cohorts', ['id' => $id]);
         $cohort->name = trim($cyclename);
+        // Prevent modifying cycle with a past date
+        if (!$this->isfuturedate($cohort->availablefrom)) {
+            $return->message = get_string('error:appraisalcycle:invalideavailablefrom', 'local_onlineappraisal');
+            $return->success = false;
+            return $return;
+        }
+
         $cohort->availablefrom = $availablefrom;
         $cohort->timemodified = time();
-
-        $return = new stdClass();
-        $return->success = true;
 
         $sql = "
             SELECT
