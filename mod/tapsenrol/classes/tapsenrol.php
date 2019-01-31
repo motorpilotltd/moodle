@@ -266,6 +266,8 @@ class tapsenrol {
     }
 
     public function cancel_enrolment($enrolmentid, $status = 'Cancelled') {
+        global $DB;
+
         $allowedstatuses = ['Cancelled', 'No Show'];
         if (!in_array($status, $allowedstatuses)) {
             $status = 'Cancelled';
@@ -298,6 +300,12 @@ class tapsenrol {
         } else {
             $a->message = $result->status;
             $result->message = get_string('cancel:alert:error', 'tapsenrol', $a);
+        }
+
+        if (empty($this->taps->existingenrolments($enrolment->userid, null, $class->courseid))) {
+            $plugin = enrol_get_plugin('manual');
+            $instance = $DB->get_record('enrol', ['courseid'=>$class->courseid, 'enrol'=>'manual'], '*', MUST_EXIST);
+            $plugin->unenrol_user($instance, $enrolment->userid);
         }
 
         return $result;

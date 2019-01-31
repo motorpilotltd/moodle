@@ -508,20 +508,9 @@ class taps {
         $enrolment = new stdClass();
         $enrolment->userid = $userid;
         $enrolment->classid = $classid;
+        $existingenrolments = $this->existingenrolments($userid, $classid);
 
-        // Does a not cancelled enrolment exist?.
-        list($in, $inparams) = $DB->get_in_or_equal(
-            $this->get_statuses('cancelled'),
-            SQL_PARAMS_NAMED, 'status', false
-        );
-        $compare = $DB->sql_compare_text('bookingstatus');
-        $params = array_merge(
-            array('userid' => $enrolment->userid, 'classid' => $enrolment->classid),
-            $inparams
-        );
-        $select = "userid = :userid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND active = 1 AND {$compare} {$in}";
-        $existingenrolments = $DB->count_records_select('tapsenrol_class_enrolments', $select, $params);
-        if ($existingenrolments) {
+        if (!empty($existingenrolments)) {
             $result->success = false;
             $result->status = 'ALREADY_ENROLLED';
             return $result;
@@ -734,5 +723,43 @@ class taps {
 
         $information = get_string('enroltoaccesscourse', 'tapsenrol');
         return false;
+    }
+
+    /**
+     * @param $userid
+     * @param $classid
+     * @return mixed
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function existingenrolments($userid, $classid = null, $courseid = null) {
+        global $DB;
+
+        // Does a not cancelled enrolment exist?.
+        list($in, $params) = $DB->get_in_or_equal(
+                $this->get_statuses('cancelled'),
+                SQL_PARAMS_NAMED, 'status', false
+        );
+        $compare = $DB->sql_compare_text('bookingstatus');
+        $params['userid'] = $userid;
+
+        $where = "userid = :userid AND (lte.archived = 0 OR lte.archived IS NULL) AND lte.active = 1 AND {$compare} {$in}";
+
+        if (isset($classid)) {
+            $params['classid'] = $classid;
+            $where .= ' AND classid = :classid ';
+        }
+
+        if (isset($courseid)) {
+            $params['courseid'] = $courseid;
+            $where .= ' AND courseid = :courseid ';
+        }
+
+        $sql = "SELECT lte.* FROM {tapsenrol_class_enrolments} lte
+                INNER JOIN {local_taps_class} ltc on lte.classid = ltc.id
+                WHERE $where";
+
+        $existingenrolments = $DB->get_records_sql($sql, $params);
+        return $existingenrolments;
     }
 }
