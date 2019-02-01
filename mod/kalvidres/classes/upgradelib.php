@@ -42,4 +42,28 @@ class upgradelib {
             }
         }
     }
+/* BEGIN CORE MOD */
+    /**
+     * Update kalvidres records that has empty metadata
+     *
+     * @throws \dml_exception
+     */
+    public static function update_metadata_field() {
+        global $DB;
+        $kalvidresdata = $DB->get_records_select('kalvidres', "metadata = NULL OR metadata = ''");
+
+        if ($kalvidresdata) {
+            foreach ($kalvidresdata as $item) {
+                $params = ['entry_id' => $item->entry_id];
+                $where = "entry_id = :entry_id AND (metadata != NULL OR metadata != '')";
+                $kalvidres = $DB->get_record_select('kalvidres', $where, $params,"*", IGNORE_MULTIPLE);
+                if (empty($kalvidres)) {
+                    continue;
+                }
+                $item->metadata = $kalvidres->metadata;
+                $DB->update_record('kalvidres', $item);
+            }
+        }
+    }
+/* END CORE MOD */
 }
