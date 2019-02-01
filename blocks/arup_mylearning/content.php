@@ -428,7 +428,7 @@ class block_arup_mylearning_content {
                     )
             );
 
-            if ($hascapabilities['editcpd'] && !$th->locked) {
+            if ($hascapabilities['editcpd'] && !$th->locked && $th->usereditable()) {
                 $editcpdurl = new moodle_url(
                         '/blocks/arup_mylearning/editcpd.php',
                         array('id' => $th->id, 'tab' => 'myhistory', 'instance' => $this->_block->instance->id)
@@ -444,7 +444,7 @@ class block_arup_mylearning_content {
                 );
             }
 
-            if ($hascapabilities['deletecpd'] && !$th->locked) {
+            if ($hascapabilities['deletecpd'] && !$th->locked && $th->usereditable()) {
                 $deletecpdurl = new moodle_url(
                         '/blocks/arup_mylearning/deletecpd.php',
                         array('id' => $th->id, 'tab' => 'myhistory', 'instance' => $this->_block->instance->id)
@@ -545,7 +545,11 @@ class block_arup_mylearning_content {
                     case 'starttime' :
                     case 'completiontime' :
                     case 'expirydate' :
-                        $data = userdate($th->{$field});
+                        if (empty($th->{$field})) {
+                            $data = '';
+                        } else {
+                            $data = userdate($th->{$field});
+                        }
                         break;
                     case 'duration' :
                         $data = $th->formatduration();

@@ -41,6 +41,10 @@ class block_arup_mylearning_editcpd_form extends moodleform {
         $mform->addElement('date_selector', 'completiontime', get_string('cpd:completiontime', 'block_arup_mylearning'), array('timezone' => 0));
         $mform->addRule('completiontime', null, 'required', null, 'client');
 
+        $mform->addElement('date_selector', 'starttime', get_string('cpd:starttime', 'block_arup_mylearning'), array('timezone' => 0, 'optional' => 1));
+
+        $mform->addElement('date_selector', 'endtime', get_string('cpd:endtime', 'block_arup_mylearning'), array('timezone' => 0, 'optional' => 1));
+
         $mform->addElement('text', 'duration', get_string('cpd:duration', 'block_arup_mylearning'));
         $mform->setType('duration', PARAM_TEXT);
         $mform->addRule('duration', null, 'required', null, 'client');

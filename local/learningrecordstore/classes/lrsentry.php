@@ -60,6 +60,12 @@ class lrsentry extends \data_object implements \templatable {
     public $endtime;
     public $locked;
 
+    private $knownproviders = ['moodle', 'Lynda.com'];
+
+    public function usereditable() {
+        return !in_array($this->provider, $this->knownproviders);
+    }
+
     public function generateurl() {
         switch ($this->provider) {
             case "moodle":
@@ -83,6 +89,9 @@ class lrsentry extends \data_object implements \templatable {
     }
 
     public function formatduration() {
+        if (empty($this->duration)) {
+            return '';
+        }
         return $data = (float) $this->duration . ' ' . \mod_tapsenrol\taps::resolvedurationunit($this->durationunits);
     }
 

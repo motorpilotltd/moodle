@@ -66,7 +66,7 @@ try {
         }
         if ($lrsentry->location) {
             $modalupper[] = html_writer::tag('strong', get_string('modal:location', 'block_arup_mylearning').': ') .
-                    $class->location;
+                    $lrsentry->location;
         }
         if ($lrsentry->expirydate) {
             $modalupper[] = html_writer::tag('strong', get_string('modal:expirydate', 'block_arup_mylearning').': ') .

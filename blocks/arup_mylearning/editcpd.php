@@ -41,6 +41,8 @@ if (!isset($SESSION->block_arup_mylearning)) {
 require_login();
 
 
+$PAGE->set_url('/blocks/arup_mylearning.php');
+
 $taps = new \mod_tapsenrol\taps();
 
 $cpd = new stdClass();
@@ -61,6 +63,13 @@ if ($action == 'edit') {
         $SESSION->block_arup_mylearning->alert->type = 'alert-danger';
         redirect($redirecturl);
         exit;
+    } else if (!$cpd->usereditable()) {
+        // Can only edit own CPD.
+        $SESSION->block_arup_mylearning->alert = new stdClass();
+        $SESSION->block_arup_mylearning->alert->message = get_string('alert:edit:noteditable', 'block_arup_mylearning');
+        $SESSION->block_arup_mylearning->alert->type = 'alert-danger';
+        redirect($redirecturl);
+        exit;
     }
 } else {
     require_capability('block/arup_mylearning:addcpd', $context);
@@ -69,7 +78,6 @@ if ($action == 'edit') {
 
 $PAGE->requires->js_call_amd('block_arup_mylearning/enhance', 'initialise');
 $PAGE->set_context($context);
-$PAGE->set_url('/blocks/arup_mylearning.php');
 $PAGE->navbar->add(get_string('myhome'), $redirecturl);
 $PAGE->navbar->add(get_string($action.'cpd', 'block_arup_mylearning'));
 
@@ -99,6 +107,7 @@ if ($form->is_cancelled()) {
     \local_learningrecordstore\lrsentry::set_properties($cpd, $data);
     $cpd->staffid = $USER->idnumber; // Set staffid (Only used to add CPD).
     $cpd->description = $data->description['text'];
+    $cpd->timemodified = time();
 
     switch ($action) {
         case 'add' :
