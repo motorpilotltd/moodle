@@ -54,14 +54,19 @@ class tapsenrol_table_sql extends table_sql {
         echo html_writer::tag('p', get_string('approve:nohistory', 'tapsenrol'));
     }
 
+    public function setup() {
+        // Only want this to run once!
+        if (!$this->setup) {
+            parent::setup();
+        }
+    }
+
     public function show_leavers() {
         global $SESSION;
 
-        if (!$this->setup) {
-            // We need to call setup first to get prefs loaded before we override.
-            // Have to rely on inital setup having been done corretcly before calling this function.
-            $this->setup();
-        }
+        // We need to call setup first to get prefs loaded before we override.
+        // Have to rely on inital setup having been done corretcly before calling this function.
+        $this->setup();
 
         // Get preference.
         $isshowleaversset = isset($this->prefs['showleavers']);
