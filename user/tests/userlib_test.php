@@ -646,7 +646,6 @@ class core_userliblib_testcase extends advanced_testcase {
         $this->setUser($user8);
         $this->assertFalse(user_can_view_profile($user1));
 
-        $allroles = $DB->get_records_menu('role', array(), 'id', 'archetype, id');
         // Let us test with guest user.
         $this->setGuestUser();
         $CFG->forceloginforprofiles = 1;
@@ -939,6 +938,12 @@ class core_userliblib_testcase extends advanced_testcase {
         $userset = user_get_participants($course->id, $group->id, $accesssince + 1, $roleids['student'], 0, -1, 'searchforthis');
 
         $this->assertEquals($student1->id, $userset->current()->id);
+        $this->assertEquals(1, iterator_count($userset));
+
+        // Search for users without any group.
+        $userset = user_get_participants($course->id, USERSWITHOUTGROUP, 0, $roleids['student'], 0, -1, '');
+
+        $this->assertEquals($student3->id, $userset->current()->id);
         $this->assertEquals(1, iterator_count($userset));
     }
 
