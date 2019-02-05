@@ -91,6 +91,14 @@ class classoverview_table extends \table_sql {
         return userdate($class->classendtime, '', $class->usedtimezone);
     }
 
+    public function col_maximumattendees($class) {
+        if ($class->maximumattendees == -1) {
+            return get_string("unlimited", 'tapsenrol');
+        } else {
+            return $class->maximumattendees;
+        }
+    }
+
     public function col_actions($class) {
         global $OUTPUT;
 

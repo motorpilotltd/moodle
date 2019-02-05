@@ -86,7 +86,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         $classeskeyonclassid = [];
         foreach ($classes as $class) {
             $classeskeyonclassid[$class->id] = $class;
-            $classtypes[] = $overallclasstype = $tapsenrol->taps->get_classtype_type($class->classtype);
+            $classtypes[] = $overallclasstype = $class->classtype;
             if (count(array_unique($classtypes)) > 1) {
                 $overallclasstype = 'mixed';
             }
@@ -132,9 +132,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
 
                 $cells = array();
                 $cells[] = $class->classname;
-                $enrolmentclasstype = $tapsenrol->taps->get_classtype_type($class->classtype);
-                $classtype = $enrolmentclasstype ? $enrolmentclasstype : 'unknown';
-                if ($classtype == 'elearning') {
+                if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_ELEARNING) {
                     $cells[] = get_string('online', 'tapsenrol');
                     if ($overallclasstype == 'mixed') {
                         $cells[] = '-';
@@ -168,7 +166,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                             $cells[] = '-';
                         }
                     } else {
-                        $cell = new html_table_cell(get_string("waitinglist:{$classtype}", 'tapsenrol'));
+                        $cell = new html_table_cell(get_string("waitinglist", 'tapsenrol'));
                         $cell->colspan = 2;
                         $cells[] = $cell;
                     }
@@ -182,7 +180,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                 switch ($status) {
                     case 'requested' :
                         $checkseats = $enrolment;
-                        $cells[] = $this->dropdown(get_string("status:{$classtype}:requested", 'tapsenrol'),
+                        $cells[] = $this->dropdown(get_string("status:{$class->classtype}:requested", 'tapsenrol'),
                             array(
                                 array(
                                     'url' => new moodle_url('/mod/tapsenrol/cancel.php', array('id' => $cmid, 'enrolmentid' => $enrolment->id)),
@@ -205,18 +203,18 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                             $a->cancelafter = $tapsenrol->iw->cancelafter / (24 * 60 * 60) . ' days';
                             $a->cancelbefore = $tapsenrol->iw->cancelbefore / (60 * 60) . ' hours';
                             if ($tapsenrol->iw->enroltype == 'apply') {
-                                $SESSION->tapsenrol->alert->message = html_writer::tag('p', get_string("alert:iw:{$classtype}:requested:apply", 'tapsenrol', $a));
+                                $SESSION->tapsenrol->alert->message = html_writer::tag('p', get_string("alert:iw:{$class->classtype}:requested:apply", 'tapsenrol', $a));
                             } else {
-                                $SESSION->tapsenrol->alert->message = html_writer::tag('p', get_string("alert:iw:{$classtype}:requested", 'tapsenrol', $a));
+                                $SESSION->tapsenrol->alert->message = html_writer::tag('p', get_string("alert:iw:{$class->classtype}:requested", 'tapsenrol', $a));
                             }
                         } else {
-                            $SESSION->tapsenrol->alert->message = html_writer::tag('p', get_string("alert:{$classtype}:requested", 'tapsenrol'));
+                            $SESSION->tapsenrol->alert->message = html_writer::tag('p', get_string("alert:{$class->classtype}:requested", 'tapsenrol'));
                         }
                         $SESSION->tapsenrol->alert->type = 'alert-warning';
                         break;
                     case 'waitlisted' :
                         $checkseats = $enrolment;
-                        $cells[] = $this->dropdown(get_string("status:{$classtype}:waitlisted", 'tapsenrol'),
+                        $cells[] = $this->dropdown(get_string("status:{$class->classtype}:waitlisted", 'tapsenrol'),
                             array(
                                 array(
                                     'url' => new moodle_url('/mod/tapsenrol/cancel.php', array('id' => $cmid, 'enrolmentid' => $enrolment->id)),
@@ -226,7 +224,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                             'info');
                         break;
                     case 'placed' :
-                        $cells[] = $this->dropdown(get_string("status:{$classtype}:placed", 'tapsenrol'),
+                        $cells[] = $this->dropdown(get_string("status:{$class->classtype}:placed", 'tapsenrol'),
                             array(
                                 array('url' => new moodle_url('/mod/tapsenrol/cancel.php', array('id' => $cmid, 'enrolmentid' => $enrolment->id)),
                                     'title' => get_string("status:dropdown:cancel", 'tapsenrol')
@@ -235,10 +233,10 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                             'success');
                         break;
                     case 'attended' :
-                        $cells[] = get_string("status:{$classtype}:attended", 'tapsenrol');
+                        $cells[] = get_string("status:{$class->classtype}:attended", 'tapsenrol');
                         break;
                     case 'cancelled' :
-                        $cells[] = get_string("status:{$classtype}:cancelled", 'tapsenrol');
+                        $cells[] = get_string("status:{$class->classtype}:cancelled", 'tapsenrol');
                         break;
                 }
 
@@ -248,18 +246,16 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
 
         if ($classes) {
             foreach ($classes as $index => $class) {
-                $classclasstype = $tapsenrol->taps->get_classtype_type($class->classtype);
-                $classtype = $classclasstype ? $classclasstype : 'unknown';
                 $delegateurl->param('classid', $class->id);
                 $delegatebutton = html_writer::link($delegateurl, $delegateicon, array('class' => 'delegate-button'));
                 // Allow completed if elearning.
-                if (($classtype != 'elearning' && in_array($class->id, $completedclasses)) || in_array($class->id, $enrolledclasses)) {
+                if (($class->classtype != \mod_tapsenrol\enrolclass::TYPE_ELEARNING && in_array($class->id, $completedclasses)) || in_array($class->id, $enrolledclasses)) {
                     unset($classes[$index]);
                     continue;
                 }
                 $cells = array();
                 $cells[] = $class->classname;
-                if ($classtype == 'elearning') {
+                if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_ELEARNING) {
                     $cells[] = get_string('online', 'tapsenrol');
                     if ($overallclasstype == 'mixed') {
                         $cells[] = '-';
@@ -293,7 +289,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                             $cells[] = '-';
                         }
                     } else {
-                        $cell = new html_table_cell(get_string("waitinglist:{$classtype}", 'tapsenrol'));
+                        $cell = new html_table_cell(get_string("waitinglist:{$class->classtype}", 'tapsenrol'));
                         $cell->colspan = 2;
                         $cells[] = $cell;
                     }
@@ -302,7 +298,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                 $classseatsremaining = isset($seatsremaining[$class->id]) ? $seatsremaining[$class->id] : 0;
                 $cells[] = ($classseatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $classseatsremaining) . $delegatebutton;
                 $cells[] = $class->price ? $class->price.' '.$class->currencycode : '-';
-                if ($classtype == 'classroom'
+                if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM
                         && $tapsenrol->tapsenrol->internalworkflowid
                         && $tapsenrol->iw->closeenrolment
                         && $class->classstarttime
@@ -320,7 +316,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                     $enroltext = get_string('enrol:planned', 'tapsenrol') . ' ' . html_writer::tag('span', '', array('class' => 'caret caret-right'));
                     $cells[] = html_writer::link($enrolurl, $enroltext, array('class' => 'btn btn-small btn-default'));
                 } else {
-                    $enrolstring = ($classtype == 'elearning' && in_array($class->id, $completedclasses)) ? 'enrol:reenrol' : 'enrol';
+                    $enrolstring = ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_ELEARNING && in_array($class->id, $completedclasses)) ? 'enrol:reenrol' : 'enrol';
                     $enrolurl = new moodle_url('/mod/tapsenrol/enrol.php', array('id' => $cmid, 'classid' => $class->id));
                     $enroltext = get_string($enrolstring, 'tapsenrol') . ' ' . html_writer::tag('span', '', array('class' => 'caret caret-right'));
                     $cells[] = html_writer::link($enrolurl, $enroltext, array('class' => 'btn btn-primary btn-small'));
@@ -331,7 +327,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         }
 
         $table = new html_table();
-        if ($overallclasstype == 'elearning') {
+        if ($overallclasstype == \mod_tapsenrol\enrolclass::TYPE_ELEARNING) {
             $table->head = array(
                 get_string('classname', 'tapsenrol'),
                 get_string('location', 'tapsenrol'),
@@ -367,15 +363,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         if ($activeclasses) {
             $html .= html_writer::tag('p', get_string('enrolledmessage', 'tapsenrol'));
         } else if ($classes) {
-            switch ($overallclasstype) {
-                case 'elearning' :
-                case 'classroom' :
-                case 'mixed' :
-                    $html .= html_writer::tag('p', get_string("classes:{$overallclasstype}", 'tapsenrol'));
-                    break;
-                default :
-                    break;
-            }
+            $html .= html_writer::tag('p', get_string("classes:{$overallclasstype}", 'tapsenrol'));
             $alreadyattended = $tapsenrol->already_attended($USER);
             if ($alreadyattended->attended) {
                 $string = html_writer::tag('p', get_string('enrol:alert:alreadyattended', 'tapsenrol'));
@@ -443,7 +431,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         $duration .= html_writer::tag('div', $durationvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $duration, array('class' => 'fitem'));
 
-        if ($tapsenrol->taps->is_classtype($class->classtype, 'classroom')) {
+        if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM) {
             $date = html_writer::tag('div', get_string('date', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
             if (!$class->classstarttime) {
                 $datevalue = get_string('waitinglist:classroom', 'tapsenrol');
@@ -458,7 +446,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         }
 
         $location = html_writer::tag('div', get_string('location', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        if ($tapsenrol->taps->is_classtype($class->classtype, 'elearning')) {
+        if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_ELEARNING) {
             $locationvalue = get_string('online', 'tapsenrol');
         } else {
             $locationvalue = $class->location ? $class->location : get_string('tbc', 'tapsenrol');
@@ -513,7 +501,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         $duration .= html_writer::tag('div', $durationvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $duration, array('class' => 'fitem'));
 
-        if ($tapsenrol->taps->is_classtype($class->classtype, 'classroom')) {
+        if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM) {
             $date = html_writer::tag('div', get_string('date', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
             if (!$class->classstarttime) {
                 $datevalue = get_string('waitinglist:classroom', 'tapsenrol');
@@ -528,7 +516,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         }
 
         $location = html_writer::tag('div', get_string('location', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        if ($tapsenrol->taps->is_classtype($class->classtype, 'elearning')) {
+        if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_ELEARNING) {
             $locationvalue = get_string('online', 'tapsenrol');
         } else {
             $locationvalue = $class->location ? $class->location : get_string('tbc', 'tapsenrol');

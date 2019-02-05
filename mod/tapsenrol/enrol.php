@@ -55,7 +55,7 @@ if (!$tapsenrol->check_installation()) {
     echo $OUTPUT->footer();
 }
 
-$class = $tapsenrol->taps->get_class_by_id($classid);
+$class = \mod_tapsenrol\enrolclass::fetch(['id' => $classid]);
 $redirecturl = new moodle_url('/course/view.php', array('id' => $tapsenrol->course->id));
 
 if (!$class && has_capability('moodle/block:edit', $tapsenrol->context->cm)) {
@@ -102,7 +102,7 @@ $formaction = new moodle_url('/mod/tapsenrol/enrol.php', array('id' => $id, 't' 
 if ($tapsenrol->iw) {
     $enrolmentclosed = $class->classstarttime && $tapsenrol->iw->closeenrolment
             && $class->classstarttime < (time() + $tapsenrol->iw->closeenrolment)
-            && $tapsenrol->taps->is_classtype($class->classtype, 'classroom');
+            && $class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM;
     if ($enrolmentclosed) {
         $SESSION->tapsenrol->alert = new stdClass();
         $hours = $tapsenrol->iw->closeenrolment / (60 * 60);

@@ -125,7 +125,7 @@ function local_search_get_courses_search($searchterms, &$totalcount, &$region, \
     $tapsclassjoin = "
 LEFT JOIN
     {local_taps_class} ltcc
-    ON ltcc.courseid = c.id AND (ltcc.classhidden = 0 OR ltcc.classhidden IS NULL) AND (ltcc.archived = 0 OR ltcc.archived IS NULL)";
+    ON ltcc.courseid = c.id AND ltcc.classhidden = 0 AND ltcc.archived = 0";
 
     $regionsinstalled = get_config('local_regions', 'version');
     $regionsjoin = '';

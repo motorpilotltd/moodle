@@ -42,4 +42,8 @@ $observers = array(
         'priority'    => 9999, // High priority to run first.
         'callback'    => '\mod_tapsenrol\eventobservers::course_completed',
     ),
+    array(
+        'eventname'   => '\core\event\course_module_completion_updated',
+        'callback'    => '\mod_tapsenrol\eventobservers::course_module_completion_updated',
+    ),
 );

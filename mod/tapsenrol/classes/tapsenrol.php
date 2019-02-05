@@ -201,10 +201,9 @@ class tapsenrol {
 
     public function get_tapsclasses($canview = true) {
         if (!isset($this->_tapsclasses[$this->course->id]) && $canview) {
-            $this->_tapsclasses[$this->course->id] = $this->taps->get_course_classes($this->course->id, false, false);
             $now = time();
-            $classtypes = "'" . implode("', '", $this->taps->get_classtypes('elearning')) . "'";
-            $extrawhere = "(classstatus = 'Planned' OR classtype IN ({$classtypes}) OR classstarttime > {$now})";
+            $elearningtype = \mod_tapsenrol\enrolclass::TYPE_ELEARNING;
+            $extrawhere = "(classstatus = 'Planned' OR classtype = {$elearningtype} OR classstarttime > {$now})";
             $extrawhere .= " AND enrolmentstartdate < {$now} AND (enrolmentenddate > {$now} OR enrolmentenddate = 0)";
             $this->_tapsclasses[$this->course->id] = $this->taps->get_course_classes($this->course->id, false, false, '*', $extrawhere);
             // Sort in ascending date ordering with planned classes last.
@@ -241,19 +240,16 @@ class tapsenrol {
         $result->message = '';
 
         $a = new stdClass();
-        $class = $this->taps->get_class_by_id($classid);
+        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $classid]);
 
         if ($result->success) {
             $this->enrolment_check($userid, false);
-            $classtype = $this->taps->get_classtype_type($class->classtype);
+
             $statustype = $this->taps->get_status_type($result->enrolment->bookingstatus);
-            if (!$classtype || !get_string_manager()->string_exists('status:'.$classtype.':'.$statustype, 'tapsenrol')) {
-                $a->message = get_string('enrol:error:unavailable', 'tapsenrol');
-            } else {
-                $a->message = get_string('status:'.$classtype.':'.$statustype, 'tapsenrol');
-            }
+
             $a->classname = $class->classname;
             $a->coursename = $class->coursename;
+            $a->message = get_string('status:'.$class->classtype.':'.$statustype, 'tapsenrol');
             $result->message = get_string('enrol:alert:success', 'tapsenrol', $a);
         } else {
             $a->classname = empty($class->classname) ? '?' : $class->classname;
@@ -278,7 +274,7 @@ class tapsenrol {
         $return->message = '';
 
         $enrolment = $this->taps->get_enrolment_by_id($enrolmentid);
-        $class = $this->taps->get_class_by_id($enrolment->classid);
+        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
         $course = get_course($class->courseid);
 
         if (!$enrolment) {
@@ -346,7 +342,7 @@ class tapsenrol {
         $iscancelled = false;
         $groupsforuser = array();
         foreach ($enrolments as $enrolment) {
-            $class = $this->taps->get_class_by_id($enrolment->classid);
+            $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
             $enrolmentstatustype = $this->taps->get_status_type($enrolment->bookingstatus);
             switch ($enrolmentstatustype) {
                 case 'placed' :
@@ -560,7 +556,7 @@ EOS;
                 $iwtrack->timecreated = $iwtrack->timeenrolled;
                 $iwtrack->id = $DB->insert_record('tapsenrol_iw_tracking', $iwtrack);
 
-                $class = $this->taps->get_class_by_id($enrolment->classid);
+                $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
 
                 // Send confirmation to applicant.
                 $data = array(
@@ -586,7 +582,7 @@ EOS;
                 $data['approveurls'] = $this->_approve_urls($enrolment);
                 $data['comments:applicant'] = $iwtrack->requestcomments;
                 $approvebytimestamp = $iwtrack->timeenrolled + $this->iw->cancelafter;
-                if ($this->taps->is_classtype($class->classtype, 'classroom')) {
+                if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM) {
                     // Need approval before auto cancellation prior to class start.
                     $classstarttime = $class->classstarttime - $this->iw->cancelbefore;
                     if ($approvebytimestamp > $classstarttime && $class->classstarttime != 0) {
@@ -658,7 +654,7 @@ EOS;
         if ($enrolment) {
             $user = core_user::get_user($enrolment->userid);
             if ($user) {
-                $class = $this->taps->get_class_by_id($enrolment->classid);
+                $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
 
                 // Setup tracking.
                 $iwtrack = new stdClass();
@@ -686,13 +682,6 @@ EOS;
                 $a = new stdClass();
                 $a->classname = $class->classname;
                 $a->coursename = $class->coursename;
-                $classtype = $this->taps->get_classtype_type($class->classtype);
-                $statustype = $this->taps->get_status_type($this->taps->get_enrolment_status($enrolment->id));
-                if (!$classtype || !$statustype || !get_string_manager()->string_exists('status:'.$classtype.':'.$statustype, 'tapsenrol')) {
-                    $a->message = get_string('enrol:error:unavailable', 'tapsenrol');
-                } else {
-                    $a->message = get_string('status:'.$classtype.':'.$statustype, 'tapsenrol');
-                }
                 $message = get_string('enrol:alert:success', 'tapsenrol', $a);
             } else {
                 // User not found.
@@ -742,7 +731,7 @@ EOS;
 
         if ($approve) {
             // Grab class status.
-            $class = $this->taps->get_class_by_id($enrolment->classid);
+            $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
 
             if (empty($iwtrack->approved) && $this->iw->enroltype == 'apply') {
                 $status = 'W:Wait Listed';
@@ -797,7 +786,7 @@ EOS;
         list($from, $subject, $emailhtml, $emailtext) = $this->_get_email($email, $data, $this->iw->approvalrequired);
         $this->_send_email($user, $from, $subject, $emailhtml, $emailtext, $cc);
 
-        if ($email == 'approved' && $status == 'Approved Place' && $this->taps->is_classtype($class->classtype, 'classroom')) {
+        if ($email == 'approved' && $status == 'Approved Place' && $class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM) {
             // Only send invite for 'Approved Place' statuses on classroom based class, i.e. not to users on waiting lists/elearning.
             $data['update:extrainfo'] = ''; // Not updating.
             list($from, $subject, $emailhtml, $emailtext) = $this->_get_email('approved_invite', $data, $this->iw->approvalrequired);
@@ -837,7 +826,7 @@ EOS;
 
         $user = core_user::get_user($enrolment->userid);
         $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolment->id));
-        $class = $this->taps->get_class_by_id($enrolment->classid);
+        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
         if ($user && $iwtrack) {
             $iwtrack->cancelcomments = $comments;
             $iwtrack->timecancelled = time();
@@ -875,7 +864,7 @@ EOS;
                 // Also necessary to be separate as copied email to sponsor.
                 if (0 === strpos($email, 'cancellation')
                         && $this->taps->is_status($enrolment->bookingstatus, 'placed')
-                        && $this->taps->is_classtype($class->classtype, 'classroom')) {
+                        && $class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM) {
                     // Only send if original bookingstatus was 'placed' and a classroom based class, i.e. not on a waiting list/elearning.
                     list($from, $subject, $emailhtml, $emailtext) = $this->_get_email($email.'_invite', $data, $this->iw->approvalrequired);
                     $this->_send_invite($user, $from, $enrolment, $subject, $emailtext, $emailhtml, 'CANCEL');
@@ -961,13 +950,13 @@ EOS;
             // Do we need a notifcation email?
             if ($this->iw->approvalrequired ||
                         !($this->taps->is_status($enrolmentnew->bookingstatus, 'placed')
-                            && $this->taps->is_classtype($enrolmentnew->classtype, 'classroom'))) {
+                            && $class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM)) {
                 $notificationemail = true;
             }
 
             // Do we need to cancel an old invite?
             if ($this->taps->is_status($enrolment->bookingstatus, 'placed')
-                    && $this->taps->is_classtype($class->classtype, 'classroom')) {
+                    && $class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM) {
                 $cancelinvite = true;
             }
         } else {
@@ -1022,7 +1011,7 @@ EOS;
 
             // Send new invite if needed.
             if ($this->taps->is_status($enrolmentnew->bookingstatus, 'placed')
-                    && $this->taps->is_classtype($enrolmentnew->classtype, 'classroom')) {
+                    && $class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM) {
                 list($from, $subject, $emailhtml, $emailtext) = $this->_get_email('moved_new_invite', $data, $this->iw->approvalrequired);
                 $this->_send_invite($user, $from, $enrolmentnew, $subject, $emailtext, $emailhtml);
             }
@@ -1048,7 +1037,7 @@ EOS;
                 $data['approveurls'] = $this->_approve_urls($enrolmentnew);
                 $data['comments:applicant'] = $iwtrack->requestcomments;
                 $approvebytimestamp = $iwtrack->timeenrolled + $this->iw->cancelafter;
-                if ($this->taps->is_classtype($enrolmentnew->classtype, 'classroom')) {
+                if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM) {
                     // Need approval before auto cancellation prior to class start.
                     $classstarttime = $targetclass->classstarttime - $this->iw->cancelbefore;
                     if ($approvebytimestamp > $classstarttime && $targetclass->classstarttime != 0) {
@@ -1084,7 +1073,6 @@ EOS;
 
         // Set up required vars.
         $statustype = $this->taps->get_status_type($enrolment->bookingstatus);
-        $classtype = $this->taps->get_classtype_type($class->classtype);
         if ($class->classstarttime > $time) {
             $datetype = 'future';
         } else if ($class->classendtime > $time || $class->classendtime == 0) {
@@ -1131,18 +1119,7 @@ EOS;
             // Elearning/Normal Current [requested/waitlisted/cancelled - approver if requested]
             // Classroom/Normal Future [requested/waitlisted, approver if requested]
             // Elearning/Normal Future [requested/waitlisted/cancelled, approver if requested]
-            if ($sendemail && in_array($datetype, ['current', 'future'])) {
-                switch ($statustype) {
-                    case 'requested':
-                    case 'waitlisted':
-                        $notificationemail = true;
-                        break;
-                    case 'cancelled':
-                        $notificationemail = !($class->classstatus == 'Normal' && $classtype == 'classroom' && $datetype == 'future');
-                        break;
-                }
-                $notificationemail = true;
-            }
+            $notificationemail = $sendemail && in_array($datetype, ['current', 'future']);
 
             $cc = array();
             // Send notification if required.
@@ -1248,7 +1225,7 @@ EOS;
     }
 
     protected function _class_data($enrolment, $old = false) {
-        $class = $this->taps->get_class_by_id($enrolment->classid);
+        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
 
         try {
             $timezone = new DateTimeZone($class->usedtimezone);
@@ -1470,7 +1447,7 @@ EOS;
 
     protected function _send_invite($to, $from, $enrolment, $subject, $emailtext, $emailhtml, $method = 'REQUEST') {
         global $CFG;
-        $class = $this->taps->get_class_by_id($enrolment->classid);
+        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
 
         // Are we sending emails?
         if (!empty($this->iw->emailsoff)) {
@@ -1558,7 +1535,7 @@ EOS;
 
         $enrolment = $DB->get_record('tapsenrol_class_enrolments', array('id' => $enrolmentid));
         $iwtrack = $DB->get_record('tapsenrol_iw_tracking', array('enrolmentid' => $enrolmentid));
-        $class = $this->taps->get_class_by_id($enrolment->classid);
+        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
 
         if (!$enrolment || !$iwtrack) {
             return false;
@@ -1581,7 +1558,7 @@ EOS;
             $totimezone = new DateTimeZone(date_default_timezone_get());
         }
         $approvebytimestamp = $iwtrack->timeenrolled + $this->iw->cancelafter;
-        if ($this->taps->is_classtype($class->classtype, 'classroom')) {
+        if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM) {
             // Need approval before auto cancellation prior to class start.
             $classstarttime = $class->classstarttime - $this->iw->cancelbefore;
             if ($approvebytimestamp > $classstarttime && $class->classstarttime != 0) {

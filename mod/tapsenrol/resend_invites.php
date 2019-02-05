@@ -93,7 +93,7 @@ EOS;
     $enrolments = $DB->get_records_sql($sql, array_merge($params, $inparams));
     $classes = array();
     foreach ($enrolments as $enrolment) {
-        $classes[$enrolment->classid] = $tapsenrol->taps->get_class_by_id($enrolment->classid);
+        $classes[$enrolment->classid] = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
         $classes[$enrolment->classid]->enrolments = $enrolment->enrolments;
     }
     $html .= $output->resend_invites_classes($tapsenrol, $classes);
@@ -146,7 +146,7 @@ EOS;
         exit;
     }
 
-    $class = $tapsenrol->taps->get_class_by_id($classid);
+    $class = \mod_tapsenrol\enrolclass::fetch(['id' => $classid]);
 
     if (!$class) {
         $class = new stdClass();

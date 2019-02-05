@@ -371,7 +371,7 @@ class activityreset {
             ];
             $params = array_merge($params, $inparams);
 
-            $classes = $taps->get_course_classes($courseid);
+            $classes = \mod_tapsenrol\enrolclass::fetch_all_visible_by_course($courseid);
 
             foreach ($classes as $class) {
                 $params['classid'] = $class->id;

@@ -56,6 +56,101 @@ class eventobservers {
         }
     }
 
+    public static function course_module_completion_updated(\core\event\course_module_completion_updated $event) {
+        global $DB, $CFG;
+
+        require_once("$CFG->dirroot/mod/tapsenrol/classes/tapsenrol.php");
+
+        $relevantclasses = \mod_tapsenrol\enrolclass::fetch_all_visible_by_course($event->courseid,
+                ['classtype' => enrolclass::TYPE_ELEARNING]);
+
+        if (empty($relevantclasses)) {
+            return true;
+        }
+
+        $allcomplete = true;
+
+        $modinfo = get_fast_modinfo($event->courseid, $event->relateduserid);
+        $ci = new \completion_info(get_course($event->courseid));
+        $tapscms = $modinfo->get_instances_of('tapsenrol');
+
+        if (empty($tapscms)) {
+            return true;
+        } else {
+            $tapscm = reset($tapscms);
+        }
+
+        $cms = $modinfo->get_cms();
+        foreach ($cms as $cm) {
+            if ($cm->id == $event->contextinstanceid) {
+                continue;
+            }
+            if ($cm->modname == 'tapsenrol') {
+                continue;
+            }
+
+            if ($cm->completion !== COMPLETION_TRACKING_NONE) {
+                $completiondata = $ci->get_data($cm, true, $event->relateduserid);
+                if (empty($completiondata->completionstate)) {
+                    $allcomplete = false;
+                    break;
+                }
+            }
+        }
+
+        if (!$allcomplete) {
+            return true;
+        }
+
+        $taps = new taps();
+        $enrolments = $taps->get_enrolments($event->relateduserid, $event->courseid);
+
+        foreach ($enrolments as $enrolment) {
+            if (!isset($relevantclasses[$enrolment->classid])) {
+                continue;
+            }
+
+            $tapsenrol = $DB->get_record('tapsenrol', array('id' => $tapscm->instance));
+
+            if (!$ci->is_enabled($tapscm) == COMPLETION_TRACKING_AUTOMATIC || !$tapsenrol->completionattended) {
+                return true;
+            }
+
+            $class = $relevantclasses[$enrolment->classid];
+
+            if ($tapsenrol->completiontimetype == \tapsenrol::$completiontimetypes['classendtime']) {
+                $completiontime = !empty($class->classendtime) ? $class->classendtime : time();
+            } else {
+                // Everyone completes now.
+                $completiontime = time();
+            }
+
+            $result = $taps->set_status($enrolment, 'Full Attendance', $completiontime);
+
+            if (!$result->success) {
+                return true;
+            }
+
+            // Mark as complete.
+            $record = $DB->get_record('tapsenrol_completion',
+                    array('tapsenrolid' => $tapsenrol->id, 'userid' => $event->relateduserid));
+            if (!$record) {
+                $record = new \stdClass();
+                $record->tapsenrolid = $tapsenrol->id;
+                $record->userid = $event->relateduserid;
+                $record->completed = true;
+                $record->timemodified = time();
+                $DB->insert_record('tapsenrol_completion', $record);
+            } else if (!$record->completed) {
+                $record->completed = true;
+                $record->timemodified = time();
+                $DB->update_record('tapsenrol_completion', $record);
+            }
+            $ci->update_state($tapscm, COMPLETION_COMPLETE, $event->relateduserid);
+        }
+        return true;
+    }
+
     /** Triggered via \local\coursemanager\class_updated event
      *
      * @param \stdClass $event
@@ -71,7 +166,7 @@ class eventobservers {
 
         $taps = new \mod_tapsenrol\taps();
 
-        $class = $taps->get_class_by_id($event->other['classid']);
+        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $event->other['classid']]);
 
         if (!$class) {
             // Couldn't load class.
@@ -201,7 +296,6 @@ EOS;
             return;
         }
 
-
         if (count($cms) > 1) {
             print_error('Multiple instances of mod_tapsenrol are not currently supported');
         }
@@ -236,7 +330,8 @@ EOS;
         $params = array('userid' => $event->relateduserid, 'courseid' => $event->courseid);
         $enrolment = $DB->get_record_sql($sql, array_merge($params, $inparams));
 
-        $tccompletion = $DB->get_record('tapsenrol_completion', ['tapsenrolid' => $cm->instance, 'userid' => $event->relateduserid]);
+        $tccompletion =
+                $DB->get_record('tapsenrol_completion', ['tapsenrolid' => $cm->instance, 'userid' => $event->relateduserid]);
 
         if (!$tccompletion) {
             $record = new \stdClass();
@@ -255,8 +350,9 @@ EOS;
 
         // We need to update course completion time if applicable.
         // Use completed field (stores enrolmentid), ignore if 1 for legacy (actual enrolmentid 1 is historic).
-        if (!empty($enrolment->classendtime) && $tapsenrol->tapsenrol->completiontimetype  == \tapsenrol::$completiontimetypes['classendtime'] ) {
-            $class = $tapsenrol->taps->get_class_by_id($enrolment->classid);
+        if (!empty($enrolment->classendtime) &&
+                $tapsenrol->tapsenrol->completiontimetype == \tapsenrol::$completiontimetypes['classendtime']) {
+            $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
             $completiontime = $class->classendtime;
             // Update Moodle course completion date.
             // Record should exist as we're observing course completion.

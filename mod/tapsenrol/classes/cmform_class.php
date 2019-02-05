@@ -31,8 +31,6 @@ require_once($CFG->libdir . '/formslib.php');
 abstract class cmform_class extends \moodleform {
     protected $hasattendedenrolments;
 
-    const CLASS_TYPE_SCHEDULED = 'Scheduled';
-    const CLASS_TYPE_SELFPACED = 'Self Paced';
     const CLASS_STATUS_NORMAL = 'Normal';
     const CLASS_STATUS_PLANNED = 'Planned';
 
@@ -49,9 +47,10 @@ abstract class cmform_class extends \moodleform {
         $mform->addElement("hidden", "cmid");
         $mform->setType('cmid', PARAM_INT);
 
-        $classtypes = array(
-                self::CLASS_TYPE_SCHEDULED => get_string('class_scheduled', 'tapsenrol'),
-                self::CLASS_TYPE_SELFPACED => get_string('class_selfpaced', 'tapsenrol'));
+        $classtypes = [
+                enrolclass::TYPE_CLASSROOM => get_string('classroom', 'tapsenrol'),
+                enrolclass::TYPE_ELEARNING => get_string('elearning', 'tapsenrol')
+        ];
         $this->add_element("classtype", "select", PARAM_TEXT, $classtypes);
 
         $classstatus = array(
@@ -185,7 +184,7 @@ abstract class cmform_class extends \moodleform {
         // Don't want to use empty() to check classendtime as need it to actually be set.
         if (!empty($this->hasattendedenrolments)
                 && isset($this->_customdata->classendtime) && !$this->_customdata->classendtime
-                && $this->_customdata->classtype = 'Self Paced' && !empty($data['classendtimeenabled'])
+                && $this->_customdata->classtype == enrolclass::TYPE_ELEARNING && !empty($data['classendtimeenabled'])
         ) {
             // Need to offset UTC timestamps based on chosen timezone.
             try {
@@ -350,7 +349,7 @@ abstract class cmform_class extends \moodleform {
                         'usedtimezone'
                 ];
                 if (isset($this->_customdata->classtype)
-                        && $this->_customdata->classtype == 'Self Paced'
+                        && $this->_customdata->classtype == enrolclass::TYPE_ELEARNING
                         && empty($this->_customdata->classendtime)
                 ) {
                     // Do not freeze class end time for self paced classes if not already set.
@@ -375,11 +374,11 @@ abstract class cmform_class extends \moodleform {
      * @return cmform_class
      */
     public static function get_form_instance($class) {
-        if ($class->classtype == self::CLASS_TYPE_SELFPACED) {
+        if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_ELEARNING) {
             $form = new cmform_class_selfpaced(null, $class);
-        } else if ($class->classtype == self::CLASS_TYPE_SCHEDULED && $class->classstatus == self::CLASS_STATUS_PLANNED) {
+        } else if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM && $class->classstatus == self::CLASS_STATUS_PLANNED) {
             $form = new cmform_class_scheduled_planned(null, $class);
-        } else if ($class->classtype == self::CLASS_TYPE_SCHEDULED && $class->classstatus == self::CLASS_STATUS_NORMAL) {
+        } else if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM && $class->classstatus == self::CLASS_STATUS_NORMAL) {
             $form = new cmform_class_scheduled_normal(null, $class);
         } else if ($class->classtype == false && $class->classstatus == false) {
             $form = new cmform_class_selfpaced(null, $class);
@@ -413,7 +412,7 @@ abstract class cmform_class extends \moodleform {
             $tapsdurationunits = $taps->get_durationunitscode();
             $data->classdurationunits = $tapsdurationunits[$data->classdurationunitscode];
         }
-        if ($data->classtype == self::CLASS_TYPE_SCHEDULED && $data->classstatus == self::CLASS_STATUS_PLANNED) {
+        if ($data->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM && $data->classstatus == self::CLASS_STATUS_PLANNED) {
             if (!isset($data->classstarttimeenabled)) {
                 $data->classstarttime = 0;
                 $data->classstartdate = 0;
@@ -423,7 +422,7 @@ abstract class cmform_class extends \moodleform {
                 $data->classenddate = 0;
             }
         }
-        if ($data->classtype == self::CLASS_TYPE_SELFPACED) {
+        if ($data->classtype == \mod_tapsenrol\enrolclass::TYPE_ELEARNING) {
             if (!isset($data->classendtimeenabled)) {
                 $data->classendtime = 0;
                 $data->classenddate = 0;
@@ -458,8 +457,9 @@ abstract class cmform_class extends \moodleform {
         }
         $oldfields = [];
 
-        if ($record = $DB->get_record('local_taps_class', array('id' => $data->id))) {
-            if (!empty($hasattendedenrolments) && $record->classtype == 'Self Paced' && $record->classendtime > 0) {
+        $record = \mod_tapsenrol\enrolclass::fetch(['id' => $data->id]);
+        if ($record) {
+            if (!empty($hasattendedenrolments) && $record->classtype == enrolclass::TYPE_ELEARNING && $record->classendtime > 0) {
                 unset($data->classendtime);
                 unset($data->classenddate);
             }
@@ -484,7 +484,7 @@ abstract class cmform_class extends \moodleform {
             $data->classstarttime = $record->classstarttime;
         }
 
-        if ($data->classtype == self::CLASS_TYPE_SCHEDULED && $data->classstatus == self::CLASS_STATUS_NORMAL &&
+        if ($data->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM && $data->classstatus == self::CLASS_STATUS_NORMAL &&
                 $data->classstarttime > time()
         ) {
             // Any 'placed' enrolments?

@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version      = 2017051509;
+$plugin->version      = 2017051510;
 $plugin->requires     = 2015111600; // Moodle 3.0.
 $plugin->component    = 'mod_tapsenrol';
 $plugin->maturity     = MATURITY_STABLE;

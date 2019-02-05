@@ -157,7 +157,7 @@
         <FIELD NAME="classname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="coursename" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classtype" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classtype" TYPE="int" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classstatus" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classdurationunits" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classdurationunitscode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
@@ -191,8 +191,8 @@
         <FIELD NAME="usedtimezone" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="UTC" SEQUENCE="false"/>
         <FIELD NAME="classcost" TYPE="number" LENGTH="20" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
         <FIELD NAME="classcostcurrency" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="archived" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classhidden" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="archived" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="classhidden" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>

@@ -140,7 +140,7 @@ class delegate_list {
 
             $activeclasses = array();
         } else {
-            $activewhere = "{$where} AND (ltc.classhidden = 0 OR ltc.classhidden IS NULL) AND (ltc.archived = 0 OR ltc.archived IS NULL)";
+            $activewhere = "{$where} AND ltc.classhidden = 0 AND ltc.archived = 0";
 
             $sql = "SELECT ltc.id, ltc.classname, ltc.classendtime FROM {local_taps_class} ltc
                     WHERE $activewhere";
@@ -149,11 +149,10 @@ class delegate_list {
         }
 
         $classname = $DB->sql_compare_text('ltc.classname', 32);
-        $classtype = $DB->sql_compare_text('ltc.classtype', 32);
         // This may not be DB agnostic... Tested against MSSQL
         $sql = <<<EOS
 SELECT
-    ltc.id, MAX({$classname}) as classname, MAX(ltc.classendtime) as classendtime, MAX({$classtype}) as classtype
+    ltc.id, MAX({$classname}) as classname, MAX(ltc.classendtime) as classendtime, MAX(ltc.classtype) as classtype
 FROM
     {tapsenrol_class_enrolments} lte
 INNER JOIN {local_taps_class} ltc ON ltc.id = lte.classid
@@ -184,7 +183,7 @@ EOS;
         });
 
         foreach ($classes as $class) {
-            if ($this->has_capability('student') && $this->_taps->is_classtype($class->classtype, 'elearning')) {
+            if ($this->has_capability('student') && $class->classtype == \mod_tapsenrol\enrolclass::TYPE_ELEARNING) {
                 continue;
             }
             $this->_classes[$class->id] = new stdClass();
@@ -243,7 +242,7 @@ EOS;
             return;
         }
 
-        $this->_activeclass = $this->_taps->get_class_by_id($classid);
+        $this->_activeclass = \mod_tapsenrol\enrolclass::fetch(['id' => $classid]);
 
         if (!$this->_activeclass) {
             $this->_activeclass = new stdClass();

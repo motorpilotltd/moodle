@@ -119,7 +119,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($heading, '2');
 
 // Needed for renderer.
-$class = $tapsenrol->taps->get_class_by_id($enrolment->classid);
+$class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
 
 echo $output->cancel_enrolment($tapsenrol, $enrolment, $class);
 

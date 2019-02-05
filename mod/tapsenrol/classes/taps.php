@@ -314,24 +314,6 @@ class taps {
     }
 
     /**
-     * Is classtype of a type?.
-     *
-     * @param string $classtype
-     * @param mixed $types
-     * @return bool
-     */
-    public function is_classtype($classtype, $types) {
-        if (!is_array($types)) {
-            $types = array($types);
-        }
-        $return = false;
-        foreach ($types as $type) {
-            $return = $return || (isset($this->_classtypes[$type]) && in_array($classtype, $this->_classtypes[$type]));
-        }
-        return $return;
-    }
-
-    /**
      * Get classtype type.
      *
      * @param string $classtype
@@ -409,18 +391,6 @@ class taps {
     }
 
     /**
-     * Get class by ID.
-     *
-     * @param int $id
-     * @return mixed
-     */
-    public function get_class_by_id($id) {
-        global $DB;
-
-        return $DB->get_record('local_taps_class', array('id' => $id));
-    }
-
-    /**
      * Get employee's enrolled classes.
      *
      * @param int $userid
@@ -488,7 +458,7 @@ class taps {
 
         require_once("$CFG->dirroot/lib/enrollib.php");
 
-        $class = $this->get_class_by_id($classid);
+        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $classid]);
 
         $coursecontext = \context_course::instance($class->courseid);
         $user = \core_user::get_user($userid);
@@ -558,7 +528,7 @@ class taps {
     public function set_status($enrolment, $status, $completiontime = null) {
         global $DB;
 
-        $class = $this->get_class_by_id($enrolment->classid);
+        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
 
         // Setup result object.
         $result = new \stdClass();
@@ -586,7 +556,7 @@ class taps {
             return $result;
         }
 
-        $class = $this->get_class_by_id($enrolment->classid);
+        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
         if (!$class) {
             $result->success = false;
             $result->status = 'INVALID_CLASS';
@@ -629,7 +599,7 @@ class taps {
     public function get_seats_remaining($classid) {
         global $DB;
 
-        $class = $this->get_class_by_id($classid);
+        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $classid]);
 
         if (!$class) {
             return false;
@@ -659,7 +629,7 @@ class taps {
 
         $seatsremaining = [];
 
-        $classes = $this->get_course_classes($courseid, false, false, 'id, maximumattendees');
+        $classes = \mod_tapsenrol\enrolclass::fetch_all_visible_by_course($courseid);
 
         // Placed and attended count as taking seats.
         list($in, $inparams) = $DB->get_in_or_equal(

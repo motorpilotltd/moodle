@@ -24,6 +24,8 @@
 
 namespace mod_tapsenrol\task;
 
+use mod_tapsenrol\enrolclass;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -62,11 +64,7 @@ class automatic_cancellation extends \core\task\scheduled_task {
         $compare = $DB->sql_compare_text('lte.bookingstatus');
 
         // Only cancel classroom based enrolments based on start time.
-        list($in2, $inparams2) = $DB->get_in_or_equal(
-            $taps->get_classtypes('classroom'),
-            SQL_PARAMS_NAMED, 'type'
-        );
-        $compare2 = $DB->sql_compare_text('ltc.classtype');
+
 
         $from = <<<EOS
     {tapsenrol_class_enrolments} lte
@@ -98,13 +96,14 @@ EOS;
             ltc.classstarttime != 0
             AND iw.cancelbefore > 0
             AND ltc.classstarttime < ({$now} + iw.cancelbefore)
-            AND {$compare2} {$in2}
+            AND ltc.classtype :classroomtype
         )
     )
     AND {$compare} {$in}
 EOS;
 
-        $params = array_merge($inparams, $inparams2);
+        $params = $inparams;
+        $params['classroomtype'] = enrolclass::TYPE_CLASSROOM;
 
         // Process necessary records.
         $sql = <<<EOS
@@ -131,9 +130,8 @@ EOS;
             $cancelresult = $tapsenrol->cancel_enrolment($record->id);
             if ($cancelresult->success) {
                 // Variable $record will have original booking status which is required.
-                $isclassroom = $taps->get_classtype_type($record->classtype) == 'classroom';
                 $cancancelbefore = $record->classstarttime != 0 && $record->iwcancelbefore;
-                if ($isclassroom && $cancancelbefore && $record->classstarttime < ($now + $record->iwcancelbefore)) {
+                if ($record->classtype == enrolclass::TYPE_CLASSROOM && $cancancelbefore && $record->classstarttime < ($now + $record->iwcancelbefore)) {
                     $a = ($record->iwcancelbefore / (60 * 60)) . ' hours';
                     $message = get_string('iw:autocancellation_classstarted', 'tapsenrol', $a);
                     $email = 'cancelled_classstart';

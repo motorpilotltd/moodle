@@ -112,7 +112,6 @@ if (!$tapsenrol->tapsenrol->internalworkflowid) {
         exit;
     } else {
         $html .= html_writer::tag('p', get_string('manageenrolments:help', 'tapsenrol'));
-        $dbman = $DB->get_manager();
 
         if (has_capability('mod/tapsenrol:updatecompletion', $tapsenrol->context->cm)) {
             $updatecompletionurl = new moodle_url('/mod/tapsenrol/updatecompletion.php', array('id' => $tapsenrol->cm->id));

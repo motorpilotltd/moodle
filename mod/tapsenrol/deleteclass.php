@@ -17,7 +17,7 @@
 require_once(dirname(__FILE__) . '/../../config.php');
 
 $id = optional_param('id', false, PARAM_INT);
-$class = $DB->get_record('local_taps_class', ['id' => $id]);
+$class = \mod_tapsenrol\enrolclass::fetch(['id' => $id]);
 $course = get_course($class->courseid);
 
 // Needs refactoring so that local_taps_class links to cm not course.

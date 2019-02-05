@@ -48,7 +48,7 @@ class eventhandlers {
         $lrsentry->timemodified = time();
 
         $taps = new taps();
-        $classes = $taps->get_course_classes($event->courseid);
+        $classes = \mod_tapsenrol\enrolclass::fetch_all_visible_by_course($event->courseid);
 
         if (!empty($classes)) {
             $class = reset($classes);

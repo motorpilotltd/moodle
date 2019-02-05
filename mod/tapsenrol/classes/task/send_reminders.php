@@ -171,7 +171,7 @@ EOS;
                 $email = 'approval_request_reminder';
                 $record->remindersent = 1;
                 $emailsent = $tapsenrol->send_sponsor_reminder($record->enrolmentid, $email);
-            } else if ($tapsenrol->taps->is_classtype($record->ltcclasstype, 'classroom')) {
+            } else if ($record->ltcclasstype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM) {
                 // Only send reminders for classroom based classes.
                 $firstreminder = $record->iwfirstreminder && $record->classstarttime > ($now + ($record->iwfirstreminder - (24 * 60 * 60)));
                 $secondreminder = $record->iwsecondreminder && $record->classstarttime > ($now + ($record->iwsecondreminder - (24 * 60 * 60)));

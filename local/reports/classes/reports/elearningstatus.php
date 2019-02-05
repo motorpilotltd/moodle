@@ -26,6 +26,7 @@ namespace local_reports\reports;
 
 defined('MOODLE_INTERNAL') || die();
 
+use mod_tapsenrol\enrolclass;
 use stdClass;
 use moodle_url;
 use renderer_base;
@@ -87,7 +88,8 @@ class elearningstatus extends base {
         // Fix array for usage in mustache.
         foreach ($this->setfilters as $filter) {
             if ($filter->field == 'classname') {
-                $filter->displayvalue = $DB->get_field('local_taps_class', 'classname', array('id' => $filter->value[0]));
+                $class = enrolclass::fetch(['id' => $filter->value[0]]);
+                $filter->displayvalue = $class->classname;
             }
             $this->showfilters[] = $filter;
         }
@@ -212,12 +214,12 @@ class elearningstatus extends base {
         $exclusionmissingfields = array ();
         if ($exclusion && isset($this->setfilters['classname'])) {
             $filter = $this->setfilters['classname'];
-            $classinfo = $DB->get_record('local_taps_class', array('id' => $filter->value[0]));
+            $classinfo = enrolclass::fetch(['id' => $filter->value[0]]);
 
             $exclusionmissingfields = array (
                 'coursename' => $classinfo->coursename,
                 'classname' => $classinfo->classname,
-                'classtype' => 'Self Paced',
+                'classtype' => $classinfo->classtype,
                 'classstartdate' => $classinfo->classstartdate,
                 'classenddate' => $classinfo->classenddate,
                 'classcost' => $classinfo->classcost,
@@ -228,7 +230,8 @@ class elearningstatus extends base {
 
         }
 
-        $enrolmentswhere = "WHERE ( ltc.archived = '' OR ltc.archived IS NULL ) AND ltc.classtype = 'Self Paced' ";
+        $params['elearning'] = enrolclass::TYPE_ELEARNING;
+        $enrolmentswhere = "WHERE ( ltc.archived = '' OR ltc.archived IS NULL ) AND ltc.classtype = :elearning ";
         $waitlisted = $this->taps->get_statuses('waitlisted');
         $placed = $this->taps->get_statuses('placed');
         $attended = $this->taps->get_statuses('attended');
@@ -564,7 +567,7 @@ class elearningstatus extends base {
         }
 
         if ($key == 'classenddate') {
-            if ($row->classtype == 'Self Paced') {
+            if ($row->classtype == enrolclass::TYPE_ELEARNING) {
                 $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->completiontime);
                 return $this->myuserdate($date, $row);
             }
@@ -577,12 +580,10 @@ class elearningstatus extends base {
         }
 
         if ($key == 'classtype') {
-            if ($row->$key == 'Scheduled') {
+            if ($row->classtype == enrolclass::TYPE_CLASSROOM) {
                 return $this->mystr('classroom');
-            } else if ($row->$key == 'Self Paced') {
+            } else if ($row->classtype == enrolclass::TYPE_ELEARNING) {
                 return $this->mystr('elearning');
-            } else {
-                return $row->$key;
             }
         }
 
@@ -625,8 +626,7 @@ class elearningstatus extends base {
             return $options;
         }
         if ($field == 'classname') {
-            $sql = "SELECT id, classname from {local_taps_class} where classtype = ? ORDER BY classname ASC";
-            $classes = $DB->get_records_sql($sql, array('Self Paced'));
+            $classes = enrolclass::fetch_all(['classtype' => enrolclass::TYPE_ELEARNING]);
             foreach ($classes as $class) {
                 $options[$class->id] = $class->classname;
             }

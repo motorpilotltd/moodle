@@ -30,18 +30,18 @@ $string['admin:blockediting'] = 'This page is currently in admin mode, for block
 $string['admin:blocks:cancel'] = 'Edit blocks on cancellation page';
 $string['admin:blocks:enrol'] = 'Edit blocks on enrol page';
 $string['admin:dropdown'] = 'Admin tools';
-$string['alert:classroom:requested'] = 'Your place on this module is awaiting review by your approver, once approved you will be granted access to any restricted materials below.';
-$string['alert:elearning:requested'] = 'Your place on this module is awaiting review by your approver, once approved you will be granted access to any restricted materials below.';
-$string['alert:iw:classroom:requested'] = 'Your place on this module is awaiting review by {$a->sponsorname} ({$a->sponsoremail}), once approved you will be granted access to any restricted materials below.'
+$string['alert:10:requested'] = 'Your place on this module is awaiting review by your approver, once approved you will be granted access to any restricted materials below.';
+$string['alert:20:requested'] = 'Your place on this module is awaiting review by your approver, once approved you will be granted access to any restricted materials below.';
+$string['alert:iw:10:requested'] = 'Your place on this module is awaiting review by {$a->sponsorname} ({$a->sponsoremail}), once approved you will be granted access to any restricted materials below.'
     . '<br />'
     . 'Your approval request was submitted on {$a->requestdate} and will be automatically cancelled if not approved within {$a->cancelafter} or by {$a->cancelbefore} before the start of the class.';
-$string['alert:iw:classroom:requested:apply'] = 'Your place on this module is awaiting review by {$a->sponsorname} ({$a->sponsoremail}), once approved you will be added to the waiting list.'
+$string['alert:iw:10:requested:apply'] = 'Your place on this module is awaiting review by {$a->sponsorname} ({$a->sponsoremail}), once approved you will be added to the waiting list.'
     . '<br />'
     . 'Your approval request was submitted on {$a->requestdate} and will be automatically cancelled if not approved within {$a->cancelafter} or by {$a->cancelbefore} before the start of the class.';
-$string['alert:iw:elearning:requested'] = 'Your place on this module is awaiting review by {$a->sponsorname} ({$a->sponsoremail}), once approved you will be granted access to any restricted materials below.'
+$string['alert:iw:20:requested'] = 'Your place on this module is awaiting review by {$a->sponsorname} ({$a->sponsoremail}), once approved you will be granted access to any restricted materials below.'
     . '<br />'
     . 'Your approval request was submitted on {$a->requestdate} and will be automatically cancelled if not approved within {$a->cancelafter}.';
-$string['alert:iw:elearning:requested:apply'] = 'Your place on this module is awaiting review by {$a->sponsorname} ({$a->sponsoremail}), once approved you will be added to the waiting list.'
+$string['alert:iw:20:requested:apply'] = 'Your place on this module is awaiting review by {$a->sponsorname} ({$a->sponsoremail}), once approved you will be added to the waiting list.'
     . '<br />'
     . 'Your approval request was submitted on {$a->requestdate} and will be automatically cancelled if not approved within {$a->cancelafter}.';
 $string['allclasses'] = 'All classes';
@@ -114,10 +114,8 @@ $string['cannotenrol:regions'] = '<br />Enrolment is only allowed from the follo
 $string['chooseclass'] = 'Choose class';
 $string['class_planned'] = 'Planned';
 $string['class_normal'] = 'Normal';
-$string['class_scheduled'] = 'Scheduled';
-$string['class_selfpaced'] = 'Self paced';
-$string['classes:classroom'] = 'To enrol onto an available class or express your interest please select from the table below:';
-$string['classes:elearning'] = 'To enrol onto the e-learning module please select from the table below:';
+$string['classes:10'] = 'To enrol onto an available class or express your interest please select from the table below:';
+$string['classes:20'] = 'To enrol onto the e-learning module please select from the table below:';
 $string['classes:mixed'] = 'To enrol please select from the table below:';
 $string['classfull'] = 'Full';
 $string['classstatus'] = 'Class status';
@@ -270,8 +268,9 @@ $string['form:class:selectclass'] = 'Select class';
 $string['form:class:selecttimezone'] = 'Select timezone';
 $string['form:class:globaltime'] = 'Global time';
 $string['form:class:start'] = 'Start';
-$string['form:class:class_scheduled'] = 'Scheduled';
-$string['form:class:class_self_paced'] = 'Self Paced';
+$string['classroom'] = 'Classroom';
+$string['elearning'] = 'E-Learning';
+
 $string['form:class:class_scheduled_normal'] = 'Normal';
 $string['form:class:class_scheduled_planned'] = 'Planned';
 $string['form:class:tab1'] = 'Class details';
@@ -630,16 +629,16 @@ $string['settings'] = 'Settings';
 $string['settings:forceemailsending'] = 'Override $CFG email settings';
 $string['settings:forceemailsending_desc'] = 'Will ignore $CFG->noemailever, $CFG->divertallemailsto and $CFG->divertccemailsto email settings and attempt to send emails.';
 $string['staffid'] = 'Staff ID';
-$string['status:elearning:attended'] = 'Completed';
-$string['status:elearning:cancelled'] = 'Cancelled';
-$string['status:elearning:placed'] = 'Enrolled, in progress';
-$string['status:elearning:requested'] = 'Pending Approval';
-$string['status:elearning:waitlisted'] = 'Waiting List';
-$string['status:classroom:attended'] = 'Completed';
-$string['status:classroom:cancelled'] = 'Cancelled';
-$string['status:classroom:placed'] = 'Approved';
-$string['status:classroom:requested'] = 'Pending Approval';
-$string['status:classroom:waitlisted'] = 'Waiting List';
+$string['status:20:attended'] = 'Completed';
+$string['status:20:cancelled'] = 'Cancelled';
+$string['status:20:placed'] = 'Enrolled, in progress';
+$string['status:20:requested'] = 'Pending Approval';
+$string['status:20:waitlisted'] = 'Waiting List';
+$string['status:10:attended'] = 'Completed';
+$string['status:10:cancelled'] = 'Cancelled';
+$string['status:10:placed'] = 'Approved';
+$string['status:10:requested'] = 'Pending Approval';
+$string['status:10:waitlisted'] = 'Waiting List';
 $string['status:dropdown:cancel'] = 'Go to cancellation page';
 $string['status:dropdown:cancel:waitlisted'] = 'Remove me from waiting list';
 $string['status:requested:fullclass'] = 'You are pending approval on a full class,
@@ -678,8 +677,7 @@ $string['updateusers'] = 'Update users';
 $string['updatecompletion'] = 'Update completion';
 $string['userstocomplete'] = 'Users to complete';
 
-$string['waitinglist:classroom'] = 'Waiting List';
-$string['waitinglist:elearning'] = 'Waiting List';
-$string['whenandwhere:classroom'] = 'When and Where';
-$string['whenandwhere:elearning'] = 'Enrolment Information';
+$string['waitinglist'] = 'Waiting List';
+$string['whenandwhere:10'] = 'When and Where';
+$string['whenandwhere:20'] = 'Enrolment Information';
 $string['whenandwhere:mixed'] = 'Enrolment Information';

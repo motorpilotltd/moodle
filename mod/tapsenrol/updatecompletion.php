@@ -71,7 +71,7 @@ if (isset($_POST['submit'])) {
         list($enrolmentid, $classid) = explode('_', $value);
         $enrolment = $taps->get_enrolment_by_id($enrolmentid);
         if (!isset($classes[$classid])) {
-            $classes[$classid] = $taps->get_class_by_id($classid);
+            $classes[$classid] = \mod_tapsenrol\enrolclass::fetch(['id' => $classid]);
         }
         $status = optional_param($value, 'Full Attendance', PARAM_RAW);
 

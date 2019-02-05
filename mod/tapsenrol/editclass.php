@@ -19,7 +19,7 @@ require_once(dirname(__FILE__) . '/../../config.php');
 $id = optional_param('id', false, PARAM_INT);
 
 if (!empty($id)) {
-    $class = $DB->get_record('local_taps_class', ['id' => $id]);
+    $class = \mod_tapsenrol\enrolclass::fetch(['id' => $id]);
     $course = get_course($class->courseid);
 
     // Needs refactoring so that local_taps_class links to cm not course.
@@ -62,7 +62,7 @@ if ($id) {
 
 if (!isset($class)) {
     $class = new stdClass();
-    $class->classtype = optional_param('classtype', \mod_tapsenrol\cmform_class::CLASS_TYPE_SCHEDULED, PARAM_TEXT);
+    $class->classtype = optional_param('classtype', \mod_tapsenrol\enrolclass::TYPE_CLASSROOM, PARAM_TEXT);
     $class->classstatus = optional_param('classstatus', \mod_tapsenrol\cmform_class::CLASS_STATUS_NORMAL, PARAM_TEXT);
 } else {
     $class->classtype = optional_param('classtype', $class->classtype, PARAM_TEXT);

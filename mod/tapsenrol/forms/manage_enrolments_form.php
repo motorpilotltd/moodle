@@ -52,9 +52,9 @@ class mod_tapsenrol_manage_enrolments_form extends moodleform {
 
         $hide = ' hide';
 
-        $class = ($classid ? $DB->get_record('local_taps_class', array('id' => $classid)) : false);
-
-        if ($class) {
+        $class = false;
+        if (!empty($classid)) {
+            $class = \mod_tapsenrol\enrolclass::fetch(['id' => $classid]);
             $hide = '';
             $taps = new \mod_tapsenrol\taps();
             $class->location = ($class->location ? $class->location : get_string('tbc', 'tapsenrol'));

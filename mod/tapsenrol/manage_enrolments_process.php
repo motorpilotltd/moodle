@@ -72,7 +72,7 @@ $customdata = array();
 $customdata['id'] = $id;
 $customdata['type'] = $type;
 
-$class = $tapsenrol->taps->get_class_by_id($classid);
+$class = \mod_tapsenrol\enrolclass::fetch(['id' => $classid]);
 if (!$class) {
     $SESSION->tapsenrol->alert = new stdClass();
     $SESSION->tapsenrol->alert->message = get_string('enrol:error:classdoesnotexist', 'tapsenrol');
@@ -172,7 +172,7 @@ if ($type == 'future' || $type == 'past') {
                     $iwtrack->approved = 1;
                     $iwtrack->timeapproved = time();
                     $DB->update_record('tapsenrol_iw_tracking', $iwtrack);
-                    if ($tapsenrol->taps->is_classtype($class->classtype, 'classroom') && !empty($class->classendtime)) {
+                    if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM && !empty($class->classendtime)) {
                         $completiontime = $class->classendtime;
                     } else {
                         $completiontime = time();
@@ -396,7 +396,7 @@ EOJ;
             $process = false;
         }
 
-        $targetclass = $tapsenrol->taps->get_class_by_id($fromform->moveto);
+        $targetclass = \mod_tapsenrol\enrolclass::fetch(['id' => $fromform->moveto]);
 
         if (empty($targetclass)) {
             $a .= "<br />Class to move to not found.";

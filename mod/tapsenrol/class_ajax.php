@@ -24,7 +24,7 @@ try {
 
     require_sesskey();
 
-    $class = $DB->get_record('local_taps_class', array('id' => $classid));
+    $class = \mod_tapsenrol\enrolclass::fetch(['id' => $classid]);
 
     if ($class) {
         $taps = new \mod_tapsenrol\taps();

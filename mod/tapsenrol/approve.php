@@ -137,7 +137,7 @@ if ($loaderror) {
                 $event->trigger();
                 $title .= get_string('separator', 'tapsenrol') . $course->fullname;
                 // Needed for renderer.
-                $class = $tapsenrolclass->taps->get_class_by_id($enrolment->classid);
+                $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
 
                 echo $output->review_approval($title, $info, $iwtrack, $user, $enrolment, $tapsenrolclass->course, $class);
                 $form->display();

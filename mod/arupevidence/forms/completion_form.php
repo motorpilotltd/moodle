@@ -50,7 +50,7 @@ class mod_arupevidence_completion_form extends moodleform
             if ($enrolments = $taps->get_enroled_classes($user->idnumber, $COURSE->idnumber, true, false)) {
 
                 foreach ($enrolments as $enrolment) {
-                    $class = $taps->get_class_by_id($enrolment->classid);
+                    $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
 
                     if ($taps->is_status($enrolment->bookingstatus, 'placed')) {
                         $classchoices[$enrolment->id] = $class->classname;

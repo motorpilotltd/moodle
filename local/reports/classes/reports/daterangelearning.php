@@ -26,6 +26,7 @@ namespace local_reports\reports;
 
 defined('MOODLE_INTERNAL') || die();
 
+use mod_tapsenrol\enrolclass;
 use stdClass;
 use moodle_url;
 use renderer_base;
@@ -265,17 +266,18 @@ class daterangelearning extends base {
                             $classenddatestring = " AND {$classenddate} <= $enddate";
                             $classcompletiondendstring = " AND completiontime <= $enddate";
                         }
-
+                        $params['elearning'] = enrolclass::TYPE_ELEARNING;
+                        $params['classroom'] = enrolclass::TYPE_CLASSROOM;
                         $wherestring .= "
                             (
                                 (
-                                    $classtype = 'Scheduled'
+                                    $classtype = :classroom
                                     AND
                                     ($classenddate >= $startdate" . $classenddatestring . ")
                                 )
                                 OR
                                 (
-                                    $classtype = 'Self Paced'
+                                    $classtype = :elearning
                                     AND
                                     ($completiontime >= $startdate" . $classcompletiondendstring . ")
                                 )
@@ -586,7 +588,7 @@ class daterangelearning extends base {
         }
 
         if ($key == 'classenddate') {
-            if ($row->classtype == 'Self Paced') {
+            if ($row->classtype == enrolclass::TYPE_ELEARNING) {
                 $date = ($this->taps->is_status($row->bookingstatus, ['cancelled']) ? 0 : $row->completiontime);
                 return $this->myuserdate($date, $row);
             }
@@ -599,12 +601,10 @@ class daterangelearning extends base {
         }
 
         if ($key == 'classtype') {
-            if ($row->$key == 'Scheduled') {
+            if ($row->classtype == enrolclass::TYPE_CLASSROOM) {
                 return $this->mystr('classroom');
-            } else if ($row->$key == 'Self Paced') {
+            } else if ($row->classtype == enrolclass::TYPE_ELEARNING) {
                 return $this->mystr('elearning');
-            } else {
-                return $row->$key;
             }
         }
 
