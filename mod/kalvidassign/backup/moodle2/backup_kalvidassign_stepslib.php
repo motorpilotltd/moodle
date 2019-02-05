@@ -41,6 +41,7 @@ class backup_kalvidassign_activity_structure_step extends backup_activity_struct
 
         // Define each element separated.
         $columns = array(
+                'course',
                 'name',
                 'intro',
                 'introformat',
