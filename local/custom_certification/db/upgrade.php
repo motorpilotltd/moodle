@@ -143,7 +143,7 @@ function xmldb_local_custom_certification_upgrade($oldversion) {
 
 
         // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2018022803, 'local', 'custom_certification');
+        upgrade_plugin_savepoint(true, 2018022804, 'local', 'custom_certification');
     }
 
     if ($oldversion < 2018022805) {
@@ -165,7 +165,7 @@ function xmldb_local_custom_certification_upgrade($oldversion) {
         }
 
         // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2018022803, 'local', 'custom_certification');
+        upgrade_plugin_savepoint(true, 2018022805, 'local', 'custom_certification');
     }
 
     if ($oldversion < 2018022804) {
