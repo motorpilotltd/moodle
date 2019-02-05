@@ -74,19 +74,6 @@ function xmldb_kalvidres_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017120639, 'kalvidres');
     }
 
-    if ($oldversion < 2017120643) {
-
-        // Changing type of field video_title on table kalvidres to text.
-        $table = new xmldb_table('kalvidres');
-        $field = new xmldb_field('video_title', XMLDB_TYPE_TEXT);
-
-        // Launch change of type for field video_title.
-        $dbman->change_field_type($table, $field);
-
-        // Kalvidres savepoint reached.
-        upgrade_mod_savepoint(true, 2017120643, 'kalvidres');
-    }
-
     if ($oldversion < 2017120644) {
         \mod_kalvidres\upgradelib::update_metadata_field();
 
