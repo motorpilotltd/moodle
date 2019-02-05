@@ -46,7 +46,7 @@ $string['enrolmentrole_help'] = 'Select role used for automatic enrolment.<br />
         . 'This enables the auto enrolment plugin to enrol the user in the module once the tapsenrol activity is complete.<br />'
         . 'Default is Participant or Student.';
 
-$string['internalworkflowhdr'] = 'Arup linked course enrolment settings';
+$string['internalworkflowhdr'] = 'Arup enrolment settings';
 
 $string['settings'] = 'Settings';
 

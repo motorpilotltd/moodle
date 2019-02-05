@@ -45,8 +45,8 @@ $string['alert:iw:20:requested:apply'] = 'Your place on this module is awaiting 
     . '<br />'
     . 'Your approval request was submitted on {$a->requestdate} and will be automatically cancelled if not approved within {$a->cancelafter}.';
 $string['allclasses'] = 'All classes';
-$string['alreadyexists:add'] = 'An Arup linked course enrolment activity already exists in this {$a}.<br />Multiple instances are not allowed.';
-$string['alreadyexists:edit'] = 'Multiple Arup linked course enrolment activities already exist in this {$a}.<br />No instance of this activity will function whilst there are multiple instances in the {$a}.';
+$string['alreadyexists:add'] = 'An Arup enrolment activity already exists in this {$a}.<br />Multiple instances are not allowed.';
+$string['alreadyexists:edit'] = 'Multiple Arup enrolment activities already exist in this {$a}.<br />No instance of this activity will function whilst there are multiple instances in the {$a}.';
 $string['applicant'] = 'Applicant';
 $string['approve:actions'] = 'Actions';
 $string['approve:alreadydone'] = 'This request has already been {$a}.';
@@ -284,7 +284,7 @@ $string['installationissue'] = 'There are issues with the installation settings 
 $string['internalworkflow'] = 'Use internal workflow';
 $string['internalworkflow_configure'] = 'Internal workflow settings';
 $string['internalworkflow_help'] = 'Only applies to classroom courses, as approval is automatic for elearning courses.';
-$string['internalworkflow_heading'] = 'Linked course enrolment: Internal workflow settings';
+$string['internalworkflow_heading'] = 'Arup enrolment: Internal workflow settings';
 $string['internalworkflow_settings'] = 'Update internal workflow settings';
 $string['intro'] = 'Intro';
 $string['invalidworkflow'] = 'Invalid workflow';
@@ -580,10 +580,10 @@ $string['manageenrolments:waitlist:seatsremaining'] = 'Seats currently remaining
 $string['manageenrolments:waitlist:users'] = 'Applications to approve';
 $string['markattendance'] = 'Mark attendance';
 $string['maximumattendees'] = 'Maximum attendees';
-$string['modulename'] = 'Arup linked course enrolment';
-$string['modulename_help'] = 'Adds an Arup linked course enrolment activity';
+$string['modulename'] = 'Arup enrolment';
+$string['modulename_help'] = 'Adds an Arup enrolment activity';
 $string['modulename_link'] = 'mod/tapsenrol/view';
-$string['modulenameplural'] = 'Arup linked course enrolments';
+$string['modulenameplural'] = 'Arup enrolments';
 
 $string['na'] = 'N/A';
 $string['name'] = 'Name';
@@ -597,8 +597,8 @@ $string['online'] = 'Online';
 $string['overrideregions'] = 'Only add region mappings above if you wish to override those set at course level.<br />'
         . 'CTRL-click to select multiple options or de-select selected options.';
 
-$string['pluginname'] = 'Arup linked course enrolment';
-$string['pluginadministration'] = 'Arup linked course enrolment administration';
+$string['pluginname'] = 'Arup enrolment';
+$string['pluginadministration'] = 'Arup enrolment administration';
 $string['pluginversiontoolow'] = 'Plugin "{$a->name}" could not be upgraded to version {$a->version}.'
         . ' Upgrading requires at least version {$a->requiredversion} to be installed (Current version: {$a->currentversion}).';
 $string['potentialusers'] = 'Potential users';
@@ -649,7 +649,7 @@ $string['status:waitlisted:fullclass'] = 'You are on the waiting list for a full
 $string['status:waitlisted:plannedclass'] = 'You are on the waiting list for a class which now has seats available,
     please contact your regional administrator to be assigned one of the remaining seats.';
 
-$string['tapsenrol:addinstance'] = 'Add a new Arup linked course enrolment';
+$string['tapsenrol:addinstance'] = 'Add a new Arup enrolment';
 $string['tapsenrol:canapproveanyone'] = 'Can approve anyone';
 $string['tapsenrol:deleteattendedenrolments'] = 'Can delete attended enrolments';
 $string['tapsenrol:internalworkflow'] = 'Manage internal workflows';
@@ -657,11 +657,11 @@ $string['tapsenrol:internalworkflow_change'] = 'Change activity\'s internal work
 $string['tapsenrol:internalworkflow_edit'] = 'Add/Edit unlocked internal workflows';
 $string['tapsenrol:internalworkflow_edit_activity'] = 'Edit internal workflow emails for activity instance';
 $string['tapsenrol:internalworkflow_lock'] = 'Lock/unlock internal workflows';
-$string['tapsenrol:manageenrolments'] = 'Manage linked course enrolments';
+$string['tapsenrol:manageenrolments'] = 'Manage arup enrolments';
 $string['tapsenrol:resendinvites'] = 'Resend invites';
 $string['tapsenrol:updatecompletion'] = 'Update class completion';
 $string['tapsenrol:viewallapprovals'] = 'View all approvals';
-$string['tapsenrolment'] = 'Arup linked course enrolment';
+$string['tapsenrolment'] = 'Arup enrolment';
 $string['taskactivitycleanup'] = 'Activity cleanup.';
 $string['taskautomaticcancellation'] = 'Automatic cancellation.';
 $string['taskinternalworkflowcleanup'] = 'Internal workflow cleanup.';

@@ -246,7 +246,7 @@ class courseformmoddifier {
 
         $tapsenrol = new \stdClass();
         $tapsenrol->course = $course->id;
-        $tapsenrol->name = 'Linked course Enrolment';
+        $tapsenrol->name = 'Arup Enrolment';
         $tapsenrol->completionenrolment = 1;
         $tapsenrol->internalworkflowid = $internalworkflowid;
         $tapsenrol->region = $enrolmentregion;
