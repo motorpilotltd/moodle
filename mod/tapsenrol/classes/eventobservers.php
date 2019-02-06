@@ -128,7 +128,7 @@ class eventobservers {
             $result = $taps->set_status($enrolment, 'Full Attendance', $completiontime);
 
             if (!$result->success) {
-                return true;
+                continue;
             }
 
             // Mark as complete.
