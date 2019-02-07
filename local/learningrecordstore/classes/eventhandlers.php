@@ -15,13 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 
-namespace local_certification;
+namespace local_learningrecordstore;
 
 use core\event\course_completed;
-use core\event\course_deleted;
 use coursemetadatafield_arup\arupmetadata;
-use local_learningrecordstore\lrsentry;
-use mod_tapsenrol\taps;
 
 class eventhandlers {
     /**
@@ -30,7 +27,7 @@ class eventhandlers {
     public static function course_completed(course_completed $event) {
         global $DB;
         $lrsentry = new lrsentry();
-        $metadata = arupmetadata::fetch(['courseid' => $event->courseid]);
+        $metadata = arupmetadata::fetch(['course' => $event->courseid]);
         $course = get_course($event->courseid);
         $category = $DB->get_record('course_categories', ['id' => $course->category]);
         $user = \core_user::get_user($event->relateduserid);
@@ -39,15 +36,14 @@ class eventhandlers {
         $lrsentry->providerid = $event->courseid;
         $lrsentry->completiontime = $event->timecreated;
         $lrsentry->classcategory = $category->name;
-
+        $lrsentry->providername = $course->fullname;
+        $lrsentry->timemodified = time();
         $lrsentry->staffid = $user->idnumber;
 
-        $lrsentry->description = $metadata->description;
-        $lrsentry->providername = $course->fullname;
+        if (!empty($metadata)) {
+            $lrsentry->description = $metadata->description;
+        }
 
-        $lrsentry->timemodified = time();
-
-        $taps = new taps();
         $classes = \mod_tapsenrol\enrolclass::fetch_all_visible_by_course($event->courseid);
 
         if (!empty($classes)) {
@@ -60,7 +56,7 @@ class eventhandlers {
             $lrsentry->classtype = $class->classtype;
             $lrsentry->duration = $class->classduration;
             $lrsentry->durationunits = $class->classdurationunits; //needs mapping
-        } else {
+        } else if (!empty($metadata)) {
             $lrsentry->duration = $metadata->duration;
             $lrsentry->durationunits = $metadata->durationunits; //needs mapping
         }

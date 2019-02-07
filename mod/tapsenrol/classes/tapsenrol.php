@@ -682,6 +682,8 @@ EOS;
                 $a = new stdClass();
                 $a->classname = $class->classname;
                 $a->coursename = $class->coursename;
+                $statustype = $this->taps->get_status_type($this->taps->get_enrolment_status($enrolment->id));
+                $a->message = get_string('status:'.$class->classtype.':'.$statustype, 'tapsenrol');
                 $message = get_string('enrol:alert:success', 'tapsenrol', $a);
             } else {
                 // User not found.

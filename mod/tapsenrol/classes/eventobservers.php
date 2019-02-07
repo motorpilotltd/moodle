@@ -306,7 +306,7 @@ EOS;
             return;
         }
 
-        $tapsenrol = new \tapsenrol($cm->instance, 'cm', $event->courseid);
+        $tapsenrol = new \tapsenrol($cm->instance, 'instance', $event->courseid);
 
         list($instatement, $inparams) = $DB->get_in_or_equal(
                 $tapsenrol->taps->get_statuses('placed'),
@@ -329,6 +329,10 @@ EOS;
                     AND {$compare} {$instatement}";
         $params = array('userid' => $event->relateduserid, 'courseid' => $event->courseid);
         $enrolment = $DB->get_record_sql($sql, array_merge($params, $inparams));
+
+        if (empty($enrolment)) {
+            return true;
+        }
 
         $tccompletion =
                 $DB->get_record('tapsenrol_completion', ['tapsenrolid' => $cm->instance, 'userid' => $event->relateduserid]);

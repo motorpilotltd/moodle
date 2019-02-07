@@ -556,7 +556,6 @@ class taps {
             return $result;
         }
 
-        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
         if (!$class) {
             $result->success = false;
             $result->status = 'INVALID_CLASS';

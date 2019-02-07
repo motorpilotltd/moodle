@@ -96,7 +96,7 @@ EOS;
             ltc.classstarttime != 0
             AND iw.cancelbefore > 0
             AND ltc.classstarttime < ({$now} + iw.cancelbefore)
-            AND ltc.classtype :classroomtype
+            AND ltc.classtype = :classroomtype
         )
     )
     AND {$compare} {$in}

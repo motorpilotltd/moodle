@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111608;
+$plugin->version   = 2015111609;
 $plugin->requires  = 2015111600; // Moodle 3.0.
 $plugin->component = 'local_learningrecordstore';
 $plugin->maturity  = MATURITY_STABLE;
