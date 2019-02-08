@@ -60,6 +60,13 @@ class eventobservers {
         global $DB, $CFG;
 
         require_once("$CFG->dirroot/mod/tapsenrol/classes/tapsenrol.php");
+        
+        $eventdata = $event->get_record_snapshot('course_modules_completion', $event->objectid);
+
+        if ($eventdata->completionstate != COMPLETION_COMPLETE
+                && $eventdata->completionstate != COMPLETION_COMPLETE_PASS) {
+            return true;
+        }
 
         $relevantclasses = \mod_tapsenrol\enrolclass::fetch_all_visible_by_course($event->courseid,
                 ['classtype' => enrolclass::TYPE_ELEARNING]);
