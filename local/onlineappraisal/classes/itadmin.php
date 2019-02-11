@@ -534,7 +534,10 @@ class itadmin {
             $request->datesend = userdate($request->created_date, get_string('strftimedate'));
             if ($request->received_date) {
                 $request->received = true;
+            } else if (empty($request->received_date) && (!empty($request->feedback) || !empty($request->feedback_2))) {
+                $request->received_status = get_string('itadmin:feedbackstatus:draft', 'local_onlineappraisal');
             }
+
             $params = array('search' => $this->search,
                 'itadminaction' => 'removefeedback',
                 'requestid' => $request->id,
