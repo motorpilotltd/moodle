@@ -156,5 +156,17 @@ function xmldb_local_custom_certification_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018022803, 'local', 'custom_certification');
     }
 
+    if ($oldversion < 2018022804) {
+        // Update field to allow NULLs.
+        $table = new xmldb_table('certif_completions_archive');
+        $field = new xmldb_field('timecompleted', XMLDB_TYPE_INTEGER, 10, null, null, null, null);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2018022804, 'local', 'custom_certification');
+    }
+
     return true;
 }
