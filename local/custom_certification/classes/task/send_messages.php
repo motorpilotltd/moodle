@@ -24,7 +24,14 @@ class send_messages extends \core\task\scheduled_task
         $this->prepare_overdue_messages();
         $this->prepare_overdue_reminder_messages();
 
-        $messages = message::get_messages_to_send(100);
+        $sendrate = get_config('local_custom_certification', 'send_message_rate');
+        if ($sendrate === false) {
+            // Use originally fixed setting.
+            $sendrate = 100;
+        } else if ($sendrate === '0') {
+            return;
+        }
+        $messages = message::get_messages_to_send($sendrate);
         foreach($messages as $message){
             message::send_message($message);
         }
