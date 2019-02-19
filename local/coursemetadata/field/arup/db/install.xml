@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/arupadvert/db" VERSION="20130128" COMMENT="XMLDB file for Moodle mod_arupadvert"
+<XMLDB PATH="local/coursemetadata/field/arup/db" VERSION="20130128" COMMENT="XMLDB file for Moodle mod_arupadvert"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../../lib/xmldb/xmldb.xsd"
 >
