@@ -86,9 +86,6 @@ $string['approve:title:approve'] = 'Approve request';
 $string['approve:title:either'] = 'Approve or reject request';
 $string['approve:title:reject'] = 'Reject request';
 $string['attending'] = 'Attending';
-$string['autocompletion'] = 'Automatically update learning history on course completion';
-$string['autocompletionhint'] = 'This setting can only be changed by administrators.';
-
 $string['backtocoursemanager'] = 'Back to course manager';
 $string['backtomanageenrolments'] = 'Back to manage enrolments';
 $string['backtomodule'] = 'Back to module';

@@ -102,5 +102,18 @@ function xmldb_tapsenrol_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017051510, 'tapsenrol');
     }
 
+    if ($oldversion < 2017051511) {
+        $table = new xmldb_table('tapsenrol');
+        $field = new xmldb_field('autocompletion');
+
+        // Conditionally launch drop field groupmembersonly.
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        // Main savepoint reached.
+        upgrade_mod_savepoint(true, 2017051511, 'tapsenrol');
+    }
+
     return true;
 }

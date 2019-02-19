@@ -77,10 +77,6 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
             $mform->addElement('html', html_writer::tag('div', $hint, array('class' => 'fitem')));
         }
 
-        $mform->addElement('checkbox', 'autocompletion', get_string('autocompletion', 'tapsenrol'));
-        $mform->setDefault('autocompletion', 0);
-        $mform->addElement('static', 'autocompletionhint', '', get_string('autocompletionhint', 'tapsenrol'));
-
         $options = [];
         foreach (tapsenrol::$completiontimetypes as $name => $value) {
             $options[$value] = get_string("completiontimetype:{$name}", 'tapsenrol');
@@ -128,21 +124,6 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
         $changecaps = array('mod/tapsenrol:internalworkflow_change', 'mod/tapsenrol:internalworkflow_edit', 'mod/tapsenrol:internalworkflow');
         if (!empty($this->_instance) && !has_any_capability($changecaps, $this->context)) {
             $mform->freeze('internalworkflowid');
-        }
-
-        $canupdateautocompletion = has_capability('moodle/site:config', context_system::instance());
-
-        if (!$canupdateautocompletion) {
-            $mform->hardFreeze('autocompletion');
-        } else {
-            $mform->removeElement('autocompletionhint');
-        }
-
-        if (!$canupdateautocompletion && $mform->getElementValue('update')) {
-            $instance = $DB->get_record('tapsenrol', array('id' => $mform->getElementValue('instance')));
-            if ($instance) {
-                $mform->setConstant('autocompletion', $instance->autocompletion);
-            }
         }
     }
 
