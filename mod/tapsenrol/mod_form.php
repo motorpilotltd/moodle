@@ -77,12 +77,6 @@ class mod_tapsenrol_mod_form extends moodleform_mod {
             $mform->addElement('html', html_writer::tag('div', $hint, array('class' => 'fitem')));
         }
 
-        $options = [];
-        foreach (tapsenrol::$completiontimetypes as $name => $value) {
-            $options[$value] = get_string("completiontimetype:{$name}", 'tapsenrol');
-        }
-        $mform->addElement('select', 'completiontimetype', get_string('completiontimetype', 'tapsenrol'), $options);
-
         $this->standard_coursemodule_elements();
 
         $this->add_action_buttons();

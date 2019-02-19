@@ -129,9 +129,6 @@ $string['completionfailed:invalidclass'] = 'Invalid class';
 $string['completionfailed:invalidenrolment'] = 'Invalid enrolment';
 $string['completionfailed:invalidstatus'] = 'Invalid status';
 $string['completionsucceeded'] = '{$a->user} : Successfully set as \'{$a->status}\' on {$a->classname}';
-$string['completiontimetype'] = 'Course completion time to use';
-$string['completiontimetype:classendtime'] = 'Class end time';
-$string['completiontimetype:currenttime'] = 'Current time at moment of completion';
 $string['cost'] = 'Cost';
 $string['couldnotloadcourse'] = 'Sorry, the {$a} details could not be loaded.';
 

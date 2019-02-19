@@ -115,12 +115,12 @@ if (isset($_POST['submit'])) {
                 $tapsenrol->cancel_workflow($enrolment, 'TUTOR: No Show', null);
                 break;
             case 'Full Attendance':
-                if ($tapsenrol->tapsenrol->completiontimetype == tapsenrol::$completiontimetypes['classendtime']) {
-                    $completiontime = !empty($classes[$classid]->classendtime) ? $classes[$classid]->classendtime : time();
-                } else {
-                    // Everyone completes now.
-                    $completiontime = time();
+                $completiontime = time();
+
+                if ($classes[$classid]->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM && !empty($classes[$classid]->classendtime)) {
+                    $completiontime = $classes[$classid]->classendtime;
                 }
+
                 $result = $taps->set_status($enrolment, 'Full Attendance', $completiontime);
                 $a->errormessage = $result->status;
                 if (!$result->success) {

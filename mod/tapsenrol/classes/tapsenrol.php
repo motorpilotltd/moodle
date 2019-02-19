@@ -41,11 +41,6 @@ class tapsenrol {
 
     protected $_tapsclasses = array();
 
-    public static $completiontimetypes = [
-            'currenttime' => 0,
-            'classendtime' => 1,
-    ];
-
     public function __construct($id, $type = 'cm', $courseid = 0) {
         global $SESSION;
 

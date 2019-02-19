@@ -60,7 +60,7 @@ class eventobservers {
         global $DB, $CFG;
 
         require_once("$CFG->dirroot/mod/tapsenrol/classes/tapsenrol.php");
-        
+
         $eventdata = $event->get_record_snapshot('course_modules_completion', $event->objectid);
 
         if ($eventdata->completionstate != COMPLETION_COMPLETE
@@ -125,11 +125,10 @@ class eventobservers {
 
             $class = $relevantclasses[$enrolment->classid];
 
-            if ($tapsenrol->completiontimetype == \tapsenrol::$completiontimetypes['classendtime']) {
-                $completiontime = !empty($class->classendtime) ? $class->classendtime : time();
-            } else {
-                // Everyone completes now.
-                $completiontime = time();
+            $completiontime = time();
+
+            if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM && !empty($class->classendtime)) {
+                $completiontime = $class->classendtime;
             }
 
             $result = $taps->set_status($enrolment, 'Full Attendance', $completiontime);
@@ -357,20 +356,17 @@ EOS;
             $DB->update_record('tapsenrol_completion', $tccompletion);
         }
 
-        $ccompletion = new \completion_completion(['course' => $event->courseid, 'userid' => $event->relateduserid]);
+        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
 
-        // We need to update course completion time if applicable.
-        // Use completed field (stores enrolmentid), ignore if 1 for legacy (actual enrolmentid 1 is historic).
-        if (!empty($enrolment->classendtime) &&
-                $tapsenrol->tapsenrol->completiontimetype == \tapsenrol::$completiontimetypes['classendtime']) {
-            $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
+        $completiontime = time();
+
+        if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM && !empty($class->classendtime)) {
             $completiontime = $class->classendtime;
+            $ccompletion = new \completion_completion(['course' => $event->courseid, 'userid' => $event->relateduserid]);
             // Update Moodle course completion date.
             // Record should exist as we're observing course completion.
             $ccompletion->timecompleted = $completiontime;
             $ccompletion->update();
-        } else {
-            $completiontime = time();
         }
 
         $tapsenrol->taps->set_status($enrolment, 'Full Attendance', $completiontime);
