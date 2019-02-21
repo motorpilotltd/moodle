@@ -246,7 +246,16 @@ class feedback {
             $fb = new stdClass();
             $fb->lang = $data->language; // Only available/set on creation.
         }
+        if (empty($fb->email) || (!empty($fb->email) && ($fb->email != \core_text::strtolower($data->email)))) {
+            $fb->password = $this->get_random_string();
 
+            // Defaults.
+            $fb->created_date = time();
+            $fb->feedback = null;
+            $fb->feedback_2 = null;
+            $fb->confidential = 0;
+            $fb->received_date = null;
+        }
         // Retrieved from appraisal.
         $fb->appraisalid = $this->appraisal->appraisal->id;
         $fb->requested_by = $this->appraisal->user->id;
@@ -259,13 +268,6 @@ class feedback {
         // Make it lowercase for consistency.
         $fb->email = \core_text::strtolower($data->email);
 
-        // Defaults.
-        $fb->created_date = time();
-        $fb->feedback = null;
-        $fb->feedback_2 = null;
-        $fb->confidential = 0;
-        $fb->received_date = null;
-        $fb->password = $this->get_random_string();
         if ($data->hascustomemail) {
             // Don't user nl2br() as doesn't actually remove line breaks, resulting in extra whitespace.
             $fb->customemail = str_replace(["\r\n", "\r", "\n"], '<br>', $data->customemailmsg);
@@ -438,6 +440,7 @@ class feedback {
             $or->requested = $this->get_requestedby($or);
             $or->feedbacklink = new moodle_url('/local/onlineappraisal/add_feedback.php',
                 array('id' => $or->appraisalid, 'pw' => $or->password));
+            $or->continuefeedback = !empty($or->feedback) || !empty($or->feedback_2)? true : false;
             $this->request_userdates($or);
             $template->outstanding[] = $or;
         }
