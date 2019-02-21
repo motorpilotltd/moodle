@@ -53,6 +53,64 @@ class tapsenrol_table_sql extends table_sql {
     public function print_nothing_to_display() {
         echo html_writer::tag('p', get_string('approve:nohistory', 'tapsenrol'));
     }
+
+    public function setup() {
+        // Only want this to run once!
+        if (!$this->setup) {
+            parent::setup();
+        }
+    }
+
+    public function show_leavers() {
+        global $SESSION;
+
+        // We need to call setup first to get prefs loaded before we override.
+        // Have to rely on inital setup having been done corretcly before calling this function.
+        $this->setup();
+
+        // Get preference.
+        $isshowleaversset = isset($this->prefs['showleavers']);
+        $showleavers = $isshowleaversset ? $this->prefs['showleavers'] : 0;
+        // Grab param, if set.
+        $this->prefs['showleavers'] = optional_param('showleavers', $showleavers, PARAM_BOOL);
+
+        // Save user preferences if they have changed.
+        if (!$isshowleaversset || $this->prefs['showleavers'] !== $showleavers) {
+            if ($this->persistent) {
+                set_user_preference('flextable_' . $this->uniqueid, json_encode($this->prefs));
+            } else {
+                $SESSION->flextable[$this->uniqueid] = $this->prefs;
+            }
+        }
+
+        return $this->prefs['showleavers'];
+    }
+
+    /**
+     * Override parent function to add show leavers button.
+     *
+     * @return string HTML fragment
+     */
+    protected function render_reset_button() {
+        $html = parent::render_reset_button();
+
+        $showleavers = isset($this->prefs['showleavers']) ? $this->prefs['showleavers'] : 0;
+
+        $url = $this->baseurl->out(false, array('showleavers' => !$showleavers));
+        $string = get_string("approve:showleavers:$showleavers",'mod_tapsenrol');
+
+        $html .= html_writer::start_div('resettable mdl-right');
+        $html .= html_writer::link($url, $string);
+        $html .= html_writer::end_div();
+
+        return $html;
+    }
+
+    public function get_row_class($row) {
+        if ($row->suspended) {
+            return 'tapsenrol-user-suspended';
+        }
+    }
 }
 
 class tapsenrol_enrolments_table_sql extends table_sql {

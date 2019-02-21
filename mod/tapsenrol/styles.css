@@ -133,3 +133,11 @@ a.delegate-button i {
     min-width: 30px;
     width: 5%;
 }
+
+.path-mod-tapsenrol table.flexible > tbody > tr.tapsenrol-user-suspended {
+    background-color: #BCBEC0;
+}
+
+.path-mod-tapsenrol table.flexible > tbody > tr.tapsenrol-user-suspended > td {
+    opacity: 0.65;
+}
