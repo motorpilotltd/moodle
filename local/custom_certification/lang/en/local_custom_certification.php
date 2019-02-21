@@ -3,6 +3,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Certifications';
+$string['adminpage'] = 'Administration';
+$string['settings'] = 'Settings';
+$string['setting:send_message_rate'] = 'Send message rate';
+$string['setting:send_message_rate_desc'] = 'How many queued messages to send each task (does not affect queuing rate). Setting as 0 means no messages will be sent from the queue.';
 $string['custom_certification:view'] = 'View Certifications';
 $string['custom_certification:manage'] = 'Manage Certifications';
 $string['programdetails'] = 'Certification details';

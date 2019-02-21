@@ -844,34 +844,6 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
 
         $table = new tapsenrol_table_sql('tapsenrol-approval-history');
 
-        $usernamefields = get_all_user_name_fields(true, 'u');
-        $fields = "tit.*, u.id as userid, {$usernamefields}, lte.coursename, lte.classname, lte.classstarttime, lte.usedtimezone, lte.bookingstatus";
-        $from = <<<EOF
-    {tapsenrol_iw_tracking} tit
-JOIN
-    {local_taps_enrolment} lte
-    ON lte.enrolmentid = tit.enrolmentid
-JOIN
-    {tapsenrol} t
-    ON t.tapscourse = lte.courseid
-JOIN
-    {tapsenrol_iw} ti
-    ON ti.id = t.internalworkflowid
-JOIN
-    {user} u
-    ON u.idnumber = lte.staffid
-EOF;
-        $where = '(lte.archived = 0 OR lte.archived IS NULL) AND tit.approved IS NOT null';
-
-        $params = array();
-        if (!has_capability('mod/tapsenrol:viewallapprovals', context_system::instance())) {
-            $useremail = strtolower($USER->email);
-            $where .= ' AND tit.sponsoremail = :sponsoremail ';
-            $params['sponsoremail'] = $useremail;
-        }
-
-        $table->set_sql($fields, $from, $where, $params);
-
         $table->define_columns(array('fullname', 'coursename', 'classname', 'classstarttime', 'timeapproved', 'approved', 'bookingstatus'));
         $table->text_sorting('coursename');
         $table->text_sorting('classname');
@@ -890,10 +862,44 @@ EOF;
         $url = new moodle_url('/mod/tapsenrol/approve.php');
         $table->define_baseurl($url);
 
-        $table->sortable(true, 'approvaldate', SORT_DESC);
+        $table->sortable(true, 'timeapproved', SORT_DESC);
         $table->is_collapsible = false;
 
         $table->useridfield = 'userid';
+
+        // This handles setting leavers visibility prefs and returning whether to show.
+        $leavers = $table->show_leavers();
+
+        $usernamefields = get_all_user_name_fields(true, 'u');
+        $fields = "tit.*, u.id as userid, u.suspended, {$usernamefields}, lte.coursename, lte.classname, lte.classstarttime, lte.usedtimezone, lte.bookingstatus";
+        $from = <<<EOF
+    {tapsenrol_iw_tracking} tit
+JOIN
+    {local_taps_enrolment} lte
+    ON lte.enrolmentid = tit.enrolmentid
+JOIN
+    {tapsenrol} t
+    ON t.tapscourse = lte.courseid
+JOIN
+    {tapsenrol_iw} ti
+    ON ti.id = t.internalworkflowid
+JOIN
+    {user} u
+    ON u.idnumber = lte.staffid
+EOF;
+        $where = '(lte.archived = 0 OR lte.archived IS NULL) AND tit.approved IS NOT null AND u.deleted = 0';
+        if (!$leavers) {
+            $where .= ' AND u.suspended = 0';
+        }
+
+        $params = array();
+        if (!has_capability('mod/tapsenrol:viewallapprovals', context_system::instance())) {
+            $useremail = strtolower($USER->email);
+            $where .= ' AND tit.sponsoremail = :sponsoremail ';
+            $params['sponsoremail'] = $useremail;
+        }
+
+        $table->set_sql($fields, $from, $where, $params);
 
         $table->out(10, false);
     }
