@@ -16,6 +16,7 @@
 
 namespace mod_tapsenrol;
 
+use coursemetadatafield_arup\arupmetadata;
 use mod_tapsenrol\event\class_created;
 use mod_tapsenrol\event\class_updated;
 
@@ -51,7 +52,18 @@ abstract class cmform_class extends \moodleform {
                 enrolclass::TYPE_CLASSROOM => get_string('classroom', 'tapsenrol'),
                 enrolclass::TYPE_ELEARNING => get_string('elearning', 'tapsenrol')
         ];
-        $this->add_element("classtype", "select", PARAM_TEXT, $classtypes);
+
+        $classtypeelem = $mform->createElement("select", "classtype", $this->str('classtype'), $classtypes);
+
+        if (isset($data->courseid)) {
+            $metadata = arupmetadata::fetch(['course' => $data->courseid]);
+            if ($metadata->classtypelocked()) {
+                $classtypeelem = $mform->createElement("hidden", "classtype", $metadata->get_default_class_type());
+            }
+        }
+
+        $this->_form->addElement($classtypeelem);
+        $mform->setType('classtype', PARAM_INT);
 
         $classstatus = array(
                 self::CLASS_STATUS_NORMAL  => get_string('class_normal', 'tapsenrol'),

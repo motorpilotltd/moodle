@@ -61,8 +61,10 @@ if ($id) {
 }
 
 if (!isset($class)) {
+    $metadata = \coursemetadatafield_arup\arupmetadata::fetch(['course' => $course->id]);
+
     $class = new stdClass();
-    $class->classtype = optional_param('classtype', \mod_tapsenrol\enrolclass::TYPE_CLASSROOM, PARAM_TEXT);
+    $class->classtype = optional_param('classtype', $metadata->get_default_class_type(), PARAM_TEXT);
     $class->classstatus = optional_param('classstatus', \mod_tapsenrol\cmform_class::CLASS_STATUS_NORMAL, PARAM_TEXT);
 } else {
     $class->classtype = optional_param('classtype', $class->classtype, PARAM_TEXT);

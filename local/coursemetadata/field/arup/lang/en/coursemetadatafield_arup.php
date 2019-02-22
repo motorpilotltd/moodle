@@ -56,3 +56,10 @@ $string['block:code'] = 'Course code';
 $string['block:level'] = 'Level';
 $string['block:keywords'] = 'Keywords';
 $string['block:region'] = 'Region';
+
+$string['methodology'] = "Methodology";
+$string['methodology_classroom'] = "Classroom";
+$string['methodology_elearning'] = "e-Learning";
+$string['methodology_learningburst'] = "Learning Burst";
+$string['methodology_programmes'] = "Programme";
+$string['methodology_other'] = "Other";

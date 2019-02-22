@@ -36,8 +36,15 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
                                'keywordsformat'    => FORMAT_HTML,
                                'accredited'        => false, 'accreditationdate' => null, 'timecreated' => 0, 'timemodified' => 0,
                                'duration'          => null, 'durationunits' => null,
-                               'display'           => true
+                               'display'           => true,
+                               'methodology'       => self::METHODOLOGY_CLASSROOM
     ];
+
+    const METHODOLOGY_CLASSROOM = 10; //Enrolments only accept Classroom Classes/
+    const METHODOLOGY_ELEARNING = 20; // - Enrolments only accept Elearning Classes
+    const METHODOLOGY_LEARNINGBURST = 40; // same as Elearning
+    const METHODOLOGY_PROGRAMMES = 50; //Enrolments only accept Classroom Classes
+    const METHODOLOGY_OTHER = 60; //No enrolment plugin required on setup. But user can add and choose class or elearn or a blended option of both.
 
     public $course;
     public $display;
@@ -58,6 +65,7 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
     public $timemodified;
     public $duration;
     public $durationunits;
+    public $methodology;
 
     public function export_for_template(\renderer_base $output) {
 
@@ -107,15 +115,53 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
 
         $data->courseimage = $this->get_image_url();
 
-        $data->canviewshare = has_capability('coursemetadatafield/arup:viewsharelink', \context_course::instance($this->get_course()->id));
+        $data->canviewshare =
+                has_capability('coursemetadatafield/arup:viewsharelink', \context_course::instance($this->get_course()->id));
         $data->description = json_encode(format_string($this->get_course()->summary));
         $data->ogsharelink =
                 urlencode(new \moodle_url("/mod/arupadvert/redirect.php", ['shortname' => $this->get_course()->shortname]));
+
+        $map = $this->getmethodologymap();
+
+        if (!isset($this->methodology) || !isset($map[$this->methodology])) {
+            $data->methodology = '';
+        } else {
+            $data->methodology = $map[$this->methodology];
+        }
 
         return $data;
     }
 
     private $courseobject = null;
+
+    public static function getmethodologymap() {
+        return [
+                self::METHODOLOGY_CLASSROOM     => get_string('methodology_classroom', 'coursemetadatafield_arup'),
+                self::METHODOLOGY_ELEARNING     => get_string('methodology_elearning', 'coursemetadatafield_arup'),
+                self::METHODOLOGY_LEARNINGBURST => get_string('methodology_learningburst', 'coursemetadatafield_arup'),
+                self::METHODOLOGY_PROGRAMMES    => get_string('methodology_programmes', 'coursemetadatafield_arup'),
+                self::METHODOLOGY_OTHER         => get_string('methodology_other', 'coursemetadatafield_arup')
+        ];
+    }
+
+    public function classtypelocked() {
+        return $this->methodology !== self::METHODOLOGY_OTHER;
+    }
+
+    public function get_default_class_type() {
+        switch ($this->methodology) {
+            case self::METHODOLOGY_CLASSROOM:
+            case self::METHODOLOGY_PROGRAMMES:
+                return \mod_tapsenrol\enrolclass::TYPE_CLASSROOM;
+                break;
+            case self::METHODOLOGY_ELEARNING:
+            case self::METHODOLOGY_LEARNINGBURST:
+                return \mod_tapsenrol\enrolclass::TYPE_ELEARNING;
+                break;
+            default:
+                return \mod_tapsenrol\enrolclass::TYPE_CLASSROOM;
+        }
+    }
 
     public function get_course() {
         if (!isset($this->courseobject)) {

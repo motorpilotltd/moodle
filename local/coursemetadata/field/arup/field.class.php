@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use coursemetadatafield_arup\arupmetadata;
+
 class coursemetadata_field_arup extends \local_coursemetadata\field_base {
     private $arupmetadata = null;
 
@@ -76,6 +78,8 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
 
         $mform->addElement('editor', 'arupmeta_keywords_editor', get_string('keywords', 'coursemetadatafield_arup'));
         $mform->setType('arupmeta_keywords_editor', PARAM_RAW); // No XSS prevention here, users must be trusted.
+
+        $mform->addElement('select', 'arupmeta_methodology', get_string('methodology', 'coursemetadatafield_arup'), arupmetadata::getmethodologymap());
 
         $mform->addElement('header', 'duration', get_string('duration', 'coursemetadatafield_arup'));
         $mform->setExpanded('duration', true, true);
