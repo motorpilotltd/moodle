@@ -77,15 +77,13 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         return html_writer::tag('div', $button.$message, array('class' => $class));
     }
 
-    public function enrolment_history($tapsenrol, $enrolments, $classes, $cmid) {
+    public function enrolment_history($tapsenrol, $enrolments, $classes, $cmid, $allclasses) {
         global $DB, $SESSION, $OUTPUT, $USER;
 
         $overallclasstype = 'unknown';
         $classtypes = [];
 
-        $classeskeyonclassid = [];
         foreach ($classes as $class) {
-            $classeskeyonclassid[$class->id] = $class;
             $classtypes[] = $overallclasstype = $class->classtype;
             if (count(array_unique($classtypes)) > 1) {
                 $overallclasstype = 'mixed';
@@ -110,7 +108,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         if ($enrolments) {
             $hideadvert = true;
             foreach ($enrolments as $enrolment) {
-                $class = $classeskeyonclassid[$enrolment->classid];
+                $class = $allclasses[$enrolment->classid];
 
                 $delegateurl->param('classid', $enrolment->classid);
                 $delegatebutton = html_writer::link($delegateurl, $delegateicon, array('class' => 'delegate-button'));

@@ -68,8 +68,9 @@ if (!$tapsenrol->check_installation()) {
 
     if ($canview) {
         $classes = $tapsenrol->get_tapsclasses($canviewclasses);
+        $allclasses = $tapsenrol->taps->get_course_classes($tapsenrol->course->id, true, false);
         $enrolments = $tapsenrol->taps->get_enrolments($USER->id, $tapsenrol->course->id, false, false);
-        $enrolmentoutput = $output->enrolment_history($tapsenrol, $enrolments, $classes, $tapsenrol->cm->id);
+        $enrolmentoutput = $output->enrolment_history($tapsenrol, $enrolments, $classes, $tapsenrol->cm->id, $allclasses);
     }
 
     if (!$canview || !$canviewclasses) {
