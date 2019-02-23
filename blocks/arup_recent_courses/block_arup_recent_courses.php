@@ -18,7 +18,6 @@ require_once($CFG->dirroot . '/course/lib.php');
 
 class block_arup_recent_courses extends block_base {
     protected $_tapsinstalled;
-    protected $_methodologyfield;
     protected $_taps;
 
     public function init() {
@@ -52,11 +51,7 @@ class block_arup_recent_courses extends block_base {
         }
 
         $table = new html_table();
-        $table->attributes['class'] = 'arup-recent-courses-table';
-
-        if ($this->_has_methodologies()) {
-            $table->attributes['class'] .= ' arup-has-methodologies';
-        }
+        $table->attributes['class'] = 'arup-recent-courses-table arup-has-methodologies';
 
         $courses = enrol_get_my_courses(null, 'visible DESC, fullname ASC');
         $tapsenrolments = $this->_get_taps_enrolments();
@@ -83,29 +78,28 @@ class block_arup_recent_courses extends block_base {
                 $cell->text = '';
                 $cells[] = clone($cell);
 
-                if ($this->_has_methodologies()) {
-                    $cell = new html_table_cell();
-                    $cell->attributes['class'] = 'text-center';
-                    if ($tapsenrolment->classtype) {
-                        $classtypegroup = $this->_taps->get_classtype_type($tapsenrolment->classtype);
-                        if (get_string_manager()->string_exists($classtypegroup, 'block_arup_recent_courses')) {
-                            $alttitle = get_string($classtypegroup, 'block_arup_recent_courses');
-                        } else {
-                            $alttitle = $tapsenrolment->classtype;
-                        }
-                        $cell->text = html_writer::empty_tag(
-                            'img',
-                            array(
-                                'src' => $OUTPUT->image_url($classtypegroup, 'block_arup_recent_courses'),
-                                'alt' => $alttitle,
-                                'title' => $alttitle
-                            )
-                        );
+                $cell = new html_table_cell();
+                $cell->attributes['class'] = 'text-center';
+                if ($tapsenrolment->classtype) {
+                    $classtypegroup = $this->_taps->get_classtype_type($tapsenrolment->classtype);
+                    if (get_string_manager()->string_exists($classtypegroup, 'block_arup_recent_courses')) {
+                        $alttitle = get_string($classtypegroup, 'block_arup_recent_courses');
                     } else {
-                        $cell->text = '';
+                        $alttitle = $tapsenrolment->classtype;
                     }
-                    $cells[] = clone($cell);
+                    $cell->text = html_writer::empty_tag(
+                        'img',
+                        array(
+                            'src' => $OUTPUT->image_url($classtypegroup, 'block_arup_recent_courses'),
+                            'alt' => $alttitle,
+                            'title' => $alttitle
+                        )
+                    );
+                } else {
+                    $cell->text = '';
                 }
+                $cells[] = clone($cell);
+
                 $linkclass = $tapsenrolment->visible ? '' : 'dimmed';
                 $linktext = format_string($tapsenrolment->fullname) . $tapsstatus;
                 $linkurl = new moodle_url('/course/view.php', array('id' => $tapsenrolment->course));
@@ -163,12 +157,11 @@ class block_arup_recent_courses extends block_base {
                 $cell->text = '';
                 $cells[] = clone($cell);
 
-                if ($this->_has_methodologies()) {
-                    $cell = new html_table_cell();
-                    $cell->attributes['class'] = 'text-center';
-                    $cell->text = $this->_get_methodology($course->id);
-                    $cells[] = clone($cell);
-                }
+                $cell = new html_table_cell();
+                $cell->attributes['class'] = 'text-center';
+                $cell->text = \coursemetadatafield_arup\arupmetadata::getmethodologyname($course->methodology);
+                $cells[] = clone($cell);
+
                 $linkclass = $course->visible ? '' : 'dimmed';
                 $linktext = format_string($course->fullname) . $tapsstatus;
                 $linkurl = new moodle_url('/course/view.php', array('id' => $course->id));
@@ -347,34 +340,5 @@ EOS;
 
         $count = $DB->get_field_sql($sql, $params);
         return ($count > 0);
-    }
-
-    protected function _has_methodologies() {
-        global $DB;
-
-        if (!isset($this->_methodologyfield)) {
-            $this->_methodologyfield = false;
-
-            $fieldid = isset($this->config->methodologyfield) ? $this->config->methodologyfield : 0;
-            if ($fieldid && get_config('local_coursemetadata', 'version')) {
-                $this->_methodologyfield = $DB->get_record('coursemetadata_info_field', array('id' => $fieldid));
-            }
-        }
-        return $this->_methodologyfield;
-    }
-
-    protected function _get_methodology($courseid) {
-        global $CFG;
-
-        if (!$this->_has_methodologies()) {
-            return '';
-        }
-
-        require_once("{$CFG->dirroot}/local/coursemetadata/lib.php");
-        require_once("{$CFG->dirroot}/local/coursemetadata/field/{$this->_methodologyfield->datatype}/field.class.php");
-        $fieldclassname = 'coursemetadata_field_'.$this->_methodologyfield->datatype;
-        $fieldclass = new $fieldclassname($this->_methodologyfield->id, $courseid);
-
-        return $fieldclass->display_data();
     }
 }

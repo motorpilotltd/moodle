@@ -38,7 +38,4 @@ $string['viewcatalogue'] = 'View catalogue';
 // Utility strings.
 $string['configtitle'] = 'Block title';
 
-$string['methodologyfield'] = 'Coursemetadatafield for methodology';
-$string['methodologyfield_help'] = 'Will only allow the choice of \'iconsingle\' coursemetadata fields, in this block, to avoid rendering issues.';
-
 $string['numberofcourses'] = 'Number of courses';

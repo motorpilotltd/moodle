@@ -634,8 +634,11 @@ function get_courses($categoryid="all", $sort="c.sortorder ASC", $fields="c.*") 
     $ccjoin = "LEFT JOIN {context} ctx ON (ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel)";
     $params['contextlevel'] = CONTEXT_COURSE;
 
+    $fields .= ",cma.methodology";
+
     $sql = "SELECT $fields $ccselect
               FROM {course} c
+              INNER JOIN {coursemetadata_arup} cma ON c.id = cma.course
            $ccjoin
               $categoryselect
               $sortstatement";

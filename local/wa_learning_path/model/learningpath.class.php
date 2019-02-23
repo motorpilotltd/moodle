@@ -12,6 +12,8 @@
 namespace wa_learning_path\model;
 
 // Learning path statuses.
+use coursemetadatafield_arup\arupmetadata;
+
 define('WA_LEARNING_PATH_DELETED', 0);
 define('WA_LEARNING_PATH_DRAFT', 1);
 define('WA_LEARNING_PATH_PUBLISH', 2);
@@ -22,7 +24,6 @@ define('WA_LEARNING_PATH_RECOMMENDED', 2);
 define('WA_LEARNING_PATH_ELECTIVE', 3);
 
 define('WA_LEARNING_PATH_CUSTOM_FIELD_LEVEL', 'level');
-define('WA_LEARNING_PATH_CUSTOM_FIELD_METHODOLOGY', 'methodology');
 define('WA_LEARNING_PATH_CUSTOM_FIELD_COURSE_ICON', 'learningpathicon');
 define('WA_LEARNING_PATH_CUSTOM_FIELD_702010', '702010');
 
@@ -758,22 +759,24 @@ class learningpath {
                             $position->position = $type;
                             if ($position->type == 'module') {
                                 if (isset($courses[$position->id])) {
+                                    $course = $courses[$position->id];
+
                                     $activity->modules_count++;
-                                    $position->fullname = $courses[$position->id]->fullname;
-                                    $position->description = $courses[$position->id]->summary;
-                                    $position->summaryformat = $courses[$position->id]->summaryformat;
-                                    $position->percent = isset($courses[$position->id]->p702010) ? $courses[$position->id]->p702010
+                                    $position->fullname = $course->fullname;
+                                    $position->description = $course->summary;
+                                    $position->summaryformat = $course->summaryformat;
+                                    $position->percent = isset($course->p702010) ? $course->p702010
                                                 : '';
-                                    $position->methodology = isset($courses[$position->id]->methodology) ? $courses[$position->id]->methodology
-                                                : '';
-									$position->methodologyicon = $position->methodology ? \wa_learning_path\lib\get_course_methodologie_icon((int) $position->id)
-												: '';
+
+                                    $position->methodology = arupmetadata::getmethodologyname($course->methodologyid);
+                                    $position->methodologyicon = arupmetadata::getmethodologyicon($course->methodologyid);
+
                                     $position->region = isset($courses[$position->id]->regionids) ? $courses[$position->id]->regionids
                                                 : array(0 => '0');
                                     $position->completed = false;
                                     if ($completioninfo) {
-                                        $position->enrolled = isset($enrolled[$courses[$position->id]->id]);
-                                        $completed = isset($courses[$position->id]->timestarted) ? $courses[$position->id]->timestarted
+                                        $position->enrolled = isset($enrolled[$course->id]);
+                                        $completed = isset($course->timestarted) ? $course->timestarted
                                                     : '0';
                                         $position->completed = $completed && $position->enrolled;
                                         if ($position->enrolled) {

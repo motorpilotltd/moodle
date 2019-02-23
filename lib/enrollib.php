@@ -707,8 +707,9 @@ function enrol_get_my_courses($fields = null, $sort = null, $limit = 0, $coursei
 
     // Note: we can not use DISTINCT + text fields due to Oracle and MS limitations, that is why
     // we have the subselect there.
-    $sql = "SELECT $coursefields $ccselect
+    $sql = "SELECT $coursefields, cma.methodology $ccselect
               FROM {course} c
+              INNER JOIN {coursemetadata_arup} cma ON c.id = cma.course
               JOIN ($courseidsql) en ON (en.courseid = c.id)
            $ccjoin
              WHERE $wheres

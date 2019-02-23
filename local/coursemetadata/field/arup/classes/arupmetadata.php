@@ -144,6 +144,51 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
         ];
     }
 
+    public static function getmethodologyname($methodology) {
+        switch ($methodology) {
+            case self::METHODOLOGY_CLASSROOM:
+                $identifier = 'methodology_classroom';
+                break;
+            case self::METHODOLOGY_PROGRAMMES:
+                $identifier = 'methodology_programmes';
+                break;
+            case self::METHODOLOGY_ELEARNING:
+                $identifier = 'methodology_elearning';
+                break;
+            case self::METHODOLOGY_LEARNINGBURST:
+                $identifier = 'methodology_learningburst';
+                break;
+            default:
+                return false;
+                break;
+        }
+
+        return get_string($identifier, 'coursemetadatafield_arup');
+    }
+
+    public static function getmethodologyicon($methodology) {
+        global $OUTPUT;
+
+        switch ($methodology) {
+            case self::METHODOLOGY_CLASSROOM:
+                $identifier = 'methodology_classroom';
+                break;
+            case self::METHODOLOGY_PROGRAMMES:
+                $identifier = 'methodology_programmes';
+                break;
+            case self::METHODOLOGY_ELEARNING:
+                $identifier = 'methodology_elearning';
+                break;
+            case self::METHODOLOGY_LEARNINGBURST:
+                $identifier = 'methodology_learningburst';
+                break;
+            default:
+                return false;
+                break;
+        }
+        return $OUTPUT->pix_icon($identifier, get_string($identifier, 'coursemetadatafield_arup'), 'coursemetadatafield_arup');
+    }
+
     public function classtypelocked() {
         return $this->methodology !== self::METHODOLOGY_OTHER;
     }

@@ -33,9 +33,6 @@ $string['cpd'] = 'Learning Burst';
 
 $string['elearning'] = 'E-learning';
 
-$string['methodologyfield'] = 'Coursemetadatafield for methodology';
-$string['methodologyfield_help'] = 'Will only allow the choice of \'iconsingle\' coursemetadata fields, in this block, to avoid rendering issues.';
-
 $string['norecentcourses'] = 'No applicable modules';
 
 $string['status:placed'] = ' (Approved)';

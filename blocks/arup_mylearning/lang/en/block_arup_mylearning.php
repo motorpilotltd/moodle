@@ -157,6 +157,3 @@ $string['lynda'] = 'Lynda.com';
 
 // Errors.
 $string['exportfailed'] = 'Sorry, the export failed.';
-
-// Settings.
-$string['methodologyfield'] = 'Coursemetadatafield for methodology';

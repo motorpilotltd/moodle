@@ -105,11 +105,6 @@ class block_arup_mylearning extends block_base {
         return $this->content;
     }
 
-    public function instance_config_save($data, $nolongerused = false) {
-        $config = clone($data);
-        parent::instance_config_save($config, $nolongerused);
-    }
-
     public function instance_delete() {
         $fs = get_file_storage();
         $fs->delete_area_files($this->context->id, 'block_arup_mylearning');

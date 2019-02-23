@@ -22,7 +22,6 @@ class block_arup_mylearning_content {
     protected $_worksheets;
 
     protected $_tapsinstalled;
-    protected $_methodologyfield;
 
     public $renderer;
 
@@ -168,10 +167,8 @@ class block_arup_mylearning_content {
                 array('text' => get_string('course'), 'class' => 'text-left'),
                 array('text' => get_string('category'), 'class' => 'text-left'),
                 array('text' => get_string('status', 'block_arup_mylearning'), 'class' => 'text-left'),
+                array('text' => get_string('methodology', 'block_arup_mylearning'), 'class' => 'text-center')
         );
-        if ($this->_has_methodologies()) {
-            array_unshift($headers, array('text' => get_string('methodology', 'block_arup_mylearning'), 'class' => 'text-center'));
-        }
         foreach ($headers as $col => $header) {
             $table->head[$col] = new html_table_cell(str_ireplace(' ', '&nbsp;', $header['text']));
             $table->head[$col]->attributes['class'] = $header['class'];
@@ -196,11 +193,9 @@ class block_arup_mylearning_content {
             foreach ($courses as $course) {
                 $cells = array();
 
-                if ($this->_has_methodologies()) {
-                    $cell->text = $this->_get_methodology($course->id);
-                    $cell->attributes['class'] = 'text-center';
-                    $cells[] = clone($cell);
-                }
+                $cell->text = \coursemetadatafield_arup\arupmetadata::getmethodologyname($course->methodology);
+                $cell->attributes['class'] = 'text-center';
+                $cells[] = clone($cell);
 
                 $cell->attributes['class'] = 'text-left';
 
@@ -267,10 +262,8 @@ class block_arup_mylearning_content {
                 array('text' => get_string('category'), 'class' => 'text-left'),
                 array('text' => get_string('enrolments', 'block_arup_mylearning'), 'class' => 'text-center'),
                 array('text' => get_string('open', 'block_arup_mylearning'), 'class' => 'text-center'),
+                array('text' => get_string('methodology', 'block_arup_mylearning'), 'class' => 'text-center')
         );
-        if ($this->_has_methodologies()) {
-            array_unshift($headers, array('text' => get_string('methodology', 'block_arup_mylearning'), 'class' => 'text-center'));
-        }
         foreach ($headers as $col => $header) {
             $table->head[$col] = new html_table_cell(str_ireplace(' ', '&nbsp;', $header['text']));
             $table->head[$col]->attributes['class'] = $header['class'];
@@ -295,11 +288,9 @@ class block_arup_mylearning_content {
             foreach ($courses as $course) {
                 $cells = array();
 
-                if ($this->_has_methodologies()) {
-                    $cell->text = $this->_get_methodology($course->id);
-                    $cell->attributes['class'] = 'text-center';
-                    $cells[] = clone($cell);
-                }
+                $cell->text = \coursemetadatafield_arup\arupmetadata::getmethodologyname($course->methodology);
+                $cell->attributes['class'] = 'text-center';
+                $cells[] = clone($cell);
 
                 $cell->attributes['class'] = 'text-left';
 
@@ -740,34 +731,6 @@ class block_arup_mylearning_content {
     /* MAIN TAB FUNCTIONS - END */
 
     /* OVERVIEW/MYTEACHING FUNCTIONS - START */
-    protected function _has_methodologies() {
-        global $DB;
-
-        if (!isset($this->_methodologyfield)) {
-            $this->_methodologyfield = false;
-
-            $fieldid = isset($this->_block->config->methodologyfield) ? $this->_block->config->methodologyfield : 0;
-            if ($fieldid && get_config('local_coursemetadata', 'version')) {
-                $this->_methodologyfield = $DB->get_record('coursemetadata_info_field', array('id' => $fieldid));
-            }
-        }
-        return $this->_methodologyfield;
-    }
-
-    protected function _get_methodology($courseid) {
-        global $CFG;
-
-        if (!$this->_has_methodologies()) {
-            return '';
-        }
-
-        require_once("{$CFG->dirroot}/local/coursemetadata/lib.php");
-        require_once("{$CFG->dirroot}/local/coursemetadata/field/{$this->_methodologyfield->datatype}/field.class.php");
-        $fieldprovidername = 'coursemetadata_field_' . $this->_methodologyfield->datatype;
-        $fieldclass = new $fieldprovidername($this->_methodologyfield->id, $courseid);
-
-        return $fieldclass->display_data();
-    }
 
     protected function _get_taps_enrolments() {
         global $CFG, $DB, $USER;

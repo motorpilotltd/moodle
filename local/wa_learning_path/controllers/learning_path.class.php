@@ -11,6 +11,7 @@
 
 namespace wa_learning_path\controller;
 
+use coursemetadatafield_arup\arupmetadata;
 use wa_learning_path\lib;
 use moodle_url;
 
@@ -251,7 +252,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
                 \wa_learning_path\lib\load_form('addactivity');
                 $this->form = new \wa_learning_path\form\addactivity_form();
-                $this->methodologylist = array_merge($this->form->get_activity_type(false), \wa_learning_path\lib\get_methodologies());
+                $this->methodologylist = $this->form->get_activity_type(false) + arupmetadata::getmethodologymap();
 
                 // Load system context.
                 $this->systemcontext = \context_system::instance();
@@ -463,7 +464,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                                     $myxls2->write($line, 2, isset($act->fullname) ? $act->fullname : $act->title);
                                     $myxls2->write($line, 3, $this->get_string($type));
                                     if ($act->type == 'module') {
-                                        $myxls2->write($line, 4, $act->methodology);
+                                        $myxls2->write($line, 4, arupmetadata::getmethodologyname($act->methodologyid));
                                     } else {
                                         $myxls2->write($line, 4, $act->methodology ? $this->get_string('type_'.$act->methodology) : '');
                                     }

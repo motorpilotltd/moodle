@@ -2,8 +2,11 @@
 
 namespace wa_learning_path\lib;
 
+use coursemetadatafield_arup\arupmetadata;
+
 /**
  * Convert date to unix timestamp
+ *
  * @param $year
  * @param $month
  * @param $date
@@ -173,9 +176,7 @@ function is_activity_editor($userid = false) {
 function get_modules($ids = array(), $matrixview = false, $group_courses = true) {
 	global $DB, $USER;
 
-	//$fieldlevel = \wa_learning_path\lib\get_custom_field(WA_LEARNING_PATH_CUSTOM_FIELD_LEVEL);
 	$field702010 = \wa_learning_path\lib\get_custom_field(WA_LEARNING_PATH_CUSTOM_FIELD_702010);
-	$fieldmethodology = \wa_learning_path\lib\get_custom_field(WA_LEARNING_PATH_CUSTOM_FIELD_METHODOLOGY);
 
 	if ($ids) {
 		list($usql, $params) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'id');
@@ -199,14 +200,13 @@ function get_modules($ids = array(), $matrixview = false, $group_courses = true)
                     ELSE {$unique} END as unique_id, c.id, c.fullname, c.summary, c.summaryformat, r.id as regionid, r.name as region {$completionsql} "
 		//. (!empty($fieldlevel) ? ", d1.data as level ": " ")
 		. (!empty($field702010) ? ", d2.data as p702010 " : " ")
-		. (!empty($fieldmethodology) ? ", d3.data as methodology " : " ")
+		. ", cma.methodology as methodologyid "
 		. " from {course} c " .
 		" left join {local_regions_reg_cou} rc on rc.courseid = c.id " .
 		$join .
 		" left join {local_regions_reg} r on rc.regionid = r.id " .
-		//($fieldlevel ? " left join {coursemetadata_info_data} d1 on d1.course = c.id and d1.fieldid = ".$fieldlevel : ' ') .
+        " INNER JOIN {coursemetadata_arup} cma ON c.id = cma.course " .
 		($field702010 ? " left join {coursemetadata_info_data} d2 on d2.course = c.id and d2.fieldid = " . $field702010 : ' ') .
-		($fieldmethodology ? " left join {coursemetadata_info_data} d3 on d3.course = c.id and d3.fieldid = " . $fieldmethodology : ' ') .
 		" where visible = 1 and category > 0 " . $usql . " order by fullname ";
 
 	$list = $DB->get_records_sql($sql, $params);
@@ -214,6 +214,9 @@ function get_modules($ids = array(), $matrixview = false, $group_courses = true)
 	if ($group_courses) {
 		$grouped = array();
 		foreach ($list as $r) {
+		    $r->methodology = arupmetadata::getmethodologyname($r->methodologyid);
+		    $r->methodologyicon = arupmetadata::getmethodologyicon($r->methodologyid);
+
 			if (!isset($grouped[$r->id])) {
 				$grouped[$r->id] = $r;
 				$grouped[$r->id]->region_ids = array();
@@ -262,36 +265,6 @@ function get_regions() {
 	}
 
 	return $ret;
-}
-
-function get_methodologies() {
-	global $DB, $CFG;
-
-	$field = $DB->get_record('coursemetadata_info_field', array('shortname' => WA_LEARNING_PATH_CUSTOM_FIELD_METHODOLOGY));
-	if (empty($field)) {
-		return array();
-	}
-
-	require_once($CFG->dirroot . '/local/coursemetadata/field/' . $field->datatype . '/field.class.php');
-	$newfield = 'coursemetadata_field_' . $field->datatype;
-	$object = new $newfield((int) $field->id);
-	
-	return $object->options;
-}
-
-function get_course_methodologie_icon($courseid) {
-	global $DB, $CFG;
-
-	$field = $DB->get_record('coursemetadata_info_field', array('shortname' => WA_LEARNING_PATH_CUSTOM_FIELD_METHODOLOGY));
-	if (empty($field)) {
-		return array();
-	}
-
-	require_once($CFG->dirroot . '/local/coursemetadata/field/' . $field->datatype . '/field.class.php');
-	$newfield = 'coursemetadata_field_' . $field->datatype;
-	$object = new $newfield((int) $field->id, (int) $courseid);
-	
-	return $object->display_data();
 }
 
 function html_to_excel($html) {

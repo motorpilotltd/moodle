@@ -71,7 +71,7 @@ function xmldb_local_wa_learning_path_upgrade($oldversion) {
         // Assign savepoint reached.
         upgrade_plugin_savepoint(true, 2016061404, 'local', 'wa_learning_path');
     }
-    
+
     if ($oldversion < 2016061507) {
 //        die('aa');
         $dbman = $DB->get_manager();
@@ -96,7 +96,7 @@ function xmldb_local_wa_learning_path_upgrade($oldversion) {
         }
         //=============
         // And delete the old columns.
-        
+
         $table2 = new xmldb_table('wa_learning_path_activity');
 		if ($dbman->table_exists($table2)) {
 			$index = new xmldb_index('wa_lpa_index_region', XMLDB_INDEX_NOTUNIQUE, array('region'));
@@ -115,6 +115,54 @@ function xmldb_local_wa_learning_path_upgrade($oldversion) {
 		}
         // Assign savepoint reached.
         upgrade_plugin_savepoint(true, 2016061507, 'local', 'wa_learning_path');
+    }
+
+    if ($oldversion < 2016081204) {
+        foreach ($DB->get_records('wa_learning_path') as $path) {
+            $matrix = json_decode($path->matrix);
+            foreach ($matrix->activities as $activity) {
+                foreach ($activity->positions as $positionactivities) {
+                    foreach ($positionactivities as $positionactivity) {
+                        if (!isset($positionactivity->methodology)) {
+                            continue;
+                        }
+                        switch ($positionactivity->methodology) {
+                            case 'Classroom':
+                                $positionactivity->methodologyid = \coursemetadatafield_arup\arupmetadata::METHODOLOGY_CLASSROOM;
+                                break;
+                            case 'eBook':
+                                $positionactivity->methodologyid = \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER;
+                                break;
+                            case 'eLearning':
+                                $positionactivity->methodologyid = \coursemetadatafield_arup\arupmetadata::METHODOLOGY_ELEARNING;
+                                break;
+                            case 'Learning Burst':
+                                $positionactivity->methodologyid =
+                                        \coursemetadatafield_arup\arupmetadata::METHODOLOGY_LEARNINGBURST;
+                                break;
+                            case 'Masters Programme':
+                                $positionactivity->methodologyid = \coursemetadatafield_arup\arupmetadata::METHODOLOGY_PROGRAMMES;
+                                break;
+                            case 'Other':
+                                $positionactivity->methodologyid = \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER;
+                                break;
+                            case 'Video Learning':
+                                $positionactivity->methodologyid = \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER;
+                                break;
+                            case 'Virtual Classroom':
+                                $positionactivity->methodologyid = \coursemetadatafield_arup\arupmetadata::METHODOLOGY_CLASSROOM;
+                                break;
+                        }
+                    }
+                }
+            }
+            $path->matrix = json_encode($matrix);
+            $DB->update_record('wa_learning_path', $path);
+        }
+
+
+        // Assign savepoint reached.
+        upgrade_plugin_savepoint(true, 2016081204, 'local', 'wa_learning_path');
     }
 
 

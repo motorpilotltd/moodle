@@ -59,11 +59,7 @@ class block_arup_new_courses extends block_base {
         $this->content->footer = '';
 
         $table = new html_table();
-        $table->attributes['class'] = 'arup-new-courses-table';
-
-        if ($this->_has_methodologies()) {
-            $table->attributes['class'] .= ' arup-has-methodologies';
-        }
+        $table->attributes['class'] = 'arup-new-courses-table arup-has-methodologies';
 
         $table->data = array();
 
@@ -113,9 +109,11 @@ class block_arup_new_courses extends block_base {
             $params['contextlevel'] = CONTEXT_COURSE;
             $sql = "
                 SELECT
-                    c.* {$ccselect}
+                    c.*, cma.methodology {$ccselect}
                 FROM
                     {course} c
+                    
+                INNER JOIN {coursemetadata_arup} cma ON c.id = cma.course
                 {$regjoin}
                 {$ccjoin}
                 WHERE
@@ -188,12 +186,10 @@ class block_arup_new_courses extends block_base {
                 $cell->text = '';
                 $cells[] = clone($cell);
 
-                if ($this->_has_methodologies()) {
-                    $cell = new html_table_cell();
-                    $cell->attributes['class'] = 'text-center';
-                    $cell->text = $this->_get_methodology($course->id);
-                    $cells[] = clone($cell);
-                }
+                $cell = new html_table_cell();
+                $cell->attributes['class'] = 'text-center';
+                $cell->text = \coursemetadatafield_arup\arupmetadata::getmethodologyname($course->methodology);
+                $cells[] = clone($cell);
 
                 $linktext = format_string($course->fullname);
                 $linkurl = new moodle_url('/course/view.php', array('id' => $course->id));
@@ -229,34 +225,5 @@ class block_arup_new_courses extends block_base {
         $this->content->footer = html_writer::link($footerurl, get_string('viewcatalogue', 'block_arup_new_courses'));
 
         return $this->content;
-    }
-
-    protected function _has_methodologies() {
-        global $DB;
-
-        if (!isset($this->_methodologyfield)) {
-            $this->_methodologyfield = false;
-
-            $fieldid = isset($this->config->methodologyfield) ? $this->config->methodologyfield : 0;
-            if ($fieldid && get_config('local_coursemetadata', 'version')) {
-                $this->_methodologyfield = $DB->get_record('coursemetadata_info_field', array('id' => $fieldid));
-            }
-        }
-        return $this->_methodologyfield;
-    }
-
-    protected function _get_methodology($courseid) {
-        global $CFG;
-
-        if (!$this->_has_methodologies()) {
-            return '';
-        }
-
-        require_once("{$CFG->dirroot}/local/coursemetadata/lib.php");
-        require_once("{$CFG->dirroot}/local/coursemetadata/field/{$this->_methodologyfield->datatype}/field.class.php");
-        $fieldclassname = 'coursemetadata_field_'.$this->_methodologyfield->datatype;
-        $fieldclass = new $fieldclassname($this->_methodologyfield->id, $courseid);
-
-        return $fieldclass->display_data();
     }
 }
