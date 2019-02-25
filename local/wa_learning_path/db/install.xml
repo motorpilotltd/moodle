@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/wa_agency/db" VERSION="2016012101" COMMENT="XMLDB file for Moodle local/wa_agency"
+<XMLDB PATH="local/wa_learning_path/db" VERSION="2016012101" COMMENT="XMLDB file for Moodle local/wa_agency"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
     <TABLES>
 
@@ -56,7 +56,7 @@
 			  <INDEX NAME="wa_lp_index_status"			UNIQUE="false"	FIELDS="status"			COMMENT="The status of this instance."/>
 			</INDEXES>
         </TABLE>
-		
+
 		<TABLE NAME="wa_learning_path_activity" COMMENT="WA Activity">
             <FIELDS>
                 <FIELD NAME="id"            TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="true"  />
@@ -83,7 +83,7 @@
                 <INDEX NAME="wa_lp_index_lp"	UNIQUE="false"	FIELDS="idlearningpath"			COMMENT="Learning path"/>
 			</INDEXES>
         </TABLE>
-		
+
 		<TABLE NAME="wa_learning_path_act_region" COMMENT="WA Activities regions">
             <FIELDS>
                 <FIELD NAME="id"            TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="true"  />
@@ -98,7 +98,7 @@
                 <INDEX NAME="wa_lpar_inde_regionid"		UNIQUE="false"	FIELDS="regionid"	COMMENT="The region"/>
             </INDEXES>
         </TABLE>
-		
+
 		<TABLE NAME="wa_learning_path_a_com" COMMENT="WA activity completions">
             <FIELDS>
                 <FIELD NAME="id"				TYPE="int"  LENGTH="10" NOTNULL="true"  UNSIGNED="true" SEQUENCE="true" />

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/dynamic_cohorts/db" VERSION="20170127" COMMENT="XMLDB file for Moodle dynamic cohort plugin"
+<XMLDB PATH="blocks/certification_report/db" VERSION="20170127" COMMENT="XMLDB file for Moodle dynamic cohort plugin"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
