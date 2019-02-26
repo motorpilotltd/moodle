@@ -120,6 +120,10 @@ function xmldb_local_wa_learning_path_upgrade($oldversion) {
     if ($oldversion < 2016081204) {
         foreach ($DB->get_records('wa_learning_path') as $path) {
             $matrix = json_decode($path->matrix);
+            if (!isset($matrix) || empty($matrix->activities)) {
+                continue;
+            }
+
             foreach ($matrix->activities as $activity) {
                 foreach ($activity->positions as $positionactivities) {
                     foreach ($positionactivities as $positionactivity) {
