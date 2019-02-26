@@ -49,6 +49,7 @@ class testapiclient extends apiclient {
 
     const DSA_TESTSTATE_ALLDONE = 0;
     const DSA_TESTSTATE_ONEINPROGRESS = 10;
+    const DSA_TESTSTATE_NOASSESSMENTS = 20;
 
     public $teststate;
 
@@ -159,6 +160,13 @@ class testapiclient extends apiclient {
       "AssessorPhoneNumber": null,
       "Status": "Compliant"
     }
+  ],
+  "message": "Assessment history for user with staff number 13899"
+}';
+        } else if ($this->teststate == self::DSA_TESTSTATE_NOASSESSMENTS) {
+            $curlresponse = '{
+  "assessmentCount": 0,
+  "assessmentDetails": [
   ],
   "message": "Assessment history for user with staff number 13899"
 }';

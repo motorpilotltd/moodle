@@ -179,7 +179,13 @@ class sync extends scheduled_task {
             $liveassessmentids[] = $progress->AssessmentID;
         }
 
-        list($insql, $params) = $DB->get_in_or_equal($liveassessmentids, SQL_PARAMS_NAMED, 'param', false);
+        if (!empty($liveassessmentids)) {
+            list($insql, $params) = $DB->get_in_or_equal($liveassessmentids, SQL_PARAMS_NAMED, 'param', false);
+        } else {
+            $params = [];
+            $insql = " IS NOT NULL ";
+        }
+
         $sql = 'DELETE FROM {dsa_assessment} WHERE userid = :userid AND assessmentid ' . $insql;
         $params['userid'] = $user->id;
         $DB->execute($sql, $params);

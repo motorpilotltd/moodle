@@ -70,6 +70,31 @@ class mod_dsa_lib_testcase extends advanced_testcase {
         $this->assertTrue(dsa_get_completion_state($course, $cm, $learner->id, null));
     }
 
+    public function test_dsa_no_assessments() {
+        $course = $this->getDataGenerator()->create_course();
+
+        list($instance, $cm, $context) = $this->create_instance(['course' => $course->id]);
+        $learner = $this->getDataGenerator()->create_user(['idnumber' => 'testidnumber']);
+
+        $this->assertFalse(dsa_get_completion_state($course, $cm, $learner->id, null));
+
+        $apiclient = new \mod_dsa\testapiclient();
+        $apiclient->idnumbertoreturn = $learner->idnumber;
+        $apiclient->teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ALLDONE;
+
+        $task = new \mod_dsa\task\sync($apiclient);
+        $task->execute();
+
+        $this->assertTrue(dsa_get_completion_state($course, $cm, $learner->id, null));
+
+        $apiclient->teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_NOASSESSMENTS;
+
+        $task = new \mod_dsa\task\sync($apiclient);
+        $task->execute();
+
+        $this->assertFalse(dsa_get_completion_state($course, $cm, $learner->id, null));
+    }
+
     public function test_dsa_deleteorphannedrecords() {
         global $DB;
 
