@@ -48,13 +48,12 @@ class mod_dsa_lib_testcase extends advanced_testcase {
 
         $this->assertFalse(dsa_get_completion_state($course, $cm, $learner->id, null));
 
-        $apiclient = new \mod_dsa\testapiclient();
-        $apiclient->idnumbertoreturn = $learner->idnumber;
-        $apiclient->teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ONEINPROGRESS;
 
         $events = $this->redirectEvents();
 
-        $task = new \mod_dsa\task\sync($apiclient);
+        $task = new \mod_dsa\task\sync();
+        \mod_dsa\testapiclient::$idnumbertoreturn = $learner->idnumber;
+        \mod_dsa\testapiclient::$teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ONEINPROGRESS;
         $task->execute();
 
         $this->assertEquals(1, $events->count());
@@ -64,8 +63,52 @@ class mod_dsa_lib_testcase extends advanced_testcase {
 
         $this->assertFalse(dsa_get_completion_state($course, $cm, $learner->id, null));
 
-        $apiclient->teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ALLDONE;
+        \mod_dsa\testapiclient::$teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ALLDONE;
         $task->execute();
+
+        $this->assertTrue(dsa_get_completion_state($course, $cm, $learner->id, null));
+    }
+
+    public function test_dsa_get_completion_state_on_enrolment() {
+        global $DB;
+
+        $course = $this->getDataGenerator()->create_course();
+
+        list($instance, $cm, $context) = $this->create_instance(['course' => $course->id]);
+        $learner = $this->getDataGenerator()->create_user(['idnumber' => 'testidnumber']);
+
+        \mod_dsa\testapiclient::$idnumbertoreturn = $learner->idnumber;
+        \mod_dsa\testapiclient::$teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ALLDONE;
+
+        $task = new \mod_dsa\task\sync();
+        $task->execute();
+
+        $studentroleid = $DB->get_field('role', 'id', array('shortname' => 'student'));
+        $this->getDataGenerator()->enrol_user($learner->id, $course->id, $studentroleid);
+
+        $this->assertTrue(dsa_get_completion_state($course, $cm, $learner->id, null));
+    }
+
+    public function test_dsa_get_completion_state_on_add_module() {
+        global $DB;
+
+        $course = $this->getDataGenerator()->create_course();
+        $learner = $this->getDataGenerator()->create_user(['idnumber' => 'testidnumber']);
+        $studentroleid = $DB->get_field('role', 'id', array('shortname' => 'student'));
+        $this->getDataGenerator()->enrol_user($learner->id, $course->id, $studentroleid);
+
+        \mod_dsa\testapiclient::$idnumbertoreturn = $learner->idnumber;
+        \mod_dsa\testapiclient::$teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ALLDONE;
+
+        $task = new \mod_dsa\task\sync();
+        $task->execute();
+
+        list($instance, $cm, $context) = $this->create_instance(['course' => $course->id]);
+
+        $task = \core\task\manager::get_next_adhoc_task(time());
+        $this->assertInstanceOf('\\mod_dsa\\task\\resynccourse', $task);
+        $task->execute();
+        \core\task\manager::adhoc_task_complete($task);
 
         $this->assertTrue(dsa_get_completion_state($course, $cm, $learner->id, null));
     }
@@ -78,18 +121,15 @@ class mod_dsa_lib_testcase extends advanced_testcase {
 
         $this->assertFalse(dsa_get_completion_state($course, $cm, $learner->id, null));
 
-        $apiclient = new \mod_dsa\testapiclient();
-        $apiclient->idnumbertoreturn = $learner->idnumber;
-        $apiclient->teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ALLDONE;
-
-        $task = new \mod_dsa\task\sync($apiclient);
+        $task = new \mod_dsa\task\sync();
+        \mod_dsa\testapiclient::$idnumbertoreturn = $learner->idnumber;
+        \mod_dsa\testapiclient::$teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ALLDONE;
         $task->execute();
 
         $this->assertTrue(dsa_get_completion_state($course, $cm, $learner->id, null));
 
-        $apiclient->teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_NOASSESSMENTS;
+        \mod_dsa\testapiclient::$teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_NOASSESSMENTS;
 
-        $task = new \mod_dsa\task\sync($apiclient);
         $task->execute();
 
         $this->assertFalse(dsa_get_completion_state($course, $cm, $learner->id, null));
@@ -100,18 +140,15 @@ class mod_dsa_lib_testcase extends advanced_testcase {
 
         $learner = $this->getDataGenerator()->create_user(['idnumber' => 'testidnumber']);
 
-        $apiclient = new \mod_dsa\testapiclient();
-        $apiclient->idnumbertoreturn = $learner->idnumber;
-        $apiclient->teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ONEINPROGRESS;
-
-        $task = new \mod_dsa\task\sync($apiclient);
+        $task = new \mod_dsa\task\sync();
+        \mod_dsa\testapiclient::$idnumbertoreturn = $learner->idnumber;
+        \mod_dsa\testapiclient::$teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ONEINPROGRESS;
         $task->execute();
 
         $this->assertEquals(3, $DB->count_records('dsa_assessment', ['userid' => $learner->id]));
 
-        $apiclient->teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ALLDONE;
+        \mod_dsa\testapiclient::$teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ALLDONE;
 
-        $task = new \mod_dsa\task\sync($apiclient);
         $task->execute();
 
         $this->assertEquals(2, $DB->count_records('dsa_assessment', ['userid' => $learner->id]));
@@ -125,11 +162,10 @@ class mod_dsa_lib_testcase extends advanced_testcase {
 
         $this->assertFalse(dsa_get_completion_state($course, $cm, $learner->id, null));
 
-        $apiclient = new \mod_dsa\testapiclient();
-        $apiclient->idnumbertoreturn = '';
-        $apiclient->teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ALLDONE;
+        $task = new \mod_dsa\task\sync();
+        \mod_dsa\testapiclient::$idnumbertoreturn = '';
+        \mod_dsa\testapiclient::$teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ALLDONE;
 
-        $task = new \mod_dsa\task\sync($apiclient);
         $task->execute();
 
         $this->assertTrue(dsa_get_completion_state($course, $cm, $learner->id, null));
@@ -168,10 +204,10 @@ class mod_dsa_lib_testcase extends advanced_testcase {
         $aggregation->setMethod(COMPLETION_AGGREGATION_ALL);
         $aggregation->save();
 
-        $apiclient = new \mod_dsa\testapiclient();
-        $apiclient->idnumbertoreturn = $student->idnumber;
-        $apiclient->teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ALLDONE;
-        $task = new \mod_dsa\task\sync($apiclient);
+        $task = new \mod_dsa\task\sync();
+        \mod_dsa\testapiclient::$idnumbertoreturn = $student->idnumber;
+        \mod_dsa\testapiclient::$teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ALLDONE;
+
         $task->execute();
         $this->assertTrue(dsa_get_completion_state($course, $cmdata, $student->id, null));
 
@@ -190,7 +226,7 @@ class mod_dsa_lib_testcase extends advanced_testcase {
 
         // Add a new, incomplete assessment and activity and course should be incomplete.
 
-        $apiclient->teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ONEINPROGRESS;
+        \mod_dsa\testapiclient::$teststate = \mod_dsa\testapiclient::DSA_TESTSTATE_ONEINPROGRESS;
         $task->execute();
 
         $this->assertFalse(dsa_get_completion_state($course, $cmdata, $student->id, null));

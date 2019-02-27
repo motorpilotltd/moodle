@@ -23,10 +23,10 @@
 namespace mod_dsa;
 
 class testapiclient extends apiclient {
-    public $idnumbertoreturn = '';
+    public static $idnumbertoreturn = '';
 
     public function checkforupdate($time, $lastrun) {
-        if (empty($this->idnumbertoreturn)) {
+        if (empty(self::$idnumbertoreturn)) {
             return [];
         }
 
@@ -37,7 +37,7 @@ class testapiclient extends apiclient {
   "userCount": 8,
   "staffNumbers": [
     {
-      "StaffNumber": "' . $this->idnumbertoreturn . '"
+      "StaffNumber": "' . self::$idnumbertoreturn . '"
     }
   ],
   "message": "StaffNumbers having assessments with updates in the last 180 minutes"
@@ -51,10 +51,10 @@ class testapiclient extends apiclient {
     const DSA_TESTSTATE_ONEINPROGRESS = 10;
     const DSA_TESTSTATE_NOASSESSMENTS = 20;
 
-    public $teststate;
+    public static $teststate;
 
     public function staffprogress($staffid) {
-        if ($this->teststate == self::DSA_TESTSTATE_ALLDONE) {
+        if (self::$teststate == self::DSA_TESTSTATE_ALLDONE) {
             $curlresponse = '{
   "assessmentCount": 2,
   "assessmentDetails": [
@@ -99,7 +99,7 @@ class testapiclient extends apiclient {
   ],
   "message": "Assessment history for user with staff number 13899"
 }';
-        } else if ($this->teststate == self::DSA_TESTSTATE_ONEINPROGRESS) {
+        } else if (self::$teststate == self::DSA_TESTSTATE_ONEINPROGRESS) {
             $curlresponse = '{
   "assessmentCount": 3,
   "assessmentDetails": [
@@ -163,7 +163,7 @@ class testapiclient extends apiclient {
   ],
   "message": "Assessment history for user with staff number 13899"
 }';
-        } else if ($this->teststate == self::DSA_TESTSTATE_NOASSESSMENTS) {
+        } else if (self::$teststate == self::DSA_TESTSTATE_NOASSESSMENTS) {
             $curlresponse = '{
   "assessmentCount": 0,
   "assessmentDetails": [
