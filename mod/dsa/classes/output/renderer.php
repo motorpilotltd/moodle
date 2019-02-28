@@ -92,7 +92,7 @@ class renderer extends \plugin_renderer_base {
                 $icon = $OUTPUT->pix_icon('complete', $state, 'mod_dsa');
             } else {
                 $icon = $OUTPUT->pix_icon('onhold', $state, 'mod_dsa');
-                debugging('Unknown DSA status/state');
+                debugging("Unknown DSA status/state: $state");
             }
 
             $table->data[] = [
