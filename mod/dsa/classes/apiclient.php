@@ -196,7 +196,7 @@ class apiclient {
 
         foreach ($users as $user) {
             $incompleterecords =
-                    $DB->get_records_sql('SELECT * FROM {dsa_assessment} WHERE state <> "closed" AND state <> "abandoned" AND userid = :userid',
+                    $DB->get_records_sql("SELECT * FROM {dsa_assessment} WHERE state <> 'closed' AND state <> 'abandoned' AND userid = :userid",
                             ['userid' => $user->id]);
             $complete = empty($incompleterecords);
 
