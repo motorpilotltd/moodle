@@ -38,10 +38,16 @@ class apiclient {
     }
 
     public function __construct() {
-        global $DB;
+        global $DB, $CFG;
 
         $this->config = get_config('mod_dsa');
         $this->context = \context_system::instance();
+
+        // If we're mid-upgrade then get_course_and_cm_from_instance will error. Since this will get instantiated to
+        // do config we won't worry about fully constructing.
+        if (!empty($CFG->upgraderunning)) {
+            return;
+        }
 
         $instances = $DB->get_records('dsa');
         foreach ($instances as $instance) {
