@@ -16,4 +16,50 @@ class eventhandler {
         $api = apiclient::getapiclient();
         $api->sync_course($event->courseid, $event->relateduserid);
     }
+
+    /**
+     * Triggered via course_completed event.
+     *
+     * @param stdClass $event
+     * @return void
+     */
+    public static function course_completed(\core\event\course_completed $event) {
+        global $CFG, $DB;
+
+        $cms = get_fast_modinfo($event->courseid, -1)->get_instances_of('dsa');
+
+        if (empty($cms)) {
+            // Not applicable to this course.
+            return;
+        }
+
+        require_once($CFG->libdir . '/completionlib.php');
+
+        $completion = new \completion_info($event->courseid);
+
+        // Should only be one, but returned as an array so looping.
+        foreach ($cms as $cm) {
+
+            if ($completion->is_enabled($cm) != COMPLETION_TRACKING_AUTOMATIC) {
+                return;
+            }
+
+            $cmcompletion = $completion->get_data($cm, false, $event->relateduserid);
+
+            if ($cmcompletion->completionstate > COMPLETION_INCOMPLETE) {
+                $completiontime = $DB->get_field_select(
+                    'dsa_assessment',
+                    'MAX(completed)',
+                    "userid = :userid AND state = :state AND completed > 0",
+                    ['userid' => $userid, 'state' => 'closed']);
+                if ($completiontime) {
+                    // Update Moodle course completion date.
+                    // Record should exist as we're observing course completion.
+                    $ccompletion = new \completion_completion(['course' => $event->courseid, 'userid' => $event->relateduserid]);
+                    $ccompletion->timecompleted = $completiontime;
+                    $ccompletion->update();
+                }
+            }
+        }
+    }
 }

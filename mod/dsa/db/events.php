@@ -31,5 +31,10 @@ $observers = [
         [
                 'eventname' => '\core\event\user_enrolment_created',
                 'callback'  => '\mod_dsa\eventhandler::user_enrolment_created',
-        ]
+        ],
+        [
+                'eventname'   => '\core\event\course_completed',
+                'priority'    => 9999, // High priority to run first.
+                'callback'    => '\mod_dsa\eventhandler::course_completed',
+        ],
 ];
