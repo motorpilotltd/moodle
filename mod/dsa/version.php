@@ -24,6 +24,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_dsa';
 $plugin->release = '0.1.0';
-$plugin->version = 2018092104;
+$plugin->version = 2018092105;
 $plugin->requires = 2017051507;
 $plugin->maturity = MATURITY_ALPHA;
