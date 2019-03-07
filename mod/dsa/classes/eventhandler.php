@@ -26,8 +26,12 @@ class eventhandler {
     public static function course_completed(\core\event\course_completed $event) {
         global $CFG, $DB;
 
-        $cms = get_fast_modinfo($event->courseid, -1)->get_instances_of('dsa');
+        $course = get_course($event->courseid);
+        if (!$course) {
+            return;
+        }
 
+        $cms = get_fast_modinfo($course->id, -1)->get_instances_of('dsa');
         if (empty($cms)) {
             // Not applicable to this course.
             return;
@@ -35,7 +39,7 @@ class eventhandler {
 
         require_once($CFG->libdir . '/completionlib.php');
 
-        $completion = new \completion_info($event->courseid);
+        $completion = new \completion_info($course);
 
         // Should only be one, but returned as an array so looping.
         foreach ($cms as $cm) {
@@ -51,11 +55,11 @@ class eventhandler {
                     'dsa_assessment',
                     'MAX(completed)',
                     "userid = :userid AND state = :state AND completed > 0",
-                    ['userid' => $userid, 'state' => 'closed']);
+                    ['userid' => $event->relateduserid, 'state' => 'closed']);
                 if ($completiontime) {
                     // Update Moodle course completion date.
                     // Record should exist as we're observing course completion.
-                    $ccompletion = new \completion_completion(['course' => $event->courseid, 'userid' => $event->relateduserid]);
+                    $ccompletion = new \completion_completion(['course' => $course->id, 'userid' => $event->relateduserid]);
                     $ccompletion->timecompleted = $completiontime;
                     $ccompletion->update();
                 }
