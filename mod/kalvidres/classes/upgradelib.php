@@ -49,7 +49,7 @@ class upgradelib {
      */
     public static function update_metadata_field() {
         global $DB;
-        $kalvidresdata = $DB->get_records_select('kalvidres', "metadata = NULL OR metadata = ''");
+        $kalvidresdata = $DB->get_records_select('kalvidres', "metadata IS NULL OR metadata = ''");
         foreach ($kalvidresdata as $item) {
             $params = ['entry_id' => $item->entry_id];
             $where = "entry_id = :entry_id AND (metadata != NULL OR metadata != '')";
@@ -68,12 +68,15 @@ class upgradelib {
      * @throws \dml_exception
      */
     public static function update_metadata_field_api() {
-        global $CFG, $DB;
+        global $CFG, $DB, $USER;
+
+        // Override for getting Kaltura API client.
+        $USER->username = 'admin';
 
         require_once($CFG->dirroot.'/local/kaltura/locallib.php');
         $client = arup_local_kaltura_get_kaltura_client();
 
-        $kalvidresdata = $DB->get_records_select('kalvidres', "metadata = NULL OR metadata = ''");
+        $kalvidresdata = $DB->get_records_select('kalvidres', "metadata IS NULL OR metadata = ''");
         foreach ($kalvidresdata as $item) {
             try {
 				$entry = $client->baseEntry->get($item->entry_id);
