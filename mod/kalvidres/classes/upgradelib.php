@@ -18,10 +18,9 @@ namespace mod_kalvidres;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The video_resource_viewed event class.
+ * Upgrade library class.
  *
- * @since     Moodle 2.7
- * @copyright 2015 Rex Lorenzo <rexlorenzo@gmail.com>
+ * @since     Moodle 3.3
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 class upgradelib {
@@ -42,28 +41,55 @@ class upgradelib {
             }
         }
     }
-/* BEGIN CORE MOD */
+
     /**
-     * Update kalvidres records that has empty metadata
+     * Update kalvidres records, from duplicates, that have empty metadata.
      *
      * @throws \dml_exception
      */
     public static function update_metadata_field() {
         global $DB;
         $kalvidresdata = $DB->get_records_select('kalvidres', "metadata = NULL OR metadata = ''");
-
-        if ($kalvidresdata) {
-            foreach ($kalvidresdata as $item) {
-                $params = ['entry_id' => $item->entry_id];
-                $where = "entry_id = :entry_id AND (metadata != NULL OR metadata != '')";
-                $kalvidres = $DB->get_record_select('kalvidres', $where, $params,"*", IGNORE_MULTIPLE);
-                if (empty($kalvidres)) {
-                    continue;
-                }
-                $item->metadata = $kalvidres->metadata;
-                $DB->update_record('kalvidres', $item);
+        foreach ($kalvidresdata as $item) {
+            $params = ['entry_id' => $item->entry_id];
+            $where = "entry_id = :entry_id AND (metadata != NULL OR metadata != '')";
+            $kalvidres = $DB->get_record_select('kalvidres', $where, $params,"*", IGNORE_MULTIPLE);
+            if (empty($kalvidres)) {
+                continue;
             }
+            $item->metadata = $kalvidres->metadata;
+            $DB->update_record('kalvidres', $item);
         }
     }
-/* END CORE MOD */
+
+    /**
+     * Update kalvidres records, from API, that have empty metadata.
+     *
+     * @throws \dml_exception
+     */
+    public static function update_metadata_field_api() {
+        global $DB;
+
+        require_once($CFG->dirroot.'/local/kaltura/locallib.php');
+        $client = arup_local_kaltura_get_kaltura_client();
+
+        $kalvidresdata = $DB->get_records_select('kalvidres', "metadata = NULL OR metadata = ''");
+        foreach ($kalvidresdata as $item) {
+            try {
+				$entry = $client->baseEntry->get($item->entry_id);
+			} catch (\Exception $e) {
+                debugging($e->getMessage());
+				continue;
+            }
+
+            $metadata = local_kaltura_convert_kaltura_base_entry_object($entry);
+            if (!$metadata) {
+                continue;
+            }
+
+            // Serialize and base 64 encode the metadata.
+            $item->metadata = local_kaltura_encode_object_for_storage($metadata);
+            $DB->update_record('kalvidres', $item);
+        }
+    }
 }

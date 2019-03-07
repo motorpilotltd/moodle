@@ -80,6 +80,13 @@ function xmldb_kalvidres_upgrade($oldversion) {
         // Kalvidres savepoint reached.
         upgrade_mod_savepoint(true, 2017120644, 'kalvidres');
     }
+
+    if ($oldversion < 2017120645) {
+        \mod_kalvidres\upgradelib::update_metadata_field_api();
+
+        // Kalvidres savepoint reached.
+        upgrade_mod_savepoint(true, 2017120645, 'kalvidres');
+    }
 /* END CORE MOD */
     return true;
 }
