@@ -68,7 +68,7 @@ class upgradelib {
      * @throws \dml_exception
      */
     public static function update_metadata_field_api() {
-        global $DB;
+        global $CFG, $DB;
 
         require_once($CFG->dirroot.'/local/kaltura/locallib.php');
         $client = arup_local_kaltura_get_kaltura_client();
