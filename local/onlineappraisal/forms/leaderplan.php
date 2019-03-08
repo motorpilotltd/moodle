@@ -174,12 +174,12 @@ class apform_leaderplan extends moodleform {
                 $button.$noscript
                 );
 
-
+        $data702010 = $this->get_702010();
         $islockedattr = '';
         if ($islocked || $data->appraisal->viewingas !== 'appraisee') {
             $islockedattr = ' locked="yes"';
         }
-        $mform->addElement('textarearup', 'ldpdevelopmentplan', $this->str('ldpdevelopmentplan'), 'rows="3" cols="70"' . $islockedattr, '', '');
+        $mform->addElement('textarearup', 'ldpdevelopmentplan', $this->str('ldpdevelopmentplan') . $data702010, 'rows="3" cols="70"' . $islockedattr, '', '');
         $mform->setType('ldpdevelopmentplan', PARAM_RAW);
         $mform->disabledIf('ldpdevelopmentplan', 'islocked', 'eq', 1);
         $mform->disabledIf('ldpdevelopmentplan', 'view', 'neq', 'appraisee');
@@ -333,5 +333,56 @@ class apform_leaderplan extends moodleform {
             $this->userdata['location'] = $hubdata->location;
             $this->userdata['group'] = "{$hubdata->groupname} ({$hubdata->groupcode})";
         }
+    }
+
+    /**
+     *
+     * @global \moodle_database $DB
+     * @global type $PAGE
+     * @return boolean
+     */
+    private function get_702010() {
+        global $DB, $PAGE;
+
+        $form = 'development';
+        $fields = ['seventy', 'twenty', 'ten'];
+
+        $renderer = $PAGE->get_renderer('local_onlineappraisal', 'leaderplan');
+
+        $data702010 = [];
+        $formrec = $DB->get_record(
+                'local_appraisal_forms',
+                [
+                    'appraisalid' => $this->_customdata->appraisal->id,
+                    'user_id' => $this->_customdata->appraisal->appraisee->id,
+                    'form_name' => $form
+                ]);
+        if ($formrec) {
+            list($in, $params) = $DB->get_in_or_equal($fields, SQL_PARAMS_NAMED);
+            $params['formid'] = $formrec->id;
+            $fieldrecs = $DB->get_records_select('local_appraisal_data', "form_id = :formid AND name {$in}", $params);
+            foreach ($fieldrecs as $fieldrec) {
+                $out = new stdClass();
+                $out->question = get_string("form:{$form}:{$fieldrec->name}", 'local_onlineappraisal');
+                if ($fieldrec->type == 'array') {
+                    $out->isarray = true;
+                    $out->data = unserialize($fieldrec->data);
+                } else {
+                    $out->data = $fieldrec->data;
+                }
+                $data702010[] = clone($out);
+            }
+
+            array_walk($data702010, function(&$val) {
+                if (!empty($val->isarray)) {
+                    array_walk($val->data, function(&$val) { $val = nl2br($val); });
+                } else {
+                    $val->data = nl2br($val->data);
+                }
+            });
+        }
+
+        $template = new \local_onlineappraisal\output\leaderplan\leaderplan_702010($data702010);
+        return $renderer->render($template);
     }
 }
