@@ -85,14 +85,14 @@ class completion
      * @param null $path should completion be check for certification or recertification path, if null then check
      * @return int certification / recertification status (completed or started)
      */
-    public static function check_completion($certification, $userid, $path = null, $completedcourses = null){
-        if(!is_object($certification)){
+    public static function check_completion($certification, $userid, $path = null, $completedcourses = null, $update = true) {
+        if (!is_object($certification)) {
             $certification = new certification($certification, false);
         }
         /**
          * Get all completed courses for user if not provided
          */
-        if($completedcourses === null){
+        if ($completedcourses === null) {
             $completedcourses = self::get_completed_courses($userid);
         }
         $certificationcompleted = self::COMPLETION_STATUS_STARTED;
@@ -101,10 +101,10 @@ class completion
         /**
          * Check if this is certification or recertification path
          */
-        if($path == certification::CERTIFICATIONPATH_RECERTIFICATION || ($path===null && self::is_recertification($certification, $userid))){
+        if ($path == certification::CERTIFICATIONPATH_RECERTIFICATION || ($path === null && self::is_recertification($certification, $userid))) {
             $coursesets = $certification->recertificationcoursesets;
             $certifpath = certification::CERTIFICATIONPATH_RECERTIFICATION;
-        }else{
+        } else {
             $coursesets = $certification->certificationcoursesets;
             $certifpath = certification::CERTIFICATIONPATH_BASIC;
         }
@@ -113,11 +113,11 @@ class completion
          * Check if all required courseset are completed
          */
         $lastoperator = '';
-        foreach($coursesets as $courseset){
-            if($lastoperator == certification::NEXTOPERATOR_OR){
+        foreach ($coursesets as $courseset) {
+            if ($lastoperator == certification::NEXTOPERATOR_OR) {
                 $completed = true;
             }
-            if(!self::check_courseset_completion($courseset, $completedcourses)){
+            if (!self::check_courseset_completion($courseset, $completedcourses)) {
                 $completed = false;
             }
 
@@ -125,23 +125,27 @@ class completion
              * Update completion status for single courseset
              */
             $completiontime = self::get_completion_time($certification, $userid, $certifpath, $courseset->id);
-            self::update_courseset_completion_status($courseset->id, $userid, ($completed ? completion::COMPLETION_STATUS_COMPLETED : completion::COMPLETION_STATUS_STARTED), $completiontime);
+            if ($update) {
+                self::update_courseset_completion_status($courseset->id, $userid, ($completed ? completion::COMPLETION_STATUS_COMPLETED : completion::COMPLETION_STATUS_STARTED), $completiontime);
+            }
             /**
              * If nextoperator is OR and previous coursesets are completed then mark entire certification as completed
              */
-            if($courseset->nextoperator == certification::NEXTOPERATOR_OR && $completed){
+            if ($courseset->nextoperator == certification::NEXTOPERATOR_OR && $completed) {
                 $certificationcompleted = self::COMPLETION_STATUS_COMPLETED;
             }
             $lastoperator = $courseset->nextoperator;
         }
 
-        if($completed){
+        if ($completed) {
             $certificationcompleted = self::COMPLETION_STATUS_COMPLETED;
         }
         /**
          * Update certification completion record info
          */
-        self::update_completion_status($certification, $userid, $certifpath, $certificationcompleted);
+        if ($update) {
+            self::update_completion_status($certification, $userid, $certifpath, $certificationcompleted);
+        }
         return $certificationcompleted;
     }
 
@@ -408,11 +412,13 @@ class completion
 
         // Handle a current complete certification vs not complete/non-existent..
         if ($completionrecord
-                && $completionrecord->status == self::COMPLETION_STATUS_COMPLETED
-                && $status == self::COMPLETION_STATUS_COMPLETED) {
-            // Record exists, is already complete, and passed status is complete.
-            $newcompletiontime = self::get_completion_time($certification, $userid, (int) $certification->has_recertification());
-            if ($newcompletiontime > $completionrecord->timecompleted) {
+                && $completionrecord->status == self::COMPLETION_STATUS_COMPLETED) {
+            // Record exists and is already complete.
+            // Check if this is a newer completion (checking recertification if appropriate).
+            $newcertifpath = $certification->has_recertification() ? certification::CERTIFICATIONPATH_RECERTIFICATION : certification::CERTIFICATIONPATH_BASIC;
+            $newcompletiontime = self::get_completion_time($certification, $userid, $newcertifpath);
+            if (self::check_completion($certification, $userid, $newcertifpath, null, false)
+                    && $newcompletiontime > $completionrecord->timecompleted) {
                 // We have a newer completion, archive existing record and clear down.
                 $insertrecord = clone $completionrecord;
                 $insertrecord->id = null;
@@ -421,7 +427,7 @@ class completion
                     $DB->delete_records('certif_completions', ['id' => $completionrecord->id]);
                     self::delete_courseset_completion_data($completionrecord->certifid, $completionrecord->userid);
                     // Re-run completion check.
-                    self::check_completion($completionrecord->certifid, $completionrecord->userid, (int) $certification->has_recertification());
+                    self::check_completion($completionrecord->certifid, $completionrecord->userid, $newcertifpath);
                 }
             }
         } else {
