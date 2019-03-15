@@ -756,14 +756,8 @@ function arupapplication_mergepdfs ($contextid, $submissionid, $userid, $forcedo
     if ($appformfiles) {
         $file = array_pop($appformfiles);
         $filepathname = $file->get_contenthash();
-        $filename = $file->get_filename();
         $sysfilename = $CFG->dataroot .'/filedir/'.arupapplication_path_from_hash($filepathname).'/'.$filepathname;
-        $filetoembed = $CFG->dataroot .'/filedir/'.arupapplication_path_from_hash($filepathname).'/'.$filename;
-        if (copy($sysfilename, $filetoembed)) {
-            $pdfDocs[] = $filetoembed;
-        } else {
-            $appformfilefound = 0;
-        }
+        $pdfDocs[] = $sysfilename;
     }
 
     //Read CV
@@ -772,14 +766,8 @@ function arupapplication_mergepdfs ($contextid, $submissionid, $userid, $forcedo
     if ($cvfiles) {
         $file = array_pop($cvfiles);
         $filepathname = $file->get_contenthash();
-        $filename = $file->get_filename();
         $sysfilename = $CFG->dataroot .'/filedir/'.arupapplication_path_from_hash($filepathname).'/'.$filepathname;
-        $filetoembed = $CFG->dataroot .'/filedir/'.arupapplication_path_from_hash($filepathname).'/'.$filename;
-        if (copy($sysfilename, $filetoembed)) {
-            $pdfDocs[] = $filetoembed;
-        } else {
-            $cvfilefound = 0;
-        }
+        $pdfDocs[] = $sysfilename;
     }
 
     $pdfNew = new FPDI();
