@@ -5,8 +5,8 @@ require_once($CFG->libdir . '/adminlib.php');
 $systemcontext = context_system::instance();
 require_login();
 $PAGE->requires->js(new moodle_url('/local/custom_certification/js/collapsed.js'));
-$PAGE->requires->css(new moodle_url('/local/custom_certification/styles/custom_certification.css'));
-$PAGE->requires->css(new moodle_url('/local/custom_certification/styles/overview.css'));
+$PAGE->requires->css(new moodle_url('/local/custom_certification/styles/custom_certification_2019031800.css'));
+$PAGE->requires->css(new moodle_url('/local/custom_certification/styles/overview_2019031800.css'));
 
 $certifid = required_param('id', PARAM_INT);
 $userid = optional_param('userid', null, PARAM_INT);
