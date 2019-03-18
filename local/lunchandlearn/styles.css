@@ -364,6 +364,10 @@ table.event .bottom-bar span.attendance {
         width: 30%;
     }
 
+    table.attendeelist .c3 {
+        display: none;
+    }
+
     body {
         width: 100%;
     }

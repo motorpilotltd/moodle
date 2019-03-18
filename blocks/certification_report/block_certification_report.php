@@ -25,7 +25,6 @@ class block_certification_report extends block_base {
         global $PAGE;
 
         $PAGE->requires->css(new moodle_url('/blocks/certification_report/styles/certification_report_2019031800.css'));
-        $PAGE->requires->js(new moodle_url('/blocks/certification_report/js/certification_report.js'));
 
         if($this->content !== NULL) {
             return $this->content;

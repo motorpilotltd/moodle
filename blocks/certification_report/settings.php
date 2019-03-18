@@ -52,4 +52,13 @@ if ($ADMIN->fulltree) {
             PARAM_TEXT
         )
     );
+
+    $settings->add(
+        new admin_setting_configcheckbox(
+            'block_certification_report/ticker_active',
+            get_string('activate_ticker_report', 'block_certification_report'),
+            get_string('activate_ticker_report_desc', 'block_certification_report'),
+            0
+        )
+    );
 }

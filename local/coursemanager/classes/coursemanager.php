@@ -157,7 +157,7 @@ class coursemanager {
             } else {
                 $record->moodlecourse = false;
             }
-            
+
             $this->courselist[$record->id] = $record;
             return $record;
         }
@@ -166,7 +166,7 @@ class coursemanager {
 
     private function actions() {
         global $DB;
-        
+
         $this->pendingdeleteclass = false;
         $this->pendingdeletecourse = false;
         if ($this->action) {
@@ -195,6 +195,7 @@ class coursemanager {
                 if ($enrolments > 0) {
                     $this->pendingdeleteclass = $this->cmclass->id;
                 } else {
+                    $this->cmclass->classname = '[DELETED] ' . $this->cmclass->classname;
                     $this->cmclass->archived = 1;
                     $DB->update_record('local_taps_class', $this->cmclass);
                 }
@@ -208,6 +209,7 @@ class coursemanager {
                     $enrolment->archived = 1;
                     $DB->update_record('local_taps_enrolment', $enrolment);
                 }
+                $this->cmclass->classname = '[DELETED] ' . $this->cmclass->classname;
                 $this->cmclass->archived = 1;
                 $DB->update_record('local_taps_class', $this->cmclass);
             }
@@ -225,7 +227,7 @@ class coursemanager {
             $page = $this->get_current_pageobject();
             $contentmethod = 'content_'.$page->type;
             $content = $this->$contentmethod();
-    
+
             return $content;
         }
     }
@@ -361,7 +363,7 @@ class coursemanager {
         $params = $this->searchparams;
         $params['page'] = 'overview';
         $params['start'] = $this->start;
-        
+
         // Get array of used fields
         $used = array();
         foreach ($this->setfilters as $filter) {
@@ -640,11 +642,11 @@ class coursemanager {
             $myparams['cmcourse'] = $this->cmcourse->id;
             $params = array_merge($this->searchparams, $myparams);
             $currentcourse = $this->get_current_courseobject($this->cmcourse->id);
-            
+
             if ($name == 'classoverview') {
                 $page->url = new moodle_url($this->baseurl, $params);
                 if (empty($currentcourse->classes)) {
-                   $page->visible = false; 
+                   $page->visible = false;
                 } else {
                     $page->records = $currentcourse->classes;
                     $page->visible = true;
@@ -669,7 +671,7 @@ class coursemanager {
                 $classaction = ($this->action == 'deleteclass' || $this->action == 'forcedeleteclass');
                 if (($newclass && $classpage && $page->add) || $this->action || $noclasses) {
                     $params['edit'] = 1;
-                    $page->visible = true;                
+                    $page->visible = true;
                     $page->name = get_string('newclass', 'local_coursemanager');
                 } else if ($this->cmclass->id > 0 ) {
                     $page->active = 'active';
@@ -708,7 +710,7 @@ class coursemanager {
     public function get_navigation() {
         global $CFG;
         $navigation = new stdClass();
-        $navigation->items = array();   
+        $navigation->items = array();
         // Add each of the form pages
         $classpages = array('class_scheduled', 'class_scheduled_planned', 'class_scheduled_normal');
         if (in_array($this->page, $classpages)) {

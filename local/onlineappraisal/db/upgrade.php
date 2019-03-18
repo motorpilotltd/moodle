@@ -625,14 +625,6 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018010102, 'local', 'onlineappraisal');
     }
 
-    if ($oldversion < 2018010103) {
-        // Rebuild permissions table and cache.
-        \local_onlineappraisal\permissions::rebuild_permissions();
-
-        // Onlineappraisal savepoint reached.
-        upgrade_plugin_savepoint(true, 2018010103, 'local', 'onlineappraisal');
-    }
-
     if ($oldversion < 2018010105) {
 
         // Define table local_appraisal_appraisal to be updated.
@@ -648,6 +640,26 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
 
         // Onlineappraisal savepoint reached.
         upgrade_plugin_savepoint(true, 2018010105, 'local', 'onlineappraisal');
+    }
+
+    if ($oldversion < 2018010107) {
+
+        // Define table local_appraisal_appraisal to be updated.
+        $table = new xmldb_table('local_appraisal_appraisal');
+
+        // Adding leaderplan field to table local_appraisal_appraisal.
+        $field = new xmldb_field('leaderplan', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', null);
+
+        // Conditionally launch add field.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Rebuild permissions table and cache.
+        \local_onlineappraisal\permissions::rebuild_permissions();
+
+        // Onlineappraisal savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010107, 'local', 'onlineappraisal');
     }
 
     return true;

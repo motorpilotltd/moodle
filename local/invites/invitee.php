@@ -23,6 +23,7 @@ class invitee {
     protected $email;
     protected $realemail;
     protected $name;
+    protected $divert;
 
     public function __construct($email, $name = '') {
         if (is_string($email)) {
@@ -34,10 +35,11 @@ class invitee {
     private function add_plain($email, $name) {
         global $CFG;
         $this->email = $this->realemail = $email;
-        if (!empty($CFG->divertallemailsto)) {
+        if (email_should_be_diverted($this->email)) {
             $this->email = $CFG->divertallemailsto;
+            $this->divert = true;
         }
-        $this->name = $name;
+        $this->name = trim($name);
     }
 
     private function add_moodle_user($user) {
@@ -45,11 +47,16 @@ class invitee {
     }
 
     public function setup_mailer(PHPMailer $mailer) {
-        $mailer->AddAddress($this->email, $this->name);
+        if (!validate_email($this->email)) {
+            // We can not send emails to invalid addresses - it might create security issue or confuse the mailer.
+            debugging("local_invite: Email (".s($this->email).") is invalid! Not sending.");
+            return;
+        }
+        $mailer->addAddress($this->email, $this->name);
     }
 
     public function __toString() {
-        return "ATTENDEE;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=\"{$this->name}\":mailto:{$this->email}";
+        return "ATTENDEE;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=\"{$this->name}\":mailto:{$this->realemail}";
     }
 
     public function __get($name) {

@@ -395,6 +395,24 @@
 .path-local-onlineappraisal .mform .input-group {
   max-width: 300px;
 }
+.path-local-onlineappraisal .mform .input-group.ldppotentialnew {
+  max-width: 505px;
+}
+.path-local-onlineappraisal .mform .input-group.ldppotentialnew input {
+  max-width: 100%;
+  width: 100%;
+}
+.path-local-onlineappraisal .mform .input-group.ldppotentialnew div.input-group-addon {
+  padding: 0;
+}
+.path-local-onlineappraisal .mform .input-group.ldppotentialnew button {
+  border: none;
+  margin: 0;
+  background: transparent;
+  padding: 0;
+  width: 33px;
+  height: 28px;
+}
 .path-local-onlineappraisal .mform .fitem .fitemtitle,
 .path-local-onlineappraisal .mform .fitem .felement {
   float: none;
@@ -404,8 +422,8 @@
 }
 .path-local-onlineappraisal .mform .fitem .fitemtitle select,
 .path-local-onlineappraisal .mform .fitem .felement select {
-  max-width: 100%;
-  width: auto;
+  max-width: 505px;
+  width: 100%;
 }
 .path-local-onlineappraisal .mform .fitem .fitemtitle {
   padding-bottom: 0.8em;
@@ -505,10 +523,12 @@
   padding: 4px 12px;
   min-height: 70px;
 }
-.path-local-onlineappraisal .mform .fitem .fcheckbox > span > label {
+.path-local-onlineappraisal .mform .fitem .fcheckbox > span > label,
+.path-local-onlineappraisal .mform .fitem .fadvcheckbox > span > label {
   display: inline;
 }
-.path-local-onlineappraisal .mform .fitem.fitem_fcheckbox .fitemtitle {
+.path-local-onlineappraisal .mform .fitem.fitem_fcheckbox .fitemtitle,
+.path-local-onlineappraisal .mform .fitem.fitem_fadvcheckbox .fitemtitle {
   display: none;
 }
 .path-local-onlineappraisal .mform .fitem.oa-repeating-element .felement .oa-repeating-element {

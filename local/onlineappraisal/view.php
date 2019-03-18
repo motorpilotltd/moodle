@@ -95,6 +95,9 @@ $arguments = array(
 );
 $PAGE->requires->js_call_amd('local_onlineappraisal/view', 'init', $arguments);
 
+// Add vendor CSS.
+$PAGE->requires->css(new moodle_url('/local/onlineappraisal/css/select2.min.css'));
+$PAGE->requires->css(new moodle_url('/local/onlineappraisal/css/select2-bootstrap.min.css'));
 
 $renderer = $PAGE->get_renderer('local_onlineappraisal', 'navlist');
 $navlist = new \local_onlineappraisal\output\navlist\navlist($oa);
@@ -102,7 +105,7 @@ $navlist = new \local_onlineappraisal\output\navlist\navlist($oa);
 $regions = $PAGE->blocks->get_regions();
 $PAGE->blocks->add_fake_block($renderer->render($navlist), reset($regions));
 
-$quicklinks = new \local_onlineappraisal\output\quicklinks(current_language());
+$quicklinks = new \local_onlineappraisal\output\quicklinks(current_language(), $oa->page);
 if ($quicklinks->has_content()) {
     $PAGE->blocks->add_fake_block($PAGE->get_renderer('local_onlineappraisal')->render($quicklinks), reset($regions));
 }

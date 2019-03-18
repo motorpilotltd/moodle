@@ -39,6 +39,7 @@ class invite {
     private $descriptionplain;
     private $status = 'CONFIRMED';
     private $sequence = 0;
+    private $diverted = false;
 
     private $dtstart;
     private $dtend;
@@ -82,8 +83,17 @@ class invite {
 
     public function setup_mailer(PHPMailer $mailer) {
         global $CFG;
-        
-        if (!empty($CFG->divertallemailsto)) {
+
+        $this->organizer->setup_mailer($mailer);
+
+        foreach ($this->attendees as $attendee) {
+            $attendee->setup_mailer($mailer);
+            if ($attendee->divert) {
+                $this->diverted = true;
+            }
+        }
+
+        if ($this->diverted) {
             if (count($this->attendees) === 1) {
                 $attendeeemail = reset($this->attendees)->realemail;
             } else {
@@ -96,12 +106,6 @@ class invite {
         $mailer->isHTML(true);
         $mailer->Body = $this->description;
         $mailer->AltBody = $this->descriptionplain;
-
-        $this->organizer->setup_mailer($mailer);
-
-        foreach ($this->attendees as $attendee) {
-            $attendee->setup_mailer($mailer);
-        }
     }
 
     private function get_dates_as_string() {
