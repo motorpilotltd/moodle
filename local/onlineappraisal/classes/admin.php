@@ -78,7 +78,7 @@ class admin {
         $this->setup_cohorts();
 
         $this->groupcohort = $this->get_groupcohort();
-        
+
         // Check if this user is allowed to view admin.
         if (!$this->can_view_admin()) {
             print_error('error:noaccess', 'local_onlineappraisal');
@@ -93,7 +93,7 @@ class admin {
 
     /**
      *  Magic getter.
-     * 
+     *
      * @param string $name
      * @return mixed property
      * @throws Exception
@@ -182,7 +182,7 @@ class admin {
             print_error('error:pagedoesnotexist', 'local_onlineappraisal');
         }
     }
-    
+
     /**
      * Prepare the admin page and form.
      */
@@ -190,7 +190,7 @@ class admin {
         if (!empty($this->pages[$this->page]->noform)) {
             return;
         }
-        
+
         // Prepare form.
         $customdata = [
             'groups' => $this->groups,
@@ -276,7 +276,7 @@ class admin {
                 $page = new $class($this);
                 $pagehtml = $this->renderer->render($page);
             }
-            
+
             // Is there an alert.
             $alerthtml = '';
             if (!empty($SESSION->local_onlineappraisal->alert)) {
@@ -294,13 +294,13 @@ class admin {
 
     /**
      * Load applicable groups for current BA and set default if required.
-     * 
+     *
      * @global \moodle_database  $DB
      */
     public function setup_groups() {
         global $DB;
 
-        
+
         $joins = array();
         $wheres = array(
             "lc.enableappraisal = 1",
@@ -521,7 +521,7 @@ class admin {
 
     /**
      * Get users in group who can have an appraisal initialised.
-     * 
+     *
      * @global \moodle_database $DB
      * @param bool $full Include full initialise info.
      * @return array user records
@@ -605,7 +605,7 @@ class admin {
 
     /**
      * Get appraisals from group.
-     * 
+     *
      * @global \moodle_database $DB
      * @param int $status
      * @return array appraisal records.
@@ -683,7 +683,7 @@ class admin {
                 AND aca.cohortid = :cohortid
             ORDER BY
                 u.lastname ASC, u.firstname ASC";
-                
+
         $params = array(
             'ccid' => $this->groupid,
             'cohortid' => $this->cohortid,
@@ -718,7 +718,7 @@ class admin {
             ORDER BY
                 u.lastname ASC, u.firstname ASC
             ";
-        
+
         $baseparams = array(
             'confirmed' => 1,
             'suspended' => 0,
@@ -766,7 +766,7 @@ class admin {
 
         // Merge arrays but maintain keys.
         $users = $switchusers + $permusers;
-        
+
         // Only sort if necessary
         if (!empty($switchusers) && !empty($permusers)) {
             uasort($users, array($this, 'sort_users'));
@@ -797,7 +797,7 @@ class admin {
 
     /**
      * Initialise an appraisal (called via AJAX).
-     * 
+     *
      * @global stdClass $DB
      * @global stdClass $USER
      * @return stdClass result
@@ -836,7 +836,7 @@ class admin {
             $groupleaderid = null; // Null for DB record.
             $groupleader = false; // To match possible return from get_record().
         }
-        
+
         if (empty($appraisee) || empty($appraiser) || empty($signoff) || ($groupleaderid && empty($groupleader))) {
             // Not valid users.
             throw new moodle_exception('error:loadusers', 'local_onlineappraisal');
@@ -845,7 +845,7 @@ class admin {
         if (!$DB->get_record('local_appraisal_cohort_users', ['cohortid' => $cohortid, 'userid' => $appraiseeid])) {
             throw new moodle_exception('error:cohortuser', 'local_onlineappraisal');
         }
-        
+
         if ($appraiser->id === $appraisee->id || $signoff->id === $appraisee->id || ($groupleader && $groupleader->id === $appraisee->id)) {
             // Cannot be own appraiser/sign off/group leader.
             throw new moodle_exception('error:appraiseeassuperior', 'local_onlineappraisal');
@@ -855,18 +855,18 @@ class admin {
             // Sign off cannot be groupleader.
             throw new moodle_exception('error:signoffasgroupleader', 'local_onlineappraisal');
         }
-        
+
         if (!has_capability('local/costcentre:administer', \context_system::instance())
                 && !costcentre::is_user($USER->id, array(costcentre::BUSINESS_ADMINISTRATOR, costcentre::HR_LEADER, costcentre::HR_ADMIN), $appraisee->icq)) {
             // Not BA/Admin/HR on this cost centre.
             throw new moodle_exception('error:permission:appraisal:create', 'local_onlineappraisal');
         }
-        
+
         if ($appraiser->icq != $appraisee->icq && !costcentre::is_user($appraiser->id, costcentre::APPRAISER, $appraisee->icq)) {
             // Not appraiser for this cost centre.
             throw new moodle_exception('error:appraisernotvalid', 'local_onlineappraisal');
         }
-        
+
         if (!costcentre::is_user($signoff->id, array(costcentre::SIGNATORY, costcentre::GROUP_LEADER), $appraisee->icq)) {
             // Not sign off for this cost centre.
             throw new moodle_exception('error:signoffnotvalid', 'local_onlineappraisal');
@@ -876,7 +876,7 @@ class admin {
             // Not groupleader for this cost centre.
             throw new moodle_exception('error:groupleadernotvalid', 'local_onlineappraisal');
         }
-        
+
         $existingparams = array(
             'appraisee_userid' => $appraisee->id,
             'archived' => 0,
@@ -975,7 +975,7 @@ class admin {
             }
             $appraiseeemail->prepare();
             $appraiseeemailsent = $appraiseeemail->send();
-            
+
             $appraiseremail = new email('status:0_to_1:appraiser', $emailvars, $appraiser, $USER);
             if ($appraiseremail->used_language() != current_language()) {
                 $appraiseremail->set_emailvar('duedate', self::userdate($appraiseremail->used_language(), $record->due_date, 'strftimedate', '', new \DateTimeZone('UTC')));
@@ -1014,7 +1014,7 @@ class admin {
 
     /**
      * Update appraisal appraiser and sign off user (called via AJAX).
-     * 
+     *
      * @global stdClass $DB
      * @global stdClass $USER
      * @return stdClass result
@@ -1104,8 +1104,8 @@ class admin {
         // What's been updated?
         $appraiserupdated = ($appraisal->appraiser_userid !== $appraiser->id) ? $appraisal->appraiser_userid : false;
         $signoffupdated = ($appraisal->signoff_userid !== $signoff->id) ? $appraisal->signoff_userid : false;
-        // DB query returns as string, param is integer.
-        $groupleaderupdated = ($appraisal->groupleader_userid !== (string) $groupleaderid) ? $appraisal->groupleader_userid : false;
+        // Relaxed checking due to possible NULLs/empty.
+        $groupleaderupdated = ($appraisal->groupleader_userid != $groupleaderid) ? $appraisal->groupleader_userid : false;
 
         // Update appraisal record.
         $appraisal->appraiser_userid = $appraiser->id;
@@ -1219,7 +1219,7 @@ class admin {
     /**
      * Delete appraisal (called via AJAX).
      * Can be flagged as deleted or permanently deleted.
-     * 
+     *
      * @global stdClass $DB
      * @global stdClass $USER
      * @return stdClass result
@@ -1330,7 +1330,7 @@ class admin {
             'deleted' => 0,
         );
         $existing = $DB->get_records('local_appraisal_appraisal', $existingparams);
-        
+
         // Only worry about archiving/deleting if switching to appraisal not required.
         if (!$confirm) {
             $return->success = false;
@@ -1406,7 +1406,7 @@ class admin {
         if ($return->success) {
             $cccohort = $DB->get_record_select(
                     'local_appraisal_cohort_ccs',
-                    'costcentre = :icq AND locked > 0 AND closed IS NULL',                    
+                    'costcentre = :icq AND locked > 0 AND closed IS NULL',
                     ['icq' => $user->icq]);
             if ($cccohort && !empty($notrequired->superseded)
                     && !$DB->get_record('local_appraisal_cohort_users', ['cohortid' => $cccohort->cohortid, 'userid' => $user->id])) {
@@ -1683,7 +1683,7 @@ class admin {
      */
     private static function userdate($lang,  $date, $format = '', $component = null, $timezone = 99, $fixday = true, $fixhour = true) {
         global $SESSION;
-        
+
         // Force to requested language.
         force_current_language($lang);
 
