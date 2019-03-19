@@ -1199,7 +1199,7 @@ class certification_report {
                     'progress' => $progress,
                     'optional' => $compldata->optional,
                     'exemptionid' => $compldata->exemptionid,
-                    'ragstatus' => completion::get_rag_status($compldata->timecompleted, $compldata->duedate, $compldata->lasttimewindowsopens, $compldata->progress, $compldata->optional, 1),
+                    'ragstatus' => completion::get_rag_status($compldata->timecompleted, $compldata->lasttimecompleted, $compldata->duedate, $compldata->lasttimewindowsopens, $compldata->progress, $compldata->optional, 1),
                     'currentcompletiondate' => $compldata->timecompleted
                 ];
 

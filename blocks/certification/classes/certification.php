@@ -128,7 +128,7 @@ class certification {
              * Get RAG status
              */
             $optional = $certification->optional || $certification->exempt;
-            $certification->ragstatus = completion::get_rag_status($certification->timecompleted, $certification->renewaldate, $certification->lasttimewindowsopens, $certification->progress, $optional);
+            $certification->ragstatus = completion::get_rag_status($certification->timecompleted, $certification->lasttimecompleted, $certification->renewaldate, $certification->lasttimewindowsopens, $certification->progress, $optional);
             if(!isset($categoryprogress[$certification->categoryid])){
                 $categoryprogress[$certification->categoryid] = [];
                 $categoryragstatus[$certification->categoryid] = completion::RAG_STATUS_GREEN;

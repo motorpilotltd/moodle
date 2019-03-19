@@ -59,7 +59,7 @@ if ($showoverview) {
         $enrolleduser = true;
         $coursesprogress = \local_custom_certification\completion::get_user_progress($certif, $user->id);
         $usercertdetails = \local_custom_certification\completion::get_user_certification_details($certif->id, $user->id);
-        $ragstatus = \local_custom_certification\completion::get_rag_status($usercertdetails->timecompleted, $usercertdetails->duedate, $usercertdetails->lasttimewindowsopens, $usercertdetails->progress, $usercertdetails->optional);
+        $ragstatus = \local_custom_certification\completion::get_rag_status($usercertdetails->timecompleted, $usercertdetails->lasttimecompleted, $usercertdetails->duedate, $usercertdetails->lasttimewindowsopens, $usercertdetails->progress, $usercertdetails->optional);
 
         $isrecertif = local_custom_certification\completion::is_recertification($certif, $user->id);
     }

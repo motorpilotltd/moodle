@@ -831,6 +831,7 @@ EOS;
               comp.progress,
               cua.optional,
               cua.duedate as assignmentduedate,
+              cca.timecompleted as lasttimecompleted,
               cca.timeexpires as lasttimeexpires,
               cca.timewindowsopens as lasttimewindowsopens
             FROM {certif_user_assignments} cua
@@ -1034,7 +1035,7 @@ EOS;
      * @param $duedate Duedate
      * @return string RAG status
      */
-    public static function get_rag_status($timecompleted, $duedate, $windowopens, $progress, $optional = null, $report = 0) {
+    public static function get_rag_status($timecompleted, $lasttimecompleted, $duedate, $windowopens, $progress, $optional = null, $report = 0) {
         $now = time();
         if ($optional == 1 && $report == 1) {
             $rag = self::RAG_STATUS_OPTIONAL;
@@ -1043,7 +1044,7 @@ EOS;
         } else if ((int)$duedate > $now || (int) $duedate == 0) {
             if ($optional == 1 && $duedate == 0) {
                 $rag = self::RAG_STATUS_OPTIONAL;
-            } else if (($progress == 0 || $progress == 100) && (empty($windowopens) || $windowopens > $now)) {
+            } else if (!empty($lasttimecompleted) && ($progress == 0 || $progress == 100) && (empty($windowopens) || $windowopens > $now)) {
                 // We should keep green in certain circumstances.
                 $rag = self::RAG_STATUS_GREEN;
             } else {
