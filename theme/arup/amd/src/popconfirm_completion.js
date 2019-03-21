@@ -6,7 +6,8 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/log'], function($, bootstra
   log.debug('Popconfirm');
 
   var myDefaultWhiteList = $.fn.tooltip.Constructor.DEFAULTS.whiteList;
-  myDefaultWhiteList.button = [];
+  myDefaultWhiteList.button = ['type'];
+  myDefaultWhiteList.p = ['style'];
 
 /*!
  * PopConfirm 0.4.3

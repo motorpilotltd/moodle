@@ -149,7 +149,6 @@ class block_certification_report_renderer extends plugin_renderer_base {
         $templatevars->url = $filterurl->out();
         $attributes = [
             'id' => 'copy-to-clipboard-popover',
-            'data-toggle' => 'popover',
             'data-content' => $this->render_from_template('block_certification_report/url_popover', $templatevars),
             'data-placement' => 'top',
             'data-html' => true,
