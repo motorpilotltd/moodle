@@ -248,7 +248,7 @@ class appraisal extends base {
 
         $this->data->checkins = array();
 
-        $records = $DB->get_records('local_appraisal_checkins', array('appraisalid' => $this->appraisal->id), 'created_date ASC');
+        $records = $DB->get_records('local_appraisal_checkins', array('appraisalid' => $this->appraisal->id, 'type' => null), 'created_date ASC');
 
         $count = 0;
         foreach ($records as $record) {

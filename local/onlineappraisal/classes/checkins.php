@@ -52,19 +52,25 @@ class checkins extends comments {
      * @var array $checkins checkins records.
      */
     private $checkins;
+
+    /**
+     * @var array $type checkin's type.
+     */
+    private $type;
     
     /**
      * Constructor.
      * 
      * @param int $appraisalid
      */
-    public function __construct($appraisal) {
+    public function __construct($appraisal, $type = null) {
         if (is_object($appraisal)) {
             $this->appraisal = $appraisal;
             $this->appraisalid = $appraisal->appraisal->id;
         } else {
             $this->appraisalid = $appraisal;
         }
+        $this->type = $type;
     }
 
     public function hook() {
@@ -96,6 +102,7 @@ class checkins extends comments {
         $appraisalid = required_param('appraisalid', PARAM_INT);
         $checkinid = required_param('checkinid', PARAM_INT);
         $checkin = trim(required_param('checkin', PARAM_RAW));
+        $type = required_param('type', PARAM_ALPHA);
         $view = optional_param('view', '', PARAM_ALPHA);
 
         $onlineappraisal = new \local_onlineappraisal\appraisal($USER, $appraisalid, $view, 'overview', 0);
@@ -108,7 +115,7 @@ class checkins extends comments {
             throw new moodle_exception('error:checkin:validation', 'local_onlineappraisal');
         }
 
-        $record = self::save_checkin($appraisalid, $checkin, $checkinid, $USER->id, $onlineappraisal->appraisal->viewingas);
+        $record = self::save_checkin($appraisalid, $checkin, $checkinid, $USER->id, $onlineappraisal->appraisal->viewingas, $type);
 
         $return = new stdClass();
         $return->success = $record->id;
@@ -152,7 +159,7 @@ class checkins extends comments {
      * @param string $usertype
      * @return stdClass
      */
-    public static function save_checkin($appraisalid, $checkin, $checkinid, $ownerid = null, $usertype = null) {
+    public static function save_checkin($appraisalid, $checkin, $checkinid, $ownerid = null, $usertype = null, $type) {
         global $DB, $USER;
 
         if ($checkinid == -1) {
@@ -162,6 +169,7 @@ class checkins extends comments {
             $record->ownerid = $ownerid;
             $record->user_type = $usertype;
             $record->created_date = time();
+            $record->type = empty($type) ? NULL : $type;
             $record->id = $DB->insert_record(self::$table, $record);
         } else {
             $params = array('id' => $checkinid);
@@ -208,7 +216,10 @@ class checkins extends comments {
             $skip = $SESSION->local_onlineappraisal->editcheckin;
         } 
 
-        $params = array('appraisalid' => $this->appraisalid);
+        $params = array(
+            'appraisalid' => $this->appraisalid,
+            'type' => $this->type
+        );
         $sort = 'created_date DESC';
 
         $checkins = $DB->get_records(self::$table, $params, $sort);

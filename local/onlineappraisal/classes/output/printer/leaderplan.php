@@ -39,6 +39,9 @@ class leaderplan extends base {
 
         // Get extra user data.
         $this->get_extra_user_data();
+
+        // Get check-ins.
+        $this->get_checkins();
     }
 
     /**
@@ -152,5 +155,39 @@ class leaderplan extends base {
         $userdata = $DB->get_records_sql($sql, $params);
         $this->data->location = (!empty($userdata['location']) ? $userdata['location']->data : '');
         $this->data->group = (!empty($userdata['group']) ? $userdata['group']->data : '');
+    }
+
+    /**
+     * Inject check-in info into data object.
+     *
+     * @global \moodle_database $DB
+     */
+    private function get_checkins() {
+        global $DB;
+
+        // Owner caching.
+        $owners = array();
+
+        $this->data->checkins = array();
+
+        $records = $DB->get_records('local_appraisal_checkins', array('appraisalid' => $this->appraisal->id, 'type' => 'leaderplan'), 'created_date ASC');
+
+        $count = 0;
+        foreach ($records as $record) {
+            if (!isset($owners[$record->ownerid])) {
+                $owners[$record->ownerid] = $DB->get_record('user', array('id' => $record->ownerid));
+            }
+            $count++;
+            $checkin = new stdClass();
+            $checkin->first = ($count == 0);
+            $checkin->last = ($count == count($records));
+            $checkin->name = fullname($owners[$record->ownerid]);
+            $checkin->role = get_string($record->user_type, 'local_onlineappraisal');
+            $checkin->checkin = format_text($record->checkin, FORMAT_PLAIN, array('filter' => 'false', 'nocache' => true));
+            $checkin->date = userdate($record->created_date, get_string('strftimedate'));
+
+            $this->data->checkins[] = clone($checkin);
+        }
+        $this->data->hascheckins = (bool) count($this->data->checkins);
     }
 }
