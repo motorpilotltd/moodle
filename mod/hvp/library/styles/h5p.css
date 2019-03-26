@@ -478,8 +478,7 @@ div.h5p-fullscreen {
 .h5p-play-overlay i.fa {
   color: #fff;
   top: 39%;
-  transform: translate(-50%,0);
-  position: absolute;
+  position: relative;
   font-size: 58px;
   cursor: pointer;
 }
