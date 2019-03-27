@@ -6,39 +6,64 @@
     background-clip: padding-box;
 }
 
-.status-red{
+.status-red {
     background-color:#d20d00;
     color: white;
     text-align: center;
 }
 
-.status-amber{
-    background-color:#ff9000;
+.status-amber {
+    background-color: #ff9000;
     color: white;
     text-align: center;
 }
 
-.status-green{
+.status-green {
     background-color:#a6be22;
     color: white;
     text-align: center;
 }
 
-.status-optional{
+.status-optional {
     border: 1px solid black;
 }
 
-.status-na{
+.status-na {
     background-color:#fff;
     color: black;
     text-align: center;
 }
 
-
-.report-circle {
+.report-shape-red {
+    background-color:#d20d00;
     height: 14px;
     width: 14px;
     border-radius: 11px;
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    margin-top: -7px;
+    cursor: pointer;
+}
+
+.report-shape-amber {
+    height: 0;
+    width: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 12px solid #ff9000;
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    margin-top: -7px;
+    cursor: pointer;
+}
+
+.report-shape-green {
+    background-color:#a6be22;
+    height: 14px;
+    width: 14px;
+    border-radius: 0;
     position: absolute;
     right: 5px;
     top: 50%;

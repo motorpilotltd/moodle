@@ -43,8 +43,10 @@ class certification {
                 comp.status,
                 comp.certifpath,
                 comp.timecompleted,
+                comp.progress,
                 cca.timecompleted as lasttimecompleted,
                 cca.timeexpires as lasttimeexpires,
+                cca.timewindowsopens as lasttimewindowsopens,
                 co.id as cohortid,
                 co.name as cohortname,
                 co.idnumber as cohortidnumber,
@@ -71,7 +73,8 @@ class certification {
                         cca.userid,
                         cca.certifid,
                         MAX(cca.timecompleted) as timecompleted,
-                        MAX(cca.timeexpires) as timeexpires
+                        MAX(cca.timeexpires) as timeexpires,
+                        MAX(cca.timewindowsopens) as timewindowsopens
                     FROM
                         {certif_completions_archive} cca
                     GROUP BY
@@ -116,21 +119,16 @@ class certification {
             /**
              * Get progress
              */
-            $certifprogress = completion::get_user_progress($certification->certifid, $USER->id);
-            if ($certification->lasttimeexpires > time()) {
-                // Previous certification completion has not yet expired.
+            if ($certification->progress == 0 && $certification->lasttimecompleted && ($certification->lasttimeexpires > time() || $certification->lasttimeexpires == 0)) {
+                // Previous certification completion has not yet expired (or doesn't expire).
                 $certification->progress = 100;
-            } else if ($certification->certifpath == \local_custom_certification\certification::CERTIFICATIONPATH_RECERTIFICATION){
-                $certification->progress = $certifprogress['recertification'];
-            }else{
-                $certification->progress = $certifprogress['certification'];
             }
 
             /**
              * Get RAG status
              */
             $optional = $certification->optional || $certification->exempt;
-            $certification->ragstatus = completion::get_rag_status($certification->timecompleted, $certification->renewaldate, $optional);
+            $certification->ragstatus = completion::get_rag_status($certification->timecompleted, $certification->lasttimecompleted, $certification->renewaldate, $certification->lasttimewindowsopens, $certification->progress, $optional);
             if(!isset($categoryprogress[$certification->categoryid])){
                 $categoryprogress[$certification->categoryid] = [];
                 $categoryragstatus[$certification->categoryid] = completion::RAG_STATUS_GREEN;
