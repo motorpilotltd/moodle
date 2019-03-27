@@ -225,6 +225,7 @@ $string['appraisals:nocurrent:search'] = 'There are no current appraisals for th
 $string['appraisals:nocurrent:you'] = 'You have no current appraisals.';
 $string['appraisals:select'] = 'Select all appraisals';
 
+$string['activitylogs'] = 'Activity Logs';
 $string['checkins'] = 'Check-ins';
 $string['checkins:latest'] = 'Latest check-in';
 $string['cohort'] = 'Appraisal Cycle';
@@ -1553,6 +1554,7 @@ $string['introduction:targetedmessage'] = '<div class="alert alert-info">For tho
 $string['pdf:appraisername'] = 'Appraiser Name';
 
 $string['pdf:checkins:none'] = 'No check-ins to display';
+$string['pdf:activitylogs:none'] = 'No activity logs to display';
 $string['pdf:completed'] = 'Appraisal completed:';
 
 $string['pdf:duedate'] = 'Appraisal Due Date';
