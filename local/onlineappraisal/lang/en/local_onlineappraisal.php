@@ -1532,6 +1532,7 @@ $string['add_feedback_title'] = 'Add your feedback';
 // Checkins
 $string['appraisee_checkin_title'] = 'Section 6. Check-in';
 $string['checkins_intro'] = 'Throughout the year, it is expected that the appraisee and appraiser will want to discuss progress against the Agreed Impact Plan, Development Plan, actions and performance. The appraisee and/or appraiser can use the section below to record progress. The frequency of these conversations is up to you but at least once a year is recommended.';
+$string['checkins_intro_ldp'] = 'LDP Check-in description text';
 $string['success:checkin:add'] = 'Successfully added check-in';
 $string['error:checkin:add'] = 'Failed to add check-in';
 $string['error:checkin:validation'] = 'Please provide some text.';

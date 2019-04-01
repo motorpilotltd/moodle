@@ -677,5 +677,14 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018010108, 'local', 'onlineappraisal');
     }
 
+    if ($oldversion < 2018010109) {
+
+        // Rebuild permissions table and cache.
+        \local_onlineappraisal\permissions::rebuild_permissions();
+
+        // Onlineappraisal savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010109, 'local', 'onlineappraisal');
+    }
+
     return true;
 }

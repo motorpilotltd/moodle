@@ -64,7 +64,7 @@ class checkin extends base {
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();
         $data->checkins = $this->checkins($output);
-        $data->canadd = $this->appraisal->check_permission('checkin:add');
+        $data->canadd = ($this->type == null) ? $this->appraisal->check_permission('checkin:add') : $this->appraisal->check_permission('checkinleaderplan:add');
         $data->view = $this->appraisal->appraisal->viewingas;
         $data->appraisalid = $this->appraisal->appraisal->id;
         $data->sesskey = $this->sesskey;
@@ -77,7 +77,8 @@ class checkin extends base {
             $data->buttontext = get_string('checkin:update', 'local_onlineappraisal');
         }
         $data->appraiseename = fullname($this->appraisal->appraisal->appraisee);
-        $data->tagline = get_string('tagline', 'local_onlineappraisal', strtoupper($data->appraiseename));
+        $data->tagline = ($this->type == null) ? get_string('tagline', 'local_onlineappraisal', strtoupper($data->appraiseename)) : '';
+        $data->description = ($this->type == null) ? get_string('checkins_intro', 'local_onlineappraisal') : get_string('checkins_intro_ldp', 'local_onlineappraisal');
         $data->type = $this->type;
         $data->title = ($this->type == null) ? get_string('appraisee_checkin_title', 'local_onlineappraisal') : get_string('checkin', 'local_onlineappraisal') ;
         return $data;
