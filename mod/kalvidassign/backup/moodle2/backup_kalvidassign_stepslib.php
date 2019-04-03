@@ -69,6 +69,9 @@ class backup_kalvidassign_activity_structure_step extends backup_activity_struct
                 'format',
                 'teacher',
                 'mailed',
+/* BEGIN CORE MOD */
+                'metadata',
+/* BEGIN CORE MOD */
                 'timemarked',
                 'timecreated',
                 'timemodified'

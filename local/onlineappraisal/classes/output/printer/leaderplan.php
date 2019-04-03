@@ -64,6 +64,7 @@ class leaderplan extends base {
             'careerdirection' => ['mobility'],
             'leaderplan*' => ['ldpstrengths', 'ldpdevelopmentareas'],
             'summaries' => ['appraiser'],
+            'development' => ['seventy', 'twenty', 'ten'],
             'leaderplan**' => ['ldpdevelopmentplan'],
             'careerdirection*' => ['progress', 'comments'],
             'leaderplan***' => ['ldplocked'],

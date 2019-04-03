@@ -24,7 +24,7 @@ $overviewfilesoptions = [
     'accepted_types' => '*'
 ];
 
-$PAGE->requires->css(new moodle_url('/local/custom_certification/styles/custom_certification.css'));
+$PAGE->requires->css(new moodle_url('/local/custom_certification/styles/custom_certification_2019031800.css'));
 $PAGE->requires->jquery();
 
 $action = required_param('action', PARAM_RAW);
@@ -74,5 +74,3 @@ if($action == 'content'){
 
 $detailsform->display();
 echo $OUTPUT->footer();
-
-

@@ -28,6 +28,11 @@ require_once($CFG->libdir.'/adminlib.php');
 
 admin_externalpage_setup('local_admin_userreport');
 
+// Required CSS and JS.
+$PAGE->requires->css(new moodle_url('/local/admin/css/select2.min.css'));
+$PAGE->requires->css(new moodle_url('/local/admin/css/select2-bootstrap.min.css'));
+$PAGE->requires->js_call_amd('local_admin/enhance', 'initialise');
+
 $title = get_string('userreport', 'local_admin');
 $PAGE->set_title(get_site()->shortname . ': ' . $title);
 
@@ -36,8 +41,60 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($title);
 
 // Content.
-echo '<p>This page will display two different reports:<br />'
-. 'A table of users who cannot be added (i.e. are not even attempted).<br />'
-. 'A table of log entries showing all the additions/(un)suspensions/updates that have been carried out.';
+$form = new \local_admin\form\user_report_filter();
+
+$formdata = $form->get_data();
+
+$table = new \local_admin\user_report_table_sql('user_report');
+
+$fields = 'log.*, hub.FULL_NAME as name';
+$staffid = $DB->sql_cast_char2real('log.staffid');
+$from = "{local_admin_user_update_log} log LEFT JOIN SQLHUB.ARUP_ALL_STAFF_V hub ON {$staffid} = hub.EMPLOYEE_NUMBER";
+$where = '1=1';
+$params = [];
+
+if ($formdata) {
+    if (!empty($formdata->actions)) {
+        list($actionsql, $actionparams) = $DB->get_in_or_equal($formdata->actions, SQL_PARAMS_NAMED, 'action');
+        $where .= " AND log.action {$actionsql}";
+        $params = $params + $actionparams;
+    }
+    if (!empty($formdata->statuses)) {
+        list($statussql, $statusparams) = $DB->get_in_or_equal($formdata->statuses, SQL_PARAMS_NAMED, 'status');
+        $where .= " AND log.status {$statussql}";
+        $params = $params + $statusparams;
+    }
+    if (!empty($formdata->from)) {
+        $where .= " AND timecreated >= {$formdata->from}";
+    }
+    if (!empty($formdata->to)) {
+        $to = $formdata->to + (60 * 60 * 24) - 1; // End of day!
+        $where .= " AND timecreated <= {$to}";
+    }
+}
+
+$table->set_sql($fields, $from, $where, $params);
+
+$columns = ['staffid', 'userid', 'name', 'action', 'status', 'extrainfo', 'timecreated'];
+$headers = [];
+foreach ($columns as $column) {
+    $headers[] = get_string("userreport:{$column}", 'local_admin');
+}
+
+$table->define_columns($columns);
+$table->column_style_all('text-align', 'left');
+$table->define_headers($headers);
+$table->define_baseurl($PAGE->url);
+
+$table->sortable(true, 'timecreated', SORT_DESC);
+$table->is_collapsible = false;
+
+$table->useridfield = 'userid';
+
+$table->no_sorting('extrainfo');
+
+$form->display();
+
+$table->out(50, false);
 
 echo $OUTPUT->footer();

@@ -172,7 +172,7 @@ module.exports = function(grunt) {
         },
         csscomb: {
             options: {
-                config: 'less/bootstrap3/.csscomb.json'
+                config: 'less/bootstrap3-4-1/.csscomb.json'
             },
             dist: {
                 expand: true,

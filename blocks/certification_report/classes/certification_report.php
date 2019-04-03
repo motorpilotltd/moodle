@@ -811,11 +811,11 @@ class certification_report {
                 ce.id as exemptionid,
                 cc.duedate,
                 cc.progress,
-                cc.timeexpires,
                 cc.timecompleted,
                 cua.optional,
                 (CASE WHEN cc.timecompleted > 0 THEN cc.timecompleted WHEN cca.timecompleted IS NOT NULL THEN cca.timecompleted ELSE 0 END) as lasttimecompleted,
                 (CASE WHEN cc.timeexpires > 0 THEN cc.timeexpires WHEN cca.timeexpires IS NOT NULL THEN cca.timeexpires ELSE 0 END) as timeexpires,
+                cca.timewindowsopens as lasttimewindowsopens,
                 h.GRADE as grade,
                 h.GROUP_NAME as groupname,
                 h.DISCIPLINE_NAME as 'disciplinename',
@@ -841,7 +841,8 @@ class certification_report {
                   cca.userid,
                   cca.certifid,
                   MAX(cca.timecompleted) as timecompleted,
-                  MAX(cca.timeexpires) as timeexpires
+                  MAX(cca.timeexpires) as timeexpires,
+                  MAX(cca.timewindowsopens) as timewindowsopens
                 FROM {certif_completions_archive} cca
                 GROUP BY cca.userid, cca.certifid
             ) cca ON cca.userid = cua.userid AND cca.certifid = cua.certifid
@@ -1198,7 +1199,7 @@ class certification_report {
                     'progress' => $progress,
                     'optional' => $compldata->optional,
                     'exemptionid' => $compldata->exemptionid,
-                    'ragstatus' => completion::get_rag_status($compldata->timecompleted, $compldata->duedate, $compldata->optional, 1),
+                    'ragstatus' => completion::get_rag_status($compldata->timecompleted, $compldata->lasttimecompleted, $compldata->duedate, $compldata->lasttimewindowsopens, $compldata->progress, $compldata->optional, 1),
                     'currentcompletiondate' => $compldata->timecompleted
                 ];
 

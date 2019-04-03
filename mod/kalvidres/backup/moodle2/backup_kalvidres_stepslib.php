@@ -33,9 +33,11 @@ class backup_kalvidres_activity_structure_step extends backup_activity_structure
     protected function define_structure() {
 
         // Define each element separated
+/* BEGIN CORE MOD */
         $kalvidres = new backup_nested_element('kalvidres', array('id'), array(
             'name', 'intro', 'introformat', 'entry_id', 'video_title',
-            'uiconf_id', 'widescreen', 'height', 'width', 'source', 'timemodified', 'timecreated'));
+            'uiconf_id', 'widescreen', 'height', 'width', 'source', 'metadata', 'timemodified', 'timecreated'));
+/* END CORE MOD */
 
         // Define sources
         $kalvidres->set_source_table('kalvidres', array('id' => backup::VAR_ACTIVITYID));

@@ -209,7 +209,7 @@ function kalvidres_cm_info_view(cm_info $cm) {
 
     if(!$metadata) {
         debugging("kalvidres: Could not load metadata or metadata empty ($kalvidresid)");
-        return;
+        // Keep going as need a link to the vid!
     }
 
     if (!$cm->uservisible) {

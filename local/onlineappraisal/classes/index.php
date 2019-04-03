@@ -395,7 +395,7 @@ class index {
     public function get_groups() {
         global $DB;
 
-        $params = array(
+        $groupsparams = array(
             'userid' => $this->user->id,
             'bitandhrl' => costcentre::HR_LEADER,
             'bitandhra' => costcentre::HR_ADMIN,
@@ -404,51 +404,44 @@ class index {
         $bitandhrl = $DB->sql_bitand('lcu.permissions', costcentre::HR_LEADER);
         $bitandhra = $DB->sql_bitand('lcu.permissions', costcentre::HR_ADMIN);
 
-        $sql = "
-            SELECT
-                DISTINCT(lc.costcentre)
-            FROM {local_costcentre} lc
-            JOIN {local_costcentre_user} lcu ON lcu.costcentre = lc.costcentre
-            WHERE
-                lc.enableappraisal = 1
-                AND lcu.userid = :userid
-                AND ({$bitandhrl} = :bitandhrl OR {$bitandhra} = :bitandhra)
-            ORDER BY
-                lc.costcentre ASC";
+        $groupssql = "SELECT DISTINCT lc.costcentre, lc.enableappraisal
+                  FROM {local_costcentre} lc
+                  JOIN {local_costcentre_user} lcu ON lcu.costcentre = lc.costcentre
+                 WHERE lcu.userid = :userid
+                       AND ({$bitandhrl} = :bitandhrl OR {$bitandhra} = :bitandhra)
+              ORDER BY lc.enableappraisal DESC, lc.costcentre ASC";
 
-        $groups = $DB->get_records_sql($sql, $params);
+        $groups = $DB->get_records_sql($groupssql, $groupsparams);
 
         $options = array('' => get_string('form:choosedots', 'local_onlineappraisal'));
         foreach($groups as $group) {
+            // If disabled are there any appraisals attached...
+            if (!$group->enableappraisal) {
+                $appsql = "SELECT COUNT(id)
+                             FROM {local_appraisal_appraisal}
+                            WHERE appraisee_userid IN (SELECT id
+                                                         FROM {user}
+                                                        WHERE icq = :icq)
+                              AND deleted = 0";
+                if (!$DB->count_records_sql($appsql, ['icq' => $group->costcentre])) {
+                    // No appraisals, continue to not move into options list.
+                    continue;
+                }
+            }
             // Find the group name.
-            $sql = "
-                SELECT
-                    u.department
-                FROM
-                    {user} u
-                INNER JOIN
-                    (SELECT
-                        MAX(id) maxid
-                    FROM
-                        {user} inneru
-                    INNER JOIN
-                        (SELECT
-                            MAX(timemodified) as maxtimemodified
-                        FROM
-                            {user}
-                        WHERE
-                            icq = :icq1
-                        ) groupedicq
-                        ON inneru.timemodified = groupedicq.maxtimemodified
-                    WHERE
-                        icq = :icq2
-                    ) groupedid
-                    ON u.id = groupedid.maxid
-                WHERE
-                    u.icq = :icq3";
-            $params = array_fill_keys(array('icq1', 'icq2', 'icq3'), $group->costcentre);
-            $groupname = $DB->get_field_sql($sql, $params);
-            $options = $options + array($group->costcentre => $group->costcentre.' - ' . $groupname);
+            $groupsql = "SELECT u.department
+                      FROM {user} u
+                INNER JOIN (SELECT MAX(id) maxid
+                              FROM {user} inneru
+                        INNER JOIN (SELECT MAX(timemodified) as maxtimemodified
+                                      FROM {user}
+                                     WHERE icq = :icq1) groupedicq ON inneru.timemodified = groupedicq.maxtimemodified
+                             WHERE icq = :icq2) groupedid ON u.id = groupedid.maxid
+                     WHERE u.icq = :icq3";
+            $groupparams = array_fill_keys(array('icq1', 'icq2', 'icq3'), $group->costcentre);
+            $groupname = $DB->get_field_sql($groupsql, $groupparams);
+            $disabled = ($group->enableappraisal) ? '' : ' - ' . get_string('inactive', 'local_onlineappraisal');
+            $options = $options + array($group->costcentre => $group->costcentre.' - ' . $groupname . $disabled);
             if ($this->is['hrleader']) {
                 // Check if can actually view VIP and toggle SDP/LDP (HR_LEADER _only_).
                 $this->canviewvip[$group->costcentre] =

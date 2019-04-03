@@ -229,7 +229,7 @@ class send_messages extends \core\task\scheduled_task
                    AND c.visible = 1
                    AND c.deleted = 0
           GROUP BY cua.userid, cc.id, cm.id, cm.triggertime
-            HAVING (MAX(cml.timesent) + cm.triggertime) < {$now} AND (MAX(cml.timesent) + cm.triggertime) > ({$now} - {$hours24})
+            HAVING MIN(cml.timesent) != 0 AND (MAX(cml.timesent) + cm.triggertime) < {$now} AND (MAX(cml.timesent) + cm.triggertime) > ({$now} - {$hours24})
         ";
         $params = [];
         $params['messagetype1'] = $params['messagetype'] = message::TYPE_OVERDUE_REMINDER;

@@ -14,7 +14,7 @@ class block_certification_renderer extends plugin_renderer_base {
 
     /**
      * Prepare table with current user certifications details
-     * 
+     *
      * @param $certifications
      * @return string
      */
@@ -22,7 +22,7 @@ class block_certification_renderer extends plugin_renderer_base {
         global $OUTPUT;
 
         $type = !empty($view->type) ? $view->type : null;
-        
+
         $output = '';
         if (count($certifications) == 0) {
             $output .= get_string('nocertificationsassigned', 'block_certification');
@@ -103,7 +103,7 @@ class block_certification_renderer extends plugin_renderer_base {
                 } else if ($optionalorexempt && $certification->ragstatus == \local_custom_certification\completion::RAG_STATUS_AMBER) {
                     $status = html_writer::img($OUTPUT->image_url('/i/caution'), '', ['class' => 'status']);
                 } else {
-                    $status =  html_writer::tag('span', '', ['class' => 'status status-'.$certification->ragstatus]);
+                    $status =  html_writer::tag('span', '', ['class' => "status status-{$certification->ragstatus} status-icon-{$certification->ragstatus}"]);
                 }
 
                 $rowragclass = '';

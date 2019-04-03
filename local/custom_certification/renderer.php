@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 use local_custom_certification\certification;
+use local_custom_certification\completion;
 use local_custom_certification\message;
 
 defined('MOODLE_INTERNAL') || die();
@@ -585,7 +586,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
         $output .= html_writer::end_div();
 
         $output .= html_writer::tag('h2', $certif->fullname, []);
-        if($enrolleduser && $certificationprogress == 100 && $ragstatus != \local_custom_certification\completion::RAG_STATUS_GREEN){
+        if($enrolleduser && $certificationprogress == 100 && $ragstatus != completion::RAG_STATUS_GREEN){
             $output .= html_writer::div(get_string('statusnote', 'local_custom_certification'), 'alert alert-warning');
         }
 
@@ -699,7 +700,10 @@ class local_custom_certification_renderer extends \plugin_renderer_base
             $output .= html_writer::start_tag('table', ['class' => 'generaltable']);
             $output .= html_writer::start_tag('tr', []);
             $output .= html_writer::tag('th', get_string('coursename', 'local_custom_certification'), []);
-            $output .= html_writer::tag('th', get_string('headerprogress', 'local_custom_certification'), []);
+            if ($ragstatus !== completion::RAG_STATUS_GREEN) {
+                // Don't show course progress as may be confusing.
+                $output .= html_writer::tag('th', get_string('headerprogress', 'local_custom_certification'), []);
+            }
             $output .= html_writer::tag('th', get_string('headeractions', 'local_custom_certification'), ['class' => 'certification-overview-actions text-center']);
             $output .= html_writer::end_tag('tr');
 
@@ -707,7 +711,7 @@ class local_custom_certification_renderer extends \plugin_renderer_base
             foreach ($courseset->courses as $course) {
                 $statusoutput = '';
                 $progressoutput = '';
-                if ($enrolleduser) {
+                if ($enrolleduser && $ragstatus !== completion::RAG_STATUS_GREEN) {
                     $courseprogress = isset($progress['courses'][$course->courseid]) ? $progress['courses'][$course->courseid] : 0;
                     if ($courseprogress == 0) {
                         $progressoutput .= get_string('coursenotstarted', 'local_custom_certification');
@@ -724,7 +728,10 @@ class local_custom_certification_renderer extends \plugin_renderer_base
                 $output .= html_writer::start_tag('tr', []);
                 $output .= html_writer::tag('td', $statusoutput . $course->fullname, []);
 
-                $output .= html_writer::tag('td', $progressoutput);
+                if ($ragstatus !== completion::RAG_STATUS_GREEN) {
+                    // Don't show course progress as may be confusing.
+                    $output .= html_writer::tag('td', $progressoutput);
+                }
 
                 if ($canview || $enrolleduser) {
                     $output .= html_writer::start_tag('td', ['class' => 'certification-overview-actions']);

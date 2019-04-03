@@ -132,7 +132,10 @@ class mod_feedback_responses_table extends table_sql {
             // Remove 'userpic' from downloaded data.
             array_shift($tablecolumns);
             array_shift($tableheaders);
-
+/* BEGIN CORE MOD */
+            $tablecolumns[] = 'group';
+            $tableheaders[] = get_string('groups');
+/* END CORE MOD */
             // Add all identity fields as separate columns.
             foreach ($extrafields as $field) {
                 $fields .= ", u.{$field}";
@@ -217,7 +220,20 @@ class mod_feedback_responses_table extends table_sql {
         return $OUTPUT->action_icon($deleteentryurl,
             new pix_icon('t/delete', get_string('delete_entry', 'feedback')), $deleteaction);
     }
-
+/* BEGIN CORE MOD */
+    public function col_group($row) {
+        $groups = groups_get_all_groups(
+            $this->feedbackstructure->get_cm()->course,
+            $row->userid,
+            0,
+            'g.id, g.name');
+        $groupsarray = [];
+        foreach ($groups as $group) {
+            $groupsarray[] = $group->name;
+        }
+        return implode(',', $groupsarray);
+    }
+/* END CORE MOD */
     /**
      * Returns a link for viewing a single response
      * @param stdClass $row

@@ -5,8 +5,8 @@ require_once($CFG->libdir . '/adminlib.php');
 $systemcontext = context_system::instance();
 require_login();
 $PAGE->requires->js(new moodle_url('/local/custom_certification/js/collapsed.js'));
-$PAGE->requires->css(new moodle_url('/local/custom_certification/styles/custom_certification.css'));
-$PAGE->requires->css(new moodle_url('/local/custom_certification/styles/overview.css'));
+$PAGE->requires->css(new moodle_url('/local/custom_certification/styles/custom_certification_2019031800.css'));
+$PAGE->requires->css(new moodle_url('/local/custom_certification/styles/overview_2019031800.css'));
 
 $certifid = required_param('id', PARAM_INT);
 $userid = optional_param('userid', null, PARAM_INT);
@@ -53,19 +53,19 @@ if ($showoverview) {
     $isrecertif = null;
     $coursesprogress = [];
     $ragstatus = '';
-    $usercertificationdetails = null;
+    $usercertdetails = null;
     if ($assignmentdata = $certif->get_user_assignments($user->id)) {
-        
+
         $enrolleduser = true;
         $coursesprogress = \local_custom_certification\completion::get_user_progress($certif, $user->id);
-        $usercertificationdetails = \local_custom_certification\completion::get_user_certification_details($certif->id, $user->id);
-        $ragstatus = \local_custom_certification\completion::get_rag_status($usercertificationdetails->timecompleted, $usercertificationdetails->duedate, $usercertificationdetails->assignmentduedate);
-        
+        $usercertdetails = \local_custom_certification\completion::get_user_certification_details($certif->id, $user->id);
+        $ragstatus = \local_custom_certification\completion::get_rag_status($usercertdetails->timecompleted, $usercertdetails->lasttimecompleted, $usercertdetails->duedate, $usercertdetails->lasttimewindowsopens, $usercertdetails->progress, $usercertdetails->optional);
+
         $isrecertif = local_custom_certification\completion::is_recertification($certif, $user->id);
     }
 
     echo $renderer->display_overview($certif, $certifid, $viewinguser, $userfullname, $assignmentdata,
-                                    $canview, $enrolleduser, $isrecertif, $coursesprogress, $usercertificationdetails, $ragstatus, $canmanage);
+                                    $canview, $enrolleduser, $isrecertif, $coursesprogress, $usercertdetails, $ragstatus, $canmanage);
 
 }
 

@@ -65,10 +65,11 @@ class local_custom_certification_observer {
      */
     public static function course_completed(\core\event\course_completed $event) {
         global $DB;
-
+        $concatid = $DB->sql_concat('cua.userid', "'-'", 'cua.certifid');
         $query = "
             SELECT
                 DISTINCT
+                {$concatid} as id,
                 cua.userid,
                 cua.certifid
             FROM {certif_user_assignments} cua

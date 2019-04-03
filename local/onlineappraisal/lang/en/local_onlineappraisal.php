@@ -225,6 +225,7 @@ $string['appraisals:nocurrent:search'] = 'There are no current appraisals for th
 $string['appraisals:nocurrent:you'] = 'You have no current appraisals.';
 $string['appraisals:select'] = 'Select all appraisals';
 
+$string['activitylogs'] = 'Activity Logs';
 $string['checkins'] = 'Check-ins';
 $string['checkins:latest'] = 'Latest check-in';
 $string['cohort'] = 'Appraisal Cycle';
@@ -269,6 +270,7 @@ $string['f2f:notcomplete'] = 'F2F Not Held';
 
 $string['group'] = 'Cost Centre';
 
+$string['inactive'] = 'INACTIVE';
 $string['index:awaiting'] = 'Awaiting your input';
 $string['index:emptyfilter'] = 'No appraisals match your filter selection.';
 $string['index:filter:label'] = 'Appraisal Cycle';
@@ -1221,6 +1223,8 @@ $string['form:successionplan:confirm:unlock:yes'] = 'Yes, unlock it';
 $string['form:successionplan:confirm:unlock:no'] = 'No, leave it locked';
 
 // Leadership plan.
+$string['form:leaderplan:cardinfo:702010link'] = '70 | 20 | 10';
+$string['form:leaderplan:cardinfo:none'] = 'You have not added any 70 | 20 | 10 information yet.';
 $string['form:leaderplan:title'] = 'Leadership Development Plan (Beta)';
 $string['form:leaderplan:intro'] = 'This section informs the leadership plan. This will be shared with region board, management board as appropriate. ';
 $string['form:leaderplan:ldppotential'] = 'Potential Future Roles (Choose and/or add alternative)';
@@ -1550,6 +1554,7 @@ $string['introduction:targetedmessage'] = '<div class="alert alert-info">For tho
 $string['pdf:appraisername'] = 'Appraiser Name';
 
 $string['pdf:checkins:none'] = 'No check-ins to display';
+$string['pdf:activitylogs:none'] = 'No activity logs to display';
 $string['pdf:completed'] = 'Appraisal completed:';
 
 $string['pdf:duedate'] = 'Appraisal Due Date';
@@ -1588,6 +1593,9 @@ $string['pdf:leaderplan:appraiser'] = 'Current performance summary (as per appra
 $string['pdf:leaderplan:comments'] = 'Career aspiration and next steps (as per appraisal)<br>Appraiser comments';
 $string['pdf:leaderplan:ldplocked'] = 'Has this plan been marked as complete?';
 $string['pdf:leaderplan:progress'] = 'Career aspiration and next steps (as per appraisal)<br>Appraisee comments';
+$string['pdf:leaderplan:seventy'] = 'Learning that takes place in the course of your work - about 70% (as per appraisal)';
+$string['pdf:leaderplan:ten'] = 'Learning from formal courses - face to face or online - about 10% (as per appraisal)';
+$string['pdf:leaderplan:twenty'] = 'Learning from other people - about 20% (as per appraisal)';
 $string['pdf:learninghistory:classroom'] = 'Classroom';
 $string['pdf:learninghistory:elearning'] = 'Classroom';
 $string['pdf:learninghistory:none'] = 'No learning history available.';

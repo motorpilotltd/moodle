@@ -10,3 +10,13 @@
             </div>
     </div>
 </form>
+{{#js}}
+require(['jquery', 'thee_bootstrap'], function($) {
+    var myDefaultWhiteList = $.fn.tooltip.Constructor.DEFAULTS.whiteList;
+    myDefaultWhiteList.form = [];
+    myDefaultWhiteList.input = ['value', 'type'];
+    myDefaultWhiteList.div = ['data-clipboard-target', 'data-title-success', 'data-title-error', 'title'];
+    myDefaultWhiteList.i = ['title'];
+    $('#copy-to-clipboard-popover').popover();
+});
+{{/js}}
