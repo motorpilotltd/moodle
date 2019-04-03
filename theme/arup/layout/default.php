@@ -53,28 +53,35 @@ $sectionnum = !empty($PAGE->cm->sectionnum) ? $PAGE->cm->sectionnum : null;
 $PAGE->requires->js_call_amd('theme_arup/backtocourse', 'init', array($sectionnum, get_config('core', 'moodlecourse_linktosection')));
 
 $html = $PAGE->get_renderer('theme_arup', 'html');
-$mobileicon = new moodle_url('/theme/arup/pix/arup-icon.png');
+
+$appletouchicon = new moodle_url('/theme/arup/pix/apple-touch-icon.png');
+$favicon32x32 = new moodle_url('/theme/arup/pix/favicon-32x32.png');
+$favicon16x16 = new moodle_url('/theme/arup/pix/favicon-16x16.png');
+$webmanifest = "$CFG->wwwroot/theme/arup/android.webmanifest.php";
+$safaritab = new moodle_url('/theme/arup/pix/safari-pinned-tab.svg');
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>
     <title><?php echo $OUTPUT->page_title(); ?></title>
     <link rel="shortcut icon" href="<?php echo $OUTPUT->favicon(); ?>" />
     <!-- iPhone(first generation or 2G), iPhone 3G, iPhone 3GS -->
-    <link rel="apple-touch-icon" sizes="57x57" href="<?php echo $mobileicon->out(); ?>">
+    <link rel="apple-touch-icon" sizes="57x57" href="<?php echo $appletouchicon->out(); ?>">
     <!-- iPad and iPad mini @1x -->
-    <link rel="apple-touch-icon" sizes="76x76" href="<?php echo $mobileicon->out(); ?>">
+    <link rel="apple-touch-icon" sizes="76x76" href="<?php echo $appletouchicon->out(); ?>">
     <!-- iPhone 4, iPhone 4s, iPhone 5, iPhone 5c, iPhone 5s, iPhone 6, iPhone 6s, iPhone 7, iPhone 7s, iPhone8 -->
-    <link rel="apple-touch-icon" sizes="120x120" href="<?php echo $mobileicon->out(); ?>">
+    <link rel="apple-touch-icon" sizes="120x120" href="<?php echo $appletouchicon->out(); ?>">
     <!-- iPad and iPad mini @2x -->
-    <link rel="apple-touch-icon" sizes="152x152" href="<?php echo $mobileicon->out(); ?>">
+    <link rel="apple-touch-icon" sizes="152x152" href="<?php echo $appletouchicon->out(); ?>">
     <!-- iPad Pro -->
-    <link rel="apple-touch-icon" sizes="167x167" href="<?php echo $mobileicon->out(); ?>">
+    <link rel="apple-touch-icon" sizes="167x167" href="<?php echo $appletouchicon->out(); ?>">
     <!-- iPhone X, iPhone 8 Plus, iPhone 7 Plus, iPhone 6s Plus, iPhone 6 Plus -->
-    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo $mobileicon->out(); ?>">
-    <!-- Android Devices High Resolution -->
-    <link rel="icon" sizes="192x192" href="<?php echo $mobileicon->out(); ?>">
-    <!-- Android Devices Normal Resolution -->
-    <link rel="icon" sizes="128x128" href="<?php echo $mobileicon->out(); ?>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo $appletouchicon->out(); ?>">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $favicon32x32->out(); ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo $favicon16x16->out(); ?>">
+    <link rel="manifest" href="<?php echo $webmanifest;?>">
+    <link rel="mask-icon" href="<?php echo $safaritab->out(); ?>" color="#5bbad5">
+
     <?php echo $OUTPUT->standard_head_html(); ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimal-ui">
 </head>
