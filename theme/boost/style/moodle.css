@@ -2357,7 +2357,7 @@
   --gray: #868e96;
   --gray-dark: #373a3c;
   --primary: #1177d1;
-  --secondary: #e9ecef;
+  --secondary: #ced4da;
   --success: #5cb85c;
   --info: #5bc0de;
   --warning: #f0ad4e;
@@ -3450,10 +3450,10 @@ table#listdirectories td {
 .table-secondary,
 .table-secondary > th,
 .table-secondary > td {
-  background-color: #f9fafb; }
+  background-color: #f1f3f5; }
 
 .table-hover .table-secondary:hover, table.grading-report .table-secondary:hover, .forumheaderlist .table-secondary:hover, .generaltable .table-secondary:hover, table.flexible .table-secondary:hover, .category_subcategories .table-secondary:hover, table#modules .table-secondary:hover, table#permissions .table-secondary:hover {
-  background-color: #eaedf1; }
+  background-color: #e2e6ea; }
   .table-hover .table-secondary:hover > td, table.grading-report .table-secondary:hover > td, .forumheaderlist .table-secondary:hover > td, .generaltable .table-secondary:hover > td, table.flexible .table-secondary:hover > td, .category_subcategories .table-secondary:hover > td, table#modules .table-secondary:hover > td, table#permissions .table-secondary:hover > td,
   .table-hover .table-secondary:hover > th,
   table.grading-report .table-secondary:hover > th,
@@ -3463,7 +3463,7 @@ table#listdirectories td {
   .category_subcategories .table-secondary:hover > th,
   table#modules .table-secondary:hover > th,
   table#permissions .table-secondary:hover > th {
-    background-color: #eaedf1; }
+    background-color: #e2e6ea; }
 
 .table-success,
 .table-success > th,
@@ -4099,28 +4099,28 @@ fieldset:disabled #rubric-rubric.gradingform_rubric a.addcriterion,
 
 .btn-secondary, .btn-default {
   color: #212529;
-  background-color: #e9ecef;
-  border-color: #e9ecef; }
+  background-color: #ced4da;
+  border-color: #ced4da; }
   .btn-secondary:hover, .btn-default:hover {
     color: #212529;
-    background-color: #d3d9df;
-    border-color: #cbd3da; }
+    background-color: #b8c1ca;
+    border-color: #b1bbc4; }
   .btn-secondary:focus, .btn-default:focus, .btn-secondary.focus, .focus.btn-default {
-    box-shadow: 0 0 0 0.2rem rgba(233, 236, 239, 0.5); }
+    box-shadow: 0 0 0 0.2rem rgba(206, 212, 218, 0.5); }
   .btn-secondary.disabled, .fp-viewbar.disabled a, .disabled.btn-default, .btn-secondary:disabled, .btn-default:disabled {
     color: #212529;
-    background-color: #e9ecef;
-    border-color: #e9ecef; }
+    background-color: #ced4da;
+    border-color: #ced4da; }
   .btn-secondary:not(:disabled):not(.disabled):active, .btn-default:not(:disabled):not(.disabled):active, .btn-secondary:not(:disabled):not(.disabled).active, .fp-viewbar:not(.disabled) a.checked:not(:disabled):not(.disabled), .btn-default:not(:disabled):not(.disabled).active,
   .show > .btn-secondary.dropdown-toggle,
   .show > .dropdown-toggle.btn-default {
     color: #212529;
-    background-color: #cbd3da;
-    border-color: #c4ccd4; }
+    background-color: #b1bbc4;
+    border-color: #aab4bf; }
     .btn-secondary:not(:disabled):not(.disabled):active:focus, .btn-default:not(:disabled):not(.disabled):active:focus, .btn-secondary:not(:disabled):not(.disabled).active:focus, .fp-viewbar:not(.disabled) a.checked:not(:disabled):not(.disabled):focus, .btn-default:not(:disabled):not(.disabled).active:focus,
     .show > .btn-secondary.dropdown-toggle:focus,
     .show > .dropdown-toggle.btn-default:focus {
-      box-shadow: 0 0 0 0.2rem rgba(233, 236, 239, 0.5); }
+      box-shadow: 0 0 0 0.2rem rgba(206, 212, 218, 0.5); }
 
 .btn-success {
   color: #fff;
@@ -4284,27 +4284,27 @@ fieldset:disabled #rubric-rubric.gradingform_rubric a.addcriterion,
       box-shadow: 0 0 0 0.2rem rgba(17, 119, 209, 0.5); }
 
 .btn-outline-secondary {
-  color: #e9ecef;
+  color: #ced4da;
   background-color: transparent;
   background-image: none;
-  border-color: #e9ecef; }
+  border-color: #ced4da; }
   .btn-outline-secondary:hover {
     color: #212529;
-    background-color: #e9ecef;
-    border-color: #e9ecef; }
+    background-color: #ced4da;
+    border-color: #ced4da; }
   .btn-outline-secondary:focus, .btn-outline-secondary.focus {
-    box-shadow: 0 0 0 0.2rem rgba(233, 236, 239, 0.5); }
+    box-shadow: 0 0 0 0.2rem rgba(206, 212, 218, 0.5); }
   .btn-outline-secondary.disabled, .btn-outline-secondary:disabled {
-    color: #e9ecef;
+    color: #ced4da;
     background-color: transparent; }
   .btn-outline-secondary:not(:disabled):not(.disabled):active, .btn-outline-secondary:not(:disabled):not(.disabled).active,
   .show > .btn-outline-secondary.dropdown-toggle {
     color: #212529;
-    background-color: #e9ecef;
-    border-color: #e9ecef; }
+    background-color: #ced4da;
+    border-color: #ced4da; }
     .btn-outline-secondary:not(:disabled):not(.disabled):active:focus, .btn-outline-secondary:not(:disabled):not(.disabled).active:focus,
     .show > .btn-outline-secondary.dropdown-toggle:focus {
-      box-shadow: 0 0 0 0.2rem rgba(233, 236, 239, 0.5); }
+      box-shadow: 0 0 0 0.2rem rgba(206, 212, 218, 0.5); }
 
 .btn-outline-success {
   color: #5cb85c;
@@ -5717,11 +5717,11 @@ tbody.collapse.show {
 
 .badge-secondary {
   color: #212529;
-  background-color: #e9ecef; }
+  background-color: #ced4da; }
   .badge-secondary[href]:hover, .badge-secondary[href]:focus {
     color: #212529;
     text-decoration: none;
-    background-color: #cbd3da; }
+    background-color: #b1bbc4; }
 
 .badge-success {
   color: #fff;
@@ -5787,7 +5787,7 @@ tbody.collapse.show {
 #page-admin-index .adminwarning,
 #page-admin-index .adminerror, .que .formulation,
 .que .outcome,
-.que .comment {
+.que .comment, .assignfeedback_editpdf_widget .label {
   position: relative;
   padding: 0.75rem 1.25rem;
   margin-bottom: 1rem;
@@ -5818,13 +5818,13 @@ tbody.collapse.show {
     color: #05233e; }
 
 .alert-secondary {
-  color: #797b7c;
-  background-color: #fbfbfc;
-  border-color: #f9fafb; }
+  color: #6b6e71;
+  background-color: #f5f6f8;
+  border-color: #f1f3f5; }
   .alert-secondary hr {
-    border-top-color: #eaedf1; }
+    border-top-color: #e2e6ea; }
   .alert-secondary .alert-link {
-    color: #606162; }
+    color: #525557; }
 
 .alert-success,
 .que .comment {
@@ -5836,13 +5836,13 @@ tbody.collapse.show {
   .alert-success .alert-link, .que .comment .alert-link {
     color: #1f3e1f; }
 
-.alert-info, #page-admin-index .releasenoteslink, #adminsettings .form-overridden, .que .formulation {
+.alert-info, #page-admin-index .releasenoteslink, #adminsettings .form-overridden, .que .formulation, .assignfeedback_editpdf_widget .label {
   color: #2f6473;
   background-color: #def2f8;
   border-color: #d1edf6; }
-  .alert-info hr, #page-admin-index .releasenoteslink hr, #adminsettings .form-overridden hr, .que .formulation hr {
+  .alert-info hr, #page-admin-index .releasenoteslink hr, #adminsettings .form-overridden hr, .que .formulation hr, .assignfeedback_editpdf_widget .label hr {
     border-top-color: #bce5f2; }
-  .alert-info .alert-link, #page-admin-index .releasenoteslink .alert-link, #adminsettings .form-overridden .alert-link, .que .formulation .alert-link {
+  .alert-info .alert-link, #page-admin-index .releasenoteslink .alert-link, #adminsettings .form-overridden .alert-link, .que .formulation .alert-link, .assignfeedback_editpdf_widget .label .alert-link {
     color: #20454f; }
 
 .alert-warning,
@@ -5982,15 +5982,15 @@ tbody.collapse.show {
     border-color: #093e6d; }
 
 .list-group-item-secondary {
-  color: #797b7c;
-  background-color: #f9fafb; }
+  color: #6b6e71;
+  background-color: #f1f3f5; }
   .list-group-item-secondary.list-group-item-action:hover, .list-group-item-secondary.list-group-item-action:focus {
-    color: #797b7c;
-    background-color: #eaedf1; }
+    color: #6b6e71;
+    background-color: #e2e6ea; }
   .list-group-item-secondary.list-group-item-action.active {
     color: #fff;
-    background-color: #797b7c;
-    border-color: #797b7c; }
+    background-color: #6b6e71;
+    border-color: #6b6e71; }
 
 .list-group-item-success {
   color: #306030;
@@ -6551,12 +6551,12 @@ button.bg-primary:focus {
   background-color: #0d5ca2 !important; }
 
 .bg-secondary {
-  background-color: #e9ecef !important; }
+  background-color: #ced4da !important; }
 
 a.bg-secondary:hover, a.bg-secondary:focus,
 button.bg-secondary:hover,
 button.bg-secondary:focus {
-  background-color: #cbd3da !important; }
+  background-color: #b1bbc4 !important; }
 
 .bg-success {
   background-color: #5cb85c !important; }
@@ -6647,7 +6647,7 @@ button.bg-dark:focus {
   border-color: #1177d1 !important; }
 
 .border-secondary {
-  border-color: #e9ecef !important; }
+  border-color: #ced4da !important; }
 
 .border-success {
   border-color: #5cb85c !important; }
@@ -8374,10 +8374,10 @@ a.text-primary:hover, a.text-primary:focus {
   color: #0d5ca2 !important; }
 
 .text-secondary {
-  color: #e9ecef !important; }
+  color: #ced4da !important; }
 
 a.text-secondary:hover, a.text-secondary:focus {
-  color: #cbd3da !important; }
+  color: #b1bbc4 !important; }
 
 .text-success, .green,
 .notifysuccess, .connected {
@@ -8422,10 +8422,10 @@ a.text-danger:hover, a.notconnected:hover, .que a.validationerror:hover, a.text-
 a.text-light:hover, a.text-light:focus {
   color: #dae0e5 !important; }
 
-.text-dark {
+.text-dark, #categoryquestions .highlight {
   color: #373a3c !important; }
 
-a.text-dark:hover, a.text-dark:focus {
+a.text-dark:hover, #categoryquestions a.highlight:hover, a.text-dark:focus, #categoryquestions a.highlight:focus {
   color: #1f2021 !important; }
 
 .text-muted, a.dimmed,
@@ -8519,7 +8519,7 @@ a.dimmed_text:visited,
 /* stylelint-disable function-url-scheme-blacklist */
 /* stylelint-enable function-url-scheme-blacklist */
 .tag, .statusok, .statuswarning, .statusserious,
-.statuscritical, .que .correctness, .assignfeedback_editpdf_widget .label, .label, .badge {
+.statuscritical, .que .correctness, .label, .badge {
   display: inline-block;
   padding: 0.25rem 0.4em;
   font-size: 75%;
@@ -8565,9 +8565,9 @@ a.dimmed_text:visited,
   #page-admin-report-backups-index .backup-notyetrun[href]:focus {
     background-color: #449d44; }
 
-.tag-info, #page-admin-index .adminwarning.availableupdatesinfo .moodleupdateinfo.maturity200 .info.release, .assignfeedback_editpdf_widget .label {
+.tag-info, #page-admin-index .adminwarning.availableupdatesinfo .moodleupdateinfo.maturity200 .info.release {
   background-color: #5bc0de; }
-  .tag-info[href]:hover, #page-admin-index .adminwarning.availableupdatesinfo .moodleupdateinfo.maturity200 .info.release[href]:hover, .assignfeedback_editpdf_widget .label[href]:hover, .tag-info[href]:focus, #page-admin-index .adminwarning.availableupdatesinfo .moodleupdateinfo.maturity200 .info.release[href]:focus, .assignfeedback_editpdf_widget .label[href]:focus {
+  .tag-info[href]:hover, #page-admin-index .adminwarning.availableupdatesinfo .moodleupdateinfo.maturity200 .info.release[href]:hover, .tag-info[href]:focus, #page-admin-index .adminwarning.availableupdatesinfo .moodleupdateinfo.maturity200 .info.release[href]:focus {
     background-color: #31b0d5; }
 
 .tag-warning, .statuswarning, #page-admin-report-backups-index .backup-warning, #page-admin-index .updateplugin .updatepluginconfirmexternal, #page-admin-index .adminwarning.availableupdatesinfo .moodleupdateinfo.maturity100 .info.release,
@@ -8995,6 +8995,7 @@ form.popupform div {
   overflow: auto; }
 
 .no-overflow > .generaltable {
+  position: relative;
   margin-bottom: 0;
   min-height: 10em; }
 
@@ -10370,6 +10371,9 @@ ul {
   width: 100%;
   color: #373a3c; }
 
+.dropdown-item:active a {
+  color: #fff; }
+
 .competency-tree ul {
   padding-left: 1.5rem; }
 
@@ -11307,14 +11311,14 @@ div.editor_atto_toolbar button .icon {
 .block_myoverview .empty-placeholder-image-lg {
   height: 125px; }
 
-.card-deck .card, .card-deck #page-enrol-users #filterform, #page-enrol-users .card-deck #filterform, .card-deck .que .history, .que .card-deck .history, .card-deck .userprofile .profile_tree section, .userprofile .profile_tree .card-deck section, .card-deck .groupinfobox, .card-deck .well {
+.block_myoverview .card-deck .card, .block_myoverview .card-deck #page-enrol-users #filterform, #page-enrol-users .block_myoverview .card-deck #filterform, .block_myoverview .card-deck .que .history, .que .block_myoverview .card-deck .history, .block_myoverview .card-deck .userprofile .profile_tree section, .userprofile .profile_tree .block_myoverview .card-deck section, .block_myoverview .card-deck .groupinfobox, .block_myoverview .card-deck .well {
   flex-grow: 0;
   flex-shrink: 0;
   flex-basis: calc(50% - 30px); }
 
-.card-deck .myoverviewimg {
+.block_myoverview .card-deck .myoverviewimg {
   height: 150px; }
-  .card-deck .myoverviewimg.courseimage {
+  .block_myoverview .card-deck .myoverviewimg.courseimage {
     background-position: center;
     background-size: cover; }
 
@@ -12392,7 +12396,9 @@ span.editinstructions {
   #course-category-listings .select-a-category .que .outcome,
   .que #course-category-listings .select-a-category .outcome,
   #course-category-listings .select-a-category .que .comment,
-  .que #course-category-listings .select-a-category .comment {
+  .que #course-category-listings .select-a-category .comment,
+  #course-category-listings .select-a-category .assignfeedback_editpdf_widget .label,
+  .assignfeedback_editpdf_widget #course-category-listings .select-a-category .label {
     margin: 1em; }
 
 #course-category-listings #course-listing .listitem .drag-handle {
@@ -13674,6 +13680,7 @@ a.ygtvspacer:hover {
           .messaging-area-container .messaging-area .messages-area .response .message-box .message-text-container {
             display: table-cell; }
             .messaging-area-container .messaging-area .messages-area .response .message-box .message-text-container textarea {
+              direction: ltr;
               line-height: 20px;
               padding: 4px 6px;
               vertical-align: middle;
@@ -14949,6 +14956,9 @@ div.backup-section + form {
   text-align: left;
   direction: ltr; }
 
+.que.match .mediaplugin {
+  width: 50vw; }
+
 /* rtl:ignore */
 #page-admin-grade-edit-scale-edit .error input#id_name {
   margin-right: 170px; }
@@ -15607,9 +15617,6 @@ div#dock {
 .path-mod-assign [data-region="grade-actions-panel"] [data-region="grade-actions"] .collapse-buttons {
   top: auto; }
 
-.path-mod-assign .no-overflow {
-  overflow: initial; }
-
 .path-mod-assign #page-content [data-region="grade-panel"] .mform:not(.unresponsive) .fcontainer .fitem.popout .felement {
   height: calc(100% - 4rem); }
 
@@ -16004,6 +16011,7 @@ p.arrow_button {
   left: 40vw; }
 
 .path-grade-report-grader #region-main {
+  overflow-x: visible;
   min-width: 100%;
   width: auto; }
   .path-grade-report-grader #region-main > .card, .path-grade-report-grader #page-enrol-users #region-main > #filterform, #page-enrol-users .path-grade-report-grader #region-main > #filterform, .path-grade-report-grader .que #region-main > .history, .que .path-grade-report-grader #region-main > .history, .path-grade-report-grader .userprofile .profile_tree #region-main > section, .userprofile .profile_tree .path-grade-report-grader #region-main > section, .path-grade-report-grader #region-main > .groupinfobox, .path-grade-report-grader #region-main > .well {
@@ -16973,3 +16981,11 @@ body {
 
 .userpicture {
   border-radius: 50%; }
+
+.bg-gray {
+  background-color: #e9ecef !important; }
+
+a.bg-gray:hover, a.bg-gray:focus,
+button.bg-gray:hover,
+button.bg-gray:focus {
+  background-color: #cbd3da !important; }
