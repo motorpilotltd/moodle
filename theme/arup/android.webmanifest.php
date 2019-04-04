@@ -25,12 +25,14 @@
 define('NO_DEBUG_DISPLAY', true);
 define('NO_MOODLE_COOKIES', true);
 require_once(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/theme/bootstrap/renderers/core_renderer.php');
+require_once($CFG->dirroot . '/theme/bootstrap/renderers/course_renderer.php');
 
 header('Content-Type: application/json; charset: utf-8');
 
-$android192 = new moodle_url('/theme/arup/pix/android-chrome-192x192.png');
-$android128 = new moodle_url('/theme/arup/pix/android-chrome-128x128.png');
-$android512 = new moodle_url('/theme/arup/pix/android-chrome-512x512.png');
+$android192 = $OUTPUT->image_url('android-chrome-192x192', 'theme');
+$android128 = $OUTPUT->image_url('android-chrome-128x128', 'theme');
+$android512 = $OUTPUT->image_url('android-chrome-512x512', 'theme');
 
 $manifest = new StdClass;
 $manifest->prefer_related_applications = true;

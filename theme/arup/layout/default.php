@@ -54,11 +54,11 @@ $PAGE->requires->js_call_amd('theme_arup/backtocourse', 'init', array($sectionnu
 
 $html = $PAGE->get_renderer('theme_arup', 'html');
 
-$appletouchicon = new moodle_url('/theme/arup/pix/apple-touch-icon.png');
-$favicon32x32 = new moodle_url('/theme/arup/pix/favicon-32x32.png');
-$favicon16x16 = new moodle_url('/theme/arup/pix/favicon-16x16.png');
+$appletouchicon = $OUTPUT->image_url('apple-touch-icon', 'theme');
+$favicon32x32 = $OUTPUT->image_url('favicon-32x32', 'theme');
+$favicon16x16 = $OUTPUT->image_url('favicon-16x16', 'theme');
 $webmanifest = "$CFG->wwwroot/theme/arup/android.webmanifest.php";
-$safaritab = new moodle_url('/theme/arup/pix/safari-pinned-tab.svg');
+$safaritab = $OUTPUT->image_url('safari-pinned-tab', 'theme');
 echo $OUTPUT->doctype() ?>
 <html <?php echo $OUTPUT->htmlattributes(); ?>>
 <head>
