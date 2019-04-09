@@ -393,4 +393,5 @@ $string['privacy:metadata:hvp_xapi_results:max_score'] = 'Max achievable score f
 
 /* BEGIN CORE MOD */
 $string['backtomodule'] = 'Back to module';
+$string['overlay_button'] = 'Click to view';
 /* END CORE MOD */

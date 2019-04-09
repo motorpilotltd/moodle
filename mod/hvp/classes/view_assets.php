@@ -309,9 +309,10 @@ class view_assets {
      */
 /* BEGIN CORE MOD */
     public function outputview($addPlay = false) {
+        $overlaystr = get_string('overlay_button', 'hvp');
         $overlayelement = "
             <div class=\"h5p-play-overlay\" data-itemid=\"{$this->cm->id}\">
-                <i class=\"fa fa-play-circle\"></i>
+                <button class=\"btn btn-default\">{$overlaystr}</button>
             </div>";
 
         $playoverlay = $addPlay ? $overlayelement : '';
