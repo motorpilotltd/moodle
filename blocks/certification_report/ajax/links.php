@@ -19,7 +19,6 @@ define('AJAX_SCRIPT', true);
 require_once(dirname(dirname(dirname(dirname(__FILE__)))) . '/config.php');
 
 use block_certification_report\certification_report;
-use Horde\Socket\Client\Exception;
 
 require_login();
 
