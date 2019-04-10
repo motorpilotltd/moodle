@@ -23,10 +23,20 @@ require_once('invitee.php');
  */
 class organizer extends invitee {
     public function setup_mailer(PHPMailer $mailer) {
-        $mailer->SetFrom($this->email, $this->name);
+        global $CFG, $SITE;
+        $fromstring = $this->name;
+        if ($CFG->emailfromvia == EMAIL_VIA_ALWAYS) {
+            $fromdetails = new stdClass();
+            $fromdetails->name = $this->name;
+            $fromdetails->url = preg_replace('#^https?://#', '', $CFG->wwwroot);
+            $fromdetails->siteshortname = format_string($SITE->shortname);
+            $fromstring = get_string('emailvia', 'core', $fromdetails);
+        }
+        // Always use real email for from address.
+        $mailer->setFrom($this->realemail, $fromstring);
     }
 
     public function __toString() {
-        return "ORGANIZER;CN=\"{$this->name}\":mailto:{$this->email}";
+        return "ORGANIZER;CN=\"{$this->name}\":mailto:{$this->realemail}";
     }
 }

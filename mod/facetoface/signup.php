@@ -76,7 +76,7 @@ if (isguestuser()) {
     $out = html_writer::tag('p', get_string('guestsno', 'facetoface')) .
         html_writer::empty_tag('br') .
         html_writer::tag('p', get_string('continuetologin', 'facetoface'));
-    echo $OUTPUT->confirm($out, $loginurl, get_referer(false));
+    echo $OUTPUT->confirm($out, $loginurl, get_local_referer(false));
     echo $OUTPUT->footer();
     exit();
 }
@@ -213,7 +213,7 @@ if (!$signedup && !facetoface_session_has_capacity($session, $context) && (!$ses
 echo facetoface_print_session($session, $viewattendees);
 
 if ($signedup) {
-    if (!($session->datetimeknown && facetoface_has_session_started($session, $timenow))) {
+    if (!($session->datetimeknown && facetoface_has_session_started($session, $timenow)) && $session->allowcancellations) {
 
         // Cancellation link.
         $cancellationurl = new moodle_url('cancelsignup.php', array('s' => $session->id, 'backtoallsessions' => $backtoallsessions));

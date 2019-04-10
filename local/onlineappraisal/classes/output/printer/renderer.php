@@ -70,4 +70,11 @@ class renderer extends \local_onlineappraisal\output\renderer {
 
         return $this->render_from_template('local_onlineappraisal/printer_successionplan', $templatevars);
     }
+
+    public function render_leaderplan(\local_onlineappraisal\output\printer\leaderplan $leaderplan) {
+        // Call the export_for_template function.
+        $templatevars = $leaderplan->export_for_template($this);
+
+        return $this->render_from_template('local_onlineappraisal/printer_leaderplan', $templatevars);
+    }
 }

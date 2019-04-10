@@ -102,7 +102,7 @@ class itadmin {
                 $deletefeedbackform = new \local_onlineappraisal\form\itadmin_deletefeedback(
                         null, $customdata, 'post', '', array('class' => 'itadmin_group clearfix')
                     );
-                
+
                 if ($deletefeedbackform->is_submitted() && ($data = $deletefeedbackform->get_data())) {
                     if ($data->reason) {
                         $a = new stdClass();
@@ -247,12 +247,12 @@ class itadmin {
             print_error('error:pagedoesnotexist', 'local_onlineappraisal');
         }
     }
-    
+
     /**
      * Prepare the admin page and form.
      */
     public function prepare_page() {
-        
+
         // Prepare form.
         $customdata = array(
             'search' => $this->search,
@@ -319,7 +319,7 @@ class itadmin {
                 $page = new $class($this);
                 $pagehtml = $this->renderer->render($page);
             }
-            
+
             // Is there an alert.
             $alerthtml = '';
             if (!empty($SESSION->local_onlineappraisal->alert)) {
@@ -337,7 +337,7 @@ class itadmin {
 
     /**
      * Get appraisals for type/state.
-     * 
+     *
      * @global stdClass $DB
      * @global stdClass $USER
      * @param string $type
@@ -346,7 +346,7 @@ class itadmin {
      */
     public function appraisals($search, $type = 'appraisee', $state = 'current') {
         global $DB;
-        if (!$user = $DB->get_record('user', array('idnumber' => strval($search)))){
+        if (!$user = $DB->get_record('user', array('idnumber' => str_pad($search, 6, '0', STR_PAD_LEFT)))){
             return 'nouser';
         }
 
@@ -367,7 +367,7 @@ class itadmin {
 
         $typefilter = "AND aa.{$type}_userid = :userid";
         $params['userid'] = $user->id;
-            
+
         $appraisee = $DB->sql_concat_join("' '", array('u.firstname', 'u.lastname'));
         $appraiser = $DB->sql_concat_join("' '", array('au.firstname', 'au.lastname'));
         $signoff = $DB->sql_concat_join("' '", array('su.firstname', 'su.lastname'));
@@ -425,32 +425,13 @@ class itadmin {
     private function find_appraisal_administrator($appraisal) {
         global $DB;
 
-        $admins = array();
-
-        // Find users with the correct capability.
-        $costcentreadmins = get_users_by_capability(\context_system::instance(), 'local/costcentre:administer');
-        foreach ($costcentreadmins as $csa) {
-            if ($csa->icq == $appraisal->costcentre) {
-                $csa->fullname = fullname($csa);
-                $admins[] = $csa;
-            }
-        }
+        $admins = [];
 
         // Find users from the costcentre configuration.
-        $ccsql = "SELECT * FROM {local_costcentre_user}
-                          WHERE costcentre = :costcentre
-                            AND permissions IN (:perm1, :perm2, :perm3)";
+        $ccroles = costcentre::get_cost_centre_users($appraisal->costcentre, costcentre::BUSINESS_ADMINISTRATOR);
 
-        $params = array('costcentre' => $appraisal->costcentre,
-            'perm1' => costcentre::BUSINESS_ADMINISTRATOR,
-            'perm2' => costcentre::HR_LEADER,
-            'perm3' => costcentre::HR_ADMIN
-            );
-
-        $ccroles = $DB->get_records_sql($ccsql, $params);
-
-        foreach ($ccroles as $ccadmin) {
-            if ($ccadminuser = $DB->get_record('user', array('id' => $ccadmin->userid))) {
+        foreach ($ccroles as $ccadminuserid => $ccadminpermissions) {
+            if ($ccadminuser = $DB->get_record('user', array('id' => $ccadminuserid))) {
                 $ccadminuser->fullname = fullname($ccadminuser);
                 $admins[] = $ccadminuser;
             }
@@ -483,7 +464,7 @@ class itadmin {
         }
 
         $statusoptions = $allstatusoptions;
-        
+
         $customdata = array(
             'search' => $this->search,
             'appraisalid' => $appraisal->id,
@@ -553,7 +534,10 @@ class itadmin {
             $request->datesend = userdate($request->created_date, get_string('strftimedate'));
             if ($request->received_date) {
                 $request->received = true;
+            } else if (empty($request->received_date) && (!empty($request->feedback) || !empty($request->feedback_2))) {
+                $request->received_status = get_string('itadmin:feedbackstatus:draft', 'local_onlineappraisal');
             }
+
             $params = array('search' => $this->search,
                 'itadminaction' => 'removefeedback',
                 'requestid' => $request->id,
@@ -582,7 +566,7 @@ class itadmin {
      */
     private static function userdate($lang,  $date, $format = '', $component = null, $timezone = 99, $fixday = true, $fixhour = true) {
         global $SESSION;
-        
+
         // Force to requested language.
         force_current_language($lang);
 

@@ -30,7 +30,7 @@ $overviewfilesoptions = [
     'accepted_types' => '*'
 ];
 
-$PAGE->requires->css(new moodle_url('/local/custom_certification/styles/custom_certification.css'));
+$PAGE->requires->css(new moodle_url('/local/custom_certification/styles/custom_certification_2019031800.css'));
 
 $action = 'add';
 
@@ -53,4 +53,3 @@ require('tabs.php');
 $detailsform->display();
 
 echo $OUTPUT->footer();
-

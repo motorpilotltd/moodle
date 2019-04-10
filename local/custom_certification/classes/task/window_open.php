@@ -35,7 +35,7 @@ class window_open extends \core\task\scheduled_task
         $params['now'] = time();
         $params['deleted'] = 0;
         $params['visible'] = 1;
-        $completionrecords = $DB->get_records_sql($query, $params);
+        $completionrecords = $DB->get_records_sql($query, $params, 0, 50); // Limit number.
 
         foreach($completionrecords as $completionrecord){
             completion::open_window($completionrecord);

@@ -811,13 +811,14 @@ class certification_report {
                 ce.id as exemptionid,
                 cc.duedate,
                 cc.progress,
-                cc.timeexpires,
                 cc.timecompleted,
                 cua.optional,
                 (CASE WHEN cc.timecompleted > 0 THEN cc.timecompleted WHEN cca.timecompleted IS NOT NULL THEN cca.timecompleted ELSE 0 END) as lasttimecompleted,
                 (CASE WHEN cc.timeexpires > 0 THEN cc.timeexpires WHEN cca.timeexpires IS NOT NULL THEN cca.timeexpires ELSE 0 END) as timeexpires,
+                cca.timewindowsopens as lasttimewindowsopens,
                 h.GRADE as grade,
                 h.GROUP_NAME as groupname,
+                h.DISCIPLINE_NAME as 'disciplinename',
                 h.LOCATION_NAME as locationname,
                 h.EMPLOYMENT_CATEGORY as employmentcategory
             ";
@@ -840,7 +841,8 @@ class certification_report {
                   cca.userid,
                   cca.certifid,
                   MAX(cca.timecompleted) as timecompleted,
-                  MAX(cca.timeexpires) as timeexpires
+                  MAX(cca.timeexpires) as timeexpires,
+                  MAX(cca.timewindowsopens) as timewindowsopens
                 FROM {certif_completions_archive} cca
                 GROUP BY cca.userid, cca.certifid
             ) cca ON cca.userid = cua.userid AND cca.certifid = cua.certifid
@@ -1197,7 +1199,7 @@ class certification_report {
                     'progress' => $progress,
                     'optional' => $compldata->optional,
                     'exemptionid' => $compldata->exemptionid,
-                    'ragstatus' => completion::get_rag_status($compldata->timecompleted, $compldata->duedate, $compldata->optional, 1),
+                    'ragstatus' => completion::get_rag_status($compldata->timecompleted, $compldata->lasttimecompleted, $compldata->duedate, $compldata->lasttimewindowsopens, $compldata->progress, $compldata->optional, 1),
                     'currentcompletiondate' => $compldata->timecompleted
                 ];
 
@@ -1495,13 +1497,14 @@ class certification_report {
 
         $usersheader = [];
         $usersheader[] = get_string('staffid', 'block_certification_report');
-        $usersheader[] = get_string('username');
+        $usersheader[] = get_string('fullnameuser');
         $usersheader[] = get_string('email');
         $usersheader[] = get_string('grade', 'block_certification_report');
         $usersheader[] = get_string('employmentcategory', 'block_certification_report');
         $usersheader[] = get_string('actualregion', 'block_certification_report');
         $usersheader[] = get_string('georegion', 'block_certification_report');
         $usersheader[] = get_string('costcentre', 'block_certification_report');
+        $usersheader[] = get_string('discipline', 'block_certification_report');
         $usersheader[] = get_string('groupname', 'block_certification_report');
         $usersheader[] = get_string('locationname', 'block_certification_report');
 
@@ -1522,7 +1525,8 @@ class certification_report {
                         . ($data['viewtotal']['certifications'][$certification->id]['exempt'] == 1 ? "\n" . get_string('exempt', 'block_certification_report') : '')
                         . ($data['viewtotal']['certifications'][$certification->id]['optional'] == 1 ? "\n" . get_string('optional', 'block_certification_report') : '')
                         . "\n" . get_string('headertotal', 'block_certification_report');
-                $usersheader[] = $certification->shortname;
+                $usersheader[] = $certification->shortname . ' ' . get_string('progress', 'block_certification_report');
+                $usersheader[] = $certification->shortname . ' ' . get_string('completiondate', 'block_certification_report');
             }
         }
 
@@ -1554,6 +1558,7 @@ class certification_report {
                 $line[] = $item['userdata']->georegion;
                 $costcentre = isset($ccs[$item['userdata']->costcentre]) ? $ccs[$item['userdata']->costcentre] : $item['userdata']->costcentre;
                 $line[] = $costcentre == -1 ? '' : $costcentre;
+                $line[] = $item['userdata']->disciplinename;
                 $line[] = $item['userdata']->groupname;
                 $line[] = $item['userdata']->locationname;
             } else {
@@ -1563,20 +1568,22 @@ class certification_report {
                 if (isset($data['viewtotal']['certifications'][$certificationid]) && $data['viewtotal']['certifications'][$certificationid]['progress'] !== null) {
                     if (isset($certification['exemptionid']) && $certification['exemptionid'] > 0) {
                         $line[] = get_string('notrequired', 'block_certification_report');
-                        if ($view != 'users') {
-                            $line[] = get_string('notrequired', 'block_certification_report');
-                        }
-                    } elseif ($certification['progress'] === null) {
-                        $line[] = get_string('na', 'block_certification_report');
-                        if ($view != 'users') {
-                            $line[] = get_string('na', 'block_certification_report');
-                        }
+                        $line[] = get_string('notrequired', 'block_certification_report');
                     } elseif ($view == 'users') {
-                        $cell = $certification['progress'] . '%';
-                        if (isset($certification['completiondate']) && $certification['completiondate'] > 0) {
-                            $cell .= ' (' . userdate($certification['completiondate'], get_string('strftimedatefullshort')) . ')';
+
+                        if ($certification['progress'] === null) {
+                            $line[] = get_string('na', 'block_certification_report');
+                            $line[] = get_string('na', 'block_certification_report');
+                        } else {
+                            // Progress cell.
+                            $line[] = $certification['progress'] . '%';
+                            // Completion date cell.
+                            if (empty($certification['completiondate'])) {
+                                $line[] = '';
+                            } else {
+                                $line[] = strtoupper(userdate($certification['completiondate'], get_string('strftimedatefull', 'block_certification_report')));
+                            }
                         }
-                        $line[] = $cell;
                     } else {
                         $line[] = round(($certification['progress']/100) * $certification['userscounter']);
                         $line[] = $certification['userscounter'];

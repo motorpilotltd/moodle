@@ -39,10 +39,11 @@ switch ($action) {
             foreach ($messages as $message) {
 
                 $message['triggertime'] > 0 ? $message['triggertime'] = strtotime($message['triggertime'] . ' days', 0) : $message['triggertime'] = 0;
+                $message['donotsendtime'] > 0 ? $message['donotsendtime'] = strtotime($message['donotsendtime'] . ' days', 0) : $message['donotsendtime'] = 0;
                 $message['recipient'] == 'true' ? $message['recipient'] = 1 : $message['recipient'] = 0;
 
                 if ($message['subject'] != '') {
-                    \local_custom_certification\certification::set_message_details($message['messageid'], $certifid, $message['messagetype'], $message['recipient'], $message['recipientemail'], $message['subject'], $message['body'], $message['triggertime']);
+                    \local_custom_certification\certification::set_message_details($message['messageid'], $certifid, $message['messagetype'], $message['recipient'], $message['recipientemail'], $message['subject'], $message['body'], $message['triggertime'], $message['donotsendtime']);
                 }
             }
         }

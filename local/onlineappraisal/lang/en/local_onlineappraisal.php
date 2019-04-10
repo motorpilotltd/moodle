@@ -38,18 +38,23 @@ $string['setting:quicklinks'] = 'Quick links';
 $string['setting:quicklinks_desc'] = 'Links to be added to the quick links block under the main navigation block.
 
 Enter each quick link on a new line with format:<br>
-item text, link URL, and language code (optional, comma separated list, can be negated with ! at beginning, for displaying the item to users of the specified language only), separated by pipe characters.
+item text, link URL, language code(s), and page(s), separated by pipe characters.
+language codes and page codes are optional (empty indicates all) and should be comma separated list, can be negated with ! at beginning, for displaying the item for/on specific lanaguages/pages
 
 For example...<br>
-1. Shows for all languages except es, pl, nl<br>
-2. Shows for es<br>
-3. Shows for pl, nl<br>
-4. Shows for all
+1. Shows for all languages except es, pl, nl, on all pages<br>
+2. Shows for es, on all pages<br>
+3. Shows for pl, nl, on all pages<br>
+4. Shows for all languages, on all pages
+5. Shows for all languages, on leaderplan page only
+5. Shows for all languages, on all pages except leaderplan page.
 <pre>
 Contribution Guide|https://example.com/guide|!es,pl,nl
 Guía de Contribución|https://example.com/guide-es|es
 Guide for Poland and the Netherlands|https://example.com/guide-pl-nl|pl,nl
 Guide to Appraisal|https://example.com/guide-appraisal
+Leadership Development Plan|https://example.com/leader-plan||leaderplan
+General Info|https://example.com/general-info||!leaderplan
 </pre>';
 $string['settings'] = 'Online appraisal configuration';
 
@@ -102,6 +107,7 @@ $string['summaries'] = 'Summaries';
 $string['checkin'] = 'Check-in';
 $string['help'] = 'Help';
 $string['successionplan'] = 'Succession Development Plan';
+$string['leaderplan'] = 'Leadership Development Plan (Beta)';
 
 // General alerts.
 $string['alert:language:notdefault'] = '<strong>Warning</strong>: You are not using the default language to view this appraisal. Please ensure you provide answers to the questions in the most appropriate language for everyone involved.';
@@ -219,6 +225,7 @@ $string['appraisals:nocurrent:search'] = 'There are no current appraisals for th
 $string['appraisals:nocurrent:you'] = 'You have no current appraisals.';
 $string['appraisals:select'] = 'Select all appraisals';
 
+$string['activitylogs'] = 'Activity Logs';
 $string['checkins'] = 'Check-ins';
 $string['checkins:latest'] = 'Latest check-in';
 $string['cohort'] = 'Appraisal Cycle';
@@ -226,6 +233,8 @@ $string['comment'] = 'Comment';
 $string['comment:adddots'] = 'Add a comment...';
 $string['comment:addingdots'] = 'Adding...';
 $string['comment:addnewdots'] = 'Add a new comment...';
+$string['comment:ldp:locking'] = ' Leadership Development Plan has been marked as complete by {$a->relateduser}';
+$string['comment:ldp:unlocking'] = 'Leadership Development Plan has been unlocked by {$a->relateduser}';
 $string['comment:sdp:locking'] = ' Succession Development Plan has been locked by {$a->relateduser}';
 $string['comment:sdp:unlocking'] = 'Succession Development Plan has been unlocked by {$a->relateduser}';
 $string['comment:showmore'] = '<i class="fa fa-plus-circle"></i> Show more';
@@ -247,6 +256,8 @@ $string['comment:updated:groupleader:empty'] = 'NOT SET';
 $string['comment:updated:signoff'] = '{$a->ba} changed the sign off user from {$a->oldsignoff} to {$a->newsignoff}.';
 $string['comment:removed:feedback'] = '{$a->itadmin} removed feedback from {$a->sender}, reason: {$a->reason}';
 $string['comment:status:change'] = '{$a->itadmin} changed appraisal status to {$a->status}, reason: {$a->reason}';
+$string['comment:toggleleaderplan:has'] = 'Leadership Development plan has been added to this appraisal by {$a->relateduser}.';
+$string['comment:toggleleaderplan:hasnot'] = 'Leadership Development plan has been removed from this appraisal by {$a->relateduser}.';
 $string['comment:togglesuccessionplan:has'] = 'Succession Development plan has been added to this appraisal by {$a->relateduser}.';
 $string['comment:togglesuccessionplan:hasnot'] = 'Succession Development plan has been removed from this appraisal by {$a->relateduser}.';
 
@@ -259,6 +270,7 @@ $string['f2f:notcomplete'] = 'F2F Not Held';
 
 $string['group'] = 'Cost Centre';
 
+$string['inactive'] = 'INACTIVE';
 $string['index:awaiting'] = 'Awaiting your input';
 $string['index:emptyfilter'] = 'No appraisals match your filter selection.';
 $string['index:filter:label'] = 'Appraisal Cycle';
@@ -269,6 +281,7 @@ $string['index:notstarted:tooltip'] = 'The appraisee has not yet started their a
 $string['index:notables'] = 'Please choose a cost centre or initiate a search to see results.';
 $string['index:printappraisal'] = 'Download Appraisal';
 $string['index:printfeedback'] = 'Download Feedback';
+$string['index:printleaderplan'] = 'Download Leadership Development Plan';
 $string['index:printsuccessionplan'] = 'Download Succession Development Plan';
 $string['index:search'] = 'Search by Appraisee name';
 $string['index:search:hrleader'] = 'Search across cost centres by Appraisee name';
@@ -292,9 +305,14 @@ $string['index:toptext:signoff'] = 'This dashboard shows any current and archive
 $string['index:toptext:itadmin'] = 'This dashboard shows tools to manage user Appraisals';
 $string['index:view'] = 'View Appraisal';
 
+$string['leaderplan:has'] = 'Has Leadership Development Plan';
+$string['leaderplan:hasnot'] = 'Doesn\'t have Leadership Development Plan';
+$string['leaderplan:th'] = 'LDP';
+
 $string['progress'] = 'Progress';
 $string['print:button:appraisal'] = '<i class="fa fa-download"></i> Download Appraisal';
 $string['print:button:feedback'] = '<i class="fa fa-download"></i> Download Feedback';
+$string['print:button:leaderplan'] = '<i class="fa fa-download"></i> Download Leadership Development Plan';
 $string['print:button:successionplan'] = '<i class="fa fa-download"></i> Download Succession Development Plan';
 
 $string['successionplan:has'] = 'Has Succession Development Plan';
@@ -336,6 +354,8 @@ $string['success:f2fdate:update'] = 'F2F date has been updated.';
 
 $string['success:togglef2f:complete'] = 'F2F has been marked as held.';
 $string['success:togglef2f:notcomplete'] = 'F2F has been marked as not held.';
+$string['success:toggleleaderplan:has'] = 'Leadership Development Plan has been added to this appraisal.';
+$string['success:toggleleaderplan:hasnot'] = 'Leadership Development Plan has been removed from this appraisal.';
 $string['success:togglesuccessionplan:has'] = 'Succession Development Plan has been added to this appraisal.';
 $string['success:togglesuccessionplan:hasnot'] = 'Succession Development Plan has been removed from this appraisal.';
 
@@ -413,6 +433,10 @@ $string['error:togglerequired:reason:cancel'] = 'Cancel';
 $string['error:togglerequired:reason:continue'] = 'Continue';
 $string['error:togglef2f:complete'] = 'Could not mark F2F as held.';
 $string['error:togglef2f:notcomplete'] = 'Could not mark F2F as not held.';
+$string['error:toggleleaderplan:confirm:add'] = 'This will add the requirement to complete a Leadership Development Plan to this appraisal.<br />Are you sure you wish to proceed?<br />{$a->yes} {$a->no}';
+$string['error:toggleleaderplan:confirm:remove'] = 'This will remove the requirement to complete a Leadership Development Plan from this appraisal.<br />Are you sure you wish to proceed?<br />{$a->yes} {$a->no}';
+$string['error:toggleleaderplan:has'] = 'Could not add Leadership Development Plan to this appraisal.';
+$string['error:toggleleaderplan:hasnot'] = 'Could not remove Leadership Development Plan from this appraisal.';
 $string['error:togglesuccessionplan:confirm:add'] = 'This will add the requirement to complete a Succession Development Plan to this appraisal.<br />Are you sure you wish to proceed?<br />{$a->yes} {$a->no}';
 $string['error:togglesuccessionplan:confirm:remove'] = 'This will remove the requirement to complete a Succession Development Plan from this appraisal.<br />Are you sure you wish to proceed?<br />{$a->yes} {$a->no}';
 $string['error:togglesuccessionplan:has'] = 'Could not add Succession Development Plan to this appraisal.';
@@ -440,6 +464,7 @@ $string['error:permission:appraisalcycle:update'] = 'You do not have permission 
 $string['error:permission:comment:add'] = 'You do not have permission to add a comment.';
 $string['error:permission:f2f:add'] = 'You do not have permission to change the F2F date.';
 $string['error:permission:f2f:complete'] = 'You do not have permission to change the F2F held status.';
+$string['error:permission:leaderplan:toggle'] = 'You do not have permission to add/remove a Leadership Development Plan.';
 $string['error:permission:successionplan:toggle'] = 'You do not have permission to add/remove a Succession Development Plan.';
 $string['error:printer:general'] = 'Error whilst generating PDF:<br />{$a}';
 
@@ -858,6 +883,62 @@ $string['email:body:togglesuccessionplan:appraiser:hasnot'] = '<p>Dear {{apprais
 <p>This is an auto generated message sent to {{appraiseremail}} from {{hrleaderemail}} by moodle.arup.com - Succession Development Plan {{addedremoved}} (Appraiser)</p>
 <p>Trouble viewing? To view the appraisal online please copy and paste this URL {{linkappraiser}} into your browser.</p>';
 
+// Leadership Development Plan add/remove EMAIL.
+$string['email:extras:statuswhich:start'] = 'when you have started your appraisal';
+$string['email:extras:statuswhich:now'] = 'now';
+$string['email:extras:statuswhich:draft'] = 'when the appraisee has submitted a draft of their appraisal';
+$string['email:extras:linkwhich:dashboard'] = 'your dashboard';
+$string['email:extras:linkwhich:overview'] = 'appraisal overview';
+$string['email:extras:linkwhich:leaderplan'] = 'appraisal leadership development plan';
+
+$string['email:subject:toggleleaderplan:appraisee:has'] = 'Leadership Development Plan added to your appraisal';
+$string['email:body:toggleleaderplan:appraisee:has'] = '<p>Dear {{appraiseefirstname}},</p>
+<p>I have added a Leadership Development Plan to your appraisal which can be viewed {{statusappraiseewhich}}.</p>
+<p><a href="{{linkappraisee}}">View {{linkappraiseewhich}}</a>.</p>
+<p>Kind regards,<br />
+    {{hrleaderfirstname}} {{hrleaderlastname}}</p>
+<br />
+<hr>
+<p>Further assistance can be found <a href="https://moodle.arup.com/appraisal/help">here</a> alternatively you can contact your local HR group or raise a Service Desk ticket.</p>
+<p>This is an auto generated message sent to {{appraiseeemail}} from {{hrleaderemail}} by moodle.arup.com - Leadership Development Plan Added (Appraisee)</p>
+<p>Trouble viewing? To view the appraisal online please copy and paste this URL {{linkappraisee}} into your browser.</p>';
+
+$string['email:subject:toggleleaderplan:appraisee:hasnot'] = 'Leadership Development Plan removed from your appraisal';
+$string['email:body:toggleleaderplan:appraisee:hasnot'] = '<p>Dear {{appraiseefirstname}},</p>
+<p>I have removed the Leadership Development Plan from your appraisal.</p>
+<p><a href="{{linkappraisee}}">View {{linkappraiseewhich}}</a>.</p>
+<p>Kind regards,<br />
+    {{hrleaderfirstname}} {{hrleaderlastname}}</p>
+<br />
+<hr>
+<p>Further assistance can be found <a href="https://moodle.arup.com/appraisal/help">here</a> alternatively you can contact your local HR group or raise a Service Desk ticket.</p>
+<p>This is an auto generated message sent to {{appraiseeemail}} from {{hrleaderemail}} by moodle.arup.com - Leadership Development Plan Removed (Appraisee)</p>
+<p>Trouble viewing? To view the appraisal online please copy and paste this URL {{linkappraisee}} into your browser.</p>';
+
+$string['email:subject:toggleleaderplan:appraiser:has'] = 'Appraisal ({{appraiseefirstname}} {{appraiseelastname}}) - Leadership Development Plan Added';
+$string['email:body:toggleleaderplan:appraiser:has'] = '<p>Dear {{appraiserfirstname}},</p>
+<p>I have added a Leadership Development Plan to the appraisal for {{appraiseefirstname}} {{appraiseelastname}} which can be viewed {{statusappraiserwhich}}.</p>
+<p><a href="{{linkappraiser}}">View {{linkappraiserwhich}}</a>.</p>
+<p>Kind regards,<br />
+    {{hrleaderfirstname}} {{hrleaderlastname}}</p>
+<br />
+<hr>
+<p>Further assistance can be found <a href="https://moodle.arup.com/appraisal/help">here</a> alternatively you can contact your local HR group or raise a Service Desk ticket.</p>
+<p>This is an auto generated message sent to {{appraiseremail}} from {{hrleaderemail}} by moodle.arup.com - Leadership Development Plan {{addedremoved}} (Appraiser)</p>
+<p>Trouble viewing? To view the appraisal online please copy and paste this URL {{linkappraiser}} into your browser.</p>';
+
+$string['email:subject:toggleleaderplan:appraiser:hasnot'] = 'Appraisal ({{appraiseefirstname}} {{appraiseelastname}}) - Leadership Development Plan Removed';
+$string['email:body:toggleleaderplan:appraiser:hasnot'] = '<p>Dear {{appraiserfirstname}},</p>
+<p>I have removed the Leadership Development Plan from the appraisal for {{appraiseefirstname}} {{appraiseelastname}}.</p>
+<p><a href="{{linkappraiser}}">View {{linkappraiserwhich}}</a>.</p>
+<p>Kind regards,<br />
+    {{hrleaderfirstname}} {{hrleaderlastname}}</p>
+<br />
+<hr>
+<p>Further assistance can be found <a href="https://moodle.arup.com/appraisal/help">here</a> alternatively you can contact your local HR group or raise a Service Desk ticket.</p>
+<p>This is an auto generated message sent to {{appraiseremail}} from {{hrleaderemail}} by moodle.arup.com - Leadership Development Plan {{addedremoved}} (Appraiser)</p>
+<p>Trouble viewing? To view the appraisal online please copy and paste this URL {{linkappraiser}} into your browser.</p>';
+
 // Forms.
 
 // Standard alerts (Can be customised on a per form basis - see feedback/addfeedback for examples).
@@ -1119,7 +1200,7 @@ $string['form:successionplan:readiness:answer:1'] = 'Ready Now';
 $string['form:successionplan:readiness:answer:2'] = 'Ready in 1-2 years';
 $string['form:successionplan:readiness:answer:3'] = 'Ready in 3-5 years';
 $string['form:successionplan:readiness:answer:4'] = 'N/A';
-$string['form:successionplan:potential'] = 'Potential Future Roles (use CTRL key to multi-select)';
+$string['form:successionplan:potential'] = 'Potential Future Roles';
 $string['form:successionplan:potential:answer:1'] = 'Business Leader';
 $string['form:successionplan:potential:answer:2'] = 'Group Leader';
 $string['form:successionplan:potential:answer:3'] = 'Practice Leader (Americas Region ONLY)';
@@ -1140,6 +1221,34 @@ $string['form:successionplan:confirm:unlock:title'] = 'Unlock Succession Develop
 $string['form:successionplan:confirm:unlock:question'] = 'Are you sure you wish to unlock this Succession Development Plan?';
 $string['form:successionplan:confirm:unlock:yes'] = 'Yes, unlock it';
 $string['form:successionplan:confirm:unlock:no'] = 'No, leave it locked';
+
+// Leadership plan.
+$string['form:leaderplan:cardinfo:702010link'] = '70 | 20 | 10';
+$string['form:leaderplan:cardinfo:none'] = 'You have not added any 70 | 20 | 10 information yet.';
+$string['form:leaderplan:title'] = 'Leadership Development Plan (Beta)';
+$string['form:leaderplan:intro'] = 'This section informs the leadership plan. This will be shared with region board, management board as appropriate. ';
+$string['form:leaderplan:ldppotential'] = 'Potential Future Roles (Choose and/or add alternative)';
+$string['form:leaderplan:ldppotential:answer:1'] = 'Greater scope and influence in current role';
+$string['form:leaderplan:ldppotential:answer:2'] = 'Business Leader';
+$string['form:leaderplan:ldppotential:answer:3'] = 'Group Leader';
+$string['form:leaderplan:ldppotential:answer:4'] = 'Practice Leader (Americas Region ONLY)';
+$string['form:leaderplan:ldppotential:answer:5'] = 'Project Director';
+$string['form:leaderplan:ldppotential:answer:6'] = 'Technical Leader';
+$string['form:leaderplan:ldppotential:answer:7'] = 'Business Services Leader';
+$string['form:leaderplan:ldpstrengths'] = 'Strengths';
+$string['form:leaderplan:ldpstrengths:add'] = 'Add another strength';
+$string['form:leaderplan:ldpstrengths:add:noscript'] = 'Save to add another strength input';
+$string['form:leaderplan:ldpdevelopmentareas'] = 'Areas for development';
+$string['form:leaderplan:ldpdevelopmentareas:add'] = 'Add another area for development';
+$string['form:leaderplan:ldpdevelopmentareas:add:noscript'] = 'Save to add another area for development input';
+$string['form:leaderplan:ldpdevelopmentplan'] = 'Leadership Development Plan<br>(If an agreed development objective is already captured in your appraisal, please feel free to reference that here)';
+$string['form:leaderplan:ldplocked'] = 'Tick here to indicate that the Leadership Development Plan has been reviewed and is complete. This will lock the fields and prevent further changes being made. To enable editing, untick the box at any time.';
+$string['form:leaderplan:ldplocked:tooltip'] = 'To be completed by the supervisor (appraiser)';
+$string['form:leaderplan:islocked'] = 'Leadership Development Plan has been marked as complete and cannot be edited unless unlocked.';
+$string['form:leaderplan:confirm:unlock:title'] = 'Unlock Leadership Development Plan';
+$string['form:leaderplan:confirm:unlock:question'] = 'Are you sure you wish to unlock this Leadership Development Plan?';
+$string['form:leaderplan:confirm:unlock:yes'] = 'Yes, unlock it';
+$string['form:leaderplan:confirm:unlock:no'] = 'No, leave it locked';
 
 // Events.
 $string['eventappraisaladminviewed'] = 'Appraisal admin viewed';
@@ -1405,6 +1514,7 @@ $string['feedbackrequests:th:completeddate'] = 'Completed date';
 $string['feedbackrequests:th:actions'] = 'Actions';
 $string['feedbackrequests:emailcopy'] = 'Email me a copy';
 $string['feedbackrequests:submitfeedback'] = 'Submit feedback';
+$string['feedbackrequests:continuefeedback'] = 'Continue feedback';
 $string['email:subject:myfeedback'] = 'Your appraisal feedback for {{appraisee}}';
 $string['email:body:myfeedback'] = '<p>Dear {{recipient}},</p>
 <p>You submitted the following {{confidential}} feedback for {{appraisee}}:</p> <div>{{feedback}}</div> <div>{{feedback_2}}</div>';
@@ -1444,6 +1554,7 @@ $string['introduction:targetedmessage'] = '<div class="alert alert-info">For tho
 $string['pdf:appraisername'] = 'Appraiser Name';
 
 $string['pdf:checkins:none'] = 'No check-ins to display';
+$string['pdf:activitylogs:none'] = 'No activity logs to display';
 $string['pdf:completed'] = 'Appraisal completed:';
 
 $string['pdf:duedate'] = 'Appraisal Due Date';
@@ -1478,6 +1589,13 @@ $string['pdf:heading:summaries'] = 'Overall summaries';
 $string['pdf:heading:summary'] = 'Appraisal Summary';
 $string['pdf:helddate'] = 'Appraisal Date';
 
+$string['pdf:leaderplan:appraiser'] = 'Current performance summary (as per appraisal)';
+$string['pdf:leaderplan:comments'] = 'Career aspiration and next steps (as per appraisal)<br>Appraiser comments';
+$string['pdf:leaderplan:ldplocked'] = 'Has this plan been marked as complete?';
+$string['pdf:leaderplan:progress'] = 'Career aspiration and next steps (as per appraisal)<br>Appraisee comments';
+$string['pdf:leaderplan:seventy'] = 'Learning that takes place in the course of your work - about 70% (as per appraisal)';
+$string['pdf:leaderplan:ten'] = 'Learning from formal courses - face to face or online - about 10% (as per appraisal)';
+$string['pdf:leaderplan:twenty'] = 'Learning from other people - about 20% (as per appraisal)';
 $string['pdf:learninghistory:classroom'] = 'Classroom';
 $string['pdf:learninghistory:elearning'] = 'Classroom';
 $string['pdf:learninghistory:none'] = 'No learning history available.';
@@ -1540,10 +1658,10 @@ $string['z:legacy:pdf:summary:six_month_review'] = 'Six Month Review Comments:';
 // Itadmin lines.
 $string['itadmin:appraisaladministrator'] = 'Appraisal Administrator';
 $string['itamdin:appraisalsummary'] = 'Appraisal Summary';
-$string['itadmin:changeroles'] = 'If you need to change the Appraiser, Leader Sign Off or Sign Off then you will need to contact the appraisal administrator listed below for this cost centre {$a}';
+$string['itadmin:changeroles'] = 'If you need to change the Appraiser, Leader Sign Off or Sign Off then you will need to contact one of the appraisal administrators, listed below, for this cost centre ({$a})';
 $string['itadmin:appraisalsummary'] = 'Appraisal Summary';
 $string['itadmin:appraisalstatus'] = 'Appraisal Status';
-$string['itadmin:statuschangetext'] = 'You can change the status of the appraisal by using the drop down below. NB: before the change occurs you will be asked to enter a reason (i.e. Service Desk Ticket) that will be displayed to all who have access to the appraisal to ensure transparency and have a full audit trail.';
+$string['itadmin:statuschangetext'] = 'You can change the status of the appraisal by using the drop down below. NB: before the change occurs you will be asked to enter a reason (i.e. Service Desk Ticket) that will be displayed to all who have access to the appraisal to ensure transparency and that there is a full audit trail.';
 $string['itadmin:changestatus'] = 'Change Status';
 $string['itadmin:change'] = 'Change';
 $string['itadmin:selectstatus'] = 'Select Status';
@@ -1557,6 +1675,7 @@ $string['itadmin:deletefeedback'] = 'Delete Feedback';
 $string['itadmin:feedbackdeleted'] = 'Feedback Deleted';
 $string['itadmin:faqcontent'] = '<h4>How do I change the status of an appraisal?</h4>
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ullamcorper, metus laoreet efficitur maximus, elit lorem egestas justo, sed lacinia nisl urna a nibh. Vestibulum vel nunc massa. Cras sit amet turpis accumsan, luctus felis sed, elementum diam. Sed eu metus tempor turpis auctor scelerisque at vel lectus. Pellentesque odio turpis, venenatis id nulla in, eleifend maximus sem. Aliquam vitae vestibulum felis. Integer ultrices neque vitae odio aliquam, nec tristique enim vulputate. Pellentesque porta sagittis diam vitae facilisis. Duis eleifend iaculis neque, non luctus turpis cursus sed. In eget nibh quis enim finibus pharetra vel fringilla arcu. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.';
+$string['itadmin:feedbackstatus:draft'] = "DRAFT";
 
 // Fake blocks.
 $string['navigation'] = 'Navigation';

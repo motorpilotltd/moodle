@@ -26,6 +26,7 @@ $string['tasktidyusers'] = 'Tidy users';
 
 // Capabilities.
 $string['costcentre:administer'] = 'Administer cost centres';
+$string['costcentre:administer_hr'] = 'Access restricted fields';
 
 // Menu items.
 $string['menu:index'] = 'Cost centre setup';

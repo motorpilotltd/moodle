@@ -53,3 +53,5 @@ $string['unmatchedrecord_received'] = 'Unmatched lynda learning record received'
 $string['cachedef_full_taxonomy'] = 'Lynda taxonomy';
 $string['cachedef_lyndacourses'] = 'Lynda courses';
 $string['cachedef_users'] = 'Lynda users';
+$string['noltikeys'] = 'Lynda.com is not available in your region. LTI keys are not configured for your region';
+$string['notenabledforregion'] = 'Lynda.com is not enabled for your your region';

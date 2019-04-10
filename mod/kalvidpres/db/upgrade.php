@@ -88,8 +88,21 @@ function xmldb_kalvidpres_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Kalvidassign savepoint reached.
+        // Kalvidpres savepoint reached.
         upgrade_mod_savepoint(true, 2014023000.01, 'kalvidpres');
+    }
+
+    if ($oldversion < 2017120635) {
+
+        // Changing type of field video_title on table kalvidpres to text.
+        $table = new xmldb_table('kalvidpres');
+        $field = new xmldb_field('video_title', XMLDB_TYPE_TEXT);
+
+        // Launch change of type for field video_title.
+        $dbman->change_field_type($table, $field);
+
+        // Kalvidpres savepoint reached.
+        upgrade_mod_savepoint(true, 2017120635, 'kalvidpres');
     }
 
     return true;

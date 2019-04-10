@@ -149,7 +149,6 @@ class block_certification_report_renderer extends plugin_renderer_base {
         $templatevars->url = $filterurl->out();
         $attributes = [
             'id' => 'copy-to-clipboard-popover',
-            'data-toggle' => 'popover',
             'data-content' => $this->render_from_template('block_certification_report/url_popover', $templatevars),
             'data-placement' => 'top',
             'data-html' => true,
@@ -209,7 +208,7 @@ class block_certification_report_renderer extends plugin_renderer_base {
                 } else {
                     $cell = $certification['progress'] . '%';
                     if ($certification['completiondate'] > 0) {
-                        $cell .= ' (' . userdate($certification['completiondate'], get_string('strftimedatefullshort')) . ')';
+                        $cell .= ' (' . strtoupper(userdate($certification['completiondate'], get_string('strftimedatefull', 'block_certification_report'))) . ')';
                     }
                     if ($this->canreset && $certification['currentcompletiondate'] > 0) {
                         $reset = html_writer::tag(
@@ -224,7 +223,7 @@ class block_certification_report_renderer extends plugin_renderer_base {
                         $reset = '';
                     }
                     $cell = $reset . html_writer::span($cell);
-                    $cell .= html_writer::span('', 'report-circle status-' . $certification['ragstatus'] . ' setexemption', ['data-userid' => $user['userdata']->userid, 'data-certifid' => $certificationid]);
+                    $cell .= html_writer::span('', 'report-shape-' . $certification['ragstatus'] . ' setexemption', ['data-userid' => $user['userdata']->userid, 'data-certifid' => $certificationid]);
                     $cell = new html_table_cell($cell);
                     $cell->attributes['class'] = 'text-nowrap td-circle';
                     $cell->id = 'certif_data_' . $user['userdata']->userid . '_' . $certificationid;

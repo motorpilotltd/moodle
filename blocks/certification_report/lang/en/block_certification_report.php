@@ -82,9 +82,13 @@ $string['choose_root_category'] = 'Choose root category';
 $string['choose_root_category_desc'] = 'Choose the category that will act as the root for certification reporting.';
 $string['header:filter'] = 'Filters';
 
+$string['activate_ticker_report'] = 'Activate ticker report';
+$string['activate_ticker_report_desc'] = 'Activates task that sends mandatory training report to moodle.ticker@arup.com.<br>If activating check task itself is enabled too!';
+
 $string['staffid'] = 'Staff ID';
 $string['grade'] = 'Grade';
 $string['employmentcategory'] = 'Employment Category';
+$string['discipline'] = 'Discipline';
 $string['groupname'] = 'Group Name';
 $string['locationname'] = 'Location Name';
 $string['employmentcategories'] = 'Employment Categories';
@@ -93,12 +97,17 @@ $string['locationnames'] = 'Location Names';
 $string['grades'] = 'Grades';
 $string['email'] = 'Email';
 
+$string['progress'] = 'Progress';
+$string['completiondate'] = 'Completion date';
+
 $string['resetcertification'] = 'Reset Certification';
 
 $string['nodata'] = 'There are no certification assignments for the filter options selected.';
 
 $string['modal:close'] = 'Close';
 
+// Date format
+$string['strftimedatefull'] = '%d-%b-%Y';
 // Tasks.
 $string['taskexportreports'] = 'Export reports';
 

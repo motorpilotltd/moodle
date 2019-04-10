@@ -29,10 +29,6 @@ $observers = [
         'callback'    => 'local_custom_certification_observer::certification_completed',
     ],
     [
-        'eventname'   => '\local_custom_certification\event\certification_expired',
-        'callback'    => 'local_custom_certification_observer::certification_expired',
-    ],
-    [
         'eventname'   => '\core\event\course_completed',
         'callback'    => 'local_custom_certification_observer::course_completed',
     ]

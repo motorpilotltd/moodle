@@ -2453,3 +2453,53 @@ function scorm_update_calendar(stdClass $scorm, $cmid) {
 
     return true;
 }
+
+/* BEGIN CORE MOD */
+/**
+ * Get document domain from the scorm reference
+ *
+ * @param stdClass $scorm
+ * @return null|string
+ */
+function scorm_get_document_domain(stdClass $scorm) {
+    if ($scorm->scormtype !== SCORM_TYPE_EXTERNAL) {
+        return null;
+    }
+    $refurl = new moodle_url($scorm->reference);
+    $refurl = explode('/', $scorm->reference);
+    unset($refurl[count($refurl) - 1]);
+
+    $docurl = new moodle_url(implode('/', $refurl));
+    $docurl->set_slashargument('/document_domain.txt');
+
+    $docdom = @file_get_contents($docurl);
+    if (!$docdom) {
+        return null;
+    } else {
+        $docdom = trim($docdom);
+    }
+
+    $docdomurl = new moodle_url($docdom);
+    $docdomurl->set_scheme('http');
+    if (scorm_url_appears_valid_url($docdomurl->out())) {
+        return $docdom;
+    }
+    return null;
+}
+
+/**
+ * This methods does weak url validation, we are looking for major problems only,
+ * no strict RFE validation.
+ *
+ * @param $url
+ * @return bool true is seems valid, false if definitely not valid URL
+ */
+function scorm_url_appears_valid_url($url) {
+    if (preg_match('/^(\/|https?:|ftp:)/i', $url)) {
+        // note: this is not exact validation, we look for severely malformed URLs only
+        return (bool)preg_match('/^[a-z]+:\/\/([^:@\s]+:[^@\s]+@)?[a-z0-9_\.\-]+(:[0-9]+)?(\/[^#]*)?(#.*)?$/i', $url);
+    } else {
+        return (bool)preg_match('/^[a-z]+:\/\/...*$/i', $url);
+    }
+}
+/* END CORE MOD */

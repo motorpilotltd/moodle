@@ -72,6 +72,7 @@ class index {
 
     private $canviewvip = array();
     private $cantogglesdp = array();
+    private $cantoggleldp = array();
 
     /**
      * Constructor.
@@ -193,7 +194,8 @@ class index {
         // Can use is_business_adminstrator() function from here.
         $navbarmenu = new navbarmenu();
         $this->is['businessadmin'] = $navbarmenu->is_business_administrator($this->user->id);
-        $this->is['costcentreadmin'] = has_capability('local/costcentre:administer', \context_system::instance()) || costcentre::is_user($this->user->id, costcentre::BUSINESS_ADMINISTRATOR);
+        $this->is['costcentreadmin'] = has_capability('local/costcentre:administer', \context_system::instance()) || costcentre::is_user($this->user->id, costcentre::BUSINESS_ADMINISTRATOR)
+                || (has_capability('local/costcentre:administer_hr', \context_system::instance()) && costcentre::is_user($this->user->id, [costcentre::HR_LEADER, costcentre::HR_ADMIN]));
 
     }
 
@@ -393,7 +395,7 @@ class index {
     public function get_groups() {
         global $DB;
 
-        $params = array(
+        $groupsparams = array(
             'userid' => $this->user->id,
             'bitandhrl' => costcentre::HR_LEADER,
             'bitandhra' => costcentre::HR_ADMIN,
@@ -402,55 +404,49 @@ class index {
         $bitandhrl = $DB->sql_bitand('lcu.permissions', costcentre::HR_LEADER);
         $bitandhra = $DB->sql_bitand('lcu.permissions', costcentre::HR_ADMIN);
 
-        $sql = "
-            SELECT
-                DISTINCT(lc.costcentre)
-            FROM {local_costcentre} lc
-            JOIN {local_costcentre_user} lcu ON lcu.costcentre = lc.costcentre
-            WHERE
-                lc.enableappraisal = 1
-                AND lcu.userid = :userid
-                AND ({$bitandhrl} = :bitandhrl OR {$bitandhra} = :bitandhra)
-            ORDER BY
-                lc.costcentre ASC";
+        $groupssql = "SELECT DISTINCT lc.costcentre, lc.enableappraisal
+                  FROM {local_costcentre} lc
+                  JOIN {local_costcentre_user} lcu ON lcu.costcentre = lc.costcentre
+                 WHERE lcu.userid = :userid
+                       AND ({$bitandhrl} = :bitandhrl OR {$bitandhra} = :bitandhra)
+              ORDER BY lc.enableappraisal DESC, lc.costcentre ASC";
 
-        $groups = $DB->get_records_sql($sql, $params);
+        $groups = $DB->get_records_sql($groupssql, $groupsparams);
 
         $options = array('' => get_string('form:choosedots', 'local_onlineappraisal'));
         foreach($groups as $group) {
+            // If disabled are there any appraisals attached...
+            if (!$group->enableappraisal) {
+                $appsql = "SELECT COUNT(id)
+                             FROM {local_appraisal_appraisal}
+                            WHERE appraisee_userid IN (SELECT id
+                                                         FROM {user}
+                                                        WHERE icq = :icq)
+                              AND deleted = 0";
+                if (!$DB->count_records_sql($appsql, ['icq' => $group->costcentre])) {
+                    // No appraisals, continue to not move into options list.
+                    continue;
+                }
+            }
             // Find the group name.
-            $sql = "
-                SELECT
-                    u.department
-                FROM
-                    {user} u
-                INNER JOIN
-                    (SELECT
-                        MAX(id) maxid
-                    FROM
-                        {user} inneru
-                    INNER JOIN
-                        (SELECT
-                            MAX(timemodified) as maxtimemodified
-                        FROM
-                            {user}
-                        WHERE
-                            icq = :icq1
-                        ) groupedicq
-                        ON inneru.timemodified = groupedicq.maxtimemodified
-                    WHERE
-                        icq = :icq2
-                    ) groupedid
-                    ON u.id = groupedid.maxid
-                WHERE
-                    u.icq = :icq3";
-            $params = array_fill_keys(array('icq1', 'icq2', 'icq3'), $group->costcentre);
-            $groupname = $DB->get_field_sql($sql, $params);
-            $options = $options + array($group->costcentre => $group->costcentre.' - ' . $groupname);
+            $groupsql = "SELECT u.department
+                      FROM {user} u
+                INNER JOIN (SELECT MAX(id) maxid
+                              FROM {user} inneru
+                        INNER JOIN (SELECT MAX(timemodified) as maxtimemodified
+                                      FROM {user}
+                                     WHERE icq = :icq1) groupedicq ON inneru.timemodified = groupedicq.maxtimemodified
+                             WHERE icq = :icq2) groupedid ON u.id = groupedid.maxid
+                     WHERE u.icq = :icq3";
+            $groupparams = array_fill_keys(array('icq1', 'icq2', 'icq3'), $group->costcentre);
+            $groupname = $DB->get_field_sql($groupsql, $groupparams);
+            $disabled = ($group->enableappraisal) ? '' : ' - ' . get_string('inactive', 'local_onlineappraisal');
+            $options = $options + array($group->costcentre => $group->costcentre.' - ' . $groupname . $disabled);
             if ($this->is['hrleader']) {
-                // Check if can actually view VIP and toggle SDP (HR_LEADER _only_).
+                // Check if can actually view VIP and toggle SDP/LDP (HR_LEADER _only_).
                 $this->canviewvip[$group->costcentre] =
-                        $this->cantogglesdp[$group->costcentre] = costcentre::is_user($this->user->id, costcentre::HR_LEADER, $group->costcentre);
+                        $this->cantogglesdp[$group->costcentre] =
+                        $this->cantoggleldp[$group->costcentre] = costcentre::is_user($this->user->id, costcentre::HR_LEADER, $group->costcentre);
             }
         }
 
@@ -475,7 +471,7 @@ class index {
         $appraiseefilter = '';
         $cyclejoin = '';
         $cyclefilter = '';
-        $orderby = 'u.lastname ASC, u.firstname ASC';
+        $orderby = 'u.lastname ASC, u.firstname ASC, aa.created_date DESC';
 
         if (!$appraiseeid) {
             // Only applicable if not searching for a specific aprpaisee.
@@ -974,7 +970,8 @@ class index {
                 $return->message .= get_string('error:appraisal:create:appraiseremail', 'local_onlineappraisal');
             }
 
-            // Add comment
+            // Add comment.
+            $a = new stdClass();
             $a->status = get_string('status:1', 'local_onlineappraisal');
             $a->relateduser = fullname($USER);
             $comment = comments::save_comment(
@@ -990,6 +987,173 @@ class index {
             }
         } else {
             $return->message = get_string("error:togglesuccessionplan:has{$not}", 'local_onlineappraisal');
+        }
+
+        return $return;
+    }
+
+    /**
+     * Toggle leaderplan for an appraisal.
+     *
+     * @global \moodle_database $DB
+     * @global stdClass $USER
+     * @return stdClass result
+     * @throws moodle_exception
+     */
+    public static function toggle_leaderplan() {
+        global $DB, $USER;
+
+        $appraisalid = required_param('appraisalid', PARAM_INT);
+        $confirm = optional_param('confirm', false, PARAM_BOOL);
+
+        $params = array(
+            'id' => $appraisalid,
+            'archived' => 0,
+            'deleted' => 0
+        );
+        $appraisal = $DB->get_record('local_appraisal_appraisal', $params);
+        if (empty($appraisal)) {
+            // The appraisal doesn't exist.
+            throw new moodle_exception('error:loadappraisal', 'local_onlineappraisal');
+        }
+
+        $appraisee = $DB->get_record('user', ['id' => $appraisal->appraisee_userid]);
+        $appraiser = $DB->get_record('user', ['id' => $appraisal->appraiser_userid]);
+
+        if (empty($appraisee) || empty($appraiser)) {
+            // Not valid users.
+            throw new moodle_exception('error:loadusers', 'local_onlineappraisal');
+        }
+
+        $ishrleader = $appraisee->icq && costcentre::is_user(
+                $USER->id,
+                [costcentre::HR_LEADER, costcentre::HR_ADMIN],
+                $appraisee->icq
+                );
+        if ($ishrleader) {
+            $viewingas = 'hrleader';
+        } else {
+            $viewingas = null;
+        }
+
+        if (!permissions::is_allowed('leaderplan:toggle', $appraisal->permissionsid, $viewingas, $appraisal->archived, $appraisal->legacy)) {
+            throw new moodle_exception('error:permission:leaderplan:toggle', 'local_onlineappraisal');
+        }
+
+        $return = new stdClass();
+
+        if (!$confirm) {
+            $return->success = false;
+            $return->data = 'confirm';
+            $a = new stdClass();
+            $a->yes = \html_writer::link(
+                    '#',
+                    get_string('form:confirm:cancel:yes', 'local_onlineappraisal'),
+                    array('class' => 'btn btn-primary m-t-5 oa-toggleleaderplan-confirm', 'data-appraisalid' => $appraisalid, 'data-confirm' => 1)
+                    );
+            $a->no = \html_writer::link(
+                    '#',
+                    get_string('form:confirm:cancel:no', 'local_onlineappraisal'),
+                    array('class' => 'btn btn-default m-t-5 oa-toggleleaderplan-confirm', 'data-appraisalid' => $appraisalid, 'data-confirm' => 0)
+                    );
+            if (!$appraisal->leaderplan) {
+                // Confirm adding.
+                $return->message = get_string('error:toggleleaderplan:confirm:add', 'local_onlineappraisal', $a);
+            } else {
+                // Confirm removing.
+                $return->message = get_string('error:toggleleaderplan:confirm:remove', 'local_onlineappraisal', $a);
+            }
+            return $return;
+        }
+
+        // Toggle leaderplan in appraisal record.
+        $appraisal->leaderplan = $appraisal->leaderplan ? 0 : 1;
+        $appraisal->modified_date = time();
+        $return->data = (bool) $appraisal->leaderplan;
+        $return->success = $DB->update_record('local_appraisal_appraisal', $appraisal);
+
+        $not = $appraisal->leaderplan ? '' : 'not';
+        if ($return->success) {
+            $return->message = get_string("success:toggleleaderplan:has{$not}", 'local_onlineappraisal');
+
+            // Send emails.
+            $emailvars = new stdClass();
+            $emailvars->appraiseefirstname = $appraisee->firstname;
+            $emailvars->appraiseelastname = $appraisee->lastname;
+            $emailvars->appraiseeemail = $appraisee->email;
+            $emailvars->appraiserfirstname = $appraiser->firstname;
+            $emailvars->appraiserlastname = $appraiser->lastname;
+            $emailvars->appraiseremail = $appraiser->email;
+            $emailvars->hrleaderfirstname = $USER->firstname;
+            $emailvars->hrleaderlastname = $USER->lastname;
+            $emailvars->hrleaderemail = $USER->email;
+            $url = new \moodle_url(
+                    '/local/onlineappraisal/view.php',
+                    array('appraisalid' => $appraisal->id, 'view' => 'appraisee', 'page' => 'leaderplan')
+                    );
+            $urldashboard = new \moodle_url(
+                    '/local/onlineappraisal/index.php',
+                    array('page' => 'appraisee')
+                    );
+
+            if ($not || $appraisal->statusid == 1) {
+                $emailvars->linkappraisee = $urldashboard->out();
+                $urldashboard->params(['page' =>'appraiser']);
+                $emailvars->linkappraiser = $urldashboard->out();
+
+                $emailvars->linkappraiseewhich = $emailvars->linkappraiserwhich = get_string('email:extras:linkwhich:dashboard', 'local_onlineappraisal');
+                $emailvars->statusappraiseewhich = get_string('email:extras:statuswhich:start', 'local_onlineappraisal');
+                $emailvars->statusappraiserwhich = get_string('email:extras:statuswhich:draft', 'local_onlineappraisal');
+            } else if ($appraisal->statusid == 2) {
+                $emailvars->linkappraisee = $url->out();
+                $url->params(['view' => 'appraiser', 'page' => 'overview']);
+                $emailvars->linkappraiser = $url->out();
+
+                $emailvars->linkappraiseewhich = get_string('email:extras:linkwhich:leaderplan', 'local_onlineappraisal');
+                $emailvars->linkappraiserwhich = get_string('email:extras:linkwhich:overview', 'local_onlineappraisal');
+                $emailvars->statusappraiseewhich = get_string('email:extras:statuswhich:now', 'local_onlineappraisal');
+                $emailvars->statusappraiserwhich = get_string('email:extras:statuswhich:draft', 'local_onlineappraisal');
+            } else {
+                $emailvars->linkappraisee = $url->out();
+                $url->params(['view' => 'appraiser']);
+                $emailvars->linkappraiser = $url->out();
+
+                $emailvars->linkappraiseewhich = $emailvars->linkappraiserwhich = get_string('email:extras:linkwhich:leaderplan', 'local_onlineappraisal');
+                $emailvars->statusappraiseewhich = $emailvars->statusappraiserwhich = get_string('email:extras:statuswhich:now', 'local_onlineappraisal');
+            }
+
+            $appraiseeemail = new email("toggleleaderplan:appraisee:has{$not}", $emailvars, $appraisee, $USER);
+            $appraiseeemail->prepare();
+            $appraiseeemailsent = $appraiseeemail->send();
+
+            $appraiseremail = new email("toggleleaderplan:appraiser:has{$not}", $emailvars, $appraiser, $USER);
+            $appraiseremail->prepare();
+            $appraiseremailsent = $appraiseremail->send();
+
+            if (!$appraiseeemailsent) {
+                $return->message .= get_string('error:appraisal:create:appraiseeemail', 'local_onlineappraisal');
+            }
+            if (!$appraiseremailsent) {
+                $return->message .= get_string('error:appraisal:create:appraiseremail', 'local_onlineappraisal');
+            }
+
+            // Add comment.
+            $a = new stdClass();
+            $a->status = get_string('status:1', 'local_onlineappraisal');
+            $a->relateduser = fullname($USER);
+            $comment = comments::save_comment(
+                    $appraisal->id,
+                    get_string(
+                            "comment:toggleleaderplan:has{$not}",
+                            'local_onlineappraisal',
+                            $a
+                            )
+                    );
+            if (!$comment->id) {
+                $return->message .= get_string('error:appraisal:create:comment', 'local_onlineappraisal');
+            }
+        } else {
+            $return->message = get_string("error:toggleleaderplan:has{$not}", 'local_onlineappraisal');
         }
 
         return $return;

@@ -84,5 +84,11 @@ function xmldb_local_lynda_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080518, 'local', 'lynda');
     }
 
+    if ($oldversion < 2016080520) {
+        require_once("$CFG->dirroot/local/lynda/db/upgradelib.php");
+        local_lynda_install_fulltextindexes();
+        upgrade_plugin_savepoint(true, 2016080520, 'local', 'lynda');
+    }
+
     return true;
 }

@@ -40,6 +40,10 @@ class appraisal {
     const ACTION_DONE_SUCCESS = 1;
     const ACTION_DONE_FAILURE = 2;
 
+    const HR_NONE = 0;
+    const HR_BEFORE = 1;
+    const HR_AFTER = 2;
+
     public $pagetitle;
     public $pageheading;
     public $pages;
@@ -286,9 +290,10 @@ class appraisal {
         $this->add_page('form', 'development');
         $this->add_page('form', 'summaries');
         $this->add_page('form', 'sixmonth');
-        $this->add_page('dashboard', 'checkin', false, 'checkins', true, false);
+        $this->add_page('dashboard', 'checkin', false, 'checkins', true, false, self::HR_AFTER);
         $this->add_page('form', 'successionplan');
-        $this->add_page('dashboard', 'help', false, false, true, false);
+        $this->add_page('form', 'leaderplan');
+        $this->add_page('dashboard', 'help', false, false, true, false, self::HR_BEFORE);
         $this->add_page('dashboard', 'addfeedback', 'addfeedback', false, false, false);
 
         if (!array_key_exists($this->page, $this->pages)) {
@@ -308,7 +313,7 @@ class appraisal {
      * @param boolean $showinnav Whether to show in navigation or not.
      * @param boolean $redirectto Whether to allow redirection to page on 'save and continue'.
      */
-    private function add_page($type, $name, $preloadform = false, $hook = false, $showinnav = true, $redirectto = true) {
+    private function add_page($type, $name, $preloadform = false, $hook = false, $showinnav = true, $redirectto = true, $hr = self::HR_NONE) {
         global $DB;
 
         $page = new stdClass();
@@ -347,6 +352,12 @@ class appraisal {
                     return;
                 }
                 break;
+            case 'leaderplan':
+                // Check if enabled for appraisal.
+                if (empty($this->appraisal->leaderplan)) {
+                    return;
+                }
+                break;
             case 'help':
                 $url = get_config('local_onlineappraisal', 'helpurl');
                 if ($url) {
@@ -374,6 +385,8 @@ class appraisal {
         if ($this->page == $name) {
             $page->active = 'active';
         }
+
+        $page->hr = $hr;
 
         $this->pages[$name] = $page;
     }
@@ -475,7 +488,7 @@ class appraisal {
                 )
             );
 
-        $options = array('appraisal' => 'appraisal', 'feedback' => 'feedback', 'feedbackown' => 'feedback', 'successionplan' => 'successionplan');
+        $options = array('appraisal' => 'appraisal', 'feedback' => 'feedback', 'feedbackown' => 'feedback', 'successionplan' => 'successionplan', 'leaderplan' => 'leaderplan');
         foreach ($options as $permission => $option) {
             if (permissions::is_allowed("{$permission}:print", $this->appraisal->permissionsid, $this->appraisal->viewingas, $this->appraisal->archived, $this->appraisal->legacy)) {
                 $object = new stdClass();
@@ -503,7 +516,25 @@ class appraisal {
                 // Not yet saved, remove SDP download link.
                 unset($printvars->options['successionplan']);
             }
+        }
 
+        if (isset($printvars->options['leaderplan'])) {
+            // Only display SDP download link if has been saved.
+            $sql = "SELECT COUNT(lad.id)
+                  FROM {local_appraisal_data} lad
+                  JOIN {local_appraisal_forms} laf ON laf.id = lad.form_id
+                 WHERE laf.form_name = :form_name
+                       AND laf.appraisalid = :appraisalid
+                       AND laf.user_id = :user_id";
+            $params = [
+                'form_name' => 'leaderplan',
+                'appraisalid' => $this->appraisal->id,
+                'user_id' => $this->appraisal->appraisee->id,
+            ];
+            if ($DB->count_records_sql($sql, $params) === 0) {
+                // Not yet saved, remove SDP download link.
+                unset($printvars->options['leaderplan']);
+            }
         }
 
         if (isset($printvars->options['feedback']) && isset($printvars->options['feedbackown'])) {
@@ -554,6 +585,7 @@ class appraisal {
 
         $forms = \local_onlineappraisal\forms::get_user_forms($this->appraisal->id, $this->appraisal->appraisee->id);
         // Add each of the form pages
+        $prevhrafter = true; // Don't want an <hr> _before_ first item!
         foreach ($this->pages as $page) {
             $navitem = clone($page);
             if (!$navitem->showinnav) {
@@ -574,8 +606,23 @@ class appraisal {
 
             $navitem->flagged = (bool) count(array_intersect(array('all', $page->name), $stages->failedvalidation));
 
+            $navitem->hrbefore = $navitem->hrafter = false;
+            if (!$prevhrafter && ($page->hr & self::HR_BEFORE)) {
+                $navitem->hrbefore = true;
+            }
+            $prevhrafter = $page->hr & self::HR_AFTER;
+            if ($prevhrafter) {
+                $navitem->hrafter = true;
+            }
+
             $navigation->items[] = $navitem;
         }
+
+        // Ensure last item doesn't have an <hr> after.
+        end($navigation->items);
+        $endkey = key($navigation->items);
+        $navigation->items[$endkey]->hrafter = false;
+        reset($navigation->items);
 
         // Debugging information
 

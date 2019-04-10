@@ -37,6 +37,8 @@ class user_update {
     }
 
     public function add_users() {
+        global $DB;
+
         $successcount = 0;
         $errorcount = 0;
 
@@ -60,7 +62,16 @@ class user_update {
                     continue;
                 }
 
+                // Grab username (UPN).
                 $username = array_pop($adusers);
+
+                if ($DB->record_exists('user', ['username' => $username])) {
+                    $errorcount++;
+                    // Log error.
+                    $this->log($add->staffid, null, 'ADD', 'ERROR_USERNAME_EXISTS');
+                    continue;
+                }
+
                 $user = create_user_record($username, '', 'saml');
                 if (!$user) {
                     $errorcount++;
@@ -227,7 +238,7 @@ class user_update {
 
         return['success' => $successcount, 'error' => $errorcount];
     }
-    
+
     public function get_users_cannot_add() {
         global $DB;
 
@@ -323,19 +334,11 @@ class user_update {
         $usertable = self::TABLES['user'];
         $hubtable = self::TABLES['hub'];
         $castidnumber = $DB->sql_cast_char2int('u.idnumber');
-        $query = "
-            SELECT
-              h.EMPLOYEE_NUMBER as staffid,
-              h.FULL_NAME as fullname,
-              h.EMAIL_ADDRESS as email,
-              u.id as uid
-            FROM {$hubtable} h
-            JOIN {$usertable} u ON {$castidnumber} = h.EMPLOYEE_NUMBER
-            WHERE
-                h.LEAVER_FLAG = 'Y'
-                AND u.suspended = 0
-                AND u.deleted = 0
-        ";
+        $query = "SELECT u.id as uid, u.idnumber as staffid
+                    FROM {$usertable} u
+               LEFT JOIN {$hubtable} h ON {$castidnumber} = h.EMPLOYEE_NUMBER
+                   WHERE u.auth = 'saml' AND u.idnumber != '' AND u.suspended = 0 AND u.deleted = 0
+                         AND (h.LEAVER_FLAG = 'Y' OR h.LEAVER_FLAG IS NULL)";
 
         return $DB->get_records_sql($query);
     }
