@@ -2641,7 +2641,9 @@ class questionnaire {
      */
     protected function user_fields() {
         $userfieldsarr = get_all_user_name_fields();
-        $userfieldsarr = array_merge($userfieldsarr, ['username', 'department', 'institution']);
+/* BEGIN CORE MOD */
+        $userfieldsarr = array_merge($userfieldsarr, ['username', 'department', 'institution', 'idnumber']);
+/* END CORE MOD */
         return $userfieldsarr;
     }
 
@@ -3710,4 +3712,3 @@ class questionnaire_user extends \core_user {
     }
 }
 /* END CORE MOD */
-
