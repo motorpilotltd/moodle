@@ -251,13 +251,28 @@ EOJ;
                     "LEFT JOIN FREETEXTTABLE({local_taps_course}, *, :keywords4) AS rank_local_taps_course ON rank_local_taps_course.[KEY] = ltc.id";
             $params['keywords4'] = $query;
         }
+
+        $rankingjoins['rank_course_fullname'] = "LEFT JOIN FREETEXTTABLE({course}, fullname, :keywords5) AS rank_course_fullname ON rank_course_fullname.[KEY] = c.id";
+        $params['keywords5'] = $query;
+        $rankingjoins['rank_arupadvertdatatype_custom_keywords'] = "LEFT JOIN FREETEXTTABLE({arupadvertdatatype_custom}, keywords, :keywords6) AS rank_arupadvertdatatype_custom_keywords ON rank_arupadvertdatatype_custom_keywords.[KEY] = ac.id";
+        $params['keywords6'] = $query;
+        $rankingjoins['rank_local_taps_course_keywords'] =
+                "LEFT JOIN FREETEXTTABLE({local_taps_course}, keywords, :keywords7) AS rank_local_taps_course_keywords ON rank_local_taps_course_keywords.[KEY] = ltc.id";
+        $params['keywords7'] = $query;
+
         $rankingjoin = implode("\n", array_values($rankingjoins));
 
         $rankingjoinscond = [];
         $sortelems = [];
         foreach ($rankingjoins as $rankingjoinname => $unused) {
             $rankingjoinscond[] =  "$rankingjoinname.RANK IS NOT NULL";
-            $sortelems[] = "ISNULL($rankingjoinname.RANK, 0)";
+
+            if (in_array($rankingjoinname, ['rank_course_fullname', 'rank_arupadvertdatatype_custom_keywords', 'rank_local_taps_course_keywords'])) {
+                $sortelems[] = "(ISNULL($rankingjoinname.RANK, 0) * ISNULL($rankingjoinname.RANK, 0))";
+            } else {
+                $sortelems[] = "ISNULL($rankingjoinname.RANK, 0)";
+            }
+
         }
         $searchcond = " AND (" . implode(' OR ', $rankingjoinscond) . " ) ";
         $sort = implode(' + ', $sortelems) . ' DESC ';
