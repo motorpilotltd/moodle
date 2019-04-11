@@ -2794,6 +2794,11 @@ class questionnaire {
         if (in_array('username', $options)) {
             array_push($positioned, $username);
         }
+/* BEGIN CORE MOD */
+        if (in_array('idnumber', $options)) {
+            array_push($positioned, $user->idnumber);
+        }
+/* END CORE MOD */
 
         for ($c = $nbinfocols; $c < $numrespcols; $c++) {
             if (isset($row[$c])) {
