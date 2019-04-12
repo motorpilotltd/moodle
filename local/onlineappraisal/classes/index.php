@@ -536,7 +536,7 @@ class index {
         $orderby = 'u.lastname ASC, u.firstname ASC, aa.created_date DESC';
 
         if (!$appraiseeid) {
-            // Only applicable if not searching for a specific aprpaisee.
+            // Only applicable if not searching for a specific appraisee.
             if (!$leavers) {
                 $leaversfilter = 'AND u.suspended = 0';
             }
@@ -578,8 +578,8 @@ class index {
                 break;
             case 'groupleader' :
                 $groups = costcentre::get_user_cost_centres($USER->id, costcentre::GROUP_LEADER);
-                if (!empty($this->groupid) && in_array($this->groupid, $groups)) {
-                    $typefilter = "AND u.icq = :uicq AND c.enableappraisal = 1 AND c.groupleaderactive = 1";
+                if (!empty($this->groupid) && array_key_exists($this->groupid, $groups)) {
+                    $typefilter = "AND u.icq = :uicq AND c.enableappraisal = 1";
                     $params['uicq'] = $this->groupid;
                 } else if (!empty($this->groupid)) {
                     $typefilter = "AND u.icq = :uicq AND aa.{$type}_userid = :userid AND c.enableappraisal = 1 AND c.groupleaderactive = 1";
@@ -691,18 +691,18 @@ class index {
                 $params['userid2'] = $USER->id;
                 break;
             case 'groupleader' :
-                $typefilter = "AND ((aa.{$type}_userid = :userid AND c.groupleaderactive = :groupleaderactive)";
-                $params['userid'] = $USER->id;
-                $params['groupleaderactive'] = 1;
-
                 $groups = costcentre::get_user_cost_centres($USER->id, costcentre::GROUP_LEADER);
-                if (!empty($groups)) {
-                    list($insql, $inparams) = $DB->get_in_or_equal(array_keys($groups), SQL_PARAMS_NAMED);
-                    $params = $params + $inparams;
-                    $typefilter .= " OR u.icq {$insql}";
+                if (!empty($this->groupid) && array_key_exists($this->groupid, $groups)) {
+                    $typefilter = "AND u.icq = :uicq AND c.enableappraisal = 1";
+                    $params['uicq'] = $this->groupid;
+                } else if (!empty($this->groupid)) {
+                    $typefilter = "AND u.icq = :uicq AND aa.{$type}_userid = :userid AND c.enableappraisal = 1 AND c.groupleaderactive = 1";
+                    $params['uicq'] = $this->groupid;
+                    $params['userid'] = $USER->id;
+                } else {
+                    $typefilter = "AND aa.{$type}_userid = :userid AND c.enableappraisal = 1 AND c.groupleaderactive = 1";
+                    $params['userid'] = $USER->id;
                 }
-
-                $typefilter .= ')';
                 break;
             case 'hrleader' :
                 $groups = costcentre::get_user_cost_centres($USER->id, array(costcentre::HR_LEADER, costcentre::HR_ADMIN));
