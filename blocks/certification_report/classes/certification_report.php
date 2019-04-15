@@ -231,6 +231,61 @@ class certification_report {
     }
 
     /**
+     * Remove array params from URL.
+     * Example:
+     * remove_url_params($url, ['costcentre']);
+     * Will remove all costcentre, costcentre[], and costcentre[0] type params.
+     *
+     * return \moodle_url
+     */
+    public static function remove_url_params(\moodle_url $url, $params) {
+        if (!is_array($params)) {
+            $params = [$params];
+        }
+        // Passed param of 'regions' will remove actual _and_ geo filter params.
+        if (in_array('regions', $params)) {
+            $params[] = 'actualregions';
+            $params[] = 'georegions';
+            $params = array_diff($params, ['regions']);
+        }
+        $allowedparams = [
+            'actualregions',
+            'georegions',
+            'costcentres',
+            'fullname',
+            'cohorts',
+            'certifications',
+            'categories',
+            'groupnames',
+            'locationnames',
+            'employmentcategories',
+            'grades',
+        ];
+        // Validate passed params.
+        foreach ($params as $index => $param) {
+            if (!in_array($param, $allowedparams)) {
+                unset($params[$index]);
+            }
+        }
+        // Grab existing params.
+        $urlparams = $url->params();
+        // Clear down existing params.
+        $url->remove_all_params();
+        // Regular expression to match existing params to remove.
+        $pregmatch = '/^'.implode('|', $params).'/';
+        // Loop through and remove unwanted params.
+        foreach (array_keys($urlparams) as $urlparam) {
+            if (preg_match($pregmatch, $urlparam)) {
+                unset($urlparams[$urlparam]);
+            }
+
+        }
+        // Add back in still required params.
+        $url->params($urlparams);
+        return $url;
+    }
+
+    /**
      * Get hub options from DB
      */
     public static function get_hub_options($field) {
