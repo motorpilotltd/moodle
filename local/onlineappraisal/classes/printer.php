@@ -54,7 +54,7 @@ class printer {
      * What can be printed.
      * @var string $canprint
      */
-    private $canprint = ['appraisal', 'feedback', 'successionplan'];
+    private $canprint = ['appraisal', 'feedback', 'successionplan', 'leaderplan'];
 
     /**
      * Error message.

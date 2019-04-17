@@ -30,7 +30,13 @@
                 <td>{{completeddate}}</td>
                 <td class="text-center w-1">
                     <a href="{{{feedbacklink}}}" class="btn btn-small btn-success email-copy">
-                        {{#str}}feedbackrequests:submitfeedback, local_onlineappraisal{{/str}}
+                        {{#continuefeedback}}
+                            {{#str}}feedbackrequests:continuefeedback, local_onlineappraisal{{/str}}
+                        {{/continuefeedback}}
+
+                        {{^continuefeedback}}
+                            {{#str}}feedbackrequests:submitfeedback, local_onlineappraisal{{/str}}
+                        {{/continuefeedback}}
                     </a>
                 </td>
             </tr>

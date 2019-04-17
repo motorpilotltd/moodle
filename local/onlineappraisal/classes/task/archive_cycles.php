@@ -71,7 +71,7 @@ class archive_cycles extends \core\task\scheduled_task {
 
         $count = 0;
         foreach ($cycles as $cycle) {
-            $email .= $string = "ARCHIVING FROM CYCLE: {$cycle->name}\n";
+            $email .= $string = "\nARCHIVING FROM CYCLE: {$cycle->name}\n";
             mtrace($string);
             // Any non-archive appraisals on it?
             $appsql = "SELECT laa.*

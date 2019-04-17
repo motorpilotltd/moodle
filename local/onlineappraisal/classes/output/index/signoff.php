@@ -32,11 +32,20 @@ use renderer_base;
 
 class signoff extends base {
     /**
+     * Constructor.
+     * @param \local_onlineappraisal\index $index
+     */
+    public function __construct(\local_onlineappraisal\index $index) {
+        $this->set_type('signoff');
+        parent::__construct($index);
+    }
+    /**
      * Export this data so it can be used as the context for a mustache template.
      * @return stdClass
      */
     public function export_for_template(renderer_base $output) {
-        $this->set_type('signoff');
+        parent::export_for_template($output);
+
         $this->data->heading = get_string('index:signoff', 'local_onlineappraisal');
         $this->data->toptext = get_string('index:toptext:signoff', 'local_onlineappraisal');
         $this->get_appraisals();

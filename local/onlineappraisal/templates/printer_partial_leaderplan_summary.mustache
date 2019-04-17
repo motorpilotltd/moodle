@@ -1,0 +1,48 @@
+{{!
+    This file is part of the Online Appraisal Plugin for Arup.
+}}
+{{!
+    @template local_onlineappraisal/printer_partial_leaderplan_summary
+
+    PDF Content : Appraisal : Summary Table
+}}
+
+<div style="text-align: right; border-bottom: 1px solid black; color: black; font-size:1.25em;">{{#str}}pdf:heading:summary, local_onlineappraisal{{/str}}</div>
+<div style="display: inline-block; text-align: left; width: auto; margin-right: auto;">
+    <table style="width: 65%;">
+        <tr>
+            <td></td>
+            <td><table style="background-color: #E7E6E6; width: 300px; padding: 3px;">
+                    <tr>
+                        <td>{{#str}}form:userinfo:name, local_onlineappraisal{{/str}}</td>
+                        <td>{{appraisal.appraisee.firstname}} {{appraisal.appraisee.lastname}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{#str}}pdf:group, local_onlineappraisal{{/str}}</td>
+                        <td>{{group}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{#str}}form:userinfo:grade, local_onlineappraisal{{/str}}</td>
+                        <td>{{appraisal.grade}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{#str}}pdf:location, local_onlineappraisal{{/str}}</td>
+                        <td>{{location}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{#str}}pdf:helddate, local_onlineappraisal{{/str}}</td>
+                        <td>{{appraisal.held_date}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{#str}}pdf:appraisername, local_onlineappraisal{{/str}}</td>
+                        <td>{{appraisal.appraiser.firstname}} {{appraisal.appraiser.lastname}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{#str}}form:userinfo:operationaljobtitle, local_onlineappraisal{{/str}}</td>
+                        <td>{{appraisal.operational_job_title}}</td>
+                    </tr>
+                </table></td>
+            <td></td>
+        </tr>
+    </table>
+</div>

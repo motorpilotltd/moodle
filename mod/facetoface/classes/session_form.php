@@ -39,6 +39,7 @@ class mod_facetoface_session_form extends moodleform {
         global $CFG, $DB;
 
         $mform =& $this->_form;
+        $context = context_course::instance($this->_customdata['course']->id);
 
         // Course Module ID.
         $mform->addElement('hidden', 'id', $this->_customdata['id']);
@@ -78,7 +79,8 @@ class mod_facetoface_session_form extends moodleform {
 
         $formarray  = array();
         $formarray[] = $mform->createElement('selectyesno', 'datetimeknown', get_string('sessiondatetimeknown', 'facetoface'));
-        $formarray[] = $mform->createElement('static', 'datetimeknownhint', '', html_writer::tag('span', get_string('datetimeknownhinttext', 'facetoface'), array('class' => 'hint-text')));
+        $formarray[] = $mform->createElement('static', 'datetimeknownhint', '',
+            html_writer::tag('span', get_string('datetimeknownhinttext', 'facetoface'), array('class' => 'hint-text')));
         $mform->addGroup($formarray, 'datetimeknown_group', get_string('sessiondatetimeknown', 'facetoface'), array(' '), false);
         $mform->addGroupRule('datetimeknown_group', null, 'required', null, 'client');
         $mform->setDefault('datetimeknown', false);
@@ -105,6 +107,12 @@ class mod_facetoface_session_form extends moodleform {
         $this->repeat_elements($repeatarray, $repeatcount, $repeatoptions, 'date_repeats', 'date_add_fields',
                                1, get_string('dateadd', 'facetoface'), true);
 
+        if (has_capability('mod/facetoface:configurecancellation', $context)) {
+            $mform->addElement('advcheckbox', 'allowcancellations', get_string('allowcancellations', 'facetoface'));
+            $mform->setDefault('allowcancellations', $this->_customdata['facetoface']->allowcancellationsdefault);
+            $mform->addHelpButton('allowcancellations', 'allowcancellations', 'facetoface');
+        }
+
         $mform->addElement('text', 'capacity', get_string('capacity', 'facetoface'), 'size="5"');
         $mform->addRule('capacity', null, 'required', null, 'client');
         $mform->setType('capacity', PARAM_INT);
@@ -123,7 +131,8 @@ class mod_facetoface_session_form extends moodleform {
         if (!get_config(null, 'facetoface_hidecost')) {
             $formarray  = array();
             $formarray[] = $mform->createElement('text', 'normalcost', get_string('normalcost', 'facetoface'), 'size="5"');
-            $formarray[] = $mform->createElement('static', 'normalcosthint', '', html_writer::tag('span', get_string('normalcosthinttext', 'facetoface'), array('class' => 'hint-text')));
+            $formarray[] = $mform->createElement('static', 'normalcosthint', '', html_writer::tag('span',
+                get_string('normalcosthinttext', 'facetoface'), array('class' => 'hint-text')));
             $mform->addGroup($formarray, 'normalcost_group', get_string('normalcost', 'facetoface'), array(' '), false);
             $mform->setType('normalcost', PARAM_TEXT);
             $mform->addHelpButton('normalcost_group', 'normalcost', 'facetoface');
@@ -131,7 +140,8 @@ class mod_facetoface_session_form extends moodleform {
             if (!get_config(null, 'facetoface_hidediscount')) {
                 $formarray  = array();
                 $formarray[] = $mform->createElement('text', 'discountcost', get_string('discountcost', 'facetoface'), 'size="5"');
-                $formarray[] = $mform->createElement('static', 'discountcosthint', '', html_writer::tag('span', get_string('discountcosthinttext', 'facetoface'), array('class' => 'hint-text')));
+                $formarray[] = $mform->createElement('static', 'discountcosthint', '', html_writer::tag('span',
+                    get_string('discountcosthinttext', 'facetoface'), array('class' => 'hint-text')));
                 $mform->addGroup($formarray, 'discountcost_group', get_string('discountcost', 'facetoface'), array(' '), false);
                 $mform->setType('discountcost', PARAM_TEXT);
                 $mform->addHelpButton('discountcost_group', 'discountcost', 'facetoface');
@@ -154,9 +164,6 @@ class mod_facetoface_session_form extends moodleform {
             $headershown = false;
             foreach ($rolenames as $role => $rolename) {
                 $rolename = $rolename->name;
-
-                // Get course context.
-                $context = context_course::instance($this->_customdata['course']->id);
 
                 // Attempt to load users with this role in this course.
                 $usernamefields = get_all_user_name_fields(true);
@@ -203,11 +210,13 @@ class mod_facetoface_session_form extends moodleform {
                             $roledisplay = '';
                         }
 
-                        $mform->addElement('advcheckbox', 'trainerrole[' . $role . '][' . $cid . ']', $roledisplay, $choice, null, array('', $cid));
+                        $mform->addElement('advcheckbox', 'trainerrole[' . $role . '][' . $cid . ']', $roledisplay, $choice,
+                            null, array('', $cid));
                         $mform->setType('trainerrole[' . $role . '][' . $cid . ']', PARAM_INT);
                     }
                 } else {
-                    $mform->addElement('select', 'trainerrole[' . $role . ']', $rolename, $choices, array('multiple' => 'multiple'));
+                    $mform->addElement('select', 'trainerrole[' . $role . ']', $rolename, $choices,
+                        array('multiple' => 'multiple'));
                     $mform->setType('trainerrole[' . $role . ']', PARAM_SEQUENCE);
                 }
 
@@ -234,15 +243,13 @@ class mod_facetoface_session_form extends moodleform {
         $dateids = $data['sessiondateid'];
         $dates = count($dateids);
         for ($i = 0; $i < $dates; $i++) {
-/* BEGIN CORE MOD */
             $starttime = $data["timestart"][$i];
             $endtime = $data["timefinish"][$i];
-/* END CORE MOD */
             $removecheckbox = empty($data["datedelete"]) ? array() : $data["datedelete"];
             if ($starttime > $endtime && !isset($removecheckbox[$i])) {
                 $errstr = get_string('error:sessionstartafterend', 'facetoface');
-                $errors['timestart[' . $i . ']'] = $errstr;
-                $errors['timefinish[' . $i . ']'] = $errstr;
+                $errors['timestart'][$i] = $errstr;
+                $errors['timefinish'][$i] = $errstr;
                 unset($errstr);
             }
         }

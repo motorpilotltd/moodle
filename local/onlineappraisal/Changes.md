@@ -656,3 +656,7 @@ Updated group leader sign off (minimum viable solution) functionality.
 Version 2018010100 July/August 2018
 Added succession plan
     Version bump to rebuild permissions cache.
+
+Version 2018010107 November 2018
+Added leadership development plan (clone of succession plan)
+    Version bump to rebuild permissions cache.

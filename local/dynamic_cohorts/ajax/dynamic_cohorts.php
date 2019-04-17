@@ -9,7 +9,14 @@ require_login();
 // Send the correct headers.
 send_headers('text/html; charset=utf-8', false);
 
-$PAGE->set_context(context_system::instance());
+$contextid = required_param('contextid', PARAM_INT);
+$thecontext = context::instance_by_id($contextid);
+
+$PAGE->set_context($thecontext);
+
+if (!has_capability('local/dynamic_cohorts:edit', $thecontext)) {
+    throw new moodle_exception('nopermissions');
+}
 
 $rulesetrenderer = $PAGE->get_renderer('local_dynamic_cohorts', 'ruleset');
 $rolerenderer = $PAGE->get_renderer('local_dynamic_cohorts', 'role');
@@ -24,7 +31,6 @@ $value = optional_param('value', null, PARAM_TEXT);
 $ruleid = optional_param('ruleid', null, PARAM_INT);
 $edit = optional_param('edit', null, PARAM_INT);
 $roleid = optional_param('roleid', null, PARAM_INT);
-$contextid = optional_param('contextid', null, PARAM_INT);
 
 switch ($action) {
     case 'addruleset':

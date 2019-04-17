@@ -265,6 +265,9 @@ class certification
         }
         switch ($assignment->assignmenttype) {
             case self::ASSIGNMENT_TYPE_AUDIENCE:
+                if (!$DB->record_exists('cohort', ['id' => $assignment->assignmenttypeid, 'visible' => 1])) {
+                    return [];
+                }
                 $cohortmembersresult = \core_cohort_external::get_cohort_members([$assignment->assignmenttypeid]);
                 $cohortmembers = array_shift($cohortmembersresult);
                 $users = $cohortmembers['userids'];
@@ -418,6 +421,7 @@ class certification
             SELECT
                 c.id,
                 c.name,
+                c.visible,
                 ca.id as assignmentid,
                 (SELECT
                   COUNT(1)
@@ -432,6 +436,7 @@ class certification
             GROUP BY
               c.id,
               c.name,
+              c.visible,
               ca.id
         ';
 
@@ -725,7 +730,7 @@ class certification
      * @param $body - body
      * @param $triggertime - number of seconds before action, when message should be send (i.e. X days before duedate)
      */
-    public static function set_message_details($id, $certifid, $messagetype, $recipient, $recipientemail, $subject, $body, $triggertime)
+    public static function set_message_details($id, $certifid, $messagetype, $recipient, $recipientemail, $subject, $body, $triggertime, $donotsendtime)
     {
         global $DB;
         $message = new \stdClass();
@@ -736,6 +741,7 @@ class certification
         $message->recipient = $recipient;
         $message->recipientemail = $recipientemail;
         $message->triggertime = $triggertime;
+        $message->donotsendtime = $donotsendtime;
         if ($id > 0) {
             $message->id = $id;
             $DB->update_record('certif_messages', $message);
@@ -1036,7 +1042,8 @@ class certification
                 $message->recipientemail,
                 $message->subject,
                 $message->body,
-                $message->triggertime
+                $message->triggertime,
+                $message->donotsendtime
             );
         }
 

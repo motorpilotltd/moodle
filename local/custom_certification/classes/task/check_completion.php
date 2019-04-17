@@ -45,11 +45,11 @@ class check_completion extends \core\task\scheduled_task
          * Get all not completed assignments
          */
         $query = "
-            SELECT 
+            SELECT
               cua.id,
               cua.userid,
               cua.certifid,
-              cc.id as ccid, 
+              cc.id as ccid,
               cc.certifpath
             FROM {certif_user_assignments} cua
             LEFT JOIN {certif_completions} cc ON cc.userid = cua.userid AND cc.certifid = cua.certifid
@@ -58,7 +58,7 @@ class check_completion extends \core\task\scheduled_task
             OR cc.id IS NULL)
             AND c.visible = :visible
             AND c.deleted = :deleted
-            ORDER by cua.certifid
+            ORDER by cua.certifid, cua.userid
         ";
 
         $params = [];
@@ -85,5 +85,3 @@ class check_completion extends \core\task\scheduled_task
         }
     }
 }
-
-

@@ -85,7 +85,7 @@ class forms {
      */
     public function get_form() {
         global $CFG;
-        
+
         require_once($CFG->dirroot . '/local/onlineappraisal/forms/'.$this->appraisal->page.'.php');
         $formclass = 'apform_' . $this->appraisal->page;
         if (method_exists($formclass, 'stored_form')) {
@@ -101,7 +101,7 @@ class forms {
 
     /**
      * Get the stored form instance with data.
-     * 
+     *
      * return object $sform a new empty for or the full form data for an existing record.
      */
     private function stored_form() {
@@ -151,12 +151,12 @@ class forms {
      *
      * Loop through the stored data and add it to the pass $dform by reference
      *
-     * @param object $dbform stored form instance. 
+     * @param object $dbform stored form instance.
      */
     private function get_formdata(&$dform) {
         global $DB;
         $formrecords = $DB->get_records('local_appraisal_data', array('form_id' => $dform->formid));
-        
+
         foreach ($formrecords as $record) {
             $fieldname = $record->name;
             $type = $record->type;
@@ -214,7 +214,7 @@ class forms {
             if ($continue) {
                 $this->appraisal->redirect_to_nextpage();
             }
-            
+
             redirect($this->get_redirect_url());
         } else if ($this->form->is_submitted()) {
             // Form was submitted but there was an error, probably in validation or may not have permission).
@@ -251,7 +251,7 @@ class forms {
 
     /**
      * Get the redirect URL (either custom for form, if method exists, or default).
-     * 
+     *
      * @param bool $cancel Is cancel url required.
      * @return moodle_url
      */

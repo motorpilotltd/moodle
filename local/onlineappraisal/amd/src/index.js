@@ -22,7 +22,18 @@
  * @since      3.0
  */
 
-define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlineappraisal/datepicker'],
+ // Load vendors js via cdn with fall back
+require.config({
+    enforceDefine: false,
+    paths: {
+        'select2_4_0_5': [
+            'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min',
+            M.cfg.wwwroot + '/pluginfile.php/' + M.cfg.contextid + '/local_onlineappraisal/vendor/select2_4.0.5.min'
+        ]
+    }
+});
+
+define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlineappraisal/datepicker', 'select2_4_0_5'],
        function($, cfg, str, notification, dp) {
 
     return /** @alias module:local_onlineappraisal/index */ {
@@ -461,6 +472,159 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                 tr.slideUp(function(){
                     $(this).remove();
                 });
+            });
+
+            // Toggling leaderplan.
+            $('i.oa-toggleleaderplan').css('cursor', 'pointer');
+            $('.oa-toggleleaderplan.disabled').css('cursor', 'not-allowed');
+            $('.oa-toggleleaderplan').click(function(e){
+                e.preventDefault();
+                var self = $(this);
+                // Return if already running.
+                if ($(this).data('processing') || $(this).hasClass('disabled')) {
+                    return;
+                }
+                var tr = $(this).closest('tr');
+
+                // Disable further clicks.
+                self.data('processing', true);
+
+                var spinner;
+                str.get_string('admin:processingdots', 'local_onlineappraisal').done(function(s) {
+                    spinner = $('<i class="fa fa-2x fa-fw fa-spinner fa-spin"></i><span class="sr-only">' + s + '</span>');
+                    self.hide().after(spinner);
+                }).fail(notification.exception);
+
+                var colspan = tr.find('td').length;
+                var alerttr = $(
+                        '<tr class="tr-alert"><td colspan="'
+                        + colspan
+                        + '"><div class="alert" role="alert"></div></td></tr>'
+                    ).hide();
+                var alert = alerttr.find('.alert');
+
+                // Get data.
+                var appraisalid = self.data('appraisalid');
+                var confirm = self.data('confirm');
+                if (typeof confirm === 'undefined') {
+                    confirm = 0;
+                }
+                // Unset flags now.
+                self.removeData('confirm');
+
+                str.get_string('error:request', 'local_onlineappraisal').done(function(s) {
+                    $.ajax({
+                        type: 'POST',
+                        url: cfg.wwwroot + '/local/onlineappraisal/ajax.php?sesskey=' + cfg.sesskey,
+                        data: {
+                            c: 'index',
+                            a: 'toggle_leaderplan',
+                            appraisalid: appraisalid,
+                            confirm: confirm
+                        },
+                        success: function(data) {
+                            // Failure if object not returned.
+                            if (typeof data !== 'object') {
+                                data = {
+                                    success: false,
+                                    message: s,
+                                    data: ''
+                                };
+                            }
+                            if (data.success) {
+                                alert.removeClass('alert-danger').addClass('alert-success');
+                                // Change checkbox according to whether completed or not.
+                                self.toggleClass('fa-square-o', !data.data)
+                                        .toggleClass('fa-check-square', data.data)
+                                        .data('processing', false)
+                                        .show();
+                                spinner.remove();
+                            } else {
+                                alert.removeClass('alert-success').addClass('alert-danger');
+                                spinner.remove();
+                                self.data('processing', false).show();
+                            }
+                            alert.html(data.message);
+                            tr.next('.tr-alert').remove();
+                            if (data.data === 'confirm') {
+                                alerttr.insertAfter(tr)
+                                    .slideDown();
+                            } else {
+                                alerttr.insertAfter(tr)
+                                    .slideDown()
+                                    .delay(5000)
+                                    .slideUp(function(){
+                                        $(this).remove();
+                                    });
+                            }
+                        },
+                        error: function(){
+                            alert.removeClass('alert-success').addClass('alert-danger');
+                            alert.html(s);
+                            tr.next('.tr-alert').remove();
+                            alerttr.insertAfter(tr)
+                                .slideDown()
+                                .delay(5000)
+                                .slideUp(function(){
+                                    $(this).remove();
+                                });
+                            spinner.remove();
+                            self.data('processing', false).show();
+                        }
+                    });
+                }).fail(notification.exception);
+            });
+
+            // Confirmation required.
+            $('table').on('click', '.oa-toggleleaderplan-confirm', function(e){
+                e.preventDefault();
+                var self = $(this);
+                var tr = self.closest('tr');
+                if (self.data('confirm')) {
+                    tr.closest('table')
+                        .find('.oa-toggleleaderplan')
+                        .filter(function(){
+                            return $(this).data('appraisalid') === self.data('appraisalid');
+                        })
+                        .data('confirm', 1)
+                        .click();
+                }
+                tr.slideUp(function(){
+                    $(this).remove();
+                });
+            });
+
+            // Select2 initialisation.
+            var searchform = $('#oa-index-search');
+            searchform.removeClass('hidden');
+            $('select#oa-index-search-select').select2({
+                minimumInputLength: 2,
+                width: '50%',
+                ajax: {
+                    url: cfg.wwwroot + '/local/onlineappraisal/ajax.php?sesskey=' + cfg.sesskey,
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            c: 'index',
+                            a: 'search_index',
+                            page: searchform.find('input[name="page"]').val(),
+                            q: params.term,
+                            searchpage: params.page
+                        };
+                    },
+                    processResults: function(data, params) {
+                        params.page = params.page || 1;
+                        var results = data.data;
+                        return {
+                            results: results.items,
+                            pagination: {
+                                more: (params.page * 25) < results.totalcount
+                            }
+                        };
+                    },
+                    cache: true
+                }
             });
         }
     };

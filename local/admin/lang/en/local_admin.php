@@ -52,6 +52,20 @@ $string['testemails:to'] = 'To';
 $string['testemails:usehtml'] = 'Use HTML';
 
 $string['userreport'] = 'User update report';
+$string['userreport:action'] = 'Action';
+$string['userreport:actions'] = 'Actions';
+$string['userreport:actions:choose'] = 'Choose actions...';
+$string['userreport:apply_filters'] = 'Apply filters';
+$string['userreport:extrainfo'] = 'Extra info';
+$string['userreport:from'] = 'From';
+$string['userreport:name'] = 'Name';
+$string['userreport:staffid'] = 'Staff ID';
+$string['userreport:status'] = 'Status';
+$string['userreport:statuses'] = 'Statuses';
+$string['userreport:statuses:choose'] = 'Choose statuses';
+$string['userreport:timecreated'] = 'Time';
+$string['userreport:userid'] = 'User ID';
+$string['userreport:to'] = 'To';
 
 // Language strings for core modifications.
 $string['activitydeletehelp'] = 'This activity cannot be deleted due to the being a part of the current {$a} completion settings, please contact an administrator if you require help.';

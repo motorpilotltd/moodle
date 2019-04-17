@@ -1104,8 +1104,8 @@ class admin {
         // What's been updated?
         $appraiserupdated = ($appraisal->appraiser_userid !== $appraiser->id) ? $appraisal->appraiser_userid : false;
         $signoffupdated = ($appraisal->signoff_userid !== $signoff->id) ? $appraisal->signoff_userid : false;
-        // DB query returns as string, param is integer.
-        $groupleaderupdated = ($appraisal->groupleader_userid !== (string) $groupleaderid) ? $appraisal->groupleader_userid : false;
+        // Relaxed checking due to possible NULLs/empty.
+        $groupleaderupdated = ($appraisal->groupleader_userid != $groupleaderid) ? $appraisal->groupleader_userid : false;
 
         // Update appraisal record.
         $appraisal->appraiser_userid = $appraiser->id;

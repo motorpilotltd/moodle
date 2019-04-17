@@ -202,7 +202,7 @@ class apform_addfeedback extends moodleform {
      */
     function validation($data, $files) {
         $errors = array();
-        if (empty(trim($data['feedback']))) {
+        if (!isset($data['feedback']) || empty(trim($data['feedback']))) {
             $errors['feedback'] = get_string('required');
         }
         return $errors;

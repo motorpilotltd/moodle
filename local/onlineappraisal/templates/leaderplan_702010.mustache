@@ -1,0 +1,36 @@
+<div class="leaderplanboxes m-t-10 702010">
+    <a class="btn btn-warning" data-toggle="collapse" href="#702010" aria-expanded="false" aria-controls="collapseExample">
+        {{#str}}form:leaderplan:cardinfo:702010link, local_onlineappraisal{{/str}}
+    </a>
+    <div class="collapse" id="702010">
+
+    {{#hasdata}}
+    <div class="row">
+    {{#leaderplan}}
+        <div class="col-md-12">
+            <div class="panel panel-default m-t-10">
+                <div class="panel-heading">
+                    {{{question}}}
+                </div>
+                <div class="panel-body">
+                    {{#isarray}}
+                        {{#data}}
+                            {{{.}}}
+                        {{/data}}
+                    {{/isarray}}
+                    {{^isarray}}
+                        {{{data}}}
+                    {{/isarray}}
+                </div>
+            </div>
+        </div>
+    {{/leaderplan}}
+    </div>
+    {{/hasdata}}
+    {{^hasdata}}
+        <div class="alert alert-warning m-t-10" role="alert">
+            {{#str}}form:leaderplan:cardinfo:none, local_onlineappraisal{{/str}}
+        </div>
+    {{/hasdata}}
+    </div>
+</div>

@@ -3,6 +3,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Certifications';
+$string['adminpage'] = 'Administration';
+$string['settings'] = 'Settings';
+$string['setting:send_message_rate'] = 'Send message rate';
+$string['setting:send_message_rate_desc'] = 'How many queued messages to send each task (does not affect queuing rate). Setting as 0 means no messages will be sent from the queue.';
 $string['custom_certification:view'] = 'View Certifications';
 $string['custom_certification:manage'] = 'Manage Certifications';
 $string['programdetails'] = 'Certification details';
@@ -186,20 +190,33 @@ In certification messages, certain variables can be inserted into the subject an
 
 %certificationfullname%
 :   This will be replaced by the program\'s full name';
-$string['before'] = 'Days pick';
-$string['before_help'] = 'The trigger time determines when the message will be sent in relation to the event described (e.g. 4 weeks after the program is completed).';
 
-$string['messagetypeenrollment'] = 'Certification enrolment email';
-$string['messagetypeunenrollment'] = 'Certification un-enrolment email';
-$string['messagetypecertificationcompleted'] = 'Certification Completion email';
-$string['messagetyperecertificationwindowopen'] = 'Certification Window Open email';
-$string['messagetypecertificationexpired'] = 'Overdue email';
-$string['messagetyperecertificationbeforeexpiration'] = 'Certification due email';
+$string['messagetype:enrolment'] = 'Enrolment email';
+$string['messagetype:unenrolment'] = 'Unenrolment email';
+$string['messagetype:completed'] = 'Completion email';
+$string['messagetype:expired'] = 'Expired email';
+$string['messagetype:beforeexpiry'] = 'Expiry window notification email';
+$string['messagetype:overdue'] = 'Overdue email';
+$string['messagetype:overduereminder'] = 'Overdue reminder email';
 
 
 $string['additionalchecklabel'] = 'Send message to 3rd Party';
 $string['messagelabel'] = 'Message';
-$string['daysbeforelabel'] = 'Days before';
+$string['triggertimehelp:6'] = 'setting days before expiry';
+$string['triggertimehelp:6_help'] = 'This determines the time before the certification expires that this message will be sent to the user.';
+$string['triggertimehelp:8'] = 'setting days after previous message';
+$string['triggertimehelp:8_help'] = 'This determines the time after the previous message that this will be sent, repeating until the certification is completed (or the user is no longer assigned). Initially sent this number of days after the expiry or overdue email. Subsequently sent this number of days after the previous reminder.';
+$string['triggertimelabel:6'] = 'Days before expiry';
+$string['triggertimelabel:8'] = 'Days after previous message';
+$string['donotsendtimehelp:5'] = 'setting days after assignment';
+$string['donotsendtimehelp:5_help'] = 'This determines the time window, following the user being assigned to the certification, during which this message will _NOT_ be sent.';
+$string['donotsendtimehelp:6'] = 'setting days after assignment';
+$string['donotsendtimehelp:6_help'] = 'This determines the time window, following the user being assigned to the certification, during which this message will _NOT_ be sent.';
+$string['donotsendtimehelp:7'] = 'setting days after assignment';
+$string['donotsendtimehelp:7_help'] = 'This determines the time window, following the user being assigned to the certification, during which this message will _NOT_ be sent.';
+$string['donotsendtimelabel:5'] = 'Days after being assigned to certification';
+$string['donotsendtimelabel:6'] = 'Days after being assigned to certification';
+$string['donotsendtimelabel:7'] = 'Days after being assigned to certification';
 $string['additionalrecipientlabel'] = '3rd Party Email';
 $string['additionalrecipient'] = '3rd Party Email';
 $string['additionalrecipient_help'] = 'If You fill 3rd Party Email input, system will send email to proper user and to additional email address you give. There can be multiple email adresses seperated by ; ';

@@ -190,7 +190,7 @@ if (!$validsamlsession) {
 
     // Just passes time as a password. User will never log in directly to Moodle with this password anyway or so we hope?
     $failurereason = null;
-    $user = authenticate_user_login($username, time(), false, $failurereason);
+    $user = authenticate_user_login($username, time(), false, $failurereason, false);
     if ($user === false) {
         $message =
                 ($failurereason == AUTH_LOGIN_SUSPENDED)

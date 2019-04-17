@@ -66,13 +66,33 @@ function xmldb_kalvidres_upgrade($oldversion) {
         // Kalvidassign savepoint reached.
         upgrade_mod_savepoint(true, 2014023000.01, 'kalvidres');
     }
-
+/* BEGIN CORE MOD */
     if ($oldversion < 2017120639) {
         \mod_kalvidres\upgradelib::add_web_services();
 
-        // Kalvidassign savepoint reached.
+        // Kalvidres savepoint reached.
         upgrade_mod_savepoint(true, 2017120639, 'kalvidres');
     }
 
+    if ($oldversion < 2017120646) {
+        \mod_kalvidres\upgradelib::update_metadata_field();
+        \mod_kalvidres\upgradelib::update_metadata_field_api();
+
+        // Kalvidres savepoint reached.
+        upgrade_mod_savepoint(true, 2017120646, 'kalvidres');
+    }
+
+    if ($oldversion < 2017120647) {
+        // Changing type of field video_title on table kalvidres to text.
+        $table = new xmldb_table('kalvidres');
+        $field = new xmldb_field('video_title', XMLDB_TYPE_TEXT);
+
+        // Launch change of type for field video_title.
+        $dbman->change_field_type($table, $field);
+
+        // Kalvidres savepoint reached.
+        upgrade_mod_savepoint(true, 2017120647, 'kalvidres');
+    }
+/* END CORE MOD */
     return true;
 }

@@ -9,7 +9,7 @@ $systemcontext = context_system::instance();
 require_login();
 
 // Required CSS and JS.
-$PAGE->requires->css(new moodle_url('/blocks/certification_report/styles/certification_report.css'));
+$PAGE->requires->css(new moodle_url('/blocks/certification_report/styles/certification_report_2019031800.css'));
 $PAGE->requires->css(new moodle_url('/blocks/certification_report/styles/select2.min.css'));
 $PAGE->requires->css(new moodle_url('/blocks/certification_report/styles/select2-bootstrap.min.css'));
 $PAGE->requires->strings_for_js(

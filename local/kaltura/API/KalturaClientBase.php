@@ -487,6 +487,7 @@ class KalturaClientBase
 		}
 		curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate');
 		curl_setopt($ch, CURLOPT_USERAGENT, $this->config->userAgent);
+
 		if (count($files) > 0)
 			curl_setopt($ch, CURLOPT_TIMEOUT, 0);
 		else
@@ -1227,5 +1228,3 @@ interface IKalturaLogger
 {
 	function log($msg);
 }
-
-

@@ -500,7 +500,7 @@ class costcentre {
                 $this->costcentresmenu = $costcentres;
             } else {
                 // Otherwise only BAs can administer cost centres.
-                $this->costcentresmenu = self::get_user_cost_centres($USER->id, self::BUSINESS_ADMINISTRATOR);
+                $this->costcentresmenu = self::get_user_cost_centres($USER->id, [self::BUSINESS_ADMINISTRATOR, self::HR_LEADER, self::HR_ADMIN]);
             }
         }
         return $this->costcentresmenu;

@@ -55,7 +55,7 @@ class apform_successionplan extends moodleform {
         $mform->addElement('hidden', 'appraisalid', $data->appraisalid);
         $mform->setType('appraisalid', PARAM_INT);
 
-        $mform->addElement('hidden', 'view', $data->appraisal->viewingas);
+        $mform->addElement('hidden', 'view', $data->appraisal->viewingas, ['id' => 'oa-sdp-view']);
         $mform->setType('view', PARAM_TEXT);
 
         $isformlocked = !empty($data->locked);
@@ -107,6 +107,7 @@ class apform_successionplan extends moodleform {
                 continue;
             }
             $answers = ($question === 'potential') ? [] : ['' => ''];
+            $class = ($question === 'potential') ? 'select2-general' : '';
             $i = 1;
             $answerstring = "{$question}:answer:{$i}";
             while ($this->str_exists($answerstring)) {
@@ -115,11 +116,12 @@ class apform_successionplan extends moodleform {
                 $i++;
                 $answerstring = "{$question}:answer:{$i}";
             }
-            $element = $mform->addElement('select', $question, $this->str($question), $answers);
+            $element = $mform->addElement('select', $question, $this->str($question), $answers, ['class' => $class]);
             if ($question === 'potential') {
                 $element->setMultiple(true);
             }
             $mform->disabledIf($question, 'islocked', 'eq', 1);
+            $mform->disabledIf($question, 'view', 'eq', 'appraisee');
         }
 
         $strengths = [
@@ -128,7 +130,7 @@ class apform_successionplan extends moodleform {
             !empty($_POST['strengths']) ? count($_POST['strengths']) : 0
         ];
         $maxstrengths = max($strengths);
-        if ($islocked) {
+        if ($islocked || $data->appraisal->viewingas === 'appraisee') {
             $maxstrengths = (!empty($data->strengths) ? count($data->strengths) : 1);
         }
         for ($i = 0; $i < $maxstrengths; $i++) {
@@ -136,6 +138,7 @@ class apform_successionplan extends moodleform {
             $mform->addElement('text', "strengths[{$i}]", $label, ['class' => 'oa-repeating-element']);
             $mform->setType("strengths[{$i}]", PARAM_TEXT);
             $mform->disabledIf("strengths[{$i}]", 'islocked', 'eq', 1);
+            $mform->disabledIf("strengths[{$i}]", 'view', 'eq', 'appraisee');
         }
         $noscript = "<p class=\"visibleifnotjs\">{$this->str('strengths:add:noscript')}</p>";
         $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="strengths">'.$this->str('strengths:add').'</button>';
@@ -150,7 +153,7 @@ class apform_successionplan extends moodleform {
             !empty($_POST['developmentareas']) ? count($_POST['developmentareas']) : 0
         ];
         $maxdevelopmentareas = max($developmentareas);
-        if ($islocked) {
+        if ($islocked || $data->appraisal->viewingas === 'appraisee') {
             $maxdevelopmentareas = (!empty($data->developmentareas) ? count($data->developmentareas) : 1);
         }
         for ($i = 0; $i < $maxdevelopmentareas; $i++) {
@@ -158,6 +161,7 @@ class apform_successionplan extends moodleform {
             $mform->addElement('text', "developmentareas[{$i}]", $label, ['class' => 'oa-repeating-element']);
             $mform->setType("developmentareas[{$i}]", PARAM_TEXT);
             $mform->disabledIf("developmentareas[{$i}]", 'islocked', 'eq', 1);
+            $mform->disabledIf("developmentareas[{$i}]", 'view', 'eq', 'appraisee');
         }
         $noscript = "<p class=\"visibleifnotjs\">{$this->str('developmentareas:add:noscript')}</p>";
         $button = '<button class="btn btn-xs btn-primary oa-add-repeating-element" data-index="'.($i - 1).'" data-type="developmentareas">'.$this->str('developmentareas:add').'</button>';
@@ -172,9 +176,11 @@ class apform_successionplan extends moodleform {
         if (!$isformlocked) {
             $mform->addElement('advcheckbox', 'locked', '', $this->str('locked'), array('group' => 1), array(0, 1));
             $mform->disabledIf('locked', 'islocked', 'eq', 1);
+            $mform->disabledIf('locked', 'view', 'eq', 'appraisee');
         } else {
             $mform->addElement('advcheckbox', 'unlock', '', $this->str('unlock'), array('group' => 1), array(0, 1));
             $mform->disabledIf('unlock', 'islockedforuser', 'eq', 1);
+            $mform->disabledIf('unlock', 'view', 'eq', 'appraisee');
         }
 
         if (!$islocked || ($isformlocked && !$islockedforuser)) {

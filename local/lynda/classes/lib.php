@@ -24,25 +24,20 @@ namespace local_lynda;
 
 class lib {
     public static function appendurlparamswitharray($url, $params) {
-        $arr = [];
+        $outurl = new \moodle_url($url); // Ensure is a Moodle URL.
+
         foreach ($params as $key => $val) {
+            $outurl->remove_params($key); // Ensure param is removed before re-adding.
             if (is_array($val)) {
                 foreach ($val as $index => $value) {
-                    $arr[] = rawurlencode($key . '[' . $index . ']') . "=" . rawurlencode($value);
+                    $outurl->param($key . '[' . $index . ']', $value);
                 }
             } else {
-                if (isset($val) && $val !== '') {
-                    $arr[] = rawurlencode($key) . "=" . rawurlencode($val);
-                } else {
-                    $arr[] = rawurlencode($key);
-                }
+                $outurl->param($key, $val);
             }
         }
-        if (strpos($url, '?') === false) {
-            $url .= '?';
-        }
 
-        return $url . implode('&', $arr);
+        return $outurl;
     }
 
     public static function enabledforregion($regionid) {

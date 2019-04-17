@@ -37,23 +37,25 @@ class vcal_requester {
     public function __construct(invite $invite, $method='REQUEST') {
         global $CFG;
 
+        if (!empty($CFG->noemailever)) {
+            // Hidden setting for development sites, set in config.php if needed.
+            debugging('Not sending email due to $CFG->noemailever config setting', DEBUG_NORMAL);
+            return true;
+        }
+
         $mail = get_mailer();
         $invite->setup_mailer($mail);
         $mail->Ical = ($this->wrap_vevent($invite, $method));
         $mail->IcalMethod = $method;
 
-        if (!empty($CFG->noemailever)) {
-            // Hidden setting for development sites, set in config.php if needed.
-            $noemail = 'Not sending email due to noemailever config setting';
-            error_log($noemail);
-            if (CLI_SCRIPT) {
-                mtrace('Error: lib/moodlelib.php email_to_user(): '.$noemail);
-            }
-            return true;
+        if (!validate_email($mail->From)) {
+            debugging('local_invite: Invalid from-email '.s($mail->From).' - not sending');
+            return false;
         }
 
-        if (!$mail->Send()) {
-            error_log($mail->ErrorInfo);
+        if (!$mail->send()) {
+            debugging($mail->ErrorInfo);
+            return false;
         }
     }
 }

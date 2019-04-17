@@ -23,7 +23,7 @@ $tasks = [
     [
         'classname' => 'local_custom_certification\task\window_open',
         'blocking' => 0,
-        'minute' => 'R',
+        'minute' => '*/5',
         'hour' => '*',
         'day' => '*',
         'dayofweek' => '*',

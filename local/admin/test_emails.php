@@ -81,7 +81,7 @@ if ($fromform) {
         $endtime = new DateTime();
         $endtime->setTimestamp($now + (2 * 60 * 60));
         $endtime->setTimezone(new DateTimeZone('UTC'));
-        $invite->setDate(
+        $invite->set_date(
                 $starttime,
                 $starttime->diff($endtime));
 
