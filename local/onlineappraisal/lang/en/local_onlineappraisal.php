@@ -57,6 +57,7 @@ Leadership Development Plan|https://example.com/leader-plan||leaderplan
 General Info|https://example.com/general-info||!leaderplan
 </pre>';
 $string['settings'] = 'Online appraisal configuration';
+$string['taskarchivecycles'] = 'Archive old cycle appraisals';
 
 $string['appraisal'] = 'Appraisal';
 

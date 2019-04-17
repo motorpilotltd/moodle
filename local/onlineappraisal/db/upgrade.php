@@ -662,7 +662,7 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018010107, 'local', 'onlineappraisal');
     }
 
-    if ($oldversion < 2018010108) {
+    if ($oldversion < 2018010110) {
 
         // Define field user_id to be dropped from local_appraisal_forms.
         $table = new xmldb_table('local_appraisal_checkins');
@@ -673,17 +673,11 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Onlineappraisal savepoint reached.
-        upgrade_plugin_savepoint(true, 2018010108, 'local', 'onlineappraisal');
-    }
-
-    if ($oldversion < 2018010109) {
-
         // Rebuild permissions table and cache.
         \local_onlineappraisal\permissions::rebuild_permissions();
 
         // Onlineappraisal savepoint reached.
-        upgrade_plugin_savepoint(true, 2018010109, 'local', 'onlineappraisal');
+        upgrade_plugin_savepoint(true, 2018010110, 'local', 'onlineappraisal');
     }
 
     return true;

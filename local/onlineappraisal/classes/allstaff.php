@@ -68,7 +68,7 @@ class allstaff {
             $groupid = required_param('groupid', PARAM_ALPHANUMEXT);
             $cohortid = required_param('cohortid', PARAM_INT);
             $duedate = required_param('duedate', PARAM_INT);
-        
+
             $result = $this->{$action}($groupid, $cohortid, $duedate);
             appraisal::set_alert($result->message, 'success');
 
@@ -124,9 +124,11 @@ class allstaff {
             $DB->update_record('local_appraisal_cohort_ccs', $cohort);
         }
 
-        // Archive all existing records for this cost centre.
-        $updatesql = "UPDATE {local_appraisal_appraisal} SET archived = 1 WHERE appraisee_userid IN (SELECT id FROM {user} WHERE icq = :groupid) AND archived = 0";
-        $DB->execute($updatesql, ['groupid' => $groupid]);
+        // Archive all existing records for this cost centre where not already assigned to new cycle (i.e. if moved from a diff cost centre).
+        $usersubquery = "SELECT id FROM {user} WHERE icq = :groupid";
+        $appsubquery = "SELECT appraisalid FROM {local_appraisal_cohort_apps} WHERE cohortid = :cohortid";
+        $updatesql = "UPDATE {local_appraisal_appraisal} SET archived = 1 WHERE appraisee_userid IN ($usersubquery) AND id NOT IN ($appsubquery) AND archived = 0";
+        $DB->execute($updatesql, ['groupid' => $groupid, 'cohortid' => $cohortid]);
 
         // Update record to show started.
         $cohortinfo->started = time();
