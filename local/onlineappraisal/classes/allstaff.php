@@ -130,8 +130,15 @@ class allstaff {
         $updatesql = "UPDATE {local_appraisal_appraisal} SET archived = 1 WHERE appraisee_userid IN ($usersubquery) AND id NOT IN ($appsubquery) AND archived = 0";
         $DB->execute($updatesql, ['groupid' => $groupid, 'cohortid' => $cohortid]);
 
+        // Are any (not suspended) users already assigned (from cost centre moves, etc.)?
+        $users = $this->admin->get_group_users_allstaff(false);
+
         // Update record to show started.
         $cohortinfo->started = time();
+        if (!empty($users->assigned)) {
+            // Lock cycle as users already assigned.
+            $cohortinfo->locked = time();
+        }
         $cohortinfo->duedate = $duedate;
         $DB->update_record('local_appraisal_cohort_ccs', $cohortinfo);
 
