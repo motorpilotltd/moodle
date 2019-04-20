@@ -60,27 +60,30 @@ class block_certification_report_renderer extends plugin_renderer_base {
         $row = new html_table_row($header);
         $row->attributes['class'] = 'header-'.$view;
         $tabledata[] = $row;
+        $rowurl = new moodle_url($urlbase);
+        // Remove regionview switcher.
+        $rowurl->remove_params('regionview');
+        switch ($view) {
+            case 'regions':
+                $param = $regionview.'regions[]';
+                break;
+            case 'costcentre':
+                $param = 'costcentres[]';
+                $rowurl = certification_report::remove_url_params($rowurl, ['costcentres']);
+                break;
+            default:
+                // Will be 'users'.
+                $param = $view;
+        }
         foreach($data as $itemid => $item){
             if($view == 'users' && $itemid != 'viewtotal'){
                 $tabledata[] = $this->prepare_user_row($item, $data);
             }else{
                 $line = [];
                 if($itemid != 'viewtotal'){
-                    $url = new moodle_url($urlbase);
-                    switch ($view) {
-                        case 'regions':
-                            $param = $regionview.'regions[]';
-                            break;
-                        case 'costcentre':
-                            $param = 'costcentres[]';
-                            $url->remove_params('costcentres');
-                            break;
-                        default:
-                            $param = $view;
-                    }
-                    $url->remove_params('regionview');
-                    $url->param($param, $itemid);
-                    $line[] = html_writer::link($url, $item['fullname']);
+                    // Set the main filter param for the next level.
+                    $rowurl->param($param, $itemid);
+                    $line[] = html_writer::link($rowurl, $item['fullname']);
                     /* Temporarily hide
                     if (count($header) > 2) {
                         $line[0] .= ' ';
