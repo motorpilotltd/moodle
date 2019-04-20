@@ -1306,6 +1306,53 @@ class certification_report {
         return ['view' => $view, 'data' => $data];
     }
 
+    /**
+     * Get regions actual/geographic
+     *
+     * @return array regions
+     */
+    public static function get_local_regions() {
+        global $DB;
+
+        $regions = [
+            'actual' => [],
+            'geographic' => []
+        ];
+
+        if ($records = $DB->get_records('local_regions_reg')) {
+            foreach ($records as $record) {
+                if ($record->userselectable == 1) {
+                    $regions['geographic'][$record->id] = $record->name;
+                }
+                $regions['actual'][$record->id] = $record->name;
+            }
+        }
+
+        return $regions;
+
+    }
+
+    public static function get_report_links() {
+        global $DB;
+
+        $query = "
+            SELECT
+                cl.id,
+                cl.name,
+                cl.linkurl,
+                cl.geographicregionid,
+                cl.actualregionid,
+                lrr1.name as geographicregion,
+                lrr2.name as actualregion,
+                cl.timecreated
+            FROM mdl_certif_links cl
+            LEFT JOIN mdl_local_regions_reg lrr1 ON cl.geographicregionid = lrr1.id
+            LEFT JOIN mdl_local_regions_reg lrr2 ON cl.actualregionid = lrr2.id
+            ORDER BY cl.timecreated DESC";
+
+        return $DB->get_records_sql($query);
+    }
+
     public static function get_costcentre_names() {
         global $DB;
         $like = $DB->sql_like('icq', ':icq', false, false);
@@ -1578,4 +1625,32 @@ class certification_report {
         // No permissions.
         return false;
     }
+
+    public static function is_admin() {
+        global $USER;
+        // Check capabilities.
+        if (has_capability('block/certification_report:administer', \context_system::instance())) {
+            return true;
+        }
+
+        // No permissions.
+        return false;
+    }
+
+    /**
+     * This methods does weak url validation, we are looking for major problems only,
+     * no strict RFE validation.
+     *
+     * @param $url
+     * @return bool true is seems valid, false if definitely not valid URL
+     */
+    public static function url_appears_valid_url($url) {
+        if (preg_match('/^(\/|https?:|ftp:)/i', $url)) {
+            // note: this is not exact validation, we look for severely malformed URLs only
+            return (bool)preg_match('/^[a-z]+:\/\/([^:@\s]+:[^@\s]+@)?[a-z0-9_\.\-]+(:[0-9]+)?(\/[^#]*)?(#.*)?$/i', $url);
+        } else {
+            return (bool)preg_match('/^[a-z]+:\/\/...*$/i', $url);
+        }
+    }
+
 }
