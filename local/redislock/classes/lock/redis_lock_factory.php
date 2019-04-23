@@ -310,7 +310,7 @@ class redis_lock_factory implements lock_factory {
                 $redis->auth($CFG->local_redislock_redis_password);
             }
             if (!empty($CFG->local_redislock_redis_prefix)) {
-                $redis->setOption(Redis::OPT_PREFIX, $CFG->local_redislock_redis_prefix);
+                $redis->setOption(\Redis::OPT_PREFIX, $CFG->local_redislock_redis_prefix);
             }
 /* END CORE MOD */
         } catch (\RedisException $e) {
