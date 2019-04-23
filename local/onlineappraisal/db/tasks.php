@@ -15,18 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Definition of local_onlineappraisal scheduled tasks.
  *
- * @package     local_onlineappraisal
- * @copyright   2016 Motorpilot Ltd
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   local_onlineappraisal
+ * @category  task
+ * @copyright 2018 Motorpilot Ltd
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2018010108; // Arbitrary start of year version as already jumped past base Moodle version.
-$plugin->requires  = 2017051500; // Moodle 3.3.
-$plugin->component = 'local_onlineappraisal';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.3.8 (Build: {$plugin->version})";
-$plugin->dependencies = array();
+$tasks = [
+    [
+        'classname' => 'local_onlineappraisal\task\archive_cycles',
+        'blocking' => 0,
+        'minute' => 'R',
+        'hour' => '2',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ],
+];

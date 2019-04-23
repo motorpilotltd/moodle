@@ -33,4 +33,13 @@ $tasks = [
         'dayofweek' => '*',
         'month' => '*'
     ],
+    [
+        'classname' => 'local_costcentre\task\add_costcentres',
+        'blocking' => 0,
+        'minute' => 'R',
+        'hour' => '22',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*'
+    ],
 ];

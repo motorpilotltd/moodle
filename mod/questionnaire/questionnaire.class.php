@@ -2608,7 +2608,9 @@ class questionnaire {
      */
     protected function user_fields() {
         $userfieldsarr = get_all_user_name_fields();
-        $userfieldsarr = array_merge($userfieldsarr, ['username', 'department', 'institution']);
+/* BEGIN CORE MOD */
+        $userfieldsarr = array_merge($userfieldsarr, ['username', 'department', 'institution', 'idnumber']);
+/* END CORE MOD */
         return $userfieldsarr;
     }
 
@@ -2794,6 +2796,11 @@ class questionnaire {
         if (in_array('username', $options)) {
             array_push($positioned, $username);
         }
+/* BEGIN CORE MOD */
+        if (in_array('idnumber', $options)) {
+            array_push($positioned, $user->idnumber);
+        }
+/* END CORE MOD */
         if (in_array('complete', $options)) {
             array_push($positioned, $resprow->complete);
         }
@@ -3632,4 +3639,3 @@ class questionnaire_user extends \core_user {
     }
 }
 /* END CORE MOD */
-

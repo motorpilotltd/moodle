@@ -194,3 +194,11 @@
 .path-blocks-certification_report .copy-to-clipboard {
     cursor: pointer;
 }
+
+.block_certification_report .footer span {
+    font-size: 12px;
+}
+
+#managelink-form #id_cancel {
+    display: none;
+}

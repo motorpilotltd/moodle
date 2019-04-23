@@ -19,9 +19,11 @@ $string['pluginversiontoolow'] = 'Plugin "{$a->name}" could not be upgraded to v
         . ' Upgrading requires at least version {$a->requiredversion} to be installed (Current version: {$a->currentversion}).';
 
 // Settings.
+$string['eventcostcentresadded'] = 'Cost centre added';
 $string['setting:help_courseid'] = 'Help {$a} ID';
 $string['setting:help_courseid_desc'] = 'The "Appraisal Admin Learning Burst" {$a} ID.';
 $string['settings'] = 'Configuration';
+$string['taskaddcostcentres'] = 'Add cost centres';
 $string['tasktidyusers'] = 'Tidy users';
 
 // Capabilities.

@@ -60,27 +60,30 @@ class block_certification_report_renderer extends plugin_renderer_base {
         $row = new html_table_row($header);
         $row->attributes['class'] = 'header-'.$view;
         $tabledata[] = $row;
+        $rowurl = new moodle_url($urlbase);
+        // Remove regionview switcher.
+        $rowurl->remove_params('regionview');
+        switch ($view) {
+            case 'regions':
+                $param = $regionview.'regions[]';
+                break;
+            case 'costcentre':
+                $param = 'costcentres[]';
+                $rowurl = certification_report::remove_url_params($rowurl, ['costcentres']);
+                break;
+            default:
+                // Will be 'users'.
+                $param = $view;
+        }
         foreach($data as $itemid => $item){
             if($view == 'users' && $itemid != 'viewtotal'){
                 $tabledata[] = $this->prepare_user_row($item, $data);
             }else{
                 $line = [];
                 if($itemid != 'viewtotal'){
-                    $url = new moodle_url($urlbase);
-                    switch ($view) {
-                        case 'regions':
-                            $param = $regionview.'regions[]';
-                            break;
-                        case 'costcentre':
-                            $param = 'costcentres[]';
-                            $url->remove_params('costcentres');
-                            break;
-                        default:
-                            $param = $view;
-                    }
-                    $url->remove_params('regionview');
-                    $url->param($param, $itemid);
-                    $line[] = html_writer::link($url, $item['fullname']);
+                    // Set the main filter param for the next level.
+                    $rowurl->param($param, $itemid);
+                    $line[] = html_writer::link($rowurl, $item['fullname']);
                     /* Temporarily hide
                     if (count($header) > 2) {
                         $line[0] .= ' ';
@@ -160,6 +163,22 @@ class block_certification_report_renderer extends plugin_renderer_base {
 
         return $output;
 
+    }
+
+    /**
+     * Generate alertbox
+     * @param string $message
+     * @param string $type
+     * @param bool $exitbutton
+     * @return string
+     */
+    public function alert($message = '', $type = 'alert-warning', $exitbutton = true) {
+        $class = "alert fade in {$type}";
+        $button = '';
+        if ($exitbutton) {
+            $button .= html_writer::tag('button', '&times;', array('class' => 'close', 'data-dismiss' => 'alert', 'type' => 'button'));
+        }
+        return html_writer::tag('div', $button.$message, array('class' => $class));
     }
 
     /**
@@ -315,5 +334,25 @@ class block_certification_report_renderer extends plugin_renderer_base {
             $plaintext[] = get_string($filter, 'block_certification_report').': '.implode(', ', $selected);
             $output .= html_writer::div(html_writer::span(get_string($filter, 'block_certification_report'), 'bold').' : '.implode(', ', $selected));
         }
+    }
+
+    public function print_reportlink_table($data) {
+        return $this->render_from_template('block_certification_report/reportlinks_table', $data);
+    }
+
+    public function print_reportlink_lists($data) {
+        return $this->render_from_template('block_certification_report/reportlink_lists', $data);
+    }
+
+    public function print_reportlink_manage() {
+        $icon = new pix_icon('icon_blueplus', '', 'theme');
+        $addlink = '';
+
+        $manage = new moodle_url('/blocks/certification_report/manage_links.php');
+        $addlink = html_writer::span(
+            html_writer::link($manage,
+                $this->render($icon)
+                . html_writer::span(get_string('addreportlinks','block_certification_report'))), 'pull-right m-b-10 m-t-10');
+        return $addlink;
     }
 }

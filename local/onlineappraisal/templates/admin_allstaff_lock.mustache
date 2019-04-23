@@ -49,7 +49,7 @@
     {{/notassignedusers}}
     {{^notassignedusers}}
         <tr>
-            <td colspan="4">
+            <td colspan="{{#ishrleader}}7{{/ishrleader}}{{^ishrleader}}6{{/ishrleader}}">
                 <div class="alert alert-info m-b-0"><i class="fa fa-exclamation-triangle"></i> {{#str}}admin:allstaff:nousers, local_onlineappraisal{{/str}}</div>
             </td>
         </tr>

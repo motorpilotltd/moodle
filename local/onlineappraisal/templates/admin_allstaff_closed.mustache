@@ -31,7 +31,7 @@
     {{/assignedusers}}
     {{^assignedusers}}
         <tr>
-            <td colspan="3">
+            <td colspan="{{#ishrleader}}6{{/ishrleader}}{{^ishrleader}}5{{/ishrleader}}">
                 <div class="alert alert-info m-b-0"><i class="fa fa-exclamation-triangle"></i> {{#str}}admin:allstaff:assigned:none, local_onlineappraisal{{/str}}</div>
             </td>
         </tr>

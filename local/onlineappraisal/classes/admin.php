@@ -464,7 +464,7 @@ class admin {
                 au.value as isvip
             FROM
                 {user} u
-            JOIN
+            LEFT JOIN
                 SQLHUB.ARUP_ALL_STAFF_V h
                 ON h.EMPLOYEE_NUMBER = {$castidnumber}
             LEFT JOIN

@@ -214,6 +214,64 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'core/log',
                 $(this).find('.modal-body').html(modalloader);
             });
 
+            var managelinkform = $('#managelink-form');
+
+            /**
+             * Edit a report link url
+             */
+            $(document).on('click', '.edit-link', function() {
+                var data = $(this).data();
+                managelinkform.find('#id_linkname').val(data.name);
+                managelinkform.find('#id_linkurl').val(data.linkurl);
+                managelinkform.find("input[name='id']").val(data.id);
+                managelinkform.find('#id_actualregion').val(data.region);
+                managelinkform.find('#id_geographicregion').val(data.georegion);
+
+                managelinkform.find('#id_cancel').css('display', 'inline');
+
+                $(window).scrollTop(managelinkform.position().top);
+            });
+
+            /**
+             * Cancel edit of a report link
+             */
+            $(document).on('click', '#id_cancel', function() {
+                managelinkform.find('#id_linkname').val('');
+                managelinkform.find('#id_linkurl').val('');
+                managelinkform.find("input[name='id']").val('');
+                managelinkform.find('#id_actualregion').val('0');
+                managelinkform.find('#id_geographicregion').val('0');
+
+                managelinkform.find('#id_cancel').css('display', 'none');
+            });
+
+            // Deleting report link
+            var deletemodal = $('#delete-confirm-modal');
+
+            $(document).on('click', '.delete-link', function() {
+                var id = $(this).data('id');
+                deletemodal.modal('show');
+
+                deletemodal.on('shown.bs.modal', function () {
+                    // Add event listener to modal submit buttton
+                    var _thismodal = $(this);
+                    _thismodal.on('click', '#delete-confirm-btn', function () {
+                        $.ajax({
+                            type: "POST",
+                            url: cfg.wwwroot + '/blocks/certification_report/ajax/links.php',
+                            data: {
+                                action: 'delete',
+                                id: id,
+                            },
+                            success: function () {
+                                location.reload();
+                            }
+                        });
+                    });
+                });
+            });
+
+
             /**
              * Copy report URL to clipboard.
              */
