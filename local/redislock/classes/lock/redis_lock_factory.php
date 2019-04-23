@@ -299,7 +299,20 @@ class redis_lock_factory implements lock_factory {
 
         try {
             $redis = new \Redis();
-            $redis->connect($CFG->local_redislock_redis_server);
+/* BEGIN CORE MOD */
+            if (strpos($CFG->local_redislock_redis_server, ':')) {
+                $serverconf = explode(':', $CFG->local_redislock_redis_server);
+                $server = $serverconf[0];
+                $port = $serverconf[1];
+            }
+            $redis->connect($server, $port);
+            if (!empty($CFG->local_redislock_redis_password)) {
+                $redis->auth($CFG->local_redislock_redis_password);
+            }
+            if (!empty($CFG->local_redislock_redis_prefix)) {
+                $redis->setOption(Redis::OPT_PREFIX, $CFG->local_redislock_redis_prefix);
+            }
+/* END CORE MOD */
         } catch (\RedisException $e) {
             throw new \coding_exception("RedisException caught on host {$this->get_hostname()} with message: {$e->getMessage()}");
         }
