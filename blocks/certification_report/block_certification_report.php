@@ -46,12 +46,12 @@ class block_certification_report extends block_base {
             $reporturl = new moodle_url('/blocks/certification_report/report.php');
             $this->content->text = html_writer::link($reporturl, get_string('viewreport', 'block_certification_report'));
             $this->content->text .= $this->get_main_report_link();
-        }
 
-        $reportlinks = $this->get_report_links();
-        if ($reportlinks) {
-            $this->content->text .= html_writer::tag('h3', get_string('heading:reportlinks', 'block_certification_report'));
-            $this->content->text .= $renderer->print_reportlink_lists(['reportlinks' => array_values($reportlinks)]);
+            $reportlinks = $this->get_report_links();
+            if ($reportlinks) {
+                $this->content->text .= html_writer::tag('h3', get_string('heading:reportlinks', 'block_certification_report'));
+                $this->content->text .= $renderer->print_reportlink_lists(['reportlinks' => array_values($reportlinks)]);
+            }
         }
 
         // Add manage links for admin
