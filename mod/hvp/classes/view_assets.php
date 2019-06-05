@@ -312,7 +312,7 @@ class view_assets {
         $overlaystr = get_string('overlay_button', 'hvp');
         $overlayelement = "
             <div class=\"h5p-play-overlay\" data-itemid=\"{$this->cm->id}\">
-                <button class=\"btn btn-default\">{$overlaystr}</button>
+                <button class=\"btn btn-primary\">{$overlaystr}</button>
             </div>";
 
         $playoverlay = $addPlay ? $overlayelement : '';

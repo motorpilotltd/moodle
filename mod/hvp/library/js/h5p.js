@@ -265,6 +265,11 @@ H5P.init = function (target) {
 
           // Free parent
           iframe.parentElement.style.height = parentHeight;
+
+/* BEGIN CORE MOD */
+          // IE11 not moving button when iframe resized fix!
+          window.parent.H5P.jQuery('div.h5p-play-overlay button').hide().show(0);
+/* END CORE MOD */
         };
 
         H5P.on(instance, 'resize', function () {
@@ -362,20 +367,19 @@ H5P.init = function (target) {
 
 /* BEGIN CORE MOD */
   // Add click event for overlay play button
-  H5P.jQuery('.h5p-play-overlay').on('click', function (event) {
-    var itemid =  $(this).data('itemid'),
-        self = $(this);
+  H5P.jQuery('.h5p-play-overlay').on('click', function () {
+    var itemid = H5P.jQuery(this).data('itemid');
 
-    $.ajax({
+    H5P.jQuery.ajax({
       type: 'POST',
       url: M.cfg.wwwroot + '/mod/hvp/ajax.php?action=contentviewed',
       data: {
-          id: itemid
+        id: itemid
       }
     });
 
     // Remove play overlay
-    $(this).hide();
+    H5P.jQuery(this).hide();
   });
 /* END CORE MOD */
 };
