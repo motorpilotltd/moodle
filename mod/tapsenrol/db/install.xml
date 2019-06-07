@@ -155,7 +155,7 @@
         <FIELD NAME="classname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="coursename" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="classtype" TYPE="int" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classtype" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classstatus" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classdurationunits" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classdurationunitscode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
