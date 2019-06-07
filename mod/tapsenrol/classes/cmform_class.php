@@ -57,9 +57,12 @@ abstract class cmform_class extends \moodleform {
 
         if (isset($data->courseid)) {
             $metadata = arupmetadata::fetch(['course' => $data->courseid]);
-            if ($metadata->classtypelocked()) {
-                $classtypeelem = $mform->createElement("hidden", "classtype", $metadata->get_default_class_type());
+            if (!empty($metadata) && $metadata->classtypelocked()) {
+                $defaultclasstype = $metadata->get_default_class_type();
+            } else {
+                $defaultclasstype = \mod_tapsenrol\enrolclass::TYPE_CLASSROOM;
             }
+            $classtypeelem = $mform->createElement("hidden", "classtype", $defaultclasstype);
         }
 
         $this->_form->addElement($classtypeelem);
