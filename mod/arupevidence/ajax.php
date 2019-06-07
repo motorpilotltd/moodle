@@ -122,80 +122,88 @@ if (!empty($action)) {
             $result->success = true;
         } else if ($action == 'approve' && $isuserapprover) {
             if(!$ae_user->approved) {
-                // get uploader fileinfo
-                $file = arupevidence_fileinfo($context, $ae_user->userid);
-                // Ensure that an evidence has a file uploaded
-                if (!empty($file)) {
-                    // Update arupevidence_user completion status
-                    $ae_user->approved = time();
-                    $ae_user->approverid = $USER->id;
-                    $ae_user->completion = 1 ;
-                    //remove current rejection info
-                    $ae_user->rejected = null;
-                    $ae_user->rejectedbyid = null;
-                    $ae_user->rejectmessage = null;
+                // Update arupevidence_user completion status
+                $ae_user->approved = time();
+                $ae_user->approverid = $USER->id;
+                $ae_user->completion = 1 ;
+                //remove current rejection info
+                $ae_user->rejected = null;
+                $ae_user->rejectedbyid = null;
+                $ae_user->rejectmessage = null;
 
-                    $itemid = 0;
-                    $filearea = null;
-                    if ($arupevidence->cpdlms == ARUPEVIDENCE_CPD) {
+                // Processing cpd/lms
+                $itemid = 0;
+                $filearea = null;
+                if ($arupevidence->cpdlms == ARUPEVIDENCE_CPD) {
 
-                        $user = core_user::get_user($ae_user->userid, '*', MUST_EXIST);
-                        $cpd = arupevidence_sendtotaps($cm->instance, $user, $debug);
-                        $return = arupevidence_process_result($cpd, $debug);
+                    $user = core_user::get_user($ae_user->userid, '*', MUST_EXIST);
+                    $cpd = arupevidence_sendtotaps($cm->instance, $user, $debug);
+                    $return = arupevidence_process_result($cpd, $debug);
 
-                        if ($return->success == true) {
-                            $ae_user->taps = 1 ;
-                            $ae_user->itemid = $cpd;
-                            $params = array(
-                                'context' => $context,
-                                'courseid' => $course->id,
-                                'objectid' => $cm->instance,
-                                'relateduserid' => $user->id,
-                                'other' => array(
-                                    'automatic' => false,
-                                )
-                            );
+                    if ($return->success == true) {
+                        $ae_user->taps = 1 ;
+                        $ae_user->itemid = $cpd;
+                        $params = array(
+                            'context' => $context,
+                            'courseid' => $course->id,
+                            'objectid' => $cm->instance,
+                            'relateduserid' => $user->id,
+                            'other' => array(
+                                'automatic' => false,
+                            )
+                        );
 
-                            $logevent = \mod_arupevidence\event\cpd_request_sent::create($params);
-                            $logevent->trigger();
+                        $logevent = \mod_arupevidence\event\cpd_request_sent::create($params);
+                        $logevent->trigger();
 
-                            $itemid = $cpd;
-                            $filearea = ARUPEVIDENCE_CPD;
-                        }
-
-                    } else if ($arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
-                        $itemid = $ae_user->itemid;
-                        $filearea = ARUPEVIDENCE_LMS;
-                    }
-                    $filearea = arupevidence_fileareaname($filearea);
-                    arupevidence_move_filearea($context, $file, $filearea, $itemid);
-                    // Update user's record
-                    $DB->update_record('arupevidence_users', $ae_user);
-
-                    $completion = new completion_info($course);
-
-                    if ($completion->is_enabled($cm)) {
-                        $completion->update_state($cm, COMPLETION_COMPLETE, $ae_user->userid);
+                        $itemid = $cpd;
+                        $filearea = ARUPEVIDENCE_CPD;
                     }
 
-                    $alertmessage = get_string('approve:successapproved', 'mod_arupevidence');
-                    $alerttype = 'alert-success';
-
-                    // Setting email content and subject
-                    $subject = get_string('email:approve:subject', 'mod_arupevidence', array(
-                        'coursename' => $course->fullname,
-                    ));
-                    $emailcontent = get_string('email:approve:content', 'mod_arupevidence', array(
-                        'coursename' => $course->fullname,
-                        'userfirstname' => $user->firstname,
-                        'approverfirstname' => $from_user->firstname,
-                    ));
-                    $sendemail = true;
-
-                } else {
-                    $alertmessage = get_string('error:noevidenceupload', 'mod_arupevidence');
-                    $alerttype = 'alert-warning';
+                } else if ($arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
+                    $itemid = $ae_user->itemid;
+                    $filearea = ARUPEVIDENCE_LMS;
                 }
+                // Process file when UPLOAD is required
+                if ($arupevidence->requireupload) {
+                    // get uploader fileinfo
+                    $file = arupevidence_fileinfo($context, $ae_user->userid);
+                    // Ensure that an evidence has a file uploaded
+                    if (!empty($file)) {
+                        if ($arupevidence->deleteevidence) {
+                            $file->delete();
+                        }  else {
+                            $filearea = arupevidence_fileareaname($filearea);
+                            arupevidence_move_filearea($context, $file, $filearea, $itemid);
+                        }
+                    } else {
+                        $alertmessage = get_string('error:noevidenceupload', 'mod_arupevidence');
+                        $alerttype = 'alert-warning';
+                    }
+                }
+                // Update user's record
+                $DB->update_record('arupevidence_users', $ae_user);
+
+                $completion = new completion_info($course);
+
+                if ($completion->is_enabled($cm)) {
+                    $completion->update_state($cm, COMPLETION_COMPLETE, $ae_user->userid);
+                }
+
+                $alertmessage = get_string('approve:successapproved', 'mod_arupevidence');
+                $alerttype = 'alert-success';
+
+                // Setting email content and subject
+                $subject = get_string('email:approve:subject', 'mod_arupevidence', array(
+                    'coursename' => $course->fullname,
+                ));
+                $emailcontent = get_string('email:approve:content', 'mod_arupevidence', array(
+                    'coursename' => $course->fullname,
+                    'userfirstname' => $user->firstname,
+                    'approverfirstname' => $from_user->firstname,
+                ));
+                $sendemail = true;
+
             } else { // already approved by the other approver
                 $alertmessage = get_string('approve:alreadyapproved', 'mod_arupevidence');
                 $alerttype = 'alert-warning';

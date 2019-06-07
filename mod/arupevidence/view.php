@@ -64,14 +64,15 @@ if(!empty($ahbuserid)) {
 }
 
 $ahbuser = $DB->get_record('arupevidence_users', $params, '*', IGNORE_MULTIPLE);
-
+$declarations = $DB->get_records('arupevidence_declarations', array('arupevidenceid' => $ahb->id), 'id ASC');
 $output = $PAGE->get_renderer('mod_arupevidence');
 $content = '';
 $customdata = array(
     'arupevidenceuser' => $ahbuser,
     'action' => $action,
     'contextid' => $context->id,
-    'arupevidence' => $ahb
+    'arupevidence' => $ahb,
+    'declarations' => $declarations
 );
 
 $mform = new mod_arupevidence_completion_form($viewurl, $customdata);
@@ -93,34 +94,38 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
         $html_btn = html_writer::tag('button', get_string('reviewchanges', 'mod_arupevidence'));
         $content .= html_writer::link($editahbuserpage_url, $html_btn);
     } else {
-        $itemid = (isset($data->action) && $data->action == 'edit') && isset($data->ahbuserid) ? $ahbuser->userid : $USER->id ;
-        file_save_draft_area_files(
-            $data->completioncertificate,
-            $context->id,
-            'mod_arupevidence',
-            'certificate',
-            $itemid, // set userid as itemid
-            array(
-                'subdirs' => 0,
-                'maxbytes' => $COURSE->maxbytes,
-                'maxfiles' => 1
-            )
-        );
+        $PAGE->set_url($viewurl); // prevent warning upon redirection
 
-        try {
-            // escape/remove special characters
-            $fs = get_file_storage();
-            $files = $fs->get_area_files($context->id, 'mod_arupevidence', 'certificate', $itemid);
-            if ($files) {
-                foreach ($files as $file) {
-                    $pattern = "/[^A-Za-z0-9\_\s\-\.]/";
-                    if (($itemid == $file->get_itemid() && $file->get_source() != null && preg_match($pattern, $file->get_filename()))) {
-                        $newfilename = core_text::specialtoascii($file->get_filename());
-                        $file->rename($file->get_filepath(), $newfilename);
+        if (isset($data->completioncertificate)) {
+            $itemid = (isset($data->action) && $data->action == 'edit') && isset($data->ahbuserid) ? $ahbuser->userid : $USER->id ;
+            file_save_draft_area_files(
+                $data->completioncertificate,
+                $context->id,
+                'mod_arupevidence',
+                'certificate',
+                $itemid, // set userid as itemid
+                array(
+                    'subdirs' => 0,
+                    'maxbytes' => $COURSE->maxbytes,
+                    'maxfiles' => 1
+                )
+            );
+
+            try {
+                // escape/remove special characters
+                $fs = get_file_storage();
+                $files = $fs->get_area_files($context->id, 'mod_arupevidence', 'certificate', $itemid);
+                if ($files) {
+                    foreach ($files as $file) {
+                        $pattern = "/[^A-Za-z0-9\_\s\-\.]/";
+                        if (($itemid == $file->get_itemid() && $file->get_source() != null && preg_match($pattern, $file->get_filename()))) {
+                            $newfilename = core_text::specialtoascii($file->get_filename());
+                            $file->rename($file->get_filepath(), $newfilename);
+                        }
                     }
                 }
-            }
-        } catch (Exception $e) {}
+            } catch (Exception $e) {}
+        }
 
         $arupevidencedata = array(
             'completiondate' => $data->completiondate,
@@ -143,6 +148,22 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
             $arupevidencedata = array_merge($arupevidencedata, $cpddetails);
         }
 
+        // Saving declaration agreement
+        $agreeddeclaration = [];
+        if (!empty($declarations)) {
+            foreach ($declarations as $declaration) {
+                if (isset($data->{'declaration-'.$declaration->id}) && $data->{'declaration-'.$declaration->id}) {
+                    $agreeddeclaration[] = $declaration->id;
+
+                    // Tagging declaration to agreed
+                    if ($declartion_agreed = $DB->get_record('arupevidence_declarations', array('id' => $declaration->id, 'has_agreed' => 0))) {
+                        // Update declaration has_agreed
+                        $declartion_agreed->has_agreed = 1;
+                        $DB->update_record('arupevidence_declarations', $declartion_agreed);
+                    }
+                }
+            }
+        }
         $neworrejected = false;
         if(isset($data->action) && $data->action == 'edit') {
             // Modify existing completion information
@@ -159,7 +180,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
             $ahbuser->rejected = null;
             $ahbuser->rejectedbyid = null;
             $ahbuser->rejectmessage = null;
-
+            $ahbuser->declarations = !empty($agreeddeclaration)? json_encode($agreeddeclaration): null;
             $DB->update_record('arupevidence_users', $ahbuser);
         } else {
             // New completion information arupevidence_users
@@ -178,6 +199,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
             $ahbuser->completion = ($ahb->approvalrequired)? 0 : 1 ;
             $ahbuser->itemid = ($ahb->cpdlms == ARUPEVIDENCE_LMS)? $data->enrolmentid : null;
             $ahbuser->approved = null;
+            $ahbuser->declarations = !empty($agreeddeclaration)? json_encode($agreeddeclaration): null;
             $ahbuser->timemodified = time();
 
             // Appends input data from user

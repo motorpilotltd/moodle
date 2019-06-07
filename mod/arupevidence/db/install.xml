@@ -21,6 +21,8 @@
         <FIELD NAME="learningdesc" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="requireexpirydate" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="requirevalidityperiod" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="requireupload" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="deleteevidence" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="expectedvalidityperiod" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="expectedvalidityperiodunit" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="cpdlms" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
@@ -55,6 +57,7 @@
         <FIELD NAME="validityperiod" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="validityperiodunit" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="expirydate" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="declarations" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Optional declarations text"/>
         <FIELD NAME="provider" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="duration" TYPE="float" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="durationunitscode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
@@ -74,6 +77,18 @@
         <INDEX NAME="arupevidenceid" UNIQUE="false" FIELDS="arupevidenceid"/>
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
+    </TABLE>
+    <TABLE NAME="arupevidence_declarations" COMMENT="This table keeps information about declaration statements for mod_arupevidence.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="arupevidenceid"/>
+        <FIELD NAME="arupevidenceid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="declaration"/>
+        <FIELD NAME="has_agreed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="arupevidenceid" NEXT="declaration"/>
+        <FIELD NAME="declaration" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="has_agreed" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="declaration"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" COMMENT="The unique id for this declaration statement." NEXT="applicationid"/>
+      </KEYS>
     </TABLE>
   </TABLES>
 </XMLDB>

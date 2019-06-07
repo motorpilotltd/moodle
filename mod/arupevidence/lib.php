@@ -67,8 +67,12 @@ function arupevidence_add_instance(stdClass $arupevidence, mod_arupevidence_mod_
 
     $arupevidence->learningdesc = $arupevidence->learningdesc['text'];
     $arupevidence->timecreated = time();
+    $insertid = $DB->insert_record('arupevidence', $arupevidence);
+    $arupevidence->id = $insertid;
 
-    return $DB->insert_record('arupevidence', $arupevidence);
+    arupevidence_add_declarations($arupevidence);
+
+    return $insertid;
 }
 
 /**
@@ -83,6 +87,7 @@ function arupevidence_update_instance(stdClass $arupevidence, mod_arupevidence_m
     $arupevidence->learningdesc = $arupevidence->learningdesc['text'];
     $arupevidence->timemodified = time();
     $arupevidence->id = $arupevidence->instance;
+    arupevidence_add_declarations($arupevidence);
 
     return $DB->update_record('arupevidence', $arupevidence);
 }
@@ -103,6 +108,48 @@ function arupevidence_delete_instance($id) {
     $DB->delete_records('arupevidence', array('id' => $arupevidence->id));
 
     return true;
+}
+
+/**
+ * Add declarations
+ *
+ * @param $arupevidence arupevidence object
+ * @throws dml_exception
+ */
+function arupevidence_add_declarations($arupevidence) {
+    global $DB;
+    // Clear existing declarations.
+    if (!empty($arupevidence->declaration)) {
+        // Add declarations from form data
+        $declarationrecord = new stdClass();
+        $declarationrecord->arupevidenceid = $arupevidence->id;
+        $declarationrecord->timecreated = time();
+
+        foreach ($arupevidence->declaration as $key => $declaration) {
+            $declarationrecord->declaration = $declaration;
+            $declarationids = isset($arupevidence->declarationid)? $arupevidence->declarationid: [];
+            if (!array_key_exists($key, $declarationids)) {
+                // Add new declaration
+                if (!empty($declaration)) {
+                    $DB->insert_record('arupevidence_declarations', $declarationrecord);
+                }
+            } else {
+                if (!isset($arupevidence->declarationid)) {
+                    continue;
+                }
+                $declarationid = $arupevidence->declarationid[$key];
+                if (empty($declaration)) {
+                    // Delete empty existing declaration
+                    $DB->delete_records('arupevidence_declarations', array('id' => $declarationid));
+                } else {
+                    // Update declaration
+                    $declarationrecord->id = $declarationid;
+                    $DB->update_record('arupevidence_declarations', $declarationrecord);
+                }
+
+            }
+        }
+    }
 }
 
 /**

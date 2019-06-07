@@ -71,6 +71,12 @@ $string['approvalusers'] = 'Approval users';
 $string['cpdorlms'] = 'CPD or LMS';
 $string['arupevidence_cpd'] = 'CPD';
 $string['arupevidence_lms'] = 'LMS';
+$string['requireupload'] = 'Upload required';
+$string['deleteevidence'] = 'Delete evidence uploaded on approval';
+$string['declaration'] = 'Declaration';
+$string['declaration:add'] = 'Add another declaration';
+$string['declaration:note:agreed'] = 'Declarations cannot be modified/added as they have already been agreed to by one or more users.';
+$string['error:declaration:required'] = 'All declarations must be confirmed';
 
 $string['setcoursecompletion'] = 'Overwrite course completion';
 $string['setcoursecompletion_help'] = 'Setting this will mean that when the course is completed the completion date will be overwritten with that from this activity.';

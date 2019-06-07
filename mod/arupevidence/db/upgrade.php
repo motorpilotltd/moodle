@@ -220,6 +220,48 @@ function xmldb_arupevidence_upgrade($oldversion) {
         // Savepoint reached.
         upgrade_plugin_savepoint(true, 2015111619, 'mod', 'arupevidence');
     }
+    // additional fields for evidence settings
+    if ($oldversion < 2015111621) {
 
+        // Table arupevidence
+        $table = new xmldb_table('arupevidence');
+        $fields = array(
+            new xmldb_field('requireupload', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, 0, 1),
+            new xmldb_field('deleteevidence', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, 0, 0),
+        );
+
+        foreach ($fields as $field) {
+            // Conditionally launch add field
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        // Table arupevidence_users
+        $table = new xmldb_table('arupevidence_users');
+        $field = new xmldb_field('declarations', XMLDB_TYPE_TEXT);
+
+        // Conditionally launch add field
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define table arupevidence_declarations to be created.
+        $table = new xmldb_table('arupevidence_declarations');
+        // Adding fields to table arupevidence_declarations.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('arupevidenceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('declaration', XMLDB_TYPE_TEXT);
+        $table->add_field('has_agreed', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, 0, 0);
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        // Adding keys to table arupevidence_declarations.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        // Conditionally launch create table for arupevidence_declarations.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2015111621, 'mod', 'arupevidence');
+    }
     return true;
 }

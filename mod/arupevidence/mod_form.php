@@ -33,8 +33,19 @@ class mod_arupevidence_mod_form extends moodleform_mod {
 
     protected $cm = null;
 
+    private $declarations;
+    private $declarations_menu;
+    private $has_agreed_declaration = false;
     public function __construct($current, $section, $cm, $course) {
+        global $DB;
         $this->cm = $cm;
+        if (!empty($this->cm->instance)) {
+            $this->declarations = $DB->get_records('arupevidence_declarations', array('arupevidenceid' => $this->cm->instance), 'id, declaration, has_agreed');
+
+            foreach ($this->declarations as $dec) {
+                $this->declarations_menu[$dec->id] = $dec->declaration;
+            }
+        }
         parent::__construct($current, $section, $cm, $course);
     }
 
@@ -43,7 +54,7 @@ class mod_arupevidence_mod_form extends moodleform_mod {
      */
     public function definition() {
 
-        global $CFG, $PAGE, $COURSE, $DB;
+        global $CFG, $PAGE, $COURSE;
 
         $mform = $this->_form;
 
@@ -81,6 +92,11 @@ class mod_arupevidence_mod_form extends moodleform_mod {
 
         $mform->addElement('advcheckbox', 'requirevalidityperiod', get_string('requirevalidityperiod', 'mod_arupevidence'));
         $mform->disabledIf('requirevalidityperiod', 'requireexpirydate', 'checked');
+
+        $mform->addElement('advcheckbox', 'requireupload', get_string('requireupload', 'mod_arupevidence'));
+        $mform->setDefault('requireupload', 1);
+
+        $mform->addElement('advcheckbox', 'deleteevidence', get_string('deleteevidence', 'mod_arupevidence'));
 
         $choices = array(get_string('none'), 1,2,3,4,5,6,7,8,9,10,11,12);
         $mform->addElement('select', 'expectedvalidityperiod', get_string('expectedvalidityperiod', 'mod_arupevidence'), $choices);
@@ -139,6 +155,49 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         // FAKE field for completion settings.
         $mform->addElement('static', 'completionfake', '', '');
 
+        // Declarations section
+        // Has agreed declaration hidden field flag
+        $mform->addElement('hidden', 'hasagreeddeclaration', 0);
+        $mform->setType('hasagreeddeclaration', PARAM_INT);
+
+        if (!empty($this->declarations_menu)) {
+            $counter = 0;
+            foreach($this->declarations_menu as $key => $val) {
+                $_name =  "declarationid[{$counter}]";
+                $mform->addElement('hidden', $_name, $key);
+                $mform->setType($_name, PARAM_INT);
+
+                // flag for any declarations has user(s) agreed
+                if (isset( $this->declarations[$key]) && !empty($this->declarations[$key]) && $this->declarations[$key]->has_agreed) {
+                    $this->has_agreed_declaration = true;
+                }
+                $counter++;
+            }
+        }
+        if ($this->has_agreed_declaration) {
+            $mform->addElement('static', 'description', '', get_string('declaration:note:agreed', 'mod_arupevidence'));
+        }
+
+        $repeatcount = (count($this->declarations_menu) > 0)? count($this->declarations_menu): 1;
+        $disable_dec = $this->has_agreed_declaration? 'disabled': '';
+        $declarationelement = $mform->createElement('textarea', 'declaration', get_string('declaration', 'mod_arupevidence'), $disable_dec);
+        $this->repeat_elements(
+            array($declarationelement),
+            $repeatcount,
+            array(
+                'declaration' => array(
+                    'type' => PARAM_TEXT
+                )
+            ),
+            'declarationrepeats',
+            'declarationadds',
+            1,
+            get_string('declaration:add', 'mod_arupevidence'),
+            true
+        );
+
+        $mform->disabledIf('declarationadds', 'hasagreeddeclaration', 'eq', 1);
+
         $this->add_taps_fields($mform);
 
         $this->standard_coursemodule_elements();
@@ -195,9 +254,12 @@ class mod_arupevidence_mod_form extends moodleform_mod {
                 }
                 unset($defaultvalues->{'approvalusers'});
             }
+            if (!empty($this->declarations)) {
+                $defaultvalues->{'declaration'} = array_values($this->declarations_menu);
+                $defaultvalues->{'hasagreeddeclaration'} = $this->has_agreed_declaration ? 1: 0;
+            }
+
         }
-
-
         parent::set_data($defaultvalues);
     }
 
@@ -212,6 +274,14 @@ class mod_arupevidence_mod_form extends moodleform_mod {
 
         if(empty($data->requireexpirydate) || empty($_POST['requireexpirydate'])) {
             $data->requireexpirydate = 0;
+        }
+
+        if(empty($data->requireupload) || empty($_POST['requireupload'])) {
+            $data->requireupload = 0;
+        }
+
+        if(empty($data->deleteevidence) || empty($_POST['deleteevidence'])) {
+            $data->deleteevidence = 0;
         }
 
         if(empty($data->mustendmonth) || empty($_POST['mustendmonth'])) {
