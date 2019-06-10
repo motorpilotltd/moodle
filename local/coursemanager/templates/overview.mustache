@@ -1,0 +1,137 @@
+{{text}}
+
+<div class="addclassbtn">
+    <div class="innerbuttons">
+
+    </div>
+</div>
+<div class="navbar navbar-default">
+
+    <ul class="nav navbar-nav">              
+        <li class="dropdown">
+            <a href="{{url}}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{currentsearch}}<span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+            {{#filteroptions}}
+                <li><a href="{{{url}}}">{{name}}</a></li>
+            {{/filteroptions}}
+            </ul>
+        </li>
+    </ul>
+    {{#textsearch}}
+        <form class="navbar-form">
+            {{#setfilters}}
+                <input type="hidden" name="search{{searchnumber}}" value="{{field}}">
+                <input type="hidden" name="searchvalue{{searchnumber}}" value="{{value}}">
+            {{/setfilters}}
+            <input type="hidden" name="start" value="{{start}}">
+            <input type="hidden" name="page" value="overview">
+            <input type="hidden" name="search{{searchlevel}}" value="{{currentsearch}}">
+            
+            <input type="text" name="searchvalue{{searchlevel}}"
+            class="form-control" placeholder="{{placeholdertext}}" value="{{searchvalue}}">
+            <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+    {{/textsearch}}
+    {{#datesearch}}
+        {{{datesearchform}}}
+    {{/datesearch}}
+    <div class="clearfix"></div>
+    {{#hassearch}}
+        <div class="setfilters p-l-10 p-b-10 p-r-10">
+            {{#setfilters}}
+                <a href="{{{url}}}" class="btn btn-sm btn-default">
+                    {{field}}: {{displayvalue}}
+                    {{#pix}}t/delete, core, Remove Filter{{/pix}}
+                </a>
+            {{/setfilters}}
+        </div>
+    {{/hassearch}}
+</div>
+
+{{#pagination}}
+<ul class="pagination lv-pagination {{addclass}}">
+    <li>
+        <a href="{{{prevurl}}}">
+            {{{leftarrow}}}
+        </a>
+    </li>
+    {{#pages}}
+        <li class="{{active}}"><a href="{{{link}}}">{{number}}</a></li>
+    {{/pages}}
+    <li>
+        <a href="{{{nexturl}}}">
+            {{{rightarrow}}}
+        </a>
+    </li>
+</ul>
+{{/pagination}}
+
+<table id="coursemanager-courses" class="generaltable flexible boxaligncenter">
+    <thead>
+        <tr style="vertical-align: bottom">
+            {{#heading}}
+            <th scope="col {{class}}">
+                {{#sortasc}}
+                    <a href="{{{sortasc}}}" title="sort {{key}} asc">{{name}}</a>
+                {{/sortasc}}
+                {{#sortdesc}}
+                    <a href="{{{sortdesc}}}" title="sort {{key}} desc">{{name}} {{{iconsort}}}</a>
+                {{/sortdesc}}
+                {{#nosort}}
+                    {{name}}
+                {{/nosort}}
+            </th>
+            {{/heading}}
+        </tr>
+    </thead>
+    <tbody>
+        {{#courselist}}
+            <tr>
+                {{#values}}
+                    <td class="courseinfocell {{class}}">
+                        {{{value}}}
+                        {{#hasicon}}
+                            {{#iconlink}}
+                                <a href="{{{iconlink}}}">
+                            {{/iconlink}}
+                            <i class="fa {{icon}}" {{#tooltip}} data-toggle="tooltip" data-placement="{{location}}" title="{{tooltip}}" {{/tooltip}}>
+                            </i>
+                            {{#iconlink}}
+                            </a>
+                            {{/iconlink}}
+                        {{/hasicon}}
+                    </td>
+                {{/values}}
+            </tr>
+            {{#pendingdelete}}
+                <tr>
+                    <td colspan="10">
+                    <div class="alert alert-warning text-center">
+                        {{#str}}confirmcoursedelete, local_coursemanager{{/str}}
+                    </div>
+                    </td>
+                </tr>
+            {{/pendingdelete}}
+
+        {{/courselist}}
+    </tbody>
+</table>
+
+{{#pagination}}
+<ul class="pagination lv-pagination">
+    <li>
+        <a href="{{{prevurl}}}">
+            {{{leftarrow}}}
+        </a>
+    </li>
+    {{#pages}}
+        <li class="{{active}}"><a href="{{{link}}}">{{number}}</a></li>
+    {{/pages}}
+    <li>
+        <a href="{{{nexturl}}}">
+            {{{rightarrow}}}
+        </a>
+    </li>
+</ul>
+{{/pagination}}

@@ -1,0 +1,15 @@
+<div class="section-group onesection" role="tablist" aria-multiselectable="false">
+    <ul class="nav nav-tabs">
+    {{#items}}
+        {{#visible}}
+        <li class="{{active}}">
+            <a href="{{{url}}}">
+                <span class="name">
+                    {{{name}}} {{#records}}<span class="label label-success">{{records}}</span>{{/records}}
+                </span>
+            </a>
+        </li>
+        {{/visible}}
+    {{/items}}
+    </ul>
+</div>
