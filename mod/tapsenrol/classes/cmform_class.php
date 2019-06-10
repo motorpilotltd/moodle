@@ -331,11 +331,8 @@ abstract class cmform_class extends \moodleform {
     }
 
     private function shift_timestamp_to_timezone($timestamp, $timezone) {
-        $timezone = new \DateTimeZone($timezone);
-        $date = new \DateTime();
-        $date->setTimestamp($timestamp);
-        $date->setTimezone($timezone);
-        $shifteddate = \DateTime::createFromFormat('Y-m-d H:i', $date->format('Y-m-d H:i'));
+        $dateintimezone = userdate($timestamp, get_string('strftimedatetimeshort', 'langconfig'), $timezone);
+        $shifteddate = \DateTime::createFromFormat('d/m/y, H:i', $dateintimezone, new \DateTimeZone('UTC'));
         return $shifteddate->getTimestamp();
     }
 
