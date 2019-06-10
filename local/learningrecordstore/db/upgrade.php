@@ -78,10 +78,16 @@ function xmldb_local_learningrecordstore_upgrade($oldversion) {
         $table = new xmldb_table('local_learningrecordstore');
 
         $field = new xmldb_field('starttime', XMLDB_TYPE_INTEGER, '10', null, false, null, null);
-        $dbman->change_field_notnull($table, $field);
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
         $field = new xmldb_field('endtime', XMLDB_TYPE_INTEGER, '10', null, false, null, null);
-        $dbman->change_field_notnull($table, $field);
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
         upgrade_plugin_savepoint(true, 2015111611, 'local', 'learningrecordstore');
     }
