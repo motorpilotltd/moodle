@@ -251,14 +251,10 @@ abstract class cmform_class extends \moodleform {
             $data->classenddate = $classenddate->getTimestamp();
         }
         if (!empty($data->enrolmentstartdate)) {
-            $enrolmentstartdatestring = gmdate('Y-m-d 00:00:00', $data->enrolmentstartdate);
-            $enrolmentstartdate = new \DateTime($enrolmentstartdatestring, $timezone);
-            $data->enrolmentstartdate = $enrolmentstartdate->getTimestamp();
+            $data->enrolmentstartdate = usergetmidnight($data->enrolmentstartdate, $timezone);
         }
         if (!empty($data->enrolmentenddate)) {
-            $enrolmentenddatestring = gmdate('Y-m-d 23:59:59', $data->enrolmentenddate);
-            $enrolmentenddate = new \DateTime($enrolmentenddatestring, $timezone);
-            $data->enrolmentenddate = $enrolmentenddate->getTimestamp();
+            $data->enrolmentenddate = usergetmidnight($data->enrolmentenddate, $timezone);
         }
         return $data;
     }
@@ -311,17 +307,13 @@ abstract class cmform_class extends \moodleform {
             $default_values['unlimitedattendees'] = false;
         }
 
-        if (!empty($default_values['classstarttime'])) {
-            $default_values['classstarttime'] = $this->shift_timestamp_to_timezone(
-                    $default_values['classstarttime'],
-                    empty($default_values['usedtimezone']) ? date_default_timezone_get() : $default_values['usedtimezone']
-            );
-        }
-        if (!empty($default_values['classendtime'])) {
-            $default_values['classendtime'] = $this->shift_timestamp_to_timezone(
-                    $default_values['classendtime'],
-                    empty($default_values['usedtimezone']) ? date_default_timezone_get() : $default_values['usedtimezone']
-            );
+        foreach (['classstarttime', 'classendtime', 'enrolmentstartdate', 'enrolmentenddate'] as $datetoshift) {
+            if (!empty($default_values[$datetoshift])) {
+                $default_values[$datetoshift] = $this->shift_timestamp_to_timezone(
+                        $default_values[$datetoshift],
+                        empty($default_values['usedtimezone']) ? date_default_timezone_get() : $default_values['usedtimezone']
+                );
+            }
         }
         // Date based on timezone
         // Output
