@@ -469,7 +469,7 @@ class elearningstatus extends base {
         $returnfile = new stdClass();
 
         $filename = 'report_'.(time()).'.csv';
-        $tempfile = $CFG->dataroot . '/temp/' . $filename;
+        $tempfile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $filename;
         $returnfile->filename = $filename;
         $returnfile->tempfile = $tempfile;
         $delimiter = get_config('local_reports', 'csvseparator');
