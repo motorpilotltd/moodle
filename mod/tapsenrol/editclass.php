@@ -82,6 +82,10 @@ $data = $form->get_data();
 
 if ($data) {
     $form->store_data($data);
+}
+
+if ($form->is_cancelled() || $form->is_submitted()) {
+
     $params =  ['cmid' => $cm->id];
     if ($form->alertrequired) {
         $params['resendinvitesclassid'] = $form->classid;
