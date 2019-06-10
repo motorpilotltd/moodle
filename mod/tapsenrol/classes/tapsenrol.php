@@ -1602,7 +1602,7 @@ EOS;
         }
 
         // Merge class data with enrolment data to ensure up-to-date.
-        $enrolment = (object)array_merge((array)$userenrolment, (array)$class);
+        $enrolment = (object)array_merge((array)$class, (array)$userenrolment);
 
         $data = array();
         $data['update:extrainfo'] = nl2br($extrainfo);
