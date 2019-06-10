@@ -303,6 +303,7 @@ abstract class cmform_class extends \moodleform {
 
         if (!isset($default_values['maximumattendees']) || $default_values['maximumattendees'] == -1) {
             $default_values['unlimitedattendees'] = true;
+            unset($default_values['maximumattendees']);
         } else {
             $default_values['unlimitedattendees'] = false;
         }
