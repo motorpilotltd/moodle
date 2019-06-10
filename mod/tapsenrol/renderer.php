@@ -287,7 +287,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                             $cells[] = '-';
                         }
                     } else {
-                        $cell = new html_table_cell(get_string("waitinglist:{$class->classtype}", 'tapsenrol'));
+                        $cell = new html_table_cell(get_string("waitinglist", 'tapsenrol'));
                         $cell->colspan = 2;
                         $cells[] = $cell;
                     }
@@ -432,7 +432,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM) {
             $date = html_writer::tag('div', get_string('date', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
             if (!$class->classstarttime) {
-                $datevalue = get_string('waitinglist:classroom', 'tapsenrol');
+                $datevalue = get_string('waitinglist', 'tapsenrol');
             } else {
                 $datevalue = $startdatetime->format('d M Y');
                 $datevalue .= ($class->classstarttime != $class->classstartdate) ? $startdatetime->format(' H:i T') : '';
@@ -502,7 +502,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM) {
             $date = html_writer::tag('div', get_string('date', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
             if (!$class->classstarttime) {
-                $datevalue = get_string('waitinglist:classroom', 'tapsenrol');
+                $datevalue = get_string('waitinglist', 'tapsenrol');
             } else {
                 $datevalue = $startdatetime->format('d M Y');
                 $datevalue .= ($class->classstarttime != $class->classstartdate) ? $startdatetime->format(' H:i T') : '';
@@ -932,7 +932,7 @@ EOF;
 
         $date = html_writer::tag('div', get_string('date', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
         if (!$class->classstarttime) {
-            $datevalue = get_string('waitinglist:classroom', 'tapsenrol');
+            $datevalue = get_string('waitinglist', 'tapsenrol');
         } else {
             $datevalue = $startdatetime->format('d M Y');
             $datevalue .= ($class->classstarttime != $class->classstartdate) ? $startdatetime->format(' H:i T') : '';
@@ -1032,7 +1032,7 @@ EOF;
                         $cells[] = '-';
                     }
                 } else {
-                    $cell = new html_table_cell(get_string('waitinglist:classroom', 'tapsenrol'));
+                    $cell = new html_table_cell(get_string('waitinglist', 'tapsenrol'));
                     $cell->colspan = 2;
                     $cells[] = $cell;
                 }
@@ -1077,7 +1077,7 @@ EOF;
 
         $date = html_writer::tag('div', get_string('date', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
         if (!$class->classstarttime) {
-            $datevalue = get_string('waitinglist:classroom', 'tapsenrol');
+            $datevalue = get_string('waitinglist', 'tapsenrol');
         } else {
             $datevalue = $startdatetime->format('d M Y');
             $datevalue .= ($class->classstarttime != $class->classstartdate) ? $startdatetime->format(' H:i T') : '';

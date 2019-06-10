@@ -34,7 +34,7 @@ try {
         $a->location = $class->location ? $class->location : get_string('tbc', 'tapsenrol');
         $a->trainingcenter = is_null($class->trainingcenter) ? '' : $class->trainingcenter;
         if (!$class->classstarttime) {
-            $a->date = get_string('waitinglist:classroom', 'tapsenrol');
+            $a->date = get_string('waitinglist', 'tapsenrol');
         } else {
             try {
                 $timezone = new DateTimeZone($class->usedtimezone);

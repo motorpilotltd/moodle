@@ -74,7 +74,7 @@ abstract class mod_tapsenrol_manage_enrolments_step2_form extends moodleform {
 
         $date = html_writer::tag('div', get_string('date', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
         if (!$this->_class->classstarttime) {
-            $this->_class->date = get_string('waitinglist:classroom', 'tapsenrol');
+            $this->_class->date = get_string('waitinglist', 'tapsenrol');
         } else {
             try {
                 $timezone = new DateTimeZone($this->_class->usedtimezone);

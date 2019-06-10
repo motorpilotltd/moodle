@@ -43,7 +43,7 @@ class tapsenrol_table_sql extends table_sql {
                     $startdatetime->setTimestamp($row->classstarttime);
                     return $startdatetime->format('d M Y');
                 } else {
-                    return get_string('waitinglist:classroom', 'tapsenrol');
+                    return get_string('waitinglist', 'tapsenrol');
                 }
             default:
                 return null;
