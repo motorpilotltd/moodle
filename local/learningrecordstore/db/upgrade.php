@@ -92,5 +92,36 @@ function xmldb_local_learningrecordstore_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111611, 'local', 'learningrecordstore');
     }
 
+    if ($oldversion < 2015111613) {
+
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'D' where durationunits = 'Day(s)'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'H' where durationunits = 'Hour(s)'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'HPM' where durationunits = 'Hour(s) Per Month'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'HPW' where durationunits = 'Hour(s) Per Week'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'M' where durationunits = 'Month(s)'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'MIN' where durationunits = 'Minute(s)'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'Q' where durationunits = 'Quarter Hour(s)'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'W' where durationunits = 'Week(s)'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'Y' where durationunits = 'Year(s)'");
+
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'D' where durationunits = 'days'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'H' where durationunits = 'hours'");
+        $DB->execute("update {local_learningrecordstore} set durationunits = 'MIN' where durationunits = 'minutes'");
+
+        upgrade_plugin_savepoint(true, 2015111613, 'local', 'learningrecordstore');
+    }
+
+    if ($oldversion < 2015111615) {
+
+        foreach ([\mod_tapsenrol\enrolclass::TYPE_CLASSROOM => get_string('classroom', 'tapsenrol'),
+                \mod_tapsenrol\enrolclass::TYPE_ELEARNING, get_string('online', 'tapsenrol')] as $classtypecode => $classtype
+        ) {
+            $DB->execute("update {local_learningrecordstore} set classtype = :classtype where classtype = :classtypecode",
+                    ['classtype' => $classtype, 'classtypecode' => $classtypecode]);
+        }
+
+        upgrade_plugin_savepoint(true, 2015111615, 'local', 'learningrecordstore');
+    }
+
     return true;
 }

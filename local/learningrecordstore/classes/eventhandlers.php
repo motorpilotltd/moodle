@@ -53,12 +53,12 @@ class eventhandlers {
             $lrsentry->location = $class->location;
             $lrsentry->classcost = $class->classcost;
             $lrsentry->classcostcurrency = $class->classcostcurrency;
-            $lrsentry->classtype = $class->classtype;
+            $lrsentry->classtype = $class->format_classtype();
             $lrsentry->duration = $class->classduration;
-            $lrsentry->durationunits = $class->classdurationunits; //needs mapping
+            $lrsentry->durationunits = $class->classdurationunitscode;
         } else if (!empty($metadata)) {
             $lrsentry->duration = $metadata->duration;
-            $lrsentry->durationunits = $metadata->durationunits; //needs mapping
+            $lrsentry->durationunits = $metadata->durationunits;
         }
 
         $lrsentry->locked = true;
