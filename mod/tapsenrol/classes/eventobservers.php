@@ -314,11 +314,6 @@ EOS;
 
         $tapsenrol = new \tapsenrol($cm->instance, 'instance', $event->courseid);
 
-        list($instatement, $inparams) = $DB->get_in_or_equal(
-                $tapsenrol->taps->get_statuses('placed'),
-                SQL_PARAMS_NAMED, 'status'
-        );
-        $compare = $DB->sql_compare_text('lte.bookingstatus');
         $sql = "SELECT
                     lte.*
                 FROM {tapsenrol_class_enrolments} lte
@@ -331,13 +326,33 @@ EOS;
                     u.id = :userid
                     AND ltc.courseid = :courseid
                     AND lte.active = 1
-                    AND (lte.archived = 0 OR lte.archived IS NULL)
-                    AND {$compare} {$instatement}";
+                    AND (lte.archived = 0 OR lte.archived IS NULL)";
         $params = array('userid' => $event->relateduserid, 'courseid' => $event->courseid);
-        $enrolment = $DB->get_record_sql($sql, array_merge($params, $inparams));
+        $enrolment = $DB->get_record_sql($sql, $params);
 
-        if (empty($enrolment)) {
+        if (empty($enrolment) || !$tapsenrol->taps->is_status($enrolment->bookingstatus, ['placed', 'attended'])) {
             return true;
+        }
+
+        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
+
+        $completiontime = time();
+
+        if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM && !empty($class->classendtime)) {
+            $completiontime = $class->classendtime;
+            $ccompletion = new \completion_completion(['course' => $event->courseid, 'userid' => $event->relateduserid]);
+            // Update Moodle course completion date.
+            // Record should exist as we're observing course completion.
+            $ccompletion->timecompleted = $completiontime;
+            $ccompletion->update();
+
+            $cache = \cache::make('core', 'coursecompletion');
+            $key = $event->relateduserid . '_' . $event->courseid;
+            $cache->delete($key, ['value' => $data]);
+        }
+
+        if ($tapsenrol->taps->is_status($enrolment->bookingstatus, ['placed'])) {
+            $tapsenrol->taps->set_status($enrolment, 'Full Attendance', $completiontime);
         }
 
         $tccompletion =
@@ -355,20 +370,5 @@ EOS;
             $tccompletion->timemodified = time();
             $DB->update_record('tapsenrol_completion', $tccompletion);
         }
-
-        $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
-
-        $completiontime = time();
-
-        if ($class->classtype == \mod_tapsenrol\enrolclass::TYPE_CLASSROOM && !empty($class->classendtime)) {
-            $completiontime = $class->classendtime;
-            $ccompletion = new \completion_completion(['course' => $event->courseid, 'userid' => $event->relateduserid]);
-            // Update Moodle course completion date.
-            // Record should exist as we're observing course completion.
-            $ccompletion->timecompleted = $completiontime;
-            $ccompletion->update();
-        }
-
-        $tapsenrol->taps->set_status($enrolment, 'Full Attendance', $completiontime);
     }
 }

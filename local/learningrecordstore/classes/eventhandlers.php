@@ -32,9 +32,11 @@ class eventhandlers {
         $category = $DB->get_record('course_categories', ['id' => $course->category]);
         $user = \core_user::get_user($event->relateduserid);
 
+        $ccompletion = new \completion_completion(['course' => $event->courseid, 'userid' => $event->relateduserid]);
+
         $lrsentry->provider = 'moodle';
         $lrsentry->providerid = $event->courseid;
-        $lrsentry->completiontime = $event->timecreated;
+        $lrsentry->completiontime = $ccompletion->timecompleted;
         $lrsentry->classcategory = $category->name;
         $lrsentry->providername = $course->fullname;
         $lrsentry->timemodified = time();
