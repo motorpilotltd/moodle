@@ -259,7 +259,6 @@ class lyndaapi {
             mtrace('Started synccourseprogress for ' . $name);
 
             $tz = new \DateTimeZone('America/Los_Angeles');
-            $taps = new \local_taps\taps();
 
             $lastruntimecompletion = get_config('local_lynda', 'lastruntimecompletion_' . $id);
             if (empty($lastruntimecompletion)) {
