@@ -95,5 +95,21 @@ function xmldb_local_admin_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111609, 'local', 'admin');
     }
 
+    if ($oldversion < 2015111611) {
+        $roleid = $DB->get_field('role', 'id', ['shortname' => 'student']);
+        $DB->execute("UPDATE {enrol} SET roleid = :roleid WHERE roleid = 0 AND enrol = 'self'", ['roleid' => $roleid]);
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111611, 'local', 'admin');
+    }
+
+    if ($oldversion < 2015111612) {
+        $internalworkflowid = $DB->get_field('tapsenrol_iw', 'id', ['name' => 'Off (Ex-Oracle)']);
+        $DB->execute("UPDATE {tapsenrol} SET internalworkflowid = :internalworkflowid WHERE internalworkflowid = 0", ['internalworkflowid' => $internalworkflowid]);
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111612, 'local', 'admin');
+    }
+
     return true;
 }

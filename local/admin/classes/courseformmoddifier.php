@@ -124,6 +124,14 @@ class courseformmoddifier {
             $enrolmentrole = get_config('local_admin', 'default_enrolment_role');
         }
 
+        if (empty($internalworkflowid)) {
+            $internalworkflowid = $DB->get_field('tapsenrol_iw', 'id', ['name' => 'Off (Ex-Oracle)']);
+        }
+
+        if (empty($enrolmentrole)) {
+            $enrolmentrole = $DB->get_field('role', 'id', ['shortname' => 'student']);
+        }
+
         $transaction = $DB->start_delegated_transaction();
         self::add_default_enrols($course, $enrolmentrole);
 
