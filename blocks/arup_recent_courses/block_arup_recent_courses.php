@@ -211,6 +211,7 @@ JOIN
 JOIN
     {user} u
     ON u.id = lte.userid
+INNER JOIN {course} c on t.course = c.id AND c.visible = 1
 WHERE
     tit.approved IS NULL
     AND timecancelled IS NULL
@@ -269,6 +270,7 @@ JOIN
     {course} c ON c.id = ltc.courseid
 WHERE
     lte.userid = :userid
+    AND c.visible = 1
     AND lte.active = 1
     AND (lte.archived = 0 OR lte.archived IS NULL)
     AND {$DB->sql_compare_text('lte.bookingstatus')} {$usql}
