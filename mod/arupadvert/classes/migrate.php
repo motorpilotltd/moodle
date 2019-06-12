@@ -202,7 +202,7 @@ class migrate {
                 if (!empty($tapscourse->coursecode)) {
                     $course->shortname = self::find_course_field_suffix('shortname', $tapscourse->coursecode);
                 } else {
-                    $course->shortname = '';
+                    $course->shortname = $tapscourse->coursename;
                 }
 
                 $course->summary = $tapscourse->onelinedescription;

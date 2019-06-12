@@ -19,7 +19,7 @@ class migrate {
         $enrolmodule = $DB->get_record('modules', ['name' => 'tapsenrol']);
 
         // SQL Server only.
-        $DB->execute("update te set te.autocompletion = tc.autocompletion, te.completionattended = tc.completionattended, te.completiontimetype = tc.completiontimetype
+        $DB->execute("update te set te.completionattended = tc.completionattended
                         from {tapsenrol} te
                         inner join {course_modules} cm_enrol on cm_enrol.instance = te.id and cm_enrol.module = :enrolmoduleid
                         inner join {course_modules} cm_completion on cm_enrol.course = cm_completion.course and cm_completion.module = :completionmoduleid
