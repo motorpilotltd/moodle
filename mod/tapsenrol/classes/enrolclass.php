@@ -142,4 +142,17 @@ class enrolclass extends \data_object {
         }
         return $ret;
     }
+
+    public function format_classtype() {
+        switch ($this->classtype) {
+            case self::TYPE_CLASSROOM:
+                return get_string('classroom', 'tapsenrol');
+                break;
+            case self::TYPE_ELEARNING:
+                return get_string('online', 'tapsenrol');
+                break;
+            default:
+                return $this->classtype;
+        }
+    }
 }
