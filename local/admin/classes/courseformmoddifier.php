@@ -323,13 +323,14 @@ class courseformmoddifier {
         $removestart = $mform->_elementIndex['courseformathdr'];
         $stopbefore = $mform->_elementIndex['buttonar'];
 
-        $elements_to_freeze = array_slice($mform->_elements, $removestart, $stopbefore - $removestart, true);
+        $elements_to_freeze = array_slice($mform->_elements, $removestart - 1, $stopbefore - $removestart, true);
         $elementnamestofreeze = [];
+        $elementsnamestoremove = [];
 
         foreach ($elements_to_freeze as $element) {
 
             if ($element->getType() == 'header') {
-                $mform->removeElement($element->getName());
+                $elementsnamestoremove[] = $element->getName();
             } else {
                 $elementnamestofreeze[] = $element->getName();
 
@@ -345,8 +346,12 @@ class courseformmoddifier {
         $mform->addElement('html', \html_writer::tag('span', '', ['id' => 'id_updatecourseformat'])); // Spacer.
 
         $systemcontext = \context_system::instance();
-        if (!has_capability("local/coursemetadata:accessall", $systemcontext)) {
+        if (!has_capability("local/coursemetadata:accessall", $systemcontext) && $mform->elementExists('arupdefaultcourse')) {
             $elementnamestofreeze[] = 'arupdefaultcourse';
+        }
+
+        foreach($elementsnamestoremove as $elemname) {
+            $mform->removeElement($elemname);
         }
 
         $mform->hardFreeze($elementnamestofreeze);
