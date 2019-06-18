@@ -30,7 +30,7 @@ require_once("$CFG->libdir/clilib.php");
 require_once("$CFG->libdir/adminlib.php");
 
 // Now get cli options.
-list($options, $unrecognized) = cli_get_params(array('domigration' => false, 'help' => false),
+list($options, $unrecognized) = cli_get_params(['domigration' => false, 'help' => false, 'doorphannedonly' => false],
         array('h' => 'help'));
 
 if ($unrecognized) {
@@ -55,9 +55,12 @@ if ($options['help']) {
     die;
 }
 
-if (!$options['domigration']) {
+if (!empty($options['domigration'])) {
+    \mod_tapsenrol\migrate::migrate_tapsenrol_class_enrolments();
+    \mod_tapsenrol\migrate::migrate_orphannedcompletionstates();
+} else if (!empty($options['doorphannedonly'])) {
+    \mod_tapsenrol\migrate::migrate_orphannedcompletionstates();
+} else {
     echo $help . "\n";
     exit(0);
 }
-
-\mod_tapsenrol\migrate::migrate_tapsenrol_class_enrolments();
