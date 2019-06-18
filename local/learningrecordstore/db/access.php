@@ -28,14 +28,12 @@ $capabilities = array(
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
             'manager' => CAP_ALLOW
-        )
+        ),
+        'clonepermissionsfrom' => 'local/coursemanager:addcpd'
     ),
     'local/learningrecordstore:bulkaddcpd' => array(
         'captype' => 'read',
         'riskbitmask' => RISK_DATALOSS,
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
+        'contextlevel' => CONTEXT_SYSTEM
     )
 );

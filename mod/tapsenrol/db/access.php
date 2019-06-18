@@ -132,7 +132,8 @@ $capabilities = array(
             'contextlevel' => CONTEXT_COURSE,
             'archetypes' => array(
                     'manager' => CAP_ALLOW
-            )
+            ),
+            'clonepermissionsfrom' => 'mod/tapscompletion:updatecompletion'
     ),
     'mod/tapsenrol:editclass' => array(
             'captype' => 'read',
@@ -140,7 +141,8 @@ $capabilities = array(
             'contextlevel' => CONTEXT_MODULE,
             'archetypes' => array(
                     'manager' => CAP_ALLOW
-            )
+            ),
+            'clonepermissionsfrom' => 'local/coursemanagerclass:add'
     ),
     'mod/tapsenrol:deleteclass' => array(
             'captype' => 'read',
@@ -148,7 +150,8 @@ $capabilities = array(
             'contextlevel' => CONTEXT_MODULE,
             'archetypes' => array(
                     'manager' => CAP_ALLOW
-            )
+            ),
+            'clonepermissionsfrom' => 'local/coursemanager:deleteclass'
     ),
     'mod/tapsenrol:createclass' => array(
             'captype' => 'read',
@@ -156,7 +159,8 @@ $capabilities = array(
             'contextlevel' => CONTEXT_MODULE,
             'archetypes' => array(
                     'manager' => CAP_ALLOW
-            )
+            ),
+            'clonepermissionsfrom' => 'local/coursemanagercourse:add'
     ),
 
 );
