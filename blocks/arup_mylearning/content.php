@@ -193,7 +193,7 @@ class block_arup_mylearning_content {
             foreach ($courses as $course) {
                 $cells = array();
 
-                $cell->text = \coursemetadatafield_arup\arupmetadata::getmethodologyname($course->methodology);
+                $cell->text = \coursemetadatafield_arup\arupmetadata::getmethodologyicon($course->methodology);
                 $cell->attributes['class'] = 'text-center';
                 $cells[] = clone($cell);
 
@@ -288,7 +288,7 @@ class block_arup_mylearning_content {
             foreach ($courses as $course) {
                 $cells = array();
 
-                $cell->text = \coursemetadatafield_arup\arupmetadata::getmethodologyname($course->methodology);
+                $cell->text = \coursemetadatafield_arup\arupmetadata::getmethodologyicon($course->methodology);
                 $cell->attributes['class'] = 'text-center';
                 $cells[] = clone($cell);
 

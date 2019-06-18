@@ -159,7 +159,7 @@ class block_arup_recent_courses extends block_base {
 
                 $cell = new html_table_cell();
                 $cell->attributes['class'] = 'text-center';
-                $cell->text = \coursemetadatafield_arup\arupmetadata::getmethodologyname($course->methodology);
+                $cell->text = \coursemetadatafield_arup\arupmetadata::getmethodologyicon($course->methodology);
                 $cells[] = clone($cell);
 
                 $linkclass = $course->visible ? '' : 'dimmed';

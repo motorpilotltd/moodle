@@ -186,7 +186,8 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
                 return false;
                 break;
         }
-        return $OUTPUT->pix_icon($identifier, get_string($identifier, 'coursemetadatafield_arup'), 'coursemetadatafield_arup');
+
+        return \html_writer::img($OUTPUT->image_url($identifier, 'coursemetadatafield_arup'), get_string($identifier, 'coursemetadatafield_arup'), ['class' => 'coursemetadata iconsingle']);
     }
 
     public function classtypelocked() {
