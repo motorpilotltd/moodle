@@ -38,8 +38,7 @@ if ($hassiteconfig
                 new admin_externalpage('buildnewcourse', new lang_string('buildnewcourse', 'local_admin'),
                         new moodle_url('/course/edit.php', ['category' => $buildcategoryid]),
                         array('moodle/course:create')
-                ),
-                'coursemgmt'
+                )
         );
     }
 

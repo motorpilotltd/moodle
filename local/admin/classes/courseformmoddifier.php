@@ -329,7 +329,7 @@ class courseformmoddifier {
 
         foreach ($elements_to_freeze as $element) {
 
-            if ($element->getType() == 'header') {
+            if (in_array($element->getType(), ['header', 'html'])) {
                 $elementsnamestoremove[] = $element->getName();
             } else {
                 $elementnamestofreeze[] = $element->getName();
