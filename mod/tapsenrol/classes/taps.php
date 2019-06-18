@@ -409,7 +409,7 @@ class taps {
         }
 
         $activewhere = $activeonly ? ' AND lte.active = 1' : '';
-        $archivedwhere = $archived ? '' : ' AND (ltc.archived = 0 OR ltc.archived IS NULL)';
+        $archivedwhere = $archived ? '' : ' AND (ltc.archived = 0 OR ltc.archived IS NULL) AND (lte.archived = 0 OR lte.archived IS NULL)';
         $sql = "SELECT lte.* 
                 FROM {tapsenrol_class_enrolments} lte 
                 INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.id
@@ -463,11 +463,22 @@ class taps {
         $coursecontext = \context_course::instance($class->courseid);
         $user = \core_user::get_user($userid);
         if(!is_enrolled($coursecontext, $user)) {
-            $instances = $DB->get_records('enrol', array('enrol'=>'manual', 'courseid' => $class->courseid, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder,id ASC');
+
+            $instances = $DB->get_records('enrol', array('enrol'=>'self', 'courseid' => $class->courseid, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder,id ASC');
             $instance = reset($instances);
             $roleid = $instance ? $instance->roleid : null;
 
-            if (!enrol_try_internal_enrol($class->courseid, $user->id,$roleid)) {
+            if (!$instance) {
+                $result->success = false;
+                $result->status = 'MOODLE_ENROLMENT_FAILED (No self enrolment instance)';
+                return $result;
+            }
+
+            $enrol = enrol_get_plugin('self');
+
+            try {
+                $enrol->enrol_user($instance, $userid, $roleid);
+            } catch (\Exception $ex) {
                 $result->success = false;
                 $result->status = 'MOODLE_ENROLMENT_FAILED';
                 return $result;
@@ -642,7 +653,7 @@ class taps {
         $sql = "SELECT ltc.id, COUNT(lte.id)
                   FROM {tapsenrol_class_enrolments} lte
                   INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.id
-                 WHERE ltc.courseid = :courseid AND (ltc.archived = 0 OR ltc.archived IS NULL) AND bookingstatus {$in}
+                 WHERE ltc.courseid = :courseid AND (lte.archived = 0 OR lte.archived IS NULL) AND (ltc.archived = 0 OR ltc.archived IS NULL) AND bookingstatus {$in}
               GROUP BY ltc.id
               ORDER BY ltc.id ASC";
         $enrolments = $DB->get_records_sql_menu($sql, $params);
