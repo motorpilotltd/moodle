@@ -72,4 +72,7 @@ $table = new \mod_tapsenrol\classoverview_table($sortcolumn, $cm);
 $table->define_baseurl($baseurl);
 $table->out($pagesize, true);
 
+$output = $PAGE->get_renderer('mod_tapsenrol');
+echo $output->back_to_coursemanager($cm->course);
+
 echo $OUTPUT->footer();

@@ -553,7 +553,7 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
     }
 
     public function back_to_coursemanager($courseid) {
-        $url = new moodle_url('/local/coursemanager/index.php', array('page' => 'course', 'courseid' => $courseid));
+        $url = new moodle_url('/course/view.php', array('id' => $courseid));
         $link = html_writer::link($url, get_string('backtocoursemanager', 'tapsenrol'));
         return html_writer::tag('p', $link);
     }
