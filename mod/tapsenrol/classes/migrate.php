@@ -74,7 +74,7 @@ set tce.classid = tc.id
         list($insql, $params) = $DB->get_in_or_equal(array_keys($rows));
         $DB->execute("UPDATE {tapsenrol_completion} SET completed = 0 where id $insql", $params);
 
-        $sql = "select cmc.userid, cm.id as cmid, cm.course
+        $sql = "select concat(cmc.id, '_', ltce.id), cmc.userid, cm.id as cmid, cm.course
 from {course_modules_completion} cmc
 inner join {course_modules} cm on cm.id = cmc.coursemoduleid
 inner join {modules} m ON m.name = 'tapsenrol' and cm.module = m.id
