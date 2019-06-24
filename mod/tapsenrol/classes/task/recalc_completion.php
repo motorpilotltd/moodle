@@ -140,16 +140,16 @@ EOS;
                 continue;
             }
             // Mark as complete.
-            if (is_null($validenrolment->tcid)) {
+            $record = $DB->get_record('tapsenrol_completion',
+                    array('tapsenrolid' => $validenrolment->tid, 'userid' => $validenrolment->uid));
+            if (!$record) {
                 $record = new \stdClass();
                 $record->tapsenrolid = $validenrolment->tid;
                 $record->userid = $validenrolment->uid;
                 $record->completed = true;
                 $record->timemodified = time();
                 $DB->insert_record('tapsenrol_completion', $record);
-            } else if (!$validenrolment->tccompleted) {
-                $record = new \stdClass();
-                $record->id = $validenrolment->tcid;
+            } else if (!$record->completed) {
                 $record->completed = true;
                 $record->timemodified = time();
                 $DB->update_record('tapsenrol_completion', $record);

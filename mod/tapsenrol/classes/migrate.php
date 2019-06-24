@@ -64,6 +64,22 @@ set tce.classid = tc.id
 
         require_once("$CFG->dirroot/lib/completionlib.php");
 
+        // All records in tapsenrol_completion should be unique by userid/tapsenrolid.
+        $sql = "select max(completed) as completed, max(timemodified) as timemodified, userid, tapsenrolid 
+                from {tapsenrol_completion} 
+                group by userid, tapsenrolid
+                having count(id) > 1";
+        $records = $DB->get_record_sql($sql);
+        foreach ($records as $record) {
+            $DB->execute(
+                    "DELETE FROM {tapsenrol_completion} where userid = :userid and tapsenrolid = :tapsenrolid",
+                    ['userid' => $record->userid, 'tapsenrolid' => $record->tapsenrolid]
+            );
+            $DB->insert_record('tapsenrol_completion',
+                    (object)['userid' => $record->userid, 'tapsenrolid' => $record->tapsenrolid, 'completed' => $record->completed, 'timemodified' => $record->timemodified]
+            );
+        }
+
         $sql = "select tc.id 
                 from {tapsenrol_completion} tc
                 inner join {tapsenrol} te on te.id = tc.tapsenrolid
