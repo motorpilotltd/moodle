@@ -40,7 +40,8 @@ $string['wa_learning_path:editlearningmatrix'] = "Ability to edit learning path"
 $string['wa_learning_path:printlearningmatrix'] = "Ability to print learning path matrix";
 $string['wa_learning_path:exportlearningmatrix'] = "Ability to export learning path matrix";
 $string['wa_learning_path:viewlearningpath'] = "Ability to view learning path";
-$string['wa_learning_path:publishlearningpath'] = "Ability to published a learning path";
+$string['wa_learning_path:viewdraftlearningpath'] = "Ability to view draft learning path";
+$string['wa_learning_path:publishlearningpath'] = "Ability to publish a learning path";
 $string['wa_learning_path:editmatrixgrid'] = "Ability to edit a grid matrix";
 
 $string['wa_learning_path:editactivity'] = "Ability to edit activity";
