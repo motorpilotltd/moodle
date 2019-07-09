@@ -26,6 +26,9 @@ class user_report_table_sql extends \table_sql {
             case 'extrainfo':
                 $return = '';
                 $extrainfo = json_decode($row->extrainfo);
+                if (is_string($extrainfo)) {
+                    return $extrainfo;
+                }
                 if (!empty($extrainfo->exception)) {
                     $return .= "{$extrainfo->exception}";
                 }

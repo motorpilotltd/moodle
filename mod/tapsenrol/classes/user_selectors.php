@@ -20,8 +20,19 @@ require_once($CFG->dirroot.'/user/selector/lib.php');
 
 class tapsenrol_enrol_user_selector extends user_selector_base {
 
-    public function __construct($name, $options = array()) {
-        parent::__construct($name, $options);
+    private $excludeusersql = '';
+    private $excludeuserparams = [];
+
+    public function __construct($name, $options = []) {
+        parent::__construct($name);
+
+        if (isset($options['excludeusersql'])) {
+            $this->excludeusersql = $options['excludeusersql'];
+            // Params only needed/valid if exclude sql is set.
+            if (isset($options['excludeuserparams'])) {
+                $this->excludeuserparams = $options['excludeuserparams'];
+            }
+        }
 
         // Override options.
         $this->preserveselected = true;
@@ -40,6 +51,10 @@ class tapsenrol_enrol_user_selector extends user_selector_base {
             $whereconditions[] = $wherecondition;
         }
 
+        if ($this->excludeusersql) {
+            $whereconditions[] = "u.id NOT IN ({$this->excludeusersql})";
+        }
+
         if ($whereconditions) {
             $wherecondition = ' WHERE ' . implode(' AND ', $whereconditions);
         }
@@ -52,6 +67,8 @@ class tapsenrol_enrol_user_selector extends user_selector_base {
 
         list($sort, $sortparams) = users_order_by_sql('u', $search);
         $order = ' ORDER BY ' . $sort;
+
+        $params = array_merge($params, $this->excludeuserparams);
 
         if (!$this->is_validating()) {
             $potentialmemberscount = $DB->count_records_sql($countfields . $sql, $params);
