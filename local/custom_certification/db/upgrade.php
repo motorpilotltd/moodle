@@ -133,7 +133,7 @@ function xmldb_local_custom_certification_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018022802, 'local', 'custom_certification');
     }
 
-    if ($oldversion < 2018022804) {
+    if ($oldversion < 2018022806) {
         // Update field to link certificate to multiple TAPS courses.
         $table = new xmldb_table('certif');
         $field = new xmldb_field('linkedtapscourseid', XMLDB_TYPE_TEXT);
@@ -143,10 +143,10 @@ function xmldb_local_custom_certification_upgrade($oldversion) {
 
 
         // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2018022804, 'local', 'custom_certification');
+        upgrade_plugin_savepoint(true, 2018022806, 'local', 'custom_certification');
     }
 
-    if ($oldversion < 2018022805) {
+    if ($oldversion < 2018022807) {
         // Update to add donotsend timeframe to messages table.
         $table = new xmldb_table('certif_messages');
         $field = new xmldb_field('donotsendtime', XMLDB_TYPE_INTEGER, 10, null, XMLDB_NOTNULL, null, 0);
@@ -165,10 +165,10 @@ function xmldb_local_custom_certification_upgrade($oldversion) {
         }
 
         // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2018022805, 'local', 'custom_certification');
+        upgrade_plugin_savepoint(true, 2018022807, 'local', 'custom_certification');
     }
 
-    if ($oldversion < 2018022804) {
+    if ($oldversion < 2018022808) {
         // Update field to allow NULLs.
         $table = new xmldb_table('certif_completions_archive');
         $field = new xmldb_field('timecompleted', XMLDB_TYPE_INTEGER, 10, null, null, null, null);
@@ -177,7 +177,7 @@ function xmldb_local_custom_certification_upgrade($oldversion) {
         }
 
         // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2018022804, 'local', 'custom_certification');
+        upgrade_plugin_savepoint(true, 2018022808, 'local', 'custom_certification');
     }
 
     return true;
