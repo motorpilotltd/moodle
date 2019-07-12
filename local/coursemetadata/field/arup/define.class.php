@@ -26,13 +26,13 @@ class coursemetadata_define_arup extends \local_coursemetadata\define_base {
     public function define_validate_specific($data, $files) {
         global $DB;
 
-        $count = $DB->count_records('coursemetadata_info_field', ['datatype' => 'arup']);
-
         if (isset($data->id)) {
-            $count += 1;
+            $duplicate = $DB->record_exists_sql('SELECT * FROM {coursemetadata_info_field} WHERE datatype = :datatype AND id <> :id', ['datatype' => 'arup', 'id' => $data->id]);
+        } else {
+            $duplicate = $DB->record_exists_sql('SELECT * FROM {coursemetadata_info_field} WHERE datatype = :datatype', ['datatype' => 'arup']);
         }
 
-        if ($count > 1) {
+        if ($duplicate) {
             return ['shortname' => get_string('oneinstanceonly', 'coursemetadatafield_arup')];
         }
 
@@ -48,5 +48,9 @@ class coursemetadata_define_arup extends \local_coursemetadata\define_base {
         // Default data.
         $form->addElement('hidden', 'defaultdata', '');
         $form->setType('defaultdata', PARAM_TEXT); // We have to trust person with capability to edit this default description.
+
+        $roles = get_default_enrol_roles(context_system::instance());
+        $form->addElement('select', 'param1', get_string('visibletrainerrole', 'coursemetadatafield_arup'),
+                $roles);
     }
 }

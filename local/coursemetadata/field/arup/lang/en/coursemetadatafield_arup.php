@@ -40,6 +40,7 @@ $string['accredited'] = 'Accredited';
 $string['accreditationdate'] = 'Accredition date';
 $string['timecreated'] = 'Time created';
 $string['timemodified'] = 'Time modified';
+$string['trainers'] = 'Trainers';
 $string['duration'] = 'Duration';
 $string['durationunits'] = 'Duration units';
 $string['minutes'] = 'Minutes';
@@ -63,3 +64,5 @@ $string['methodology_elearning'] = "e-Learning";
 $string['methodology_learningburst'] = "Learning Burst";
 $string['methodology_programmes'] = "Programme";
 $string['methodology_other'] = "Other";
+
+$string['visibletrainerrole'] = 'Visible trainer role';

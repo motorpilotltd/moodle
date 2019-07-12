@@ -15,19 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * coursemetadatafield_arup field.
+ * Glossary cache definitions.
  *
- * @package    coursemetadatafield_arup
- * @copyright  Andrew Hancox <andrewdchancox@googlemail.com>
+ * @package    mod_glossary
+ * @category   cache
+ * @copyright  2014 Petr Skoda
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2015111612;
-$plugin->requires  = 2015111600; // Moodle 3.0.
-$plugin->component = 'coursemetadatafield_arup';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.0.0 (Build: 2015111600)';
-
-$plugin->dependencies = array();
+$definitions = array(
+    // This MUST NOT be a local cache, sorry cluster lovers.
+    'roleid' => array(
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true, // The course id or 0 for global.
+        'simpledata' => true,
+        'staticacceleration' => true,
+        'staticaccelerationsize' => 30,
+    ),
+);

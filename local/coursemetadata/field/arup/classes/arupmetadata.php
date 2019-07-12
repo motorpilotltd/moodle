@@ -24,6 +24,9 @@
 
 namespace coursemetadatafield_arup;
 
+use core_user\external\user_summary_exporter;
+use moodle_url;
+
 class arupmetadata extends \data_object implements \renderable, \templatable {
     public $table = 'coursemetadata_arup';
     public $required_fields = [
@@ -67,9 +70,20 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
     public $durationunits;
     public $methodology;
 
+    private function get_role_id() {
+        $cache = \cache::make('coursemetadatafield_arup', 'roleid');
+        $roleid = $cache->get('roleid');
+        if ($roleid === false) {
+            global $DB;
+            $roleid = $DB->get_field('coursemetadata_info_field', 'param1', ['datatype' => 'arup']);
+            $cache->set('roleid', $roleid);
+        }
+        return $cache->get('roleid');
+    }
+
     public function export_for_template(\renderer_base $output) {
 
-        global $CFG, $OUTPUT;
+        global $CFG, $OUTPUT, $DB, $PAGE;
 
         $data = new \stdClass();
 
@@ -118,6 +132,7 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
         $data->canviewshare =
                 has_capability('coursemetadatafield/arup:viewsharelink', \context_course::instance($this->get_course()->id));
         $data->description = json_encode(format_string($this->get_course()->summary));
+        $data->description_text = format_string($this->get_course()->summary);
         $data->ogsharelink =
                 urlencode(new \moodle_url("/mod/arupadvert/redirect.php", ['shortname' => $this->get_course()->shortname]));
 
@@ -127,12 +142,49 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
             $data->methodology = '';
         } else {
             $data->methodology = $map[$this->methodology];
+            $data->icon = self::getmethodologyadverticon()[$this->methodology];
+            $data->advertclass = $this->getmethodologyname($this->methodology, false);
         }
+        $data->duration = $this->formatduration();
 
+        $roleid = $this->get_role_id();
+
+        $data->trainers = [];
+        if (!empty($roleid)) {
+            $users = get_role_users($roleid, \context_course::instance($this->course), false, \user_picture::fields('u'));
+            foreach ($users as $user) {
+                $profileurl = new \moodle_url('user/profile.php', ['id' => $user->id]);
+                $trainer = new \stdClass();
+                $trainer->id = $user->id;
+                $trainer->fullname = fullname($user);
+                $trainer->image = $output->user_picture($user, array('size' => 100));
+                $trainer->profileurl = $profileurl->out();
+                $data->trainers[] = $trainer;
+            }
+        }
+        $data->url = new moodle_url('course/view.php', ['id' => $this->get_course()->id]);
         return $data;
     }
 
+    public function formatduration() {
+        if (empty($this->duration)) {
+            return '';
+        }
+        return $data = (float) $this->duration . ' ' . $this->durationunits;
+    }
+
     private $courseobject = null;
+
+    public static function getmethodologyadverticon() {
+        global $OUTPUT;
+        return [
+                self::METHODOLOGY_CLASSROOM     => $OUTPUT->image_url('method/method-classroom', 'local_coursemetadata'),
+                self::METHODOLOGY_ELEARNING     => $OUTPUT->image_url('method/method-elearning', 'local_coursemetadata'),
+                self::METHODOLOGY_LEARNINGBURST => $OUTPUT->image_url('method/method-learningburst', 'local_coursemetadata'),
+                self::METHODOLOGY_PROGRAMMES    => $OUTPUT->image_url('method/method-masters', 'local_coursemetadata'),
+                self::METHODOLOGY_OTHER         => $OUTPUT->image_url('method/method-other', 'local_coursemetadata')
+        ];
+    }
 
     public static function getmethodologymap() {
         return [
@@ -144,7 +196,7 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
         ];
     }
 
-    public static function getmethodologyname($methodology) {
+    public static function getmethodologyname($methodology, $tostring = true) {
         switch ($methodology) {
             case self::METHODOLOGY_CLASSROOM:
                 $identifier = 'methodology_classroom';
@@ -162,8 +214,11 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
                 return false;
                 break;
         }
-
-        return get_string($identifier, 'coursemetadatafield_arup');
+        if ($tostring) {
+            return get_string($identifier, 'coursemetadatafield_arup');
+        } else {
+            return $identifier;
+        }
     }
 
     public static function getmethodologyicon($methodology) {
@@ -186,8 +241,7 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
                 return false;
                 break;
         }
-
-        return \html_writer::img($OUTPUT->image_url($identifier, 'coursemetadatafield_arup'), get_string($identifier, 'coursemetadatafield_arup'), ['class' => 'coursemetadata iconsingle']);
+        return $OUTPUT->pix_icon($identifier, get_string($identifier, 'coursemetadatafield_arup'), 'coursemetadatafield_arup');
     }
 
     public function classtypelocked() {

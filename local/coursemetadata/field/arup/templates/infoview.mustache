@@ -1,37 +1,46 @@
-<div class="arupavcminfo">
+<div class="arupavcminfo {{ advertclass }}">
     <h2 class="arupav_title m-b-20">{{name}}{{#logo}}<img class="arupav_logo" src="{{{logo}}}">{{/logo}}
     </h2>
     {{#hassections}}
-        <div class="avblock {{#hassections}}to-right{{/hassections}} shadow-1 clearblock">
+        <div class="avblock {{#courseimage}} border-top-0 {{/courseimage}} {{#hassections}}to-right{{/hassections}} shadow-1 clearblock">
             {{#courseimage}}
-                <div class="av_image_wrapper">
+                <div class="av_image_wrapper position-relative">
                     <img src="{{{courseimage}}}" class="img-responsive">
+                    {{#icon}}
+                        <div class="adverticon-container position-absolute" style="left: 0; bottom: 0;">
+                            <img src="{{{ icon }}}" class="adverticon">
+                        </div>
+                    {{/icon}}
                 </div>
             {{/courseimage}}
-            <div class="av_metadata">
-                {{#blockelements}}
-                    <h4 class="avheading">{{heading}}</h4>
-                    <p class="metatext">{{{text}}}</p>
-                {{/blockelements}}
+            <div class="av_metadata av_metadata_bg av_metadata_border">
+                <div class="mb-3">
+                    {{{ description_text }}}
+                </div>
+                <div class="row no-gutters">
+                    <div class="col-6">
+                        <div class="inner separator">
+                        <h4 class="italic">{{#str}} trainers, coursemetadatafield_arup {{/str}}</h4>
+                        {{#trainers}}
+                            {{> coursemetadatafield_arup/trainer }}
+                        {{/trainers}}
+                        </div>
+                    </div>
+                    <div class="col-6 pl-3">
+                        <h4 class="italic">{{#str}} duration, coursemetadatafield_arup {{/str}}</h4>
+                        <div class="d-flex">
+                            <div class="iconlarge timeicon">
+                                {{#pix}} a/clock, theme {{/pix}}
+                            </div>{{{duration}}}
+                        </div>
+                    </div>
+                </div>
             </div>
-            {{#canviewshare}}
-            <span class="yammerbutton">
-                {{#pix}}yammer, mod_arupadvert{{/pix}}
-            </span>
-
-            <script type="text/javascript" src="https://s0.assets-yammer.com/assets/platform_social_buttons.min.js"></script>
-            <script type="text/javascript">
-                var options = {
-                    customButton : true,
-                    classSelector: 'yammerbutton',
-                    defaultMessage: {{{description}}}, //optionally pass a message to prepopulate your post
-                    pageUrl: '{{{ogsharelink}}}' //current browser url is used by default. You can pass your own url if you want to generate the OG object from a different URL.
-                };
-                yam.platform.yammerShare(options);
-            </script>
-            {{/canviewshare}}
         </div>
 
+        {{#trainers}}
+            <a href="{{{profileurl}}}">{{{image}}} {{{fullname}}}</a>
+        {{/trainers}}
 
     <div class="avtext">
         <div class="arupav_summary_wrapper">
