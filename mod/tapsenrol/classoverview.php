@@ -52,7 +52,7 @@ if ($resendinvitesclassid) {
             '/mod/tapsenrol/resend_invites.php',
             ['id' => $cm->id, 'classid' => $resendinvitesclassid]
     );
-    echo html_writer::div(get_string('resendinvites', 'tapsenrol', $resendinviteslink), 'alert alert-warning');
+    echo html_writer::div(get_string('resendinvitessuggestion', 'tapsenrol', $resendinviteslink->out()), 'alert alert-warning');
 }
 
 $showallpagesize = 5000;
