@@ -320,7 +320,7 @@ class courseformmoddifier {
     private static function freezeandhideunwantedelements(\MoodleQuickForm $mform) {
         // Hard freeze and hide everything from courseformathdr up to but not including buttonarr.
         // Add configure standard arup course checkbox and JS
-        $removestart = $mform->_elementIndex['courseformathdr'];
+        $removestart = $mform->_elementIndex['appearancehdr'];
         $stopbefore = $mform->_elementIndex['buttonar'];
 
         $elements_to_freeze = array_slice($mform->_elements, $removestart - 1, $stopbefore - $removestart, true);

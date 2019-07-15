@@ -27,6 +27,17 @@ define(['jquery'], function($) {
             arupdefaultselect.on('change', function() {
                 updatebut.trigger( "click" );
             });
+
+            var methodologyselect = $('select#id_arupmeta_methodology');
+            var formatselect = $('select#id_format');
+            var formatupdatebut = $('#id_updatecourseformat');
+
+            methodologyselect.on('change', function() {
+                if (methodologyselect.val() == '40' && formatselect.val() == 'topics') {
+                    formatselect.val('aruponepage');
+                    formatupdatebut.trigger( "click" );
+                }
+            });
         }
     };
 });
