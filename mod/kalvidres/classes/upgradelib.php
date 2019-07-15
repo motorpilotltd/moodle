@@ -76,6 +76,10 @@ class upgradelib {
         require_once($CFG->dirroot.'/local/kaltura/locallib.php');
         $client = arup_local_kaltura_get_kaltura_client();
 
+        if (!isset($client)) {
+            return;
+        }
+
         $kalvidresdata = $DB->get_records_select('kalvidres', "metadata IS NULL OR metadata = ''");
         foreach ($kalvidresdata as $item) {
             try {

@@ -765,6 +765,11 @@ function arup_local_kaltura_get_kaltura_client($privileges = '', $expiry = '') {
     require_once($CFG->dirroot . '/local/kaltura/API/KalturaClient.php');
 
     $configsettings = get_config(KALTURA_PLUGIN_NAME);
+
+    if (empty($configsettings->partner_id)) {
+        return null;
+    }
+
     $config = new KalturaConfiguration($configsettings->partner_id);
     if (!empty($CFG->proxyhost)) {
         $config->proxyHost = $CFG->proxyhost;
