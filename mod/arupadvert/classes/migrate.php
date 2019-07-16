@@ -205,6 +205,10 @@ class migrate {
                     $course->shortname = $tapscourse->coursename;
                 }
 
+                if ($DB->record_exists('course', ['shortname' => $course->shortname])) {
+                    $course->shortname = $course->shortname . ' - Legacy';
+                }
+
                 $course->summary = $tapscourse->onelinedescription;
                 $course->summaryformat = FORMAT_HTML;
 
