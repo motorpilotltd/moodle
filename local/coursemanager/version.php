@@ -23,7 +23,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$plugin->version   = 2017011702;
+$plugin->version   = 2017011703;
 $plugin->requires  = 2015111600; // Moodle 3.0.
 $plugin->component = 'local_coursemanager';
 $plugin->maturity  = MATURITY_BETA;

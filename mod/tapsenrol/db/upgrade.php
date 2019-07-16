@@ -128,5 +128,17 @@ function xmldb_tapsenrol_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017051512, 'tapsenrol');
     }
 
+    if ($oldversion < 2017051514) {
+        $table = new xmldb_table('tapsenrol');
+
+        $field = new xmldb_field('completionattended', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 1);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Savepoint reached.
+        upgrade_mod_savepoint(true, 2017051514, 'tapsenrol');
+    }
+
     return true;
 }
