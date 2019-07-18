@@ -12,6 +12,7 @@ class migrate {
     public static function migrate_tapsenrol_class_enrolments() {
         global $DB;
 
+        $DB->delete_records('tapsenrol_class_enrolments');
         $DB->execute("
         INSERT INTO {tapsenrol_class_enrolments}
     (
@@ -35,12 +36,12 @@ WHERE enrolmentid is not null
             $sql = "update  tce
 set tce.classid = tc.id
 from {tapsenrol_class_enrolments} tce
-inner join {local_taps_class} tc on tce.classid = tc.classid"; // MSSQL
+inner join {local_taps_class} tc on tce.classid = tc.id"; // MSSQL
         } else {
             $sql = "update  tce
 set tce.classid = tc.id
     from {tapsenrol_class_enrolments} tce
-    inner join {local_taps_class} tc on tce.classid = tc.classid"; // MySQL
+    inner join {local_taps_class} tc on tce.classid = tc.id"; // MySQL
         }
 
         $DB->execute($sql);
@@ -65,7 +66,7 @@ set tce.classid = tc.id
         require_once("$CFG->dirroot/lib/completionlib.php");
 
         // All records in tapsenrol_completion should be unique by userid/tapsenrolid.
-        $sql = "select max(completed) as completed, max(timemodified) as timemodified, userid, tapsenrolid 
+        $sql = "select concat(userid, '_', tapsenrolid ), max(completed) as completed, max(timemodified) as timemodified, userid, tapsenrolid 
                 from {tapsenrol_completion} 
                 group by userid, tapsenrolid
                 having count(id) > 1";
