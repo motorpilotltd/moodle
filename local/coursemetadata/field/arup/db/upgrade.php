@@ -21,7 +21,7 @@ function xmldb_coursemetadatafield_arup_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    if ($oldversion < 2015111610) {
+    if ($oldversion < 2015111611) {
         require_once("$CFG->dirroot/local/coursemetadata/lib.php");
 
         // Define table coursemetadatafield_arup_user_update_log to be created.
@@ -73,7 +73,7 @@ INNER JOIN {coursemetadata_info_data} data
         coursemetadata_delete_field($field->id);
 
         // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2015111610, 'coursemetadatafield', 'arup');
+        upgrade_plugin_savepoint(true, 2015111611, 'coursemetadatafield', 'arup');
     }
 
     return true;

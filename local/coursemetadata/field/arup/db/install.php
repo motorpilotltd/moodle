@@ -58,4 +58,41 @@ function xmldb_coursemetadatafield_arup_install() {
         $DB->execute('CREATE FULLTEXT INDEX ON {coursemetadata_arup} (keywords) KEY INDEX {courarup_id_pk} ON moodlecoursesearch');
     }
 
+    $compare = $DB->sql_compare_text('shortname ');
+    $field = $DB->get_record_sql("SELECT * FROM {coursemetadata_info_field} WHERE $compare = :methodology",
+            ['methodology' => 'Methodology']);
+
+    $compare = $DB->sql_compare_text('data.data');
+
+    $sql = "UPDATE cma SET methodology = CASE 
+WHEN $compare = 'Classroom' THEN :classroom
+WHEN $compare = 'eBook' THEN :otherebook
+WHEN $compare = 'eLearning' THEN :elearning
+WHEN $compare = 'Learning Burst' THEN :learningburst
+WHEN $compare = 'Masters Programme' THEN :programme
+WHEN $compare = 'Other' THEN :otherother
+WHEN $compare = 'Video Learning' THEN :othervideo
+WHEN $compare = 'Virtual Classroom' THEN :virtualclassroom
+ELSE :other
+END
+FROM {coursemetadata_arup} cma
+INNER JOIN {coursemetadata_info_data} data
+    ON data.course = cma.course AND data.fieldid = :fieldid";
+    $params = [
+            'fieldid'          => $field->id,
+            'classroom'        => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_CLASSROOM,
+            'otherebook'       => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER,
+            'elearning'        => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_ELEARNING,
+            'learningburst'    => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_LEARNINGBURST,
+            'programme'        => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_PROGRAMMES,
+            'otherother'       => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER,
+            'othervideo'       => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER,
+            'virtualclassroom' => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_CLASSROOM,
+            'other'            => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER,
+
+    ];
+
+    $DB->execute($sql, $params);
+
+    coursemetadata_delete_field($field->id);
 }
