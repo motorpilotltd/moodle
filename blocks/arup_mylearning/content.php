@@ -208,7 +208,7 @@ class block_arup_mylearning_content {
                 $cell->text = isset($categories[$course->category]) ? format_string($categories[$course->category]) : '';
                 $cells[] = clone($cell);
 
-                $cell->text = $course->status ? $course->status : get_string('status:unknown', 'block_arup_mylearning');
+                $cell->text = !empty($course->status) ? $course->status : get_string('status:unknown', 'block_arup_mylearning');
                 $cells[] = clone($cell);
 
                 $table->data[] = new html_table_row($cells);
