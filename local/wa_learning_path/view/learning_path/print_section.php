@@ -86,14 +86,6 @@
                                 continue;
                             }
 
-                            // Filtration.
-                            if(!empty($this->filtration['methodology']) && $activity->methodology != $this->filtration['methodology']){
-                                continue;
-                            }
-                            if(!empty($this->filtration['percent']) && $activity->percent != $this->filtration['percent']){
-                                continue;
-                            }
-
                             $id = $activity->type . "_" . $activity->id;
                             $icon = '';
                             if($activity->type == 'module'){

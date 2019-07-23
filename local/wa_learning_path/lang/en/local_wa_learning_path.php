@@ -202,6 +202,7 @@ $string['both_defined'] = 'Modules & activities defined';
 $string['modules_and_activities_defined'] = 'Modules & activities defined';
 $string['learning_in_progress'] = 'Learning in progress';
 $string['open_module'] = 'Open this module';
+$string['open_module_tooltip'] = 'Please subscribe to the path to enable module links.';
 $string['view_of_draft_version'] = 'You are viewing Learning Path content in "draft" version';
 $string['view_of_deleted_lerning_path'] = 'This learning path has been deleted';
 $string['view_of_publish_not_visible_version'] = 'You are viewing Learning Path content in "publish not visible" version';

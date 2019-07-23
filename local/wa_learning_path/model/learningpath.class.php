@@ -749,6 +749,7 @@ class learningpath {
                 foreach ($activity->positions as $type => &$positions) {
                     if (!$tab || $type == $tab) {
                         foreach ($positions as &$position) {
+                            $position->position = $type;
                             if ($position->type == 'module') {
                                 if (isset($courses[$position->id])) {
                                     $activity->modules_count++;
@@ -887,7 +888,7 @@ class learningpath {
      * @param type $regions
      * @return type
      */
-    public static function count_activities_by_positions($positions, $regions, $filtration) {
+    public static function count_activities_by_positions($positions, $regions) {
         $return = array('all' => 0);
         $current = time();
         $halfyear = YEARSECS / 2;
@@ -900,14 +901,6 @@ class learningpath {
 
             foreach ($positions->{$position} as $activity) {
                 if (empty($activity->id)) {
-                    continue;
-                }
-                // Filtration.
-                if (!empty($filtration['methodology']) && $activity->methodology != $filtration['methodology']) {
-                    continue;
-                }
-
-                if (!empty($filtration['percent']) && $activity->percent != $filtration['percent']) {
                     continue;
                 }
 

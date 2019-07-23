@@ -172,12 +172,6 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         // Selected cell of matrix (cell-ID).
         $key = optional_param('key', 0, PARAM_RAW_TRIMMED);
-        // Selected position (tab).
-        $position = optional_param('position', '', PARAM_RAW_TRIMMED);
-        // Filtration parameter: Methodology.
-        $methodology = optional_param('methodology', '', PARAM_RAW_TRIMMED);
-        // Filtration parameter: Percent.
-        $percent = optional_param('percent', '0', PARAM_INT);
 
         // Moodle Page setup.
         $this->base_url = new \moodle_url($this->url, array('c' => $this->c, 'a' => $this->a, 'id' => (int) $this->id));
@@ -219,10 +213,9 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         }
 
         $this->cell = null;
-        $this->filtration = array();
 
         if (isset($this->learning_path->matrix)) {
-            $this->position = $position;
+            $this->position = 'all'; // Always 'all'...
             $this->key = $key;
             $this->matrix = json_decode($this->learning_path->matrix);
 
@@ -259,11 +252,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                 \wa_learning_path\lib\load_form('addactivity');
                 $this->form = new \wa_learning_path\form\addactivity_form();
                 $this->methodologylist = array_merge($this->form->get_activity_type(false), \wa_learning_path\lib\get_methodologies());
-
-                // Filtration parameters.
-                $this->filtration['methodology'] = $methodology;
-                $this->filtration['percent'] = $percent;
-
+                
                 // Load system context.
                 $this->systemcontext = \context_system::instance();
 
@@ -279,45 +268,39 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                     'levels' => (string) $levels,
                     'regions' => (string) $regions,
                     'key' => $key,
-                    'methodology' => $this->filtration['methodology'],
-                    'percent' => $this->filtration['percent'],
                 ));
 
                 if($this->preview) {
                     $this->position_url->param('preview', (int) $this->preview);
                 }
 
-                // Create position: 'All'.
-                if ($this->position == 'all') {
+                // Sort positions.
+                foreach (['essential', 'recommended', 'elective'] as $position) {
+                    usort($this->cell->positions->{$position},
+                            array("wa_learning_path\controller\learning_path", "sort_activity"));
+                }
+
+                // Merge (sorted) individual positions.
                     $this->cell->positions->all = array_merge(
                             $this->cell->positions->essential, $this->cell->positions->recommended,
                             $this->cell->positions->elective);
-                }
 
-                // Count items for all conditions: region & filtration.
-                $this->count = \wa_learning_path\model\learningpath::count_activities_by_positions($this->cell->positions, $this->regions, $this->filtration);
-
-
-                if(!empty($this->position)) {
-                    // Sort items.
-                    usort($this->cell->positions->{$this->position},
-                            array("wa_learning_path\controller\learning_path", "sort_activity"));
-
+                // Count items for all conditions: region.
+                $this->count = \wa_learning_path\model\learningpath::count_activities_by_positions($this->cell->positions, $this->regions);
+                
                     // Set a breadcrumb info.
                     $this->base_position_cell = new \moodle_url(
                             $this->url,
                             array(
-                                'c' => $this->c,
-                                'a' => $this->a,
-                                'id' => (int) $this->id,
-                                'regions' => empty($this->userregion->id) ? '' : $this->userregion->id,
-                                'key' => $this->key,
-                                'position' => $this->position));
+                            'c' => $this->c,
+                            'a' => $this->a,
+                            'id' => (int) $this->id,
+                            'regions' => empty($this->userregion->id) ? '' : $this->userregion->id,
+                            'key' => $this->key));
 
                     $pagetitle .= $this->get_string($this->position);
                 }
             }
-        }
 
         $PAGE->set_title($pagetitle);
 
@@ -572,12 +555,6 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         // Selected cell of matrix (cell-ID).
         $this->key = $key = '#'.optional_param('key', 0, PARAM_RAW_TRIMMED);
-
-        // Filtration parameter: Methodology.
-        $methodology = optional_param('methodology', '', PARAM_RAW_TRIMMED);
-
-        // Filtration parameter: Percent.
-        $percent = optional_param('percent', '0', PARAM_INT);
 
         // Load system context.
         $this->systemcontext = \context_system::instance();
