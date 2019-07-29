@@ -74,5 +74,7 @@ WHERE cpdid is not null OR mlte.bookingstatus = 'Full Attendance'
         $DB->execute("update {local_learningrecordstore} set durationunits = 'D' where durationunits = 'days'");
         $DB->execute("update {local_learningrecordstore} set durationunits = 'H' where durationunits = 'hours'");
         $DB->execute("update {local_learningrecordstore} set durationunits = 'MIN' where durationunits = 'minutes'");
+
+        $DB->execute("UPDATE {local_learningrecordstore} SET staffid = REPLACE(LTRIM(REPLACE(staffid, '0', ' ')), ' ', '0')");
     }
 }

@@ -123,5 +123,11 @@ function xmldb_local_learningrecordstore_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111615, 'local', 'learningrecordstore');
     }
 
+    if ($oldversion < 2015111616) {
+        $DB->execute("UPDATE {local_learningrecordstore} SET staffid = REPLACE(LTRIM(REPLACE(staffid, '0', ' ')), ' ', '0')");
+
+        upgrade_plugin_savepoint(true, 2015111616, 'local', 'learningrecordstore');
+    }
+
     return true;
 }
