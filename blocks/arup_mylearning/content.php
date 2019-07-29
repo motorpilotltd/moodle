@@ -258,11 +258,11 @@ class block_arup_mylearning_content {
 
         $table->head = array();
         $headers = array(
+                array('text' => get_string('methodology', 'block_arup_mylearning'), 'class' => 'text-center'),
                 array('text' => get_string('course'), 'class' => 'text-left'),
                 array('text' => get_string('category'), 'class' => 'text-left'),
                 array('text' => get_string('enrolments', 'block_arup_mylearning'), 'class' => 'text-center'),
                 array('text' => get_string('open', 'block_arup_mylearning'), 'class' => 'text-center'),
-                array('text' => get_string('methodology', 'block_arup_mylearning'), 'class' => 'text-center')
         );
         foreach ($headers as $col => $header) {
             $table->head[$col] = new html_table_cell(str_ireplace(' ', '&nbsp;', $header['text']));
