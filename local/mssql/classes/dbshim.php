@@ -54,8 +54,12 @@ class dbshim {
                 $sql = " GROUP_CONCAT($field, '$delimiter', $distinct) ";
                 break;
             case 'mssql':
-                $distinct = $unique ? 'DISTINCT' : '';
-                $sql = " dbo.GROUP_CONCAT_D($distinct $field, '$delimiter') ";
+                if ($DB->get_server_info()['description'] == 'mssqlubuntu') {
+                    $sql = " MAX($field) ";
+                } else {
+                    $distinct = $unique ? 'DISTINCT' : '';
+                    $sql = " dbo.GROUP_CONCAT_D($distinct $field, '$delimiter') ";
+                }
                 break;
         }
 
