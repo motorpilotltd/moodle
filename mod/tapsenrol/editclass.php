@@ -84,7 +84,7 @@ if ($data) {
     $form->store_data($data);
 }
 
-if ($form->is_cancelled() || $form->is_submitted()) {
+if ($form->is_cancelled() || isset($data)) {
 
     $params =  ['cmid' => $cm->id];
     if ($form->alertrequired) {
