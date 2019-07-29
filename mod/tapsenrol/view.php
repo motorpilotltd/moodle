@@ -84,7 +84,7 @@ if (!$tapsenrol->check_installation()) {
     }
 
     if (!empty($SESSION->tapsenrol->alert->message)) {
-        $output .= $output->alert($SESSION->tapsenrol->alert->message, $SESSION->tapsenrol->alert->type);
+        $enrolmentoutput .= $output->alert($SESSION->tapsenrol->alert->message, $SESSION->tapsenrol->alert->type);
         unset($SESSION->tapsenrol->alert);
     }
 
