@@ -194,54 +194,65 @@ class migrate {
         foreach ($rs as $tapscourse) {
             $transaction = $DB->start_delegated_transaction();
             try {
-                $course = new \stdClass();
-                $course->fullname = $tapscourse->coursename;
-                $course->startdate = $tapscourse->startdate;
-                $course->enddate = $tapscourse->enddate;
+                $course = $DB->get_record('course', ['shortname' => $tapscourse->coursecode]);
 
-                if (!empty($tapscourse->coursecode)) {
-                    $course->shortname = self::find_course_field_suffix('shortname', $tapscourse->coursecode);
-                } else {
-                    $course->shortname = $tapscourse->coursename;
+                if (empty($course)) {
+                    $course = $DB->get_record('course', ['shortname' => $tapscourse->coursename]);
                 }
 
-                if ($DB->record_exists('course', ['shortname' => $course->shortname])) {
-                    $course->shortname = $course->shortname . ' - Legacy';
+                if (empty($course)) {
+                    $course = $DB->get_record('course', ['fullname' => $tapscourse->coursecode]);
                 }
 
-                $course->summary = $tapscourse->onelinedescription;
-                $course->summaryformat = FORMAT_HTML;
-
-                if (!empty($tapscourse->courseid)) {
-                    $course->idnumber = self::find_course_field_suffix('idnumber', $tapscourse->courseid);
-                } else {
-                    $course->idnumber = '';
+                if (empty($course)) {
+                    $course = $DB->get_record('course', ['fullname' => $tapscourse->coursename]);
                 }
 
-                // Put the course in the archive category.
-                $course->category = $archivecategoryid;
+                if (empty($course)) {
+                    $course = new \stdClass();
+                    $course->fullname = $tapscourse->coursename;
+                    $course->startdate = $tapscourse->startdate;
+                    $course->enddate = $tapscourse->enddate;
 
-                $course = create_course($course);
-                \local_admin\courseformmoddifier::post_creation($course);
+                    if (!empty($tapscourse->coursecode)) {
+                        $course->shortname = self::find_course_field_suffix('shortname', $tapscourse->coursecode);
+                    } else {
+                        $course->shortname = $tapscourse->coursename;
+                    }
+                    $course->summary = $tapscourse->onelinedescription;
+                    $course->summaryformat = FORMAT_HTML;
 
-                $arupmetadata = new \coursemetadatafield_arup\arupmetadata();
-                $arupmetadata->name = $tapscourse->coursename;
-                $arupmetadata->description = $tapscourse->coursedescription;
-                $arupmetadata->descriptionformat = FORMAT_HTML;
-                $arupmetadata->objectives = $tapscourse->courseobjectives;
-                $arupmetadata->objectivesformat = FORMAT_HTML;
-                $arupmetadata->audience = $tapscourse->courseaudience;
-                $arupmetadata->audienceformat = FORMAT_HTML;
-                $arupmetadata->keywords = $tapscourse->keywords;
-                $arupmetadata->keywordsformat = FORMAT_HTML;
-                $arupmetadata->timecreated = $tapscourse->timecreated;
-                $arupmetadata->timemodified = $tapscourse->timemodified;
-                $arupmetadata->accredited = $tapscourse->globallearningstandards == 'Meets Global Learning Standards';
-                $arupmetadata->accreditationdate =
-                        isset($tapscourse->accreditationgivendate) ? $tapscourse->accreditationgivendate : 0;
-                $arupmetadata->timecreated = $tapscourse->timemodified;
-                $arupmetadata->duration = $tapscourse->duration;
-                $arupmetadata->durationunits = $tapscourse->durationunitscode;
+                    if (!empty($tapscourse->courseid)) {
+                        $course->idnumber = self::find_course_field_suffix('idnumber', $tapscourse->courseid);
+                    } else {
+                        $course->idnumber = '';
+                    }
+
+                    // Put the course in the archive category.
+                    $course->category = $archivecategoryid;
+
+                    $course = create_course($course);
+                    \local_admin\courseformmoddifier::post_creation($course);
+
+                    $arupmetadata = new \coursemetadatafield_arup\arupmetadata();
+                    $arupmetadata->name = $tapscourse->coursename;
+                    $arupmetadata->description = $tapscourse->coursedescription;
+                    $arupmetadata->descriptionformat = FORMAT_HTML;
+                    $arupmetadata->objectives = $tapscourse->courseobjectives;
+                    $arupmetadata->objectivesformat = FORMAT_HTML;
+                    $arupmetadata->audience = $tapscourse->courseaudience;
+                    $arupmetadata->audienceformat = FORMAT_HTML;
+                    $arupmetadata->keywords = $tapscourse->keywords;
+                    $arupmetadata->keywordsformat = FORMAT_HTML;
+                    $arupmetadata->timecreated = $tapscourse->timecreated;
+                    $arupmetadata->timemodified = $tapscourse->timemodified;
+                    $arupmetadata->accredited = $tapscourse->globallearningstandards == 'Meets Global Learning Standards';
+                    $arupmetadata->accreditationdate =
+                            isset($tapscourse->accreditationgivendate) ? $tapscourse->accreditationgivendate : 0;
+                    $arupmetadata->timecreated = $tapscourse->timemodified;
+                    $arupmetadata->duration = $tapscourse->duration;
+                    $arupmetadata->durationunits = $tapscourse->durationunitscode;
+                }
 
                 // Link local_taps_class to the moodle course.
                 $DB->execute('UPDATE {local_taps_class} SET courseid = :moodlecourseid WHERE courseid = :tapscourseid',
