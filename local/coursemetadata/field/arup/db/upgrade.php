@@ -38,9 +38,10 @@ function xmldb_coursemetadatafield_arup_upgrade($oldversion) {
         $field = $DB->get_record_sql("SELECT * FROM {coursemetadata_info_field} WHERE $compare = :methodology",
                 ['methodology' => 'Methodology']);
 
-        $compare = $DB->sql_compare_text('data.data');
+        if (isset($field->id)) {
+            $compare = $DB->sql_compare_text('data.data');
 
-        $sql = "UPDATE cma SET methodology = CASE 
+            $sql = "UPDATE cma SET methodology = CASE 
 WHEN $compare = 'Classroom' THEN :classroom
 WHEN $compare = 'eBook' THEN :otherebook
 WHEN $compare = 'eLearning' THEN :elearning
@@ -54,23 +55,24 @@ END
 FROM {coursemetadata_arup} cma
 INNER JOIN {coursemetadata_info_data} data
     ON data.course = cma.course AND data.fieldid = :fieldid";
-        $params = [
-                'fieldid'          => $field->id,
-                'classroom'        => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_CLASSROOM,
-                'otherebook'       => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER,
-                'elearning'        => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_ELEARNING,
-                'learningburst'    => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_LEARNINGBURST,
-                'programme'        => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_PROGRAMMES,
-                'otherother'       => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER,
-                'othervideo'       => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER,
-                'virtualclassroom' => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_CLASSROOM,
-                'other'            => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER,
+            $params = [
+                    'fieldid'          => $field->id,
+                    'classroom'        => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_CLASSROOM,
+                    'otherebook'       => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER,
+                    'elearning'        => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_ELEARNING,
+                    'learningburst'    => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_LEARNINGBURST,
+                    'programme'        => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_PROGRAMMES,
+                    'otherother'       => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER,
+                    'othervideo'       => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER,
+                    'virtualclassroom' => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_CLASSROOM,
+                    'other'            => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_OTHER,
 
-        ];
+            ];
 
-        $DB->execute($sql, $params);
+            $DB->execute($sql, $params);
 
-        coursemetadata_delete_field($field->id);
+            coursemetadata_delete_field($field->id);
+        }
 
         // Savepoint reached.
         upgrade_plugin_savepoint(true, 2015111611, 'coursemetadatafield', 'arup');
