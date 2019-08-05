@@ -127,7 +127,7 @@ switch($view) {
     case 'event':
         require_once "{$CFG->dirroot}/local/lunchandlearn/lib.php";
         try {
-            if (empty($id)) {
+            if (empty($id) || !has_capability('local/lunchandlearn:view', context_system::instance())) {
                 $view = 'upcoming';
                 continue;
             }
