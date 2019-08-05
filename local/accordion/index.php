@@ -16,6 +16,9 @@
 
 require_once("../../config.php");
 
+require_login(SITEID, false);
+require_capability('local/accordion:view', context_system::instance());
+
 $defaultid = (int) get_config('local_accordion', 'root_category');
 define('LOCAL_ACCORDION_ID', optional_param('id', $defaultid, PARAM_INT));
 
@@ -30,9 +33,6 @@ if ($catalogue !== 'card') {
 }
 */
 $catalogue = 'accordion'; // Force default temporarily.
-if ($CFG->forcelogin) {
-    require_login();
-}
 
 if (LOCAL_ACCORDION_ID) {
     $PAGE->set_category_by_id(LOCAL_ACCORDION_ID);
