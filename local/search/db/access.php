@@ -15,17 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Capabilities definitions for local_onlineappraisal.
  *
- * @package     local_searcg
- * @copyright   2016 Motorpilot Ltd
+ * @package     local_search
+ * @copyright   2019 Motorpilot Ltd
+ * @author      Simon Lewis
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+$capabilities = array(
 
-$plugin->version   = 2015111604;
-$plugin->requires  = 2015111600; // Moodle 3.0.x.
-$plugin->component = 'local_search';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.0.4 (Build: 2015111604)';
+    'local/search:view' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'user' => CAP_ALLOW
+        )
+    ),
+
+);

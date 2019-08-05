@@ -73,7 +73,7 @@ class theme_arup_html_renderer extends plugin_renderer_base {
      */
     public function pre_content() {
         // if ($this->page->bodyid == 'page-site-index') {
-        //     $catid = optional_param('catid', 0, PARAM_INT); 
+        //     $catid = optional_param('catid', 0, PARAM_INT);
         //     return $this->availablecategories($catid);
         // }
     }
@@ -100,7 +100,7 @@ class theme_arup_html_renderer extends plugin_renderer_base {
     public function page_footer() {
         $templateinfo = new stdClass();
         $templateinfo->date = date('Y');
-        
+
         if (isset($this->page->theme->settings->footerlinks) && !empty($this->page->theme->settings->footerlinks) && isloggedin()) {
             $footerlinks = str_ireplace("\r\n", "\n", $this->page->theme->settings->footerlinks);
             $links = explode("\n", $footerlinks);
@@ -114,7 +114,7 @@ class theme_arup_html_renderer extends plugin_renderer_base {
                 }
             }
         }
-        
+
         return $this->render_from_template('theme_arup/footer', $templateinfo);
     }
 
@@ -122,6 +122,9 @@ class theme_arup_html_renderer extends plugin_renderer_base {
      * Render the searchbox shown in the top navbar.
      */
     public function searchbox($value = '') {
+        if (!has_capability('local/search:view', context_system::instance())) {
+            return '';
+        }
         $configsearchurl = get_config('theme_arup', 'searchlocation');
         $searchurl = empty($configsearchurl) ? '/course/search.php' : $configsearchurl;
         $templateinfo = new stdClass();
@@ -142,7 +145,7 @@ class theme_arup_html_renderer extends plugin_renderer_base {
         $courses = array();
 
         $timenow = time();
-        
+
         foreach ($allcourses as $acourse) {
             if ($acourse->id == 1) {
                 continue;
@@ -155,7 +158,7 @@ class theme_arup_html_renderer extends plugin_renderer_base {
             $coursecontext = context_course::instance($acourse->id);
 
             $acourse->courseimage = $this->courseimage($acourse);
-            
+
             if (empty($acourse->summary)) {
                 $acourse->summary = get_string('summary', 'theme_arup');
             } else {
@@ -183,7 +186,7 @@ class theme_arup_html_renderer extends plugin_renderer_base {
             $acourse->hasprogress = true;
 
             $acourse->progress = $this->course_progress($acourse->id);
-            
+
             $acourse->coursedate = userdate($acourse->startdate, get_string('strftimedayshort'));
 
             $courses[] = $acourse;
@@ -196,7 +199,7 @@ class theme_arup_html_renderer extends plugin_renderer_base {
      */
     public function categoryboxes($catid = 0) {
         global $DB, $OUTPUT, $PAGE;
-        
+
         $categories = $DB->get_records('course_categories', array('visible' => 1));
 
         if ($catid > 0) {
@@ -281,7 +284,7 @@ class theme_arup_html_renderer extends plugin_renderer_base {
 
     /**
      * Calculate and show course progress in enrolled courses.
-     */ 
+     */
     public function course_progress($courseid, $user = null, $method = 'count') {
         global $DB, $USER;
 
@@ -290,7 +293,7 @@ class theme_arup_html_renderer extends plugin_renderer_base {
         }
 
         $coursemodules = $DB->get_records('course_modules', array('completion' => 1, 'course' => $courseid, 'visible' =>1));
-        
+
         $total = count($coursemodules);
 
         $done = 0;
@@ -343,7 +346,7 @@ class theme_arup_html_renderer extends plugin_renderer_base {
                     $file->get_filearea(). $file->get_filepath(). $file->get_filename(), !$isimage);
             if ($isimage) {
                 return $url;
-            } 
+            }
         }
 
         return $OUTPUT->image_url('courseimage', 'theme_arup');
@@ -371,7 +374,7 @@ class theme_arup_html_renderer extends plugin_renderer_base {
 
         require_once($CFG->dirroot . '/local/kaltura/locallib.php');
         $templateinfo = new Object();
-        
+
         $templateinfo->categories = $this->categoryboxes($catid);
         if ($catid > 0) {
             $category = $DB->get_record('course_categories', array('id' => $catid));
