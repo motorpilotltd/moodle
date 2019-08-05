@@ -25,7 +25,7 @@
 
 $capabilities = array(
 
-    'theme/arup:viewcustomemenu' => array(
+    'theme/arup:viewcustommenu' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
