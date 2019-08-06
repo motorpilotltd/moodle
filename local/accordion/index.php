@@ -16,7 +16,7 @@
 
 require_once("../../config.php");
 
-require_login(SITEID, false);
+require_login();
 require_capability('local/accordion:view', context_system::instance());
 
 $defaultid = (int) get_config('local_accordion', 'root_category');
