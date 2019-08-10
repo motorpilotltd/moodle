@@ -291,3 +291,5 @@ $string['eventusersignupcompleted'] = 'User signup completed';
 // Search
 $string['loadmore'] = 'Load more learning events&hellip;';
 $string['loadfiltered'] = 'Filtering learning events&hellip;';
+
+$string['lunchandlearn:view'] = 'Allow user to view learning events';

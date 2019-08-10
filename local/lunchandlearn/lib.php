@@ -191,13 +191,15 @@ function lunchandlearn_add_event_key() {
     $clink->param('var', 'showcourses');
     $ek->add(get_string('courseevent', 'calendar'), $clink, navigation_node::TYPE_SETTING, null, 'courseevent', $courseicon);
 
-    $llink = clone $glink;
-    $lalicon = new pix_icon('i/show', 'off');
-    if (calendar_show_event_type(CALENDAR_EVENT_LUNCHANDLEARN)) {
-        $lalicon = new pix_icon('i/hide', 'on');
+    if (has_capability('local/lunchandlearn:view', context_system::instance())) {
+        $llink = clone $glink;
+        $lalicon = new pix_icon('i/show', 'off');
+        if (calendar_show_event_type(CALENDAR_EVENT_LUNCHANDLEARN)) {
+            $lalicon = new pix_icon('i/hide', 'on');
+        }
+        $llink->param('var', 'showlunchandlearn');
+        $ek->add(get_string('lunchandlearnevent', 'local_lunchandlearn'), $llink, navigation_node::TYPE_SETTING, null, 'lunchandlearnevent', $lalicon);
     }
-    $llink->param('var', 'showlunchandlearn');
-    $ek->add(get_string('lunchandlearnevent', 'local_lunchandlearn'), $llink, navigation_node::TYPE_SETTING, null, 'lunchandlearnevent', $lalicon);
 
     $arguments = array(
         'instanceid' => 'ek'
