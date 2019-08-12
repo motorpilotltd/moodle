@@ -349,6 +349,7 @@ class framework implements \H5PFrameworkInterface {
                 'Public Domain' => 'pd',
                 'Public Domain Dedication and Licence' => 'pddl',
                 'Public Domain Mark' => 'pdm',
+                'Public Domain Mark (PDM)' => 'pdm',
                 'Copyright' => 'copyrightstring',
                 'Unable to create directory.' => 'unabletocreatedir',
                 'Unable to get field type.' => 'unabletogetfieldtype',
@@ -427,6 +428,44 @@ class framework implements \H5PFrameworkInterface {
                 'CC0 1.0 Universal (CC0 1.0) Public Domain Dedication' => 'licenseCC010',
                 'CC0 1.0 Universal' => 'licenseCC010U',
                 'License Version' => 'licenseversion',
+                'Creative Commons' => 'creativecommons',
+                'Attribution' => 'ccattribution',
+                'Attribution (CC BY)' => 'ccattribution',
+                'Attribution-ShareAlike' => 'ccattributionsa',
+                'Attribution-ShareAlike (CC BY-SA)' => 'ccattributionsa',
+                'Attribution-NoDerivs' => 'ccattributionnd',
+                'Attribution-NoDerivs (CC BY-ND)' => 'ccattributionnd',
+                'Attribution-NonCommercial' => 'ccattributionnc',
+                'Attribution-NonCommercial (CC BY-NC)' => 'ccattributionnc',
+                'Attribution-NonCommercial-ShareAlike' => 'ccattributionncsa',
+                'Attribution-NonCommercial-ShareAlike (CC BY-NC-SA)' => 'ccattributionncsa',
+                'Attribution-NonCommercial-NoDerivs' => 'ccattributionncnd',
+                'Attribution-NonCommercial-NoDerivs (CC BY-NC-ND)' => 'ccattributionncnd',
+                'Public Domain Dedication' => 'ccpdd',
+                'Public Domain Dedication (CC0)' => 'ccpdd',
+                'Years (from)' => 'yearsfrom',
+                'Years (to)' => 'yearsto',
+                "Author's name" => 'authorname',
+                "Author's role" => 'authorrole',
+                'Editor' => 'editor',
+                'Licensee' => 'licensee',
+                'Originator' => 'originator',
+                'Any additional information about the license' => 'additionallicenseinfo',
+                'License Extras' => 'licenseextras',
+                'Changelog' => 'changelog',
+                'Content Type' => 'contenttype',
+                'Question' => 'question',
+                'Date' => 'date',
+                'Changed by' => 'changedby',
+                'Description of change' => 'changedescription',
+                'Photo cropped, text changed, etc.' => 'changeplaceholder',
+                'Additional Information' => 'additionalinfo',
+                'Author comments' => 'authorcomments',
+                'Comments for the editor of the content (This text will not be published as a part of copyright info)' => 'authorcommentsdescription',
+                'Reuse' => 'reuse',
+                'Reuse Content' => 'reuseContent',
+                'Reuse this content.' => 'reuseDescription',
+                'Content is copied to the clipboard' => 'contentCopied',
             ];
             // @codingStandardsIgnoreEnd
         }
@@ -756,6 +795,8 @@ class framework implements \H5PFrameworkInterface {
             'drop_library_css' => $droplibrarycss,
             'semantics' => $librarydata['semantics'],
             'has_icon' => $librarydata['hasIcon'],
+            'metadata_settings' => $librarydata['metadataSettings'],
+            'add_to' => isset($librarydata['addTo']) ? json_encode($librarydata['addTo']) : null,
         );
 
         if ($new) {
@@ -886,8 +927,8 @@ class framework implements \H5PFrameworkInterface {
             $content['disable'] = \H5PCore::DISABLE_NONE;
         }
 
-        $data = array(
-            'name' => $content['name'],
+        $data = array_merge(\H5PMetadata::toDBArray($content['metadata'], false), array(
+            'name' => isset($content['metadata']->title) ? $content['metadata']->title : $content['name'],
             'course' => $content['course'],
             'intro' => $content['intro'],
             'introformat' => $content['introformat'],
@@ -899,8 +940,8 @@ class framework implements \H5PFrameworkInterface {
             'main_library_id' => $content['library']['libraryId'],
             'filtered' => '',
             'disable' => $content['disable'],
-            'timemodified' => time()
-        );
+            'timemodified' => time(),
+        ));
 
         if (!isset($content['id'])) {
             $data['slug'] = '';
@@ -1015,28 +1056,41 @@ class framework implements \H5PFrameworkInterface {
     public function loadContent($id) {
         global $DB;
 
-        $data = $DB->get_record_sql(
-                "SELECT hc.id
-                      , hc.name
-                      , hc.intro
-                      , hc.introformat
-                      , hc.json_content
-                      , hc.filtered
-                      , hc.slug
-                      , hc.embed_type
-                      , hc.disable
-                      , hl.id AS library_id
-                      , hl.machine_name
-                      , hl.major_version
-                      , hl.minor_version
-                      , hl.embed_types
-                      , hl.fullscreen
+        $data = $DB->get_record_sql("
+          SELECT
+            hc.id,
+            hc.name,
+            hc.intro,
+            hc.introformat,
+            hc.json_content,
+            hc.filtered,
+            hc.slug,
+            hc.embed_type,
+            hc.disable,
+            hl.id AS library_id,
+            hl.machine_name,
+            hl.major_version,
+            hl.minor_version,
+            hl.embed_types,
+            hl.fullscreen,
 /* BEGIN CORE MOD */
-                      , hc.displaycontent
+            hc.displaycontent,
 /* END CORE MOD */
-                FROM {hvp} hc
-                JOIN {hvp_libraries} hl ON hl.id = hc.main_library_id
-                WHERE hc.id = ?", array($id));
+            hc.name as title,
+            hc.authors,
+            hc.source,
+            hc.license,
+            hc.license_version,
+            hc.license_extras,
+            hc.year_from,
+            hc.year_to,
+            hc.changes,
+            hc.author_comments,
+            hc.default_language
+          FROM {hvp} hc
+          JOIN {hvp_libraries} hl ON hl.id = hc.main_library_id
+          WHERE hc.id = ?", array($id)
+        );
 
         // Return null if not found.
         if ($data === false) {
@@ -1064,6 +1118,35 @@ class framework implements \H5PFrameworkInterface {
 /* BEGIN CORE MOD */
             'displaycontent' => $data->displaycontent,
 /* END CORE MOD */
+        );
+
+        $metadatafields = [
+            'title',
+            'authors',
+            'source',
+            'license',
+            'license_version',
+            'license_extras',
+            'year_from',
+            'year_to',
+            'changes',
+            'author_comments',
+            'default_language'
+        ];
+
+        $content['metadata'] = \H5PCore::snakeToCamel(
+            array_reduce($metadatafields, function ($array, $field) use ($data) {
+                if (isset($data->$field)) {
+                    $value = $data->$field;
+                    // Decode json fields.
+                    if (in_array($field, ['authors', 'changes'])) {
+                        $value = json_decode($data->$field);
+                    }
+
+                    $array[$field] = $value;
+                }
+                return $array;
+            }, [])
         );
 
         return $content;
@@ -1283,11 +1366,12 @@ class framework implements \H5PFrameworkInterface {
      * Implements getNumContent().
      */
     // @codingStandardsIgnoreLine
-    public function getNumContent($libraryid) {
+    public function getNumContent($libraryid, $skip = NULL) {
         global $DB;
+        $skipquery = empty($skip) ? '' : " AND id NOT IN ($skip)";
 
         return (int) $DB->get_field_sql(
-                "SELECT COUNT(id) FROM {hvp} WHERE main_library_id = ?",
+                "SELECT COUNT(id) FROM {hvp} WHERE main_library_id = ?{$skipquery}",
                 array($libraryid));
     }
 
@@ -1298,7 +1382,7 @@ class framework implements \H5PFrameworkInterface {
     public function isContentSlugAvailable($slug) {
         global $DB;
 
-        return !$DB->get_field_sql("SELECT slug FROM {hvp} WHERE slug = ?", array($slug));
+        return !$DB->get_records_sql("SELECT id, slug FROM {hvp} WHERE slug = ?", array($slug));
     }
 
     /**
@@ -1399,6 +1483,7 @@ class framework implements \H5PFrameworkInterface {
     public function hasPermission($permission, $cmid = null) {
         switch ($permission) {
             case \H5PPermission::DOWNLOAD_H5P:
+            case \H5PPermission::COPY_H5P:
                 $cmcontext = \context_module::instance($cmid);
                 return has_capability('mod/hvp:getexport', $cmcontext);
             case \H5PPermission::CREATE_RESTRICTED:
@@ -1466,5 +1551,77 @@ class framework implements \H5PFrameworkInterface {
                 'owner'             => $ct->owner
             ), false, true);
         }
+    }
+
+    /**
+     * Implements loadAddons
+     */
+    // @codingStandardsIgnoreLine
+    public function loadAddons() {
+        global $DB;
+        $addons = array();
+
+        $records = $DB->get_records_sql(
+                "SELECT l1.id AS library_id,
+                        l1.machine_name,
+                        l1.major_version,
+                        l1.minor_version,
+                        l1.patch_version,
+                        l1.add_to,
+                        l1.preloaded_js,
+                        l1.preloaded_css
+                   FROM {hvp_libraries} l1
+              LEFT JOIN {hvp_libraries} l2
+                     ON l1.machine_name = l2.machine_name
+                    AND (l1.major_version < l2.major_version
+                         OR (l1.major_version = l2.major_version
+                             AND l1.minor_version < l2.minor_version))
+                  WHERE l1.add_to IS NOT NULL
+                    AND l2.machine_name IS NULL");
+
+        // NOTE: These are treated as library objects but are missing the following properties:
+        // title, embed_types, drop_library_css, fullscreen, runnable, semantics, has_icon
+
+        // Extract num from records.
+        foreach ($records as $addon) {
+            $addons[] = \H5PCore::snakeToCamel($addon);
+        }
+
+        return $addons;
+    }
+
+    /**
+     * Implements getLibraryConfig
+     */
+    // @codingStandardsIgnoreLine
+    public function getLibraryConfig($libraries = null) {
+        global $CFG;
+        return (isset($CFG->mod_hvp_library_config) ? $CFG->mod_hvp_library_config : null);
+    }
+
+    /**
+     * Implements libraryHasUpgrade
+     */
+    // @codingStandardsIgnoreLine
+    public function libraryHasUpgrade($library) {
+        global $DB;
+
+        $results = $DB->get_records_sql(
+            "SELECT id
+                  FROM {hvp_libraries}
+                  WHERE machine_name = ?
+                  AND (major_version > ?
+                       OR (major_version = ? AND minor_version > ?))",
+            array(
+                $library['machineName'],
+                $library['majorVersion'],
+                $library['majorVersion'],
+                $library['minorVersion']
+            ),
+            0,
+            1
+        );
+
+        return !empty($results);
     }
 }

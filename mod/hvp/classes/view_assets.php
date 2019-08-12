@@ -24,6 +24,8 @@
 
 namespace mod_hvp;
 
+use moodle_url;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -44,7 +46,7 @@ class view_assets {
     protected $files;
 
 /* BEGIN CORE MOD */
-    public function __construct($cm, $course, $forceembedtype = null, $nocss = false, $nojs = false) {
+    public function __construct($cm, $course, $options= [], $nocss = false, $nojs = false) {
 /* END CORE MOD */
         global $CFG;
 
@@ -60,6 +62,12 @@ class view_assets {
 
         $context        = \context_module::instance($this->cm->id);
         $displayoptions = $this->core->getDisplayOptionsForView($this->content['disable'], $context->instanceid);
+        if (isset($options['disabledownload']) && $options['disabledownload']) {
+            $displayoptions[\H5PCore::DISPLAY_OPTION_DOWNLOAD] = false;
+        }
+        if (isset($options['disablefullscreen']) && $options['disablefullscreen']) {
+            $this->settings['fullscreenDisabled'] = true;
+        }
 
         // Add JavaScript settings for this content.
         $cid                                  = 'cid-' . $this->content['id'];
@@ -74,12 +82,13 @@ class view_assets {
             'displayOptions'  => $displayoptions,
             'url'             => "{$CFG->httpswwwroot}/mod/hvp/view.php?id={$this->cm->id}",
             'contentUrl'      => "{$CFG->httpswwwroot}/pluginfile.php/{$context->id}/mod_hvp/content/{$this->content['id']}",
+            'metadata'        => $this->content['metadata'],
             'contentUserData' => array(
                 0 => content_user_data::load_pre_loaded_user_data($this->content['id'])
             )
         );
 
-        $this->embedtype = isset($forceembedtype) ? $forceembedtype : \H5PCore::determineEmbedType(
+        $this->embedtype = isset($options->forceembedtype) ? $options->forceembedtype : \H5PCore::determineEmbedType(
             $this->content['embedType'], $this->content['library']['embedTypes']
         );
 

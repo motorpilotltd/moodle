@@ -119,7 +119,8 @@ class editor_framework implements \H5peditorStorage {
                         "SELECT title,
                                 runnable,
                                 restricted,
-                                tutorial_url
+                                tutorial_url,
+                                metadata_settings
                            FROM {hvp_libraries}
                           WHERE machine_name = ?
                             AND major_version = ?
@@ -137,6 +138,7 @@ class editor_framework implements \H5peditorStorage {
                     $library->title = $details->title;
                     $library->runnable = $details->runnable;
                     $library->restricted = $superuser ? false : ($details->restricted === '1' ? true : false);
+                    $library->metadataSettings = json_decode($details->metadata_settings);
                     $librarieswithdetails[] = $library;
                 }
             }
@@ -154,7 +156,8 @@ class editor_framework implements \H5peditorStorage {
                         major_version,
                         minor_version,
                         tutorial_url,
-                        restricted
+                        restricted,
+                        metadata_settings
                    FROM {hvp_libraries}
                   WHERE runnable = 1
                     AND semantics IS NOT NULL
@@ -170,9 +173,12 @@ class editor_framework implements \H5peditorStorage {
             $library->minorVersion = (int) $library->minor_version;
             unset($library->minor_version);
             if (!empty($library->tutorial_url)) {
-              $library->tutorialUrl = $library->tutorial_url;
+               $library->tutorialUrl = $library->tutorial_url;
             }
             unset($library->tutorial_url);
+
+            $library->metadataSettings = json_decode($library->metadata_settings);
+            unset($library->metadata_settings);
 
             // Make sure we only display the newest version of a library.
             foreach ($libraries as $key => $existinglibrary) {
@@ -310,5 +316,40 @@ class editor_framework implements \H5peditorStorage {
         } else {
             @unlink($filepath);
         }
+    }
+
+    /**
+     * Load a list of available language codes from the database.
+     *
+     * @param string $machineName The machine readable name of the library(content type)
+     * @param int $majorVersion Major part of version number
+     * @param int $minorVersion Minor part of version number
+     *
+     * @return array List of possible language codes
+     * @throws \dml_exception
+     */
+    public function getAvailableLanguages($machineName, $majorVersion, $minorVersion) {
+        global $DB;
+
+        $sql = "SELECT language_code
+                  FROM {hvp_libraries_languages} hlt
+                  JOIN {hvp_libraries} hl
+                    ON hl.id = hlt.library_id
+                 WHERE hl.machine_name = :machinename
+                   AND hl.major_version = :major
+                   AND hl.minor_version = :minor";
+
+        $results = $DB->get_records_sql($sql, array(
+            'machinename' => $machineName,
+            'major'       => $majorVersion,
+            'minor'       => $minorVersion,
+        ));
+
+        $codes = array('en'); // Semantics is 'en' by default.
+        foreach ($results as $result) {
+            $codes[] = $result->language_code;
+        }
+
+        return $codes;
     }
 }
