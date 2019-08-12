@@ -26,15 +26,178 @@
  require.config({
     enforceDefine: false,
     paths: {
-        'select2_4_0_5': [
-            'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min',
-            M.cfg.wwwroot + '/pluginfile.php/' + M.cfg.contextid + '/local_onlineappraisal/vendor/select2_4.0.5.min'
+        'select2_4_0_8': [
+            'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min',
+            M.cfg.wwwroot + '/pluginfile.php/' + M.cfg.contextid + '/local_onlineappraisal/vendor/select2_4.0.8.min'
         ]
     }
 });
 
-define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstrap/bootstrap', 'select2_4_0_5'],
+define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstrap/bootstrap', 'select2_4_0_8'],
        function($, cfg, str, notification) {
+
+    var leadershipElements = {
+        'leadership': {
+            'select': $('select#id_leadership')
+        },
+        'roles': {
+            'select': $('select#id_leadershiproles'),
+            'div': $('#fitem_id_leadershiproles')
+        },
+        'attributes': {
+            'select': $('select#id_leadershipattributes'),
+            'div': $('#fitem_id_leadershipattributes'),
+            'wrapper': $('#oa-development-leadershipattributes'),
+            'tables': $('#oa-development-leadershipattributes table.oa-table-leadership-attributes')
+        }
+    };
+
+    var leadershipRolesDisplay = function(roleSelect) {
+        if (roleSelect.val() === 'Yes') {
+            leadershipElements.roles.div.show(0, function() {
+                if (!leadershipElements.roles.select.hasClass('select2-hidden-accessible')) {
+                    leadershipElements.roles.select.select2({maximumSelectionLength: 2});
+                }
+            });
+            leadershipElements.attributes.wrapper.show();
+            leadershipElements.attributes.div.show(0, function() {
+                if (!leadershipElements.attributes.select.hasClass('select2-hidden-accessible')) {
+                    leadershipElements.attributes.select.select2({maximumSelectionLength: 3});
+                }
+            });
+        } else {
+            leadershipElements.roles.div.hide();
+            leadershipElements.attributes.wrapper.hide();
+            leadershipElements.attributes.div.hide();
+        }
+    };
+
+    var leadershipRolesCheck = function() {
+        str.get_string('form:development:leadershiproles:answer:generic', 'local_onlineappraisal').done(function(s) {
+            var selected = leadershipElements.roles.select.val();
+            var selectedOther = $.inArray(s, selected);
+            // If 'Other' is selected and there are more options selected should remove all other options.
+            if (selected.length > 1 && selectedOther > -1) {
+                leadershipElements.roles.select.val(null).val(s).trigger('change.select2');
+                selected = leadershipElements.roles.select.val();
+            }
+            if (selectedOther > -1) {
+                leadershipElements.attributes.tables.each(function() {
+                    var self = $(this);
+                    if (self.data('type') === 'generic') {
+                        self.show();
+                    } else {
+                        self.hide();
+                        dataAttributeFilter(self.find('button'), 'selected', true).each(function() {
+                            leadershipAttributeToggleButton($(this));
+                        });
+                    }
+                });
+            } else if (selected.length > 0) {
+                leadershipElements.attributes.tables.each(function() {
+                    var self = $(this);
+                    if (self.data('type') === 'role') {
+                        self.show();
+                        leadershipAttributeColumns(self, selected);
+                    } else {
+                        self.hide();
+                        dataAttributeFilter(self.find('button'), 'selected', true).each(function() {
+                            leadershipAttributeToggleButton($(this));
+                        });
+                    }
+                });
+            } else {
+                // Nothing selected, clear all buttons.
+                dataAttributeFilter(leadershipElements.attributes.tables.find('button'), 'selected', true).each(function() {
+                    leadershipAttributeToggleButton($(this));
+                });
+            }
+            if (selected.length > 0) {
+                leadershipElements.attributes.wrapper.show();
+                leadershipElements.attributes.div.show();
+            } else {
+                leadershipElements.attributes.wrapper.hide();
+                leadershipElements.attributes.div.hide();
+            }
+            // Enable/Disable optgroups
+            leadershipElements.attributes.select.find('optgroup').each(function() {
+                // Strip before first "|"" for comparison.
+                var optgroup = $(this);
+                var baserole = optgroup.prop('label').split(' | ', 1)[0];
+                if ($.inArray(baserole, selected) === -1) {
+                    optgroup.prop('disabled', true);
+                    optgroup.find('option').prop('selected', false).prop('disabled', true);
+                } else {
+                    optgroup.prop('disabled', false);
+                    optgroup.find('option').prop('disabled', false);
+                }
+            });
+            leadershipElements.attributes.select.trigger('change.select2');
+        });
+    };
+
+    var leadershipAttributeButton = function(button) {
+        var selected = leadershipElements.attributes.select.val();
+        var option = button.data('option');
+        var index = $.inArray(option, selected);
+        if (!button.data('selected') && index === -1) {
+            selected.push(option);
+        } else if (button.data('selected') && index !== -1) {
+            selected.splice(index, 1);
+        }
+        if (selected.length > 3) {
+            var strs = [
+                {key: 'error', component: 'local_onlineappraisal'},
+                {key: 'form:development:leadershipattributes:error:toomany', component: 'local_onlineappraisal'}
+            ];
+            str.get_strings(strs).done(function(s) {
+                notification.alert(s[0], s[1], 'OK');
+            });
+        } else {
+            leadershipAttributeToggleButton(button);
+            leadershipElements.attributes.select.val(selected).trigger('change.select2');
+        }
+    };
+
+    var leadershipAttributeToggleButton = function(button) {
+        button.data('selected', !button.data('selected'));
+        button.toggleClass('btn-default btn-primary').blur();
+    };
+
+    var leadershipAttributesSelect = function() {
+        var selected = leadershipElements.attributes.select.val();
+        var buttons = leadershipElements.attributes.tables.find('button');
+        buttons.data('selected', false);
+        buttons.removeClass('btn-primary').addClass('btn-default');
+        $.each(selected, function() {
+            var selectedButtons = dataAttributeFilter(buttons, 'option', this);
+            selectedButtons.data('selected', true);
+            selectedButtons.removeClass('btn-default').addClass('btn-primary');
+        });
+    };
+
+    var leadershipAttributeColumns = function(table, selected) {
+        var columns = table.find('th');
+        columns.each(function() {
+            var column = $(this);
+            var position = column[0].cellIndex + 1;
+            var cells = table.find('th:nth-child(' + position + '), td:nth-child(' + position + ')');
+            if ($.inArray(column.data('column'), selected) > -1) {
+                cells.show();
+            } else {
+                cells.hide();
+                dataAttributeFilter(cells.find('button'), 'selected', true).each(function() {
+                    leadershipAttributeButton($(this));
+                });
+            }
+        });
+    };
+
+    var dataAttributeFilter = function(elements, attribute, value) {
+        return elements.filter(function() {
+            return $(this).data(attribute) == value;
+        });
+    };
 
     return /** @alias module:local_onlineappraisal/view */ {
         init: function(appraisalid, view, page, statusid) {
@@ -46,13 +209,48 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 $searchfield.prop('disabled', true);
             });
 
+            if (page === 'development') {
+                leadershipElements.roles.div.removeClass('hidden').hide();
+                leadershipElements.roles.select.removeClass('hidden');
+                leadershipElements.attributes.wrapper.removeClass('hidden').hide();
+                leadershipElements.attributes.tables.removeClass('hidden').hide();
+                leadershipElements.attributes.div.removeClass('hidden').hide();
+                leadershipElements.attributes.select.removeClass('hidden');
+
+                leadershipRolesDisplay(leadershipElements.leadership.select);
+                leadershipRolesCheck();
+
+                leadershipAttributesSelect();
+
+                leadershipElements.leadership.select.on('change', function() {
+                    leadershipRolesDisplay($(this));
+                    leadershipRolesCheck();
+                });
+
+                leadershipElements.roles.select.on('change', function() {
+                    leadershipRolesCheck();
+                });
+
+                leadershipElements.attributes.wrapper.on('click', 'button', function(e) {
+                    var self = $(this);
+                    e.preventDefault();
+                    if (!self.prop('disabled')) {
+                        leadershipAttributeButton(self);
+                    }
+                });
+
+                leadershipElements.attributes.select.on('change', function() {
+                    leadershipAttributesSelect();
+                });
+            }
+
             if (page === 'userinfo' && (view === 'appraisee' || view === 'appraiser') && statusid < 5) {
                 var classes, graderefresh, jobtitlerefresh;
                 var grade = $('#id_grade');
                 var jobtitle = $('#id_jobtitle');
                 str.get_strings([
-                        {key : 'form:userinfo:refresh', component : 'local_onlineappraisal'},
-                        {key : 'form:userinfo:refresh:tooltip', component : 'local_onlineappraisal'}
+                        {key: 'form:userinfo:refresh', component: 'local_onlineappraisal'},
+                        {key: 'form:userinfo:refresh:tooltip', component: 'local_onlineappraisal'}
                     ]).done(function(s) {
                         // Inject ability to update fields from datahub.
                         classes = 'oa-refresh-datahub fa fa-2x fa-refresh m-l-10 pull-left';
@@ -71,7 +269,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 ).fail(notification.exception);
 
                 // Processing.
-                $('.felement').on('click', '.oa-refresh-datahub', function(){
+                $('.felement').on('click', '.oa-refresh-datahub', function() {
                     // Set up variables.
                     var self = $(this);
 
@@ -124,18 +322,18 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                                 alert.insertAfter(self)
                                     .slideDown()
                                     .delay(5000)
-                                    .slideUp(function(){
+                                    .slideUp(function() {
                                         $(this).remove();
                                     });
                             },
-                            error: function(){
+                            error: function() {
                                 alert.removeClass('alert-success').addClass('alert-danger');
                                 alert.html(s);
                                 self.next('.alert').remove();
                                 alert.insertAfter(self)
                                     .slideDown()
                                     .delay(5000)
-                                    .slideUp(function(){
+                                    .slideUp(function() {
                                         $(this).remove();
                                     });
                                 self.data('processing', false).removeClass('fa-spin');
@@ -151,20 +349,20 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 // Add strength/developmentarea inputs.
                 // Reveal buttons.
                 $('.oa-add-repeating-element').show();
-                $('.oa-add-repeating-element').click(function(e){
+                $('.oa-add-repeating-element').click(function(e) {
                     e.preventDefault();
                     var that = $(this);
                     var index = that.data('index');
                     var newindex = parseInt(index) + 1;
                     that.data('index', newindex);
                     var type = that.data('type');
-                    var clone = that.parent().find('#fitem_id_'+type+'_'+index).clone();
-                    clone.prop('id', 'fitem_id_'+type+'_'+newindex);
+                    var clone = that.parent().find('#fitem_id_' + type + '_' + index).clone();
+                    clone.prop('id', 'fitem_id_' + type + '_' + newindex);
                     var label = clone.find('label');
-                    label.prop('for', 'id_'+type+'_'+newindex);
+                    label.prop('for', 'id_' + type + '_' + newindex);
                     var input = clone.find('input');
-                    input.prop('id', 'id_'+type+'_'+newindex);
-                    input.prop('name', type+'['+newindex+']');
+                    input.prop('id', 'id_' + type + '_' + newindex);
+                    input.prop('name', type + '[' + newindex + ']');
                     input.val('');
                     clone.insertBefore(that);
                 });
@@ -172,11 +370,11 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
             // Confirm SDP unlocking.
             var strs = [
-                { key: 'form:successionplan:confirm:unlock:title', component: 'local_onlineappraisal'},
-                { key: 'form:successionplan:confirm:unlock:question', component: 'local_onlineappraisal'},
-                { key: 'form:successionplan:confirm:unlock:yes', component: 'local_onlineappraisal'},
-                { key: 'form:successionplan:confirm:unlock:no', component: 'local_onlineappraisal'},
-                { key: 'form:save', component: 'local_onlineappraisal'}
+                {key: 'form:successionplan:confirm:unlock:title', component: 'local_onlineappraisal'},
+                {key: 'form:successionplan:confirm:unlock:question', component: 'local_onlineappraisal'},
+                {key: 'form:successionplan:confirm:unlock:yes', component: 'local_onlineappraisal'},
+                {key: 'form:successionplan:confirm:unlock:no', component: 'local_onlineappraisal'},
+                {key: 'form:save', component: 'local_onlineappraisal'}
             ];
             str.get_strings(strs).done(function(s) {
                 $('#id_submitbutton.oa-unlock-sdp').click(function(e) {
@@ -187,7 +385,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         return;
                     }
                     notification.confirm(s[0], s[1], s[2], s[3],
-                        function(){
+                        function() {
                             // Avoid regular leaving page notification.
                             M.core_formchangechecker.set_form_submitted();
                             var input = $('<input type="hidden" name="submitbutton" value="' + s[4] + '" />');
@@ -203,20 +401,20 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 // Add ldpstrength/ldpdevelopmentarea inputs.
                 // Reveal buttons.
                 $('.oa-add-repeating-element').show();
-                $('.oa-add-repeating-element').click(function(e){
+                $('.oa-add-repeating-element').click(function(e) {
                     e.preventDefault();
                     var that = $(this);
                     var index = that.data('index');
                     var newindex = parseInt(index) + 1;
                     that.data('index', newindex);
                     var type = that.data('type');
-                    var clone = that.parent().find('#fitem_id_'+type+'_'+index).clone();
-                    clone.prop('id', 'fitem_id_'+type+'_'+newindex);
+                    var clone = that.parent().find('#fitem_id_' + type + '_' + index).clone();
+                    clone.prop('id', 'fitem_id_' + type + '_' + newindex);
                     var label = clone.find('label');
-                    label.prop('for', 'id_'+type+'_'+newindex);
+                    label.prop('for', 'id_' + type + '_' + newindex);
                     var input = clone.find('input');
-                    input.prop('id', 'id_'+type+'_'+newindex);
-                    input.prop('name', type+'['+newindex+']');
+                    input.prop('id', 'id_' + type + '_' + newindex);
+                    input.prop('name', type + '[' + newindex + ']');
                     input.val('');
                     clone.insertBefore(that);
                 });
@@ -235,11 +433,11 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
             // Confirm LDP unlocking.
             var ldpstrs = [
-                { key: 'form:leaderplan:confirm:unlock:title', component: 'local_onlineappraisal'},
-                { key: 'form:leaderplan:confirm:unlock:question', component: 'local_onlineappraisal'},
-                { key: 'form:leaderplan:confirm:unlock:yes', component: 'local_onlineappraisal'},
-                { key: 'form:leaderplan:confirm:unlock:no', component: 'local_onlineappraisal'},
-                { key: 'form:save', component: 'local_onlineappraisal'}
+                {key: 'form:leaderplan:confirm:unlock:title', component: 'local_onlineappraisal'},
+                {key: 'form:leaderplan:confirm:unlock:question', component: 'local_onlineappraisal'},
+                {key: 'form:leaderplan:confirm:unlock:yes', component: 'local_onlineappraisal'},
+                {key: 'form:leaderplan:confirm:unlock:no', component: 'local_onlineappraisal'},
+                {key: 'form:save', component: 'local_onlineappraisal'}
             ];
             str.get_strings(ldpstrs).done(function(s) {
                 $('#id_submitbutton.oa-unlock-ldp').click(function(e) {
@@ -250,7 +448,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         return;
                     }
                     notification.confirm(s[0], s[1], s[2], s[3],
-                        function(){
+                        function() {
                             // Avoid regular leaving page notification.
                             M.core_formchangechecker.set_form_submitted();
                             var input = $('<input type="hidden" name="submitbutton" value="' + s[4] + '" />');
@@ -269,13 +467,13 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     });
                 }, 900000);
 
-                $('.oa-save-nag-modal-save').click(function(){
+                $('.oa-save-nag-modal-save').click(function() {
                     $('#oa-save-nag-modal').modal('hide');
                     window.scrollTo(0, $('#id_submitbutton').offset().top);
                     $(this).closest('form').find('#id_submitbutton').click();
                 });
 
-                $('input[type="submit"]').click(function(){
+                $('input[type="submit"]').click(function() {
                     // Need to ensure clicked button is set.
                     var self = $(this);
                     var form = self.closest('form');
@@ -284,7 +482,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 });
 
                 str.get_string('error:sessioncheck', 'local_onlineappraisal').done(function(s) {
-                    $('.oa-save-session-check').submit(function(e){
+                    $('.oa-save-session-check').submit(function(e) {
                         var self = $(this);
 
                         // Don't worry if cancelling.
@@ -343,7 +541,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                                 }
 
                             },
-                            error: function(){
+                            error: function() {
                                 alert.removeClass('alert-success').addClass('alert-danger');
                                 alert.html(s);
                                 buttonar.find('.alert').remove();

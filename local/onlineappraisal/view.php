@@ -85,6 +85,9 @@ $PAGE->requires->strings_for_js(
         'error:sessioncheck',
         'form:userinfo:refresh',
         'form:userinfo:refresh:tooltip',
+        'form:development:leadershiproles:answer:generic',
+        'form:development:leadershipattributes:error:toomany',
+        'error'
     ), 'local_onlineappraisal');
 // Add JS.
 $arguments = array(

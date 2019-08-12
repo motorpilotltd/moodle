@@ -1,0 +1,91 @@
+{
+    "Business": {
+        "Business focused": [
+            "Spends significant time and effort engaging in the external market to identify opportunities and potential future work.",
+            "Develops work which delivers short-term commercial benefit, and longer-term, builds and shapes our services and capabilities in line with Group strategy."
+        ],
+        "Commercially astute": [
+            "Is the lead architect for commercial outcomes on all projects which deliver profitability for Arup while nurturing client relationships in the long term.",
+            "Creates a culture of recognising the monetary value to clients of everything we do and charging appropriately for all of our expertise and services.",
+            "Personally models timely cash collection in project plans and rigorously adheres to schedules."
+        ],
+        "Entrepreneurial": [
+            "Sees new opportunities to develop existing service lines and build new ones where there is untapped potential, even",
+            "where some risk is involved.",
+            "Influences the direction of Arup's work, develops business and wins work."
+        ],
+        "Operationally minded": [
+            "Plans work in detail, executing in line with the quality, timing and commercial expectations of all stakeholders.",
+            "Builds operational resilience into planning.",
+            "Ensures a culture of attention to detail within teams and models the effective deployment of resources, maintaining quality and the flexibility to adapt to and manage change requests.",
+            "Is resourceful, using the people, technology, knowledge and systems at their disposal, and more besides."
+        ]
+    },
+    "Leadership": {
+        "Ambassadorial": [
+            "Actively promotes Arup's reputation and talks widely with influential audiences about our people and our multi-disciplinary capabilities.",
+            "Is a role model of Arup's values, ethics and distinctiveness."
+        ],
+        "Curious": [
+            "Asks searching questions and follows up possibilities.",
+            "Asks \"why\" as well as \"how\" to encourage others to explore beyond the obvious and achieve better, innovative imaginative solutions.",
+            "Quick to adapt, learning from colleagues of all ages and backgrounds."
+        ],
+        "Relationship focused": [
+            "Invests time with colleagues and clients in the service of long-term, trusting rather than transactional relationships.",
+            "Balances the interests of all parties while retaining professional and personal integrity.",
+            "Mindful of ethics and values in dealings with colleagues and clients.",
+            "Is true to their word, morally reliable, open, transparent and trustworthy."
+        ],
+        "Visionary": [
+            "Inspires and engages others with imagination and wisdom.",
+            "Is a creative thinker who paints an unconstrained, compelling picture of the future and develops pragmatic strategies that provide a route to that vision."
+        ]
+    },
+    "People": {
+        "Humane": [
+            "Makes decisions using consistent principles with people at their heart.",
+            "Is kind, caring, compassionate, ethical and empathetic.",
+            "Creates an inclusive environment for truly diverse, talented teams.",
+            "Is respectful of others, displays generosity of spirit and values building relationships."
+        ],
+        "Developmental": [
+            "Establishes a culture of learning, acting as coach and role model.",
+            "Identifies potential in others, especially diverse talents.",
+            "Purposefully plans their development and builds team capability."
+        ],
+        "Enabling": [
+            "Creates success by facilitating a sense of confidence, ownership and responsibility.",
+            "Recognises and helps teams navigate or resolve complexity.",
+            "Recognises and celebrates the contributions and successes of our people."
+        ],
+        "Influential": [
+            "Changes the trajectory of work for the better.",
+            "Identifies and develops relationships with stakeholders who are instrumental to success.",
+            "Actively engages with others to create a persuasive and impactful proposition."
+        ]
+    },
+    "Work": {
+        "Expert": [
+            "Visibly and vigorously champions world-class knowledge and expertise that is continually honed.",
+            "Applies the latest thinking to bring about innovation and quality in our work.",
+            "Is a trusted advisor whose eminence influences our work internally and clients and the discipline externally.",
+            "Prioritises self-development."
+        ],
+        "Holistic": [
+            "Sees the big picture, and shapes projects and opportunities to deliver for society as well as the client.",
+            "Has an all-inclusive and long-term view and approach."
+        ],
+        "Integrating": [
+            "Integrates all Arup services and capabilities for client benefit.",
+            "Draws out knowledge from across the firm and delivers it in new ways to solve complex challenges.",
+            "Is collaborative in approach, working together across boundaries in a joint intellectual effort."
+        ],
+        "Innovative": [
+            "Invents and develops new ideas.",
+            "Develops a culture of design creativity and innovation.",
+            "Pushes boundaries without compromising standards.",
+            "Is unconventional and unconstrained by tradition."
+        ]
+    }
+}

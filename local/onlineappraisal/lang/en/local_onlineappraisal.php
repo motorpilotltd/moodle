@@ -1130,6 +1130,28 @@ $string['form:development:title'] = 'Section 4: Development Plan';
 $string['form:development:intro'] = 'The Development Plan sets out what personal skills, knowledge or behavioural changes are needed to support the appraisee\'s career progression and Agreed Impact Plan.<br /><br />
 How do you need to develop in the next 12-18 months to achieve this? What support will you need and when do you plan to undertake this development?<br /><br />
 <div class="well well-sm">At Arup we use the principle of "70-20-10" in personal development. This means that for most people, 70% of development should be "on the job" and learned from experience. 20% should be via other people, perhaps through coaching or mentoring. The final 10% should be by formal learning methods, like classroom courses or formal e-learning. The percentages are of course just a guideline.</div>';
+$string['form:development:leadership'] = 'Do you hold, or aspire to hold, a leadership role?';
+$string['form:development:leadership:answer:1'] = 'No';
+$string['form:development:leadership:answer:2'] = 'Yes';
+$string['form:development:leadershiproles:1'] = 'Additionally, do you hold, or aspire to hold, any of the following roles?';
+$string['form:development:leadershiproles:2'] = 'Please select up to two options from the list below:';
+$string['form:development:leadershiproles:popover'] = 'The roles listed here are some of the key leadership roles in our firm.
+    Profiles have been developed to further define which attributes are considered foundational for that role.
+    The profile then sets out specific deliverables that illustrate that particular attribute.
+    If you do not hold or aspire to hold one of these roles, please select \'other\'.
+    For further information click <a href="https://moodle.arup.com/appraisal/attributeslearningburst" target="_blank">here</a>';
+$string['form:development:leadershiproles:links'] = '<a href="https://moodle.arup.com/appraisal/rolespecificattributes" target="_blank">Role Specific Leadership Attribute Guides</a><br>
+    <a href="https://moodle.arup.com/appraisal/leadershipattributes" target="_blank">Generic Leadership Attribute Guide</a><br>
+    <a href="https://moodle.arup.com/appraisal/attributeslearningburst" target="_blank">Leadership Attributes Learning Burst</a>';
+$string['form:development:leadershiproles:answer:generic'] = 'Other';
+$string['form:development:leadershiproles:error'] = 'Please select a maximum of two options';
+$string['form:development:leadershipattributes:popover'] = 'The 16 Arup Leadership Attributes set out what the form expects of our leaders both in terms of what and how they deliver.
+    It is expected that Arup Leaders will possess all of these qualities to a degree but show real strength in some of them and want to develop others.
+        For further information click <a href="https://moodle.arup.com/appraisal/attributeslearningburst" target="_blank">here</a>';
+$string['form:development:leadershipattributes:generic'] = file_get_contents($CFG->wwwroot . '/local/onlineappraisal/lang/en/leadership-attributes-generic.json');
+$string['form:development:leadershipattributes:role'] = file_get_contents($CFG->wwwroot . '/local/onlineappraisal/lang/en/leadership-attributes-role.json');
+$string['form:development:leadershipattributes:error:wrongnumber'] = 'Please select two or three options';
+$string['form:development:leadershipattributes:error:toomany'] = 'Please select no more than three options';
 $string['form:development:seventy'] = 'Learning that takes place in the course of your work - about 70%';
 $string['form:development:seventyhelp'] = '<div class="well well-sm"> <em>For example:</em> <ul class="m-b-0"> <li><em>Project assignments</em></li> <li><em>Team assignments</em></li> <li><em>Mobility</em></li> <li><em>Discussion of work and feedback</em></li> <li><em>Project reviews, design charrettes</em></li> <li><em>Reading</em></li> <li><em>Research</em></li> </ul> </div>';
 $string['form:development:twenty'] = 'Learning from other people - about 20%';

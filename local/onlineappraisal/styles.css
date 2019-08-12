@@ -812,6 +812,9 @@ fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.focus {
 .path-local-onlineappraisal form.form-inline button {
   margin-bottom: 5px;
 }
+.path-local-onlineappraisal .select2-container--default .select2-results__option[aria-disabled=true] {
+  display: none;
+}
 .path-local-onlineappraisal .block_local_onlineappraisal ul.nav-stacked {
   margin: 0;
 }
@@ -953,6 +956,29 @@ fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.focus {
 }
 .path-local-onlineappraisal .generaltable .oa-editable-table .btn {
   padding: 2px 4px;
+}
+.path-local-onlineappraisal .oa-table-leadership-attributes {
+  text-align: center;
+}
+.path-local-onlineappraisal .oa-table-leadership-attributes tbody + tbody,
+.path-local-onlineappraisal .oa-table-leadership-attributes td,
+.path-local-onlineappraisal .oa-table-leadership-attributes th,
+.path-local-onlineappraisal .oa-table-leadership-attributes thead th {
+  border: 0;
+}
+.path-local-onlineappraisal .oa-table-leadership-attributes tbody td {
+  padding-right: 24px;
+  width: 25%;
+}
+.path-local-onlineappraisal .oa-table-leadership-attributes tbody td button {
+  float: left;
+  margin: 0;
+  width: 100%;
+}
+.path-local-onlineappraisal .oa-table-leadership-attributes tbody td i.fa {
+  float: right;
+  margin-right: -24px;
+  margin-top: 9px;
 }
 .path-local-onlineappraisal .progress {
   height: 20px;
