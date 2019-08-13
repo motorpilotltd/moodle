@@ -66,9 +66,9 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 }
             });
         } else {
+            leadershipElements.roles.select.val(null).trigger('change.select2');
+            leadershipRolesCheck();
             leadershipElements.roles.div.hide();
-            leadershipElements.attributes.wrapper.hide();
-            leadershipElements.attributes.div.hide();
         }
     };
 
@@ -87,10 +87,11 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     if (self.data('type') === 'generic') {
                         self.show();
                     } else {
-                        self.hide();
+                        self.find('i[data-toggle="popover"]').popover('hide');
                         dataAttributeFilter(self.find('button'), 'selected', true).each(function() {
                             leadershipAttributeToggleButton($(this));
                         });
+                        self.hide();
                     }
                 });
             } else if (selected.length > 0) {
@@ -100,22 +101,21 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         self.show();
                         leadershipAttributeColumns(self, selected);
                     } else {
-                        self.hide();
+                        self.find('i[data-toggle="popover"]').popover('hide');
                         dataAttributeFilter(self.find('button'), 'selected', true).each(function() {
                             leadershipAttributeToggleButton($(this));
                         });
                     }
-                });
-            } else {
-                // Nothing selected, clear all buttons.
-                dataAttributeFilter(leadershipElements.attributes.tables.find('button'), 'selected', true).each(function() {
-                    leadershipAttributeToggleButton($(this));
                 });
             }
             if (selected.length > 0) {
                 leadershipElements.attributes.wrapper.show();
                 leadershipElements.attributes.div.show();
             } else {
+                leadershipElements.attributes.tables.find('i[data-toggle="popover"]').popover('hide');
+                dataAttributeFilter(leadershipElements.attributes.tables.find('button'), 'selected', true).each(function() {
+                    leadershipAttributeToggleButton($(this));
+                });
                 leadershipElements.attributes.wrapper.hide();
                 leadershipElements.attributes.div.hide();
             }
@@ -185,6 +185,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
             if ($.inArray(column.data('column'), selected) > -1) {
                 cells.show();
             } else {
+                cells.find('i[data-toggle="popover"]').popover('hide');
                 cells.hide();
                 dataAttributeFilter(cells.find('button'), 'selected', true).each(function() {
                     leadershipAttributeButton($(this));

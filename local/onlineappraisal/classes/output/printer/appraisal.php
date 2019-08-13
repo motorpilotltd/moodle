@@ -123,7 +123,7 @@ class appraisal extends base {
             'lastyear' => array('appraiseereview', 'appraiserreview', 'appraiseedevelopment', 'appraiseefeedback'),
             'careerdirection' => array('mobility', 'progress', 'comments'),
             'impactplan' => array('impact', 'support', 'comments'),
-            'development' => array('seventy', 'twenty', 'ten', 'comments'),
+            'development' => array('leadership', 'leadershiproles', 'leadershipattributes', 'seventy', 'twenty', 'ten', 'comments'),
         );
 
         $params = array(
@@ -162,6 +162,9 @@ class appraisal extends base {
 
         $count = 0;
         foreach ($fields as $name) {
+            if (!$this->show_field($name, $formname, $formdata)) {
+                continue;
+            }
             $count++;
             $field = new stdClass();
             $field->name = $name;
@@ -197,6 +200,22 @@ class appraisal extends base {
         }
 
         return $return;
+    }
+
+    private function show_field($fieldname, $formname, $formdata) {
+        switch ($formname) {
+            case 'development':
+                switch ($fieldname) {
+                    case 'leadershiproles':
+                    case 'leadershipattributes':
+                        if ($formdata['leadership']->data === get_string('form:development:leadership:answer:1', 'local_onlineappraisal')) {
+                            return false;
+                        }
+                    break;
+                }
+            break;
+        }
+        return true;
     }
 
     /**

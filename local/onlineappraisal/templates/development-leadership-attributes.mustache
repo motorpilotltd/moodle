@@ -10,10 +10,15 @@
     {{#rows}}
         <tr>
         {{#cells}}
+            {{#empty}}
+            <td></td>
+            {{/empty}}
+            {{^empty}}
             <td><button class="btn btn-default" data-option="{{option}}" data-selected="false" {{disabled}}>{{name}}</button>{{!
             }}<i role="button"
                  class="fa fa-info-circle fa-lg fa-fw"
                  data-toggle="popover" data-content="{{info}}"" data-html="true" data-container="body"></i></td>
+            {{/empty}}
         {{/cells}}
         </tr>
     {{/rows}}

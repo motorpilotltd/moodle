@@ -102,7 +102,7 @@ class apform_development extends moodleform {
                 . html_writer::empty_tag('br')
                 . $this->str('leadershiproles:2');
         $label = html_writer::div(
-            html_writer::span($question, 'pull-left') . html_writer::span($this->str('leadershiproles:links'), 'pull-right'),
+            html_writer::span($question, 'pull-left', ['style' => 'margin-top: 20px;']) . html_writer::span($this->str('leadershiproles:links'), 'pull-right'),
             'clearfix');
         $leadershiproles = $mform->addElement('select', 'leadershiproles', $label, $answers, ['class' => 'hidden']);
         $leadershiproles->setMultiple(true);
@@ -116,15 +116,15 @@ class apform_development extends moodleform {
             'data-toggle' => 'popover',
             'data-content' => $this->str('leadershipattributes:popover'),
             'data-html' => 'true']);
-        $mform->addElement('html', '<div id="oa-development-leadershipattributes" class="hidden">');
-        $mform->addElement('html', "<p>Select 2-3 attributes {$popover} to concentrate on from the following</p>");
+        $mform->addElement('html', html_writer::start_div('hidden', ['id' => 'oa-development-leadershipattributes']));
+        $mform->addElement('html', html_writer::tag('p', $this->str('leadershipattributes:intro', $popover)));
         $mform->addElement('html', $this->renderer->render_from_template('local_onlineappraisal/development-leadership-attributes', $genericattributes->details));
         $mform->addElement('html', $this->renderer->render_from_template('local_onlineappraisal/development-leadership-attributes', $roleattributes->details));
-        $mform->addElement('html', '</div>');
+        $mform->addElement('html', html_writer::end_div());
 
         $options = array_merge($roleattributes->options, $genericattributes->options);
 
-        $leadershipattributes = $mform->addElement('selectgroups', 'leadershipattributes', 'Your selected attributes for this year:', $options, ['class' => 'hidden']);
+        $leadershipattributes = $mform->addElement('selectgroups', 'leadershipattributes', $this->str('leadershipattributes'), $options, ['class' => 'hidden']);
         $leadershipattributes->setMultiple(true);
         if ($data->appraisal->viewingas !== 'appraisee' || $data->appraiseeedit == APPRAISAL_FIELD_LOCKED) {
             $leadershipattributes->updateAttributes(['disabled' => 'disabled']);
@@ -163,8 +163,8 @@ class apform_development extends moodleform {
         }
     }
 
-    private function str($string) {
-        return get_string('form:development:' . $string, 'local_onlineappraisal');
+    private function str($string, $a = '') {
+        return get_string('form:development:' . $string, 'local_onlineappraisal', $a);
     }
 
     public function definition_after_data() {
@@ -204,6 +204,7 @@ class apform_development extends moodleform {
             // Handle empty multi select, but only if unlocked.
             if ($data->leadership === $this->str("leadership:answer:1")) {
                 $data->leadershiproles = [];
+                $data->leadershipattributes = [];
             }
         }
 
@@ -218,8 +219,12 @@ class apform_development extends moodleform {
      * @return stdClass Data ready for rendering
      */
     private function get_leadership_attributes($type, $prefix = '') {
-        $data = json_decode($this->str("leadershipattributes:{$type}"), true);
+        $data = (array) json_decode($this->str("leadershipattributes:{$type}"), true);
+        if ($type === 'role') {
+            // Sort data alphabetically by role.
+            ksort($data);
 
+        }
         $return = new stdClass();
         $return->options = [];
         $return->details = new stdClass();
@@ -237,18 +242,23 @@ class apform_development extends moodleform {
             $optgroup = $prefix . $colname;
             $optionprefix = $optgroup . ' | ';
 
-            // Sort column data alphabetically by key.
-            ksort($coldata);
+            if ($type === 'role') {
+                // Sort column data alphabetically by key.
+                ksort($coldata);
+            }
 
             $rowcount = 0;
             foreach ($coldata as $attrname => $attrinfo) {
                 if (!isset($return->details->rows[$rowcount])) {
                     $return->details->rows[$rowcount] = new stdClass();
                     $return->details->rows[$rowcount]->cells = [];
-                    if ($colcount > 0) {
-                        for ($i = 0; $i <= $colcount; $i++) {
-                            $return->details->rows[$rowcount]->cells[$i] = new stdClass();
-                        }
+                }
+                // Pad out row where necessary.
+                $cellcount = count($return->details->rows[$rowcount]->cells);
+                if ($colcount > $cellcount) {
+                    for ($i = $cellcount; $i < $colcount; $i++) {
+                        $return->details->rows[$rowcount]->cells[$i] = new stdClass();
+                        $return->details->rows[$rowcount]->cells[$i]->empty = true;
                     }
                 }
                 $option = $optionprefix . $attrname;
