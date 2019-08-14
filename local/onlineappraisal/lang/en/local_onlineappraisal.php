@@ -1135,16 +1135,17 @@ $string['form:development:leadership:answer:1'] = 'No';
 $string['form:development:leadership:answer:2'] = 'Yes';
 $string['form:development:leadershiproles:1'] = 'Additionally, do you hold, or aspire to hold, any of the following roles?';
 $string['form:development:leadershiproles:2'] = 'Please select up to two options from the list below:';
+$string['form:development:leadershiproles:answer:generic'] = 'Other';
+$string['form:development:leadershiproles:error'] = 'Please select a maximum of two options';
+$string['form:development:leadershiproles:links'] = '<a href="https://moodle.arup.com/appraisal/rolespecificattributes" target="_blank">Role Specific Leadership Attribute Guides</a><br>
+    <a href="https://moodle.arup.com/appraisal/leadershipattributes" target="_blank">Generic Leadership Attribute Guide</a><br>
+    <a href="https://moodle.arup.com/appraisal/attributeslearningburst" target="_blank">Leadership Attributes Learning Burst</a>';
+$string['form:development:leadershiproles:placeholder'] = 'Select role(s)';
 $string['form:development:leadershiproles:popover'] = 'The roles listed here are some of the key leadership roles in our firm.
     Profiles have been developed to further define which attributes are considered foundational for that role.
     The profile then sets out specific deliverables that illustrate that particular attribute.
     If you do not hold or aspire to hold one of these roles, please select \'other\'.
     For further information click <a href="https://moodle.arup.com/appraisal/attributeslearningburst" target="_blank">here</a>';
-$string['form:development:leadershiproles:links'] = '<a href="https://moodle.arup.com/appraisal/rolespecificattributes" target="_blank">Role Specific Leadership Attribute Guides</a><br>
-    <a href="https://moodle.arup.com/appraisal/leadershipattributes" target="_blank">Generic Leadership Attribute Guide</a><br>
-    <a href="https://moodle.arup.com/appraisal/attributeslearningburst" target="_blank">Leadership Attributes Learning Burst</a>';
-$string['form:development:leadershiproles:answer:generic'] = 'Other';
-$string['form:development:leadershiproles:error'] = 'Please select a maximum of two options';
 $string['form:development:leadershipattributes'] = 'Your selected attributes for this year';
 $string['form:development:leadershipattributes:error:wrongnumber'] = 'Please select two or three options';
 $string['form:development:leadershipattributes:error:toomany'] = 'Please select no more than three options';

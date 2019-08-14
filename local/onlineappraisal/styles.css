@@ -815,6 +815,9 @@ fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.focus {
 .path-local-onlineappraisal .select2-container--default .select2-results__option[aria-disabled=true] {
   display: none;
 }
+.path-local-onlineappraisal i.fa-info-circle {
+  color: #999999;
+}
 .path-local-onlineappraisal .block_local_onlineappraisal ul.nav-stacked {
   margin: 0;
 }
@@ -979,6 +982,22 @@ fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.focus {
   float: right;
   margin-right: -24px;
   margin-top: 9px;
+}
+@media (max-width: 767px) {
+  .path-local-onlineappraisal .oa-table-leadership-attributes.oa-single-column {
+    width: 50%;
+  }
+  .path-local-onlineappraisal .oa-table-leadership-attributes.oa-multi-column {
+    width: 100%;
+  }
+}
+@media (min-width: 768px) {
+  .path-local-onlineappraisal .oa-table-leadership-attributes.oa-single-column {
+    width: 25%;
+  }
+  .path-local-onlineappraisal .oa-table-leadership-attributes.oa-multi-column {
+    width: 50%;
+  }
 }
 .path-local-onlineappraisal .progress {
   height: 20px;

@@ -56,7 +56,12 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
         if (roleSelect.val() === 'Yes') {
             leadershipElements.roles.div.show(0, function() {
                 if (!leadershipElements.roles.select.hasClass('select2-hidden-accessible')) {
-                    leadershipElements.roles.select.select2({maximumSelectionLength: 2});
+                    str.get_string('form:development:leadershiproles:placeholder', 'local_onlineappraisal').done(function(s) {
+                        leadershipElements.roles.select.select2({
+                            maximumSelectionLength: 2,
+                            placeholder: s
+                        });
+                    });
                 }
             });
             leadershipElements.attributes.wrapper.show();
@@ -105,13 +110,16 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         dataAttributeFilter(self.find('button'), 'selected', true).each(function() {
                             leadershipAttributeToggleButton($(this));
                         });
+                        self.hide();
                     }
                 });
             }
+
             if (selected.length > 0) {
                 leadershipElements.attributes.wrapper.show();
                 leadershipElements.attributes.div.show();
             } else {
+                leadershipElements.attributes.select.val(null).trigger('change.select2');
                 leadershipElements.attributes.tables.find('i[data-toggle="popover"]').popover('hide');
                 dataAttributeFilter(leadershipElements.attributes.tables.find('button'), 'selected', true).each(function() {
                     leadershipAttributeToggleButton($(this));
@@ -119,20 +127,6 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 leadershipElements.attributes.wrapper.hide();
                 leadershipElements.attributes.div.hide();
             }
-            // Enable/Disable optgroups
-            leadershipElements.attributes.select.find('optgroup').each(function() {
-                // Strip before first "|"" for comparison.
-                var optgroup = $(this);
-                var baserole = optgroup.prop('label').split(' | ', 1)[0];
-                if ($.inArray(baserole, selected) === -1) {
-                    optgroup.prop('disabled', true);
-                    optgroup.find('option').prop('selected', false).prop('disabled', true);
-                } else {
-                    optgroup.prop('disabled', false);
-                    optgroup.find('option').prop('disabled', false);
-                }
-            });
-            leadershipElements.attributes.select.trigger('change.select2');
         });
     };
 
@@ -192,12 +186,27 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 });
             }
         });
+        if (selected.length === 1) {
+            table.removeClass('oa-multi-column').addClass('oa-single-column');
+        } else {
+            table.removeClass('oa-single-column').addClass('oa-multi-column');
+        }
     };
 
     var dataAttributeFilter = function(elements, attribute, value) {
         return elements.filter(function() {
             return $(this).data(attribute) == value;
         });
+    };
+
+    var leadershipAttributesActivate = function(on) {
+        if (on === true) {
+            leadershipElements.attributes.select.prop('disabled', false);
+            leadershipElements.attributes.select.trigger('change.select2');
+        } else {
+            leadershipElements.attributes.select.prop('disabled', true);
+            leadershipElements.attributes.select.trigger('change.select2');
+        }
     };
 
     return /** @alias module:local_onlineappraisal/view */ {
@@ -211,37 +220,51 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
             });
 
             if (page === 'development') {
-                leadershipElements.roles.div.removeClass('hidden').hide();
-                leadershipElements.roles.select.removeClass('hidden');
-                leadershipElements.attributes.wrapper.removeClass('hidden').hide();
+                leadershipElements.roles.div.removeClass('hiddenifjs').hide();
+                leadershipElements.roles.select.removeClass('hiddenifjs');
+                leadershipElements.attributes.wrapper.removeClass('hiddenifjs').hide();
+                // Tables will be hidden if no js (force select use);
                 leadershipElements.attributes.tables.removeClass('hidden').hide();
-                leadershipElements.attributes.div.removeClass('hidden').hide();
-                leadershipElements.attributes.select.removeClass('hidden');
+                leadershipElements.attributes.div.removeClass('hiddenifjs').hide();
+                leadershipElements.attributes.select.removeClass('hiddenifjs');
 
+                leadershipAttributesActivate(true);
                 leadershipRolesDisplay(leadershipElements.leadership.select);
                 leadershipRolesCheck();
-
                 leadershipAttributesSelect();
+                leadershipAttributesActivate(false);
 
                 leadershipElements.leadership.select.on('change', function() {
+                    leadershipAttributesActivate(true);
                     leadershipRolesDisplay($(this));
                     leadershipRolesCheck();
+                    leadershipAttributesActivate(false);
                 });
 
                 leadershipElements.roles.select.on('change', function() {
+                    leadershipAttributesActivate(true);
                     leadershipRolesCheck();
+                    leadershipAttributesActivate(false);
                 });
 
                 leadershipElements.attributes.wrapper.on('click', 'button', function(e) {
+                    leadershipAttributesActivate(true);
                     var self = $(this);
                     e.preventDefault();
                     if (!self.prop('disabled')) {
                         leadershipAttributeButton(self);
                     }
+                    leadershipAttributesActivate(false);
                 });
 
                 leadershipElements.attributes.select.on('change', function() {
+                    leadershipAttributesActivate(true);
                     leadershipAttributesSelect();
+                    leadershipAttributesActivate(false);
+                });
+
+                $('form').on('submit', function() {
+                    leadershipAttributesActivate(true);
                 });
             }
 
@@ -466,6 +489,8 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         backdrop: 'static',
                         keyboard: false
                     });
+                    // In case any popovers are showing!
+                    $('[data-toggle="popover"]').popover('hide');
                 }, 900000);
 
                 $('.oa-save-nag-modal-save').click(function() {

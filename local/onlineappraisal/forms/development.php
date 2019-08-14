@@ -100,11 +100,12 @@ class apform_development extends moodleform {
                     'data-content' => $this->str('leadershiproles:popover'),
                     'data-html' => 'true'])
                 . html_writer::empty_tag('br')
+                . html_writer::empty_tag('br')
                 . $this->str('leadershiproles:2');
         $label = html_writer::div(
-            html_writer::span($question, 'pull-left', ['style' => 'margin-top: 20px;']) . html_writer::span($this->str('leadershiproles:links'), 'pull-right'),
+            html_writer::span($question, 'pull-left') . html_writer::span($this->str('leadershiproles:links'), 'pull-right'),
             'clearfix');
-        $leadershiproles = $mform->addElement('select', 'leadershiproles', $label, $answers, ['class' => 'hidden']);
+        $leadershiproles = $mform->addElement('select', 'leadershiproles', $label, $answers, ['class' => 'hiddenifjs']);
         $leadershiproles->setMultiple(true);
         if ($data->appraisal->viewingas !== 'appraisee' || $data->appraiseeedit == APPRAISAL_FIELD_LOCKED) {
             $leadershiproles->updateAttributes(['disabled' => 'disabled']);
@@ -116,7 +117,7 @@ class apform_development extends moodleform {
             'data-toggle' => 'popover',
             'data-content' => $this->str('leadershipattributes:popover'),
             'data-html' => 'true']);
-        $mform->addElement('html', html_writer::start_div('hidden', ['id' => 'oa-development-leadershipattributes']));
+        $mform->addElement('html', html_writer::start_div('hiddenifjs', ['id' => 'oa-development-leadershipattributes']));
         $mform->addElement('html', html_writer::tag('p', $this->str('leadershipattributes:intro', $popover)));
         $mform->addElement('html', $this->renderer->render_from_template('local_onlineappraisal/development-leadership-attributes', $genericattributes->details));
         $mform->addElement('html', $this->renderer->render_from_template('local_onlineappraisal/development-leadership-attributes', $roleattributes->details));
@@ -124,7 +125,7 @@ class apform_development extends moodleform {
 
         $options = array_merge($roleattributes->options, $genericattributes->options);
 
-        $leadershipattributes = $mform->addElement('selectgroups', 'leadershipattributes', $this->str('leadershipattributes'), $options, ['class' => 'hidden']);
+        $leadershipattributes = $mform->addElement('selectgroups', 'leadershipattributes', $this->str('leadershipattributes'), $options, ['class' => 'hiddenifjs']);
         $leadershipattributes->setMultiple(true);
         if ($data->appraisal->viewingas !== 'appraisee' || $data->appraiseeedit == APPRAISAL_FIELD_LOCKED) {
             $leadershipattributes->updateAttributes(['disabled' => 'disabled']);
@@ -204,6 +205,9 @@ class apform_development extends moodleform {
             // Handle empty multi select, but only if unlocked.
             if ($data->leadership === $this->str("leadership:answer:1")) {
                 $data->leadershiproles = [];
+                $data->leadershipattributes = [];
+            }
+            if (empty($data->leadershiproles)) {
                 $data->leadershipattributes = [];
             }
         }
