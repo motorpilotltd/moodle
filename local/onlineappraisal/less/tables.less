@@ -74,8 +74,11 @@
         &.oa-single-column {
             width: 25%;
         }
-        &.oa-multi-column {
+        &.oa-multi-column[data-type="role"] {
             width: 50%;
+        }
+        &.oa-multi-column[data-type="generic"] {
+            width: 100%;
         }
     }
 }

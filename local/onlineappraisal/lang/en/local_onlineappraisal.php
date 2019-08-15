@@ -1137,6 +1137,7 @@ $string['form:development:leadershiproles:1'] = 'Additionally, do you hold, or a
 $string['form:development:leadershiproles:2'] = 'Please select up to two options from the list below:';
 $string['form:development:leadershiproles:answer:generic'] = 'Other';
 $string['form:development:leadershiproles:error'] = 'Please select a maximum of two options';
+$string['form:development:leadershiproles:error:required'] = 'Required - select \'Other\' if you do not hold, or aspire to hold, a specific role';
 $string['form:development:leadershiproles:links'] = '<a href="https://moodle.arup.com/appraisal/rolespecificattributes" target="_blank">Role Specific Leadership Attribute Guides</a><br>
     <a href="https://moodle.arup.com/appraisal/leadershipattributes" target="_blank">Generic Leadership Attribute Guide</a><br>
     <a href="https://moodle.arup.com/appraisal/attributeslearningburst" target="_blank">Leadership Attributes Learning Burst</a>';
@@ -1147,6 +1148,7 @@ $string['form:development:leadershiproles:popover'] = 'The roles listed here are
     If you do not hold or aspire to hold one of these roles, please select \'other\'.
     For further information click <a href="https://moodle.arup.com/appraisal/attributeslearningburst" target="_blank">here</a>';
 $string['form:development:leadershipattributes'] = 'Your selected attributes for this year';
+$string['form:development:leadershipattributes:detailed'] = 'View detailed Leadership Attribute Guides for your selected roles <a href="#">here</a>';
 $string['form:development:leadershipattributes:error:wrongnumber'] = 'Please select two or three options';
 $string['form:development:leadershipattributes:error:toomany'] = 'Please select no more than three options';
 $string['form:development:leadershipattributes:generic'] = file_get_contents($CFG->wwwroot . '/local/onlineappraisal/lang/en/leadership-attributes-generic.json');
@@ -1612,6 +1614,7 @@ $string['pdf:header:helddate'] = 'Appraisal Date:';
 $string['pdf:header:confidential'] = 'STRICTLY CONFIDENTIAL';
 $string['pdf:header:staffid'] = 'Staff ID:';
 $string['pdf:header:warning'] = 'Downloaded by: {$a->who} on {$a->when}<br>Please do not file or leave somewhere unsafe.';
+$string['pdf:heading:leadershipattributes'] = 'Leadership Attributes';
 $string['pdf:heading:learninghistory'] = 'Last 3yrs Learning History';
 $string['pdf:heading:summaries'] = 'Overall summaries';
 $string['pdf:heading:summary'] = 'Appraisal Summary';

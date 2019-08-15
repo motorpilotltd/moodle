@@ -537,6 +537,13 @@
 .path-local-onlineappraisal .mform .fitem.femptylabel.oa-repeating-element .fitemtitle {
   display: none;
 }
+.path-local-onlineappraisal .mform .fitem.appraisee .felement select,
+.path-local-onlineappraisal .mform .fitem.appraisee .felement .select2-selection {
+  border-color: #007FFF;
+}
+.path-local-onlineappraisal .mform .fitem.appraisee .felement .select2-container--disabled .select2-selection__choice {
+  background-color: #fff;
+}
 .path-local-onlineappraisal .mform.admin_group {
   position: relative;
 }
@@ -995,8 +1002,11 @@ fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.focus {
   .path-local-onlineappraisal .oa-table-leadership-attributes.oa-single-column {
     width: 25%;
   }
-  .path-local-onlineappraisal .oa-table-leadership-attributes.oa-multi-column {
+  .path-local-onlineappraisal .oa-table-leadership-attributes.oa-multi-column[data-type="role"] {
     width: 50%;
+  }
+  .path-local-onlineappraisal .oa-table-leadership-attributes.oa-multi-column[data-type="generic"] {
+    width: 100%;
   }
 }
 .path-local-onlineappraisal .progress {

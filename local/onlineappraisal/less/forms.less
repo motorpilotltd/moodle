@@ -125,6 +125,16 @@
         &.femptylabel.oa-repeating-element .fitemtitle {
             display: none;
         }
+        &.appraisee {
+            .felement {
+                select, .select2-selection {
+                    border-color: @appraisee;
+                }
+                .select2-container--disabled .select2-selection__choice {
+                    background-color: #fff;
+                }
+            }
+        }
     }
     &.admin_group {
         position: relative;

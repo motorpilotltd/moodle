@@ -79,8 +79,11 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
     var leadershipRolesCheck = function() {
         str.get_string('form:development:leadershiproles:answer:generic', 'local_onlineappraisal').done(function(s) {
+            leadershipAttributesActivate(true);
+
             var selected = leadershipElements.roles.select.val();
             var selectedOther = $.inArray(s, selected);
+            var currentattributes = leadershipElements.attributes.select.val();
             // If 'Other' is selected and there are more options selected should remove all other options.
             if (selected.length > 1 && selectedOther > -1) {
                 leadershipElements.roles.select.val(null).val(s).trigger('change.select2');
@@ -94,11 +97,18 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     } else {
                         self.find('i[data-toggle="popover"]').popover('hide');
                         dataAttributeFilter(self.find('button'), 'selected', true).each(function() {
-                            leadershipAttributeToggleButton($(this));
+                            var button = $(this);
+                            leadershipAttributeToggleButton(button);
+                            var index = $.inArray(button.data('option'), currentattributes);
+                            if (index !== -1) {
+                                currentattributes.splice(index, 1);
+                            }
                         });
+                        leadershipElements.attributes.select.val(currentattributes).trigger('change.select2');
                         self.hide();
                     }
                 });
+                $('#oa-development-leadershipattributes-detailed').hide();
             } else if (selected.length > 0) {
                 leadershipElements.attributes.tables.each(function() {
                     var self = $(this);
@@ -108,11 +118,17 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     } else {
                         self.find('i[data-toggle="popover"]').popover('hide');
                         dataAttributeFilter(self.find('button'), 'selected', true).each(function() {
-                            leadershipAttributeToggleButton($(this));
+                            var button = $(this);
+                            leadershipAttributeToggleButton(button);
+                            var index = $.inArray(button.data('option'), currentattributes);
+                            if (index !== -1) {
+                                currentattributes.splice(index, 1);
+                            }
                         });
                         self.hide();
                     }
                 });
+                $('#oa-development-leadershipattributes-detailed').show();
             }
 
             if (selected.length > 0) {
@@ -127,6 +143,8 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 leadershipElements.attributes.wrapper.hide();
                 leadershipElements.attributes.div.hide();
             }
+
+            leadershipAttributesActivate(false);
         });
     };
 
@@ -149,7 +167,9 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
             });
         } else {
             leadershipAttributeToggleButton(button);
+            leadershipAttributesActivate(true);
             leadershipElements.attributes.select.val(selected).trigger('change.select2');
+            leadershipAttributesActivate(false);
         }
     };
 
@@ -190,6 +210,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
             table.removeClass('oa-multi-column').addClass('oa-single-column');
         } else {
             table.removeClass('oa-single-column').addClass('oa-multi-column');
+            // Sort for same values.
         }
     };
 
@@ -223,10 +244,12 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 leadershipElements.roles.div.removeClass('hiddenifjs').hide();
                 leadershipElements.roles.select.removeClass('hiddenifjs');
                 leadershipElements.attributes.wrapper.removeClass('hiddenifjs').hide();
-                // Tables will be hidden if no js (force select use);
+                // Tables will be hidden if no js (force select use).
                 leadershipElements.attributes.tables.removeClass('hidden').hide();
                 leadershipElements.attributes.div.removeClass('hiddenifjs').hide();
                 leadershipElements.attributes.select.removeClass('hiddenifjs');
+                // Detail link will be hidden if no js (can't form link and load).
+                $('#oa-development-leadershipattributes-detailed').removeClass('hidden').hide();
 
                 leadershipAttributesActivate(true);
                 leadershipRolesDisplay(leadershipElements.leadership.select);
@@ -235,32 +258,34 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 leadershipAttributesActivate(false);
 
                 leadershipElements.leadership.select.on('change', function() {
-                    leadershipAttributesActivate(true);
                     leadershipRolesDisplay($(this));
                     leadershipRolesCheck();
-                    leadershipAttributesActivate(false);
                 });
 
                 leadershipElements.roles.select.on('change', function() {
-                    leadershipAttributesActivate(true);
                     leadershipRolesCheck();
-                    leadershipAttributesActivate(false);
                 });
 
                 leadershipElements.attributes.wrapper.on('click', 'button', function(e) {
-                    leadershipAttributesActivate(true);
                     var self = $(this);
                     e.preventDefault();
                     if (!self.prop('disabled')) {
                         leadershipAttributeButton(self);
                     }
-                    leadershipAttributesActivate(false);
                 });
 
                 leadershipElements.attributes.select.on('change', function() {
-                    leadershipAttributesActivate(true);
                     leadershipAttributesSelect();
-                    leadershipAttributesActivate(false);
+                });
+
+                $('#oa-development-leadershipattributes-detailed').on('click', function(e) {
+                    e.preventDefault();
+                    var querystring = 'print=leadershipattributes&appraisalid=' + appraisalid + '&view=' + view;
+                    $.each(leadershipElements.roles.select.val(), function() {
+                        querystring = querystring + '&role[]=' + encodeURIComponent(this);
+                    });
+                    var url = cfg.wwwroot + '/local/onlineappraisal/print.php?' + querystring;
+                    window.location.href = url;
                 });
 
                 $('form').on('submit', function() {
