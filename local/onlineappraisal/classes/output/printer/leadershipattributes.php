@@ -91,7 +91,7 @@ class leadershipattributes extends base {
                     }
                 }
 
-                // Update cellcount (in case mroe added).
+                // Update cellcount (in case more added).
                 $cellcount = count($table->rows[$rowcount]->cells);
 
                 // Add cells with pre-rendering...

@@ -73,58 +73,60 @@ class apform_development extends moodleform {
         $mform->addElement('html', html_writer::tag('div', $this->str('intro'), array('class' => 'm-b-20')));
 
         // START : Leadership Attributes.
-        $roleattributes = $this->get_leadership_attributes('role');
-        $genericattributes = $this->get_leadership_attributes('generic', 'Other | ');
+        if ($this->is_leadershipattributesactive()) {
+            $roleattributes = $this->get_leadership_attributes('role');
+            $genericattributes = $this->get_leadership_attributes('generic');
 
-        $answers = [];
-        for ($i = 1; $i <= 2; $i++) {
-            $answers[$this->str("leadership:answer:{$i}")] = $this->str("leadership:answer:{$i}");
-        }
-        $leadership = $mform->addElement('select', 'leadership', $this->str('leadership'), $answers, ['class' => 'appraisee']);
-        if ($data->appraisal->viewingas !== 'appraisee' || $data->appraiseeedit == APPRAISAL_FIELD_LOCKED) {
-            $leadership->updateAttributes(['disabled' => 'disabled']);
-        }
+            $answers = [];
+            for ($i = 1; $i <= 2; $i++) {
+                $answers[$this->str("leadership:answer:{$i}")] = $this->str("leadership:answer:{$i}");
+            }
+            $leadership = $mform->addElement('select', 'leadership', $this->str('leadership'), $answers, ['class' => 'appraisee']);
+            if ($data->appraisal->viewingas !== 'appraisee' || $data->appraiseeedit == APPRAISAL_FIELD_LOCKED) {
+                $leadership->updateAttributes(['disabled' => 'disabled']);
+            }
 
-        $answers = array_combine($roleattributes->details->headings, $roleattributes->details->headings);
-        // Add 'Other'
-        $answers[$this->str("leadershiproles:answer:generic")] = $this->str("leadershiproles:answer:generic");
-        $question = $this->str('leadershiproles:1')
-                . html_writer::tag('i', '', [
-                    'class' => 'fa fa-info-circle fa-lg fa-fw',
-                    'role' => 'button',
-                    'data-toggle' => 'popover',
-                    'data-content' => $this->str('leadershiproles:popover'),
-                    'data-html' => 'true'])
-                . html_writer::empty_tag('br')
-                . $this->str('leadershiproles:2');
-        $label = html_writer::div(
-            html_writer::span($question, 'pull-left m-t-20') . html_writer::span($this->str('leadershiproles:links'), 'pull-right'),
-            'clearfix');
-        $leadershiproles = $mform->addElement('select', 'leadershiproles', $label, $answers, ['class' => 'hiddenifjs appraisee']);
-        $leadershiproles->setMultiple(true);
-        if ($data->appraisal->viewingas !== 'appraisee' || $data->appraiseeedit == APPRAISAL_FIELD_LOCKED) {
-            $leadershiproles->updateAttributes(['disabled' => 'disabled']);
-        }
+            $answers = array_combine($roleattributes->details->headings, $roleattributes->details->headings);
+            // Add 'Other'
+            $answers[$this->str("leadershiproles:answer:generic")] = $this->str("leadershiproles:answer:generic");
+            $question = $this->str('leadershiproles:1')
+                    . html_writer::tag('i', '', [
+                        'class' => 'fa fa-info-circle fa-lg fa-fw',
+                        'role' => 'button',
+                        'data-toggle' => 'popover',
+                        'data-content' => $this->str('leadershiproles:popover'),
+                        'data-html' => 'true'])
+                    . html_writer::empty_tag('br')
+                    . $this->str('leadershiproles:2');
+            $label = html_writer::div(
+                html_writer::span($question, 'pull-left m-t-20') . html_writer::span($this->str('leadershiproles:links'), 'pull-right'),
+                'clearfix');
+            $leadershiproles = $mform->addElement('select', 'leadershiproles', $label, $answers, ['class' => 'hiddenifjs appraisee']);
+            $leadershiproles->setMultiple(true);
+            if ($data->appraisal->viewingas !== 'appraisee' || $data->appraiseeedit == APPRAISAL_FIELD_LOCKED) {
+                $leadershiproles->updateAttributes(['disabled' => 'disabled']);
+            }
 
-        $popover = html_writer::tag('i', '', [
-            'class' => 'fa fa-info-circle fa-lg fa-fw',
-            'role' => 'button',
-            'data-toggle' => 'popover',
-            'data-content' => $this->str('leadershipattributes:popover'),
-            'data-html' => 'true']);
-        $mform->addElement('html', html_writer::start_div('hiddenifjs', ['id' => 'oa-development-leadershipattributes']));
-        $mform->addElement('html', html_writer::tag('p', $this->str('leadershipattributes:intro', $popover)));
-        $mform->addElement('html', self::get_renderer()->render_from_template('local_onlineappraisal/development-leadership-attributes', $genericattributes->details));
-        $mform->addElement('html', self::get_renderer()->render_from_template('local_onlineappraisal/development-leadership-attributes', $roleattributes->details));
-        $mform->addElement('html', html_writer::tag('p', $this->str('leadershipattributes:detailed'), ['id' => 'oa-development-leadershipattributes-detailed', 'class' => 'hidden']));
-        $mform->addElement('html', html_writer::end_div());
+            $popover = html_writer::tag('i', '', [
+                'class' => 'fa fa-info-circle fa-lg fa-fw',
+                'role' => 'button',
+                'data-toggle' => 'popover',
+                'data-content' => $this->str('leadershipattributes:popover'),
+                'data-html' => 'true']);
+            $mform->addElement('html', html_writer::start_div('hiddenifjs', ['id' => 'oa-development-leadershipattributes']));
+            $mform->addElement('html', html_writer::tag('p', $this->str('leadershipattributes:intro', $popover)));
+            $mform->addElement('html', self::get_renderer()->render_from_template('local_onlineappraisal/development-leadership-attributes', $genericattributes->details));
+            $mform->addElement('html', self::get_renderer()->render_from_template('local_onlineappraisal/development-leadership-attributes', $roleattributes->details));
+            $mform->addElement('html', html_writer::tag('p', $this->str('leadershipattributes:detailed'), ['id' => 'oa-development-leadershipattributes-detailed', 'class' => 'hidden']));
+            $mform->addElement('html', html_writer::end_div());
 
-        $options = array_merge($roleattributes->options, $genericattributes->options);
+            $options = array_merge($roleattributes->options, $genericattributes->options);
 
-        $leadershipattributes = $mform->addElement('selectgroups', 'leadershipattributes', $this->str('leadershipattributes'), $options, ['class' => 'hiddenifjs appraisee']);
-        $leadershipattributes->setMultiple(true);
-        if ($data->appraisal->viewingas !== 'appraisee' || $data->appraiseeedit == APPRAISAL_FIELD_LOCKED) {
-            $leadershipattributes->updateAttributes(['disabled' => 'disabled']);
+            $leadershipattributes = $mform->addElement('selectgroups', 'leadershipattributes', $this->str('leadershipattributes'), $options, ['class' => 'hiddenifjs appraisee']);
+            $leadershipattributes->setMultiple(true);
+            if ($data->appraisal->viewingas !== 'appraisee' || $data->appraiseeedit == APPRAISAL_FIELD_LOCKED) {
+                $leadershipattributes->updateAttributes(['disabled' => 'disabled']);
+            }
         }
         // END : Leadership Attributes.
 
@@ -196,7 +198,7 @@ class apform_development extends moodleform {
     public function get_data() {
         $data = parent::get_data();
 
-        if ($this->_customdata->appraiseeedit == APPRAISAL_FIELD_EDIT && $this->is_validated()) {
+        if ($this->is_leadershipattributesactive() && $this->_customdata->appraiseeedit == APPRAISAL_FIELD_EDIT && $this->is_validated()) {
             // Handle empty multi select, but only if unlocked.
             if ($data->leadership === $this->str("leadership:answer:1")) {
                 $data->leadershiproles = [];
@@ -214,10 +216,9 @@ class apform_development extends moodleform {
      * Loads leadership attributes JSON data and formats for rendering.
      *
      * @param string $type The type of data to load/render.
-     * @param string $prefix Any extra prefix for the returned options.
      * @return stdClass Data ready for rendering
      */
-    private function get_leadership_attributes($type, $prefix = '') {
+    private function get_leadership_attributes($type) {
         $data = (array) json_decode($this->str("leadershipattributes:{$type}"), true);
         if ($type === 'role') {
             // Sort data alphabetically by role.
@@ -238,8 +239,15 @@ class apform_development extends moodleform {
         $colcount = 0;
         foreach ($data as $colname => $coldata) {
             $return->details->headings[] = $colname;
-            $optgroup = $prefix . $colname;
-            $optionprefix = $optgroup . ' | ';
+
+            if ($type === 'generic') {
+                $optgroup = $colname . ' | Other';
+                $optionsuffix = ' | Other';
+            } else {
+                $optgroup = $colname;
+                $optionsuffix = ' | ' . $optgroup;
+            }
+
 
             if ($type === 'role') {
                 // Sort column data alphabetically by key.
@@ -260,7 +268,7 @@ class apform_development extends moodleform {
                         $return->details->rows[$rowcount]->cells[$i]->empty = true;
                     }
                 }
-                $option = $optionprefix . $attrname;
+                $option = $attrname . $optionsuffix;
                 $return->options[$optgroup][$option] = $option;
 
                 $cell = new stdClass();
@@ -303,11 +311,29 @@ class apform_development extends moodleform {
         return self::get_renderer()->render_from_template('local_onlineappraisal/development-leadership-attributes-info', $torender);
     }
 
+    /**
+     * Get the renderer.
+     *
+     * @return renderer_base The renderer to use.
+     */
     private static function get_renderer() {
         global $PAGE;
         if (empty(self::$renderer)) {
             self::$renderer = $PAGE->get_renderer('local_onlineappraisal');
         }
         return self::$renderer;
+    }
+
+    /**
+     * Determine if leadership attribute section is active.
+     *
+     * @return bool
+     */
+    private function is_leadershipattributesactive() {
+        $activateleadershipattributes = get_config('local_onlineappraisal', 'activateleadershipattributes');
+        if (!$activateleadershipattributes || $activateleadershipattributes > $this->_customdata->appraisal->created_date) {
+            return false;
+        }
+        return true;
     }
 }

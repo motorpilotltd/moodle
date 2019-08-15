@@ -126,6 +126,11 @@ class appraisal extends base {
             'development' => array('leadership', 'leadershiproles', 'leadershipattributes', 'seventy', 'twenty', 'ten', 'comments'),
         );
 
+        $activateleadershipattributes = get_config('local_onlineappraisal', 'activateleadershipattributes');
+        if (!$activateleadershipattributes || $activateleadershipattributes > $this->appraisal->created_date) {
+            $forms['development'] = array_diff($forms['development'], ['leadership', 'leadershiproles', 'leadershipattributes']);
+        }
+
         $params = array(
             'appraisalid' => $this->appraisal->id,
             'user_id' => $this->appraisal->appraisee->id,
@@ -208,7 +213,8 @@ class appraisal extends base {
                 switch ($fieldname) {
                     case 'leadershiproles':
                     case 'leadershipattributes':
-                        if ($formdata['leadership']->data === get_string('form:development:leadership:answer:1', 'local_onlineappraisal')) {
+                        if (empty($formdata['leadership'])
+                            || $formdata['leadership']->data === get_string('form:development:leadership:answer:1', 'local_onlineappraisal')) {
                             return false;
                         }
                     break;
