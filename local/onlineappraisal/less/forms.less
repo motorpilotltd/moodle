@@ -127,11 +127,17 @@
         }
         &.appraisee {
             .felement {
-                select, .select2-selection {
+                select,
+                .select2-selection {
                     border-color: @appraisee;
                 }
-                .select2-container--disabled .select2-selection__choice {
-                    background-color: #fff;
+                .select2-container--disabled {
+                    .select2-selection {
+                        border-color: #aaa;
+                    }
+                    .select2-selection__choice {
+                        background-color: #fff;
+                    }
                 }
             }
         }
@@ -189,7 +195,7 @@
     #id_submitcontinue {
         .button-variant(@btn-success-color; @btn-success-bg; @btn-success-border);
     }
-    @media (min-width: 768px) {
+    @media (min-width: @screen-sm-min) {
         .dl-horizontal {
             dt {
                 width: 150px;
@@ -210,6 +216,13 @@
     button.oa-add-repeating-element {
         display: none;
         margin: 0 0 10px 0;
+    }
+    @media (min-width: @screen-md-min) {
+        #oa-leadershiproles-links {
+            position: absolute;
+            right: 0;
+            z-index: 2;
+        }
     }
 }
 

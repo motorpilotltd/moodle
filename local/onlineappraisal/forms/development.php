@@ -86,6 +86,8 @@ class apform_development extends moodleform {
                 $leadership->updateAttributes(['disabled' => 'disabled']);
             }
 
+            $mform->addElement('html', html_writer::div($this->str('leadershiproles:links'), 'hiddenifjs', ['id' => 'oa-leadershiproles-links']));
+
             $answers = array_combine($roleattributes->details->headings, $roleattributes->details->headings);
             // Add 'Other'
             $answers[$this->str("leadershiproles:answer:generic")] = $this->str("leadershiproles:answer:generic");
@@ -101,7 +103,7 @@ class apform_development extends moodleform {
             $label = html_writer::div(
                 html_writer::span($question, 'pull-left m-t-20') . html_writer::span($this->str('leadershiproles:links'), 'pull-right'),
                 'clearfix');
-            $leadershiproles = $mform->addElement('select', 'leadershiproles', $label, $answers, ['class' => 'hiddenifjs appraisee']);
+            $leadershiproles = $mform->addElement('select', 'leadershiproles', $question, $answers, ['class' => 'hiddenifjs appraisee']);
             $leadershiproles->setMultiple(true);
             if ($data->appraisal->viewingas !== 'appraisee' || $data->appraiseeedit == APPRAISAL_FIELD_LOCKED) {
                 $leadershiproles->updateAttributes(['disabled' => 'disabled']);

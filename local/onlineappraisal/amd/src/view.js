@@ -42,7 +42,8 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
         },
         'roles': {
             'select': $('select#id_leadershiproles'),
-            'div': $('#fitem_id_leadershiproles')
+            'div': $('#fitem_id_leadershiproles'),
+            'links': $('#oa-leadershiproles-links')
         },
         'attributes': {
             'select': $('select#id_leadershipattributes'),
@@ -63,6 +64,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         });
                     });
                 }
+                leadershipElements.roles.links.show();
             });
             leadershipElements.attributes.wrapper.show();
             leadershipElements.attributes.div.show(0, function() {
@@ -73,6 +75,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
         } else {
             leadershipElements.roles.select.val(null).trigger('change.select2');
             leadershipRolesCheck();
+            leadershipElements.roles.links.hide();
             leadershipElements.roles.div.hide();
         }
     };
@@ -265,6 +268,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
             if (page === 'development') {
                 leadershipElements.roles.div.removeClass('hiddenifjs').hide();
+                leadershipElements.roles.links.removeClass('hiddenifjs').hide();
                 leadershipElements.roles.select.removeClass('hiddenifjs');
                 leadershipElements.attributes.wrapper.removeClass('hiddenifjs').hide();
                 // Tables will be hidden if no js (force select use).
