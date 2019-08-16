@@ -192,14 +192,24 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
     var leadershipAttributeColumns = function(table, selected) {
         var columns = table.find('th');
+        var colcount = 0;
         columns.each(function() {
             var column = $(this);
             var position = column[0].cellIndex + 1;
             var cells = table.find('th:nth-child(' + position + '), td:nth-child(' + position + ')');
+            var popovers = cells.find('i[data-toggle="popover"]');
             if ($.inArray(column.data('column'), selected) > -1) {
+                colcount++;
                 cells.show();
+                if (colcount === 1) {
+                    popovers.popover('destroy');
+                    popovers.data('placement', 'left');
+                } else {
+                    popovers.popover('destroy');
+                    popovers.data('placement', 'right');
+                }
             } else {
-                cells.find('i[data-toggle="popover"]').popover('hide');
+                popovers.popover('hide');
                 cells.hide();
                 dataAttributeFilter(cells.find('button'), 'selected', true).each(function() {
                     leadershipAttributeButton($(this));
@@ -227,6 +237,19 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
         } else {
             leadershipElements.attributes.select.prop('disabled', true);
             leadershipElements.attributes.select.trigger('change.select2');
+        }
+    };
+
+    var leadershipAttributesPopoverHide = function(popover) {
+        var table = popover.parents('table');
+        var type = table.data('type');
+        if (type === 'role') {
+            // Hide popovers in same column (role).
+            var position = popover.parent('td')[0].cellIndex + 1;
+            table.find('td:nth-child(' + position + ') i[data-toggle="popover"]').not(popover).popover('hide');
+        } else {
+            // Hide popovers in rest of table (generic).
+            table.find('i[data-toggle="popover"]').not(popover).popover('hide');
         }
     };
 
@@ -272,6 +295,10 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     if (!self.prop('disabled')) {
                         leadershipAttributeButton(self);
                     }
+                });
+
+                leadershipElements.attributes.tables.on('click', 'i[data-toggle="popover"]', function() {
+                    leadershipAttributesPopoverHide($(this));
                 });
 
                 leadershipElements.attributes.select.on('change', function() {
