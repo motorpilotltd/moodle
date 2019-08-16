@@ -196,12 +196,14 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
     var leadershipAttributeColumns = function(table, selected) {
         var columns = table.find('th');
         var colcount = 0;
+        var selectedpositions = [];
         columns.each(function() {
             var column = $(this);
             var position = column[0].cellIndex + 1;
             var cells = table.find('th:nth-child(' + position + '), td:nth-child(' + position + ')');
             var popovers = cells.find('i[data-toggle="popover"]');
             if ($.inArray(column.data('column'), selected) > -1) {
+                selectedpositions.push(position);
                 colcount++;
                 cells.show();
                 if (colcount === 1) {
@@ -223,7 +225,61 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
             table.removeClass('oa-multi-column').addClass('oa-single-column');
         } else {
             table.removeClass('oa-single-column').addClass('oa-multi-column');
-            // Sort for same values.
+        }
+        leadershipAttributesSort(table, selectedpositions);
+    };
+
+    var leadershipAttributesSort = function(table, positions) {
+        var cells;
+        var cloned;
+        var sorted;
+        if (positions.length === 1) {
+            // Sort alphabetically
+            cells = table.find('td:nth-child(' + positions[0] + ')');
+            cloned = cells.clone(true);
+            cells.each(function() {
+                var self = $(this);
+                if (self.data('attribute')) {
+                    sorted.push($(this).data('attribute'));
+                }
+            });
+            sorted.sort();
+            $.each(sorted, function(index, value) {
+                $(cells[index]).replaceWith(cloned.filter('[data-attribute="' + value + '"]'));
+            });
+        } else if (positions.length === 2) {
+            // Sort matching, then alphabetically.
+            cells = [];
+            cloned = [];
+            sorted = [];
+            [0, 1].forEach(function(i) {
+                cells[i] = table.find('td:nth-child(' + positions[i] + ')');
+                cloned[i] = cells[i].clone(true);
+                sorted[i] = [];
+                cells[i].each(function() {
+                    var self = $(this);
+                    if (self.data('attribute')) {
+                        sorted[i].push($(this).data('attribute'));
+                    }
+                });
+            });
+
+            // Find shared values.
+            var shared = sorted[0].filter(function(val) {
+                return sorted[1].indexOf(val) > -1;
+            });
+            shared.sort();
+
+            [0, 1].forEach(function(i) {
+                sorted[i] = sorted[i].filter(function(val) {
+                    return shared.indexOf(val) === -1;
+                });
+                sorted[i].sort();
+                sorted[i] = shared.concat(sorted[i]);
+                $.each(sorted[i], function(index, value) {
+                    $(cells[i][index]).replaceWith(cloned[i].filter('[data-attribute="' + value + '"]'));
+                });
+            });
         }
     };
 

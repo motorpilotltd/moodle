@@ -250,7 +250,6 @@ class apform_development extends moodleform {
                 $optionsuffix = ' | ' . $optgroup;
             }
 
-
             if ($type === 'role') {
                 // Sort column data alphabetically by key.
                 ksort($coldata);
