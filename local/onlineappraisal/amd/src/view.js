@@ -235,6 +235,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
         var sorted;
         if (positions.length === 1) {
             // Sort alphabetically
+            sorted = [];
             cells = table.find('td:nth-child(' + positions[0] + ')');
             cloned = cells.clone(true);
             cells.each(function() {
