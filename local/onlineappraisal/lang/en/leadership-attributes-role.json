@@ -1,6 +1,7 @@
 {
     "Group Leader": {
         "Business focused": [
+            "#Business focused - Group Leader",
             "Targets and secures the right clients and projects, working within the firm's bidding guidelines and directly aligning with group strategies.",
             "Anticipates the future and continually develops the Group's capability and balance sheet in consultation with their Region Board.",
             "Builds a culture of commercial responsibility, teaching commercial basics to everyone.",
@@ -8,6 +9,7 @@
             "Builds our reputation proactively in the local market, forging relationships with key markets and external bodies."
         ],
         "Operationally minded": [
+            "#Operationally minded - Group Leader",
             "Monitors group workload, ensuring staff and projects are managed effectively.",
             "Assigns appropriately skilled Project Directors, Managers and teams.",
             "Provides a quality service commensurate with the firm's expectations and reinforces a longer-term quality culture within the group.",
@@ -18,6 +20,7 @@
             "Models attitude to change and the leadership of it. Charts a course for the group in uncertain times, and mindfully leads the people through that uncertainty, lack of clarity or anxiety."
         ],
         "Relationship focused": [
+            "#Relationship focused - Group Leader",
             "Develops long term \"trusted advisor\" relationships with clients.",
             "Champions the professionalism of client management through teams.",
             "Proactively targets key individuals and groups in the external marketplace to develop long term relationships with.",
@@ -26,12 +29,14 @@
             "Continues to protect a culture of ethics and our values in all of our relationships internally and externally."
         ],
         "Humane": [
+            "#Humane - Group Leader",
             "Builds a diverse Group of excellent people and ensures their success and wellbeing.",
             "Defines \"Inclusivity\" for the group in a practical sense so that project teams are clear what has to be done to ensure our environments are inclusive.",
             "Takes personal care to ensure that staff matters, particularly issues of wellbeing and performance are dealt with humanely and fairly for all sides.",
             "Role models generosity (of time, energy and resource) so that everyone can see and feel what this key Arup quality looks like in everyday life."
         ],
         "Developmental": [
+            "#Developmental - Group Leader",
             "Ensures that all Group members are appraised regularly and given appropriate feedback, training, development and career opportunities.",
             "Sets the vision and strategy for the capability of the group, identify future capability requirements and analyse comparatively with current levels. Plans activities in response.",
             "Promotes varied developmental tools and models the effective use of development tools.",
@@ -41,6 +46,7 @@
             "Builds succession for key roles within the group."
         ],
         "Integrating": [
+            "#Integrating - Group Leader",
             "Demonstrates what an Integrator is, and how they do it.",
             "Shows how to bring Arup capabilities and groups together to add value to a client, opportunity or problem.",
             "Is a collaborator by nature. Role models bringing groups and individuals into pieces of work to make outcomes better.",
@@ -50,17 +56,20 @@
             "Breaks down geographical barriers for the benefit of better work."
         ],
         "Visionary": [
+            "#Visionary - Group Leader",
             "Actively scans the market, competitors, our own capability, technology and insight to construct a better vision of our capability and services.",
             "Vigorously engages with external thinking and expertise to inform our range of possible futures.",
             "Shapes the vision to be clear, optimistic, achievable, distinctly \"Arup\", compelling and widely engaging.",
             "Personally prioritises communication in the service of engaging and inspiring the group."
         ],
         "Entrepreneurial": [
+            "#Entrepreneurial - Group Leader",
             "Development of commercial opportunities for the group.",
             "Builds digital and advisory capability within the group and develops those opportunities.",
             "Champions and has the remit to invest into their businesses for future, where supportive of Arup strategy."
         ],
         "Commercially astute": [
+            "#Commercially astute - Group Leader",
             "Spots commercial opportunities for the group and ways to maximise profitability within the boundaries of good client relationships.",
             "Defines and measures the value to be added by the opportunities available as well as the risks inherent.",
             "Proactively manages and mitigates the identified risks.",
@@ -70,6 +79,7 @@
     },
     "Client Relationship Manager": {
         "Business focused": [
+            "#Business focused - Client Relationship Manager",
             "Engages in continuous dialogue with Client leadership to understand their problems, challenges to inform how Arup can add value.",
             "Creates strategic key client plan and appropriate team to deliver client care at highest level of professionalism.",
             "Analyses client business challenges and opportunities sufficiently to propose holistic, high value solutions.",
@@ -79,18 +89,21 @@
             "Is sufficiently connected internally to talk to clients about other and related Arup capability."
         ],
         "Commercially astute": [
+            "#Commercially astute - Client Relationship Manager",
             "Sets commercial goals for client work that deliver reasonable prosperity to Arup while building a long-term relationship of trust with the client.",
             "Sets internal targets for Arup to provide clear direction and expectation on income and profit.",
             "Sets commercial metrics with client, negotiating adjustments, particularly in response to change requests.",
             "Clear minded about required commercial outcomes from the project. Monitors progress carefully and quickly reacts to deviations."
         ],
         "Entrepreneurial": [
+            "#Entrepreneurial - Client Relationship Manager",
             "Understands the client's internal and external landscape well enough to see opportunities for us to add value, potentially before the client.",
             "Builds collaborative relationships inside and outside Arup to deploy technology that will bring significant value.",
             "Identifies and develops mutually beneficial opportunities.",
             "Highly connected in Arup, and able to see opportunities to bring more of our disciplines and experts to a client."
         ],
         "Ambassadorial": [
+            "#Ambassadorial - Client Relationship Manager",
             "Is seen as a senior spokesperson in their field externally.",
             "Builds strategic partnerships with the most senior external leaders and influencers.",
             "Highly influential in external industry bodies.",
@@ -99,6 +112,7 @@
             "Actively introduces clients and potential clients to other experts in Arup."
         ],
         "Relationship focused": [
+            "#Relationship focused - Client Relationship Manager",
             "Develops long term \"trusted advisor\" relationships with clients who share our values.",
             "Builds or influences proposals which have good outcomes for all stakeholders, including commercial goals.",
             "Proactively targets key individuals and groups in the client organisation with whom to develop long term relationships and practically encourages colleagues to do the same.",
@@ -106,17 +120,20 @@
             "Continues to protect a culture of ethics and our values in all of our relationships internally and externally."
         ],
         "Influential": [
+            "#Influential - Client Relationship Manager",
             "Able and willing to influence the client/s to adapt the work for better outcomes.",
             "Persuades the client of the value of a big picture approach to the work, including the value added by digital technology, resilient solutions and the UN SDGs.",
             "Creates a powerful coalition of the willing in the client to encourage better work and outcomes.",
             "Influences project teams and clients to make space for new and potentially untested digital applications and innovations that will add value."
         ],
         "Holistic": [
+            "#Holistic - Client Relationship Manager",
             "Promotes solutions with clients and project team that deliver value more widely than just the contracted solution.",
             "Strives for solutions that benefit clients and society long term.",
             "Actively cross-sells Arup disciplines whose expertise will enhance the value of the deliverables, and always looking for the opportunity to do so."
         ],
         "Integrating": [
+            "#Integrating - Client Relationship Manager",
             "Has an exceptional internal network, understanding what our disciplines can bring.",
             "Can clarify and communicate the value to a client of an integrated solution.",
             "Takes practical steps to encourage and invigorate cross discipline networking and collaboration."
@@ -124,6 +141,7 @@
     },
     "Skill Leader": {
         "Expert": [
+            "#Expert - Skill Leader",
             "#Role Model",
             "Arup Fellow or aspirant Fellow.",
             "Influences standards across industry.",
@@ -139,6 +157,7 @@
             "Exerts influence over how things are done within the discipline, both internally (on work globally) and externally."
         ],
         "Enabling": [
+            "#Enabling - Skill Leader",
             "#Role Model",
             "Has an extensive external and internal network, readily deployed on internal challenges and opportunities.",
             "Connects Arup people to external work and conversations.",
@@ -154,6 +173,7 @@
             "Sees the potential of contributions at any level and how those might be deployed widely, connecting people and groups to leverage that."
         ],
         "Ambassadorial": [
+            "#Ambassadorial - Skill Leader",
             "#Role Model",
             "Is seen as a senior spokesperson in their topic externally.",
             "Builds strategic partnerships with the most senior external leaders and influencers.",
@@ -167,6 +187,7 @@
             "Purposefully influential in bringing people together and in taking the measures necessary to develop the right skills quickly enough."
         ],
         "Developmental": [
+            "#Developmental - Skill Leader",
             "#Role Model",
             "Personally figureheads a multi-year plan to build capability in the discipline across all regions linked to clear analysis of our strategic capability needs.",
             "Deliberately enhances the learning and sharing culture in the network in a strategic and sustained way.",
@@ -182,6 +203,7 @@
             "Plans succession for key roles within the discipline and network, collaborating with geographical leadership to make sure the plans are executed."
         ],
         "Innovative": [
+            "#Innovative - Skill Leader",
             "#Role Model",
             "Innovations are adopted externally and become standard.",
             "Promotes innovative practices on projects and in groups - sets up the environment to make innovation happen.",
@@ -198,6 +220,7 @@
             "Agree the network's annual top investment themes."
         ],
         "Operationally minded": [
+            "#Operationally minded - Skill Leader",
             "#Role Model",
             "Marshalls resources to produce transformational network activity.",
             "Powerful advocate and remover of obstacles.",
@@ -218,6 +241,7 @@
     },
     "Business/Service Leader": {
         "Business focused": [
+            "#Business focused - Business/Service Leader",
             "Clearly and compellingly articulates benefit to clients (and Arup) of a holistic Arup approach.",
             "Shapes and refines offerings and business model for the Service or Business.",
             "Set and execute plans to grow the businesses and services in terms of revenue and our own capability (resources and skills).",
@@ -229,6 +253,7 @@
             "Responsible for the outcomes of the business model and the overall evolution of the work."
         ],
         "Commercially astute": [
+            "#Commercially astute - Business/Service Leader",
             "Spends significant time identifying and monitoring market and client trends.",
             "Highly connected to market and client movement in culture, regional and global politics, macro micro economies.",
             "Internally, makes and publicises connection from trends to our current and future projects and services.",
@@ -237,6 +262,7 @@
             "Proactively manages and mitigates the identified risks."
         ],
         "Entrepreneurial": [
+            "#Entrepreneurial - Business/Service Leader",
             "Develop integrated, trans-disciplinary themes and services for better work and better commercial performance, such as water advisory.",
             "Engage clients and partners at strategy level, meaning more productive conversations about value.",
             "Creative and innovative about taking ideas and collaborations to market.",
@@ -244,6 +270,7 @@
             "Embraces the opportunities that Digital Services and new ways of working can bring."
         ],
         "Relationship focused": [
+            "#Relationship focused - Business/Service Leader",
             "Strongly authentic in all relationships - credible, trustworthy and trusted while humble, inclusive and sincere.",
             "Plans to form deep relationships and ensure regular and open communication rather than \"light touch\".",
             "Develop the culture in which a Service or Business will thrive.",
@@ -255,6 +282,7 @@
             "Continues to protect a culture of ethics and our values in all of our relationships internally and externally."
         ],
         "Visionary": [
+            "#Visionary - Business/Service Leader",
             "Spends significant time internally, influencing the development of global strategy for new and existing business.",
             "Influences, forms and communicates a coherent vision for how Arup should be engaging with the market/s.",
             "Is the recognised expert in \"what's coming next\" in the markets for that Business or Service. Provides thought leadership and convinces others.",
@@ -265,6 +293,7 @@
             "Takes a central position in thought leadership, writing and speaking and becoming an industry leading figure."
         ],
         "Influential": [
+            "#Influential - Business/Service Leader",
             "Persuades key markets and clients of the value of a big picture approach to the work.",
             "Creates a powerful coalition of the willing in the client to encourage better work and outcomes.",
             "Persuades internal leaders to make investment, resource and time available for speculative collaboration.",
@@ -272,12 +301,14 @@
             "Grow and develop these skills and behaviours in others to have a team that can support the execution as well as succession planning for this role."
         ],
         "Holistic": [
+            "#Holistic - Business/Service Leader",
             "Identifies opportunities for the Business or Service to add value to significant bids and projects, in a way that the client can easily engage with.",
             "Designs work packages with clients that support and deliver the UN SDGs and upholds the firm's EDI ambitions to deliver inclusive projects.",
             "Strives for solutions that benefit clients and society long term.",
             "Actively cross-sells Arup disciplines whose expertise will enhance the value of the deliverables, and always looking for the opportunity to do so."
         ],
         "Integrating": [
+            "#Integrating - Business/Service Leader",
             "Promotes integrating and integrators internally - explaining what they do and who they are and developing those people in the service of better results for the Businesses and Services.",
             "Demonstrates what an Integrator is, and how they do it.",
             "Proactively collaborates with other groups in Arup, influencing strategy and investment to develop work.",
@@ -291,34 +322,40 @@
     },
     "Digital Innovator": {
         "Business focused": [
+            "#Business focused - Digital Innovator",
             "Strongly connected to emerging and proven applications of technology as they evolve and mature.",
             "Has analysed client business challenges and opportunities sufficiently to propose digital solutions.",
             "Uses digital tools and technology for significant commercial gain for Arup and value for our clients.",
             "Teaches our business how to create and calculate value from technology and communicate that to clients."
         ],
         "Entrepreneurial": [
+            "#Entrepreneurial - Digital Innovator",
             "Builds collaborative relationships inside and outside Arup to develop applications of technology.",
             "Facilitates the development of great ideas through to commercial impact via digital products, services or techniques.",
             "Develops digital products, services and techniques and the relevant business models."
         ],
         "Curious": [
+            "#Curious - Digital Innovator",
             "Continuously and deliberately learns techniques and stays abreast of new developments.",
             "Builds a network of people to learn from.",
             "Stays well informed about how organisations are using technology to further their goals.",
             "Sets up and/or encourages communication channels in the firm to spread learning."
         ],
         "Enabling": [
+            "#Enabling - Digital Innovator",
             "Strongly encourages teams and individuals to explore applications and new technologies.",
             "Contributes to a culture of exploration by protecting teams and individuals from failure, so that risk is seen positively.",
             "Uses leadership influence to get teams and individuals the resources (time, money, software...) they need to successfully apply technology.",
             "Ensures that people have access to the right training and learning and are encouraged to access them."
         ],
         "Influential": [
+            "#Influential - Digital Innovator",
             "Influences project teams and clients to make space for new and potentially untested digital applications that will add value.",
             "Helps exploring teams to successfully implement new or risky innovations.",
             "Creates a powerful coalition of the willing to encourage all of us to innovate."
         ],
         "Innovative": [
+            "#Innovative - Digital Innovator",
             "Creates innovative environments on projects.",
             "Creates a culture of digital innovation through valuing and rewarding innovative behaviours.",
             "Attempts to make the working environment conducive to creativity, innovation and collaboration.",

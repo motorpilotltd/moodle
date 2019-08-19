@@ -1149,12 +1149,12 @@ $string['form:development:leadershiproles:popover'] = 'The roles listed here are
     The profile then sets out specific deliverables that illustrate that particular attribute.
     If you do not hold or aspire to hold one of these roles, please select \'other\'.
     For further information click <a href="https://moodle.arup.com/appraisal/attributeslearningburst" target="_blank">here</a>';
-$string['form:development:leadershipattributes'] = 'Your selected attributes for this year';
+$string['form:development:leadershipattributes'] = 'Your selected attributes for this year:';
 $string['form:development:leadershipattributes:detailed'] = 'View detailed Leadership Attribute Guides for your selected roles <a href="#">here</a>';
 $string['form:development:leadershipattributes:error:wrongnumber'] = 'Please select two or three options';
 $string['form:development:leadershipattributes:error:toomany'] = 'Please select no more than three options';
 $string['form:development:leadershipattributes:generic'] = file_get_contents($CFG->wwwroot . '/local/onlineappraisal/lang/en/leadership-attributes-generic.json');
-$string['form:development:leadershipattributes:intro'] = 'Select 2-3 attributes {$a} to concentrate on from the following';
+$string['form:development:leadershipattributes:intro'] = 'Select 2-3 attributes {$a} to concentrate on from the following:';
 $string['form:development:leadershipattributes:popover'] = 'The 16 Arup Leadership Attributes set out what the form expects of our leaders both in terms of what and how they deliver.
     It is expected that Arup Leaders will possess all of these qualities to a degree but show real strength in some of them and want to develop others.
         For further information click <a href="https://moodle.arup.com/appraisal/attributeslearningburst" target="_blank">here</a>';
