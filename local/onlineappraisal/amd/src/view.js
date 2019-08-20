@@ -206,6 +206,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 selectedpositions.push(position);
                 colcount++;
                 cells.show();
+                /* Disable popover placement changes.
                 if (colcount === 1) {
                     popovers.popover('destroy');
                     popovers.data('placement', 'left');
@@ -213,6 +214,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     popovers.popover('destroy');
                     popovers.data('placement', 'right');
                 }
+                */
             } else {
                 popovers.popover('hide');
                 cells.hide();
@@ -237,7 +239,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
             // Sort alphabetically
             sorted = [];
             cells = table.find('td:nth-child(' + positions[0] + ')');
-            cloned = cells.clone(true);
+            cloned = cells.clone();
             cells.each(function() {
                 var self = $(this);
                 if (self.data('attribute')) {
@@ -255,7 +257,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
             sorted = [];
             [0, 1].forEach(function(i) {
                 cells[i] = table.find('td:nth-child(' + positions[i] + ')');
-                cloned[i] = cells[i].clone(true);
+                cloned[i] = cells[i].clone();
                 sorted[i] = [];
                 cells[i].each(function() {
                     var self = $(this);
