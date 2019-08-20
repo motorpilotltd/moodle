@@ -281,6 +281,9 @@ function hvp_cm_info_view(cm_info $cm) {
         return;
     }
 
+    // Do we need an overlay for view completion tracking?
+    $hasoverlay = hvp_cm_info_view_hasoverlay($hvp, $cm);
+
     // Log events, pulled from $view->logviewed() (Avoids completion view as header has been printed).
     $view->logh5pviewedevent();
     $view->triggermoduleviewedevent();
@@ -309,12 +312,44 @@ function hvp_cm_info_view(cm_info $cm) {
     \mod_hvp\framework::printMessages('error', \mod_hvp\framework::messages('error'));
 
     // Capture view output.
-    $view->outputview();
+    $view->outputview($hasoverlay);
 
     $output .= ob_get_contents();
     ob_end_clean();
 
     $cm->set_content($output);
+}
+/**
+ * Does the injected content require an overlay?
+ *
+ * @param stdClass $hvp
+ * @param cm_info $cm
+ * @return bool
+ */
+function hvp_cm_info_view_hasoverlay($hvp, $cm) {
+    global $COURSE;
+
+    // Not required if not displaying content on course page.
+    if (!$hvp->displaycontent) {
+        return false;
+
+    }
+
+    $completion = new \completion_info($COURSE);
+
+    // Not required if view condition is not turned on.
+    if ($cm->completionview == COMPLETION_VIEW_NOT_REQUIRED || !$completion->is_enabled($cm)) {
+        return false;
+    }
+
+    $usercompletion = $completion->get_data($cm, false, 0);
+
+    // Not required if already viewed.
+    if ($usercompletion->viewed == COMPLETION_VIEWED) {
+        return false;
+    }
+
+    return true;
 }
 /* END CORE MOD */
 /**

@@ -563,4 +563,25 @@ iframe.h5peditor-semi-fullscreen {
 .hvp .mod-indent-outer {
   display: block;
 }
+.h5p-play-overlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 100;
+  background: rgba(0,0,0,0.6);
+  transition: all 1s;
+  -webkit-transition: all 1s;
+  text-align: center;
+}
+
+.h5p-iframe-wrapper.h5p-has-overlay {
+  position: relative;
+}
+
+.h5p-play-overlay button {
+  position: relative;
+  margin-top: -10px;
+  top: 50%;
+}
+
 /* END CORE MOD */

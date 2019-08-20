@@ -316,11 +316,24 @@ class view_assets {
     /**
      * Outputs h5p view
      */
-    public function outputview() {
+/* BEGIN CORE MOD */
+    public function outputview($addPlay = false) {
+        $overlaystr = get_string('overlay_button', 'hvp');
+        $overlayelement = "
+            <div class=\"h5p-play-overlay\" data-itemid=\"{$this->cm->id}\">
+                <button class=\"btn btn-primary\">{$overlaystr}</button>
+            </div>";
+
+        $playoverlay = $addPlay ? $overlayelement : '';
+        $hasoverlay = $addPlay ? "h5p-has-overlay" : "";
+/* END CORE MOD */
         if ($this->embedtype === 'div') {
             echo "<div class=\"h5p-content\" data-content-id=\"{$this->content['id']}\"></div>";
         } else {
-            echo "<div class=\"h5p-iframe-wrapper\">" .
+/* BEGIN CORE MOD */
+            echo "<div class=\"h5p-iframe-wrapper {$hasoverlay}\">" .
+                 $playoverlay .
+/* END CORE MOD */
                  "<iframe id=\"h5p-iframe-{$this->content['id']}\"" .
                  " class=\"h5p-iframe\"" .
                  " data-content-id=\"{$this->content['id']}\"" .

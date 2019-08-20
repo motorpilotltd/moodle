@@ -437,4 +437,5 @@ $string['contentCopied'] = 'Content is copied to the clipboard';
 
 /* BEGIN CORE MOD */
 $string['backtomodule'] = 'Back to module';
+$string['overlay_button'] = 'Click to view';
 /* END CORE MOD */

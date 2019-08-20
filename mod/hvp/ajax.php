@@ -29,6 +29,7 @@ require_once("locallib.php");
 require_login();
 
 $action = required_param('action', PARAM_ALPHA);
+
 switch($action) {
 
     /*
@@ -322,6 +323,35 @@ switch($action) {
         break;
 
 
+/* BEGIN CORE MOD */
+    /*
+     * Trigger completion when h5p content viewed
+     *
+     * Parameters:
+     *  int cm id
+     */
+    case 'contentviewed';
+        // log h5p activity as viewed
+        $id = required_param('id', PARAM_INT);
+        $cm = get_coursemodule_from_id('hvp', $id);
+
+        $PAGE->set_context($cm->context);
+
+        if (!$cm) {
+            print_error('invalidcoursemodule');
+        }
+        $course = $DB->get_record('course', array('id' => $cm->course));
+        if (!$course) {
+            print_error('coursemisconf');
+        }
+
+        $view = new \mod_hvp\view_assets($cm, $course, null, true, true);
+
+        $view->logviewed();
+
+        echo json_encode("success");
+        break;
+/* END CORE MOD */
     /*
      * Throw error if AJAX isnt handeled
      */
