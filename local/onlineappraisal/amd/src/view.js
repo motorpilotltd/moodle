@@ -155,9 +155,9 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
         var selected = leadershipElements.attributes.select.val();
         var option = button.data('option');
         var index = $.inArray(option, selected);
-        if (!button.data('selected') && index === -1) {
+        if (button.attr('data-selected') === 'false' && index === -1) {
             selected.push(option);
-        } else if (button.data('selected') && index !== -1) {
+        } else if (button.attr('data-selected') === 'true' && index !== -1) {
             selected.splice(index, 1);
         }
         if (selected.length > 3) {
@@ -177,18 +177,18 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
     };
 
     var leadershipAttributeToggleButton = function(button) {
-        button.data('selected', !button.data('selected'));
+        button.attr('data-selected', button.attr('data-selected') === 'true' ? false : true);
         button.toggleClass('btn-default btn-primary').blur();
     };
 
     var leadershipAttributesSelect = function() {
         var selected = leadershipElements.attributes.select.val();
         var buttons = leadershipElements.attributes.tables.find('button');
-        buttons.data('selected', false);
+        buttons.attr('data-selected', false);
         buttons.removeClass('btn-primary').addClass('btn-default');
         $.each(selected, function() {
             var selectedButtons = dataAttributeFilter(buttons, 'option', this);
-            selectedButtons.data('selected', true);
+            selectedButtons.attr('data-selected', true);
             selectedButtons.removeClass('btn-default').addClass('btn-primary');
         });
     };
@@ -206,21 +206,17 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 selectedpositions.push(position);
                 colcount++;
                 cells.show();
-                /* Disable popover placement changes.
-                if (colcount === 1) {
-                    popovers.popover('destroy');
-                    popovers.data('placement', 'left');
+                if (selected.length === 1 || colcount > 1) {
+                    popovers.attr('data-placement', 'right');
                 } else {
-                    popovers.popover('destroy');
-                    popovers.data('placement', 'right');
+                    popovers.attr('data-placement', 'left');
                 }
-                */
             } else {
                 popovers.popover('hide');
-                cells.hide();
                 dataAttributeFilter(cells.find('button'), 'selected', true).each(function() {
                     leadershipAttributeButton($(this));
                 });
+                cells.hide();
             }
         });
         if (selected.length === 1) {
