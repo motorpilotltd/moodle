@@ -62,6 +62,9 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                             maximumSelectionLength: 2,
                             placeholder: s
                         });
+                        leadershipElements.roles.select.on('select2:opening', function() {
+                            leadershipElements.attributes.tables.find('i[data-toggle="popover"]').popover('hide');
+                        });
                     });
                 }
                 leadershipElements.roles.links.show();
@@ -73,6 +76,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 }
             });
         } else {
+            leadershipElements.attributes.tables.find('i[data-toggle="popover"]').popover('hide');
             leadershipElements.roles.select.val(null).trigger('change.select2');
             leadershipRolesCheck();
             leadershipElements.roles.links.hide();
