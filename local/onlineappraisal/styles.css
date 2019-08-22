@@ -570,6 +570,10 @@
 .path-local-onlineappraisal .mform.itadmin_group .fitem_actionbuttons {
   margin: 0;
 }
+
+.path-local-onlineappraisal .admin_cycle .input-group input:not(.datepicker) {
+  border-radius: 4px;
+}
 .path-local-onlineappraisal .mform .well.emailmsg {
   max-width: 635px;
 }

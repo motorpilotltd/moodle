@@ -72,6 +72,7 @@ $string['leadersignoff'] = 'Leader Sign Off';
 $string['vip'] = 'VIP';
 
 // Pages.
+$string['cycle'] = 'Appraisal Cycle';
 $string['allstaff'] = 'All Staff';
 $string['archived'] = 'Archived';
 $string['itadmin'] = 'IT Admin';
@@ -208,10 +209,12 @@ $string['admin:toptext:inprogress'] = 'Appraisals can be monitored below on this
     signed off. Actions in the table allow you to change the Appraiser / Sign Off User as well as delete the appraisal (note
     this will not be recoverable). Using the select and the drop down at the bottom of the page you can email users to chase
     progress. Archive is used at the end of the year to enable you to create a new appraisal.';
+$string['admin:toptext:appraisalcycle:list'] = 'List of appraisal cycles';
 $string['admin:updatingdots'] = 'Updating...';
 $string['admin:usercount'] = 'Total number of staff in selected cost centre: {$a}';
 $string['admin:usercount:assigned'] = '({$a} users)';
 $string['admin:usercount:notassigned'] = '({$a} users)';
+$string['admin:cycle:nodata'] = 'No available data';
 $string['appraisal:id'] = 'App ID';
 $string['appraisal:progress'] = 'Appraisal progress';
 $string['appraisal:select'] = 'Select appraisal {$a}';
@@ -341,11 +344,13 @@ $string['success:appraisal:delete'] = 'The appraisal was successfully deleted.';
 $string['success:appraisal:toggle'] = 'The user\'s appraisal requirements were successfully updated.';
 $string['success:appraisal:togglevip'] = 'The user\'s appraisal VIP status was successfully updated.';
 $string['success:appraisal:update'] = 'The appraisal was successfully updated.';
+$string['success:appraisalcycle:added'] = 'Successfully added new appraisal cycle.';
 $string['success:appraisalcycle:assign'] = '{$a} has been assigned to the current appraisal cycle.';
 $string['success:appraisalcycle:assign:reactivated'] = '{$a} has been assigned to the current appraisal cycle.<br />Their previously started appraisal has been reactivated.';
 $string['success:appraisalcycle:lock'] = 'The marked users have been assigned to this appraisal cycle.';
 $string['success:appraisalcycle:start'] = 'The appraisal cycle has been started and you can now assign users to it.';
 $string['success:appraisalcycle:update'] = 'The default due date for this appraisal cycle has been updated.';
+$string['success:appraisalcycle:updatecycle'] = 'Appraisal cycle has been updated.';
 $string['success:appraisalcycle:unassign'] = '{$a} has been unassigned from the current appraisal cycle.<br />They have also been marked as not requiring an appraisal.';
 $string['success:appraisalcycle:unassign:suspended'] = '{$a} has been unassigned from the current appraisal cycle.<br />They have also been marked as not requiring an appraisal.<br />The user is flagged as no longer an active member of staff so will not appear in the unassigned users list.';
 
@@ -381,6 +386,9 @@ $string['error:appraisalcycle:alreadylocked'] = 'This appraisal cycle has alread
 $string['error:appraisalcycle:alreadystarted'] = 'This appraisal cycle has already had users assigned to it.';
 $string['error:appraisalcycle:closed'] = 'This appraisal cycle is closed, you can no longer make changes to it.';
 $string['error:appraisalcycle:groupcohort'] = 'Invalid group or appraisal cycle information submitted.';
+$string['error:appraisalcycle:nameexist'] = 'Appraisal cycle name <b>{$a}</b> already exists.';
+$string['error:appraisalcycle:namenotempty'] = 'Appraisal cycle name cannot be empty.';
+$string['error:appraisalcycle:invalideavailablefrom'] = 'Invalid <i>available from</i> date.';
 $string['error:appraisalexists'] = 'There is already an active appraisal for this user.';
 $string['error:appraiseeassuperior'] = 'The appraisee cannot also be the appraiser, sign off or leader.';
 $string['error:appraisernotvalid'] = 'The chosen appraiser is not valid for this group.';
@@ -980,6 +988,12 @@ $string['form:select'] = 'Select';
 $string['form:submitcontinue'] = 'Save and Continue';
 $string['form:undo'] = 'Undo';
 $string['form:nextpage'] = 'Continue';
+$string['form:update'] = 'Update';
+
+// Appraisal Cycle
+$string['form:cycle:name'] = 'Cycle name';
+$string['form:cycle:availablefrom'] = 'Available from';
+$string['form:cycle:action'] = 'Action';
 
 // Userinfo.
 $string['form:userinfo:title'] = 'Appraisee Info';
