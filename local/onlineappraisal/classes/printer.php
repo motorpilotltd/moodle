@@ -52,9 +52,15 @@ class printer {
 
     /**
      * What can be printed.
-     * @var string $canprint
+     * @var array $canprint
      */
-    private $canprint = ['appraisal', 'feedback', 'successionplan', 'leaderplan'];
+    private $canprint = [
+        'appraisal' => 'P',
+        'feedback' => 'P',
+        'successionplan' => 'P',
+        'leaderplan' => 'P',
+        'leadershipattributes' => 'L'
+    ];
 
     /**
      * Error message.
@@ -72,14 +78,14 @@ class printer {
      */
     public function __construct(\local_onlineappraisal\appraisal $appraisal, $print) {
         $this->appraisal = $appraisal;
-        $this->print = in_array($print, $this->canprint) ? $print : 'appraisal';
+        $this->print = array_key_exists($print, $this->canprint) ? $print : 'appraisal';
 
         // Check if this user is allowed to print.
         if (!$this->can_print()) {
             throw new moodle_exception('error:noaccess', 'local_onlineappraisal');
         }
 
-        $this->pdf = new \local_onlineappraisal\pdf();
+        $this->pdf = new \local_onlineappraisal\pdf($this->canprint[$this->print]);
         $this->pdf->SetProtection(['modify', 'annot-forms', 'fill-forms', 'extract', 'assemble']);
     }
 
@@ -108,6 +114,9 @@ class printer {
     private function can_print() {
         $canprint = false;
         switch ($this->print) {
+            case 'leadershipattributes':
+                $canprint = true;
+                break;
             case 'feedback':
                 $canprint = $this->appraisal->check_permission("feedback:print") || $this->appraisal->check_permission("feedbackown:print");
                 break;
@@ -144,8 +153,17 @@ class printer {
         $content = new $class($this);
         $contenthtml = $renderer->render($content);
 
-        $this->pdf->set_customheaderhtml($headerhtml);
-        $this->pdf->SetMargins(10, 45, 10);
+        switch ($this->print) {
+            case 'leadershipattributes':
+                $this->pdf->set_customheaderhtml('');
+                $this->pdf->SetMargins(10, 10, 10);
+                break;
+            default:
+                $this->pdf->set_customheaderhtml($headerhtml);
+                $this->pdf->SetMargins(10, 45, 10);
+                break;
+        }
+
         $this->pdf->AddPage();
         if (preg_match('/[\x{4e00}-\x{9fa5}]+/u', $contenthtml)) {
             // Chinese.

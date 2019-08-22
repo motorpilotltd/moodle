@@ -537,6 +537,16 @@
 .path-local-onlineappraisal .mform .fitem.femptylabel.oa-repeating-element .fitemtitle {
   display: none;
 }
+.path-local-onlineappraisal .mform .fitem.appraisee .felement select,
+.path-local-onlineappraisal .mform .fitem.appraisee .felement .select2-selection {
+  border-color: #007FFF;
+}
+.path-local-onlineappraisal .mform .fitem.appraisee .felement .select2-container--disabled .select2-selection {
+  border-color: #aaa;
+}
+.path-local-onlineappraisal .mform .fitem.appraisee .felement .select2-container--disabled .select2-selection__choice {
+  background-color: #fff;
+}
 .path-local-onlineappraisal .mform.admin_group {
   position: relative;
 }
@@ -813,8 +823,21 @@ fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.focus {
   display: none;
   margin: 0 0 10px 0;
 }
+@media (min-width: 992px) {
+  .path-local-onlineappraisal .mform #oa-leadershiproles-links {
+    position: absolute;
+    right: 0;
+    z-index: 2;
+  }
+}
 .path-local-onlineappraisal form.form-inline button {
   margin-bottom: 5px;
+}
+.path-local-onlineappraisal .select2-container--default .select2-results__option[aria-disabled=true] {
+  display: none;
+}
+.path-local-onlineappraisal i.fa-info-circle {
+  color: #999999;
 }
 .path-local-onlineappraisal .block_local_onlineappraisal ul.nav-stacked {
   margin: 0;
@@ -957,6 +980,48 @@ fieldset[disabled] .path-local-onlineappraisal .mform #id_resetbutton.focus {
 }
 .path-local-onlineappraisal .generaltable .oa-editable-table .btn {
   padding: 2px 4px;
+}
+.path-local-onlineappraisal .oa-table-leadership-attributes {
+  text-align: center;
+}
+.path-local-onlineappraisal .oa-table-leadership-attributes tbody + tbody,
+.path-local-onlineappraisal .oa-table-leadership-attributes td,
+.path-local-onlineappraisal .oa-table-leadership-attributes th,
+.path-local-onlineappraisal .oa-table-leadership-attributes thead th {
+  border: 0;
+}
+.path-local-onlineappraisal .oa-table-leadership-attributes tbody td {
+  padding-right: 24px;
+  width: 25%;
+}
+.path-local-onlineappraisal .oa-table-leadership-attributes tbody td button {
+  float: left;
+  margin: 0;
+  width: 100%;
+}
+.path-local-onlineappraisal .oa-table-leadership-attributes tbody td i.fa {
+  float: right;
+  margin-right: -24px;
+  margin-top: 9px;
+}
+@media (max-width: 767px) {
+  .path-local-onlineappraisal .oa-table-leadership-attributes.oa-single-column {
+    width: 50%;
+  }
+  .path-local-onlineappraisal .oa-table-leadership-attributes.oa-multi-column {
+    width: 100%;
+  }
+}
+@media (min-width: 768px) {
+  .path-local-onlineappraisal .oa-table-leadership-attributes.oa-single-column {
+    width: 25%;
+  }
+  .path-local-onlineappraisal .oa-table-leadership-attributes.oa-multi-column[data-type="role"] {
+    width: 50%;
+  }
+  .path-local-onlineappraisal .oa-table-leadership-attributes.oa-multi-column[data-type="generic"] {
+    width: 100%;
+  }
 }
 .path-local-onlineappraisal .progress {
   height: 20px;

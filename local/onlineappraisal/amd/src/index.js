@@ -26,14 +26,14 @@
 require.config({
     enforceDefine: false,
     paths: {
-        'select2_4_0_5': [
-            'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min',
-            M.cfg.wwwroot + '/pluginfile.php/' + M.cfg.contextid + '/local_onlineappraisal/vendor/select2_4.0.5.min'
+        'select2_4_0_8': [
+            'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min',
+            M.cfg.wwwroot + '/pluginfile.php/' + M.cfg.contextid + '/local_onlineappraisal/vendor/select2_4.0.8.min'
         ]
     }
 });
 
-define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlineappraisal/datepicker', 'select2_4_0_5'],
+define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlineappraisal/datepicker', 'select2_4_0_8'],
        function($, cfg, str, notification, dp) {
 
     return /** @alias module:local_onlineappraisal/index */ {
