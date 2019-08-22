@@ -1142,13 +1142,13 @@ $string['form:development:leadershiproles:error'] = 'Please select a maximum of 
 $string['form:development:leadershiproles:error:required'] = 'Required - select \'Other\' if you do not hold, or aspire to hold, a specific role';
 $string['form:development:leadershiproles:links'] = '<a href="https://moodle.arup.com/appraisal/rolespecificattributes" target="_blank">Role Specific Leadership Attribute Guides</a><br>
     <a href="https://moodle.arup.com/appraisal/leadershipattributes" target="_blank">Generic Leadership Attribute Guide</a><br>
-    <a href="https://moodle.arup.com/appraisal/attributeslearningburst" target="_blank">Leadership Attributes Learning Burst</a>';
+    <a href="https://moodle.arup.com/appraisal/leadershipattributesguide" target="_blank">Leadership Attributes Learning Burst</a>';
 $string['form:development:leadershiproles:placeholder'] = 'Select role(s)';
 $string['form:development:leadershiproles:popover'] = 'The roles listed here are some of the key leadership roles in our firm.
     Profiles have been developed to further define which attributes are considered foundational for that role.
     The profile then sets out specific deliverables that illustrate that particular attribute.
     If you do not hold or aspire to hold one of these roles, please select \'other\'.
-    For further information see the Leadership Attributes <a href="https://moodle.arup.com/appraisal/attributeslearningburst" target="_blank">Learning Burst</a>.';
+    For further information see the Leadership Attributes <a href="https://moodle.arup.com/appraisal/leadershipattributesguide" target="_blank">Learning Burst</a>.';
 $string['form:development:leadershipattributes'] = 'Your selected attributes for this year:';
 $string['form:development:leadershipattributes:detailed'] = 'View detailed Leadership Attribute Guides for your selected roles <a href="#">here</a>.';
 $string['form:development:leadershipattributes:error:wrongnumber'] = 'Please select two or three options';
@@ -1157,7 +1157,7 @@ $string['form:development:leadershipattributes:generic'] = file_get_contents($CF
 $string['form:development:leadershipattributes:intro'] = 'Select 2-3 attributes {$a} to concentrate on from the following:';
 $string['form:development:leadershipattributes:popover'] = 'The 16 Arup Leadership Attributes set out what the form expects of our leaders both in terms of what and how they deliver.
     It is expected that Arup Leaders will possess all of these qualities to a degree but show real strength in some of them and want to develop others.
-    For further information see the Leadership Attributes <a href="https://moodle.arup.com/appraisal/attributeslearningburst" target="_blank">Learning Burst</a>.';
+    For further information see the Leadership Attributes <a href="https://moodle.arup.com/appraisal/leadershipattributesguide" target="_blank">Learning Burst</a>.';
 $string['form:development:leadershipattributes:role'] = file_get_contents($CFG->dirroot . '/local/onlineappraisal/lang/en/leadership-attributes-role.json');
 $string['form:development:seventy'] = 'Learning that takes place in the course of your work - about 70%';
 $string['form:development:seventyhelp'] = '<div class="well well-sm"> <em>For example:</em> <ul class="m-b-0"> <li><em>Project assignments</em></li> <li><em>Team assignments</em></li> <li><em>Mobility</em></li> <li><em>Discussion of work and feedback</em></li> <li><em>Project reviews, design charrettes</em></li> <li><em>Reading</em></li> <li><em>Research</em></li> </ul> </div>';
