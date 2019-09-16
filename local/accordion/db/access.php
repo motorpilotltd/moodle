@@ -1,5 +1,5 @@
 <?php
-// This file is part of the arup theme for Moodle
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,21 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Theme arup version file.
+ * Capabilities definitions for local_onlineappraisal.
  *
- * @package    theme_arup
- * @copyright  2016 Arup
- * @author 	   Bas Brands
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_accordion
+ * @copyright   2019 Motorpilot Ltd
+ * @author      Simon Lewis
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+$capabilities = array(
 
-$plugin->version   = 2018020102;
-$plugin->requires  = 2014051200;
-$plugin->release  = 2014051300;
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->component = 'theme_arup';
-$plugin->dependencies = array(
-    'theme_bootstrap'  => 2015062200
+    'local/accordion:view' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'user' => CAP_ALLOW
+        )
+    ),
+
 );

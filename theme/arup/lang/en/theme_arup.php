@@ -104,3 +104,5 @@ $string['popconfirm:togglecompletion:no'] = 'No';
 $string['updatetimezone:heading'] = 'Update Your Timezone';
 $string['updatetimezone:paragraph'] = 'Please make sure your time zone settings are correct. These settings are used for event reminders';
 $string['hiddennavitem'] = ' (hidden)';
+
+$string['arup:viewcustommenu'] = 'Allow user to view custom menu';

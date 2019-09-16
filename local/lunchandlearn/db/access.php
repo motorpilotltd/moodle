@@ -49,5 +49,12 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-);
+    'local/lunchandlearn:view' => array(
 
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'user' => CAP_ALLOW
+        )
+    ),
+);

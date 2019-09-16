@@ -403,6 +403,8 @@ class appraisal {
         $firstpage = reset($pages);
 
         foreach ($pages as $page) {
+            // Make sure we're also cycling through the array one step ahead...
+            next($pages);
             if ($this->page == $page->name) {
                 // Grab next page or first page if on last page.
                 $nextpage = current($pages) ? current($pages) : $firstpage;

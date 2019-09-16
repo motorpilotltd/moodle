@@ -87,3 +87,5 @@ $string['subregion'] = 'Location';
 $string['ukmea:show'] = 'Show <strong>UKIMEA</strong> modules';
 
 $string['viewalllearningpaths'] = 'View all learning paths';
+
+$string['accordion:view'] = 'Allow user to view catalogue';

@@ -24,10 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111600;
+$plugin->version   = 2015111601;
 $plugin->requires  = 2015111600; // Moodle 3.0.
 $plugin->component = 'local_accordion';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.0.0 (Build: 2015111600)';
+$plugin->release   = '3.0.1 (Build: 2015111601)';
 
 $plugin->dependencies = array();

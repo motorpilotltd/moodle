@@ -58,6 +58,8 @@ if ($cal_d !== 0) {
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
 
+require_capability('local/lunchandlearn:edit', $PAGE->context);
+
 lunchandlearn_add_page_navigation($PAGE, $PAGE->url);
 lunchandlearn_add_admin_navigation($PAGE, $PAGE->url);
 $PAGE->navbar->ignore_active();

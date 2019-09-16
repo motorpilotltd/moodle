@@ -30,6 +30,8 @@ $string['cachedef_permissions'] = 'Permissions cache';
 $string['onlineappraisal:deleteappraisal'] = 'Allowed to permanently delete appraisals';
 $string['onlineappraisal:itadmin'] = 'Allowed to access the IT admin area';
 $string['pluginname'] = 'Online Appraisal';
+$string['setting:activateleadershipattributes'] = 'Activate Leadership Attributes';
+$string['setting:activateleadershipattributes_desc'] = 'Set timestamp after which Leadership Attributes will be activated (for subsequently initialised appraisals).';
 $string['setting:logo'] = 'Alternate logo';
 $string['setting:logo_desc'] = 'An alternate logo which will be used specifically for appraisal pages.';
 $string['setting:helpurl'] = 'Help Url';
@@ -72,6 +74,7 @@ $string['leadersignoff'] = 'Leader Sign Off';
 $string['vip'] = 'VIP';
 
 // Pages.
+$string['cycle'] = 'Appraisal Cycle';
 $string['allstaff'] = 'All Staff';
 $string['archived'] = 'Archived';
 $string['itadmin'] = 'IT Admin';
@@ -208,10 +211,12 @@ $string['admin:toptext:inprogress'] = 'Appraisals can be monitored below on this
     signed off. Actions in the table allow you to change the Appraiser / Sign Off User as well as delete the appraisal (note
     this will not be recoverable). Using the select and the drop down at the bottom of the page you can email users to chase
     progress. Archive is used at the end of the year to enable you to create a new appraisal.';
+$string['admin:toptext:appraisalcycle:list'] = 'List of appraisal cycles';
 $string['admin:updatingdots'] = 'Updating...';
 $string['admin:usercount'] = 'Total number of staff in selected cost centre: {$a}';
 $string['admin:usercount:assigned'] = '({$a} users)';
 $string['admin:usercount:notassigned'] = '({$a} users)';
+$string['admin:cycle:nodata'] = 'No available data';
 $string['appraisal:id'] = 'App ID';
 $string['appraisal:progress'] = 'Appraisal progress';
 $string['appraisal:select'] = 'Select appraisal {$a}';
@@ -341,11 +346,13 @@ $string['success:appraisal:delete'] = 'The appraisal was successfully deleted.';
 $string['success:appraisal:toggle'] = 'The user\'s appraisal requirements were successfully updated.';
 $string['success:appraisal:togglevip'] = 'The user\'s appraisal VIP status was successfully updated.';
 $string['success:appraisal:update'] = 'The appraisal was successfully updated.';
+$string['success:appraisalcycle:added'] = 'Successfully added new appraisal cycle.';
 $string['success:appraisalcycle:assign'] = '{$a} has been assigned to the current appraisal cycle.';
 $string['success:appraisalcycle:assign:reactivated'] = '{$a} has been assigned to the current appraisal cycle.<br />Their previously started appraisal has been reactivated.';
 $string['success:appraisalcycle:lock'] = 'The marked users have been assigned to this appraisal cycle.';
 $string['success:appraisalcycle:start'] = 'The appraisal cycle has been started and you can now assign users to it.';
 $string['success:appraisalcycle:update'] = 'The default due date for this appraisal cycle has been updated.';
+$string['success:appraisalcycle:updatecycle'] = 'Appraisal cycle has been updated.';
 $string['success:appraisalcycle:unassign'] = '{$a} has been unassigned from the current appraisal cycle.<br />They have also been marked as not requiring an appraisal.';
 $string['success:appraisalcycle:unassign:suspended'] = '{$a} has been unassigned from the current appraisal cycle.<br />They have also been marked as not requiring an appraisal.<br />The user is flagged as no longer an active member of staff so will not appear in the unassigned users list.';
 
@@ -381,6 +388,9 @@ $string['error:appraisalcycle:alreadylocked'] = 'This appraisal cycle has alread
 $string['error:appraisalcycle:alreadystarted'] = 'This appraisal cycle has already had users assigned to it.';
 $string['error:appraisalcycle:closed'] = 'This appraisal cycle is closed, you can no longer make changes to it.';
 $string['error:appraisalcycle:groupcohort'] = 'Invalid group or appraisal cycle information submitted.';
+$string['error:appraisalcycle:nameexist'] = 'Appraisal cycle name <b>{$a}</b> already exists.';
+$string['error:appraisalcycle:namenotempty'] = 'Appraisal cycle name cannot be empty.';
+$string['error:appraisalcycle:invalideavailablefrom'] = 'Invalid <i>available from</i> date.';
 $string['error:appraisalexists'] = 'There is already an active appraisal for this user.';
 $string['error:appraiseeassuperior'] = 'The appraisee cannot also be the appraiser, sign off or leader.';
 $string['error:appraisernotvalid'] = 'The chosen appraiser is not valid for this group.';
@@ -980,6 +990,12 @@ $string['form:select'] = 'Select';
 $string['form:submitcontinue'] = 'Save and Continue';
 $string['form:undo'] = 'Undo';
 $string['form:nextpage'] = 'Continue';
+$string['form:update'] = 'Update';
+
+// Appraisal Cycle
+$string['form:cycle:name'] = 'Cycle name';
+$string['form:cycle:availablefrom'] = 'Available from';
+$string['form:cycle:action'] = 'Action';
 
 // Userinfo.
 $string['form:userinfo:title'] = 'Appraisee Info';
@@ -1130,6 +1146,33 @@ $string['form:development:title'] = 'Section 4: Development Plan';
 $string['form:development:intro'] = 'The Development Plan sets out what personal skills, knowledge or behavioural changes are needed to support the appraisee\'s career progression and Agreed Impact Plan.<br /><br />
 How do you need to develop in the next 12-18 months to achieve this? What support will you need and when do you plan to undertake this development?<br /><br />
 <div class="well well-sm">At Arup we use the principle of "70-20-10" in personal development. This means that for most people, 70% of development should be "on the job" and learned from experience. 20% should be via other people, perhaps through coaching or mentoring. The final 10% should be by formal learning methods, like classroom courses or formal e-learning. The percentages are of course just a guideline.</div>';
+$string['form:development:leadership'] = 'Do you hold, or aspire to hold, a leadership role?';
+$string['form:development:leadership:answer:1'] = 'No';
+$string['form:development:leadership:answer:2'] = 'Yes';
+$string['form:development:leadershiproles:1'] = 'Additionally, do you hold, or aspire to hold, any of the following roles?';
+$string['form:development:leadershiproles:2'] = 'You can select up to two options from the list below:';
+$string['form:development:leadershiproles:answer:generic'] = 'Other';
+$string['form:development:leadershiproles:error'] = 'Please select a maximum of two options';
+$string['form:development:leadershiproles:error:required'] = 'Required - select \'Other\' if you do not hold, or aspire to hold, a specific role';
+$string['form:development:leadershiproles:links'] = '<a href="https://moodle.arup.com/appraisal/rolespecificattributes" target="_blank">Role Specific Leadership Attribute Guides</a><br>
+    <a href="https://moodle.arup.com/appraisal/leadershipattributes" target="_blank">Generic Leadership Attribute Guide</a><br>
+    <a href="https://moodle.arup.com/appraisal/leadershipattributesguide" target="_blank">Leadership Attributes Learning Burst</a>';
+$string['form:development:leadershiproles:placeholder'] = 'Select role(s)';
+$string['form:development:leadershiproles:popover'] = 'The roles listed here are some of the key leadership roles in our firm.
+    Profiles have been developed to further define which attributes are considered foundational for that role.
+    The profile then sets out specific deliverables that illustrate that particular attribute.
+    If you do not hold or aspire to hold one of these roles, please select \'other\'.
+    For further information see the Leadership Attributes <a href="https://moodle.arup.com/appraisal/leadershipattributesguide" target="_blank">Learning Burst</a>.';
+$string['form:development:leadershipattributes'] = 'Your selected attributes for this year:';
+$string['form:development:leadershipattributes:detailed'] = 'View detailed Leadership Attribute Guides for your selected roles <a href="#">here</a>.';
+$string['form:development:leadershipattributes:error:wrongnumber'] = 'Please select two or three options';
+$string['form:development:leadershipattributes:error:toomany'] = 'Please select no more than three options';
+$string['form:development:leadershipattributes:generic'] = file_get_contents($CFG->dirroot . '/local/onlineappraisal/lang/en/leadership-attributes-generic.json');
+$string['form:development:leadershipattributes:intro'] = 'Select 2-3 attributes {$a} to concentrate on from the following:';
+$string['form:development:leadershipattributes:popover'] = 'The 16 Arup Leadership Attributes set out what the form expects of our leaders both in terms of what and how they deliver.
+    It is expected that Arup Leaders will possess all of these qualities to a degree but show real strength in some of them and want to develop others.
+    For further information see the Leadership Attributes <a href="https://moodle.arup.com/appraisal/leadershipattributesguide" target="_blank">Learning Burst</a>.';
+$string['form:development:leadershipattributes:role'] = file_get_contents($CFG->dirroot . '/local/onlineappraisal/lang/en/leadership-attributes-role.json');
 $string['form:development:seventy'] = 'Learning that takes place in the course of your work - about 70%';
 $string['form:development:seventyhelp'] = '<div class="well well-sm"> <em>For example:</em> <ul class="m-b-0"> <li><em>Project assignments</em></li> <li><em>Team assignments</em></li> <li><em>Mobility</em></li> <li><em>Discussion of work and feedback</em></li> <li><em>Project reviews, design charrettes</em></li> <li><em>Reading</em></li> <li><em>Research</em></li> </ul> </div>';
 $string['form:development:twenty'] = 'Learning from other people - about 20%';
@@ -1549,7 +1592,7 @@ $string['appraisee_welcome_info'] = 'Your appraisal deadline for this year is {$
 
 $string['introduction:video'] = '<img src="https://moodle.arup.com/scorm/_assets/ArupAppraisal.png"  alt="Arup Appraisal logo"/>';
 
-$string['introduction:targetedmessage'] = '<div class="alert alert-info">For those in leadership roles, you may wish to refer to the <a href="https://moodle.arup.com/appraisal/leadershipattributes" target="_blank">Arup Leadership Attributes</a> - the 16 qualities which define us as leaders.  For further information please refer to the accompanying <a href="https://moodle.arup.com/appraisal/leadershipattributesguide" target="_blank">Introduction to Arup Leadership Attributes</a>.</div>';
+$string['introduction:targetedmessage'] = '<div class="alert alert-info">For those holding, or aspiring to hold, leadership roles, you may wish to refer to the <a href="https://moodle.arup.com/appraisal/leadershipattributes" target="_blank">Arup Leadership Attributes</a> - the 16 qualities which define us as leaders.  For further information please refer to the accompanying <a href="https://moodle.arup.com/appraisal/leadershipattributesguide" target="_blank">Introduction to Arup Leadership Attributes</a>.</div>';
 
 // PDF.
 $string['pdf:appraisername'] = 'Appraiser Name';
@@ -1572,6 +1615,9 @@ $string['pdf:feedback:requested'] = 'Feedback requested from:';
 $string['pdf:feedback:requestedhelp'] = '* Denotes feedback requested by your Appraiser which is not yet visible to you.';
 $string['pdf:feedback:requested:none'] = 'No feedback has been requested.';
 $string['pdf:feedback:requestedfrom'] = 'Reviewer {$a->firstname} {$a->lastname}{$a->appraiserflag}{$a->confidentialflag}:';
+$string['pdf:form:development:leadership'] = 'Do you hold, or aspire to hold, a leadership role';
+$string['pdf:form:development:leadershiproles'] = 'Leadership roles you hold, or aspire to hold';
+$string['pdf:form:development:leadershipattributes'] = 'Your selected leadership attributes for this year';
 $string['pdf:form:summaries:appraisee'] = 'Appraisee comments';
 $string['pdf:form:summaries:appraiser'] = 'Appraiser summary of overall performance';
 $string['pdf:form:summaries:signoff'] = 'Sign Off summary';
@@ -1585,6 +1631,7 @@ $string['pdf:header:helddate'] = 'Appraisal Date:';
 $string['pdf:header:confidential'] = 'STRICTLY CONFIDENTIAL';
 $string['pdf:header:staffid'] = 'Staff ID:';
 $string['pdf:header:warning'] = 'Downloaded by: {$a->who} on {$a->when}<br>Please do not file or leave somewhere unsafe.';
+$string['pdf:heading:leadershipattributes'] = 'Leadership Attributes';
 $string['pdf:heading:learninghistory'] = 'Last 3yrs Learning History';
 $string['pdf:heading:summaries'] = 'Overall summaries';
 $string['pdf:heading:summary'] = 'Appraisal Summary';

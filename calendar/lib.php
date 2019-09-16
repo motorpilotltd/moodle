@@ -1324,7 +1324,7 @@ function calendar_get_events($tstart, $tend, $users, $groups, $courses,
     }
 
 /* BEGIN CORE MOD */
-    if (calendar_show_event_type(CALENDAR_EVENT_LUNCHANDLEARN)) {
+    if (has_capability('local/lunchandlearn:view', context_system::instance()) && calendar_show_event_type(CALENDAR_EVENT_LUNCHANDLEARN)) {
         global $CFG;
         require_once ($CFG->dirroot . '/local/lunchandlearn/lib.php');
         $regionid = lunchandlearn_get_region();

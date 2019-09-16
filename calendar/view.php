@@ -99,9 +99,11 @@ if ($courseid != SITEID && !empty($courseid)) {
 require_login($course, false);
 
 /* BEGIN CORE MOD */
-require_once "{$CFG->dirroot}/local/lunchandlearn/lib.php";
-lunchandlearn_add_page_navigation($PAGE, $url);
-lunchandlearn_add_admin_navigation($PAGE, $url);
+if (has_capability('local/lunchandlearn:view', context_system::instance())) {
+    require_once "{$CFG->dirroot}/local/lunchandlearn/lib.php";
+    lunchandlearn_add_page_navigation($PAGE, $url);
+    lunchandlearn_add_admin_navigation($PAGE, $url);
+}
 /* END CORE MOD */
 
 $calendar = calendar_information::create($time, $courseid, $categoryid);
@@ -115,7 +117,7 @@ switch($view) {
     case 'event':
         require_once "{$CFG->dirroot}/local/lunchandlearn/lib.php";
         try {
-            if (empty($id)) {
+            if (empty($id) || !has_capability('local/lunchandlearn:view', context_system::instance())) {
                 $view = 'upcoming';
                 continue;
             }

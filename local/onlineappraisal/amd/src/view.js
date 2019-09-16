@@ -26,15 +26,294 @@
  require.config({
     enforceDefine: false,
     paths: {
-        'select2_4_0_5': [
-            'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min',
-            M.cfg.wwwroot + '/pluginfile.php/' + M.cfg.contextid + '/local_onlineappraisal/vendor/select2_4.0.5.min'
+        'select2_4_0_8': [
+            'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min',
+            M.cfg.wwwroot + '/pluginfile.php/' + M.cfg.contextid + '/local_onlineappraisal/vendor/select2_4.0.8.min'
         ]
     }
 });
 
-define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstrap/bootstrap', 'select2_4_0_5'],
+define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstrap/bootstrap', 'select2_4_0_8'],
        function($, cfg, str, notification) {
+
+    var leadershipElements = {
+        'leadership': {
+            'select': $('select#id_leadership')
+        },
+        'roles': {
+            'select': $('select#id_leadershiproles'),
+            'div': $('#fitem_id_leadershiproles'),
+            'links': $('#oa-leadershiproles-links')
+        },
+        'attributes': {
+            'select': $('select#id_leadershipattributes'),
+            'div': $('#fitem_id_leadershipattributes'),
+            'wrapper': $('#oa-development-leadershipattributes'),
+            'tables': $('#oa-development-leadershipattributes table.oa-table-leadership-attributes')
+        }
+    };
+
+    var leadershipRolesDisplay = function(roleSelect) {
+        if (roleSelect.val() === 'Yes') {
+            leadershipElements.roles.div.show(0, function() {
+                if (!leadershipElements.roles.select.hasClass('select2-hidden-accessible')) {
+                    str.get_string('form:development:leadershiproles:placeholder', 'local_onlineappraisal').done(function(s) {
+                        leadershipElements.roles.select.select2({
+                            maximumSelectionLength: 2,
+                            placeholder: s
+                        });
+                        leadershipElements.roles.select.on('select2:opening', function() {
+                            leadershipElements.attributes.tables.find('i[data-toggle="popover"]').popover('hide');
+                        });
+                    });
+                }
+                leadershipElements.roles.links.show();
+            });
+            leadershipElements.attributes.wrapper.show();
+            leadershipElements.attributes.div.show(0, function() {
+                if (!leadershipElements.attributes.select.hasClass('select2-hidden-accessible')) {
+                    leadershipElements.attributes.select.select2({maximumSelectionLength: 3});
+                }
+            });
+        } else {
+            leadershipElements.attributes.tables.find('i[data-toggle="popover"]').popover('hide');
+            leadershipElements.roles.select.val(null).trigger('change.select2');
+            leadershipRolesCheck();
+            leadershipElements.roles.links.hide();
+            leadershipElements.roles.div.hide();
+        }
+    };
+
+    var leadershipRolesCheck = function() {
+        str.get_string('form:development:leadershiproles:answer:generic', 'local_onlineappraisal').done(function(s) {
+            leadershipAttributesActivate(true);
+
+            var selected = leadershipElements.roles.select.val();
+            var selectedOther = $.inArray(s, selected);
+            var currentattributes = leadershipElements.attributes.select.val();
+            // If 'Other' is selected and there are more options selected should remove all other options.
+            if (selected.length > 1 && selectedOther > -1) {
+                leadershipElements.roles.select.val(null).val(s).trigger('change.select2');
+                selected = leadershipElements.roles.select.val();
+            }
+            if (selectedOther > -1) {
+                leadershipElements.attributes.tables.each(function() {
+                    var self = $(this);
+                    if (self.data('type') === 'generic') {
+                        self.show();
+                    } else {
+                        self.find('i[data-toggle="popover"]').popover('hide');
+                        dataAttributeFilter(self.find('button'), 'selected', true).each(function() {
+                            var button = $(this);
+                            leadershipAttributeToggleButton(button);
+                            var index = $.inArray(button.data('option'), currentattributes);
+                            if (index !== -1) {
+                                currentattributes.splice(index, 1);
+                            }
+                        });
+                        leadershipElements.attributes.select.val(currentattributes).trigger('change.select2');
+                        self.hide();
+                    }
+                });
+                $('#oa-development-leadershipattributes-detailed').hide();
+            } else if (selected.length > 0) {
+                leadershipElements.attributes.tables.each(function() {
+                    var self = $(this);
+                    if (self.data('type') === 'role') {
+                        self.show();
+                        leadershipAttributeColumns(self, selected);
+                    } else {
+                        self.find('i[data-toggle="popover"]').popover('hide');
+                        dataAttributeFilter(self.find('button'), 'selected', true).each(function() {
+                            var button = $(this);
+                            leadershipAttributeToggleButton(button);
+                            var index = $.inArray(button.data('option'), currentattributes);
+                            if (index !== -1) {
+                                currentattributes.splice(index, 1);
+                            }
+                        });
+                        self.hide();
+                    }
+                });
+                $('#oa-development-leadershipattributes-detailed').show();
+            }
+
+            if (selected.length > 0) {
+                leadershipElements.attributes.wrapper.show();
+                leadershipElements.attributes.div.show();
+            } else {
+                leadershipElements.attributes.select.val(null).trigger('change.select2');
+                leadershipElements.attributes.tables.find('i[data-toggle="popover"]').popover('hide');
+                dataAttributeFilter(leadershipElements.attributes.tables.find('button'), 'selected', true).each(function() {
+                    leadershipAttributeToggleButton($(this));
+                });
+                leadershipElements.attributes.wrapper.hide();
+                leadershipElements.attributes.div.hide();
+            }
+
+            leadershipAttributesActivate(false);
+        });
+    };
+
+    var leadershipAttributeButton = function(button) {
+        var selected = leadershipElements.attributes.select.val();
+        var option = button.data('option');
+        var index = $.inArray(option, selected);
+        if (button.attr('data-selected') === 'false' && index === -1) {
+            selected.push(option);
+        } else if (button.attr('data-selected') === 'true' && index !== -1) {
+            selected.splice(index, 1);
+        }
+        if (selected.length > 3) {
+            var strs = [
+                {key: 'error', component: 'local_onlineappraisal'},
+                {key: 'form:development:leadershipattributes:error:toomany', component: 'local_onlineappraisal'}
+            ];
+            str.get_strings(strs).done(function(s) {
+                notification.alert(s[0], s[1], 'OK');
+            });
+        } else {
+            leadershipAttributeToggleButton(button);
+            leadershipAttributesActivate(true);
+            leadershipElements.attributes.select.val(selected).trigger('change.select2');
+            leadershipAttributesActivate(false);
+        }
+    };
+
+    var leadershipAttributeToggleButton = function(button) {
+        button.attr('data-selected', button.attr('data-selected') === 'true' ? false : true);
+        button.toggleClass('btn-default btn-primary').blur();
+    };
+
+    var leadershipAttributesSelect = function() {
+        var selected = leadershipElements.attributes.select.val();
+        var buttons = leadershipElements.attributes.tables.find('button');
+        buttons.attr('data-selected', false);
+        buttons.removeClass('btn-primary').addClass('btn-default');
+        $.each(selected, function() {
+            var selectedButtons = dataAttributeFilter(buttons, 'option', this);
+            selectedButtons.attr('data-selected', true);
+            selectedButtons.removeClass('btn-default').addClass('btn-primary');
+        });
+    };
+
+    var leadershipAttributeColumns = function(table, selected) {
+        var columns = table.find('th');
+        var colcount = 0;
+        var selectedpositions = [];
+        columns.each(function() {
+            var column = $(this);
+            var position = column[0].cellIndex + 1;
+            var cells = table.find('th:nth-child(' + position + '), td:nth-child(' + position + ')');
+            var popovers = cells.find('i[data-toggle="popover"]');
+            if ($.inArray(column.data('column'), selected) > -1) {
+                selectedpositions.push(position);
+                colcount++;
+                cells.show();
+                if (selected.length === 1 || colcount > 1) {
+                    popovers.attr('data-placement', 'right');
+                } else {
+                    popovers.attr('data-placement', 'left');
+                }
+            } else {
+                popovers.popover('hide');
+                dataAttributeFilter(cells.find('button'), 'selected', true).each(function() {
+                    leadershipAttributeButton($(this));
+                });
+                cells.hide();
+            }
+        });
+        if (selected.length === 1) {
+            table.removeClass('oa-multi-column').addClass('oa-single-column');
+        } else {
+            table.removeClass('oa-single-column').addClass('oa-multi-column');
+        }
+        leadershipAttributesSort(table, selectedpositions);
+    };
+
+    var leadershipAttributesSort = function(table, positions) {
+        var cells;
+        var cloned;
+        var sorted;
+        if (positions.length === 1) {
+            // Sort alphabetically
+            sorted = [];
+            cells = table.find('td:nth-child(' + positions[0] + ')');
+            cloned = cells.clone();
+            cells.each(function() {
+                var self = $(this);
+                if (self.data('attribute')) {
+                    sorted.push($(this).data('attribute'));
+                }
+            });
+            sorted.sort();
+            $.each(sorted, function(index, value) {
+                $(cells[index]).replaceWith(cloned.filter('[data-attribute="' + value + '"]'));
+            });
+        } else if (positions.length === 2) {
+            // Sort matching, then alphabetically.
+            cells = [];
+            cloned = [];
+            sorted = [];
+            [0, 1].forEach(function(i) {
+                cells[i] = table.find('td:nth-child(' + positions[i] + ')');
+                cloned[i] = cells[i].clone();
+                sorted[i] = [];
+                cells[i].each(function() {
+                    var self = $(this);
+                    if (self.data('attribute')) {
+                        sorted[i].push($(this).data('attribute'));
+                    }
+                });
+            });
+
+            // Find shared values.
+            var shared = sorted[0].filter(function(val) {
+                return sorted[1].indexOf(val) > -1;
+            });
+            shared.sort();
+
+            [0, 1].forEach(function(i) {
+                sorted[i] = sorted[i].filter(function(val) {
+                    return shared.indexOf(val) === -1;
+                });
+                sorted[i].sort();
+                sorted[i] = shared.concat(sorted[i]);
+                $.each(sorted[i], function(index, value) {
+                    $(cells[i][index]).replaceWith(cloned[i].filter('[data-attribute="' + value + '"]'));
+                });
+            });
+        }
+    };
+
+    var dataAttributeFilter = function(elements, attribute, value) {
+        return elements.filter(function() {
+            return $(this).data(attribute) == value;
+        });
+    };
+
+    var leadershipAttributesActivate = function(on) {
+        if (on === true) {
+            leadershipElements.attributes.select.prop('disabled', false);
+            leadershipElements.attributes.select.trigger('change.select2');
+        } else {
+            leadershipElements.attributes.select.prop('disabled', true);
+            leadershipElements.attributes.select.trigger('change.select2');
+        }
+    };
+
+    var leadershipAttributesPopoverHide = function(popover) {
+        var table = popover.parents('table');
+        var type = table.data('type');
+        if (type === 'role') {
+            // Hide popovers in same column (role).
+            var position = popover.parent('td')[0].cellIndex + 1;
+            table.find('td:nth-child(' + position + ') i[data-toggle="popover"]').not(popover).popover('hide');
+        } else {
+            // Hide popovers in rest of table (generic).
+            table.find('i[data-toggle="popover"]').not(popover).popover('hide');
+        }
+    };
 
     return /** @alias module:local_onlineappraisal/view */ {
         init: function(appraisalid, view, page, statusid) {
@@ -46,13 +325,71 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 $searchfield.prop('disabled', true);
             });
 
+            if (page === 'development') {
+                leadershipElements.roles.div.removeClass('hiddenifjs').hide();
+                leadershipElements.roles.links.removeClass('hiddenifjs').hide();
+                leadershipElements.roles.select.removeClass('hiddenifjs');
+                leadershipElements.attributes.wrapper.removeClass('hiddenifjs').hide();
+                // Tables will be hidden if no js (force select use).
+                leadershipElements.attributes.tables.removeClass('hidden').hide();
+                leadershipElements.attributes.div.removeClass('hiddenifjs').hide();
+                leadershipElements.attributes.select.removeClass('hiddenifjs');
+                // Detail link will be hidden if no js (can't form link and load).
+                $('#oa-development-leadershipattributes-detailed').removeClass('hidden').hide();
+
+                leadershipAttributesActivate(true);
+                leadershipRolesDisplay(leadershipElements.leadership.select);
+                leadershipRolesCheck();
+                leadershipAttributesSelect();
+                leadershipAttributesActivate(false);
+
+                leadershipElements.leadership.select.on('change', function() {
+                    leadershipRolesDisplay($(this));
+                    leadershipRolesCheck();
+                });
+
+                leadershipElements.roles.select.on('change', function() {
+                    leadershipRolesCheck();
+                });
+
+                leadershipElements.attributes.wrapper.on('click', 'button', function(e) {
+                    var self = $(this);
+                    e.preventDefault();
+                    if (!self.prop('disabled')) {
+                        leadershipAttributeButton(self);
+                    }
+                });
+
+                leadershipElements.attributes.tables.on('click', 'i[data-toggle="popover"]', function() {
+                    leadershipAttributesPopoverHide($(this));
+                });
+
+                leadershipElements.attributes.select.on('change', function() {
+                    leadershipAttributesSelect();
+                });
+
+                $('#oa-development-leadershipattributes-detailed').on('click', function(e) {
+                    e.preventDefault();
+                    var querystring = 'print=leadershipattributes&appraisalid=' + appraisalid + '&view=' + view;
+                    $.each(leadershipElements.roles.select.val(), function() {
+                        querystring = querystring + '&role[]=' + encodeURIComponent(this);
+                    });
+                    var url = cfg.wwwroot + '/local/onlineappraisal/print.php?' + querystring;
+                    window.location.href = url;
+                });
+
+                $('form').on('submit', function() {
+                    leadershipAttributesActivate(true);
+                });
+            }
+
             if (page === 'userinfo' && (view === 'appraisee' || view === 'appraiser') && statusid < 5) {
                 var classes, graderefresh, jobtitlerefresh;
                 var grade = $('#id_grade');
                 var jobtitle = $('#id_jobtitle');
                 str.get_strings([
-                        {key : 'form:userinfo:refresh', component : 'local_onlineappraisal'},
-                        {key : 'form:userinfo:refresh:tooltip', component : 'local_onlineappraisal'}
+                        {key: 'form:userinfo:refresh', component: 'local_onlineappraisal'},
+                        {key: 'form:userinfo:refresh:tooltip', component: 'local_onlineappraisal'}
                     ]).done(function(s) {
                         // Inject ability to update fields from datahub.
                         classes = 'oa-refresh-datahub fa fa-2x fa-refresh m-l-10 pull-left';
@@ -71,7 +408,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 ).fail(notification.exception);
 
                 // Processing.
-                $('.felement').on('click', '.oa-refresh-datahub', function(){
+                $('.felement').on('click', '.oa-refresh-datahub', function() {
                     // Set up variables.
                     var self = $(this);
 
@@ -124,18 +461,18 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                                 alert.insertAfter(self)
                                     .slideDown()
                                     .delay(5000)
-                                    .slideUp(function(){
+                                    .slideUp(function() {
                                         $(this).remove();
                                     });
                             },
-                            error: function(){
+                            error: function() {
                                 alert.removeClass('alert-success').addClass('alert-danger');
                                 alert.html(s);
                                 self.next('.alert').remove();
                                 alert.insertAfter(self)
                                     .slideDown()
                                     .delay(5000)
-                                    .slideUp(function(){
+                                    .slideUp(function() {
                                         $(this).remove();
                                     });
                                 self.data('processing', false).removeClass('fa-spin');
@@ -151,20 +488,20 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 // Add strength/developmentarea inputs.
                 // Reveal buttons.
                 $('.oa-add-repeating-element').show();
-                $('.oa-add-repeating-element').click(function(e){
+                $('.oa-add-repeating-element').click(function(e) {
                     e.preventDefault();
                     var that = $(this);
                     var index = that.data('index');
                     var newindex = parseInt(index) + 1;
                     that.data('index', newindex);
                     var type = that.data('type');
-                    var clone = that.parent().find('#fitem_id_'+type+'_'+index).clone();
-                    clone.prop('id', 'fitem_id_'+type+'_'+newindex);
+                    var clone = that.parent().find('#fitem_id_' + type + '_' + index).clone();
+                    clone.prop('id', 'fitem_id_' + type + '_' + newindex);
                     var label = clone.find('label');
-                    label.prop('for', 'id_'+type+'_'+newindex);
+                    label.prop('for', 'id_' + type + '_' + newindex);
                     var input = clone.find('input');
-                    input.prop('id', 'id_'+type+'_'+newindex);
-                    input.prop('name', type+'['+newindex+']');
+                    input.prop('id', 'id_' + type + '_' + newindex);
+                    input.prop('name', type + '[' + newindex + ']');
                     input.val('');
                     clone.insertBefore(that);
                 });
@@ -172,11 +509,11 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
             // Confirm SDP unlocking.
             var strs = [
-                { key: 'form:successionplan:confirm:unlock:title', component: 'local_onlineappraisal'},
-                { key: 'form:successionplan:confirm:unlock:question', component: 'local_onlineappraisal'},
-                { key: 'form:successionplan:confirm:unlock:yes', component: 'local_onlineappraisal'},
-                { key: 'form:successionplan:confirm:unlock:no', component: 'local_onlineappraisal'},
-                { key: 'form:save', component: 'local_onlineappraisal'}
+                {key: 'form:successionplan:confirm:unlock:title', component: 'local_onlineappraisal'},
+                {key: 'form:successionplan:confirm:unlock:question', component: 'local_onlineappraisal'},
+                {key: 'form:successionplan:confirm:unlock:yes', component: 'local_onlineappraisal'},
+                {key: 'form:successionplan:confirm:unlock:no', component: 'local_onlineappraisal'},
+                {key: 'form:save', component: 'local_onlineappraisal'}
             ];
             str.get_strings(strs).done(function(s) {
                 $('#id_submitbutton.oa-unlock-sdp').click(function(e) {
@@ -187,7 +524,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         return;
                     }
                     notification.confirm(s[0], s[1], s[2], s[3],
-                        function(){
+                        function() {
                             // Avoid regular leaving page notification.
                             M.core_formchangechecker.set_form_submitted();
                             var input = $('<input type="hidden" name="submitbutton" value="' + s[4] + '" />');
@@ -203,20 +540,20 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 // Add ldpstrength/ldpdevelopmentarea inputs.
                 // Reveal buttons.
                 $('.oa-add-repeating-element').show();
-                $('.oa-add-repeating-element').click(function(e){
+                $('.oa-add-repeating-element').click(function(e) {
                     e.preventDefault();
                     var that = $(this);
                     var index = that.data('index');
                     var newindex = parseInt(index) + 1;
                     that.data('index', newindex);
                     var type = that.data('type');
-                    var clone = that.parent().find('#fitem_id_'+type+'_'+index).clone();
-                    clone.prop('id', 'fitem_id_'+type+'_'+newindex);
+                    var clone = that.parent().find('#fitem_id_' + type + '_' + index).clone();
+                    clone.prop('id', 'fitem_id_' + type + '_' + newindex);
                     var label = clone.find('label');
-                    label.prop('for', 'id_'+type+'_'+newindex);
+                    label.prop('for', 'id_' + type + '_' + newindex);
                     var input = clone.find('input');
-                    input.prop('id', 'id_'+type+'_'+newindex);
-                    input.prop('name', type+'['+newindex+']');
+                    input.prop('id', 'id_' + type + '_' + newindex);
+                    input.prop('name', type + '[' + newindex + ']');
                     input.val('');
                     clone.insertBefore(that);
                 });
@@ -235,11 +572,11 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
             // Confirm LDP unlocking.
             var ldpstrs = [
-                { key: 'form:leaderplan:confirm:unlock:title', component: 'local_onlineappraisal'},
-                { key: 'form:leaderplan:confirm:unlock:question', component: 'local_onlineappraisal'},
-                { key: 'form:leaderplan:confirm:unlock:yes', component: 'local_onlineappraisal'},
-                { key: 'form:leaderplan:confirm:unlock:no', component: 'local_onlineappraisal'},
-                { key: 'form:save', component: 'local_onlineappraisal'}
+                {key: 'form:leaderplan:confirm:unlock:title', component: 'local_onlineappraisal'},
+                {key: 'form:leaderplan:confirm:unlock:question', component: 'local_onlineappraisal'},
+                {key: 'form:leaderplan:confirm:unlock:yes', component: 'local_onlineappraisal'},
+                {key: 'form:leaderplan:confirm:unlock:no', component: 'local_onlineappraisal'},
+                {key: 'form:save', component: 'local_onlineappraisal'}
             ];
             str.get_strings(ldpstrs).done(function(s) {
                 $('#id_submitbutton.oa-unlock-ldp').click(function(e) {
@@ -250,7 +587,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         return;
                     }
                     notification.confirm(s[0], s[1], s[2], s[3],
-                        function(){
+                        function() {
                             // Avoid regular leaving page notification.
                             M.core_formchangechecker.set_form_submitted();
                             var input = $('<input type="hidden" name="submitbutton" value="' + s[4] + '" />');
@@ -267,15 +604,17 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         backdrop: 'static',
                         keyboard: false
                     });
+                    // In case any popovers are showing!
+                    $('[data-toggle="popover"]').popover('hide');
                 }, 900000);
 
-                $('.oa-save-nag-modal-save').click(function(){
+                $('.oa-save-nag-modal-save').click(function() {
                     $('#oa-save-nag-modal').modal('hide');
                     window.scrollTo(0, $('#id_submitbutton').offset().top);
                     $(this).closest('form').find('#id_submitbutton').click();
                 });
 
-                $('input[type="submit"]').click(function(){
+                $('input[type="submit"]').click(function() {
                     // Need to ensure clicked button is set.
                     var self = $(this);
                     var form = self.closest('form');
@@ -284,7 +623,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 });
 
                 str.get_string('error:sessioncheck', 'local_onlineappraisal').done(function(s) {
-                    $('.oa-save-session-check').submit(function(e){
+                    $('.oa-save-session-check').submit(function(e) {
                         var self = $(this);
 
                         // Don't worry if cancelling.
@@ -343,7 +682,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                                 }
 
                             },
-                            error: function(){
+                            error: function() {
                                 alert.removeClass('alert-success').addClass('alert-danger');
                                 alert.html(s);
                                 buttonar.find('.alert').remove();
