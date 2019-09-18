@@ -28,7 +28,7 @@ $pluginname = 'local_wa_learning_path';
 $this->table = new \html_table();
 $this->table->id = 'lptab';
 $this->table->head = array();
-$this->table->colclasses = array();
+$this->table->colclasses = array('','','','','','nowrap');
 $this->table->head[] = $this->get_string('learningpath_id', $pluginname);
 $this->table->head[] = $this->get_string('learning_path', $pluginname);
 $this->table->head[] = $this->get_string('category', $pluginname);
@@ -42,6 +42,9 @@ foreach ($this->learningpaths as $learningpath) {
         $buttons[] = html_writer::link(new \moodle_url($this->url, array('a' => 'edit', 'id' => $learningpath->id)),
             html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('i/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
             array('title' => $this->get_string('edit'), 'class' => ''));
+        $buttons[] = html_writer::link(new \moodle_url($this->url, array('a' => 'duplicate', 'id' => $learningpath->id)),
+            html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/copy'), 'alt' => $this->get_string('duplicate'), 'class' => 'iconsmall')),
+            array('title' => $this->get_string('duplicate'), 'class' => ''));
     } elseif (\wa_learning_path\lib\has_capability('amendlearningcontent') || \wa_learning_path\lib\has_capability('editmatrixgrid')) {
         $buttons[] = html_writer::link(new \moodle_url($this->url, array('a' => 'edit_matrix', 'id' => $learningpath->id)),
             html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('i/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
@@ -118,7 +121,7 @@ echo \html_writer::end_div();
                     $('#lptab').css('opacity', 1);
                 }
             })
-            
+
             if ($(this).val() == 1){
                 $(this).removeAttr('class');
                 $(this).addClass('draft');
@@ -131,8 +134,8 @@ echo \html_writer::end_div();
                 $(this).removeAttr('class');
                 $(this).addClass('invi');
             }
-            
-            
+
+
         })
 
         dialog_confirm = $("#dialog-confirm").dialog({
