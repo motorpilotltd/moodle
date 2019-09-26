@@ -175,7 +175,12 @@ class course extends \data_object {
     private function getmoodlecourse() {
         global $DB;
 
-        $sql = "select c.* from {course} c inner join {local_taps_course} ltc on c.idnumber = ltc.courseid where ltc.coursecode = :urn";
+
+        $sql = "select c.* from {course} c 
+                inner JOIN {arupadvertdatatype_taps} ladt on ladt.tapscourseid = c.id
+                inner JOIN {arupadvert} aa on aa.id = ladt.arupadvertid
+                inner join {local_taps_course} ltc on ladt.tapscourseid = ltc.courseid
+                where ltc.coursecode = :urn";
         return $DB->get_record_sql($sql, ['urn' => $this->urn]);
     }
 

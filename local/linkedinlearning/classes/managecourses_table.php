@@ -87,7 +87,9 @@ class managecourses_table extends \table_sql {
                 $tagfilterjoins
                 LEFT JOIN {linkedinlearning_crs_class} lct ON lct.linkedinlearningcourseid = lc.id
                 LEFT JOIN {local_taps_course} ltc on ltc.coursecode = lc.urn
-                LEFT JOIN {course} c on c.idnumber = ltc.courseid
+                LEFT JOIN {arupadvertdatatype_taps} ladt on ladt.tapscourseid = ltc.courseid
+                LEFT JOIN {arupadvert} aa on aa.id = ladt.arupadvertid
+                LEFT JOIN {course} c on c.id = aa.course
                 LEFT JOIN {local_regions_reg_cou} lrrc on lrrc.courseid = c.id
                 $where";
 
