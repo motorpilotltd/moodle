@@ -175,7 +175,6 @@ class course extends \data_object {
     private function getmoodlecourse() {
         global $DB;
 
-
         $sql = "select c.* from {course} c 
                 inner JOIN {arupadvertdatatype_taps} ladt on ladt.tapscourseid = c.id
                 inner JOIN {arupadvert} aa on aa.id = ladt.arupadvertid
@@ -420,7 +419,7 @@ class course extends \data_object {
         $scorm->packageurl = $this->aicclaunchurl;
         $scorm->name = $this->title;
         $scorm->intro = $this->description;
-        $scorm->introformat = FORMAT_PLAIN;
+        $scorm->introformat = FORMAT_HTML;
         $scorm->updatefreq = SCORM_UPDATE_EVERYTIME;
         $scorm->maxgrade = $cfgscorm->maxgrade;
         $scorm->grademethod = $cfgscorm->grademethod;

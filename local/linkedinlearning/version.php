@@ -21,7 +21,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016080529;
+$plugin->version   = 2016080530;
 $plugin->requires  = 2015111600; // Moodle 3.0.
 $plugin->component = 'local_linkedinlearning';
 $plugin->maturity  = MATURITY_STABLE;

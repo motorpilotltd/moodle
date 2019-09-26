@@ -37,7 +37,7 @@ class api {
                 'assetRetrievalCriteria.includeRetired' => 'true',
                 'count' => '100',
                 'start' => $start,
-                'fields' => 'urn,title,details:(availability,classifications,publishedAt,lastUpdatedAt,images:(primary),description,shortDescription,timeToComplete,urls:(aiccLaunch))',
+                'fields' => 'urn,title,details:(availability,classifications,publishedAt,lastUpdatedAt,images:(primary),descriptionIncludingHtml,shortDescriptionIncludingHtml,timeToComplete,urls:(aiccLaunch))',
         ];
 
         if ($since !== 0) {
@@ -145,8 +145,8 @@ class api {
             }
             $course->publishedat = $raw->details->publishedAt / 1000;
             $course->lastupdatedat = $raw->details->lastUpdatedAt / 1000;
-            $course->description = $raw->details->description->value;
-            $course->shortdescription = $raw->details->shortDescription->value;
+            $course->description = $raw->details->descriptionIncludingHtml->value;
+            $course->shortdescription = $raw->details->shortDescriptionIncludingHtml->value;
             $course->available = $raw->details->availability == 'AVAILABLE';
 
             switch ($raw->details->timeToComplete->unit) {

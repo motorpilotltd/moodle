@@ -45,5 +45,9 @@ function xmldb_local_linkedinlearning_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080528, 'local', 'linkedinlearning');
     }
 
+    if ($oldversion < 2016080530) {
+        set_config('lastsuccessfulrun', 0, 'local_linkedinlearning');
+    }
+
     return true;
 }
