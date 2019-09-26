@@ -240,6 +240,7 @@ class course extends \data_object {
         $course->groupmodeforce = 0;
         $course->defaultgroupingid = 0;
         $course->format = 'topics';
+        $course->newsitems = 0;
         $course->numsections = 2;
         $course->enablecompletion = COMPLETION_ENABLED;
         $course->completionstartonenrol = 1;
