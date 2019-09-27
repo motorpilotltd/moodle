@@ -364,7 +364,7 @@
     },
     "Project Manager and Project Director": {
         "Commercially astute": [
-            "#Commercially astute - Project Leader",
+            "#Commercially astute - Project Manager and Project Director",
             "Sets timely commercial metrics with client, negotiating adjustments, particularly in response to change requests.",
             "Clear minded about required commercial outcomes from the project. Monitors progress carefully and quickly reacts to deviations.",
             "Communicates the commercial goals to all staff on the project and everyone’s role in achieving them.",
@@ -372,7 +372,7 @@
             "Identifies, understands and actively manages risks and opportunities for the project."
         ],
         "Operationally minded":	[
-            "#Operationally minded - Project Leader",
+            "#Operationally minded - Project Manager and Project Director",
             "Sets and monitors project workload, ensuring staff and sub teams are managed effectively.",
             "Presides over the technical quality culture on the project team by instigating regular reviews.",
             "Deploys digital technology to advance and develop the projects business and encourages innovative adoption of technology in the team.",
@@ -381,7 +381,7 @@
             "Models attitude to change and the leadership of it. Charts a course for the project in difficult conditions, and mindfully leads the people through uncertainty, lack of clarity or anxiety."
         ],
         "Relationship focused": [
-            "#Relationship focused - Project Leader",
+            "#Relationship focused - Project Manager and Project Director",
             "Develops long term “trusted advisor” relationships with clients.",
             "Proactively targets key individuals and groups in the client organisation with whom to develop long term relationships.",
             "Develops a culture in which client relationships are valued and encouraged to grow.",
@@ -391,7 +391,7 @@
             "Is ready and able to hold difficult conversations and coaches others to do so while ensuring that the prevailing culture is humane, and that treating people carefully is the norm."
         ],
         "Developmental": [
-            "#Developmental - Project Leader",
+            "#Developmental - Project Manager and Project Director",
             "Ensures that all project staff are appraised regularly and given appropriate feedback, training, development and career opportunities.",
             "Sets the goals and journey for the project, identify future capability requirements and analyse comparatively with current levels. Plans activities in response.",
             "Promotes varied developmental tools and models the effective use of development tools.",
@@ -411,14 +411,14 @@
             "Breaks down geographical barriers for the benefit of better work."
         ],
         "Influential": [
-            "#Influential - Project Leader",
+            "#Influential - Project Manager and Project Director",
             "Able and willing to influence the client/s to adapt the work for better outcomes for all stakeholders.",
             "Persuades the client of the value of a big picture approach to the work, including the value added by digital technology, resilient solutions and the UN SDGs.",
             "Creates a powerful coalition of the willing in the client to encourage better work and outcomes.",
             "Influences project teams and clients to make space for new and potentially untested digital applications that will add value."
         ],
         "Holistic": [
-            "#Holistic - Project Leader",
+            "#Holistic - Project Manager and Project Director",
             "Promotes solutions with clients and project team that deliver value more widely than just the contracted solution and are consistent with the agreed scope of work.",
             "Strives for solutions that benefit clients and society long term.",
             "Brings in other Arup disciplines whose expertise will enhance the value of the deliverables."
