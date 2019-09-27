@@ -229,6 +229,8 @@ class course extends \data_object {
     private function build_moodle_course() {
         global $DB, $CFG;
 
+        $transaction = $DB->start_delegated_transaction();
+
         $classifications = classification::fetch_by_course($this->id);
         $keywords = [];
         foreach ($classifications as $classification) {
@@ -404,7 +406,7 @@ class course extends \data_object {
         // Add AICC/Scorm activity.
         $scormcm = new \stdClass();
         $scormcm->course = $course->id;
-        $scormcm->module = $DB->get_field('modules', 'id', ['name' => 'scorm']);
+        $scormcm->module = $DB->get_field('modules', 'id', ['name' => 'scorm'], 'MUST_EXIST');
         $scormcm->instance = 0;
         $scormcm->visible = 1;
         $scormcm->groupmode = VISIBLEGROUPS;
@@ -470,7 +472,7 @@ class course extends \data_object {
         // Add taps enrol activity.
         $tapsenrolcm = new \stdClass();
         $tapsenrolcm->course = $course->id;
-        $tapsenrolcm->module = $DB->get_field('modules', 'id', ['name' => 'tapsenrol']);
+        $tapsenrolcm->module = $DB->get_field('modules', 'id', ['name' => 'tapsenrol'], 'MUST_EXIST');
         $tapsenrolcm->instance = 0;
         $tapsenrolcm->visible = 1;
         $tapsenrolcm->groupmode = VISIBLEGROUPS;
@@ -485,7 +487,7 @@ class course extends \data_object {
         $tapsenrol->name = 'Linked course Enrolment';
         $tapsenrol->tapscourse = $tapscourse->courseid;
         $tapsenrol->completionenrolment = 1;
-        $tapsenrol->internalworkflowid = -1;
+        $tapsenrol->internalworkflowid = $DB->get_field('tapsenrol_iw', 'id', ['name' => 'Off (Ex-Oracle)'], MUST_EXIST);
 
         $tapsenrolcm->instance = tapsenrol_add_instance($tapsenrol, null);
 
@@ -576,6 +578,8 @@ class course extends \data_object {
         }
 
         rebuild_course_cache($course->id);
+
+        $transaction->allow_commit();
 
         return $course;
     }
