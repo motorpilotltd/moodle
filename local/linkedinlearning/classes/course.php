@@ -176,8 +176,8 @@ class course extends \data_object {
         global $DB;
 
         $sql = "select c.* from {course} c 
-                inner JOIN {arupadvertdatatype_taps} ladt on ladt.tapscourseid = c.id
-                inner JOIN {arupadvert} aa on aa.id = ladt.arupadvertid
+                inner JOIN {arupadvert} aa on aa.course = c.id
+                inner JOIN {arupadvertdatatype_taps} ladt on aa.id = ladt.arupadvertid
                 inner join {local_taps_course} ltc on ladt.tapscourseid = ltc.courseid
                 where ltc.coursecode = :urn";
         return $DB->get_record_sql($sql, ['urn' => $this->urn]);
@@ -210,6 +210,11 @@ class course extends \data_object {
             $DB->update_record('course', $course);
         }
         local_regions_save_data_course($course);
+
+        $data = new \stdClass();
+        $data->region = $course->regions_field_region;
+        $data->id = $DB->get_field('tapsenrol', 'id', ['course' => $course->id]);
+        tapsenrol_region_mapping_override($data);
     }
 
     /**
