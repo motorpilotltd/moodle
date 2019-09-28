@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
  * Disables this plugin for new installs
  * @return bool
  */
-function xmldb_local_linkedinlearning() {
+function xmldb_local_linkedinlearning_install() {
     global $CFG;
 
     require_once("$CFG->dirroot/local/linkedinlearning/db/upgradelib.php");
@@ -37,5 +37,3 @@ function xmldb_local_linkedinlearning() {
 
     return true;
 }
-
-
