@@ -288,7 +288,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
     var dataAttributeFilter = function(elements, attribute, value) {
         return elements.filter(function() {
-            return $(this).data(attribute) == value;
+            return $(this).attr('data-' + attribute) === value.toString();
         });
     };
 
