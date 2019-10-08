@@ -1,0 +1,10 @@
+{
+    "name": "moodle-local_reportbuilder-graphicalreporting",
+    "builds": {
+        "moodle-local_reportbuilder-graphicalreporting": {
+            "jsfiles": [
+                "graphicalreporting.js"
+            ]
+        }
+    }
+}

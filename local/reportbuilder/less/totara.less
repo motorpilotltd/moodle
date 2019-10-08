@@ -1,0 +1,15 @@
+//
+// Form elements inside tables (e.g. Reportbuilder columns).
+//
+.mform table .fitem {
+  // Remove default margins set by Bootstrap
+  // for form elements in this situation as
+  // it causes them to overlap table cells.
+  margin-right: 0;
+  margin-bottom: 0;
+  margin-left: 0;
+}
+
+.mform td .fitem .fcheckbox {
+  margin-top: (@line-height-computed * 0.4);
+}
