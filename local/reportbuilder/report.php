@@ -125,6 +125,7 @@ if ($graph) {
     $columns = [];
     $hiddencolumns = $report->js_get_hidden_columns();
     foreach ($report->get_columns() as $machinename => $column) {
+        $machinename = str_replace($column->type . '-', $column->type . '_', $machinename);
         $columns[] = (object)['name' => $column->heading, 'machinename' => $machinename, 'checked' => !in_array($machinename, $hiddencolumns)];
     }
     $PAGE->requires->js_call_amd('local_reportbuilder/showhidecolumsmodal', 'init',
