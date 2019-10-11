@@ -29,7 +29,7 @@ define(['jquery', 'core/modal_factory', 'core/templates', 'core/str', 'core/noti
     function ($, ModalFactory, Templates, Str, Notification) {
 
         var showhidecolumnsmodal = {
-            init: function (id, shortname, hiddencols, columnscontext) {
+            init: function (id, shortname, columnscontext) {
                 var addblocklink = $("div.showhidecolumns button");
 
                 var titlePromise = Str.get_string('showhidecolumns', 'local_reportbuilder')
@@ -37,10 +37,6 @@ define(['jquery', 'core/modal_factory', 'core/templates', 'core/str', 'core/noti
 
                 var bodyPromise =Templates.render('local_reportbuilder/showhidecolumnsmodal', columnscontext)
                         .fail(Notification.exception);
-
-                for (col in hiddencols) {
-                    $(hiddencols[col]).hide();
-                }
 
                 ModalFactory.create({
                     title: titlePromise,

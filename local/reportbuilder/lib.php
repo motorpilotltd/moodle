@@ -4326,12 +4326,12 @@ class reportbuilder {
 
         $shortname = $this->shortname;
         // javascript to hide columns based on session variable
-        if (isset($SESSION->rb_showhide_columns[$this->get_uniqueid('rb')])) {
+        if (isset($SESSION->rb_showhide_columns[$this->shortname])) {
             foreach ($this->columns as $column) {
                 $ident = "{$column->type}_{$column->value}";
-                if (isset($SESSION->rb_showhide_columns[$this->get_uniqueid('rb')][$ident])) {
-                    if ($SESSION->rb_showhide_columns[$this->get_uniqueid('rb')][$ident] == 0) {
-                        $cols[] = "#{$shortname} .{$ident}";
+                if (isset($SESSION->rb_showhide_columns[$this->shortname][$ident])) {
+                    if ($SESSION->rb_showhide_columns[$this->shortname][$ident] == 0) {
+                        $cols[] = $ident;
                     }
                 }
             }

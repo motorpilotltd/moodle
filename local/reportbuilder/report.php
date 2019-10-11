@@ -131,7 +131,6 @@ if ($graph) {
     $PAGE->requires->js_call_amd('local_reportbuilder/showhidecolumsmodal', 'init',
             ['id' => $report->_id,
              'shortname' => $report->shortname,
-             'hiddencols' => $hiddencolumns,
              'columnscontext' => (object)['columns' => $columns]]);
     echo $OUTPUT->single_button('', get_string('showhidecolumns', 'local_reportbuilder'), 'get', ['class' => 'showhidecolumns']);
 
