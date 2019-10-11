@@ -75,3 +75,9 @@ $string['type_session'] = 'Event';
 $string['unknowndate'] = 'Unknown';
 $string['waitlistattendees'] = 'Number of wait-listed';
 
+$string['sessionid'] = 'Session ID';
+$string['ftfid'] = 'Face to face ID';
+$string['sessstartdatetime'] = 'Session start date';
+$string['sessfinishdatetime'] = 'Session end date';
+$string['sessionid'] = 'Session ID';
+$string['ftfid'] = 'Face to face ID';

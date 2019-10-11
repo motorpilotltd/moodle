@@ -270,7 +270,7 @@ class source extends base {
         $columnoptions[] = new rb_column_option(
                 'facetoface',
                 'sessionid',
-                get_string('sessionid', 'rbsource_facetofacebase'),
+                get_string('sessionid', 'rbsource_facetofacesummary'),
                 'base.id',
                 array(
                         'dbdatatype' => 'integer'

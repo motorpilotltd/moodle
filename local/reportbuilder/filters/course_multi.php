@@ -91,7 +91,7 @@ class rb_filter_course_multi extends rb_filter_type {
         $objs[] =& $mform->createElement('static', 'selectorbutton',
             '',
             html_writer::empty_tag('input', array('type' => 'button',
-                'class' => 'rb-filter-button rb-filter-choose-course',
+                'class' => 'rb-filter-button rb-filter-choose-course btn btn-secondary',
                 'value' => get_string('coursemultiitemchoose', 'local_reportbuilder'),
                 'id' => 'show-' . $this->name . '-dialog')));
 

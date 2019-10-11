@@ -122,7 +122,18 @@ echo $report->display_saved_search_options();
 if ($graph) {
     print $report->print_feedback_results();
 } else {
-    echo $output->showhide_button($report->_id, $report->shortname);
+    $columns = [];
+    $hiddencolumns = $report->js_get_hidden_columns();
+    foreach ($report->get_columns() as $machinename => $column) {
+        $columns[] = (object)['name' => $column->heading, 'machinename' => $machinename, 'checked' => !in_array($machinename, $hiddencolumns)];
+    }
+    $PAGE->requires->js_call_amd('local_reportbuilder/showhidecolumsmodal', 'init',
+            ['id' => $report->_id,
+             'shortname' => $report->shortname,
+             'hiddencols' => $hiddencolumns,
+             'columnscontext' => (object)['columns' => $columns]]);
+    echo $OUTPUT->single_button('', get_string('showhidecolumns', 'local_reportbuilder'), 'get', ['class' => 'showhidecolumns']);
+
     echo $tablehtml;
 }
 

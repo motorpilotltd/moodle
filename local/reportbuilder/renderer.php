@@ -567,37 +567,6 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
         }
     }
 
-
-    /**
-     * Returns HTML for a button that lets users show and hide report columns
-     * interactively within the report
-     *
-     * JQuery, dialog code and showhide.js.php should be included in page
-     * when this is used (see code in report.php)
-     *
-     * @param int $reportid
-     * @param string $reportshortname the report short name
-     * @return string HTML to display the button
-     */
-    public function showhide_button($reportid, $reportshortname) {
-        $js = "var id = {$reportid}; var shortname = '{$reportshortname}';";
-        $html = html_writer::script($js);
-
-        // hide if javascript disabled
-        $html .= html_writer::start_tag('div', array('class' => 'rb-showhide'));
-        $html .= html_writer::start_tag('form');
-        $html .= html_writer::empty_tag('input', array('type' => 'button',
-            'class' => 'rb-hidden',
-            'name' => 'rb_showhide_columns',
-            'id' => 'show-showhide-dialog',
-            'value' => get_string('showhidecolumns', 'local_reportbuilder')
-        ));
-        $html .= html_writer::end_tag('form');
-        $html .= html_writer::end_tag('div');
-
-        return $html;
-    }
-
     /**
      * Returns HTML for a button that lets users show and hide report columns
      * interactively within the report
@@ -645,7 +614,7 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
         $html = html_writer::start_tag('div', array('class' => 'boxalignright'));
         $html .= html_writer::start_tag('form');
         $html .= html_writer::empty_tag('input', array('type' => 'button',
-            'class' => 'boxalignright',
+            'class' => 'btn btn-secondary',
             'name' => 'rb_manage_search',
             'id' => 'show-searchlist-dialog-' . $report->_id,
             'value' => get_string('managesavedsearches', 'local_reportbuilder')

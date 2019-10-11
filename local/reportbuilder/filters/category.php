@@ -56,7 +56,7 @@ class rb_filter_category extends rb_filter_type {
         $objs[] =& $mform->createElement('static', 'selectorbutton',
             '',
             html_writer::empty_tag('input', array('type' => 'button',
-                'class' => 'rb-filter-button rb-filter-choose-category',
+                'class' => 'rb-filter-button rb-filter-choose-category btn btn-secondary',
                 'value' => get_string('choosecatplural', 'local_reportbuilder'),
                 'id' => 'show-' . $this->name . '-dialog')));
         $objs[] =& $mform->createElement('checkbox', $this->name . '_rec', '', get_string('includesubcategories', 'local_reportbuilder'));

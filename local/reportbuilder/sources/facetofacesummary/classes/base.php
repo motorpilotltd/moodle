@@ -51,7 +51,7 @@ abstract class base extends rb_base_source {
         $columnoptions[] = new rb_column_option(
             'facetoface',
             'facetofaceid',
-            get_string('ftfid', 'rbsource_facetofacebase'),
+            get_string('ftfid', 'rbsource_facetofacesummary'),
             'facetoface.id',
             array(
                 'joins' => array('facetoface'),
@@ -93,7 +93,7 @@ abstract class base extends rb_base_source {
         $columnoptions[] = new rb_column_option(
             'facetoface',
             'sessionid',
-            get_string('sessionid', 'rbsource_facetofacebase'),
+            get_string('sessionid', 'rbsource_facetofacesummary'),
             'sessions.id',
             array(
                 'joins' => 'sessions',
@@ -114,7 +114,7 @@ abstract class base extends rb_base_source {
         $columnoptions[] = new rb_column_option(
             'date',
             'sessionstartdate',
-            get_string('sessstartdatetime', 'rbsource_facetofacebase'),
+            get_string('sessstartdatetime', 'rbsource_facetofacesummary'),
             "{$sessiondatejoin}.timestart",
             array(
                 'joins' => array($sessiondatejoin),
@@ -127,7 +127,7 @@ abstract class base extends rb_base_source {
         $columnoptions[] = new rb_column_option(
             'date',
             'sessionfinishdate',
-            get_string('sessfinishdatetime', 'rbsource_facetofacebase'),
+            get_string('sessfinishdatetime', 'rbsource_facetofacesummary'),
             "{$sessiondatejoin}.timefinish",
             array(
                 'joins' => array($sessiondatejoin),
@@ -145,7 +145,7 @@ abstract class base extends rb_base_source {
                 'joins' => array($sessiondatejoin),
                 'displayfunc' => 'local_event_date',
                 'dbdatatype' => 'timestamp',
-                'defaultheading' => get_string('sessstartdatetime', 'rbsource_facetofacebase'),
+                'defaultheading' => get_string('sessstartdatetime', 'rbsource_facetofacesummary'),
             )
         );
 
@@ -158,7 +158,7 @@ abstract class base extends rb_base_source {
                 'joins' => array($sessiondatejoin),
                 'displayfunc' => 'local_event_date',
                 'dbdatatype' => 'timestamp',
-                'defaultheading' => get_string('sessfinishdatetime', 'rbsource_facetofacebase'),
+                'defaultheading' => get_string('sessfinishdatetime', 'rbsource_facetofacesummary'),
             )
         );
 

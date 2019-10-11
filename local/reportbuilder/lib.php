@@ -560,16 +560,6 @@ class reportbuilder {
         $graph = (substr($this->source, 0, strlen('graphical_feedback_questions')) == 'graphical_feedback_questions');
         if (!$graph) {
             $code[] = TOTARA_JS_DIALOG;
-            $jsdetails = new stdClass();
-            $jsdetails->initcall = 'M.local_reportbuilder_showhide.init';
-            $jsdetails->jsmodule = array('name' => 'local_reportbuilder_showhide',
-                'fullpath' => '/local/reportbuilder/showhide.js');
-            $jsdetails->args = array('hiddencols' => $this->js_get_hidden_columns());
-            $jsdetails->strings = array(
-                'local_reportbuilder' => array('showhidecolumns'),
-                'moodle' => array('ok')
-            );
-            $js[] = $jsdetails;
 
             // Add saved search.js.
             $jsdetails = new stdClass();
