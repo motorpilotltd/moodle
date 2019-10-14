@@ -138,10 +138,7 @@ $config->rb_grouped_columns = $grouped;
 $config->rb_allowed_advanced = $allowedadvanced;
 $config->rb_advanced_options = $advoptions;
 
-$jsmodule = array(
-    'name' => 'local_reportbuildercolumns',
-    'fullpath' => '/local/reportbuilder/columns.js');
-$PAGE->requires->js_init_call('M.local_reportbuildercolumns.init', array($config), false, $jsmodule);
+$PAGE->requires->js_call_amd('local_reportbuilder/reportbuildercolumns', 'init', array($config));
 
 $PAGE->requires->strings_for_js(array('saving', 'confirmcoldelete', 'hide', 'show', 'delete', 'moveup', 'movedown', 'add'),
                                 'local_reportbuilder');

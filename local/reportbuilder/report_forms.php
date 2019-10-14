@@ -1221,10 +1221,12 @@ class report_builder_save_form extends moodleform {
         $filterparams = $report->get_restriction_descriptions('filter');
         $params = implode(html_writer::empty_tag('br'), $filterparams);
 
-        if ($data->sid) {
-            $mform->addElement('header', 'savesearch', get_string('editingsavedsearch', 'local_reportbuilder'));
-        } else {
-            $mform->addElement('header', 'savesearch', get_string('createasavedsearch', 'local_reportbuilder'));
+        if ($data->headerandactions) {
+            if (!$data->sid) {
+                $mform->addElement('header', 'savesearch', get_string('editingsavedsearch', 'local_reportbuilder'));
+            } else {
+                $mform->addElement('header', 'savesearch', get_string('createasavedsearch', 'local_reportbuilder'));
+            }
         }
         $mform->addElement('static', 'description', '', get_string('savedsearchdesc', 'local_reportbuilder'));
         $mform->addElement('static', 'params', get_string('currentsearchparams', 'local_reportbuilder'), $params);
@@ -1239,7 +1241,9 @@ class report_builder_save_form extends moodleform {
         $mform->addElement('hidden', 'action');
         $mform->setType('action', PARAM_ALPHANUMEXT);
 
-        $this->add_action_buttons();
+        if ($data->headerandactions) {
+            $this->add_action_buttons();
+        }
         $this->set_data($data);
     }
 }

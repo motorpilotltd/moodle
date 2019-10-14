@@ -108,12 +108,8 @@ $PAGE->requires->strings_for_js(array('saving', 'confirmfilterdelete', 'confirms
 $args = array('args' => '{"user_sesskey":"'.$USER->sesskey.'", "rb_reportid":'.$id.',
     "rb_filters":'.$sizeoffilters.', "rb_initial_display":'.$initialdisplay.', "rb_global_initial_display":'.$globalinitialdisplay.',
     "rb_filter_headings":'.json_encode($filterheadings).', "rb_search_column_headings":'.json_encode($searchcolumnheadings).'}');
-$jsmodule = array(
-    'name' => 'local_reportbuilderfilters',
-    'fullpath' => '/local/reportbuilder/filters.js',
-    'requires' => array('json'));
-$PAGE->requires->js_init_call('M.local_reportbuilderfilters.init', $args, false, $jsmodule);
 
+$PAGE->requires->js_call_amd('local_reportbuilder/reportbuilderfilters', 'init', $args);
 
 // Delete fields or columns.
 if ($d and $confirm) {

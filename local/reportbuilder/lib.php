@@ -4220,12 +4220,7 @@ class reportbuilder {
             }
         }
 
-        $jsmodule = array(
-            'name' => 'local_reportbuilder_expand',
-            'fullpath' => '/local/reportbuilder/js/expand.js',
-            'requires' => array('json'));
-        $PAGE->requires->js_init_call('M.local_reportbuilder_expand.init', array(), true, $jsmodule);
-
+        $PAGE->requires->js_call_amd('local_reportbuilder/reportbuilder_expand', 'init');
         if ($return) {
             return $tablehtml;
         }

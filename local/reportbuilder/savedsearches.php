@@ -107,12 +107,14 @@ if ($action === 'edit') {
 
     if (isset($name)) {
         require_sesskey();
-        $todb = $DB->get_record('report_builder_saved', ['id' => $sid]);
-        $todb->name = $name;
-        $todb->ispublic = $ispublic;
-        $todb->timemodified = time();
-        $DB->update_record('report_builder_saved', $todb);
+        $search->name = $name;
+        $search->ispublic = $ispublic;
+        $search->timemodified = time();
+        $DB->update_record('report_builder_saved', $search);
     } else {
+        $data = clone($search);
+        $data->sid = $sid;
+        $data->headerandactions = false;
         $mform = new report_builder_save_form(null, array('report' => $report, 'data' => $data));
         $mform->display();
     }

@@ -124,6 +124,10 @@ define(['jquery', 'core/modal_factory', 'core/templates', 'core/str', 'core/noti
                                         }
                                     });
                             });
+
+                            modal.getRoot().on(ModalEvents.hidden, function() {
+                                modal.destroy();
+                            });
                             modal.show();
                         });
                 });

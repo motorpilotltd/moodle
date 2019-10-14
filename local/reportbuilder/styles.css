@@ -219,7 +219,7 @@ form[id^="toolbarsearch"].mform .fsubmit {
 .path-admin-totara-reportbuilder-restrictions .header.lastcol {
     min-width: 120px;
 }
-#fitem_id_all_sidebar_filters {
+div.felement #id_all_sidebar_filters {
     /* stylelint-disable */
     display: none !important;
     /* stylelint-enable */
@@ -2233,13 +2233,13 @@ button.ui-button::-moz-focus-inner {
 
 
 div.reportbuilderform div.fitem div.col-md-3{
-    display: none;
+    display: none!important;
 }
 
 fieldset#id_standardfilter div.fitem div.col-md-3{
-    display: none;
+    display: none!important;;
 }
 
 fieldset#id_sidebarfilter div.fitem div.col-md-3{
-    display: none;
+    display: none!important;;
 }
