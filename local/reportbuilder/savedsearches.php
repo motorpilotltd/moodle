@@ -71,9 +71,6 @@ $pagetitle = format_string(get_string('savesearch', 'local_reportbuilder') . ': 
 $PAGE->set_title($pagetitle);
 
 if ($action === 'delete') {
-    if (!$sid) {
-        redirect($returnurl);
-    }
     if ($confirm) {
         require_sesskey();
         $transaction = $DB->start_delegated_transaction();
@@ -98,46 +95,32 @@ if ($action === 'delete') {
         $messageend = get_string('savedsearchinscheduleddelete', 'local_reportbuilder', $out) . str_repeat(html_writer::empty_tag('br'), 2);
     }
 
-    echo $output->heading(get_string('savedsearches', 'local_reportbuilder'), 1);
-
     $messageend .= get_string('savedsearchconfirmdelete', 'local_reportbuilder', format_string($search->name));
 
-    // Prompt to delete.
-    $params = array('id' => $id, 'sid' => $sid, 'action' => 'delete', 'confirm' => 'true', 'sesskey' => $USER->sesskey);
-    $confirmurl = new moodle_url('/local/reportbuilder/savedsearches.php', $params);
-    echo $output->confirm($messageend, $confirmurl, $returnurl);
+    echo $messageend;
     die;
 }
 
 if ($action === 'edit') {
-    if (!$sid) {
-        redirect($returnurl);
-    }
+    $name = optional_param('name', null, PARAM_TEXT);
+    $ispublic = optional_param('ispublic', null, PARAM_BOOL);
 
-    $data = clone($search);
-    $data->sid = $data->id;
-    $data->id = $data->reportid;
-    $data->action = 'edit';
-
-    $mform = new report_builder_save_form(null, array('report' => $report, 'data' => $data));
-
-    if ($data = $mform->get_data()) {
-        $todb = new stdClass();
-        $todb->id = $data->sid;
-        $todb->name = $data->name;
-        $todb->ispublic = $data->ispublic;
+    if (isset($name)) {
+        require_sesskey();
+        $todb = $DB->get_record('report_builder_saved', ['id' => $sid]);
+        $todb->name = $name;
+        $todb->ispublic = $ispublic;
         $todb->timemodified = time();
         $DB->update_record('report_builder_saved', $todb);
-        redirect($returnurl);
+    } else {
+        $mform = new report_builder_save_form(null, array('report' => $report, 'data' => $data));
+        $mform->display();
     }
 
-    echo $output->heading(get_string('savedsearches', 'local_reportbuilder'), 1);
-    $mform->display();
     die;
 }
 
 // Show users searches.
-echo $output->heading(get_string('savedsearches', 'local_reportbuilder'), 1);
 
 $searches = $DB->get_records('report_builder_saved', array('userid' => $USER->id, 'reportid' => $id));
 if (!empty($searches)) {

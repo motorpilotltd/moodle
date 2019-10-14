@@ -602,30 +602,6 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
     }
 
     /**
-     * Returns HTML for a button that lets users see saved search
-     *
-     * JQuery, dialog code and searchlist.js should be included in page
-     * when this is used (see code in report.php)
-     *
-     * @param int $report
-     * @return string HTML to display the button
-     */
-    public function manage_search_button($report) {
-        $html = html_writer::start_tag('div', array('class' => 'boxalignright'));
-        $html .= html_writer::start_tag('form');
-        $html .= html_writer::empty_tag('input', array('type' => 'button',
-            'class' => 'btn btn-secondary',
-            'name' => 'rb_manage_search',
-            'id' => 'show-searchlist-dialog-' . $report->_id,
-            'value' => get_string('managesavedsearches', 'local_reportbuilder')
-        ));
-        $html .= html_writer::end_tag('form');
-        $html .= html_writer::end_tag('div');
-
-        return $html;
-    }
-
-    /**
      * Print the description of a report
      *
      * @param string $description
@@ -737,6 +713,7 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
         $data = array();
         $stredit = get_string('edit');
         $strdelete = get_string('delete', 'local_reportbuilder');
+        $rowclasses = [];
 
         foreach ($searches as $search) {
             $editurl = new moodle_url('/local/reportbuilder/savedsearches.php',
@@ -744,14 +721,15 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
             $deleteurl = new moodle_url('/local/reportbuilder/savedsearches.php',
                 array('id' => $search->reportid, 'action' => 'delete', 'sid' => $search->id));
 
-            $actions = $this->output->action_icon($editurl, new pix_icon('/t/edit', $stredit, 'moodle')) . ' ';
-            $actions .= $this->output->action_icon($deleteurl, new pix_icon('/t/delete', $strdelete, 'moodle'));
+            $actions = $this->output->action_icon($editurl, new pix_icon('/t/edit', $stredit, 'moodle'), null, ['class' => 'edit-search', 'data-searchid' => $search->id]) . ' ';
+            $actions .= $this->output->action_icon($deleteurl, new pix_icon('/t/delete', $strdelete, 'moodle'), null, ['class' => 'delete-search', 'data-searchid' => $search->id]);
 
             $row = array();
             $row[] = $search->name;
             $row[] = ($search->ispublic) ? get_string('yes') : get_string('no');
             $row[] = $actions;
             $data[] = $row;
+            $rowclasses[] = 'savedsearchid_' . $search->id;
         }
 
         $table = new html_table();
@@ -759,6 +737,7 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
         $table->head = $tableheader;
         $table->attributes['class'] = 'fullwidth generaltable';
         $table->data = $data;
+        $table->rowclasses = $rowclasses;
 
         return html_writer::table($table);
     }

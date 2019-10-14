@@ -550,30 +550,13 @@ class reportbuilder {
         $PAGE->requires->jquery_plugin('ui');
         $PAGE->requires->jquery_plugin('ui-css');
 
-        // Array of options for local_js
-        $code = array();
-
         // Get any required js files that are specified by the source.
         $js = $this->src->get_required_jss();
 
         // Only include show/hide code for tabular reports.
         $graph = (substr($this->source, 0, strlen('graphical_feedback_questions')) == 'graphical_feedback_questions');
-        if (!$graph) {
-            $code[] = TOTARA_JS_DIALOG;
 
-            // Add saved search.js.
-            $jsdetails = new stdClass();
-            $jsdetails->initcall = 'M.local_reportbuilder_savedsearches.init';
-            $jsdetails->jsmodule = array('name' => 'local_reportbuilder_savedsearches',
-                'fullpath' => '/local/reportbuilder/saved_searches.js');
-            $jsdetails->strings = array(
-                'local_reportbuilder' => array('managesavedsearches'),
-                'form' => array('close')
-            );
-            $js[] = $jsdetails;
-        }
-
-        local_js($code);
+        local_js();
         foreach ($js as $jsdetails) {
             if (!empty($jsdetails->strings)) {
                 foreach ($jsdetails->strings as $scomponent => $sstrings) {
@@ -4421,7 +4404,7 @@ class reportbuilder {
      * @return string HTML to display the table
      */
     public function display_saved_search_options() {
-        global $PAGE;
+        global $PAGE, $OUTPUT;
 
         if (!isloggedin() or isguestuser()) {
             // No saving for guests, sorry.
@@ -4444,7 +4427,10 @@ class reportbuilder {
             $controls .= $savedbutton;
         }
         if (strlen($savedmenu) != 0) {
-            $managesearchbutton = $output->manage_search_button($this);
+            $PAGE->requires->js_call_amd('local_reportbuilder/savedsearchesmodal', 'init',
+                    ['id' => $this->_id]);
+            $managesearchbutton = $OUTPUT->single_button('', get_string('managesavedsearches', 'local_reportbuilder'), 'get', ['class' => 'managesavedsearches']);
+
             $controls .= html_writer::tag('div', $savedmenu, array('id' => 'rb-search-menu'));
             $controls .=  html_writer::tag('div', $managesearchbutton, array('id' => 'manage-saved-search-button'));;
         }
