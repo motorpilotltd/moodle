@@ -22,7 +22,7 @@ require_once('invitee.php');
  * @author paulstanyer
  */
 class organizer extends invitee {
-    public function setup_mailer(PHPMailer $mailer) {
+    public function setup_mailer(\moodle_phpmailer $mailer) {
         global $CFG, $SITE;
         $fromstring = $this->name;
         if ($CFG->emailfromvia == EMAIL_VIA_ALWAYS) {

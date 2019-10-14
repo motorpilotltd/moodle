@@ -81,7 +81,7 @@ class invite {
         $this->dtend = $datestart->format('Ymd\THis\Z');
     }
 
-    public function setup_mailer(PHPMailer $mailer) {
+    public function setup_mailer(\moodle_phpmailer $mailer) {
         global $CFG;
 
         $this->organizer->setup_mailer($mailer);

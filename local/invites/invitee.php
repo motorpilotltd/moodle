@@ -46,7 +46,7 @@ class invitee {
         $this->add_plain($user->email, fullname($user));
     }
 
-    public function setup_mailer(PHPMailer $mailer) {
+    public function setup_mailer(\moodle_phpmailer $mailer) {
         if (!validate_email($this->email)) {
             // We can not send emails to invalid addresses - it might create security issue or confuse the mailer.
             debugging("local_invite: Email (".s($this->email).") is invalid! Not sending.");
