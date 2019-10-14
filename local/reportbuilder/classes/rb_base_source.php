@@ -2357,7 +2357,7 @@ abstract class rb_base_source {
      *                          report source language file.
      * @return True
      */
-    protected function add_staff_fields_to_filters(&$filteroptions, $groupname = 'arupstaff', $addtypetoheading = false, $join='auserstaff') {
+    protected function add_staff_fields_to_filters(&$filteroptions, $groupname = 'user', $addtypetoheading = false, $join='auserstaff') {
 
         $select_width_options = rb_filter_option::select_width_limiter();
 
