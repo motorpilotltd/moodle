@@ -86,9 +86,6 @@ class source extends rb_base_source {
         $this->requiredcolumns = array();
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_user');
 
-        // Apply global report restrictions.
-        $this->add_global_report_restriction_join('base', 'id', 'base');
-
         parent::__construct();
     }
 
