@@ -94,61 +94,6 @@ function local_js($options = array()) {
         $PAGE->requires->js('/local/reportbuilder/js/lib/' . $directory . '/jquery.treeview' . $min . '.js');
 
     }
-
-    // If datepicker enabled
-    if (in_array(TOTARA_JS_DATEPICKER, $options)) {
-        $PAGE->requires->strings_for_js(array('datepickerlongyeardisplayformat', 'datepickerlongyearplaceholder', 'datepickerlongyearregexjs'), 'local_reportbuilder');
-        $PAGE->requires->string_for_js('thisdirection', 'langconfig');
-
-        $lang = current_language();
-
-        // include datepicker localization file if present for current language
-        $file = "/local/reportbuilder/js/lib/i18n/jquery.ui.datepicker-{$lang}.js";
-        if (is_readable($CFG->dirroot . $file)) {
-            $PAGE->requires->js($file);
-        }
-
-
-    }
-
-    // if placeholder enabled
-    if (in_array(TOTARA_JS_PLACEHOLDER, $options)) {
-        debugging('TOTARA_JS_PLACEHOLDER has been deprecated since Totara 10 as placeholders are implemented correctly in all supported browsers');
-        $PAGE->requires->js('/local/reportbuilder/js/lib/' . $directory . '/jquery.placeholder' . $min . '.js');
-        $PAGE->requires->js('/local/reportbuilder/js/lib/' . $directory . '/load.placeholder' . $min . '.js');
-    }
-
-    // If Icon preview is enabled
-    if (in_array(TOTARA_JS_ICON_PREVIEW, $options)) {
-
-        $PAGE->requires->js('/local/reportbuilder/js/icon.preview.js');
-
-    }
-
-    if (in_array(TOTARA_JS_DATATABLES, $options)) {
-        debugging('TOTARA_JS_DATATABLES has been deprecated and may cause unexpected results - please convert your JS to an AMD version', DEBUG_DEVELOPER);
-        $PAGE->requires->js('/local/reportbuilder/js/lib/jquery.dataTables' . $min . '.js');
-    }
-}
-
-/**
- * Adds JS datepicker setup call to page
- *
- * @param string $selector A JQuery Selector string referencing the element to add
- *                         the picker to
- * @param string $dateformat (optional) provide if format should not be standard dd/mm/yy
- */
-function build_datepicker_js($selector, $dateformat=null) {
-    global $PAGE;
-
-    $PAGE->requires->strings_for_js(array('datepickerlongyeardisplayformat', 'datepickerlongyearplaceholder', 'datepickerlongyearregexjs'), 'local_reportbuilder');
-
-    if (empty($dateformat)) {
-        $dateformat = get_string('datepickerlongyeardisplayformat', 'local_reportbuilder');
-    }
-    $button_img = array('t/calendar', 'local_reportbuilder');
-    $args = array($selector, $dateformat, $button_img);
-    $PAGE->requires->js_init_call('M.local_reportbuilder.build_datepicker', $args);
 }
 
 /**
