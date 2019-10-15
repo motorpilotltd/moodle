@@ -68,15 +68,6 @@ class rb_manage_user_reports_embedded extends rb_base_embedded {
     }
 
     /**
-     * Clarify if current embedded report support global report restrictions.
-     * Override to true for reports that support GRR
-     * @return boolean
-     */
-    public function embedded_global_restrictions_supported() {
-        return false;
-    }
-
-    /**
      * Hide this source if feature disabled or hidden.
      * @return bool
      */

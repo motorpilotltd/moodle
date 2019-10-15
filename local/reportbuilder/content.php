@@ -107,9 +107,6 @@ function reportbuilder_update_content($id, $report, $fromform) {
     $todb->id = $id;
     $todb->contentmode = $contentenabled;
     $todb->timemodified = time();
-    if (isset($fromform->globalrestriction)) {
-        $todb->globalrestriction = $fromform->globalrestriction;
-    }
     $DB->update_record('report_builder', $todb);
 
     $contentoptions = isset($report->contentoptions) ?

@@ -224,9 +224,6 @@ div.felement #id_all_sidebar_filters {
     display: none !important;
     /* stylelint-enable */
 }
-.globalrestrictionscontainer {
-    text-align: center;
-}
 #chooserestriction .error-required {
     display: none;
 }

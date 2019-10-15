@@ -21,7 +21,6 @@
         <FIELD NAME="embedded" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Indicates whether the report is an embedded report. Set to 1 for embedded, 0 otherwise."/>
         <FIELD NAME="initialdisplay" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Indicated whether to wait for filters to be applied before generating the report"/>
         <FIELD NAME="toolbarsearch" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Indicates if toolbarsearch should be enabled"/>
-        <FIELD NAME="globalrestriction" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Enable global restrictions for this report"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Updated when the report, column or setting changes"/>
         <FIELD NAME="showtotalcount" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Should a total count of records before filters are applied be shown"/>
         <FIELD NAME="useclonedb" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Use database clone"/>
@@ -229,22 +228,6 @@
       <INDEXES>
         <INDEX NAME="nextreport" UNIQUE="false" FIELDS="nextreport"/>
       </INDEXES>
-    </TABLE>
-    <TABLE NAME="report_builder_global_restr" COMMENT="Global Report Restrictions">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Description of the global report restriction"/>
-        <FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="allrecords" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="True means no restrictions"/>
-        <FIELD NAME="allusers" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="True means this restriction can be used by all users"/>
-        <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
     </TABLE>
   </TABLES>
 </XMLDB>

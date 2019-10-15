@@ -46,8 +46,6 @@ require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_filter_option.php'
 require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_param.php');
 require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_param_option.php');
 require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_content_option.php');
-require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_global_restriction.php');
-require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_global_restriction_set.php');
 require_once($CFG->dirroot . '/local/reportbuilder/js/lib/setup.php');
 require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_course_sortorder_helper.php');
 require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_course_sortorder_helper.php');
@@ -124,11 +122,6 @@ class reportbuilder {
     const FILTER = 1;
     const FILTERALL = 2;
 
-    /** Disable global restrictions in report */
-    const GLOBAL_REPORT_RESTRICTIONS_DISABLED = 0;
-    /** Use site-wide global restrictions in report */
-    const GLOBAL_REPORT_RESTRICTIONS_ENABLED = 1;
-
     /**
      * Custom uniqueid setting to apply during reportbuiler instantiation
      * It should be set by @see reportbuilder::overrideuniqueid() before every new reportbuilder call with custom uniqueid
@@ -167,15 +160,6 @@ class reportbuilder {
     public $reportfor, $embedded, $toolbarsearch;
 
     public $hidetoolbar = false;
-
-    /**
-     * The the state of global restrictions in this report.
-     * @var int $globalrestriction values GLOBAL_REPORT_RESTRICTIONS_DISABLED or GLOBAL_REPORT_RESTRICTIONS_ENABLED
-     */
-    public $globalrestriction;
-
-    /** @var rb_global_restriction_set $globalrestrictionset null if restrictions not used */
-    public $globalrestrictionset;
 
     private $_post_config_restrictions;
 
@@ -268,11 +252,10 @@ class reportbuilder {
      * @param bool $nocache Force no cache usage. Only works if cache for current report is enabled
      *                       and generated
      * @param array $embeddata data to be passed to the embedded object constructor
-     * @param rb_global_restriction_set $globalrestrictionset global report restrictions info
      *
      */
     public function __construct($id=null, $shortname=null, $embed_deprecated=false, $sid=null, $reportfor=null,
-            $nocache = false, $embeddata = array(), rb_global_restriction_set $globalrestrictionset = null) {
+            $nocache = false, $embeddata = array()) {
         global $USER, $DB, $CFG;
 
         $report = false;
@@ -310,27 +293,15 @@ class reportbuilder {
         }
 
         // If this is an embedded report then load the embedded report object.
-        $embedgrrsupport = true;
         if ($report->embedded && !$embed) {
             $embed = reportbuilder_get_embedded_report_object($report->shortname, $embeddata);
-            if ($embed instanceof rb_base_embedded) {
-                $embedgrrsupport = $embed->embedded_global_restrictions_supported();
-            }
         }
 
-        // Load restriction set.
-        if (!empty($CFG->enableglobalrestrictions) and $globalrestrictionset !== null && $embedgrrsupport) {
-            $this->globalrestrictionset = $globalrestrictionset;
-            $nocache = true; // Caching cannot work together with restrictions, sorry.
-            $usesourcecache = false; // Cannot use the source cache if we have a restrictionset.
-        } else {
-            $this->globalrestrictionset = null;
-            $usesourcecache = true; // There is no restrictionset so we can use the sourcecache.
-        }
+        $usesourcecache = true;
 
         $this->_id = $report->id;
         $this->source = $report->source;
-        $this->src = self::get_source_object($this->source, $usesourcecache, true, $this->globalrestrictionset);
+        $this->src = self::get_source_object($this->source, $usesourcecache, true);
         $this->shortname = $report->shortname;
         $this->fullname = $report->fullname;
         $this->hidden = $report->hidden;
@@ -338,7 +309,6 @@ class reportbuilder {
         $this->toolbarsearch = $report->toolbarsearch;
         $this->description = $report->description;
         $this->embedded = $report->embedded;
-        $this->globalrestriction = $report->globalrestriction;
         $this->contentmode = $report->contentmode;
         // Store the embedded URL for embedded reports only.
         if ($report->embedded && $embed) {
@@ -546,29 +516,6 @@ class reportbuilder {
     function include_js() {
         global $CFG, $PAGE;
 
-        $PAGE->requires->jquery();
-        $PAGE->requires->jquery_plugin('ui');
-        $PAGE->requires->jquery_plugin('ui-css');
-
-        // Get any required js files that are specified by the source.
-        $js = $this->src->get_required_jss();
-
-        // Only include show/hide code for tabular reports.
-        $graph = (substr($this->source, 0, strlen('graphical_feedback_questions')) == 'graphical_feedback_questions');
-
-        local_js();
-        foreach ($js as $jsdetails) {
-            if (!empty($jsdetails->strings)) {
-                foreach ($jsdetails->strings as $scomponent => $sstrings) {
-                    $PAGE->requires->strings_for_js($sstrings, $scomponent);
-                }
-            }
-
-            $PAGE->requires->js_init_call($jsdetails->initcall,
-                empty($jsdetails->args) ? null : $jsdetails->args,
-                false, $jsdetails->jsmodule);
-        }
-
 
         // Load Js for these filters.
         foreach ($this->filters as $filter) {
@@ -672,18 +619,12 @@ class reportbuilder {
      *                                 (excluding the rb_source prefix)
      * @param boolean $usecache     Whether to use the source cache or load from scratch
      * @param boolean $exception    Whether bad sources should throw exceptions or be ignored
-     * @param rb_global_restriction_set $globalrestrictionset optional global restriction set to restrict the report,
      *                              not compatible with $usecache
      * @return rb_base_source An instance of the source. Returns false if
      *                the source can't be found
      */
-    public static function get_source_object($source, $usecache = false, $exception = true, rb_global_restriction_set $globalrestrictionset = null) {
+    public static function get_source_object($source, $usecache = false, $exception = true) {
         global $USER;
-
-        if ($globalrestrictionset and $usecache) {
-            debugging('parameter $globalrestrictionset is not compatible with $usecache parameter, ignoring caches in get_source_object()', DEBUG_DEVELOPER);
-            $usecache = false;
-        }
 
         // Source objects are different for different users (regarding capabilities), so each user should have own source.
         if ($usecache && isset(self::$sourceobjects[$USER->id][$source])) {
@@ -693,10 +634,8 @@ class reportbuilder {
 
         $classname = "rbsource_$source\\source";
         if (class_exists($classname)) {
-            $instance = new $classname(null, $globalrestrictionset);
-            if (!$globalrestrictionset) {
-                self::$sourceobjects[$USER->id][$source] = $instance;
-            }
+            $instance = new $classname(null);
+            self::$sourceobjects[$USER->id][$source] = $instance;
             return $instance;
         }
 
@@ -708,10 +647,8 @@ class reportbuilder {
             $groupid = $matches[2];
             $classname = "rbsource_$basesource\\source";
             if (class_exists($classname)) {
-                $instance = new $classname($groupid, $globalrestrictionset);
-                if (!$globalrestrictionset) {
-                    self::$sourceobjects[$USER->id][$source] = $instance;
-                }
+                $instance = new $classname($groupid);
+                self::$sourceobjects[$USER->id][$source] = $instance;
                 return $instance;
             }
         }
@@ -723,10 +660,8 @@ class reportbuilder {
             $basesource = $matches[1];
             $classname = "rbsource_$basesource\\source";
             if (class_exists($classname)) {
-                $instance = new $classname(0, $globalrestrictionset);
-                if (!$globalrestrictionset) {
-                    self::$sourceobjects[$USER->id][$source] = $instance;
-                }
+                $instance = new $classname(0);
+                self::$sourceobjects[$USER->id][$source] = $instance;
                 return $instance;
             }
         }
@@ -1914,115 +1849,6 @@ class reportbuilder {
     }
 
     /**
-     * Display active selected global report restrictions for current $USER
-     * and allow them to choose restrictions if possible.
-     *
-     * Note: pages using this method must call rb_global_restriction_set::create_from_page_parameters() first.
-     *
-     * @return void - echoes HTML output
-     */
-    public function display_restrictions() {
-        global $CFG, $USER, $PAGE, $SESSION;
-
-        // Display only if GR enabled and active for report.
-        if (empty($CFG->enableglobalrestrictions) or $this->globalrestriction == reportbuilder::GLOBAL_REPORT_RESTRICTIONS_DISABLED) {
-            // Restrictions are disabled.
-            return;
-        }
-
-        // Does the report support restrictions?
-        if (!$this->src->global_restrictions_supported()) {
-            return;
-        }
-
-        $allrestrictions = rb_global_restriction_set::get_user_all_restrictions($USER->id);
-        if (!$allrestrictions) {
-            // No restrictions available - we cannot ask them to select anything.
-            if ($this->globalrestrictionset) {
-                if (!$this->globalrestrictionset->get_current_restriction_ids()) {
-                    // Do not tell users what is going on, this is a required feature.
-                    // Users will not see any records.
-                    return;
-                } else {
-                    // This should not happen, it might be a very weird race condition when deleting stuff.
-                    return;
-                }
-            } else {
-                // User can see all records, no worries here.
-                return;
-            }
-        }
-
-        // Add multilang support for names of restrictions.
-        foreach ($allrestrictions as $restriction) {
-            $restriction->name = format_string($restriction->name);
-        }
-
-        // Get the data from rb_global_restriction_set::create_from_page_parameters().
-        if (isset($SESSION->rb_global_restriction)) {
-            $sessionids = $SESSION->rb_global_restriction;
-        } else {
-            debugging('Missing session GRR data, make sure the report page calls rb_global_restriction_set::create_from_page_parameters()', DEBUG_DEVELOPER);
-            $sessionids = array();
-        }
-        $appliednames = array();
-        $appliedids = array();
-
-        foreach ($sessionids as $restid) {
-            if (!isset($allrestrictions[$restid])) {
-                // This should not happen, likely concurrent delete, it will get fixed on page reload.
-                continue;
-            }
-            $cur = $allrestrictions[$restid];
-            $appliednames[] = $cur->name;
-            $appliedids[] = $cur->id;
-        }
-
-        // Dialog box JS.
-        local_js(array(
-            TOTARA_JS_DIALOG
-        ));
-
-        // Note: PAGE->url is the right place to return to, blocks are using it too.
-        $args = array($this->_id, $PAGE->url->out(false));
-        $jsmodule = array('name' => 'totara_email_scheduled_report',
-            'fullpath' => '/local/reportbuilder/js/chooserestriction.js'
-        );
-
-        $PAGE->requires->strings_for_js(array('chooserestrictiontitle'), 'local_reportbuilder');
-        $PAGE->requires->js_init_call('M.local_reportbuilder_chooserestriction.init', $args, false, $jsmodule);
-
-        $chooselink = html_writer::link('#', get_string('changeglobalrestriction', 'local_reportbuilder'),
-            array('id' => 'show-chooserestriction-dialog', 'class' => 'restrictions_dialog'));
-
-        if (!$appliedids) {
-            // Strange, no restriction was picked automatically, this should not happen, but let them pick one manually now.
-            $messagehtml = html_writer::div(get_string('selectedglobalrestrictionsselect', 'local_reportbuilder', $chooselink),
-                'notifynotice globalrestrictionsnotice alert alert-info');
-            echo html_writer::div($messagehtml, 'globalrestrictionscontainer');
-            return;
-        }
-
-        if (count($allrestrictions) === 1) {
-            // Do not tell users what is going on, this is a required feature.
-            // Users can see records from the current restriction only.
-            return;
-        }
-
-        $chooselink = html_writer::link('#', get_string('changeglobalrestriction', 'local_reportbuilder'), array(
-            'id' => 'show-chooserestriction-dialog',
-            'class' => 'restrictions_dialog',
-            'data-selected' => implode(',', $appliedids)));
-
-        $a = new stdClass();
-        $a->appliednamesstr = implode(', ', $appliednames);
-        $a->chooselink = $chooselink;
-        $messagehtml = html_writer::div(get_string('selectedglobalrestrictionsmany', 'local_reportbuilder', $a),
-            'notifynotice globalrestrictionsnotice alert alert-info');
-        echo html_writer::div($messagehtml, 'globalrestrictionscontainer');
-    }
-
-    /**
      * Wrapper for displaying search form from filtering class
      *
      * @return Nothing returned but prints the search box
@@ -2786,34 +2612,6 @@ class reportbuilder {
     }
 
     /**
-     * Get list of global restriction joins.
-     *
-     * @return rb_join[] An array of rb_join objects containing join information.
-     */
-    public function get_global_restriction_joins() {
-        if (empty($this->src->globalrestrictionjoins)) {
-            return array();
-        }
-
-        $joins = array();
-        foreach ($this->src->globalrestrictionjoins as $join) {
-            $joins[] = $join;
-            $this->get_dependency_joins($joins, $join);
-        }
-
-        return $joins;
-    }
-
-    /**
-     * Get sql parameters used in restrictions (joins and query parts).
-     *
-     * @return array sql parameters
-     */
-    public function get_global_restriction_parameters() {
-        return $this->src->globalrestrictionparams;
-    }
-
-    /**
      * Return an array of {@link rb_join} objects containing the joins of all enabled
      * filters regardless their usage in current request (useful for caching)
      *
@@ -3456,10 +3254,6 @@ class reportbuilder {
 
         list($where, $group, $having, $sqlparams, $allgrouped) = $this->collect_restrictions($filtered);
 
-        // Addglobal restriction params.
-        $params = $this->get_global_restriction_parameters();
-        $sqlparams = array_merge($sqlparams, $params);
-
         // apply any SQL specified by the source
         if (!empty($this->src->sourcewhere)) {
             $where[] = $this->src->sourcewhere;
@@ -3660,9 +3454,8 @@ class reportbuilder {
         $paramjoins = $this->get_param_joins(true);
         $contentjoins = $this->get_content_joins();
         $sourcejoins = $this->get_source_joins();
-        $globalrestrictionjoins = $this->get_global_restriction_joins();
 
-        $joins = array_merge($columnjoins, $filterjoins, $paramjoins, $contentjoins, $sourcejoins, $globalrestrictionjoins);
+        $joins = array_merge($columnjoins, $filterjoins, $paramjoins, $contentjoins, $sourcejoins);
 
         // sort the joins to remove duplicates and resolve any dependencies
         $joins = $this->sort_joins($joins);
@@ -4192,13 +3985,7 @@ class reportbuilder {
             if (core_useragent::check_browser_version('MSIE', '6.0') and !core_useragent::check_browser_version('MSIE', '9.0')) {
                 // See http://partners.adobe.com/public/developer/en/acrobat/PDFOpenParameters.pdf
                 $svgurl = new moodle_url('/local/reportbuilder/ajax/graph.php', array('id' => $this->_id, 'sid' => $this->_sid));
-                if ($this->globalrestrictionset) {
-                    // Add the global restriction ids.
-                    $restrictionids = $this->globalrestrictionset->get_current_restriction_ids();
-                    if ($restrictionids) {
-                        $svgurl->param('globalrestrictionids', implode(',', $restrictionids));
-                    }
-                }
+
                 $svgurl = $svgurl . '#toolbar=0&navpanes=0&scrollbar=0&statusbar=0&viewrect=20,20,400,300';
                 $nopdf = get_string('error:nopdf', 'local_reportbuilder');
                 $attrs = array('type' => 'application/pdf', 'data' => $svgurl, 'width'=> '100%', 'height' => '400');
@@ -5885,9 +5672,6 @@ function reportbuilder_get_schduled_report(stdClass $sched, stdClass $reportreco
     if ($sched->reportid != $reportrecord->id) {
         throw new coding_exception('Invalid parameters');
     }
-    $allrestr = rb_global_restriction_set::create_from_ids(
-        $reportrecord, rb_global_restriction_set::get_user_all_restrictions_ids($sched->userid, true)
-    );
 
     return new reportbuilder($sched->reportid, null, false, $sched->savedsearchid, $sched->userid, false, array('userid' => $sched->userid), $allrestr);
 }
@@ -6065,19 +5849,17 @@ function reportbuilder_get_embedded_report_object($embedname, $data=array()) {
  * @param array $data Associative array of data needed by source (optional)
  * @param bool $nocache Disable cache
  * @param int $sid saved search id
- * @param rb_global_restriction_set $globalrestrictionset global report restrictions info
  *
  * @return reportbuilder Embedded report
  */
-function reportbuilder_get_embedded_report($embedname, $data = array(), $nocache = false, $sid = 'nosidsupplied',
-        rb_global_restriction_set $globalrestrictionset = null) {
+function reportbuilder_get_embedded_report($embedname, $data = array(), $nocache = false, $sid = 'nosidsupplied') {
     if ($sid === 'nosidsupplied') {
         debugging('Call to reportbuilder_get_embedded_report without supplying $sid is probably an error - if you
             want to save searches on your embedded report then you must pass in $sid here, otherwise pass 0 to remove
             this warning', DEBUG_DEVELOPER);
         $sid = 0;
     }
-    return new reportbuilder(null, $embedname, false, $sid, null, $nocache, $data, $globalrestrictionset);
+    return new reportbuilder(null, $embedname, false, $sid, null, $nocache, $data);
 }
 
 
@@ -6249,9 +6031,6 @@ function reportbuilder_create_embedded_record($shortname, $embed, &$error) {
     if (isset($embed->recordsperpage)) {
         $todb->recordsperpage = $embed->recordsperpage;
     }
-
-    // Note: embedded reports are not expected to have global restrictions for performance reasons.
-    $todb->globalrestriction = reportbuilder::GLOBAL_REPORT_RESTRICTIONS_DISABLED;
 
     if (isset($embed->initialdisplay)) {
         $todb->initialdisplay = $embed->initialdisplay;
@@ -6576,7 +6355,6 @@ function reportbuilder_clone_report(reportbuilder $report, $clonename) {
     $reportrec->embedded = 0;
     $reportrec->timemodified = time();
     $reportrec->fullname = $clonename;
-    // NOTE: do not change the global restriction flag here.
 
     if ($embedded) {
         $reportrec->accessmode = REPORT_BUILDER_ACCESS_MODE_ANY;

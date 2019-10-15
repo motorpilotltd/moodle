@@ -949,25 +949,7 @@ class report_builder_edit_content_form extends moodleform {
 
         $mform->addElement('header', 'contentheader', get_string('contentcontrols', 'local_reportbuilder'));
 
-        // Add Global restriction setting.
-        $globalrestrictionsopts = false;
-        if (!empty($CFG->enableglobalrestrictions)) {
-            // Add option if src supports GRR or Embedded report support GRR
-            // or option is already enabled (to allow disable it).
-            if ($report->src->global_restrictions_supported() &&
-                    (is_null($report->embedobj) || $report->embedobj->embedded_global_restrictions_supported()) ||
-                    $report->globalrestriction) {
-                $mform->addElement('advcheckbox', 'globalrestriction', get_string('globalrestriction', 'local_reportbuilder'));
-                $mform->addHelpButton('globalrestriction', 'globalrestriction', 'local_reportbuilder');
-                $mform->setDefault("globalrestriction", $report->globalrestriction);
-                $globalrestrictionsopts = true;
-            } else {
-                $mform->addElement('static', 'staticglobalrestriction', get_string('globalrestriction', 'local_reportbuilder'),
-                        get_string('globalrestrictionnotsupported', 'local_reportbuilder'));
-            }
-        }
-
-        if (count($contentoptions) || $globalrestrictionsopts) {
+        if (count($contentoptions)) {
             if ($report->embeddedurl !== null) {
                 $mform->addElement('html', html_writer::tag('p', get_string('embeddedcontentnotes', 'local_reportbuilder')));
             }
@@ -1476,9 +1458,6 @@ class report_builder_restrictions_edit_general_form extends moodleform {
 
         $mform->addElement('editor', 'description_editor', get_string('description'));
         $mform->setType('text', PARAM_RAW); // Always use format_text() when displaying to user.
-
-        $mform->addElement('advcheckbox', 'active', get_string('activeglobalrestriction', 'local_reportbuilder'));
-        $mform->addHelpButton('active', 'activeglobalrestriction', 'local_reportbuilder');
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);

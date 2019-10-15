@@ -24,7 +24,6 @@
 
 namespace rbsource_coursecompletionall;
 use rb_base_source;
-use rb_global_restriction_set;
 use coding_exception;
 use rb_column_option;
 use rb_filter_option;
@@ -38,13 +37,7 @@ class source extends rb_base_source {
     public $contentoptions, $paramoptions, $defaultcolumns;
     public $defaultfilters, $requiredcolumns, $sourcetitle;
 
-    public function __construct($groupid, rb_global_restriction_set $globalrestrictionset = null) {
-        if ($groupid instanceof rb_global_restriction_set) {
-            throw new coding_exception('Wrong parameter orders detected during report source instantiation.');
-        }
-        // Remember the active global restriction set.
-        $this->globalrestrictionset = $globalrestrictionset;
-
+    public function __construct() {
         $this->base = $this->define_base();
         $this->joinlist = $this->define_joinlist();
         $this->columnoptions = $this->define_columnoptions();
@@ -58,38 +51,24 @@ class source extends rb_base_source {
         parent::__construct();
     }
 
-    /**
-     * Global report restrictions are implemented in this source.
-     * @return boolean
-     */
-    public function global_restrictions_supported() {
-        return true;
-    }
-
     protected function define_sourcetitle() {
         return get_string('sourcetitle', 'rbsource_coursecompletionall');
     }
 
     protected function define_base() {
         global $DB;
-
-        $global_restriction_join_cc = $this->get_global_report_restriction_join('cc', 'userid');
-        $global_restriction_join_cch = $this->get_global_report_restriction_join('cch', 'userid');
-
         $ccuniqueid = $DB->sql_concat_join("'CC'", array(\local_reportbuilder\dblib\base::getbdlib()->sql_cast_2char('cc.id')));
         $cchuniqueid = $DB->sql_concat_join("'CCH'", array(\local_reportbuilder\dblib\base::getbdlib()->sql_cast_2char('cch.id')));
 
         $base = "(
               SELECT {$ccuniqueid} AS id, cc.userid, cc.course AS courseid, cc.timecompleted, gg.finalgrade AS grade, gi.grademax, gi.grademin, 1 AS iscurrent
                 FROM {course_completions} cc
-                {$global_restriction_join_cc}
            LEFT JOIN {grade_items} gi ON cc.course = gi.courseid AND gi.itemtype = 'course'
            LEFT JOIN {grade_grades} gg ON gi.id = gg.itemid AND gg.userid = cc.userid
                WHERE cc.timecompleted >= 0
            UNION ALL
               SELECT {$cchuniqueid} AS id,cch.userid, cch.course as courseid, cch.timecompleted, NULL, gi.grademax, gi.grademin, 0 AS iscurrent
                 FROM {certif_course_compl_archive} cch
-                {$global_restriction_join_cch}
            LEFT JOIN {grade_items} gi ON cch.course = gi.courseid AND gi.itemtype = 'course'
            LEFT JOIN {grade_grades} gg ON gi.id = gg.itemid AND gg.userid = cch.userid
               )";

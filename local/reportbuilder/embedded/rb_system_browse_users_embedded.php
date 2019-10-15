@@ -107,13 +107,4 @@ class rb_system_browse_users_embedded extends rb_base_embedded {
             'moodle/user:delete'
         ], $systemcontext);
     }
-
-    /**
-     * Define if Global Report restrictions are supported.
-     *
-     * @return boolean
-     */
-    public function embedded_global_restrictions_supported() {
-        return true;
-    }
 }

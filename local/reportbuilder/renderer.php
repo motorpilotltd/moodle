@@ -47,9 +47,7 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
 
         $tableheader = array(get_string('name', 'local_reportbuilder'),
                              get_string('source', 'local_reportbuilder'));
-        if (!empty($CFG->enableglobalrestrictions)) {
-            $tableheader[] = get_string('globalrestriction', 'local_reportbuilder');
-        }
+
         $tableheader[] = get_string('options', 'local_reportbuilder');
 
         $data = array();
@@ -72,22 +70,6 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
                     html_writer::link($viewurl, get_string('view')) . ')';
 
                 $row[] = $report->sourcetitle;
-
-                if (!empty($CFG->enableglobalrestrictions)) {
-                    $grstatus = ''; // Report does not support GUR - do not show anything.
-                    if ($report->sourceobject) {
-                        if ($report->sourceobject->global_restrictions_supported()) {
-                            if ($report->globalrestriction) {
-                                $grstatus = $stryes;
-                            } else {
-                                $grstatus = $strno;
-                            }
-                        }
-                    } else {
-                        debugging('Missing $report->sourceobject!', DEBUG_DEVELOPER);
-                    }
-                    $row[] = $grstatus;
-                }
 
                 $settings = $this->output->action_icon($editurl, new pix_icon('/t/edit', $strsettings, 'moodle'), null,
                     array('title' => $strsettings));
@@ -143,9 +125,7 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
 
         $tableheader = array(get_string('name', 'local_reportbuilder'),
                              get_string('source', 'local_reportbuilder'));
-        if (!empty($CFG->enableglobalrestrictions)) {
-            $tableheader[] = get_string('globalrestriction', 'local_reportbuilder');
-        }
+
         $tableheader[] = get_string('options', 'local_reportbuilder');
 
         $strsettings = get_string('settings', 'local_reportbuilder');
@@ -172,22 +152,6 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
                 html_writer::link($viewurl, get_string('view')) . ')';
 
             $row[] = $report->sourcetitle;
-
-            if (!empty($CFG->enableglobalrestrictions)) {
-                $grstatus = ''; // Report does not support GUR - do not show anything.
-                if ($report->sourceobject) {
-                    if ($report->sourceobject->global_restrictions_supported()) {
-                        if ($report->globalrestriction) {
-                            $grstatus = $stryes;
-                        } else if (!isset($report->embedobj) || $report->embedobj->embedded_global_restrictions_supported()) {
-                            $grstatus = $strno;
-                        }
-                    }
-                } else {
-                    debugging('Missing $report->sourceobject!', DEBUG_DEVELOPER);
-                }
-                $row[] = $grstatus;
-            }
 
             $settings = $this->output->action_icon($editurl, new pix_icon('/t/edit', $strsettings, 'moodle'), null,
                     array('title' => $strsettings));
@@ -232,116 +196,6 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
         }
 
         return $output;
-    }
-
-    /**
-     * Renders a table containing global restrictions data
-     *
-     * @param array $globalrestrictions array of global restrictions objects
-     * @return string HTML table
-     */
-    public function global_restrictions_table($globalrestrictions = array()) {
-
-        if (empty($globalrestrictions)) {
-            return get_string('noglobalrestrictionsfound', 'local_reportbuilder');
-        }
-
-        $tableheader = array(get_string('name', 'local_reportbuilder'),
-            get_string('recordstoview', 'local_reportbuilder'),
-            get_string('restrictedusers', 'local_reportbuilder'),
-            get_string('options', 'local_reportbuilder'));
-
-        $stredit = get_string('edit');
-        $strdelete = get_string('delete');
-        $strmoveup = get_string('up');
-        $strmovedown = get_string('down');
-
-        $table = new html_table();
-        $table->summary = '';
-        $table->head = $tableheader;
-        $table->data = array();
-        $firstid = $lastid = 0;
-
-        // Get the first and last record id from the records so we can manage the sort icons.
-        if (count($globalrestrictions) > 1) {
-            $globalrestrictionscopy = $globalrestrictions;
-            $temp = array_shift($globalrestrictionscopy);
-            $firstid = $temp->id;
-            if ($globalrestrictionscopy) {
-                $temp = array_pop($globalrestrictionscopy);
-                $lastid = $temp->id;
-            }
-        }
-
-        $data = array();
-        $rowclasses = array();
-        foreach ($globalrestrictions as $restriction) {
-            $fullname = format_string($restriction->name);
-            $baseurl = '/local/reportbuilder/restrictions/index.php';
-            $viewurl = new moodle_url($baseurl, array('id' => $restriction->id, 'action' => 'view', 'sesskey' => sesskey()));
-            $editurl = new moodle_url('/local/reportbuilder/restrictions/edit_general.php',
-                    array('id' => $restriction->id, 'action' => 'edit'));
-            $deleteurl = new moodle_url($baseurl, array('id' => $restriction->id, 'action' => 'delete', 'sesskey' => sesskey()));
-
-            $row = array();
-            $row[] = $fullname;
-
-            if ($restriction->allrecords) {
-                $row[] = get_string('restrictionallrecords', 'local_reportbuilder');
-            } else {
-                $row[] = $this->format_records_to_view($restriction->recordstoview);
-            }
-            if ($restriction->allusers) {
-                $row[] = get_string('restrictionallusers', 'local_reportbuilder');
-            } else {
-                $row[] = $this->format_records_to_view($restriction->restrictedusers);
-            }
-
-            $editaction = $this->output->action_icon($editurl, new pix_icon('/t/edit', $stredit, 'moodle'), null,
-                array('title' => $stredit));
-            $deleteaction = $this->output->action_icon($deleteurl, new pix_icon('/t/delete', $strdelete, 'moodle'), null,
-                array('title' => $strdelete));
-
-            // Activate or deactivate actions.
-            if ($restriction->active) {
-                $tooltip = get_string('deactivateglobalrestriction', 'local_reportbuilder');
-                $icon = 't/hide';
-                $params = array('id' => $restriction->id, 'action' => 'deactivate', 'sesskey' => sesskey());
-                $rowclass = '';
-            } else {
-                $tooltip = get_string('activateglobalrestriction', 'local_reportbuilder');
-                $icon = 't/show';
-                $params = array('id' => $restriction->id, 'action' => 'activate', 'sesskey' => sesskey());
-                $rowclass = 'dimmed_text';
-            }
-            $activatedeactivateurl = new moodle_url($baseurl, $params);
-            $disableaction = $this->output->action_icon($activatedeactivateurl, new pix_icon($icon, $tooltip, 'moodle'), null,
-                array('title' => $tooltip));
-
-            // Sort action.
-            $upaction = '';
-            $downaction = '';
-            if ($restriction->id != $firstid && $firstid) {
-                $params = array('id' => $restriction->id, 'action' => 'up', 'sesskey' => sesskey());
-                $upaction = $this->output->action_icon(new moodle_url($baseurl, $params),
-                    new pix_icon('t/up', $strmoveup), null, array('title' => $strmoveup));
-            }
-
-            if ($restriction->id != $lastid && $lastid) {
-                $params = array('id' => $restriction->id, 'action' => 'down', 'sesskey' => sesskey());
-                $downaction = $this->output->action_icon(new moodle_url($baseurl, $params),
-                    new pix_icon('t/down', $strmovedown), null, array('title' => $strmovedown));
-            }
-
-            $row[] = "{$editaction}{$deleteaction}{$disableaction}{$upaction}{$downaction}";
-
-            $data[] = $row;
-            $rowclasses[] = $rowclass;
-        }
-        $table->data = $data;
-        $table->rowclasses = $rowclasses;
-
-        return html_writer::table($table);
     }
 
     /**
@@ -833,79 +687,6 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
         $table->head = array(get_string('learner'), get_string('assignedvia', 'local_reportbuilder'));
         $out = $this->output->container(html_writer::table($table), 'clearfix', 'assignedusers');
         return $out;
-    }
-
-    /**
-     * Renders the edit restictions header.
-     *
-     * @param rb_global_restriction $restriction
-     * @param string $currenttab
-     * @return string
-     */
-    public function edit_restriction_header(rb_global_restriction $restriction, $currenttab) {
-
-        $html = $this->output->header();
-
-        $url = new moodle_url('/local/reportbuilder/restrictions/index.php');
-        $html .= $this->output->container_start('reportbuilder-navlinks');
-        $html .= html_writer::link($url, get_string('allrestrictions', 'local_reportbuilder'));
-        $html .= $this->output->container_end();
-
-        if ($restriction->id) {
-            $html .= $this->output->heading(get_string('editrestriction', 'local_reportbuilder', $restriction->name));
-        } else {
-            $html .= $this->output->heading(get_string('newrestriction', 'local_reportbuilder'));
-        }
-
-        $html .= $this->edit_restriction_tabs($restriction, $currenttab);
-        return $html;
-    }
-
-    /**
-     * Renders editing restriction tabs.
-     *
-     * @param rb_global_restriction $restriction
-     * @param string $currenttab
-     * @return string
-     */
-    public function edit_restriction_tabs(rb_global_restriction $restriction, $currenttab) {
-        // Prepare the tabs.
-        $tabgeneral = new tabobject(
-            'general',
-            new moodle_url('/local/reportbuilder/restrictions/edit_general.php', array('id' => $restriction->id)),
-            get_string('general')
-        );
-        $tabrecordstoview = new tabobject(
-            'recordstoview',
-            new moodle_url('/local/reportbuilder/restrictions/edit_recordstoview.php', array('id' => $restriction->id)),
-            get_string('recordstoview', 'local_reportbuilder')
-        );
-        $tabrestrictedusers = new tabobject(
-            'restrictedusers',
-            new moodle_url('/local/reportbuilder/restrictions/edit_restrictedusers.php', array('id' => $restriction->id)),
-            get_string('restrictedusers', 'local_reportbuilder')
-        );
-
-        // Set up the active and inactive tabs.
-        if (!$restriction->id) {
-            $tabgeneral->activated = true;
-            $tabrecordstoview->inactive = true;
-            $tabrestrictedusers->inactive = true;
-        }
-
-        $row = array(
-            $tabgeneral,
-            $tabrecordstoview,
-            $tabrestrictedusers,
-        );
-        // Ensure the current tab is selected and activated.
-        foreach ($row as $tab) {
-            if ($tab->id === $currenttab) {
-                $tab->activated = true;
-                $tab->selected = true;
-            }
-        }
-        return $this->output->tabtree($row);
     }
 
     /**

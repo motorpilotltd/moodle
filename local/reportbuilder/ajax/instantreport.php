@@ -45,12 +45,10 @@ $sid =  optional_param('sid', 0, PARAM_INT);
 
 $PAGE->set_context(context_system::instance());
 
-// Verify global restrictions.
 $reportrecord = $DB->get_record('report_builder', array('id' => $id), '*', MUST_EXIST);
-$globalrestrictionset = rb_global_restriction_set::create_from_page_parameters($reportrecord);
 
 // Create the report object. Includes embedded report capability checks.
-$report = new reportbuilder($id, null, false, $sid, null, false, array(), $globalrestrictionset);
+$report = new reportbuilder($id, null, false, $sid, null, false, array());
 
 // Decide if require_login should be executed.
 if ($report->needs_require_login()) {

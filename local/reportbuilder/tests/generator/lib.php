@@ -36,7 +36,6 @@ require_once($CFG->libdir  . '/testing/generator/data_generator.php');
  *    $reportgenerator = $this->getDataGenerator()->get_plugin_generator('local_reportbuilder');
  */
 class local_reportbuilder_generator extends component_generator_base {
-    protected $globalrestrictioncount = 0;
 
     /**
      * To be called from data reset code only,
@@ -45,110 +44,6 @@ class local_reportbuilder_generator extends component_generator_base {
      */
     public function reset() {
         parent::reset();
-
-        $this->globalrestrictioncount = 0;
-    }
-
-    /**
-     * Create a test restriction.
-     *
-     * @param array|stdClass $record
-     * @return rb_global_restriction
-     */
-    public function create_global_restriction($record = null) {
-        global $CFG;
-        require_once("$CFG->dirroot/local/reportbuilder/classes/rb_global_restriction.php");
-
-        $this->globalrestrictioncount++;
-        $i = $this->globalrestrictioncount;
-
-        $record = (object)(array)$record;
-
-        if (!isset($record->name)) {
-            $record->name = 'Global report restriction '.$i;
-        }
-
-        $rest = new rb_global_restriction();
-        $rest->insert($record);
-
-        return $rest;
-    }
-
-    /**
-     * Add user related data to restriction.
-     *
-     * Records of this cohort, org, pos or user are visible
-     * in report with the restriction.
-     *
-     * @param stdClass|array $item - must contain prefix, restrictionid, itemid and optionally includechildren
-     * @return stdClass the created record
-     */
-    public function assign_global_restriction_record($item) {
-        global $DB;
-
-        $item = (array)$item;
-
-        if (empty($item['restrictionid'])) {
-            throw new coding_exception('generator requires $item->restrictionid');
-        }
-        if (empty($item['prefix'])) {
-            throw new coding_exception('generator requires valid $item->prefix');
-        }
-        if (empty($item['itemid'])) {
-            throw new coding_exception('generator requires $item->itemid');
-        }
-
-        $tables = array(
-            'user' => 'reportbuilder_grp_usr_rec',
-        );
-
-        $record = new stdClass();
-        $record->reportbuilderrecordid = $item['restrictionid'];
-        $record->{$prefix . 'id'} = $item['itemid'];
-        $record->timecreated = time();
-        if (isset($item['includechildren'])) {
-            $record->includechildren = $item['includechildren'];
-        }
-
-        $id = $DB->insert_record($tables[$prefix], $record);
-        return $DB->get_record($tables[$prefix], array('id' => $id));
-    }
-
-    /**
-     * Add user who is allowed to select restriction.
-     *
-     * @param stdClass|array $item - must contain prefix, restrictionid, itemid and optionally includechildren
-     * @return stdClass the created record
-     */
-    public function assign_global_restriction_user($item) {
-        global $DB;
-
-        $item = (array)$item;
-
-        if (empty($item['restrictionid'])) {
-            throw new coding_exception('generator requires $item->restrictionid');
-        }
-        if (empty($item['prefix'])) {
-            throw new coding_exception('generator requires valid $item->prefix');
-        }
-        if (empty($item['itemid'])) {
-            throw new coding_exception('generator requires $item->itemid');
-        }
-
-        $tables = array(
-            'user' => 'reportbuilder_grp_usr_usr',
-        );
-
-        $record = new stdClass();
-        $record->reportbuilderuserid = $item['restrictionid'];
-        $record->{$prefix . 'id'} = $item['itemid'];
-        $record->timecreated = time();
-        if (isset($item['includechildren'])) {
-            $record->includechildren = $item['includechildren'];
-        }
-
-        $id = $DB->insert_record($tables[$prefix], $record);
-        return $DB->get_record($tables[$prefix], array('id' => $id));
     }
 
     /**
@@ -166,7 +61,6 @@ class local_reportbuilder_generator extends component_generator_base {
             'contentmode'       => 0,
             'recordsperpage'    => 40,
             'toolbarsearch'     => 1,
-            'globalrestriction' =>  0,
             'timemodified'      => time(),
             'defaultsortorder'  => 4,
             'embed'             => 0

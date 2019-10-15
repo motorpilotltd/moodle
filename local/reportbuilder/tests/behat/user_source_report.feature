@@ -291,8 +291,6 @@ Feature: Verify functionality of user source report.
       | learner2 | A1     |
       | learner3 | A2     |
       | learner4 | A2     |
-    And the following config values are set as admin:
-      | enableglobalrestrictions | 1 |
 
     When I click on "Home" in the totara menu
     And I navigate to "Global report restrictions" node in "Site administration > Reports > Report builder"

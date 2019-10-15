@@ -24,7 +24,6 @@
 
 namespace rbsource_assign;
 use rb_base_source;
-use rb_global_restriction_set;
 use coding_exception;
 use rb_join;
 use rb_column_option;
@@ -39,16 +38,7 @@ class source extends rb_base_source {
     public $defaultcolumns, $defaultfilters, $requiredcolumns;
     public $sourcetitle;
 
-    public function __construct($groupid, rb_global_restriction_set $globalrestrictionset = null) {
-        if ($groupid instanceof rb_global_restriction_set) {
-            throw new coding_exception('Wrong parameter orders detected during report source instantiation.');
-        }
-        // Remember the active global restriction set.
-        $this->globalrestrictionset = $globalrestrictionset;
-
-        // Apply global user restrictions.
-        $this->add_global_report_restriction_join('base', 'userid', 'auser');
-
+    public function __construct() {
         $this->base = '{assign_submission}';
         $this->usedcomponents[] = 'mod_assign';
         $this->joinlist = $this->define_joinlist();
@@ -60,14 +50,6 @@ class source extends rb_base_source {
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_assign');
 
         parent::__construct();
-    }
-
-    /**
-     * Global report restrictions are implemented in this source.
-     * @return boolean
-     */
-    public function global_restrictions_supported() {
-        return true;
     }
 
     /**

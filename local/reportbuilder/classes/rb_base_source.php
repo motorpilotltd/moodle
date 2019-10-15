@@ -46,15 +46,6 @@ abstract class rb_base_source {
     /** @var rb_column[] */
     public $requiredcolumns;
 
-    /** @var rb_global_restriction_set with active restrictions, ignore if null */
-    protected $globalrestrictionset = null;
-
-    /** @var rb_join[] list of global report restriction joins  */
-    public $globalrestrictionjoins = array();
-
-    /** @var array named query params used in global restriction joins */
-    public $globalrestrictionparams = array();
-
     /**
      * TODO - it would be nice to make this definable in the config or something.
      * @var string $uniqueseperator - A string unique enough to use as a seperator for textareas
@@ -186,21 +177,6 @@ abstract class rb_base_source {
      */
     public function is_ignored() {
         return false;
-    }
-
-    /**
-     * Are the global report restrictions implemented in the source?
-     *
-     * Return values mean:
-     *   - true: this report source supports global report restrictions.
-     *   - false: this report source does NOT support global report restrictions.
-     *   - null: this report source has not been converted to use global report restrictions yet.
-     *
-     * @return null|bool
-     */
-    public function global_restrictions_supported() {
-        // Null means not converted yet, override in sources with true or false.
-        return null;
     }
 
     /**
@@ -1768,108 +1744,6 @@ abstract class rb_base_source {
     // Wrapper functions to add columns/fields/joins in one go
     //
     //
-
-    /**
-     * Returns true if global report restrictions can be used with this source.
-     *
-     * @return bool
-     */
-    protected function can_global_report_restrictions_be_used() {
-        global $CFG;
-        return (!empty($CFG->enableglobalrestrictions) && $this->global_restrictions_supported()
-                && $this->globalrestrictionset);
-    }
-
-    /**
-     * Returns global restriction SQL fragment that can be used in complex joins for example.
-     *
-     * @return string SQL fragment
-     */
-    protected function get_global_report_restriction_query() {
-        // First ensure that global report restrictions can be used with this source.
-        if (!$this->can_global_report_restrictions_be_used()) {
-            return '';
-        }
-
-        list($query, $parameters) = $this->globalrestrictionset->get_join_query();
-
-        if ($parameters) {
-            $this->globalrestrictionparams = array_merge($this->globalrestrictionparams, $parameters);
-        }
-
-        return $query;
-    }
-
-    /**
-     * Adds global restriction join to the report.
-     *
-     * @param string $join Name of the join that provides the 'user id' field
-     * @param string $field Name of user id field to join on
-     * @param mixed $dependencies join dependencies
-     * @return bool
-     */
-    protected function add_global_report_restriction_join($join, $field, $dependencies = 'base') {
-        // First ensure that global report restrictions can be used with this source.
-        if (!$this->can_global_report_restrictions_be_used()) {
-            return false;
-        }
-
-        list($query, $parameters) = $this->globalrestrictionset->get_join_query();
-
-        if ($query === '') {
-            return false;
-        }
-
-        static $counter = 0;
-        $counter++;
-        $joinname = 'globalrestrjoin_' . $counter;
-
-        $this->globalrestrictionjoins[] = new rb_join(
-            $joinname,
-            'INNER',
-            "($query)",
-            "$joinname.id = $join.$field",
-            REPORT_BUILDER_RELATION_ONE_TO_MANY,
-            $dependencies
-        );
-
-        if ($parameters) {
-            $this->globalrestrictionparams = array_merge($this->globalrestrictionparams, $parameters);
-        }
-
-        return true;
-    }
-
-    /**
-     * Get global restriction join SQL to the report. All parameters will be inline.
-     *
-     * @param string $join Name of the join that provides the 'user id' field
-     * @param string $field Name of user id field to join on
-     * @return string
-     */
-    protected function get_global_report_restriction_join($join, $field) {
-        // First ensure that global report restrictions can be used with this source.
-        if (!$this->can_global_report_restrictions_be_used()) {
-            return  '';
-        }
-
-        list($query, $parameters) = $this->globalrestrictionset->get_join_query();
-
-        if (empty($query)) {
-            return '';
-        }
-
-        if ($parameters) {
-            $this->globalrestrictionparams = array_merge($this->globalrestrictionparams, $parameters);
-        }
-
-        static $counter = 0;
-        $counter++;
-        $joinname = 'globalinlinerestrjoin_' . $counter;
-
-        $joinsql = " INNER JOIN ($query) $joinname ON ($joinname.id = $join.$field) ";
-        return $joinsql;
-    }
 
     /**
      * Adds the user table to the $joinlist array

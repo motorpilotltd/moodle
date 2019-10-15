@@ -69,8 +69,6 @@ echo $OUTPUT->heading(get_string('manageuserreports','local_reportbuilder'));
 
 echo html_writer::tag('div', $renderer->single_button(new moodle_url('/local/reportbuilder/create.php'), get_string('createreport', 'local_reportbuilder'), 'get'), ['class'=>'pull-right']);
 
-$report->display_restrictions();
-
 $heading = $renderer->result_count_info($report);
 echo $OUTPUT->heading($heading, 3);
 echo $renderer->print_description($report->description, $report->_id);

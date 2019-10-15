@@ -67,8 +67,6 @@ echo $debughtml;
 
 echo $OUTPUT->heading(get_string('manageembeddedreports','local_reportbuilder'));
 
-$report->display_restrictions();
-
 $heading = $renderer->result_count_info($report);
 
 echo $OUTPUT->heading($heading, 3);

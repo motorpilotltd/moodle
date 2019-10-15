@@ -255,7 +255,6 @@ abstract class base extends rb_base_source {
      * @param string $sessiondatejoin join to {facetoface_sessions_dates}
      */
     public function add_session_common_to_joinlist(&$joinlist, $sessiondatejoin = 'base') {
-        $global_restriction_join_su = $this->get_global_report_restriction_join('su', 'userid');
 
         $joinlist[] = new rb_join(
             'sessions',
@@ -271,7 +270,6 @@ abstract class base extends rb_base_source {
             'LEFT',
             "(SELECT su.sessionid, count(ss.id) AS number
                 FROM {facetoface_signups} su
-                {$global_restriction_join_su}
                 JOIN {facetoface_signups_status} ss
                     ON su.id = ss.signupid
                 WHERE ss.superceded=0 AND ss.statuscode >= " . MDL_F2F_STATUS_APPROVED ."
@@ -469,8 +467,6 @@ abstract class base extends rb_base_source {
      * @param string $field 'id' field (from sessions table) to join to
      */
     public function add_session_status_to_joinlist(&$joinlist, $join = 'sessions', $field = 'id') {
-        // No global restrictions here because status is absolute (e.g if it is overbooked then it is overbooked, even if user
-        // cannot see all participants.
         $joinlist[] =  new rb_join(
             'cntbookings',
             'LEFT',

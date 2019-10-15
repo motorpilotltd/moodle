@@ -39,10 +39,7 @@ $PAGE->set_context($context);
 
 $reportrecord = $DB->get_record('report_builder', array('id' => $id));
 
-// Verify global restrictions.
-$globalrestrictionset = rb_global_restriction_set::create_from_page_parameters($reportrecord);
-
-$report = new reportbuilder($id, null, false, $sid, null, false, array(), $globalrestrictionset);
+$report = new reportbuilder($id, null, false, $sid, null, false, array());
 if (!$report->is_capable($id)) {
     print_error('nopermission', 'local_reportbuilder');
 }

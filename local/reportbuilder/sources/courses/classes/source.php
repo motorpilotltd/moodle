@@ -56,14 +56,6 @@ class source extends rb_base_source {
         parent::__construct();
     }
 
-    /**
-     * Global report restrictions are implemented in this source.
-     * @return boolean
-     */
-    public function global_restrictions_supported() {
-        return false;
-    }
-
     //
     //
     // Methods for defining contents of source

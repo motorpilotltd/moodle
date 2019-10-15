@@ -51,11 +51,8 @@ if ($reportrecord->embedded) {
     print_error('cannotviewembedded', 'local_reportbuilder');
 }
 
-// Verify global restrictions.
-$globalrestrictionset = rb_global_restriction_set::create_from_page_parameters($reportrecord);
-
 // New report object.
-$report = new reportbuilder($id, null, false, $sid, null, false, array(), $globalrestrictionset);
+$report = new reportbuilder($id, null, false, $sid, null, false, array());
 
 if (!$report->is_capable($id)) {
     print_error('nopermission', 'local_reportbuilder');
@@ -97,7 +94,6 @@ if ($report->has_disabled_filters()) {
 list($tablehtml, $debughtml) = $output->report_html($report, $debug);
 
 $report->display_redirect_link();
-$report->display_restrictions();
 
 // Display heading including filtering stats.
 if ($graph) {

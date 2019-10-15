@@ -24,7 +24,6 @@
 
 namespace rbsource_user;
 use rb_base_source;
-use rb_global_restriction_set;
 use coding_exception;
 use rb_join;
 use rb_column_option;
@@ -73,22 +72,8 @@ class source extends rb_base_source {
     /**
      * Constructor
      *
-     * @param int $groupid (ignored)
-     * @param rb_global_restriction_set $globalrestrictionset
      */
-    public function __construct($groupid, rb_global_restriction_set $globalrestrictionset = null) {
-        if ($groupid instanceof rb_global_restriction_set) {
-            throw new coding_exception('Wrong parameter orders detected during report source instantiation.');
-        }
-
-        // Remember the active global restriction set.
-        $this->globalrestrictionset = $globalrestrictionset;
-
-        // Allow the actions column to be used in the user source
-        if (!isset($this->allow_actions_column)) {
-            $this->allow_actions_column = (get_class($this) === 'rbsource_user');
-        }
-
+    public function __construct() {
         $this->base = "{user}";
         list($this->sourcewhere, $this->sourceparams) = $this->define_sourcewhere();
         $this->joinlist = $this->define_joinlist();
@@ -105,14 +90,6 @@ class source extends rb_base_source {
         $this->add_global_report_restriction_join('base', 'id', 'base');
 
         parent::__construct();
-    }
-
-    /**
-     * Are the global report restrictions implemented in the source?
-     * @return null|bool
-     */
-    public function global_restrictions_supported() {
-        return true;
     }
 
     //

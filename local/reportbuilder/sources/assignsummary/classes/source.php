@@ -24,7 +24,6 @@
 
 namespace rbsource_assignsummary;
 use rb_base_source;
-use rb_global_restriction_set;
 use coding_exception;
 use rb_column_option;
 use rb_filter_option;
@@ -36,16 +35,8 @@ class source extends rb_base_source {
     public $defaultcolumns, $defaultfilters, $requiredcolumns;
     public $sourcetitle;
 
-    public function __construct($groupid, rb_global_restriction_set $globalrestrictionset = null) {
+    public function __construct() {
         global $DB;
-        if ($groupid instanceof rb_global_restriction_set) {
-            throw new coding_exception('Wrong parameter orders detected during report source instantiation.');
-        }
-        // Remember the active global restriction set.
-        $this->globalrestrictionset = $globalrestrictionset;
-
-        // Apply global user restrictions.
-        $global_restriction_join = $this->get_global_report_restriction_join('asb', 'userid');
 
         $this->base = "(" .
                 " SELECT a.id AS id," .
@@ -65,7 +56,6 @@ class source extends rb_base_source {
                 " FROM {assign_submission} asb" .
                 " INNER JOIN {assign} a ON asb.assignment = a.id" .
                 " INNER JOIN {assign_grades} ag ON ag.assignment = a.id AND ag.userid = asb.userid" .
-                $global_restriction_join .
                 " WHERE ag.grade > -1" . // Meaningful aggregations are only possible for numeric grade scales.
                 " GROUP BY a.id, a.course, a.name, {$DB->sql_order_by_text('a.intro', '255')}, a.grade" .
                 " )";
@@ -76,14 +66,6 @@ class source extends rb_base_source {
         $this->defaultcolumns = $this->define_defaultcolumns();
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_assignsummary');
         parent::__construct();
-    }
-
-    /**
-     * Global report restrictions are implemented in this source.
-     * @return boolean
-     */
-    public function global_restrictions_supported() {
-        return true;
     }
 
     /**

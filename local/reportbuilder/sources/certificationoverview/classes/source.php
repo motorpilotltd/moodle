@@ -24,7 +24,6 @@
 
 namespace rbsource_certificationoverview;
 use rb_base_source;
-use rb_global_restriction_set;
 use coding_exception;
 use rb_join;
 use rb_column_option;
@@ -40,16 +39,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/local/custom_certification/lib.php');
 
 class source extends rb_base_source {
-    public function __construct($groupid, rb_global_restriction_set $globalrestrictionset = null) {
-        if ($groupid instanceof rb_global_restriction_set) {
-            throw new coding_exception('Wrong parameter orders detected during report source instantiation.');
-        }
-        // Remember the active global restriction set.
-        $this->globalrestrictionset = $globalrestrictionset;
-
-        // Apply global user restrictions.
-        $this->add_global_report_restriction_join('base', 'userid');
-
+    public function __construct() {
         $this->base = '{certif_completions}';
         $this->joinlist = $this->define_joinlist();
         $this->columnoptions = $this->define_columnoptions();
@@ -64,13 +54,6 @@ class source extends rb_base_source {
 
         parent::__construct();
 
-    }
-    /**
-     * Global report restrictions are implemented in this source.
-     * @return boolean
-     */
-    public function global_restrictions_supported() {
-        return true;
     }
 
     protected function define_joinlist() {

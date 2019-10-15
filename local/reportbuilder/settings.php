@@ -45,27 +45,6 @@ if ($ADMIN->fulltree) {
     $rb->add(new local_reportbuilder_admin_setting_configdaymonthpicker('reportbuilder/financialyear', new lang_string('financialyear', 'local_reportbuilder'),
         new lang_string('reportbuilderfinancialyear_help', 'local_reportbuilder'), array('d' => 1, 'm' => 7)));
 
-    // NOTE: for performance reasons do not use constants here.
-    $options = array(
-        0 => get_string('noactiverestrictionsbehaviournone', 'local_reportbuilder'), // == rb_global_restriction_set::NO_ACTIVE_NONE
-        1 => get_string('noactiverestrictionsbehaviourall', 'local_reportbuilder'),  // == rb_global_restriction_set::NO_ACTIVE_ALL
-    );
-    $rb->add(new admin_setting_configselect('reportbuilder/noactiverestrictionsbehaviour',
-        new lang_string('noactiverestrictionsbehaviour', 'local_reportbuilder'),
-        new lang_string('noactiverestrictionsbehaviour_desc', 'local_reportbuilder'),
-        1, $options));
-
-    // NOTE: do not use constants here for performance reasons.
-    //  0 == reportbuilder::GLOBAL_REPORT_RESTRICTIONS_DISABLED
-    //  1 == reportbuilder::GLOBAL_REPORT_RESTRICTIONS_ENABLED
-    $rb->add(new admin_setting_configcheckbox('reportbuilder/globalrestrictiondefault',
-        new lang_string('globalrestrictiondefault', 'local_reportbuilder'),
-        new lang_string('globalrestrictiondefault_desc', 'local_reportbuilder'), 1));
-
-    $rb->add(new admin_setting_configtext('reportbuilder/globalrestrictionrecordsperpage',
-        new lang_string('globalrestrictionrecordsperpage', 'local_reportbuilder'),
-        new lang_string('globalrestrictionrecordsperpage_desc', 'local_reportbuilder'), 40, PARAM_INT));
-
     $rb->add(
         new admin_setting_configcheckbox(
             'local_reportbuilder/allowtotalcount',
@@ -112,10 +91,6 @@ if ($ADMIN->fulltree) {
 
 // Add all above settings to the report builder settings node.
 $ADMIN->add('local_reportbuilder', $rb);
-
-// Add links to Global Reports Restrictions.
-$ADMIN->add('local_reportbuilder', new admin_externalpage('rbmanageglobalrestrictions', new lang_string('manageglobalrestrictions','local_reportbuilder'),
-    new moodle_url('/local/reportbuilder/restrictions/index.php'), array('local/reportbuilder:managereports'), empty($CFG->enableglobalrestrictions)));
 
 // Add links to report builder reports.
 $ADMIN->add('local_reportbuilder', new admin_externalpage('rbmanagereports', new lang_string('manageuserreports','local_reportbuilder'),

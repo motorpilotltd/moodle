@@ -23,7 +23,6 @@
  */
 
 namespace rbsource_facetofacesummary;
-use rb_global_restriction_set;
 use coding_exception;
 use rb_join;
 use rb_column_option;
@@ -43,15 +42,7 @@ class source extends base {
     public $contentoptions, $paramoptions, $defaultcolumns;
     public $defaultfilters, $sourcetitle;
 
-    public function __construct($groupid, rb_global_restriction_set $globalrestrictionset = null) {
-        if ($groupid instanceof rb_global_restriction_set) {
-            throw new coding_exception('Wrong parameter orders detected during report source instantiation.');
-        }
-        // Remember the active global restriction set.
-        $this->globalrestrictionset = $globalrestrictionset;
-
-        // Global report restrictions are applied in define_joinlist() method.
-
+    public function __construct() {
         $this->base = '{facetoface_sessions_dates}';
         $this->joinlist = $this->define_joinlist();
         $this->columnoptions = $this->define_columnoptions();
@@ -66,16 +57,7 @@ class source extends base {
         parent::__construct();
     }
 
-    /**
-     * Global report restrictions are implemented in this source.
-     * @return boolean
-     */
-    public function global_restrictions_supported() {
-        return true;
-    }
-
     public function define_joinlist() {
-        $global_restriction_join_su = $this->get_global_report_restriction_join('su', 'userid');
         $joinlist = array();
 
         $this->add_session_common_to_joinlist($joinlist);
@@ -85,7 +67,6 @@ class source extends base {
                 'LEFT',
                 "(SELECT su.sessionid, su.userid, ss.id AS ssid, ss.statuscode
                 FROM {facetoface_signups} su
-                {$global_restriction_join_su}
                 JOIN {facetoface_signups_status} ss
                     ON su.id = ss.signupid
                 WHERE ss.superceded = 0)",

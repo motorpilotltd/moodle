@@ -36,14 +36,6 @@ class rb_source_column_extra_id extends rb_base_source {
     }
 
     /**
-     * Global report restrictions are implemented in this source.
-     * @return boolean
-     */
-    public function global_restrictions_supported() {
-        return false;
-    }
-
-    /**
      * Add column with extrafield name 'id'
      *
      * @return array of rb_column

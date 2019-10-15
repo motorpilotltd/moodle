@@ -70,14 +70,6 @@ class source extends rb_base_source {
         parent::__construct();
     }
 
-    /**
-     * Are the global report restrictions implemented in the source?
-     * @return null|bool
-     */
-    public function global_restrictions_supported() {
-        return false;
-    }
-
     //
     //
     // Methods for defining contents of source

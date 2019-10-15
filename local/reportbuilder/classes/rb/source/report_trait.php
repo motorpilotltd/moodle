@@ -269,17 +269,6 @@ trait report_trait {
                 'joins' => 'saved_count'
             ]
         );
-        $this->columnoptions[] = new \rb_column_option(
-            'report',
-            'globalrestrictions',
-            get_string('globalrestriction', 'local_reportbuilder'),
-            "{$join}.globalrestriction",
-            [
-                'displayfunc' => 'report_global_restrictions',
-                'extrafields' => ['source' => "{$join}.source"],
-                'joins' => [$join],
-            ]
-        );
     }
 
     /**
