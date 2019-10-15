@@ -393,6 +393,10 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                                 }); // ajax
                             });
                             modal.show();
+
+                            modal.getRoot().on(ModalEvents.hidden, function() {
+                                modal.destroy();
+                            });
                         });
                 });
 

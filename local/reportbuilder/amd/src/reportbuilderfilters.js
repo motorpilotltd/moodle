@@ -416,6 +416,10 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                                 }); // Ajax.
                             });
                             modal.show();
+
+                            modal.getRoot().on(ModalEvents.hidden, function() {
+                                modal.destroy();
+                            });
                         });
 
                 });
@@ -500,6 +504,10 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                                 }); // Ajax.
                             });
                             modal.show();
+
+                            modal.getRoot().on(ModalEvents.hidden, function() {
+                                modal.destroy();
+                            });
                         });
 
                 });
