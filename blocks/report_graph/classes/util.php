@@ -153,12 +153,8 @@ class util {
         try {
             unset($SESSION->reportbuilder[$rawreport->id]); // Not persistent - we closed session already.
             $reportfor = $config->reportfor ? $config->reportfor : null;
-            $allrestr = \rb_global_restriction_set::create_from_ids(
-                $rawreport,
-                \rb_global_restriction_set::get_user_all_restrictions_ids($reportfor, true)
-            );
 
-            $report = new \reportbuilder($rawreport->id, null, false, $rawreport->savedid, $reportfor, false, array(), $allrestr);
+            $report = new \reportbuilder($rawreport->id, null, false, $rawreport->savedid, $reportfor, false, array());
             $svgdata = self::get_svg($report);
 
             if (!$svgdata) {
