@@ -1862,15 +1862,16 @@ class reportbuilder {
         require_once($CFG->dirroot . '/local/reportbuilder/report_forms.php');
         $mformsidebar = new report_builder_sidebar_search_form($this->get_current_url(),
                 array('report' => $this, 'fields' => $sidebarfilters), 'post', '', array('class' => 'rb-sidebar'));
-        $mformsidebar->display();
+        $oput = $mformsidebar->render();
 
         // If is_capable is not implemented on an embedded report then don't activate instant filters.
         // Instead, we force the user to use standard form submission (the same as when javascript is not available).
         if ($this->embedobj && !method_exists($this->embedobj, 'is_capable')) {
-            return;
+            return '';
         }
 
         $PAGE->requires->js_call_amd('local_reportbuilder/instantfilter', 'init', array('id' => $this->_id));
+        return $oput;
     }
 
 
@@ -3844,11 +3845,17 @@ class reportbuilder {
                     $SESSION->reportbuilder[$this->get_uniqueid()]['toolbarsearchtext'] : '';
             $mform = new report_builder_toolbar_search_form($this->get_current_url(),
                     array('toolbarsearchtext' => $toolbarsearchtext), 'post', '', null, true, null, 'toolbarsearch');
+
+
+            echo html_writer::start_div('row');
+            echo html_writer::start_div('col-md-4');
             $table->add_toolbar_content($mform->render());
 
             if ($this->embedded && $content = $this->embedobj->get_extrabuttons()) {
                 $table->add_toolbar_content($content, 'right');
             }
+            echo html_writer::end_div();
+            echo html_writer::end_div();
         }
 
         $showhidecolumn = array();

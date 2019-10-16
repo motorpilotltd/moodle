@@ -30,8 +30,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
 require_once($CFG->dirroot . '/local/reportbuilder/report_forms.php');
 
-// jQuery is loaded on each page since 8.0.
-$PAGE->requires->yui_module('moodle-local_reportbuilder-graphicalreporting', 'M.reportbuilder.graphicalreport.init');
+$PAGE->requires->js_call_amd('local_reportbuilder/graphicalreporting', 'init');
 
 $id = required_param('reportid', PARAM_INT);
 $rawreport = $DB->get_record('report_builder', array('id' => $id), '*', MUST_EXIST);

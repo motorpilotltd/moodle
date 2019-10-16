@@ -107,12 +107,29 @@ echo $debughtml;
 echo $output->print_description($report->description, $report->_id);
 
 // print filters
-$report->display_search();
-$report->display_sidebar_search();
 
+echo html_writer::start_div('row');
+echo html_writer::start_div('col-md-6');
+$report->display_search();
+echo html_writer::end_div();
+echo html_writer::end_div();
+
+echo html_writer::start_div('row');
+$sidebar = $report->display_sidebar_search();
+if ($sidebar) {
+    echo html_writer::start_div('col-md-2');
+    echo $sidebar;
+    echo html_writer::end_div();
+}
+
+
+if ($sidebar) {
+    echo html_writer::start_div('col-md-10');
+} else {
+    echo html_writer::start_div('col-md-12');
+}
 // print saved search buttons if appropriate
 echo $report->display_saved_search_options();
-
 // Show results.
 if ($graph) {
     print $report->print_feedback_results();
@@ -133,6 +150,12 @@ if ($graph) {
 }
 
 // Export button.
+echo html_writer::start_div('row');
+echo html_writer::start_div('col-md-4');
 $output->export_select($report, $sid);
+echo html_writer::end_div();
+echo html_writer::end_div();
+
+echo html_writer::end_div();
 
 echo $output->footer();

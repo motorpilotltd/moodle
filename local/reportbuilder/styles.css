@@ -22,17 +22,12 @@
     margin: 0;
     vertical-align: top;
     padding-right: 10px;
-    width: 25%;
     float: left;
 }
 .rb-sidebar .fcontainer .fitem .fitemtitle,
 .rb-sidebar .fcontainer .fitem .fgroup legend {
     width: 100%;
     margin-bottom: 5px;
-}
-.rb-sidebar .fcontainer .fitem .felement select,
-.rb-sidebar .fcontainer .fitem .felement input[type="text"] {
-    padding: 0;
 }
 .rb-sidebar input[type='text'] {
     margin-right: 10px;
@@ -115,7 +110,8 @@ form[id^="toolbarsearch"].mform fieldset {
 form[id^="toolbarsearch"].mform .fsubmit {
     width: auto;
 }
-.jsenabled #fgroup_id_submitgroupsidebar {
+
+form.rb-sidebar div.fcontainer .fitem:last-child {
     display: none;
 }
 .reportbuilder-table .user_namewithlinks a {
@@ -222,4 +218,17 @@ fieldset#id_standardfilter div.fitem div.col-md-3{
 
 fieldset#id_sidebarfilter div.fitem div.col-md-3{
     display: none!important;;
+}
+
+.rb-sidebar .col-md-3 {
+    width: 100%;
+}
+
+.rb-sidebar .col-md-9 {
+    width: 100%;
+}
+
+.rb-sidebar .fitem {
+    clear: both;
+    display: block;
 }
