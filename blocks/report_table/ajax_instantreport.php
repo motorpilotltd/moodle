@@ -65,12 +65,11 @@ $id = $config->reportid;
 
 // Verify global restrictions.
 $reportrecord = $DB->get_record('report_builder', array('id' => $id), '*', MUST_EXIST);
-$globalrestrictionset = rb_global_restriction_set::create_from_page_parameters($reportrecord);
 
 // Create the report object. Includes embedded report capability checks.
 $uniqueid = 'block_report_table_' . $blockid;
 reportbuilder::overrideuniqueid($uniqueid);
-$report = new reportbuilder($id, null, false, null, null, false, array(), $globalrestrictionset);
+$report = new reportbuilder($id, null, false, null, null, false, array());
 
 // Decide if require_login should be executed.
 if ($report->needs_require_login() and !isloggedin()) {

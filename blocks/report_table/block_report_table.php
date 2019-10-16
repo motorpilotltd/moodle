@@ -173,14 +173,11 @@ class block_report_table extends block_base {
             return $this->content;
         }
 
-        // Verify global restrictions.
-        $globalrestrictionset = rb_global_restriction_set::create_from_page_parameters($reportrecord);
-
         // Instantiate a new report object.
         try {
             reportbuilder::overrideuniqueid($this->get_uniqueid());
             reportbuilder::overrideignoreparams(true);
-            $report = new reportbuilder($id, null, false, $sid, null, false, array(), $globalrestrictionset);
+            $report = new reportbuilder($id, null, false, $sid, null, false, array());
         } catch (moodle_exception $e) {
             // Don't break page if report became unavailable.
             return $this->content;
