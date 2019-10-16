@@ -29,7 +29,6 @@ require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
 require_once($CFG->dirroot . '/local/reportbuilder/report_forms.php');
-require_once($CFG->dirroot . '/local/reportbuilder/js/lib/setup.php');
 
 // jQuery is loaded on each page since 8.0.
 $PAGE->requires->yui_module('moodle-local_reportbuilder-graphicalreporting', 'M.reportbuilder.graphicalreport.init');

@@ -288,7 +288,7 @@ class source extends rb_base_source {
         $filteroptions = [];
 
         $this->add_user_fields_to_filters($filteroptions);
-        $this->add_staff_fields_to_filters($filteroptions);
+        $this->add_staff_fields_to_filters($filteroptions, 'user', false, 'basestaff');
 
         $roles = get_roles_used_in_context(context_system::instance());
 

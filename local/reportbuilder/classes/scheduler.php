@@ -22,6 +22,8 @@
  * @subpackage core
  */
 
+namespace local_reportbuilder;
+
 /**
  * This class incapsulates operation with scheduling
  *
@@ -84,12 +86,12 @@ class scheduler {
     /**
      * Constructor
      *
-     * @param stdClass DB row object
+     * @param \stdClass DB row object
      * @param array $alias_map Optional field renaming
      */
-    public function __construct(stdClass $row = null, array $alias_map = array()) {
+    public function __construct(\stdClass $row = null, array $alias_map = array()) {
         if (is_null($row)) {
-            $row = new stdClass();
+            $row = new \stdClass();
         }
         $this->subject = $row;
         // Remap and add fields.
@@ -150,8 +152,8 @@ class scheduler {
         $frequency = $this->subject->{$this->map['frequency']};
         $schedule = $this->subject->{$this->map['schedule']};
 
-        $next = new DateTime('@' . $this->time);
-        $next->setTimezone(core_date::get_user_timezone_object($forcetimezone));
+        $next = new \DateTime('@' . $this->time);
+        $next->setTimezone(\core_date::get_user_timezone_object($forcetimezone));
 
         switch ($frequency) {
             case self::MINUTELY:
@@ -160,7 +162,7 @@ class scheduler {
                 $timeminute = (int)(floor($timeminute / $schedule) * $schedule);
                 $next->setTime($timehour, $timeminute, 0);
                 if ($next->getTimestamp() <= $this->time) {
-                    $next->add(new DateInterval('PT' . $schedule . 'M'));
+                    $next->add(new \DateInterval('PT' . $schedule . 'M'));
                 }
                 break;
             case self::HOURLY:
@@ -168,13 +170,13 @@ class scheduler {
                 $timehour = (int)(floor($timehour / $schedule) * $schedule);
                 $next->setTime($timehour, 0, 0);
                 if ($next->getTimestamp() <= $this->time) {
-                    $next->add(new DateInterval('PT' . $schedule . 'H'));
+                    $next->add(new \DateInterval('PT' . $schedule . 'H'));
                 }
                 break;
             case self::DAILY:
                 $next->setTime($schedule, 0, 0);
                 if ($next->getTimestamp() <= $this->time) {
-                    $next->add(new DateInterval('P1D'));
+                    $next->add(new \DateInterval('P1D'));
                 }
                 break;
             case self::WEEKLY:
@@ -188,7 +190,7 @@ class scheduler {
                         $diff = $diff + 7;
                     }
                     $next->setTime(0, 0, 0);
-                    $next->add(new DateInterval('P' . $diff . 'D'));
+                    $next->add(new \DateInterval('P' . $diff . 'D'));
                 }
                 break;
             case self::MONTHLY:
@@ -264,7 +266,7 @@ class scheduler {
      */
     public function get_formatted($user = null) {
         // Use a fixed date to prevent problems on days with DST switch and months with < 31 days.
-        $date = new DateTime('2000-01-01T00:00:00+00:00');
+        $date = new \DateTime('2000-01-01T00:00:00+00:00');
 
         if (!empty($user->lang)) {
             $lang = $user->lang;
@@ -278,26 +280,26 @@ class scheduler {
 
         switch($this->subject->{$this->map['frequency']}) {
             case self::MINUTELY:
-                $out .= new lang_string('scheduledminutely', 'local_reportbuilder', $schedule, $lang);
+                $out .= new \lang_string('scheduledminutely', 'local_reportbuilder', $schedule, $lang);
                 break;
             case self::HOURLY:
-                $out .= new lang_string('scheduledhourly', 'local_reportbuilder', $schedule, $lang);
+                $out .= new \lang_string('scheduledhourly', 'local_reportbuilder', $schedule, $lang);
                 break;
             case self::DAILY:
                 $date->setTime($schedule, 0, 0);
                 date_default_timezone_set('UTC');
-                $out .= new lang_string('scheduleddaily', 'local_reportbuilder',
+                $out .= new \lang_string('scheduleddaily', 'local_reportbuilder',
                     strftime(get_string('strftimetime', 'langconfig'), $date->getTimestamp()), $lang);
                 core_date::set_default_server_timezone();
                 break;
             case self::WEEKLY:
-                $out .= new lang_string('scheduledweekly', 'local_reportbuilder',  $calendardays[$schedule]['fullname'], $lang);
+                $out .= new \lang_string('scheduledweekly', 'local_reportbuilder',  $calendardays[$schedule]['fullname'], $lang);
                 break;
             case self::MONTHLY:
                 $dateformat = ($lang === 'en') ? 'jS' : 'j';
                 $date->setTime(0, 0, 0);
                 $date->setDate(2000, 1, $schedule);
-                $out .= new lang_string('scheduledmonthly', 'local_reportbuilder', $date->format($dateformat), $lang);
+                $out .= new \lang_string('scheduledmonthly', 'local_reportbuilder', $date->format($dateformat), $lang);
                 break;
         }
 
@@ -356,14 +358,14 @@ class scheduler {
      *
      * Useful for saving in DB
      * @param array|string $extrafields primary key name and other fields to export
-     * @return stdClass
+     * @return \stdClass
      */
     public function to_object($extrafields = 'id') {
         if (!is_array($extrafields)) {
             $extrafields = array($extrafields);
         }
 
-        $obj = new stdClass();
+        $obj = new \stdClass();
         $obj->{$this->map['nextevent']} = $this->subject->{$this->map['nextevent']};
         $obj->{$this->map['frequency']} = $this->subject->{$this->map['frequency']};
         $obj->{$this->map['schedule']} = $this->subject->{$this->map['schedule']};

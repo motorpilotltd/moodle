@@ -76,7 +76,8 @@ class rb_filter_course_multi extends rb_filter_type {
      * @param object $mform a MoodleForm object to setup
      */
     public function setupForm(&$mform) {
-        global $SESSION;
+        global $SESSION, $DB, $SITE, $CFG;
+        require_once("$CFG->dirroot/lib/coursecatlib.php");
 
         $label = format_string($this->label);
         $advanced = $this->advanced;
@@ -87,17 +88,29 @@ class rb_filter_course_multi extends rb_filter_type {
             html_writer::tag('span', '', array('id' => $this->name . 'title', 'class' => 'dialog-result-title')));
         $mform->setType($this->name.'_op', PARAM_TEXT);
 
-        // Can't use a button because id must be 'show-*-dialog' and formslib appends 'id_' to ID.
-        $objs[] =& $mform->createElement('static', 'selectorbutton',
-            '',
-            html_writer::empty_tag('input', array('type' => 'button',
-                'class' => 'rb-filter-button rb-filter-choose-course btn btn-secondary',
-                'value' => get_string('coursemultiitemchoose', 'local_reportbuilder'),
-                'id' => 'show-' . $this->name . '-dialog')));
+        $courses = $DB->get_records('course', ['visible' => true], 'category, fullname');
 
-        // Container for currently selected items.
-        $content = html_writer::tag('div', '', array('class' => 'rb-filter-content-list list-' . $this->name));
-        $objs[] =& $mform->createElement('static', $this->name.'_list', '', $content);
+        $coursesbycat = [];
+        foreach ($courses as $c) {
+            if (!isset($coursesbycat[$c->category])) {
+                $coursesbycat[$c->category] = [];
+            }
+            $coursesbycat[$c->category][] = $c;
+        }
+        $list = \coursecat::make_categories_list();
+
+        $select = [];
+        foreach ($list as $catid => $category) {
+            foreach ($coursesbycat[$catid] as $c) {
+                if ($c->id == $SITE->id) {
+                    continue;
+                }
+                $select[$c->id] = $category . ' / ' .
+                        format_string($c->fullname, true, array('context' => \context_course::instance($c->id)));
+            }
+        }
+
+        $objs[] = $mform->createElement('autocomplete',  $this->name, $label, $select, ['multiple' => true]);
 
         // Create a group for the elements.
         $grp =& $mform->addElement('group', $this->name.'_grp', $label, $objs, '', false);
@@ -106,9 +119,6 @@ class rb_filter_course_multi extends rb_filter_type {
         if ($advanced) {
             $mform->setAdvanced($this->name.'_grp');
         }
-
-        $mform->addElement('hidden', $this->name, '');
-        $mform->setType($this->name, PARAM_SEQUENCE);
 
         // Set default values.
         if (isset($SESSION->reportbuilder[$this->report->get_uniqueid()][$this->name])) {
@@ -123,28 +133,6 @@ class rb_filter_course_multi extends rb_filter_type {
     }
 
     /**
-     * Definition after data.
-     * @param object $mform a MoodleForm object to setup
-     */
-    public function definition_after_data(&$mform) {
-        global $DB;
-
-        if ($ids = $mform->getElementValue($this->name)) {
-            $idsarray = explode(',', $ids);
-            list($insql, $inparams) = $DB->get_in_or_equal($idsarray);
-            if ($courses = $DB->get_records_select('course', "id ".$insql, $inparams)) {
-                $out = html_writer::start_tag('div', array('class' => 'rb-filter-content-list list-' . $this->name));
-                foreach ($courses as $course) {
-                    $out .= self::display_selected_course_item($course, $this->name);
-                }
-                $out .= html_writer::end_tag('div');
-
-                $mform->setDefault($this->name . '_list', $out);
-            }
-        }
-    }
-
-    /**
      * Retrieves data from the form data.
      * @param object $formdata data submited with the form
      * @return mixed array filter data or false when filter not set
@@ -155,7 +143,7 @@ class rb_filter_course_multi extends rb_filter_type {
 
         if (isset($formdata->$field) && $formdata->$field != '') {
             $data = array('operator' => (int)$formdata->$operator,
-                'value'    => (string)$formdata->$field);
+                'value'    => implode(',', $formdata->$field));
 
             return $data;
         }
@@ -231,53 +219,5 @@ class rb_filter_course_multi extends rb_filter_type {
         $a->operator = $operators[$operator];
 
         return get_string('selectlabel', 'local_reportbuilder', $a);
-    }
-
-    /**
-     * Include Js for this filter.
-     */
-    public function include_js() {
-        global $PAGE;
-
-        $code = array();
-        $code[] = TOTARA_JS_DIALOG;
-        $code[] = TOTARA_JS_TREEVIEW;
-        local_js($code);
-
-        $jsdetails = new stdClass();
-        $jsdetails->strings = array(
-            'local_reportbuilder' => array('coursemultiitemchoose'),
-        );
-        $jsdetails->args = array('filter_to_load' => 'course_multi', null, null, $this->name, 'reportid' => $this->report->_id);
-
-        foreach ($jsdetails->strings as $scomponent => $sstrings) {
-            $PAGE->requires->strings_for_js($sstrings, $scomponent);
-        }
-
-        $PAGE->requires->js_call_amd('local_reportbuilder/filter_dialogs', 'init', $jsdetails->args);
-    }
-
-    /**
-     * Given a course item object returns the HTML to display it as a filter selection.
-     *
-     * @param object $item A category object containing id and name properties.
-     * @param string $filtername The identifying name of the current filter.
-     *
-     * @return string HTML to display a selected item or an empty string if the user cannot view the course.
-     */
-    public static function display_selected_course_item($course, $filtername) {
-        global $OUTPUT;
-
-        $strdelete = get_string('delete');
-
-        $out = html_writer::start_tag('div', array('data-filtername' => $filtername,
-            'data-id' => $course->id,
-            'class' => 'multiselect-selected-item'));
-        $out .= format_string($course->fullname);
-        $out .= $OUTPUT->action_icon('#', new pix_icon('/t/delete', $strdelete, 'moodle'), null,
-            array('class' => 'action-icon delete'));
-        $out .= html_writer::end_tag('div');
-
-        return $out;
     }
 }

@@ -45,7 +45,6 @@ class process_scheduled_task extends \core\task\scheduled_task {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
         require_once($CFG->dirroot . '/local/reportbuilder/groupslib.php');
-        require_once($CFG->dirroot . '/local/reportbuilder/lib/scheduler.php');
 
         require_once($CFG->dirroot . '/calendar/lib.php');
 
@@ -71,7 +70,7 @@ class process_scheduled_task extends \core\task\scheduled_task {
 
         foreach ($scheduledreports as $report) {
             // Set the next report time if its not yet set.
-            $schedule = new \scheduler($report, array('nextevent' => 'nextreport'));
+            $schedule = new \local_reportbuilder\scheduler($report, array('nextevent' => 'nextreport'));
 
             if ($schedule->is_time()) {
                 $user = $DB->get_record('user', array('id' => $report->userid), '*', MUST_EXIST);

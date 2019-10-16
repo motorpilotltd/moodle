@@ -33,7 +33,6 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
 require_once($CFG->dirroot . '/local/reportbuilder/report_forms.php');
-require_once($CFG->dirroot . '/local/reportbuilder/lib/scheduler.php');
 
 $id = required_param('id', PARAM_INT); // Report builder id.
 $rawreport = $DB->get_record('report_builder', array('id' => $id), '*', MUST_EXIST);
@@ -49,7 +48,7 @@ $report = new reportbuilder($id);
 $schedule = array();
 if ($report->cache) {
     $cache = reportbuilder_get_cached($id);
-    $scheduler = new scheduler($cache, array('nextevent' => 'nextreport'));
+    $scheduler = new \local_reportbuilder\scheduler($cache, array('nextevent' => 'nextreport'));
     $schedule = $scheduler->to_array();
 }
 

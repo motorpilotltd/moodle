@@ -30,7 +30,6 @@
 
 require_once($CFG->dirroot . '/calendar/lib.php');
 require_once($CFG->dirroot . '/local/reportbuilder/filters/lib.php');
-require_once($CFG->dirroot . '/local/reportbuilder/lib/scheduler.php');
 require_once($CFG->libdir . '/tablelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/local/reportbuilder/lib/totaratablelib.php');
@@ -46,7 +45,6 @@ require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_filter_option.php'
 require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_param.php');
 require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_param_option.php');
 require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_content_option.php');
-require_once($CFG->dirroot . '/local/reportbuilder/js/lib/setup.php');
 require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_course_sortorder_helper.php');
 require_once($CFG->dirroot . '/local/reportbuilder/classes/rb_course_sortorder_helper.php');
 
@@ -5257,7 +5255,7 @@ function reportbuilder_schedule_cache($reportid, $form = array()) {
         $cache = new stdClass();
     }
     $cache->reportid = $reportid;
-    $schedule = new scheduler($cache, array('nextevent' => 'nextreport'));
+    $schedule = new \local_reportbuilder\scheduler($cache, array('nextevent' => 'nextreport'));
     $schedule->from_array($form);
 
     if (!isset($cache->id)) {
@@ -5282,7 +5280,7 @@ function reportbuilder_fix_schedule($reportid) {
         return false;
     }
 
-    $schedule = new scheduler($cache, array('nextevent' => 'nextreport'));
+    $schedule = new \local_reportbuilder\scheduler($cache, array('nextevent' => 'nextreport'));
     if ($schedule->get_scheduled_time() < $cache->lastreport) {
         $schedule->next(time(), true, core_date::get_server_timezone());
     }
@@ -5574,7 +5572,7 @@ function reportbuilder_send_scheduled_report($sched) {
     $messagedetails->scheduledreportsindex = $CFG->wwwroot . '/local/reportbuilder/myreports.php';
     $messagedetails->sender = \fullname($user);
 
-    $schedule = new scheduler($sched, array('nextevent' => 'nextreport'));
+    $schedule = new \local_reportbuilder\scheduler($sched, array('nextevent' => 'nextreport'));
     $messagedetails->schedule = $schedule->get_formatted($user);
 
     $subject = format_string($reportrecord->fullname) . ' ' . get_string('report', 'local_reportbuilder');

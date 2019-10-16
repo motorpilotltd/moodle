@@ -30,7 +30,6 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->libdir  . '/adminlib.php');
 require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
 require_once($CFG->dirroot . '/local/reportbuilder/scheduled_forms.php');
-require_once($CFG->dirroot . '/local/reportbuilder/js/lib/setup.php');
 require_once($CFG->dirroot . '/local/reportbuilder/email_setting_schedule.php');
 
 require_login();
@@ -83,12 +82,6 @@ if (!isset($report->src->redirecturl)) {
 // Get list of emails settings for this schedule report.
 $schedule->systemusers = array_keys(email_setting_schedule::get_system_users_to_email($id));
 $schedule->externalemails = implode(', ', email_setting_schedule::get_external_users_to_email($id));
-
-// Load JS for lightbox.
-local_js(array(
-    TOTARA_JS_DIALOG,
-    TOTARA_JS_TREEVIEW
-));
 
 // Form definition.
 $mform = new scheduled_reports_new_form(
@@ -157,7 +150,7 @@ function add_scheduled_report($fromform) {
         $report = new stdClass();
         $report->schedule = $fromform->schedule;
         $report->frequency = $fromform->frequency;
-        $scheduler = new scheduler($report);
+        $scheduler = new \local_reportbuilder\scheduler($report);
         $nextevent = $scheduler->next(time(), false, core_date::get_user_timezone());
 
         $transaction = $DB->start_delegated_transaction();

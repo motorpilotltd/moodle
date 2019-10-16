@@ -355,11 +355,9 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
 
         if (!$cachenowinit) {
             $cachenowinit = true;
-            require_once($CFG->dirroot.'/local/reportbuilder/js/lib/setup.php');
             $PAGE->requires->strings_for_js(array('cachenow_title'), 'local_reportbuilder');
             $PAGE->requires->string_for_js('ok', 'moodle');
             $strcache = get_string('cachenow', 'local_reportbuilder');
-            local_js(array(TOTARA_JS_DIALOG));
             $PAGE->requires->js_call_amd('local_reportbuilder/cachenow-lazy', 'init', array());
         }
 

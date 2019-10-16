@@ -24,10 +24,13 @@
 
 namespace local_reportbuilder\form;
 
+use DateTime;
+use HTML_QuickForm_Renderer_Default;
+
 global $CFG;
-require_once($CFG->libdir . '/form/group.php');
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->dirroot . '/calendar/lib.php');
+require_once($CFG->dirroot . '/lib/form/group.php');
 
 /**
  * Class for a group of elements used to input a schedule for events.
@@ -37,6 +40,12 @@ class scheduler extends \MoodleQuickForm_group {
 
     /** @var array These complement separators, they are appended to the resultant HTML */
     public $_wrap = array('', '');
+    /**
+     * @var null|bool Keeps track of whether the date selector was initialised using createElement
+     *                or addElement. If true, createElement was used signifying the element has been
+     *                added to a group - see MDL-39187.
+     */
+    protected $_usedcreateelement = true;
 
     private $scheduleroptions = [];
     /**
@@ -89,7 +98,7 @@ class scheduler extends \MoodleQuickForm_group {
         $CALENDARDAYS = calendar_get_days();
 
         if (empty($this->scheduleroptions)) {
-            $this->scheduleroptions = scheduler::get_options();
+            $this->scheduleroptions = \local_reportbuilder\scheduler::get_options();
         }
         // Schedule type options.
         $frequencyselect = array();
@@ -133,7 +142,7 @@ class scheduler extends \MoodleQuickForm_group {
         }
 
         $this->_elements = array();
-        $this->_elements['frequency'] = $this->createFormElement('select', 'frequency', get_string('schedule', 'local_reportbuilder'), $frequencyselect);
+        $this->_elements['frequency'] = $this->createFormElement('select', 'frequency', get_string('schedule', 'local_reportbuilder'), $frequencyselect, '', true);
         $this->_elements['daily'] = $this->createFormElement('select', 'daily', get_string('dailyat', 'local_reportbuilder'), $dailyselect);
         $this->_elements['weekly'] = $this->createFormElement('select', 'weekly', get_string('weeklyon', 'local_reportbuilder'), $weeklyselect);
         $this->_elements['monthly'] = $this->createFormElement('select', 'monthly', get_string('monthlyon', 'local_reportbuilder'), $monthlyselect);
@@ -141,14 +150,11 @@ class scheduler extends \MoodleQuickForm_group {
         $this->_elements['minutely'] = $this->createFormElement('select', 'minutely', get_string('minutelyon', 'local_reportbuilder'), $minutelyselect);
 
         foreach ($this->_elements as $option => $element) {
-            if (array_key_exists($option, $this->scheduleroptions)) {
-                if (method_exists($element, 'setHiddenLabel')) {
-                    $element->setHiddenLabel(true);
-                }
-            } else {
-                if ($option != 'frequency') {
-                    unset($this->_elements[$option]);
-                }
+            if (method_exists($element, 'setHiddenLabel')) {
+                $element->setHiddenLabel(true);
+            }
+            if (!array_key_exists($option, $this->scheduleroptions) && $option != 'frequency') {
+                unset($this->_elements[$option]);
             }
         }
     }
@@ -163,8 +169,7 @@ class scheduler extends \MoodleQuickForm_group {
      */
     function onQuickFormEvent($event, $arg, &$caller) {
         global $CFG;
-        require_once($CFG->dirroot . '/local/reportbuilder/lib/scheduler.php');
-        $scheduler_options = scheduler::get_options();
+        $scheduler_options = \local_reportbuilder\scheduler::get_options();
         switch ($event) {
             case 'updateValue':
                 // constant values override both default and submitted ones
@@ -196,6 +201,10 @@ class scheduler extends \MoodleQuickForm_group {
                 }
                 return parent::onQuickFormEvent($event, $arg, $caller);
                 break;
+            case 'addElement':
+                $this->_usedcreateelement = false;
+                return parent::onQuickFormEvent($event, $arg, $caller);
+                break;
             default:
                 return parent::onQuickFormEvent($event, $arg, $caller);
         }
@@ -225,23 +234,23 @@ class scheduler extends \MoodleQuickForm_group {
             return null;
         }
         switch ($fields['frequency']) {
-            case scheduler::MINUTELY:
+            case \local_reportbuilder\scheduler::MINUTELY:
                 $name = 'minutely';
                 $schedule = (isset($fields['schedule'])) ? $fields['schedule'] : $fields['minutely'];
                 break;
-            case scheduler::HOURLY:
+            case \local_reportbuilder\scheduler::HOURLY:
                 $name = 'hourly';
                 $schedule = (isset($fields['schedule'])) ? $fields['schedule'] : $fields['hourly'];
                 break;
-            case scheduler::DAILY:
+            case \local_reportbuilder\scheduler::DAILY:
                 $name = 'daily';
                 $schedule = (isset($fields['schedule'])) ? $fields['schedule'] : $fields['daily'];
                 break;
-            case scheduler::WEEKLY:
+            case \local_reportbuilder\scheduler::WEEKLY:
                 $name = 'weekly';
                 $schedule = (isset($fields['schedule'])) ? $fields['schedule'] : $fields['weekly'];
                 break;
-            case scheduler::MONTHLY:
+            case \local_reportbuilder\scheduler::MONTHLY:
                 $name = 'monthly';
                 $schedule = (isset($fields['schedule'])) ? $fields['schedule'] : $fields['monthly'];
                 break;
@@ -264,18 +273,112 @@ class scheduler extends \MoodleQuickForm_group {
         $renderer = new HTML_QuickForm_Renderer_Default();
         $renderer->setElementTemplate('{element}');
         parent::accept($renderer);
-        return $this->_wrap[0] . $renderer->toHTML() . $this->_wrap[1];
+
+        $html = $this->_wrap[0];
+        if ($this->_usedcreateelement) {
+            $html .= \html_writer::tag('span', $renderer->toHtml(), array('class' => 'scheduler'));
+        } else {
+            $html .= $renderer->toHtml();
+        }
+        $html .= $this->_wrap[1];
+
+        return $html;
+
     }
 
     /**
      * Accepts a renderer
      *
-     * @param HTML_QuickForm_Renderer $renderer An HTML_QuickForm_Renderer object
+     * @param \HTML_QuickForm_Renderer $renderer An HTML_QuickForm_Renderer object
      * @param bool $required Whether a group is required
      * @param string $error An error message associated with a group
      */
     function accept(&$renderer, $required = false, $error = null) {
-        $renderer->renderElement($this, $required, $error);
+        $this->renderElement($renderer, $this, $required, $error);
+    }
+
+    /**
+     * Renders element
+     *
+     * @param \HTML_QuickForm_Renderer $renderer An HTML_QuickForm_Renderer object
+     * @param bool $required if input is required field
+     * @param string $error error message to display
+     */
+    function renderElement($renderer, $required, $error) {
+        global $OUTPUT;
+
+        // Make sure the element has an id.
+        $this->_generateId();
+        $advanced = isset($renderer->_advancedElements[$this->getName()]);
+
+        $html = $this->mform_element($required, $advanced, $error, false);
+
+        if ($renderer->_inGroup) {
+            $renderer->_groupElementTemplate = $html;
+        }
+
+        if (($renderer->_inGroup) and !empty($renderer->_groupElementTemplate)) {
+            $renderer->_groupElementTemplate = $html;
+        } else if (!isset($renderer->_templates[$this->getName()])) {
+            $renderer->_templates[$this->getName()] = $html;
+        }
+
+
+            if (in_array($this->getName(), $renderer->_stopFieldsetElements) && $renderer->_fieldsetsOpen > 0) {
+                $renderer->_html .= $renderer->_closeFieldsetTemplate;
+                $renderer->_fieldsetsOpen--;
+            }
+            $renderer->_html .= $html;
+
+    }
+
+
+    /**
+     * Renders an mform element from a template.
+     *
+     * @param bool $required if input is required field
+     * @param bool $advanced if input is an advanced field
+     * @param string $error error message to display
+     * @param bool $ingroup True if this element is rendered as part of a group
+     * @return mixed string|bool
+     */
+    public function mform_element($required, $advanced, $error, $ingroup) {
+        global $OUTPUT;
+
+        $html = $OUTPUT->mform_element($this, $required, $advanced, $error, false);
+
+        if ($html) {
+            return $html;
+        }
+
+        $templatename = 'local_reportbuilder/element-scheduler';
+        if ($ingroup) {
+            $templatename .= "-inline";
+        }
+
+        $thiscontext = $this->export_for_template($OUTPUT);
+
+        $helpbutton = '';
+        if (method_exists($this, 'getHelpButton')) {
+            $helpbutton = $this->getHelpButton();
+        }
+        $label = $this->getLabel();
+
+        $context = array(
+                'element' => $thiscontext,
+                'label' => $label,
+                'required' => $required,
+                'advanced' => $advanced,
+                'helpbutton' => $helpbutton,
+                'error' => $error
+        );
+        return $OUTPUT->render_from_template($templatename, $context);
+    }
+
+
+    public function export_for_template(\renderer_base $output) {
+        $this->_createElementsIfNotExist();
+        return parent::export_for_template($output);
     }
 
     /**
@@ -292,19 +395,19 @@ class scheduler extends \MoodleQuickForm_group {
         $value['schedule'] = 0;
 
         switch ($value['frequency']) {
-            case scheduler::MINUTELY:
+            case \local_reportbuilder\scheduler::MINUTELY:
                 $value['schedule'] = $this->_elements['minutely']->exportValue($submitValues[$this->getName()], false);
                 break;
-            case scheduler::HOURLY:
+            case \local_reportbuilder\scheduler::HOURLY:
                 $value['schedule'] = $this->_elements['hourly']->exportValue($submitValues[$this->getName()], false);
                 break;
-            case scheduler::DAILY:
+            case \local_reportbuilder\scheduler::DAILY:
                 $value['schedule'] = $this->_elements['daily']->exportValue($submitValues[$this->getName()], false);
                 break;
-            case scheduler::WEEKLY:
+            case \local_reportbuilder\scheduler::WEEKLY:
                 $value['schedule'] = $this->_elements['weekly']->exportValue($submitValues[$this->getName()], false);
                 break;
-            case scheduler::MONTHLY:
+            case \local_reportbuilder\scheduler::MONTHLY:
                 $value['schedule'] = $this->_elements['monthly']->exportValue($submitValues[$this->getName()], false);
                 break;
         }

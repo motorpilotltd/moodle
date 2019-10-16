@@ -45,7 +45,6 @@ class refresh_cache_task extends \core\task\scheduled_task {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
         require_once($CFG->dirroot . '/local/reportbuilder/groupslib.php');
-        require_once($CFG->dirroot . '/local/reportbuilder/lib/scheduler.php');
 
         if (isset($CFG->enablereportcaching) && $CFG->enablereportcaching == 0) {
             reportbuilder_purge_all_cache(true);
@@ -61,7 +60,7 @@ class refresh_cache_task extends \core\task\scheduled_task {
                 continue;
             }
 
-            $schedule = new \scheduler($cache, array('nextevent' => 'nextreport'));
+            $schedule = new \local_reportbuilder\scheduler($cache, array('nextevent' => 'nextreport'));
             if ($schedule->is_time()) {
                 $schedule->next(time(), true, \core_date::get_server_timezone());
 

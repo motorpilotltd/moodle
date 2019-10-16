@@ -43,21 +43,51 @@ class rb_filter_cohort extends rb_filter_type {
      * @param object $mform a MoodleForm object to setup
      */
     public function setupForm(&$mform) {
-        global $SESSION;
+        global $SESSION, $CFG, $SITE, $DB;
+
+        require_once("$CFG->dirroot/cohort/lib.php");
+        require_once("$CFG->dirroot/lib/coursecatlib.php");
+
         $label = format_string($this->label);
         $advanced = $this->advanced;
 
-        $mform->addElement('static', $this->name.'_list', $label,
-            // container for currently selected cohorts
-            '<div class="list-' . $this->name . '">' .
-            '</div>' . display_add_cohort_link($this->name));
+        $cohorts = cohort_get_all_cohorts(0, 1000);
 
-        if ($advanced) {
-            $mform->setAdvanced($this->name.'_list');
+        $cohortsbycat = [];
+        foreach ($cohorts['cohorts'] as $c) {
+            if (!isset($cohortsbycat[$c->contextid])) {
+                $cohortsbycat[$c->contextid] = [];
+            }
+            $cohortsbycat[$c->contextid][] = $c;
+        }
+        $list = \coursecat::make_categories_list();
+
+        $catcontmap = $DB->get_records_menu('context', ['contextlevel' => CONTEXT_COURSECAT], 'instanceid', 'instanceid, id');
+
+        $select = [];
+
+        foreach ($cohortsbycat[1] as $c) {
+            $select[$c->id] = $c->name;
+        }
+        foreach ($list as $catid => $category) {
+            if (empty($cohortsbycat[$catcontmap[$catid]])) {
+                continue;
+            }
+
+            foreach ($cohortsbycat[$catcontmap[$catid]] as $c) {
+                if ($c->id == $SITE->id) {
+                    continue;
+                }
+                $select[$c->id] = $category . ' / ' .
+                        format_string($c->name, true, array('context' => \context_course::instance($c->id)));
+            }
         }
 
-        $mform->addElement('hidden', $this->name, '');
-        $mform->setType($this->name, PARAM_SEQUENCE);
+        $mform->addElement('autocomplete',  $this->name, $label, $select, ['multiple' => true]);
+
+        if ($advanced) {
+            $mform->setAdvanced($this->name);
+        }
 
         // set default values
         if (isset($SESSION->reportbuilder[$this->report->get_uniqueid()][$this->name])) {
@@ -69,25 +99,6 @@ class rb_filter_cohort extends rb_filter_type {
 
     }
 
-    function definition_after_data(&$mform) {
-        global $DB;
-        if ($ids = $mform->getElementValue($this->name)) {
-
-            if ($cohorts = $DB->get_records_select('cohort', "id IN ($ids)")) {
-                $out = html_writer::start_tag('div', array('class' => "list-".$this->name));
-                foreach ($cohorts as $cohort) {
-                    $out .= display_selected_cohort_item($cohort, $this->name);
-                }
-                $out .= html_writer::end_tag('div');
-
-                // link to add cohorts
-                $out .= display_add_cohort_link($this->name);
-
-                $mform->setDefault($this->name.'_list', $out);
-            }
-        }
-    }
-
     /**
      * Retrieves data from the form data
      * @param object $formdata data submited with the form
@@ -97,7 +108,7 @@ class rb_filter_cohort extends rb_filter_type {
         $field    = $this->name;
 
         if (isset($formdata->$field) && !empty($formdata->$field) ) {
-            return array('value'    => $formdata->$field);
+            return array('value'    => implode(',', $formdata->$field));
         }
 
         return false;
@@ -195,63 +206,4 @@ class rb_filter_cohort extends rb_filter_type {
 
         return get_string('selectlabelnoop', 'local_reportbuilder', $a);
     }
-
-    /**
-     * Include Js for this filter
-     *
-     */
-    public function include_js() {
-        global $PAGE;
-
-        $code = array();
-        $code[] = TOTARA_JS_DIALOG;
-        $code[] = TOTARA_JS_TREEVIEW;
-        local_js($code);
-
-        $jsdetails = new stdClass();
-        $jsdetails->strings = array(
-            'totara_cohort' => array('choosecohorts')
-        );
-        $jsdetails->args = array('filter_to_load' => 'cohort', null, null, $this->name, 'reportid' => $this->report->_id);
-
-        foreach ($jsdetails->strings as $scomponent => $sstrings) {
-            $PAGE->requires->strings_for_js($sstrings, $scomponent);
-        }
-
-        $PAGE->requires->js_call_amd('local_reportbuilder/filter_dialogs', 'init', $jsdetails->args);
-    }
-}
-
-/**
- * Given a cohort object returns the HTML to display it as a filter selection
- *
- * @param object $cohort A cohort object containing id and name properties
- * @param string $filtername The identifying name of the current filter
- *
- * @return string HTML to display a selected item
- */
-function display_selected_cohort_item($cohort, $filtername) {
-    global $OUTPUT;
-    $strdelete = get_string('delete');
-    $out = html_writer::start_tag('div', array('data-filtername' => $filtername,
-                                               'data-id' => $cohort->id,
-                                               'class' => 'multiselect-selected-item'));
-    $out .= format_string($cohort->name);
-    $deleteicon = $OUTPUT->pix_icon('t/delete');
-    $out .= html_writer::link('#', $deleteicon, array('title' => $strdelete));
-    $out .= html_writer::end_tag('div');
-    return $out;
-}
-
-/**
- * Helper function to display the 'add cohorts' link to the filter
- *
- * @param string $filtername Name of the form element
- *
- * @return string HTML to display the link
- */
-function display_add_cohort_link($filtername) {
-    return html_writer::start_tag('div', array('class' => 'rb-cohort-add-link')) .
-           html_writer::link('#', get_string('addcohorts', 'local_reportbuilder'), array('id' => 'show-'.$filtername.'-dialog')) .
-           html_writer::end_tag('div');
 }

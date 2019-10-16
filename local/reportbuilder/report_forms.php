@@ -1203,7 +1203,7 @@ class report_builder_save_form extends moodleform {
         $filterparams = $report->get_restriction_descriptions('filter');
         $params = implode(html_writer::empty_tag('br'), $filterparams);
 
-        if ($data->headerandactions) {
+        if (empty($data->headerandactions)) {
             if (!$data->sid) {
                 $mform->addElement('header', 'savesearch', get_string('editingsavedsearch', 'local_reportbuilder'));
             } else {
@@ -1223,7 +1223,7 @@ class report_builder_save_form extends moodleform {
         $mform->addElement('hidden', 'action');
         $mform->setType('action', PARAM_ALPHANUMEXT);
 
-        if ($data->headerandactions) {
+        if (empty($data->headerandactions)) {
             $this->add_action_buttons();
         }
         $this->set_data($data);
@@ -1415,79 +1415,5 @@ class report_builder_course_expand_form extends moodleform {
                 $mform->addElement('static', 'enrol', '', $link);
             }
         }
-    }
-}
-
-class report_builder_program_expand_form extends moodleform {
-    public function definition() {
-        $mform =& $this->_form;
-
-        $prog = $this->_customdata;
-
-        if ($prog['summary']) {
-            $mform->addElement('static', 'summary', get_string('summary', 'totara_program'), $prog['summary']);
-        }
-
-        if ($prog['certifid']) {
-            $type = 'certification';
-            if ($prog['assigned']) {
-                $mform->addElement('static', 'status', get_string('status'), get_string('youareassigned', 'local_custom_certification'));
-            }
-        } else {
-            $type = 'program';
-            if ($prog['assigned']) {
-                $mform->addElement('static', 'status', get_string('status'), get_string('youareassigned', 'totara_program'));
-            }
-        }
-
-        $url = new moodle_url('/totara/program/view.php', array('id' => $prog['id']));
-        $mform->addElement('static', 'view', '', html_writer::link($url, get_string('view' . $type, 'totara_' . $type),
-            array('class' => 'btn btn-primary')));
-    }
-}
-
-class report_builder_restrictions_edit_general_form extends moodleform {
-    public function definition() {
-        $mform = $this->_form;
-        $data = $this->_customdata;
-
-        $mform->addElement('text', 'name', get_string('name', 'local_reportbuilder'));
-        $mform->setType('name', PARAM_TEXT);
-        $mform->addRule('name', null, 'required');
-        $mform->addHelpButton('name', 'name', 'local_reportbuilder');
-
-        $mform->addElement('editor', 'description_editor', get_string('description'));
-        $mform->setType('text', PARAM_RAW); // Always use format_text() when displaying to user.
-
-        $mform->addElement('hidden', 'id');
-        $mform->setType('id', PARAM_INT);
-
-        $this->add_action_buttons();
-
-        $this->set_data($data);
-    }
-}
-
-/**
- * Choose one ore more Global Report Restrictions to apply
- */
-class report_builder_choose_restriction_form extends moodleform {
-    public function definition() {
-        $data = $this->_customdata;
-        $restrictions = $data['restrictions'];
-        $selected = $data['selected'];
-
-        $mform =& $this->_form;
-
-        foreach ($restrictions as $restriction) {
-            $elem = $mform->addElement('advcheckbox', "restriction[{$restriction->id}]", '', $restriction->name, null,
-                    $restriction->id);
-            if (array_search($restriction->id, $selected) !== false) {
-                $elem->setChecked(true);
-                $first = false;
-            }
-        }
-
-        // This is dialog form, so no submit button required.
     }
 }

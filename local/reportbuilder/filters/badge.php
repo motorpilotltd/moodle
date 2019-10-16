@@ -44,21 +44,20 @@ class rb_filter_badge extends rb_filter_type {
      * @param object $mform a MoodleForm object to setup
      */
     public function setupForm(&$mform) {
-        global $SESSION;
+        global $SESSION, $DB;
         $label = format_string($this->label);
         $advanced = $this->advanced;
 
-        $mform->addElement('static', $this->name.'_list', $label,
-            // Container for currently selected badges.
-            '<div class="list-' . $this->name . '">' .
-            '</div>' . display_add_badge_link($this->name));
+        $badges = $DB->get_records_sql('SELECT id, name FROM {badge} WHERE status = :active or status = :activelocked ORDER BY name', ['active' => BADGE_STATUS_ACTIVE, 'activelocked' => BADGE_STATUS_ACTIVE_LOCKED]);
+        $opts = [];
+        foreach ($badges as $badge) {
+            $opts[$badge->id] = $badge->name;
+        }
+        $mform->addElement('autocomplete',  $this->name, $label, $opts, ['multiple' => true]);
 
         if ($advanced) {
-            $mform->setAdvanced($this->name.'_list');
+            $mform->setAdvanced($this->name);
         }
-
-        $mform->addElement('hidden', $this->name, '');
-        $mform->setType($this->name, PARAM_SEQUENCE);
 
         // Set default values.
         if (isset($SESSION->reportbuilder[$this->report->get_uniqueid()][$this->name])) {
@@ -70,25 +69,6 @@ class rb_filter_badge extends rb_filter_type {
 
     }
 
-    public function definition_after_data(&$mform) {
-        global $DB;
-        if ($ids = $mform->getElementValue($this->name)) {
-
-            if ($badges = $DB->get_records_select('badge', "id IN ($ids)")) {
-                $out = html_writer::start_tag('div', array('class' => "list-".$this->name));
-                foreach ($badges as $badge) {
-                    $out .= display_selected_badge_item($badge, $this->name);
-                }
-                $out .= html_writer::end_tag('div');
-
-                // Link to add badges.
-                $out .= display_add_badge_link($this->name);
-
-                $mform->setDefault($this->name.'_list', $out);
-            }
-        }
-    }
-
     /**
      * Retrieves data from the form data
      * @param object $formdata data submited with the form
@@ -98,7 +78,7 @@ class rb_filter_badge extends rb_filter_type {
         $field = $this->name;
 
         if (isset($formdata->$field) && !empty($formdata->$field) ) {
-            return array('value' => $formdata->$field);
+            return array('value' => implode(',', $formdata->$field));
         }
 
         return false;
@@ -194,67 +174,4 @@ class rb_filter_badge extends rb_filter_type {
 
         return get_string('selectlabelnoop', 'local_reportbuilder', $a);
     }
-
-    /**
-     * Include Js for this filter
-     *
-     */
-    public function include_js() {
-        global $PAGE;
-
-        $code = array();
-        $code[] = TOTARA_JS_DIALOG;
-        $code[] = TOTARA_JS_TREEVIEW;
-        local_js($code);
-
-        $jsdetails = new stdClass();
-        $jsdetails->strings = array(
-            'badges' => array('choosebadges')
-        );
-        $jsdetails->args = array('filter_to_load' => 'badge', null, null, $this->name, 'reportid' => $this->report->_id);
-
-        foreach ($jsdetails->strings as $scomponent => $sstrings) {
-            $PAGE->requires->strings_for_js($sstrings, $scomponent);
-        }
-
-        $PAGE->requires->js_call_amd('local_reportbuilder/filter_dialogs', 'init', $jsdetails->args);
-    }
-}
-
-/**
- * Given a badge object returns the HTML to display it as a filter selection
- *
- * @param object $badge A badge object containing id and name properties
- * @param string $filtername The identifying name of the current filter
- *
- * @return string HTML to display a selected item
- */
-function display_selected_badge_item($badge, $filtername) {
-    global $CFG, $OUTPUT;
-    require_once($CFG->libdir.'/badgeslib.php');
-    $strdelete = get_string('delete');
-    $out = html_writer::start_tag('div', array('data-filtername' => $filtername,
-                                               'data-id' => $badge->id,
-                                               'class' => 'multiselect-selected-item'));
-    $bclass = new badge($badge->id);
-    $bcontext = $bclass->get_context();
-    $out .= print_badge_image($bclass, $bcontext) . format_string($badge->name) . ' (' .
-                                get_string("badgestatus_{$badge->status}", 'badges') . ')';
-    $deleteicon = $OUTPUT->pix_icon('t/delete');
-    $out .= html_writer::link('#', $deleteicon, array('title' => $strdelete));
-    $out .= html_writer::end_tag('div');
-    return $out;
-}
-
-/**
- * Helper function to display the 'add badges' link to the filter
- *
- * @param string $filtername Name of the form element
- *
- * @return string HTML to display the link
- */
-function display_add_badge_link($filtername) {
-    return html_writer::start_tag('div', array('class' => 'rb-badge-add-link')) .
-           html_writer::link('#', get_string('addbadges', 'local_reportbuilder'), array('id' => 'show-'.$filtername.'-dialog')) .
-           html_writer::end_tag('div');
 }

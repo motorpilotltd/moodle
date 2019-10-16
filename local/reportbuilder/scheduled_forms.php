@@ -107,7 +107,7 @@ class scheduled_reports_new_form extends moodleform {
         $options = ['frequency' => $frequency, 'schedule' => $schedule];
         if (!has_capability('local/reportbuilder:overridescheduledfrequency', $context)) {
             $currentoption = [];
-            $defaultoptions = scheduler::get_options();
+            $defaultoptions = \local_reportbuilder\scheduler::get_options();
             if (!is_null($frequency)) {
                 $currentoption = [array_flip($defaultoptions)[$frequency] => (int) $frequency];
             }
@@ -136,6 +136,9 @@ class scheduled_reports_new_form extends moodleform {
         }
         $mform->addElement('scheduler', 'schedulegroup', $schedulestr, $options);
 
+
+
+        $mform->addElement('date_time_selector', 'date_time_selector', 'date_time_selector');
         // Email to, setting for the schedule reports.
         $mform->addElement('header', 'emailto', get_string('scheduledemailtosettings', 'local_reportbuilder'));
         $mform->addElement('html', html_writer::tag('p', get_string('warngrrvisibility', 'local_reportbuilder')));

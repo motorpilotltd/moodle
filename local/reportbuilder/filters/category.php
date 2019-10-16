@@ -42,7 +42,9 @@ class rb_filter_category extends rb_filter_type {
      * @param object $mform a MoodleForm object to setup
      */
     public function setupForm(&$mform) {
-        global $SESSION;
+        global $SESSION, $CFG;
+        require_once("$CFG->dirroot/lib/coursecatlib.php");
+
         $label = format_string($this->label);
         $advanced = $this->advanced;
 
@@ -52,19 +54,11 @@ class rb_filter_category extends rb_filter_type {
             html_writer::tag('span', '', array('id' => $this->name . 'title', 'class' => 'dialog-result-title')));
         $mform->setType($this->name.'_op', PARAM_TEXT);
 
-        // Can't use a button because id must be 'show-*-dialog' and formslib appends 'id_' to ID.
-        $objs[] =& $mform->createElement('static', 'selectorbutton',
-            '',
-            html_writer::empty_tag('input', array('type' => 'button',
-                'class' => 'rb-filter-button rb-filter-choose-category btn btn-secondary',
-                'value' => get_string('choosecatplural', 'local_reportbuilder'),
-                'id' => 'show-' . $this->name . '-dialog')));
+        $cats = \coursecat::make_categories_list();
+        $objs[] = $mform->createElement('autocomplete',  $this->name, $label, $cats, ['multiple' => true]);
+
         $objs[] =& $mform->createElement('checkbox', $this->name . '_rec', '', get_string('includesubcategories', 'local_reportbuilder'));
         $mform->setType($this->name . '_rec', PARAM_TEXT);
-
-        // Container for currently selected items.
-        $content = html_writer::tag('div', '', array('class' => 'rb-filter-content-list list-' . $this->name));
-        $objs[] =& $mform->createElement('static', $this->name.'_list', '', $content);
 
         // Create a group for the elements.
         $grp =& $mform->addElement('group', $this->name.'_grp', $label, $objs, '', false);
@@ -72,11 +66,7 @@ class rb_filter_category extends rb_filter_type {
 
         if ($advanced) {
             $mform->setAdvanced($this->name.'_grp');
-            $mform->setAdvanced($this->name.'_list');
         }
-
-        $mform->addElement('hidden', $this->name, '');
-        $mform->setType($this->name, PARAM_SEQUENCE);
 
         // Set default values.
         if (isset($SESSION->reportbuilder[$this->report->get_uniqueid()][$this->name])) {
@@ -93,28 +83,6 @@ class rb_filter_category extends rb_filter_type {
         }
     }
 
-    /**
-     * Definition after data.
-     * @param object $mform a MoodleForm object to setup
-     */
-    public function definition_after_data(&$mform) {
-        global $DB, $CFG;
-        require_once($CFG->dirroot . '/lib/coursecatlib.php');
-
-        if ($ids = $mform->getElementValue($this->name)) {
-            if ($categories = $DB->get_records_select('course_categories', "id IN ($ids)")) {
-                $names = coursecat::make_categories_list();
-                $out = html_writer::start_tag('div', array('class' => 'rb-filter-content-list list-' . $this->name));
-                foreach ($categories as $category) {
-                    $out .= display_selected_category_item($names, $category, $this->name);
-                }
-                $out .= html_writer::end_tag('div');
-
-                $mform->setDefault($this->name . '_list', $out);
-            }
-        }
-    }
-
 
     /**
      * Retrieves data from the form data.
@@ -128,7 +96,7 @@ class rb_filter_category extends rb_filter_type {
 
         if (isset($formdata->$field) && $formdata->$field != '') {
             $data = array('operator' => (int)$formdata->$operator,
-                          'value'    => (string)$formdata->$field);
+                          'value'    => implode(',', $formdata->$field));
             if (isset($formdata->$recursive)) {
                 $data['recursive'] = (int)$formdata->$recursive;
             } else {
@@ -233,58 +201,10 @@ class rb_filter_category extends rb_filter_type {
         $orandstr = ($operator == 1) ? 'or': 'and';
         $a->value = implode(get_string($orandstr, 'local_reportbuilder'), $selected);
         if ($recursive) {
-            $a->value .= get_string('andchildren', 'totara_hierarchy');
+            $a->value .= get_string('andchildren', 'local_reportbuilder');
         }
         $a->operator = $operators[$operator];
 
         return get_string('selectlabel', 'local_reportbuilder', $a);
     }
-
-    /**
-     * Include Js for this filter.
-     */
-    public function include_js() {
-        global $PAGE;
-
-        $code = array();
-        $code[] = TOTARA_JS_DIALOG;
-        $code[] = TOTARA_JS_TREEVIEW;
-        local_js($code);
-
-        $jsdetails = new stdClass();
-        $jsdetails->strings = array(
-            'local_reportbuilder' => array('choosecatplural'),
-        );
-        $jsdetails->args = array('filter_to_load' => 'category', null, null, $this->name, 'reportid' => $this->report->_id);
-
-        foreach ($jsdetails->strings as $scomponent => $sstrings) {
-            $PAGE->requires->strings_for_js($sstrings, $scomponent);
-        }
-
-        $PAGE->requires->js_call_amd('local_reportbuilder/filter_dialogs', 'init', $jsdetails->args);
-    }
-}
-
-/**
- * Given a category item object returns the HTML to display it as a filter selection.
- *
- * @param object $item A category object containing id and name properties
- * @param string $filtername The identifying name of the current filter
- *
- * @return string HTML to display a selected item
- */
-function display_selected_category_item($names, $item, $filtername) {
-    global $OUTPUT;
-
-    $strdelete = get_string('delete');
-    $itemname = (isset($names[$item->id])) ? $names[$item->id] : $item->name;
-    $out = html_writer::start_tag('div', array('data-filtername' => $filtername,
-                                               'data-id' => $item->id,
-                                               'class' => 'multiselect-selected-item'));
-    $out .= format_string($itemname);
-    $out .= $OUTPUT->action_icon('#', new pix_icon('/t/delete', $strdelete, 'moodle'), null,
-        array('class' => 'action-icon delete'));
-
-    $out .= html_writer::end_tag('div');
-    return $out;
 }

@@ -1921,3 +1921,5 @@ $string['textlabelnovalue'] = '{$a->label} {$a->operator}';
 $string['valuefor'] = '{$a} value';
 
 $string['strfdateshortmonth'] = '%d %b %Y';
+
+$string['andchildren'] = ' (and children)';

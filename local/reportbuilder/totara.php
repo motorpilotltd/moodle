@@ -229,7 +229,6 @@ function totara_print_scheduled_reports($showoptions=true, $showaddform=true, $s
     global $CFG, $PAGE;
 
     require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
-    require_once($CFG->dirroot . '/totara/core/lib/scheduler.php');
     require_once($CFG->dirroot . '/calendar/lib.php');
     require_once($CFG->dirroot . '/local/reportbuilder/scheduled_forms.php');
 
@@ -303,7 +302,7 @@ function get_my_scheduled_reports_list($sqlclause=array()) {
         $sched->exporttofilesystem = get_string($key, 'local_reportbuilder');
         //schedule column
         if (isset($sched->frequency) && isset($sched->schedule)){
-            $schedule = new scheduler($sched, array('nextevent' => 'nextreport'));
+            $schedule = new \local_reportbuilder\scheduler($sched, array('nextevent' => 'nextreport'));
             $formatted = $schedule->get_formatted();
             if ($next = $schedule->get_scheduled_time()) {
                 if ($next < time()) {
