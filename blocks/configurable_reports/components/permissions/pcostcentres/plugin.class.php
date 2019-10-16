@@ -25,7 +25,7 @@
 require_once($CFG->dirroot.'/blocks/configurable_reports/plugin.class.php');
 
 class plugin_pcostcentres extends plugin_base{
-    
+
     function init(){
         $this->form = true;
         $this->unique = false;
@@ -49,8 +49,7 @@ class plugin_pcostcentres extends plugin_base{
             return \local_costcentre\costcentre::is_user(
                 $userid,
                 array(
-                    \local_costcentre\costcentre::BUSINESS_ADMINISTRATOR,
-                    \local_costcentre\costcentre::REPORTER,
+                    \local_costcentre\costcentre::LEARNING_REPORTER,
                     \local_costcentre\costcentre::GROUP_LEADER,
                     \local_costcentre\costcentre::HR_ADMIN,
                     \local_costcentre\costcentre::HR_LEADER

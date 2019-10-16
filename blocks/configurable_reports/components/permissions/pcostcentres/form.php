@@ -38,13 +38,12 @@ class pcostcentres_form extends moodleform {
         $mform->addElement('header',  'ccformheader', get_string('pcostcentres', 'block_configurable_reports'), '');
 
         $ccroles = array(
-            \local_costcentre\costcentre::BUSINESS_ADMINISTRATOR=>"Appraisal Admin",
-            \local_costcentre\costcentre::REPORTER=>"Reporter",
+            \local_costcentre\costcentre::LEARNING_REPORTER=>"Learning Reporter",
             \local_costcentre\costcentre::GROUP_LEADER=>"Group Leader",
             \local_costcentre\costcentre::HR_ADMIN=>"HR Admin",
             \local_costcentre\costcentre::HR_LEADER=>"HR Leader"
         );
-        
+
 
         $mform->addElement('select', 'ccroles', get_string('pcostcentres_roles', 'block_configurable_reports'), $ccroles)->setMultiple(true);
 
