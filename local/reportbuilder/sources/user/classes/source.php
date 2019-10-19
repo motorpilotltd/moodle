@@ -115,14 +115,13 @@ class source extends rb_base_source {
      * @return array
      */
     protected function define_joinlist() {
-
         $joinlist = array(
                 new rb_join(
                         'course_completions_courses_started',
                         'LEFT',
                         "(SELECT userid, COUNT(id) as number
                     FROM {course_completions}
-                    WHERE timestarted > 0 OR timecompleted > 0
+                    WHERE timestarted > 0 AND (timecompleted = 0 OR timecompleted IS NULL)
                     GROUP BY userid)",
                         'base.id = course_completions_courses_started.userid',
                         REPORT_BUILDER_RELATION_ONE_TO_ONE
@@ -135,6 +134,28 @@ class source extends rb_base_source {
                     WHERE timecompleted > 0
                     GROUP BY userid)",
                         'base.id = totara_stats_courses_completed.userid',
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
+                ),
+                new rb_join(
+                        'totara_stats_courses_enrolled',
+                        'LEFT',
+                        "(SELECT userid, count(courseid) AS number
+                    FROM {user_enrolments} ue
+                    INNER JOIN {enrol} e ON e.id = ue.enrolid
+                    GROUP BY userid)",
+                        'base.id = totara_stats_courses_enrolled.userid',
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
+                ),
+                new rb_join(
+                        'totara_stats_courses_enrolled_completion',
+                        'LEFT',
+                        "(SELECT userid, count(courseid) AS number
+                    FROM {user_enrolments} ue
+                    INNER JOIN {enrol} e ON e.id = ue.enrolid
+                    INNER JOIN {course} c ON c.id = e.courseid
+                    WHERE c.enablecompletion = 1
+                    GROUP BY userid)",
+                        'base.id = totara_stats_courses_enrolled_completion.userid',
                         REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
                 new rb_join(
@@ -225,6 +246,29 @@ class source extends rb_base_source {
                 array(
                         'displayfunc' => 'count',
                         'joins' => 'totara_stats_courses_completed',
+                        'dbdatatype' => 'integer',
+                )
+        );
+        $columnoptions[] = new rb_column_option(
+                'statistics',
+                'coursesenrolled',
+                get_string('userscoursesenrolledcount', 'rbsource_user'),
+                'COALESCE(totara_stats_courses_enrolled.number,0)',
+                array(
+                        'displayfunc' => 'count',
+                        'joins' => 'totara_stats_courses_enrolled',
+                        'dbdatatype' => 'integer',
+                )
+        );
+        $columnoptions[] = new rb_column_option(
+                'statistics',
+                'progressthroughenrolled',
+                get_string('progressthroughenrolled', 'rbsource_user'),
+                'COALESCE(totara_stats_courses_enrolled.number,0)',
+                array(
+                        'extrafields' => ['todo' => 'totara_stats_courses_enrolled_completion.number', 'green' => 'totara_stats_courses_completed.number', 'amber' => 'course_completions_courses_started.number'],
+                        'displayfunc' => 'progressbar',
+                        'joins' => ['totara_stats_courses_enrolled_completion', 'totara_stats_courses_completed', 'course_completions_courses_started'],
                         'dbdatatype' => 'integer',
                 )
         );

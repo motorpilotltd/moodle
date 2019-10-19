@@ -5678,7 +5678,7 @@ function reportbuilder_get_schduled_report(stdClass $sched, stdClass $reportreco
         throw new coding_exception('Invalid parameters');
     }
 
-    return new reportbuilder($sched->reportid, null, false, $sched->savedsearchid, $sched->userid, false, array('userid' => $sched->userid), $allrestr);
+    return new reportbuilder($sched->reportid, null, false, $sched->savedsearchid, $sched->userid, false, array('userid' => $sched->userid));
 }
 
 /**

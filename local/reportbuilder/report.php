@@ -137,6 +137,9 @@ if ($graph) {
     $columns = [];
     $hiddencolumns = $report->js_get_hidden_columns();
     foreach ($report->get_columns() as $machinename => $column) {
+        if (empty($column->heading)) {
+            continue;
+        }
         $machinename = str_replace($column->type . '-', $column->type . '_', $machinename);
         $columns[] = (object)['name' => $column->heading, 'machinename' => $machinename, 'checked' => !in_array($machinename, $hiddencolumns)];
     }

@@ -44,8 +44,6 @@ class process_scheduled_task extends \core\task\scheduled_task {
     public function execute() {
         global $CFG, $DB;
         require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
-        require_once($CFG->dirroot . '/local/reportbuilder/groupslib.php');
-
         require_once($CFG->dirroot . '/calendar/lib.php');
 
         $sql = "SELECT rbs.*, rb.fullname

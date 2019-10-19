@@ -12,6 +12,11 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
             upicon: '',
             downicon: '',
             spacer: '',
+            columnselector: 'div.column_selector select, select.column_selector',
+            advancedselector: 'div.advanced_selector select, select.advanced_selector',
+            headingtextselector: 'div.column_heading_text input, input.column_heading_text',
+            customheadingcheckselector: 'div.column_custom_heading_checkbox input, input.column_custom_heading_checkbox',
+            columnselectornotnew: 'div.column_selector select:not(.new_column_selector), select.column_selector:not(.new_column_selector)',
 
             /**
              * module initialisation method called by php js_init_call()
@@ -65,9 +70,9 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                 var colName = $(column_selector).val();
                 var newHeading = module.config.rb_column_headings[colName];
 
-                var advancedSelector = $('div.advanced_selector select', $(column_selector).parents('tr:first'));
-                var headingElement = $('div.column_heading_text input', $(column_selector).parents('tr:first'));
-                var customHeadingCheckbox = $('div.column_custom_heading_checkbox input', $(column_selector).parents('tr:first'));
+                var advancedSelector = $(reportbuildercolumns.advancedselector, $(column_selector).parents('tr:first'));
+                var headingElement = $(reportbuildercolumns.headingtextselector, $(column_selector).parents('tr:first'));
+                var customHeadingCheckbox = $(reportbuildercolumns.customheadingcheckselector, $(column_selector).parents('tr:first'));
 
                 if (colName == '0') {
                     advancedSelector.hide();
@@ -133,34 +138,34 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                 $('#id_newcustomheading').prop('disabled', true);
 
                 // handle changes to the column pulldowns
-                $('div.column_selector select').off('change');
-                $('div.column_selector select').on('change', function () {
+                $(reportbuildercolumns.columnselector).off('change');
+                $(reportbuildercolumns.columnselector).on('change', function () {
                     window.onbeforeunload = null;
                     module.rb_update_col_row(this);
                 });
 
                 // handle changes to the advanced pulldowns
-                $('div.advanced_selector select').off('change');
-                $('div.advanced_selector select').on('change', function () {
+                $(reportbuildercolumns.advancedselector).off('change');
+                $(reportbuildercolumns.advancedselector).on('change', function () {
                     window.onbeforeunload = null;
-                    var column_selector = $('div.column_selector select', $(this).parents('tr:first'));
+                    var column_selector = $(reportbuildercolumns.columnselector, $(this).parents('tr:first'));
                     module.rb_update_col_row(column_selector);
                 });
 
                 // handle changes to the customise checkbox
                 // use click instead of change event for IE
-                $('div.column_custom_heading_checkbox input').off('click');
-                $('div.column_custom_heading_checkbox input').on('click', function () {
+                $(reportbuildercolumns.customheadingcheckselector).off('click');
+                $('div.column_custom_heading_checkbox input,  input.column_custom_heading_checkbox').on('click', function () {
                     window.onbeforeunload = null;
-                    var column_selector = $('div.column_selector select', $(this).parents('tr:first'));
+                    var column_selector = $(reportbuildercolumns.columnselector, $(this).parents('tr:first'));
                     module.rb_update_col_row(column_selector);
                 });
 
                 // special case for the 'Add another column...' selector
-                $('div.new_column_selector select').on('change', function () {
+                $('div.new_column_selector select, select.new_column_selector').on('change', function () {
                     window.onbeforeunload = null;
-                    var newHeadingBox = $('div.column_heading_text input', $(this).parents('tr:first'));
-                    var newCheckBox = $('div.column_custom_heading_checkbox input', $(this).parents('tr:first'));
+                    var newHeadingBox = $(reportbuildercolumns.headingtextselector, $(this).parents('tr:first'));
+                    var newCheckBox = $(reportbuildercolumns.customheadingcheckselector, $(this).parents('tr:first'));
                     var addbutton = module.rb_init_addbutton($(this));
                     if ($(this).val() == 0) {
                         // empty and disable the new heading box if no column chosen
@@ -176,7 +181,7 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                 });
 
                 // init display of advanced column for existing fields
-                $('div.column_selector select').each(function () {
+                $(reportbuildercolumns.columnselector).each(function () {
                     module.rb_update_col_row(this);
                 });
 
@@ -200,9 +205,9 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
             rb_init_addbutton: function (colselector) {
 
                 var module = this;
-                var newAdvancedBox = $('div.advanced_selector select', colselector.parents('tr:first'));
-                var newHeadingCheckbox = $('div.column_custom_heading_checkbox input', colselector.parents('tr:first'));
-                var newHeadingBox = $('div.column_heading_text input', colselector.parents('tr:first'));
+                var newAdvancedBox = $(reportbuildercolumns.advancedselector, colselector.parents('tr:first'));
+                var newHeadingCheckbox = $(reportbuildercolumns.customheadingcheckselector, colselector.parents('tr:first'));
+                var newHeadingBox = $(reportbuildercolumns.headingtextselector, colselector.parents('tr:first'));
 
                 var optionsbox = $('td:last', newHeadingBox.parents('tr:first'));
                 var newcolinput = colselector.closest('tr').clone();  // clone of current 'Add new col...' tr
@@ -226,7 +231,7 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                         heading: newHeadingBox.val(),
                         advanced: newAdvancedBox.val(),
                         customheading: (newHeadingCheckbox.is(':checked') ? 1 : 0)
-                    }
+                    };
                     var oldAddButtonHtml = addbutton.html();
 
                     e.preventDefault();
@@ -258,7 +263,7 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
 
                                 var upbutton = '';
                                 var uppersibling = colselector.closest('tr').prev('tr');
-                                if (uppersibling.find('div.column_selector select').length > 0) {
+                                if (uppersibling.find(reportbuildercolumns.columnselector).length > 0) {
                                     // Create an up button for the newly added col, to be added below
                                     var upbutton = module.rb_get_btn_up(module.config.rb_reportid, colid);
                                 }
@@ -268,9 +273,10 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
 
                                 // Set row atts
                                 var columnbox = $('td:first', optionsbox.parents('tr:first'));
-                                var columnSelector = $('div.column_selector select', columnbox);
-                                var newCustomHeading = $('div.column_custom_heading_checkbox input', optionsbox.parents('tr:first'));
+                                var columnSelector = $(reportbuildercolumns.columnselector, columnbox);
+                                var newCustomHeading = $(reportbuildercolumns.customheadingcheckselector, optionsbox.parents('tr:first'));
                                 columnSelector.parents('.fitem').removeClass('new_column_selector');
+                                columnSelector.removeClass('new_column_selector');
                                 columnSelector.attr('name', 'column' + colid);
                                 columnSelector.attr('id', 'id_column' + colid);
                                 columnbox.find('select optgroup[label=New]').remove();
@@ -354,10 +360,10 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                                             var delcol = o.result;
 
                                             // Fix sibling buttons
-                                            if (uppersibling.find('div.column_selector select').length > 0) {
+                                            if (uppersibling.find(reportbuildercolumns.columnselector).length > 0) {
                                                 module.rb_reload_option_btns(uppersibling);
                                             }
-                                            if (lowersibling.find('div.column_selector select:not(.new_column_selector)').length > 0) {
+                                            if (lowersibling.find(reportbuildercolumns.columnselectornotnew).length > 0) {
                                                 module.rb_reload_option_btns(lowersibling);
                                             }
 
@@ -510,22 +516,22 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
 
                     var colrowclone = colrow.clone();
                     // Set the selected option, cause for some reason this don't clone so well...
-                    if (colrow.find('div.column_selector select').val() !== '') {
-                        colrowclone.find('div.column_selector select option[value=' + colrow.find('div.column_selector select').val() + ']').attr('selected', 'selected');
+                    if (colrow.find(reportbuildercolumns.columnselector).val() !== '') {
+                        colrowclone.find(reportbuildercolumns.columnselector).find('option[value=' + colrow.find(reportbuildercolumns.columnselector).val() + ']').attr('selected', 'selected');
                     }
-                    if (colrow.find('div.advanced_selector select').val() !== '') {
-                        colrowclone.find('div.advanced_selector select option[value=' + colrow.find('div.advanced_selector select').val() + ']').attr('selected', 'selected');
+                    if (colrow.find(reportbuildercolumns.advancedselector).val() !== '') {
+                        colrowclone.find(reportbuildercolumns.advancedselector).find('option[value=' + colrow.find('div.advanced_selector select').val() + ']').attr('selected', 'selected');
                     }
 
                     var lowersibling = colrow.next('tr');
 
                     var lowersiblingclone = lowersibling.clone();
                     // Set the selected option, cause for some reason this don't clone so well...
-                    if (lowersibling.find('div.column_selector select').val() !== '') {
-                        lowersiblingclone.find('div.column_selector select option[value=' + lowersibling.find('div.column_selector select').val() + ']').attr('selected', 'selected');
+                    if (lowersibling.find(reportbuildercolumns.columnselector).val() !== '') {
+                        lowersiblingclone.find(reportbuildercolumns.columnselector).find('option[value=' + lowersibling.find('div.column_selector select').val() + ']').attr('selected', 'selected');
                     }
-                    if (lowersibling.find('div.advanced_selector select').val() !== '') {
-                        lowersiblingclone.find('div.advanced_selector select option[value=' + lowersibling.find('div.advanced_selector select').val() + ']').attr('selected', 'selected');
+                    if (lowersibling.find(reportbuildercolumns.advancedselector).val() !== '') {
+                        lowersiblingclone.find(reportbuildercolumns.advancedselector).find('option[value=' + lowersibling.find('div.advanced_selector select').val() + ']').attr('selected', 'selected');
                     }
 
                     $.ajax({
@@ -584,22 +590,22 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
 
                     var colrowclone = colrow.clone();
                     // Set the selected option, cause for some reason this don't clone so well...
-                    if (colrow.find('div.column_selector select').val() !== '') {
-                        colrowclone.find('div.column_selector select option[value=' + colrow.find('div.column_selector select').val() + ']').attr('selected', 'selected');
+                    if (colrow.find(reportbuildercolumns.columnselector).val() !== '') {
+                        colrowclone.find(reportbuildercolumns.columnselector).find('option[value=' + colrow.find(reportbuildercolumns.columnselector).val() + ']').attr('selected', 'selected');
                     }
-                    if (colrow.find('div.advanced_selector select').val() !== '') {
-                        colrowclone.find('div.advanced_selector select option[value=' + colrow.find('div.advanced_selector select').val() + ']').attr('selected', 'selected');
+                    if (colrow.find(reportbuildercolumns.advancedselector).val() !== '') {
+                        colrowclone.find(reportbuildercolumns.advancedselector).find('option[value=' + colrow.find(reportbuildercolumns.advancedselector).val() + ']').attr('selected', 'selected');
                     }
 
                     var uppersibling = colrow.prev('tr');
 
                     var uppersiblingclone = uppersibling.clone();
                     // Set the selected option, cause for some reason this don't clone so well...
-                    if (uppersibling.find('div.column_selector select').val() !== '') {
-                        uppersiblingclone.find('div.column_selector select option[value=' + uppersibling.find('div.column_selector select').val() + ']').attr('selected', 'selected');
+                    if (uppersibling.find(reportbuildercolumns.columnselector).val() !== '') {
+                        uppersiblingclone.find(reportbuildercolumns.columnselector).find('option[value=' + uppersibling.find(reportbuildercolumns.columnselector).val() + ']').attr('selected', 'selected');
                     }
-                    if (uppersibling.find('div.advanced_selector select').val() !== '') {
-                        uppersiblingclone.find('div.advanced_selector select option[value=' + uppersibling.find('div.advanced_selector select').val() + ']').attr('selected', 'selected');
+                    if (uppersibling.find(reportbuildercolumns.advancedselector).val() !== '') {
+                        uppersiblingclone.find(reportbuildercolumns.advancedselector).find('option[value=' + uppersibling.find('div.advanced_selector select').val() + ']').attr('selected', 'selected');
                     }
 
                     $.ajax({
@@ -662,11 +668,11 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                 var colid = colrow.attr('colid');
                 var deletebtn = this.rb_get_btn_delete(this.config.rb_reportid, colid);
                 var upbtn = this.spacer;
-                if (colrow.prev('tr').find('div.column_selector select').length > 0) {
+                if (colrow.prev('tr').find(reportbuildercolumns.columnselector).length > 0) {
                     upbtn = this.rb_get_btn_up(this.config.rb_reportid, colid);
                 }
                 var downbtn = this.spacer;
-                if (colrow.next('tr').next('tr').find('div.column_selector select').length > 0) {
+                if (colrow.next('tr').next('tr').find(reportbuildercolumns.columnselector).length > 0) {
                     downbtn = this.rb_get_btn_down(this.config.rb_reportid, colid);
                 }
 

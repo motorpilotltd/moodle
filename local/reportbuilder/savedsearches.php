@@ -114,7 +114,7 @@ if ($action === 'edit') {
     } else {
         $data = clone($search);
         $data->sid = $sid;
-        $data->headerandactions = false;
+        $data->headerandactions = true;
         $mform = new report_builder_save_form(null, array('report' => $report, 'data' => $data));
         $mform->display();
     }

@@ -30,7 +30,7 @@ define(['jquery', 'core/modal_factory', 'core/templates', 'core/str', 'core/noti
 
         var showhidecolumnsmodal = {
             init: function (id, shortname, columnscontext) {
-                var addblocklink = $("div.showhidecolumns button");
+                var addblocklink = $("div.showhidecolumns button, div.showhidecolumns input");
 
                 var titlePromise = Str.get_string('showhidecolumns', 'local_reportbuilder')
                     .fail(Notification.exception);

@@ -29,6 +29,7 @@ $string['timecreated'] = 'Time created';
 $string['mylearningicons'] = 'User\'s My Learning Icons';
 $string['name'] = 'Name';
 $string['userscoursestartedcount'] = 'User\'s Courses Started Count';
+$string['userscoursesenrolledcount'] = 'User\'s Courses Enrolled Count';
 $string['userscoursescompletedcount'] = 'User\'s Courses Completed Count';
 $string['usernamewithlearninglinks'] = 'User Fullname (with links to learning components)';
 $string['usersname'] = 'User\'s Name';
@@ -40,6 +41,7 @@ $string['coursecompletionsasevidence'] = 'Course Completions as Evidence';
 $string['coursesstarted'] = 'Courses Started';
 $string['coursescompleted'] = 'Courses Completed';
 $string['competenciesachieved'] = 'Competencies Achieved';
+$string['progressthroughenrolled'] = 'Progress through enrolled courses';
 
 $string['records'] = 'Records';
 $string['required'] = 'Required';

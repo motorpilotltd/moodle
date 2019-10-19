@@ -9,6 +9,14 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
             upicon: '',
             downicon: '',
             spacer: '',
+            filterselector: 'div.filter_selector select, select.filter_selector',
+            newfilterselector: 'div.new_standard_filter_selector select, div.new_sidebar_filter_selector select, select.new_standard_filter_selector, select.new_sidebar_filter_selector',
+            filternametextselector: 'div.filter_name_text input, input.filter_name_text',
+            searchcolumnselectselector: 'div.search_column_selector select, select.search_column_selector',
+            customnamecheckselector: 'div.filter_custom_name_checkbox input, input.filter_custom_name_checkbox',
+            advcheckselector: 'div.filter_advanced_checkbox input, input.filter_advanced_checkbox',
+            newsearchcolumnselector: 'div.new_search_column_selector select, select.new_search_column_selector',
+            notnewfilterselector: 'div.filter_selector select:not(.new_standard_filter_selector, [name="new_standard_filter_selector"]), select.filter_selector:not(.new_standard_filter_selector, [name="new_standard_filter_selector"])',
 
             /**
              * module initialisation method called by php js_init_call()
@@ -54,34 +62,34 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                 $('#id_newsidebarcustomname').prop('disabled', true);
 
                 // Disable uncustomised headers on page load.
-                $('div.filter_custom_name_checkbox input').not(':checked').each(function () {
-                    var textElement = $('div.filter_name_text input', $(this).parents('tr:first'));
+                $(reportbuilderfilters.customnamecheckselector).not(':checked').each(function () {
+                    var textElement = $(reportbuilderfilters.filternametextselector, $(this).parents('tr:first'));
                     textElement.prop('disabled', true);
                 });
 
                 // Disable onbeforeunload for advanced checkbox.
-                $('input.filter_advanced_checkbox').off('click');
-                $('input.filter_advanced_checkbox').on('click', function () {
+                $(reportbuilderfilters.advcheckselector).off('click');
+                $(reportbuilderfilters.advcheckselector).on('click', function () {
                     window.onbeforeunload = null;
                 });
 
                 // Handle changes to the filter pulldowns.
-                $('div.filter_selector select').off('change');
-                $('div.filter_selector select').on('change', function () {
+                $(reportbuilderfilters.filterselector).off('change');
+                $(reportbuilderfilters.filterselector).on('change', function () {
                     window.onbeforeunload = null;
                     var changedSelector = $(this).val();
                     var newContent = module.config.rb_filter_headings[changedSelector];
-                    var textElement = $('div.filter_name_text input', $(this).parents('tr:first'));
+                    var textElement = $(reportbuilderfilters.filternametextselector, $(this).parents('tr:first'));
 
                     textElement.val(newContent);  // Insert new content.
                 });
 
                 // Handle changes to the customise checkbox.
                 // Use click instead of change event for IE.
-                $('div.filter_custom_name_checkbox input').off('click');
-                $('div.filter_custom_name_checkbox input').on('click', function () {
+                $(reportbuilderfilters.customnamecheckselector).off('click');
+                $(reportbuilderfilters.customnamecheckselector).on('click', function () {
                     window.onbeforeunload = null;
-                    var textElement = $('div.filter_name_text input', $(this).parents('tr:first'));
+                    var textElement = $(reportbuilderfilters.filternametextselector, $(this).parents('tr:first'));
                     if ($(this).is(':checked')) {
                         // Enable the textbox when checkbox isn't checked.
                         textElement.prop('disabled', false);
@@ -89,20 +97,20 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                         // Disable the textbox when checkbox is checked.
                         // And reset text contents back to default.
                         textElement.prop('disabled', true);
-                        var changedSelector = $('div.filter_selector select', $(this).parents('tr:first')).val();
+                        var changedSelector = $(reportbuilderfilters.filterselector, $(this).parents('tr:first')).val();
                         var newContent = module.config.rb_filter_headings[changedSelector];
                         textElement.val(newContent);
                     }
                 });
 
                 // Handle changes to the 'Add another filter...' selector.
-                $('div.new_standard_filter_selector select, div.new_sidebar_filter_selector select').on('change', function () {
+                $(reportbuilderfilters.newfilterselector).on('change', function () {
                     window.onbeforeunload = null;
                     var region = $(this).attr('id').substring(6, $(this).attr('id').indexOf("filter"));
                     var addbutton = module.rb_init_filter_addbutton($(this), region);
                     var advancedCheck = $('#id_new' + region + 'advanced');
-                    var newNameBox = $('div.filter_name_text input', $(this).parents('tr:first'));
-                    var newCheckBox = $('div.filter_custom_name_checkbox input', $(this).parents('tr:first'));
+                    var newNameBox = $(reportbuilderfilters.filternametextselector, $(this).parents('tr:first'));
+                    var newCheckBox = $(reportbuilderfilters.customnamecheckselector, $(this).parents('tr:first'));
                     var selectedval = $(this).val();
 
                     if (selectedval == 0) {
@@ -132,13 +140,13 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                 var module = this;
 
                 // Handle changes to the search column pulldowns.
-                $('div.search_column_selector select').off('change');
-                $('div.search_column_selector select').on('change', function () {
+                $(reportbuilderfilters.searchcolumnselectselector).off('change');
+                $(reportbuilderfilters.searchcolumnselectselector).on('change', function () {
                     window.onbeforeunload = null;
                 });
 
                 // Handle changes to the 'Add another search column...' selector.
-                $('div.new_search_column_selector select').on('change', function () {
+                $(reportbuilderfilters.newsearchcolumnselector).on('change', function () {
                     window.onbeforeunload = null;
                     var addbutton = module.rb_init_search_column_addbutton($(this));
                     var selectedval = $(this).val();
@@ -196,7 +204,7 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
 
                                 var upbutton = '';
                                 var uppersibling = filterselector.closest('tr').prev('tr');
-                                if (uppersibling.find('div.filter_selector select').length > 0) {
+                                if (uppersibling.find(reportbuilderfilters.filterselector).length > 0) {
                                     // Create an up button for the newly added filter, to be added below.
                                     var upbutton = module.rb_get_filter_btn_up(module.config.rb_reportid, fid);
                                 }
@@ -208,12 +216,14 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                                 // Set row atts.
                                 $('#id_new' + region + 'filter').parents('.fitem').removeClass('new_standard_filter_selector');
                                 $('#id_new' + region + 'filter').parents('.fitem').removeClass('new_sidebar_filter_selector');
+                                $('#id_new' + region + 'filter').removeClass('new_standard_filter_selector');
+                                $('#id_new' + region + 'filter').removeClass('new_sidebar_filter_selector');
                                 var filterbox = selector;
                                 var customname = $('#id_new' + region + 'customname');
                                 var nametext = $('#id_new' + region + 'filtername');
-                                filterbox.find('div.filter_selector select').attr('name', 'filter' + fid);
-                                filterbox.find('select optgroup[label=New]').remove();
-                                filterbox.find('div.filter_selector select').attr('id', 'id_filter' + fid);
+                                filterbox.find(reportbuilderfilters.filterselector).attr('name', 'filter' + fid);
+                                filterbox.find('optgroup[label=New]').remove();
+                                filterbox.find(reportbuilderfilters.filterselector).attr('id', 'id_filter' + fid);
                                 customname.attr('id', 'id_customname' + fid);
                                 customname.attr('name', 'customname' + fid);
                                 nametext.attr('id', 'id_filtername' + fid);
@@ -291,9 +301,9 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                                 // Set row atts.
                                 $('#id_newsearchcolumn').removeClass('new_search_column_selector');
                                 var searchcolumnbox = selector;
-                                searchcolumnbox.find('div.search_column_selector select').attr('name', 'searchcolumn' + searchcolumnid);
+                                searchcolumnbox.find(reportbuilderfilters.searchcolumnselectselector).attr('name', 'searchcolumn' + searchcolumnid);
                                 searchcolumnbox.find('select optgroup[label=New]').remove();
-                                searchcolumnbox.find('div.search_column_selector select').attr('id', 'id_searchcolumn' + searchcolumnid);
+                                searchcolumnbox.find(reportbuilderfilters.searchcolumnselectselector).attr('id', 'id_searchcolumn' + searchcolumnid);
 
                                 // Set the id of the new searchcolumn tr
                                 selector.closest('tr').attr('searchcolumnid', searchcolumnid);
@@ -368,10 +378,10 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                                             filterrow.remove();
 
                                             // Fix sibling buttons.
-                                            if (uppersibling.find('div.filter_selector select').length > 0) {
+                                            if (uppersibling.find(reportbuilderfilters.filterselector).length > 0) {
                                                 module.rb_reload_filter_option_btns(uppersibling);
                                             }
-                                            if (lowersibling.find('div.filter_selector select:not(.new_standard_filter_selector, [name="new_standard_filter_selector"])').length > 0) {
+                                            if (lowersibling.find(reportbuilderfilters.notnewfilterselector).length > 0) {
                                                 module.rb_reload_filter_option_btns(lowersibling);
                                             }
 
@@ -529,13 +539,13 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
 
                     var filterrowclone = filterrow.clone();
                     // Set the selected option, cause for some reason this don't clone so well...
-                    filterrowclone.find('div.filter_selector select option[value=' + filterrow.find('div.filter_selector select').val() + ']').attr('selected', 'selected');
+                    filterrowclone.find(reportbuilderfilters.filterselector).find('option[value=' + filterrow.find(reportbuilderfilters.filterselector).val() + ']').attr('selected', 'selected');
 
                     var lowersibling = filterrow.next('tr');
 
                     var lowersiblingclone = lowersibling.clone();
                     // Set the selected option, cause for some reason this don't clone so well...
-                    lowersiblingclone.find('div.filter_selector select option[value=' + lowersibling.find('div.filter_selector select').val() + ']').attr('selected', 'selected');
+                    lowersiblingclone.find(reportbuilderfilters.filterselector).find('option[value=' + lowersibling.find(reportbuilderfilters.filterselector).val() + ']').attr('selected', 'selected');
 
                     $.ajax({
                         url: M.cfg.wwwroot + '/local/reportbuilder/ajax/filter.php',
@@ -586,13 +596,13 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                     var filterrow = $(this).closest('tr');
                     var filterrowclone = filterrow.clone();
                     // Set the selected option, cause for some reason this don't clone so well...
-                    filterrowclone.find('div.filter_selector select option[value=' + filterrow.find('div.filter_selector select').val() + ']').attr('selected', 'selected');
+                    filterrowclone.find(reportbuilderfilters.filterselector).find('option[value=' + filterrow.find(reportbuilderfilters.filterselector).val() + ']').attr('selected', 'selected');
 
                     var uppersibling = filterrow.prev('tr');
 
                     var uppersiblingclone = uppersibling.clone();
                     // Set the selected option, cause for some reason this don't clone so well...
-                    uppersiblingclone.find('div.filter_selector select option[value=' + uppersibling.find('div.filter_selector select').val() + ']').attr('selected', 'selected');
+                    uppersiblingclone.find(reportbuilderfilters.filterselector).find('option[value=' + uppersibling.find(reportbuilderfilters.filterselector).val() + ']').attr('selected', 'selected');
 
                     $.ajax({
                         url: M.cfg.wwwroot + '/local/reportbuilder/ajax/filter.php',
@@ -643,11 +653,11 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                 var fid = filterrow.attr('fid');
                 var deletebtn = module.rb_get_filter_btn_delete(module.config.rb_reportid, fid);
                 var upbtn = this.spacer;
-                if (filterrow.prev('tr').find('div.filter_selector select').length > 0) {
+                if (filterrow.prev('tr').find(reportbuilderfilters.filterselector).length > 0) {
                     upbtn = module.rb_get_filter_btn_up(module.config.rb_reportid, fid);
                 }
                 var downbtn = this.spacer;
-                if (filterrow.next('tr').next('tr').find('div.filter_selector select').length > 0) {
+                if (filterrow.next('tr').next('tr').find(reportbuilderfilters.filterselector).length > 0) {
                     downbtn = module.rb_get_filter_btn_down(module.config.rb_reportid, fid);
                 }
 

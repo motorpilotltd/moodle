@@ -17,21 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @package t0tara
- * @subpackage reportbuilder
+ * @author Simon Coggins <simon.coggins@t0taralms.com>
+ * @package local_reportbuilder
  */
 
-// lang file for local/reportbuilder/rb_sources/rb_source_courses.php
-$string['sourcetitle'] = 'Courses';
-// columns
-$string['content'] = 'Content';
-// filters
-$string['coursecontent'] = 'Course Content';
-// content
-$string['startdate'] = 'The start date';
+defined('MOODLE_INTERNAL') || die();
 
-
-$string['userscoursestartedcount'] = 'Users started';
-$string['userscoursescompletedcount'] = 'Users completed';
-$string['userscoursesenrolledcount'] = 'Users enrolled';
-$string['progressthroughenrolled'] = 'Progress';
+$plugin->version  = 2017091906;       // The current module version (Date: YYYYMMDDXX).
+$plugin->requires = 2016120504;       // Requires this Moodle version.
+$plugin->component = 'rbsource_userenrolments';  // To check on upgrade, that module sits in correct place

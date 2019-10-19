@@ -3630,6 +3630,12 @@ abstract class rb_base_source {
      */
     protected function add_custom_course_fields(array &$joinlist, array &$columnoptions,
         array &$filteroptions, $basetable = 'course') {
+        global $CFG;
+
+        if (!file_exists($CFG->dirroot . 'local/coursemetadata/version.php')) {
+            return true;
+        }
+
         return $this->add_custom_fields_for('coursemetadata',
                                             $basetable,
                                             'courseid',
@@ -4382,5 +4388,94 @@ abstract class rb_base_source {
                 $params, 0, $limit);
 
         return $tags;
+    }
+
+
+    public function rb_display_progressbar($value, $row, $isexport = false) {
+        if ($isexport) {
+            $plaintext = '[';
+            $total = 0;
+
+            foreach (['green', 'amber','red'] as $status) {
+                if (isset($row->$status)) {
+                    if ($row->$status == 0 || $row->todo == 0) {
+                        $percentage = 0;
+                    } else {
+                        $percentage = 10 * ($row->$status / $row->todo);
+                        $percentage = round($percentage, 0);
+                    }
+                    $total += $percentage;
+
+                    switch ($status) {
+                        case 'blue':
+                            $char = "▄";
+                            break;
+                        case 'amber':
+                            $char = "▆";
+                            break;
+                        case 'green':
+                            $char = "█";
+                            break;
+                    }
+                    for ($i = 0; $i < $percentage; $i++) {
+                        $plaintext .= $char;
+                    }
+                }
+            }
+
+            while(mb_strlen($plaintext) < 11) {
+                $plaintext .= '▁';
+            }
+            $plaintext .= ']';
+
+            return $plaintext;
+        }
+
+
+        $html = '<div class="progress">';
+        $total = 0;
+
+        foreach (['green', 'amber','red'] as $status) {
+            if (isset($row->$status)) {
+                if ($row->$status == 0 || $row->todo == 0) {
+                    $percentage = 0;
+                    $label = 0;
+                } else {
+                    $percentage = 100 * ($row->$status / $row->todo);
+                    $percentage = round($percentage, 2);
+                    $label = $row->$status;
+                }
+
+                switch ($status) {
+                    case 'blue':
+                        $class = 'progress-bar-info';
+                        break;
+                    case 'amber':
+                        $class = 'progress-bar-warning';
+                        break;
+                    case 'green':
+                        $class = 'progress-bar-success';
+                        break;
+                }
+
+                $html .= '<div class="progress-bar ' . $class . ' " style="width: ' . $percentage . '%;" role="progressbar" aria-valuenow="' .
+                        $percentage . '" aria-valuemin="0" aria-valuemax="100"></div>';
+
+                $total += $label;
+            }
+        }
+
+        if ($total < $row->todo) {
+            $remainer = $row->todo - $total;
+            $percentage = 100 * ($remainer / $row->todo);
+            $percentage = round($percentage, 2);
+
+            $html .= '<div class="progress-bar progress-bar-danger" style="width: ' . $percentage . '%;" role="progressbar" aria-valuenow="' .
+                    $percentage . '" aria-valuemin="0" aria-valuemax="100"></div>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 }

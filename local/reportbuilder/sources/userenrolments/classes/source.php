@@ -22,7 +22,7 @@
  * @package mod_assign
  */
 
-namespace rbsource_coursecompletion;
+namespace rbsource_userenrolments;
 use rb_base_source;
 use coding_exception;
 use rb_join;
@@ -39,7 +39,10 @@ class source extends rb_base_source {
     public $defaultfilters, $requiredcolumns, $sourcetitle;
 
     public function __construct() {
-        $this->base = '{course_completions}';
+        $this->base = '(SELECT ue.userid as id, e.courseid as course, min(timestart) as timestart, max(timeend) as timeend, min(ue.timecreated) as timecreated, max(ue.timemodified) as timemodified
+                    FROM {user_enrolments} ue
+                    INNER JOIN {enrol} e ON e.id = ue.enrolid
+                    GROUP BY userid)';
         $this->joinlist = $this->define_joinlist();
         $this->columnoptions = $this->define_columnoptions();
         $this->filteroptions = $this->define_filteroptions();
@@ -48,7 +51,7 @@ class source extends rb_base_source {
         $this->defaultcolumns = $this->define_defaultcolumns();
         $this->defaultfilters = $this->define_defaultfilters();
         $this->requiredcolumns = $this->define_requiredcolumns();
-        $this->sourcetitle = get_string('sourcetitle', 'rbsource_coursecompletion');
+        $this->sourcetitle = get_string('sourcetitle', 'rbsource_userenrolments');
 
         parent::__construct();
     }
@@ -67,6 +70,13 @@ class source extends rb_base_source {
 
         $joinlist = array(
                 new rb_join(
+                        'coursecompletions',
+                        'LEFT',
+                        '{course_completions}',
+                        '(coursecompletions.course = base.course and coursecompletions.userid = base.id)',
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
+                ),
+                new rb_join(
                         'criteria',
                         'LEFT',
                         '{course_completion_criteria}',
@@ -79,7 +89,7 @@ class source extends rb_base_source {
                         'critcompl',
                         'LEFT',
                         '{course_completion_crit_compl}',
-                        '(critcompl.userid = base.userid AND ' .
+                        '(critcompl.userid = base.id AND ' .
                         'critcompl.criteriaid = criteria.id AND ' .
                         '(critcompl.deleted IS NULL OR critcompl.deleted = 0)',
                         REPORT_BUILDER_RELATION_ONE_TO_ONE,
@@ -98,14 +108,14 @@ class source extends rb_base_source {
                         'LEFT',
                         '{grade_grades}',
                         '(grade_grades.itemid = grade_items.id AND ' .
-                        'grade_grades.userid = base.userid)',
+                        'grade_grades.userid = base.id)',
                         REPORT_BUILDER_RELATION_ONE_TO_ONE,
                         'grade_items'
                 ),
         );
 
         // include some standard joins
-        $this->add_user_table_to_joinlist($joinlist, 'base', 'userid');
+        $this->add_user_table_to_joinlist($joinlist, 'base', 'id');
         $this->add_course_table_to_joinlist($joinlist, 'base', 'course', 'INNER');
         // requires the course join
         $this->add_course_category_table_to_joinlist($joinlist,
@@ -122,130 +132,123 @@ class source extends rb_base_source {
                 new rb_column_option(
                         'course_completion',
                         'status',
-                        get_string('completionstatus', 'rbsource_coursecompletion'),
-                        'CASE WHEN base.timecompleted is null then -1 WHEN base.timecompleted = 0 then 0 WHEN base.timecompleted > 0 then 1 END ',
-                        array('displayfunc' => 'completion_status')
+                        get_string('completionstatus', 'rbsource_userenrolments'),
+                        'CASE WHEN coursecompletions.timecompleted is null then -1 WHEN coursecompletions.timecompleted = 0 then 0 WHEN coursecompletions.timecompleted > 0 then 1 END ',
+                        array('displayfunc' => 'completion_status', 'joins' => 'coursecompletions')
                 ),
                 new rb_column_option(
                         'course_completion',
                         'iscomplete',
-                        get_string('iscompleteany', 'rbsource_coursecompletion'),
-                        'CASE WHEN base.timecompleted > 0 THEN 1 ELSE 0 END',
+                        get_string('iscompleteany', 'rbsource_userenrolments'),
+                        'CASE WHEN coursecompletions.timecompleted > 0 THEN 1 ELSE 0 END',
                         array(
                                 'displayfunc' => 'yes_or_no',
                                 'dbdatatype' => 'boolean',
-                                'defaultheading' => get_string('iscomplete', 'rbsource_coursecompletion'),
+                                'defaultheading' => get_string('iscomplete', 'rbsource_userenrolments'),
+                                'joins' => 'coursecompletions'
                         )
                 ),
                 new rb_column_option(
                         'course_completion',
                         'isnotcomplete',
-                        get_string('isnotcomplete', 'rbsource_coursecompletion'),
-                        'CASE WHEN base.timecompleted > 0 then 0 ELSE 1 END ',
+                        get_string('isnotcomplete', 'rbsource_userenrolments'),
+                        'CASE WHEN coursecompletions.timecompleted > 0 then 0 ELSE 1 END ',
                         array(
                                 'displayfunc' => 'yes_or_no',
                                 'dbdatatype' => 'boolean',
-                                'defaultheading' => get_string('isnotcomplete', 'rbsource_coursecompletion'),
+                                'defaultheading' => get_string('isnotcomplete', 'rbsource_userenrolments'),
+                                'joins' => 'coursecompletions'
                         )
                 ),
                 new rb_column_option(
                         'course_completion',
                         'isinprogress',
-                        get_string('isinprogress', 'rbsource_coursecompletion'),
-                        'CASE WHEN base.timecompleted = 0 then 1 ELSE 0 END ',
+                        get_string('isinprogress', 'rbsource_userenrolments'),
+                        'CASE WHEN coursecompletions.timecompleted = 0 then 1 ELSE 0 END ',
                         array(
                                 'displayfunc' => 'yes_or_no',
                                 'dbdatatype' => 'boolean',
-                                'defaultheading' => get_string('isinprogress', 'rbsource_coursecompletion'),
+                                'defaultheading' => get_string('isinprogress', 'rbsource_userenrolments'),
+                                'joins' => 'coursecompletions'
                         )
                 ),
                 new rb_column_option(
                         'course_completion',
                         'isnotyetstarted',
-                        get_string('isnotyetstarted', 'rbsource_coursecompletion'),
-                        'CASE WHEN base.timecompleted IS NULL THEN 1 ELSE 0 END',
+                        get_string('isnotyetstarted', 'rbsource_userenrolments'),
+                        'CASE WHEN coursecompletions.timecompleted IS NULL THEN 1 ELSE 0 END',
                         array(
                                 'displayfunc' => 'yes_or_no',
                                 'dbdatatype' => 'boolean',
-                                'defaultheading' => get_string('isnotyetstarted', 'rbsource_coursecompletion'),
+                                'defaultheading' => get_string('isnotyetstarted', 'rbsource_userenrolments'),
+                                'joins' => 'coursecompletions'
                         )
                 ),
                 new rb_column_option(
                         'course_completion',
                         'completeddate',
-                        get_string('completiondate', 'rbsource_coursecompletion'),
-                        'base.timecompleted',
-                        array('displayfunc' => 'nice_date', 'dbdatatype' => 'timestamp')
+                        get_string('completiondate', 'rbsource_userenrolments'),
+                        'coursecompletions.timecompleted',
+                        array('displayfunc' => 'nice_date', 'dbdatatype' => 'timestamp', 'joins' => 'coursecompletions')
                 ),
                 new rb_column_option(
                         'course_completion',
                         'starteddate',
-                        get_string('datestarted', 'rbsource_coursecompletion'),
-                        'base.timestarted',
-                        array('displayfunc' => 'nice_date', 'dbdatatype' => 'timestamp')
+                        get_string('datestarted', 'rbsource_userenrolments'),
+                        'coursecompletions.timestarted',
+                        array('displayfunc' => 'nice_date', 'dbdatatype' => 'timestamp', 'joins' => 'coursecompletions')
                 ),
                 new rb_column_option(
                         'course_completion',
                         'enrolleddate',
-                        get_string('dateenrolled', 'rbsource_coursecompletion'),
-                        'base.timeenrolled',
-                        array('displayfunc' => 'nice_date', 'dbdatatype' => 'timestamp')
-                ),
-                new rb_column_option(
-                        'course_completion',
-                        'enrolltype',
-                        get_string('courseenroltypes', 'local_reportbuilder'),
-                        "(SELECT " . \local_reportbuilder\dblib\base::getbdlib()->sql_group_concat('e.enrol', ', ', 'e.enrol ASC') . "
-                    FROM {enrol} e
-                    JOIN {user_enrolments} ue ON ue.enrolid = e.id
-                   WHERE ue.userid = base.userid AND e.courseid = base.course)",
-                        array(
-                                'displayfunc' => 'enrolment_types_list',
-                                'issubquery' => true,
-                                'iscompound' => true,
-                        )
+                        get_string('dateenrolled', 'rbsource_userenrolments'),
+                        'base.timestart',
+                        array('displayfunc' => 'nice_date', 'dbdatatype' => 'timestamp', 'joins' => 'coursecompletions')
                 ),
                 new rb_column_option(
                         'course_completion',
                         'timecompletedsincestart',
-                        get_string('timetocompletesincestart', 'rbsource_coursecompletion'),
-                        "CASE WHEN base.timecompleted IS NULL OR base.timecompleted = 0 THEN null
-                      ELSE base.timecompleted - base.timestarted END",
+                        get_string('timetocompletesincestart', 'rbsource_userenrolments'),
+                        "CASE WHEN coursecompletions.timecompleted IS NULL OR coursecompletions.timecompleted = 0 THEN null
+                      ELSE coursecompletions.timecompleted - coursecompletions.timestarted END",
                         array(
                                 'displayfunc' => 'duration',
-                                'dbdatatype' => 'integer'
+                                'dbdatatype' => 'integer',
+                                'joins' => 'coursecompletions'
                         )
                 ),
                 new rb_column_option(
                         'course_completion',
                         'timecompletedsinceenrol',
-                        get_string('timetocompletesinceenrol', 'rbsource_coursecompletion'),
-                        "CASE WHEN base.timecompleted IS NULL OR base.timecompleted = 0 THEN null
-                      ELSE base.timecompleted - base.timeenrolled END",
+                        get_string('timetocompletesinceenrol', 'rbsource_userenrolments'),
+                        "CASE WHEN coursecompletions.timecompleted IS NULL OR coursecompletions.timecompleted = 0 THEN null
+                      ELSE coursecompletions.timecompleted - coursecompletions.timestart END",
                         array(
                                 'displayfunc' => 'duration',
-                                'dbdatatype' => 'integer'
+                                'dbdatatype' => 'integer',
+                                'joins' => 'coursecompletions'
                         )
                 ),
                 new rb_column_option(
                         'course_completion',
                         'grade',
-                        get_string('grade', 'rbsource_coursecompletion'),
+                        get_string('grade', 'rbsource_userenrolments'),
                         'grade_grades.finalgrade',
                         array(
                                 'joins' => 'grade_grades',
                                 'extrafields' => array(
                                         'maxgrade' => 'grade_grades.rawgrademax',
                                         'mingrade' => 'grade_grades.rawgrademin',
-                                        'status' => 'CASE WHEN base.timecompleted is null then -1 WHEN base.timecompleted = 0 then 0 WHEN base.timecompleted > 0 then 1 END'
+                                        'status' => 'CASE WHEN coursecompletions.timecompleted is null then -1 WHEN coursecompletions.timecompleted = 0 then 0 WHEN coursecompletions.timecompleted > 0 then 1 END'
                                 ),
                                 'displayfunc' => 'course_grade_percent',
+                                'joins' => 'coursecompletions'
                         )
                 ),
                 new rb_column_option(
                         'course_completion',
                         'passgrade',
-                        get_string('passgrade', 'rbsource_coursecompletion'),
+                        get_string('passgrade', 'rbsource_userenrolments'),
                         '(((criteria.gradepass - grade_items.grademin) / (grade_items.grademax - grade_items.grademin)) * 100)',
                         array(
                                 'joins' => ['criteria', 'grade_items'],
@@ -255,7 +258,7 @@ class source extends rb_base_source {
                 new rb_column_option(
                         'course_completion',
                         'gradestring',
-                        get_string('requiredgrade', 'rbsource_coursecompletion'),
+                        get_string('requiredgrade', 'rbsource_userenrolments'),
                         'grade_grades.finalgrade',
                         array(
                                 'joins' => array('criteria', 'grade_grades'),
@@ -265,29 +268,18 @@ class source extends rb_base_source {
                                         'grademax' => 'grade_items.grademax',
                                         'grademin' => 'grade_items.grademin',
                                 ),
-                                'defaultheading' => get_string('grade', 'rbsource_coursecompletion'),
+                                'defaultheading' => get_string('grade', 'rbsource_userenrolments'),
                         )
                 ),
                 new rb_column_option(
                         'course_completion',
-                        'progressnumeric',
-                        get_string('progressnumeric', 'rbsource_coursecompletion'),
-                        'CASE WHEN base.timecompleted is null then -1 WHEN base.timecompleted = 0 then 0 WHEN base.timecompleted > 0 then 1 END',
+                        'done',
+                        get_string('progresspercent', 'rbsource_userenrolments'),
+                        'CASE WHEN coursecompletions.timecompleted is null then 0 WHEN coursecompletions.timecompleted = 0 then 50 WHEN coursecompletions.timecompleted > 0 then 100 END',
                         array(
                                 'displayfunc' => 'course_progress',
-                                'extrafields' => array('numericonly' => 1, 'userid' => 'base.userid', 'courseid' => 'base.course'),
-                                'defaultheading' => get_string('progress', 'rbsource_coursecompletion'),
-                        )
-                ),
-                new rb_column_option(
-                        'course_completion',
-                        'progresspercent',
-                        get_string('progresspercent', 'rbsource_coursecompletion'),
-                        'CASE WHEN base.timecompleted is null then -1 WHEN base.timecompleted = 0 then 0 WHEN base.timecompleted > 0 then 1 END',
-                        array(
-                                'displayfunc' => 'course_progress',
-                                'extrafields' => array('numericonly' => 0, 'userid' => 'base.userid', 'courseid' => 'base.course'),
-                                'defaultheading' => get_string('progress', 'rbsource_coursecompletion'),
+                                'extrafields' => array('todo' => 100),
+                                'defaultheading' => get_string('progress', 'rbsource_userenrolments'),
                         )
                 ),
         );
@@ -318,39 +310,39 @@ class source extends rb_base_source {
                 new rb_filter_option(
                         'course_completion',
                         'completeddate',
-                        get_string('datecompleted', 'rbsource_coursecompletion'),
+                        get_string('datecompleted', 'rbsource_userenrolments'),
                         'date'
                 ),
                 new rb_filter_option(
                         'course_completion',
                         'starteddate',
-                        get_string('datestarted', 'rbsource_coursecompletion'),
+                        get_string('datestarted', 'rbsource_userenrolments'),
                         'date'
                 ),
                 new rb_filter_option(
                         'course_completion',
                         'enrolleddate',
-                        get_string('dateenrolled', 'rbsource_coursecompletion'),
+                        get_string('dateenrolled', 'rbsource_userenrolments'),
                         'date'
                 ),
                 new rb_filter_option(
                         'course_completion',
                         'status',
-                        get_string('completionstatus', 'rbsource_coursecompletion'),
+                        get_string('completionstatus', 'rbsource_userenrolments'),
                         'multicheck',
                         array(
                                 'selectfunc' => 'completion_status_list',
                                 'attributes' => rb_filter_option::select_width_limiter(),
                                 'showcounts' => array(
-                                        'joins' => array("LEFT JOIN {course_completions} ccs_filter ON base.id = ccs_filter.id"),
+                                        'joins' => array("LEFT JOIN {course_completions} ccs_filter ON coursecompletions.id = ccs_filter.id"),
                                         'dataalias' => 'ccs_filter',
-                                        'datafield' => 'CASE WHEN base.timecompleted is null then -1 WHEN base.timecompleted = 0 then 0 WHEN base.timecompleted > 0 then 1 END')
+                                        'datafield' => 'CASE WHEN coursecompletions.timecompleted is null then -1 WHEN coursecompletions.timecompleted = 0 then 0 WHEN coursecompletions.timecompleted > 0 then 1 END')
                         )
                 ),
                 new rb_filter_option(
                         'course_completion',
                         'iscomplete',
-                        get_string('iscompleteany', 'rbsource_coursecompletion'),
+                        get_string('iscompleteany', 'rbsource_userenrolments'),
                         'select',
                         array(
                                 'selectfunc' => 'yesno_list',
@@ -360,7 +352,7 @@ class source extends rb_base_source {
                 new rb_filter_option(
                         'course_completion',
                         'isnotcomplete',
-                        get_string('isnotcomplete', 'rbsource_coursecompletion'),
+                        get_string('isnotcomplete', 'rbsource_userenrolments'),
                         'select',
                         array(
                                 'selectfunc' => 'yesno_list',
@@ -370,7 +362,7 @@ class source extends rb_base_source {
                 new rb_filter_option(
                         'course_completion',
                         'isinprogress',
-                        get_string('isinprogress', 'rbsource_coursecompletion'),
+                        get_string('isinprogress', 'rbsource_userenrolments'),
                         'select',
                         array(
                                 'selectfunc' => 'yesno_list',
@@ -380,7 +372,7 @@ class source extends rb_base_source {
                 new rb_filter_option(
                         'course_completion',
                         'isnotyetstarted',
-                        get_string('isnotyetstarted', 'rbsource_coursecompletion'),
+                        get_string('isnotyetstarted', 'rbsource_userenrolments'),
                         'select',
                         array(
                                 'selectfunc' => 'yesno_list',
@@ -390,7 +382,7 @@ class source extends rb_base_source {
                 new rb_filter_option(
                         'course_completion',
                         'grade',
-                        get_string('grade', 'rbsource_coursecompletion'),
+                        get_string('grade', 'rbsource_userenrolments'),
                         'number'
                 ),
                 new rb_filter_option(
@@ -402,11 +394,11 @@ class source extends rb_base_source {
                 new rb_filter_option(
                         'course_completion',
                         'enrolled',
-                        get_string('isenrolled', 'rbsource_coursecompletion'),
+                        get_string('isenrolled', 'rbsource_userenrolments'),
                         'enrol',
                         array(),
                         // special enrol filter requires a composite field
-                        array('course' => 'base.course', 'user' => 'base.userid')
+                        array('course' => 'coursecompletions.course', 'user' => 'coursecompletions.userid')
                 ),
                 new rb_filter_option(
                         'course_completion',
@@ -435,8 +427,8 @@ class source extends rb_base_source {
 
         $contentoptions[] = new rb_content_option(
                 'date',
-                get_string('completiondate', 'rbsource_coursecompletion'),
-                'base.timecompleted'
+                get_string('completiondate', 'rbsource_userenrolments'),
+                'coursecompletions.timecompleted'
         );
 
         return $contentoptions;
@@ -446,12 +438,12 @@ class source extends rb_base_source {
         $paramoptions = array(
                 new rb_param_option(
                         'userid',       // parameter name
-                        'base.userid',  // field
+                        'coursecompletions.userid',  // field
                         null            // joins
                 ),
                 new rb_param_option(
                         'courseid',
-                        'base.course'
+                        'coursecompletions.course'
                 ),
         );
 

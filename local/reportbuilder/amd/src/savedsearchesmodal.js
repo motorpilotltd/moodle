@@ -30,7 +30,7 @@ define(['jquery', 'core/modal_factory', 'core/templates', 'core/str', 'core/noti
 
         var managesavedsearchesmodal = {
             init: function (id) {
-                var addblocklink = $("div.managesavedsearches button");
+                var addblocklink = $("div.managesavedsearches button, div.managesavedsearches input");
 
                 var titlePromise = Str.get_string('savedsearches', 'local_reportbuilder')
                     .fail(Notification.exception);
