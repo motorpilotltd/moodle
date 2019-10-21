@@ -1293,6 +1293,14 @@ $string['form:leaderplan:confirm:unlock:title'] = 'Unlock Leadership Development
 $string['form:leaderplan:confirm:unlock:question'] = 'Are you sure you wish to unlock this Leadership Development Plan?';
 $string['form:leaderplan:confirm:unlock:yes'] = 'Yes, unlock it';
 $string['form:leaderplan:confirm:unlock:no'] = 'No, leave it locked';
+$string['form:leaderplan:import:disabled'] = 'Import disabled due to existing data';
+$string['form:leaderplan:import:info'] = 'Use the import button to bring in your LDP data from your last appraisal. Please note, it will not be possible to import data if there is already data in the form.';
+$string['form:leaderplan:import:link'] = 'Import previous LDP';
+$string['form:leaderplan:import:error:hasdata'] = 'Could not import previous LDP - Form already contains data';
+$string['form:leaderplan:import:error:import'] = 'Could not import previous LDP - Previous data does not exist';
+$string['form:leaderplan:import:error:locked'] = 'Could not import previous LDP - The LDP has already been locked for editing';
+$string['form:leaderplan:import:error:lockeduser'] = 'Could not import previous LDP - You do not have permission to edit the form at this stage';
+$string['form:leaderplan:import:success'] = 'Previous LDP successfully imported';
 
 // Events.
 $string['eventappraisaladminviewed'] = 'Appraisal admin viewed';

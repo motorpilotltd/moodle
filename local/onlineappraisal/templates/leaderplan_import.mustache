@@ -1,0 +1,68 @@
+<div class="leaderplanimport m-t-10">
+    <p>{{#str}}form:leaderplan:import:info, local_onlineappraisal{{/str}}</p>
+    <p>
+        <a class="btn btn-primary"
+            id="oa-ldp-import-link"
+            href="{{{url}}}"
+            {{#disabled}}
+                data-hastooltip="true"
+            {{/disabled}}
+        >
+            {{#str}}form:leaderplan:import:link, local_onlineappraisal{{/str}}
+        </a>
+    </p>
+</div>
+
+{{#js}}
+require(['jquery', 'theme_bootstrap/bootstrap'], function($) {
+    var importlink = $('#oa-ldp-import-link');
+    var fieldselector = '[name^="ldp"][name!="ldplocked"][name!="ldppotential"]';
+
+    var allempty = function() {
+        var areempty = true;
+        $(fieldselector).each(function(){
+            var fieldvalue = $(this).val();
+            if ((Array.isArray(fieldvalue) && fieldvalue.length > 0) || (!Array.isArray(fieldvalue) && fieldvalue !== '')) {
+                areempty = false;
+                return false;
+            }
+        })
+        return areempty;
+    };
+
+    var toggletooltip = function (add) {
+        if (add) {
+            importlink.prop('title', "{{#str}}form:leaderplan:import:disabled, local_onlineappraisal{{/str}}");
+            importlink.attr('disabled', 'disabled');
+            importlink.tooltip();
+        } else {
+            importlink.tooltip('destroy');
+            importlink.prop('title', "{{#str}}form:leaderplan:import:link, local_onlineappraisal{{/str}}");
+            importlink.attr('disabled', null);
+        }
+    }
+
+    if (importlink.data('hastooltip')) {
+        toggletooltip(true);
+    }
+
+    importlink.click(function(e) {
+        if ($(this).attr('disabled') === 'disabled') {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    $('form').on('change', fieldselector, function(){
+        var self = $(this);
+        var selfvalue = self.val();
+        if (selfvalue === '' || (Array.isArray(selfvalue) && !selfvalue.length)) {
+            if (allempty()) {
+                toggletooltip(false);
+            }
+        } else {
+            toggletooltip(true);
+        }
+    });
+});
+{{/js}}
