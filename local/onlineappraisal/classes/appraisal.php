@@ -292,7 +292,7 @@ class appraisal {
         $this->add_page('form', 'sixmonth');
         $this->add_page('dashboard', 'checkin', false, 'checkins', true, false, self::HR_AFTER);
         $this->add_page('form', 'successionplan');
-        $this->add_page('form', 'leaderplan');
+        $this->add_page('form', 'leaderplan', false, 'leaderplan');
         $this->add_page('dashboard', 'help', false, false, true, false, self::HR_BEFORE);
         $this->add_page('dashboard', 'addfeedback', 'addfeedback', false, false, false);
 
@@ -371,12 +371,6 @@ class appraisal {
         if (empty($page->url)) {
             $page->url = new moodle_url('/local/onlineappraisal/view.php', array('page' => $name, 'appraisalid' => $this->appraisal->id, 'view' => $this->appraisal->viewingas));
         }
-
-        if ($hook && $this->page == $name) {
-            $class = "\\local_onlineappraisal\\$hook";
-            $classinstance = new $class($this);
-            $classinstance->hook();
-        }
         $page->preloadform = $preloadform;
         $page->showinnav = $showinnav;
         $page->redirectto = $redirectto;
@@ -389,6 +383,13 @@ class appraisal {
         $page->hr = $hr;
 
         $this->pages[$name] = $page;
+
+        // Run hooks last, after page added to pages array.
+        if ($hook && $this->page == $name) {
+            $class = "\\local_onlineappraisal\\$hook";
+            $classinstance = new $class($this);
+            $classinstance->hook();
+        }
     }
 
     /**
