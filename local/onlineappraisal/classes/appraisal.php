@@ -390,7 +390,7 @@ class appraisal {
             $class = "\\local_onlineappraisal\\$hook";
             $classinstance = new $class($this);
             $classinstance->hook();
-    }
+        }
     }
 
     /**
