@@ -13,6 +13,7 @@ $string['certification_report:view_all_costcentres'] = 'Certification report - C
 $string['certification_report:filter'] = 'Certification report - Can filter reports';
 $string['certification_report:set_exemption'] = 'Add / delete exemption in report';
 $string['certification_report:reset_certification'] = 'Reset certification for user';
+$string['certification_report:administer'] = 'Administer block';
 
 $string['pluginname'] = 'Certification report';
 $string['header'] = 'Certification report';
@@ -32,6 +33,7 @@ $string['headerregionsactual:view'] = 'View Regions';
 $string['headerregionsgeo'] = 'Geographic Regions';
 $string['headerregionsgeo:view'] = 'View Geographic Regions';
 $string['headercostcentre'] = 'Cost centre';
+$string['headermanagelinks'] = 'Certification report - Manage links';
 $string['headercomplete'] = '[COMPLETE]';
 $string['headertotal'] = '[TOTAL]';
 
@@ -83,14 +85,6 @@ $string['header:filter'] = 'Filters';
 $string['activate_ticker_report'] = 'Activate ticker report';
 $string['activate_ticker_report_desc'] = 'Activates task that sends mandatory training report to moodle.ticker@arup.com.<br>If activating check task itself is enabled too!';
 
-// Temporary/demo strings.
-$string['choose_report_category'] = 'Enter featured report category ID';
-$string['choose_report_category_desc'] = 'Enter the category that will act as the root for the featured certification report.';
-$string['choose_report_certifications'] = 'Enter featured report certifications IDs';
-$string['choose_report_certifications_desc'] = 'Enter certifications for featured report (comma separated list of IDs).';
-$string['choose_report_title'] = 'Enter featured report title';
-$string['choose_report_title_desc'] = 'Enter the title of the featured certification report.';
-
 $string['staffid'] = 'Staff ID';
 $string['grade'] = 'Grade';
 $string['employmentcategory'] = 'Employment Category';
@@ -116,3 +110,36 @@ $string['modal:close'] = 'Close';
 $string['strftimedatefull'] = '%d-%b-%Y';
 // Tasks.
 $string['taskexportreports'] = 'Export reports';
+
+// New strings for updated block and associated admin.
+$string['viewcostcentrereport'] = 'View cost centre report';
+
+$string['linkname'] = 'Link name';
+
+$string['selectregion'] = 'Select a region';
+$string['linkurl'] = 'Report Link URL';
+
+$string['successaddlink'] = 'Report link successfully saved.';
+
+$string['heading:reportlinks'] = 'Report Links';
+
+$string['table:nodata'] = 'No relevant data exists';
+
+$string['button:edit'] = 'Edit';
+$string['button:delete'] = 'Delete';
+
+$string['table:action'] = 'Action';
+
+$string['addreportlinks'] = 'Add report link';
+
+$string['modal:deleteconfirm:dismiss'] = 'Dismiss';
+$string['modal:deleteconfirm:title'] = 'Delete report link';
+$string['modal:deleteconfirm:content'] = 'Kindly confirm if you wish to delete this report link.';
+$string['modal:deleteconfirm:cancel'] = 'Cancel';
+$string['modal:deleteconfirm:confirm'] = 'Confirm';
+
+$string['deletelink:error'] = 'Something went wrong, please try again later.';
+$string['deletelink:success'] = 'Successfully deleted!';
+
+$string['invalidurl'] = "Invalid URL";
+$string['erroremptyurl'] = "Report link url cannot be empty";

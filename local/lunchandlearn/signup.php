@@ -20,6 +20,8 @@ require_once(dirname(__FILE__).'/signup_form.php');
 
 require_login($SITE);
 
+require_capability('local/lunchandlearn:view', context_system::instance());
+
 $action = optional_param('action', 'signup', PARAM_ALPHA);
 
 $lal = new lunchandlearn(required_param('id', PARAM_INT));

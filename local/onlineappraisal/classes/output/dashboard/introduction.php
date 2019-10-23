@@ -57,12 +57,7 @@ class introduction extends base {
      * @return string
      */
     private function targetedmessage() {
-        global $DB;
-        $message = '';
-        $grade = $DB->get_field_sql('SELECT GRADE FROM SQLHUB.ARUP_ALL_STAFF_V WHERE EMPLOYEE_NUMBER = :idnumber', ['idnumber' => (int) $this->appraisal->appraisal->appraisee->idnumber]);
-        if (in_array($grade, ['GRD7', 'GRD8', 'GRD9'])) {
-            $message = get_string('introduction:targetedmessage', 'local_onlineappraisal');
-        }
-        return $message;
+        // No longer targeted by grade, generally available.
+        return get_string('introduction:targetedmessage', 'local_onlineappraisal');
     }
 }

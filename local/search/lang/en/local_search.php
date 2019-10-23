@@ -46,3 +46,5 @@ $string['searchyourregion'] = 'Show results from your region';
 $string['tryallregions'] = 'Try searching across all regions';
 
 $string['ukmea:show'] = 'Show <strong>UKIMEA</strong> modules';
+
+$string['search:view'] = 'Allow user to view search';

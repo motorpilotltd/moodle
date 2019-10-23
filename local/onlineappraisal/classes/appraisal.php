@@ -292,7 +292,7 @@ class appraisal {
         $this->add_page('form', 'sixmonth');
         $this->add_page('dashboard', 'checkin', false, 'checkins', true, false, self::HR_AFTER);
         $this->add_page('form', 'successionplan');
-        $this->add_page('form', 'leaderplan');
+        $this->add_page('form', 'leaderplan', false, 'leaderplan');
         $this->add_page('dashboard', 'help', false, false, true, false, self::HR_BEFORE);
         $this->add_page('dashboard', 'addfeedback', 'addfeedback', false, false, false);
 
@@ -371,13 +371,6 @@ class appraisal {
         if (empty($page->url)) {
             $page->url = new moodle_url('/local/onlineappraisal/view.php', array('page' => $name, 'appraisalid' => $this->appraisal->id, 'view' => $this->appraisal->viewingas));
         }
-
-        // Add checking checkins hook for leaderplan page
-        if (($hook && $this->page == $name) || ($hook == 'checkins' && $this->page == 'leaderplan')) {
-            $class = "\\local_onlineappraisal\\$hook";
-            $classinstance = new $class($this);
-            $classinstance->hook();
-        }
         $page->preloadform = $preloadform;
         $page->showinnav = $showinnav;
         $page->redirectto = $redirectto;
@@ -390,6 +383,14 @@ class appraisal {
         $page->hr = $hr;
 
         $this->pages[$name] = $page;
+
+        // Run hooks last, after page added to pages array.
+        // Add checking checkins hook for leaderplan page.
+        if (($hook && $this->page == $name) || ($hook == 'checkins' && $this->page == 'leaderplan')) {
+            $class = "\\local_onlineappraisal\\$hook";
+            $classinstance = new $class($this);
+            $classinstance->hook();
+    }
     }
 
     /**
@@ -404,6 +405,8 @@ class appraisal {
         $firstpage = reset($pages);
 
         foreach ($pages as $page) {
+            // Make sure we're also cycling through the array one step ahead...
+            next($pages);
             if ($this->page == $page->name) {
                 // Grab next page or first page if on last page.
                 $nextpage = current($pages) ? current($pages) : $firstpage;

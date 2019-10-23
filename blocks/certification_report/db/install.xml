@@ -24,5 +24,22 @@
                 <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" COMMENT="Index for userid"/>
             </INDEXES>
         </TABLE>
+        <TABLE NAME="certif_links" COMMENT="Table for certification report links">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Link name"/>
+                <FIELD NAME="linkurl" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Report link"/>
+                <FIELD NAME="geographicregionid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Geographic Region ID"/>
+                <FIELD NAME="actualregionid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Actual Region ID"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="geographicregionid" UNIQUE="false" FIELDS="geographicregionid" COMMENT="Index for geographicregionid"/>
+                <INDEX NAME="actualregionid" UNIQUE="false" FIELDS="actualregionid" COMMENT="Index for actualregionid"/>
+            </INDEXES>
+        </TABLE>
     </TABLES>
 </XMLDB>

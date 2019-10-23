@@ -80,7 +80,7 @@ class mod_tapscompletion_mod_form extends moodleform_mod {
 
         $mform =& $this->_form;
 
-        $canupdateautocompletion = has_capability('moodle/site:config', context_system::instance());
+        $canupdateautocompletion = has_capability('mod/tapscompletion:setautocompletion', $this->get_context());
 
         if (!$canupdateautocompletion) {
             $mform->hardFreeze('autocompletion');

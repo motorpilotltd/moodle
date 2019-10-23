@@ -80,7 +80,7 @@ class admin {
         $this->groupcohort = $this->get_groupcohort();
 
         // Check if this user is allowed to view admin.
-        if (!$this->can_view_admin()) {
+        if (!$this->can_view_admin() && !is_siteadmin($USER)) {
             print_error('error:noaccess', 'local_onlineappraisal');
         }
 
@@ -124,17 +124,28 @@ class admin {
      * Define the configured pages.
      */
     public function admin_pages() {
-        $pagesarray = array(
-            'allstaff' => true,
-            'initialise' => false,
-            'inprogress' => false,
-            'complete' => false,
-            'archived' => false
-        );
+        global $USER;
+
+        if ($this->can_view_admin()) {
+            $pagesarray = array(
+                'allstaff' => true,
+                'initialise' => false,
+                'inprogress' => false,
+                'complete' => false,
+                'archived' => false
+            );
+        } else {
+            $pagesarray = [];
+        }
 
         // Only add 'deleted' page if allowed to permanently delete appraisals.
         if (has_capability('local/onlineappraisal:deleteappraisal', \context_system::instance())) {
             $pagesarray['deleted'] = false;
+        }
+
+        // Display appraisal cycle page for site admin only
+        if (is_siteadmin($USER)) {
+            $pagesarray = ['cycle' => true] + $pagesarray;
         }
 
         $pagesarray['help'] = false;
@@ -154,6 +165,9 @@ class admin {
                         $page->popup = true;
                         $page->noform = true;
                     }
+                    break;
+                case 'cycle':
+                    $page->url = new moodle_url('/local/onlineappraisal/admin.php', array('page' => $name));
                     break;
             }
 
@@ -270,6 +284,11 @@ class admin {
                 $formhtml = '';
                 $page = new \local_onlineappraisal\output\help\help();
                 $pagehtml = $PAGE->get_renderer('local_onlineappraisal', 'help')->render($page);
+            } else if ($this->page === 'cycle') {
+                $formhtml = '';
+                $class = "\\local_onlineappraisal\\output\\admin\\{$this->page}";
+                $page = new $class($this);
+                $pagehtml = $this->renderer->render($page);
             } else {
                 $formhtml = !empty($this->form) ? $this->form->render() : '';
                 $class = "\\local_onlineappraisal\\output\\admin\\{$this->page}";

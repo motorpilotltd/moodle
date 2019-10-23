@@ -59,7 +59,7 @@ abstract class base implements renderable, templatable {
         // Searching by appraisee.
         $this->handle_search();
 
-        if ($this->type === 'hrleader' && !$this->searching && !$this->index->groupid) {
+        if (($this->type === 'hrleader' || $this->type === 'groupleader') && !$this->searching && !$this->index->groupid) {
             $this->data->showtables = false;
             return;
         }

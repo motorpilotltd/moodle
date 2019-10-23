@@ -306,6 +306,10 @@ class auth_plugin_saml extends auth_plugin_ldap {
 
         $userupdated = new stdClass();
 
+        if (empty($user->policyagreed)) {
+            $userupdated->policyagreed = 1;
+        }
+
         if (empty($user->email) && validate_email($username)) {
             $userupdated->email = $username;
         }
@@ -480,6 +484,28 @@ class auth_plugin_saml extends auth_plugin_ldap {
             $existinguser->username = trim(core_text::strtolower($username));
             $DB->update_record('user', $existinguser);
             $user = get_complete_user_data('id', $existinguser->id);
+        }
+
+        // Final check that user is not excluded from Moodle.
+        // Store config to reset after.
+        $contexts = $this->config->contexts;
+        // Tweak config.
+        $this->config->contexts = 'OU=Extranet,DC=global,DC=arup,DC=com';
+        // Check for employee id.
+        $excluded = $this->ldap_get_userlist("(employeeid={$userinfo['idnumber']})");
+        // Reset config.
+        $this->config->contexts = $contexts;
+        if (!empty($excluded)) {
+            // User is excluded.
+            if ($user->id) {
+                // User exists so needs to be suspended.
+                $user->suspended = 1;
+                $user->timemodified = time();
+                $DB->update_record('user', $user);
+                // Trigger event.
+                \core\event\user_updated::create_from_userid($user->id)->trigger();
+            }
+            saml_error(get_string('error:employeeid_excluded', 'auth_saml'), '?logout');
         }
     }
 }

@@ -1,0 +1,38 @@
+<div class="reportlink_lists">
+    <hr/>
+    <h2>{{#str}}heading:reportlinks, block_certification_report{{/str}}</h2>
+    <table class="table table-bordered table-reportlinks">
+        <thead>
+        <tr>
+            <th>{{#str}}linkname, block_certification_report{{/str}}</th>
+            <th>{{#str}}actualregion, block_certification_report{{/str}}</th>
+            <th>{{#str}}georegion, block_certification_report{{/str}}</th>
+            <th>{{#str}}table:action, block_certification_report{{/str}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#reportlinks}}
+            <tr>
+                <td><a href="{{linkurl}}" title="{{linkurl}}">{{name}}</a></td>
+                <td>{{actualregion}}</td>
+                <td>{{geographicregion}}</td>
+                <td>
+                    <button class="edit-link btn btn-primary"
+                            data-id="{{id}}"
+                            data-name="{{name}}"
+                            data-region="{{actualregionid}}"
+                            data-linkurl="{{linkurl}}"
+                            data-georegion="{{geographicregionid}}">{{#str}}button:edit, block_certification_report{{/str}}</button>
+
+                    <button class="delete-link btn btn-warning"  data-id="{{id}}">{{#str}}button:delete, block_certification_report{{/str}}</button>
+                </td>
+            </tr>
+        {{/reportlinks}}
+        {{^reportlinks}}
+            <tr>
+                <td colspan="4" class="text-center"><i>{{#str}}table:nodata, block_certification_report{{/str}}</i></td>
+            </tr>
+        {{/reportlinks}}
+        </tbody>
+    </table>
+</div>

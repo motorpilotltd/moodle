@@ -1,5 +1,9 @@
 <?php
 require_once("../../config.php");
+
+require_login(SITEID, false);
+require_capability('local/search:view', context_system::instance());
+
 require_once($CFG->dirroot.'/lib/coursecatlib.php');
 require_once($CFG->dirroot.'/local/search/lib.php');
 require_once($CFG->dirroot . '/local/regions/lib.php');

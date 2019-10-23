@@ -213,7 +213,7 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
 
                 get_string('profile')
             );
-        
+
             $usermenu->add(
                 $this->glyphicon('inbox') . get_string('messages', 'message'),
                 new moodle_url('/message/index.php'),
@@ -227,7 +227,7 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
 
                 get_string('preferences')
             );
-        
+
             $usermenu->add(
                 '#######',
                 new moodle_url('/'),
@@ -282,6 +282,12 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
         if (empty($custommenuitems) && !empty($CFG->custommenuitems)) {
             $custommenuitems = $CFG->custommenuitems;
         }
+
+        if (!has_capability('theme/arup:viewcustommenu', context_system::instance())) {
+            // Not allowed to view the custom menu.
+            $custommenuitems = '';
+        }
+
         $custommenu = new custom_menu($custommenuitems, current_language());
         return $this->render_custom_menu($custommenu);
     }
@@ -305,7 +311,7 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
             $content .= $custommenucontent;
         }
         // The new appraisal menu item.
-        
+
         return $content.'</ul>';
     }
 
@@ -556,7 +562,7 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
                 $content .= html_writer::tag('b', get_string('approvalstitle', 'theme_arup'));
                 $content .= ' ';
                 $content .= html_writer::link($approvalurl, get_string('approvalstext', 'theme_arup', $a));
-                
+
                 return html_writer::tag('div', $content, array('class' => $class));
             }
         }

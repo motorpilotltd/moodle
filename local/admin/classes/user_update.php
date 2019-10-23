@@ -29,11 +29,14 @@ class user_update {
 
     private $samlauth;
 
+    private $adexclusions;
+
     private $deletedusers = [];
 
     public function __construct() {
         $this->samlauth = get_auth_plugin('saml');
         $this->load_deleted_users();
+        $this->load_ad_exclusions();
     }
 
     public function add_users() {
@@ -170,7 +173,11 @@ class user_update {
 
             $successcount++;
             // Log success.
-            $this->log($suspend->staffid, $suspend->uid, 'SUSPEND', 'SUCCESS');
+            $extrainfo = null;
+            if (in_array((int) $suspend->staffid, $this->adexclusions)) {
+                $extrainfo = 'EXCLUDED';
+            }
+            $this->log($suspend->staffid, $suspend->uid, 'SUSPEND', 'SUCCESS', $extrainfo);
         }
 
         return['success' => $successcount, 'error' => $errorcount];
@@ -242,6 +249,10 @@ class user_update {
     public function get_users_cannot_add() {
         global $DB;
 
+        // Exclusions.
+        list($adexsql, $adexparams) = $DB->get_in_or_equal($this->adexclusions, SQL_PARAMS_NAMED, 'adex', false, 0);
+
+        // h.EMPLOYEE_NUMBER NOT IN ([EXCLUSIONS])
         // h.LEAVER_FLAG = 'N'
         // h.EMAIL_ADDRESS IS NULL
         $usertable = self::TABLES['user'];
@@ -254,17 +265,22 @@ class user_update {
             FROM {$hubtable} h
             LEFT JOIN {$usertable} u ON {$castidnumber} = h.EMPLOYEE_NUMBER
             WHERE
-                h.LEAVER_FLAG = 'N'
+                h.EMPLOYEE_NUMBER {$adexsql}
+                AND h.LEAVER_FLAG = 'N'
                 AND h.EMAIL_ADDRESS IS NULL
                 AND u.id IS NULL
         ";
 
-        return $DB->get_records_sql($query);
+        return $DB->get_records_sql($query, $adexparams);
     }
 
     private function get_users_to_add() {
         global $DB;
 
+        // Exclusions.
+        list($adexsql, $adexparams) = $DB->get_in_or_equal($this->adexclusions, SQL_PARAMS_NAMED, 'adex', false, 0);
+
+        // h.EMPLOYEE_NUMBER NOT IN ([EXCLUSIONS])
         // h.LEAVER_FLAG = 'N'
         // h.EMAIL_ADDRESS IS NOT NULL
         // LEFT JOIN
@@ -285,17 +301,22 @@ class user_update {
                 ON {$castidnumber} = h.EMPLOYEE_NUMBER
                     AND u.deleted = 0
             WHERE
-                h.LEAVER_FLAG = 'N'
+                h.EMPLOYEE_NUMBER {$adexsql}
+                AND h.LEAVER_FLAG = 'N'
                 AND h.EMAIL_ADDRESS IS NOT NULL
                 AND u.id IS NULL
         ";
 
-        return $DB->get_records_sql($query);
+        return $DB->get_records_sql($query, $adexparams);
     }
 
     private function get_users_to_unsuspend() {
         global $DB;
 
+        // Exclusions.
+        list($adexsql, $adexparams) = $DB->get_in_or_equal($this->adexclusions, SQL_PARAMS_NAMED, 'adex', false, 0);
+
+        // h.EMPLOYEE_NUMBER NOT IN ([EXCLUSIONS])
         // h.LEAVER_FLAG = 'N'
         // h.EMAIL_ADDRESS IS NOT NULL
         // JOIN
@@ -314,19 +335,23 @@ class user_update {
             FROM {$hubtable} h
             JOIN {$usertable} u ON {$castidnumber} = h.EMPLOYEE_NUMBER
             WHERE
-                h.LEAVER_FLAG = 'N'
+                h.EMPLOYEE_NUMBER {$adexsql}
+                AND h.LEAVER_FLAG = 'N'
                 AND h.EMAIL_ADDRESS IS NOT NULL
                 AND u.suspended = 1
                 AND u.deleted = 0
         ";
 
-        return $DB->get_records_sql($query);
+        return $DB->get_records_sql($query, $adexparams);
     }
 
     private function get_users_to_suspend() {
         global $DB;
 
-        // h.LEAVER_FLAG = 'Y'
+        // Exclusions.
+        list($adexsql, $adexparams) = $DB->get_in_or_equal($this->adexclusions, SQL_PARAMS_NAMED, 'adex', true, 0);
+
+        // h.LEAVER_FLAG = 'Y' OR h.LEAVER_FLAG IS NULL OR h.EMPLOYEE_NUMBER IN ([EXCLUSIONS])
         // JOIN
         // u.suspended = 0
         // u.deleted != 1
@@ -338,9 +363,9 @@ class user_update {
                     FROM {$usertable} u
                LEFT JOIN {$hubtable} h ON {$castidnumber} = h.EMPLOYEE_NUMBER
                    WHERE u.auth = 'saml' AND u.idnumber != '' AND u.suspended = 0 AND u.deleted = 0
-                         AND (h.LEAVER_FLAG = 'Y' OR h.LEAVER_FLAG IS NULL)";
+                         AND (h.LEAVER_FLAG = 'Y' OR h.LEAVER_FLAG IS NULL OR h.EMPLOYEE_NUMBER {$adexsql})";
 
-        return $DB->get_records_sql($query);
+        return $DB->get_records_sql($query, $adexparams);
     }
 
     private function get_users_to_update_cost_centre() {
@@ -423,6 +448,24 @@ class user_update {
     private function check_ad($idnumber) {
         $users = $this->samlauth->ldap_get_userlist("(&(!(useraccountcontrol:1.2.840.113556.1.4.803:=2))(employeeid={$idnumber}))");
         return $users;
+    }
+
+    private function load_ad_exclusions() {
+        // Get employeeIDs of users who should not have a Moodle account but may have an active HUB record.
+        // Store config to reset after.
+        $userattribute = $this->samlauth->config->user_attribute;
+        $contexts = $this->samlauth->config->contexts;
+        // Tweak config.
+        $this->samlauth->config->user_attribute = 'employeeid';
+        $this->samlauth->config->contexts = 'OU=Extranet,DC=global,DC=arup,DC=com';
+        // Load employee ids.
+        $this->adexclusions = $this->samlauth->ldap_get_userlist("(&(!(employeeid=999999))(employeeid=*))");
+        array_walk($this->adexclusions, function(&$value) {
+            $value = (int) $value;
+        });
+        // Reset config.
+        $this->samlauth->config->user_attribute = $userattribute;
+        $this->samlauth->config->contexts = $contexts;
     }
 
     private function log($staffid, $userid, $action, $status, $extrainfo = null) {

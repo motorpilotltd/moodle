@@ -22,7 +22,7 @@ class block_certification_report extends block_base {
      * @return stdClass contents of block
      */
     public function get_content() {
-        global $PAGE;
+        global $PAGE, $DB;
 
         $PAGE->requires->css(new moodle_url('/blocks/certification_report/styles/certification_report_2019031800.css'));
 
@@ -30,10 +30,12 @@ class block_certification_report extends block_base {
             return $this->content;
         }
 
-
         $this->content = new stdClass();
         $this->content->text = '';;
         $this->content->footer = '';
+
+        // Get renderer.
+        $renderer = $PAGE->get_renderer('block_certification_report');
 
         /**
          * Verify capabilities
@@ -43,13 +45,24 @@ class block_certification_report extends block_base {
         } else {
             $reporturl = new moodle_url('/blocks/certification_report/report.php');
             $this->content->text = html_writer::link($reporturl, get_string('viewreport', 'block_certification_report'));
-            $this->content->text .= $this->get_demo_report_link();
+            $this->content->text .= $this->get_main_report_link();
+
+            $reportlinks = $this->get_report_links();
+            if ($reportlinks) {
+                $this->content->text .= html_writer::tag('h3', get_string('heading:reportlinks', 'block_certification_report'));
+                $this->content->text .= $renderer->print_reportlink_lists(['reportlinks' => array_values($reportlinks)]);
+            }
+        }
+
+        // Add manage links for admin
+        if (certification_report::is_admin()) {
+            $this->content->footer .= $renderer->print_reportlink_manage();
         }
 
         return $this->content;
     }
 
-    private function get_demo_report_link() {
+    private function get_main_report_link() {
         global $DB, $OUTPUT, $USER;
 
         if (has_capability('block/certification_report:view_all_costcentres', context_system::instance())
@@ -94,20 +107,10 @@ EOS;
         }
 
         if (!empty($costcentres)) {
-            $config = get_config('block_certification_report');
-            $params = [];
-            if (!empty($config->report_certifications)) {
-                $certifications = explode(',', $config->report_certifications);
-                $i = 0;
-                foreach ($certifications as $certification) {
-                    $params["certifications[{$i}]"] = (int) trim($certification);
-                    $i++;
-                }
-            }
-            $url = new moodle_url('/blocks/certification_report/report.php', $params);
+            $url = new moodle_url('/blocks/certification_report/report.php');
             $select = new single_select($url, 'costcentres[]', $costcentres);
             $select->set_label('Choose cost centre');
-            $title = !empty($config->report_title) ? $config->report_title : 'Featured Report';
+            $title = get_string('viewcostcentrereport', 'block_certification_report');
             return html_writer::tag('h3', $title) . $OUTPUT->render($select);
         }
 
@@ -130,6 +133,20 @@ EOS;
      */
     public function applicable_formats() {
         return array('all' => true);
+    }
+
+    private function get_report_links() {
+        global $DB, $USER;
+
+        $userregions = $DB->get_record('local_regions_use', ['userid' => $USER->id]);
+        if ($userregions) {
+            $params = ['georegionid' => $userregions->geotapsregionid, 'actregionid' => $userregions->acttapsregionid];
+        } else {
+            $params = ['georegionid' => -1, 'actregionid' => -1];
+        }
+        $select = "(geographicregionid = :georegionid OR geographicregionid = 0) AND (actualregionid = :actregionid OR actualregionid = 0)";
+
+        return $DB->get_records_select('certif_links', $select, $params);
     }
 
 }
