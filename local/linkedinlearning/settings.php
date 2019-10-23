@@ -22,8 +22,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-if ($hassiteconfig) {
-    $ADMIN->add('localplugins', new admin_category('local_linkedinlearning', new lang_string('pluginname', 'local_linkedinlearning')));
+if ($hassiteconfig || has_capability('local/linkedinlearning:manage', context_system::instance())) {
+    $ADMIN->add('root', new admin_category('local_linkedinlearning', new lang_string('pluginname', 'local_linkedinlearning')));
 
     $settings = new admin_settingpage('local_linkedinlearning_apisettings', get_string('apisettings', 'local_linkedinlearning'));
 
