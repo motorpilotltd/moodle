@@ -39,4 +39,8 @@ class lib {
 
         return $outurl;
     }
+
+    public static function cohorts_updated($name) {
+        // @TODO This will update the enrolment restrictions.
+    }
 }

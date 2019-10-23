@@ -23,3 +23,4 @@ $string['selectfilters'] = 'Apply filters to see results';
 $string['setting:category_id'] = 'Category for new courses';
 $string['tasksynclinkedinlearningcourses'] = 'Sync linked in learning courses';
 $string['title'] = 'Title';
+$string['setting:cohorts'] = 'Cohorts to allow access to';
