@@ -44,13 +44,14 @@ class lib {
         global $DB;
 
         $like = $DB->sql_like('ltc.coursecode', ':coursecode');
-        $sql = "
-            SELECT cm.id
+        $basesql = "
+            SELECT ###selectfield###
               FROM {course_modules} cm
               JOIN {modules} m ON m.id = cm.module AND m.name = :module
               JOIN {tapsenrol} te ON te.id = cm.instance
               JOIN {local_taps_course} ltc ON ltc.courseid = te.tapscourse AND {$like}";
-        $select = "id IN ({$sql})";
+        $cmidsql = str_ireplace('###selectfield###', 'cm.id', $basesql);
+        $select = "id IN ({$cmidsql})";
         $params = [
             'module' => 'tapsenrol',
             'coursecode' => 'urn:li:lyndaCourse:%',
@@ -71,5 +72,9 @@ class lib {
             $availability = null;
         }
         $DB->set_field_select('course_modules', 'availability', $availability, $select, $params);
+        $cidsql = str_ireplace('###selectfield###', 'DISTINCT cm.course', $basesql);
+        foreach ($DB->get_records_sql($cidsql, $params) as $cid) {
+            rebuild_course_cache($cid->course);
+        }
     }
 }
