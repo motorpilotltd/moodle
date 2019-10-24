@@ -175,7 +175,7 @@ class course extends \data_object {
     private function getmoodlecourse() {
         global $DB;
 
-        $sql = "select c.* from {course} c 
+        $sql = "select c.* from {course} c
                 inner JOIN {arupadvert} aa on aa.course = c.id
                 inner JOIN {arupadvertdatatype_taps} ladt on aa.id = ladt.arupadvertid
                 inner join {local_taps_course} ltc on ladt.tapscourseid = ltc.courseid
@@ -479,6 +479,20 @@ class course extends \data_object {
         $tapsenrolcm->groupingid = 0;
         $tapsenrolcm->completion = COMPLETION_TRACKING_AUTOMATIC;
         $tapsenrolcm->showdescription = 0;
+
+        // Availability.
+        $cohorts = explode("\n", get_config('local_linkedinlearning', 'cohorts'));
+        $children = [];
+        foreach ($cohorts as $cohort) {
+            $structure = new \stdClass();
+            $structure->id = $cohort;
+            $condition = new \availability_cohort\condition($structure);
+            $children[] = $condition->save();
+        }
+        if (!empty($children)) {
+            $tapsenrolcm->availability = json_encode(\core_availability\tree::get_root_json($children, \core_availability\tree::OP_OR, true));
+        }
+
         $tapsenrolcm->coursemodule = add_course_module($tapsenrolcm);
         $tapsenrolcm->section = 0;
 
@@ -497,6 +511,8 @@ class course extends \data_object {
         course_add_cm_to_section($tapsenrolcm->course, $tapsenrolcm->coursemodule, $tapsenrolcm->section);
 
         set_coursemodule_visible($tapsenrolcm->coursemodule, $tapsenrolcm->visible);
+
+
 
         $eventdata = clone $tapsenrolcm;
         $eventdata->name = $tapsenrol->name;
