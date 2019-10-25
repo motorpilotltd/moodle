@@ -56,7 +56,7 @@ do {
         break;
     }
     $subnet = !empty($samlconfig->autologin_subnet) && address_in_subnet(getremoteaddr(), $samlconfig->autologin_subnet);
-    $appproxy = !empty($samlconfig->autologin_appproxy) && isset($_SERVER['HTTP_MS_PROXY']) && $_SERVER['HTTP_MS_PROXY'] === 'AzureAD-Application-Proxy';
+    $appproxy = !empty($samlconfig->autologin_azureappproxy) && isset($_SERVER['HTTP_X_MS_PROXY']) && $_SERVER['HTTP_X_MS_PROXY'] === 'AzureAD-Application-Proxy';
     if (!$subnet && !$appproxy) {
         break;
     }
