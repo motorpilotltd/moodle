@@ -485,7 +485,7 @@ class course extends \data_object {
         $children = [];
         foreach ($cohorts as $cohort) {
             $structure = new \stdClass();
-            $structure->id = $cohort;
+            $structure->id = (int) $cohort;
             $condition = new \availability_cohort\condition($structure);
             $children[] = $condition->save();
         }
@@ -511,8 +511,6 @@ class course extends \data_object {
         course_add_cm_to_section($tapsenrolcm->course, $tapsenrolcm->coursemodule, $tapsenrolcm->section);
 
         set_coursemodule_visible($tapsenrolcm->coursemodule, $tapsenrolcm->visible);
-
-
 
         $eventdata = clone $tapsenrolcm;
         $eventdata->name = $tapsenrol->name;
