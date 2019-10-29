@@ -58,7 +58,7 @@ class lib {
         ];
 
         // Availability.
-        $cohorts = array_filter(explode("\n", get_config('local_linkedinlearning', 'cohorts')));
+        $cohorts = array_filter(explode(',', get_config('local_linkedinlearning', 'cohorts')));
         $children = [];
         foreach ($cohorts as $cohort) {
             $structure = new \stdClass();
