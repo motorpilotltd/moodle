@@ -44,7 +44,7 @@ class courseiterator implements \Iterator {
         $this->positionoffset = 0;
         $this->currentpage = $this->api->getcourses(0, $this->since);
 
-        if (isset($this->currentpage)) {
+        if (!empty($this->currentpage)) {
             mtrace('Loaded page of course details.');
             mtrace(count($this->currentpage) . ' records loaded');
         }
@@ -67,7 +67,7 @@ class courseiterator implements \Iterator {
             $this->positionoffset = $this->position;
             $this->currentpage = $this->api->getcourses($this->position, $this->since);
 
-            if (isset($this->currentpage)) {
+            if (!empty($this->currentpage)) {
                 mtrace('Loaded page of course details.');
                 mtrace(count($this->currentpage) . ' records loaded');
             }
