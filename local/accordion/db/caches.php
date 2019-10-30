@@ -14,20 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Version details
- *
- * @package     local_admin
- * @copyright   2016 Motorpilot Ltd
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2017051500;
-$plugin->requires  = 2017051509; // Moodle 3.3.
-$plugin->component = 'local_accordion';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.3.0 (Build: 2017051500)';
-
-$plugin->dependencies = array();
+$definitions = [
+    // Caches for accordion.
+    'course_info' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true
+    ],
+];
