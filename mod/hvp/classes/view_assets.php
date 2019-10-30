@@ -332,7 +332,7 @@ class view_assets {
         } else {
 /* BEGIN CORE MOD */
             echo "<div class=\"h5p-iframe-wrapper {$hasoverlay}\">" .
-                 $playoverlay .
+                $playoverlay .
 /* END CORE MOD */
                  "<iframe id=\"h5p-iframe-{$this->content['id']}\"" .
                  " class=\"h5p-iframe\"" .
