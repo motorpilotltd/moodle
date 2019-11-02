@@ -39,4 +39,42 @@ class lib {
 
         return $outurl;
     }
+
+    public static function cohorts_updated() {
+        global $DB;
+
+        $like = $DB->sql_like('ltc.coursecode', ':coursecode');
+        $basesql = "
+            SELECT ###selectfield###
+              FROM {course_modules} cm
+              JOIN {modules} m ON m.id = cm.module AND m.name = :module
+              JOIN {tapsenrol} te ON te.id = cm.instance
+              JOIN {local_taps_course} ltc ON ltc.courseid = te.tapscourse AND {$like}";
+        $cmidsql = str_ireplace('###selectfield###', 'cm.id', $basesql);
+        $select = "id IN ({$cmidsql})";
+        $params = [
+            'module' => 'tapsenrol',
+            'coursecode' => 'urn:li:lyndaCourse:%',
+        ];
+
+        // Availability.
+        $cohorts = array_filter(explode(',', get_config('local_linkedinlearning', 'cohorts')));
+        $children = [];
+        foreach ($cohorts as $cohort) {
+            $structure = new \stdClass();
+            $structure->id = (int) $cohort;
+            $condition = new \availability_cohort\condition($structure);
+            $children[] = $condition->save();
+        }
+        if (!empty($children)) {
+            $availability = json_encode(\core_availability\tree::get_root_json($children, \core_availability\tree::OP_OR, true));
+        } else {
+            $availability = null;
+        }
+        $DB->set_field_select('course_modules', 'availability', $availability, $select, $params);
+        $cidsql = str_ireplace('###selectfield###', 'DISTINCT cm.course', $basesql);
+        foreach ($DB->get_records_sql($cidsql, $params) as $cid) {
+            rebuild_course_cache($cid->course);
+        }
+    }
 }

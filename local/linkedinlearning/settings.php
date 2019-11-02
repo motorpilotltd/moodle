@@ -22,10 +22,14 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-if ($hassiteconfig) {
-    $ADMIN->add('localplugins', new admin_category('local_linkedinlearning', new lang_string('pluginname', 'local_linkedinlearning')));
+$context = context_system::instance();
 
-    $settings = new admin_settingpage('local_linkedinlearning_apisettings', get_string('apisettings', 'local_linkedinlearning'));
+if ($hassiteconfig || has_capability('local/linkedinlearning:manage', $context)) {
+    require_once($CFG->dirroot.'/cohort/lib.php');
+
+    $ADMIN->add('root', new admin_category('local_linkedinlearning', new lang_string('pluginname', 'local_linkedinlearning')));
+
+    $settings = new admin_settingpage('local_linkedinlearning_settings', get_string('settings', 'local_linkedinlearning'));
 
     $name = 'local_linkedinlearning/client_id';
     $title = get_string('setting:client_id', 'local_linkedinlearning');
@@ -38,6 +42,21 @@ if ($hassiteconfig) {
     $name = 'local_linkedinlearning/category_idnumber';
     $title = get_string('setting:category_id', 'local_linkedinlearning');
     $settings->add(new admin_setting_configtext($name, $title, '', ''));
+
+    $name = 'local_linkedinlearning/cohorts';
+    $title = get_string('setting:cohorts', 'local_linkedinlearning');
+    $systemcohorts = cohort_get_cohorts($context->id, 0, 0);
+    $cohorts = [];
+    foreach ($systemcohorts['cohorts'] as $cohort) {
+        $cohorts[$cohort->id] = $cohort->name;
+    }
+    $setting = new admin_setting_configmultiselect($name, $title, '', [], $cohorts);
+    $setting->set_updatedcallback(
+        create_function('',
+            '\local_linkedinlearning\lib::cohorts_updated();'
+        )
+    );
+    $settings->add($setting);
 
     $ADMIN->add('local_linkedinlearning', new admin_externalpage('local_linkedinlearning/managecourses', get_string('managecourses', 'local_linkedinlearning'),
             new moodle_url('/local/linkedinlearning/manage.php'), 'local/linkedinlearning:manage'));
