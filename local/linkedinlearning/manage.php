@@ -23,18 +23,9 @@
 require_once(dirname(__FILE__).'/../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
-$context = context_system::instance();
 $strheading = get_string('managecourses', 'local_linkedinlearning');
-if (has_capability('moodle/site:config', $context)) {
-    admin_externalpage_setup('local_linkedinlearning/managecourses');
-} else {
-    require_capability('local/linkedinlearning:manage', $context);
-    $PAGE->set_pagelayout('admin');
-    $PAGE->set_context($context);
-    $PAGE->set_url('/local/linkedinlearning/manage.php');
-    $PAGE->set_title($strheading);
-    $PAGE->set_heading($strheading);
-}
+
+admin_externalpage_setup('local_linkedinlearning/managecourses');
 
 $PAGE->navbar->add($strheading);
 
@@ -44,7 +35,6 @@ $defaultpagesize = 50;
 $downloadformat = optional_param('download', false, PARAM_ALPHA);
 $treset         = optional_param('treset', false, PARAM_BOOL);
 $showall        = !$treset && ($downloadformat || optional_param('showall', false, PARAM_BOOL));
-$context        = \context_system::instance();
 
 $form     = new \local_linkedinlearning\managecourses_filterform();
 $formdata = $form->get_data();
