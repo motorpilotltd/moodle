@@ -26,6 +26,7 @@ $context = context_system::instance();
 
 if ($hassiteconfig || has_capability('local/linkedinlearning:manage', $context)) {
     require_once($CFG->dirroot.'/cohort/lib.php');
+    require_once($CFG->dirroot.'/local/linkedinlearning/classes/lib.php');
 
     $ADMIN->add('root', new admin_category('local_linkedinlearning', new lang_string('pluginname', 'local_linkedinlearning')));
 
@@ -51,11 +52,7 @@ if ($hassiteconfig || has_capability('local/linkedinlearning:manage', $context))
         $cohorts[$cohort->id] = $cohort->name;
     }
     $setting = new admin_setting_configmultiselect($name, $title, '', [], $cohorts);
-    $setting->set_updatedcallback(
-        create_function('',
-            '\local_linkedinlearning\lib::cohorts_updated();'
-        )
-    );
+    $setting->set_updatedcallback('local_linkedinlearning\cohorts_updated');
     $settings->add($setting);
 
     $ADMIN->add('local_linkedinlearning', new admin_externalpage('local_linkedinlearning/managecourses', get_string('managecourses', 'local_linkedinlearning'),
