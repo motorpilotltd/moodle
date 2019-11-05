@@ -49,5 +49,28 @@ function xmldb_local_linkedinlearning_upgrade($oldversion) {
         set_config('lastsuccessfulrun', 0, 'local_linkedinlearning');
     }
 
+    if ($oldversion < 2016080532) {
+
+        $table = new xmldb_table('linkedinlearning_progress');
+
+        // Adding fields to table tagcloud.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('urn', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('email', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('seconds_viewed', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('progress_percentage', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table tagcloud.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for tagcloud.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_plugin_savepoint(true, 2016080532, 'local', 'linkedinlearning');
+    }
+
     return true;
 }

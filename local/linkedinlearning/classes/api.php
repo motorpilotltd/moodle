@@ -32,12 +32,12 @@ class api {
         raise_memory_limit(MEMORY_HUGE);
         $url = "https://api.linkedin.com/v2/learningAssets?";
         $params = [
-                'q' => 'criteria',
-                'assetFilteringCriteria.assetTypes[0]' => 'COURSE',
+                'q'                                     => 'criteria',
+                'assetFilteringCriteria.assetTypes[0]'  => 'COURSE',
                 'assetRetrievalCriteria.includeRetired' => 'true',
-                'count' => '100',
-                'start' => $start,
-                'fields' => 'urn,title,details:(availability,classifications,publishedAt,lastUpdatedAt,images:(primary),descriptionIncludingHtml,shortDescriptionIncludingHtml,timeToComplete,urls:(aiccLaunch))',
+                'count'                                 => '100',
+                'start'                                 => $start,
+                'fields'                                => 'urn,title,details:(availability,classifications,publishedAt,lastUpdatedAt,images:(primary),descriptionIncludingHtml,shortDescriptionIncludingHtml,timeToComplete,urls:(aiccLaunch))',
         ];
 
         if ($since !== 0) {
@@ -54,6 +54,37 @@ class api {
 
         if ($results === null) {
             mtrace('Failed to load or parse response');
+        }
+
+        return $results->elements;
+    }
+
+    public function getcourseprogress($start, $since) {
+        raise_memory_limit(MEMORY_HUGE);
+
+        $url = "https://api.linkedin.com/v2/learningActivityReports?";
+        $params = [
+                'q'                             => 'criteria',
+                'count'                         => '10',
+                'timeOffset.unit'               => 'WEEK',
+                'timeOffset.duration'           => '2',
+                'aggregationCriteria.primary'   => 'INDIVIDUAL',
+                'aggregationCriteria.secondary' => 'CONTENT',
+                'assetType'                     => 'COURSE',
+                'start'                         => $start,
+                'startedAt'                     => $since * 1000
+        ];
+
+        $processedparams = [];
+        foreach ($params as $key => $value) {
+            $processedparams[] = "$key=$value";
+        }
+        $processedparams = implode('&', $processedparams);
+
+        $results = $this->callapi($url . $processedparams);
+
+        if (!$results) {
+            return false;
         }
 
         return $results->elements;
@@ -185,6 +216,36 @@ class api {
             $course->updateclassifications($courseclassificationids);
 
             $course->update_moodle_course();
+        }
+    }
+
+    public function synccourseprogress($since) {
+        global $DB;
+
+        foreach (new courseprogressiterator($this, $since) as $raw) {
+            $parmams = [
+                    'urn'   => $raw->contentDetails->contentUrn,
+                    'email' => $raw->learnerDetails->email
+            ];
+            $record = $DB->get_record('linkedinlearning_progress', $parmams);
+
+            if (!isset($record->id)) {
+                $record = (object) $parmams;
+            }
+
+            foreach ($raw->activities as $datapoint) {
+                if ($datapoint->engagementType == 'SECONDS_VIEWED') {
+                    $record->seconds_viewed = $datapoint->engagementValue;
+                } else if ($datapoint->engagementType == 'PROGRESS_PERCENTAGE') {
+                    $record->progress_percentage = $datapoint->engagementValue;
+                }
+            }
+
+            if (!isset($record->id)) {
+                $DB->insert_record('linkedinlearning_progress', $record);
+            } else {
+                $DB->update_record('linkedinlearning_progress', $record);
+            }
         }
     }
 }
