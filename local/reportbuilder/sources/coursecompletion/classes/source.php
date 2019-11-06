@@ -439,6 +439,19 @@ class source extends rb_base_source {
                 'base.timecompleted'
         );
 
+        // Add the time created content option.
+        $contentoptions[] = new rb_content_option(
+                'user',
+                get_string('user', 'local_reportbuilder'),
+                ['userid' => 'base.userid']
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'enrolledcourses',
+                get_string('enrolledcourses', 'local_reportbuilder'),
+                'base.course'
+        );
+
         return $contentoptions;
     }
 
@@ -535,11 +548,11 @@ class source extends rb_base_source {
 
     function rb_display_completion_status($status, $row, $isexport) {
         if ($status == 1) {
-            return get_string('complete', 'local_custom_certification');
+            return get_string('complete', 'rbsource_coursecompletion');
         } else if ($status == 0) {
-            return get_string('incomplete', 'local_custom_certification');
+            return get_string('incomplete', 'rbsource_coursecompletion');
         } else {
-            return get_string('notstarted', 'local_custom_certification');
+            return get_string('notstarted', 'rbsource_coursecompletion');
         }
     }
 
@@ -575,8 +588,8 @@ class source extends rb_base_source {
 
     function rb_filter_completion_status_list() {
         return [
-                1 =>  get_string('complete', 'local_custom_certification'),
-                0 =>  get_string('incomplete', 'local_custom_certification')
+                1 =>  get_string('complete', 'rbsource_coursecompletion'),
+                0 =>  get_string('incomplete', 'rbsource_coursecompletion')
         ];
     }
 } // end of rb_source_course_completion class

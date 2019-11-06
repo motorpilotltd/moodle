@@ -262,9 +262,20 @@ class source extends rb_base_source {
         );
         $columnoptions[] = new rb_column_option(
                 'statistics',
+                'coursesenrolledcompletion',
+                get_string('userscoursesenrolledcompletioncount', 'rbsource_user'),
+                'COALESCE(totara_stats_courses_enrolled_completion.number,0)',
+                array(
+                        'displayfunc' => 'count',
+                        'joins' => 'totara_stats_courses_enrolled_completion',
+                        'dbdatatype' => 'integer',
+                )
+        );
+        $columnoptions[] = new rb_column_option(
+                'statistics',
                 'progressthroughenrolled',
                 get_string('progressthroughenrolled', 'rbsource_user'),
-                'COALESCE(totara_stats_courses_enrolled.number,0)',
+                'COALESCE(totara_stats_courses_enrolled_completion.number,0)',
                 array(
                         'extrafields' => ['todo' => 'totara_stats_courses_enrolled_completion.number', 'green' => 'totara_stats_courses_completed.number', 'amber' => 'course_completions_courses_started.number'],
                         'displayfunc' => 'progressbar',
@@ -395,6 +406,13 @@ class source extends rb_base_source {
                 'date',
                 get_string('timecreated', 'rbsource_user'),
                 'base.timecreated'
+        );
+
+        // Add the time created content option.
+        $contentoptions[] = new rb_content_option(
+                'user',
+                get_string('user', 'local_reportbuilder'),
+                ['userid' => 'base.id']
         );
 
         return $contentoptions;

@@ -24,7 +24,7 @@
 
 namespace rbsource_assignsummary;
 use rb_base_source;
-use coding_exception;
+use rb_content_option;
 use rb_column_option;
 use rb_filter_option;
 
@@ -34,6 +34,7 @@ class source extends rb_base_source {
     public $base, $joinlist, $columnoptions, $filteroptions;
     public $defaultcolumns, $defaultfilters, $requiredcolumns;
     public $sourcetitle;
+    public $contentoptions;
 
     public function __construct() {
         global $DB;
@@ -63,9 +64,22 @@ class source extends rb_base_source {
         $this->columnoptions = $this->define_columnoptions();
         $this->filteroptions = $this->define_filteroptions();
         $this->requiredcolumns = array();
+        $this->contentoptions = $this->define_contentoptions();
         $this->defaultcolumns = $this->define_defaultcolumns();
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_assignsummary');
         parent::__construct();
+    }
+
+    protected function define_contentoptions() {
+        $contentoptions = [];
+
+        $contentoptions[] = new rb_content_option(
+                'enrolledcourses',
+                get_string('enrolledcourses', 'local_reportbuilder'),
+                'base.assignment_course'
+        );
+
+        return $contentoptions;
     }
 
     /**

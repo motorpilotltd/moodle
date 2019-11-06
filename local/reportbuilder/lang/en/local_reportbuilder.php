@@ -910,7 +910,6 @@ $string['toolbarsearchdisabled_help'] = 'Checking this box will prevent the sear
 report. This has the same result as removing all search fields.';
 $string['toolbarsearchtextiscontainedinsingle'] = '"{$a->searchtext}" is contained in the column "{$a->field}"';
 $string['toolbarsearchtextiscontainedinmultiple'] = '"{$a}" is contained in one or more of the following columns: ';
-$string['totarasyncenableduser'] = 'HR Import';
 $string['trainerownrecords'] = 'Show records where the user is the trainer';
 $string['trainerstaffrecords'] = 'Records where one of the user\'s direct reports is the trainer';
 $string['transformtypeday_heading'] = '{$a} - day of month';
@@ -1022,7 +1021,8 @@ $string['warnrequiredcolumns'] = 'This report uses some columns internally in or
 $string['weekly'] = 'Weekly';
 $string['withcontentrestrictionall'] = 'Show records matching <strong>all</strong> of the checked criteria below';
 $string['withcontentrestrictionany'] = 'Show records matching <strong>any</strong> of the checked criteria below';
-$string['withrestriction'] = 'Only certain users can view this report (see below)';
+$string['withrestriction'] = 'Only certain users can view this report (any criteria below)';
+$string['withrestriction_all'] = 'Only certain users can view this report (all criteria below)';
 $string['xlsformat'] = 'Excel format';
 $string['xofyrecord'] = '{$a->filtered} of {$a->unfiltered} record shown';
 $string['xofyrecords'] = '{$a->filtered} of {$a->unfiltered} records shown';
@@ -1259,7 +1259,6 @@ $string['edition'] = 'Edition';
 $string['elearning'] = 'E-learning';
 $string['elementlibrary'] = 'Element Library';
 $string['emptyassignments'] = 'No assignments';
-$string['enabledisabletotarasync'] = 'Select Enable or Disable and then click continue to update HR Import for {$a}';
 $string['enableteam'] = 'Enable Team';
 $string['enableteam_desc'] = 'This option will let you: Enable(show)/Disable Team feature from users on this site.
 
@@ -1622,47 +1621,6 @@ $string['template'] = 'Template';
 $string['tempmanager'] = 'Temporary manager';
 $string['timezoneinvalid'] = 'Invalid timezone: {$a}';
 $string['timezoneuser'] = 'User timezone';
-$string['toggletotarasync'] = 'Toggle HR Import';
-$string['toggletotarasyncerror'] = 'Could not enable/disable the HR Import field for user {$a}';
-$string['toggletotarasyncerror:noidnumber'] = 'The ID Number field is empty and so HR Import cannot be enabled for these users: {$a}';
-$string['tooltotarasynctask'] = 'Import HR elements from external sources';
-$string['totarabuild'] = 'Totara build number';
-$string['totaracopyright'] = '<p>Copyright &copy; 2010 onwards, Totara Learning Solutions Limited.</p>
-<p><a href="https://www.totaralearning.com">{$a}</a> is a fully supported Open Source learning platform specifically designed for the requirements of corporate, industry and vocational training.</p>
-<p><a href="http://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License</a></p>';
-$string['totaracopyrightacknowledge'] = '<p>{$a} utilises the following copyrighted material:</p>';
-$string['totaracore'] = 'Totara core';
-$string['totarafeatures'] = 'Totara features';
-$string['totaralogo'] = 'Totara Logo';
-$string['totaramenu'] = 'Totara Menu';
-$string['totaranavigation'] = 'Main menu';
-$string['totararegistration'] = 'Totara registration';
-$string['totararegistration_desc'] = '<p>To register Totara software you must include your registration code.</p>
-<p>Registering your software is not an End User Licensing Agreement. Registration establishes the subscriber\'s right to receive Totara’s software update service,
-technical support of your product and access to associated customer services such as access
-to the <a href="https://totara.academy/" target="_blank">Totara Academy</a> and <a href="https://totara.community/" target="_blank">Community</a>.
-Registration also enables a limited set of diagnostics such as software version and operating system
-to assist when examining and resolving support queries.</p>
-<p>If you do not have your registration code or are experiencing problems,
-your Totara Partner will be able to help, or please contact <a href="mailto:subscriptions@totaralearning.com">subscriptions@totaralearning.com</a>.</p>
-<p><a href="https://www.totaralearning.com/privacy-policy" target="_blank">Totara Learning Privacy Policy</a></p>';
-$string['totararegistrationinfo'] = '<p>This page configures registration updates which are sent to totaralearning.com.
-These updates allow Totara to know what versions of {$a} and support software you are running.
-This information will allow Totara to better examine and resolve any support issues you face in the future.</p>
-<p>This information will be securely transmitted and held in confidence.</p>';
-$string['totararegistrationlastsent'] = 'Data last sent to Totara';
-$string['totararegistrationsaved'] = 'Totara registration was updated';
-$string['totararelease'] = 'Totara release identifier';
-$string['totarareleaselink'] = 'See the <a href="https://totara.community/mod/forum/view.php?id=7038" target=\"_blank\">release notes</a> for more details.';
-$string['totararequiredupgradeversion'] = 'Totara 2.2.13';
-$string['totarauniqueidnumbercheckfail'] = 'The following tables contain non-unique values in the column idnumber:<br/><br/>
-{$a}
-<br/>
-Please fix these records before attempting the upgrade.';
-$string['totaraunsupportedupgradepath'] = 'You cannot upgrade directly to {$a->attemptedversion} from {$a->currentversion}. Please upgrade to at least {$a->required} before attempting the upgrade to {$a->attemptedversion}.';
-$string['totaraupgradecheckduplicateidnumbers'] = 'Check duplicate ID numbers';
-$string['totaraupgradesetstandardtheme'] = 'Enable Standard Totara theme';
-$string['totaraversion'] = 'Totara version number';
 $string['trysearchinginstead'] = 'Try searching instead.';
 $string['type'] = 'Type';
 $string['typeicon'] = 'Type icon';
@@ -1923,3 +1881,13 @@ $string['valuefor'] = '{$a} value';
 $string['strfdateshortmonth'] = '%d %b %Y';
 
 $string['andchildren'] = ' (and children)';
+
+$string['accessbycohort'] = 'Access by cohort';
+$string['enablecondition'] = 'Enable condition';
+$string['user'] = 'User';
+$string['cohortmembers'] = 'Cohort members';
+$string['enrolledcourses'] = 'Enrolled courses';
+$string['includeenrolledcoursesrecords'] = '';
+$string['reportbuilderenrolledcourses'] = '';
+$string['reportbuilderenrolledcourses_help'] = '';
+$string['enrolledcoursesownrecords'] = 'Enrolled courses';

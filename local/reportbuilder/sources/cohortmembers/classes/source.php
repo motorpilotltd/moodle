@@ -43,9 +43,6 @@ class source extends rb_base_source {
 
     /**
      * Constructor
-     * @global object $CFG
-     * @param int $groupid (ignored)
-     * @param rb_global_restriction_set $globalrestrictionset
      */
     public function  __construct() {
         $this->base = '{cohort_members}';

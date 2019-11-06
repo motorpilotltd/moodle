@@ -5075,7 +5075,7 @@ function totara_get_categoryid_with_capability($capability) {
     $recordset = $DB->get_recordset_sql($sql, array('contextlevel' => CONTEXT_COURSECAT));
     foreach ($recordset as $record) {
         context_helper::preload_from_record($record);
-        $context = context_coursecat::instance($record->id);
+        $context = \core_course_category::instance($record->id);
         if (!$record->visible && !has_capability('moodle/category:viewhiddencategories', $context)) {
             continue;
         }
@@ -6362,7 +6362,7 @@ function reportbuilder_clone_report(reportbuilder $report, $clonename) {
     $reportrec->fullname = $clonename;
 
     if ($embedded) {
-        $reportrec->accessmode = REPORT_BUILDER_ACCESS_MODE_ANY;
+        $reportrec->accessmode = REPORT_BUILDER_ACCESS_MODE_ALL;
     }
 
     // Search for shortname.

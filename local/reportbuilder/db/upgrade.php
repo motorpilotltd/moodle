@@ -52,5 +52,13 @@ function xmldb_local_reportbuilder_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017091906, 'local', 'reportbuilder');
     }
 
+    if ($oldversion < 2017091908) {
+
+        $DB->execute('UPDATE {report_builder} SET accessmode = 2 WHERE accessmode = 1');
+
+        // Iomad_track savepoint reached.
+        upgrade_plugin_savepoint(true, 2017091908, 'local', 'reportbuilder');
+    }
+
     return true;
 }

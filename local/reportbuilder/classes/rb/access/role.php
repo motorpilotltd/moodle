@@ -43,7 +43,7 @@ class role extends base {
         $anycontextcheck = false;
         $allowedreports = array();
 
-        $sql =  "SELECT rb.id AS reportid, rbs.value AS activeroles, rbs2.value AS context
+        $sql =  "SELECT rb.id AS reportid, rbs.value AS activeroles, rbs2.value AS context, rbs3.value as enabled
                    FROM {report_builder} rb
         LEFT OUTER JOIN {report_builder_settings} rbs
                      ON rb.id = rbs.reportid
@@ -53,9 +53,13 @@ class role extends base {
                      ON (rbs.reportid = rbs2.reportid
                     AND rbs2.type = ?
                     AND rbs2.name = ?)
+        INNER JOIN {report_builder_settings} rbs3
+                     ON (rbs.reportid = rbs3.reportid
+                    AND rbs3.type = ?
+                    AND rbs3.name = ?)
                   WHERE rb.embedded = ?";
 
-        $reports = $DB->get_records_sql($sql, array($type, 'activeroles', $type, 'context', 0));
+        $reports = $DB->get_records_sql($sql, array($type, 'activeroles', $type, 'context', $type, 'enable', 0));
 
         if (count($reports) > 0) {
             // site admins no longer have records in role_assignments to check: assume access to everything
@@ -118,6 +122,11 @@ class role extends base {
 
             // Now loop through our reports again checking role permissions.
             foreach ($reports as $rpt) {
+                if (empty($rpt->enabled)) {
+                    $allowedreports[] = $rpt->reportid;
+                    continue;
+                }
+
                 $allowed_roles = explode('|', $rpt->activeroles);
                 $roles_to_compare = (isset($rpt->context) && $rpt->context == 'any') ? $anyuserroles : $siteuserroles;
                 $matched_roles = array_intersect($allowed_roles, $roles_to_compare);
@@ -141,12 +150,19 @@ class role extends base {
         $activeroles = explode('|', reportbuilder::get_setting($reportid, $type, 'activeroles'));
         $context = reportbuilder::get_setting($reportid, $type, 'context');
 
+        $enabled =reportbuilder::get_setting($reportid, $type, 'enable');
+
+        if (!isset($enabled)) {
+            $enabled = true;
+        }
+
         // generate the check boxes for the access form
         $mform->addElement('header', 'accessbyroles', get_string('accessbyrole', 'local_reportbuilder'));
 
         //TODO replace with checkbox once there is more than one option
-        $mform->addElement('hidden', 'role_enable', 1);
+        $mform->addElement('checkbox', 'role_enable', get_string('enablecondition', 'local_reportbuilder'));
         $mform->setType('role_enable', PARAM_INT);
+        $mform->setDefault('role_enable', $enabled);
 
         $systemcontext = context_system::instance();
         $roles = role_fix_names(get_all_roles(), $systemcontext);

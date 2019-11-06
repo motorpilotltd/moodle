@@ -321,6 +321,22 @@ class source extends rb_base_source {
                 'sco_starttime'
         );
 
+        // Add the time created content option.
+        $contentoptions[] = new rb_content_option(
+                'user',
+                get_string('user', 'local_reportbuilder'),
+                ['userid' => 'base.userid']
+        );
+
+
+
+        $contentoptions[] = new rb_content_option(
+                'enrolledcourses',
+                get_string('enrolledcourses', 'local_reportbuilder'),
+                'scorm.course',
+                'scorm'
+        );
+
         return $contentoptions;
     }
 

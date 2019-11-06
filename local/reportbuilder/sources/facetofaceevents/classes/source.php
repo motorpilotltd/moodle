@@ -528,6 +528,20 @@ class source extends base {
                 'base.id'
         );
 
+        $contentoptions[] = new rb_content_option(
+                'user',
+                get_string('user', 'local_reportbuilder'),
+                ['userid' => 'allattendees.userid'],
+                'allattendees'
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'enrolledcourses',
+                get_string('enrolledcourses', 'local_reportbuilder'),
+                'facetoface.course',
+                'facetoface'
+        );
+
         return $contentoptions;
     }
 

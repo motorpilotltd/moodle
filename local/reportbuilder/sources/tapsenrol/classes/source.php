@@ -282,6 +282,21 @@ class source extends rb_base_source {
                         'base.archived'
                 ),
         ];
+
+        $contentoptions[] = new rb_content_option(
+                'user',
+                get_string('user', 'local_reportbuilder'),
+                ['userid' => 'user.id'],
+                'user'
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'enrolledcourses',
+                get_string('enrolledcourses', 'local_reportbuilder'),
+                'course.id',
+                'course'
+        );
+
         return $contentoptions;
     }
 

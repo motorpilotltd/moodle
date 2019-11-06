@@ -52,3 +52,6 @@ $string['completiondate'] = 'The completion date';
 
 // column types for this source, as strings
 $string['type_course_completion'] = 'Course Completion';
+$string['enrolplugin'] = 'Enrolment plugin';
+$string['enrolname'] = 'Enrolment instance';
+$string['type_enrol'] = 'Enrolment';

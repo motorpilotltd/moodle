@@ -52,7 +52,6 @@ class source extends base {
         $this->requiredcolumns = $this->define_requiredcolumns();
         $this->paramoptions = $this->define_paramoptions();
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_facetofacesummary');
-        $this->add_customfields();
 
         parent::__construct();
     }
@@ -379,6 +378,20 @@ class source extends base {
                 'base.sessionid'
         );
 
+        $contentoptions[] = new rb_content_option(
+                'user',
+                get_string('user', 'local_reportbuilder'),
+                ['userid' => 'allattendees.userid'],
+                'allattendees'
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'enrolledcourses',
+                get_string('enrolledcourses', 'local_reportbuilder'),
+                'facetoface.course',
+                'facetoface'
+        );
+
         return $contentoptions;
     }
 
@@ -549,10 +562,6 @@ class source extends base {
         }
 
         return $requiredcolumns;
-    }
-
-    protected function add_customfields() {
-        $this->add_custom_fields_for('facetoface_session', 'sessions', 'facetofacesessionid', $this->joinlist, $this->columnoptions, $this->filteroptions);
     }
 
     /**

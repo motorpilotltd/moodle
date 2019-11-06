@@ -52,3 +52,7 @@ $string['completiondate'] = 'The completion date';
 
 // column types for this source, as strings
 $string['type_course_completion'] = 'Course Completion';
+
+$string['complete'] = 'Complete';
+$string['incomplete'] = 'Incomplete';
+$string['notstarted'] = 'Not Started';

@@ -289,6 +289,20 @@ class source extends rb_base_source {
                 'base.dateissued'
         );
 
+        // Add the time created content option.
+        $contentoptions[] = new rb_content_option(
+                'user',
+                get_string('user', 'local_reportbuilder'),
+                ['userid' => 'base.userid']
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'enrolledcourses',
+                get_string('enrolledcourses', 'local_reportbuilder'),
+                'badge.courseid',
+                'badge'
+        );
+
         return $contentoptions;
     }
 
@@ -373,7 +387,7 @@ class source extends rb_base_source {
     public function rb_display_badgetype($type, $row, $isexport) {
         global $CFG;
         require_once($CFG->libdir.'/badgeslib.php');
-        return get_string("badgetype_{$type}", 'badges');
+        return get_string("badgetype_{$type}", 'rbsource_badgeissued');
     }
 
     public function rb_display_badgestatus($status, $row, $isexport) {

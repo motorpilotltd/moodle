@@ -1006,6 +1006,7 @@ class report_builder_edit_access_form extends moodleform {
         $radiogroup = array();
         $radiogroup[] =& $mform->createElement('radio', 'accessenabled', '', get_string('norestriction', 'local_reportbuilder'), 0);
         $radiogroup[] =& $mform->createElement('radio', 'accessenabled', '', get_string('withrestriction', 'local_reportbuilder'), 1);
+        $radiogroup[] =& $mform->createElement('radio', 'accessenabled', '', get_string('withrestriction_all', 'local_reportbuilder'), 2);
         $mform->addGroup($radiogroup, 'radiogroup', get_string('restrictaccess', 'local_reportbuilder'), html_writer::empty_tag('br'), false);
         $mform->setDefault('accessenabled', $DB->get_field('report_builder', 'accessmode', array('id' => $id)));
         $mform->addHelpButton('radiogroup', 'reportbuilderaccessmode', 'local_reportbuilder');

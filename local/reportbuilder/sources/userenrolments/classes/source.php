@@ -23,6 +23,7 @@
  */
 
 namespace rbsource_userenrolments;
+use core\plugininfo\enrol;
 use rb_base_source;
 use coding_exception;
 use rb_join;
@@ -74,6 +75,13 @@ class source extends rb_base_source {
                         'LEFT',
                         '{course_completions}',
                         '(coursecompletions.course = base.course and coursecompletions.userid = base.id)',
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
+                ),
+                new rb_join(
+                        'enrol',
+                        'LEFT',
+                        '{enrol}',
+                        'enrol.id = base.enrolid',
                         REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
                 new rb_join(
@@ -129,6 +137,27 @@ class source extends rb_base_source {
     protected function define_columnoptions() {
         global $DB;
         $columnoptions = array(
+                new rb_column_option(
+                        'enrol',
+                        'name',
+                        get_string('enrolname', 'rbsource_userenrolments'),
+                        'enrol.name',
+                        array(
+                                'dbdatatype' => 'char',
+                                'outputformat' => 'text',
+                                'joins' => 'enrol')
+                ),
+                new rb_column_option(
+                        'enrol',
+                        'plugin',
+                        get_string('enrolplugin', 'rbsource_userenrolments'),
+                        'enrol.enrol',
+                        array(
+                                'displayfunc' => 'enrolpluginname',
+                                'dbdatatype' => 'char',
+                                'outputformat' => 'text',
+                                'joins' => 'enrol')
+                ),
                 new rb_column_option(
                         'course_completion',
                         'status',
@@ -409,6 +438,22 @@ class source extends rb_base_source {
                                 'cachingcompatible' => false, // Current filter code is not compatible with aggregated columns.
                         )
                 ),
+                new rb_filter_option(
+                        'enrol',
+                        'name',
+                        get_string('enrolname', 'rbsource_userenrolments'),
+                        'text'
+                ),
+                new rb_filter_option(
+                        'enrol',
+                        'plugin',
+                        get_string('enrolplugin', 'rbsource_userenrolments'),
+                        'select',
+                        array(
+                                'selectfunc' => 'enrolplugins',
+                                'simplemode' => true,
+                        )
+                ),
         );
 
         // include some standard filters
@@ -429,6 +474,19 @@ class source extends rb_base_source {
                 'date',
                 get_string('completiondate', 'rbsource_userenrolments'),
                 'coursecompletions.timecompleted'
+        );
+
+        // Add the time created content option.
+        $contentoptions[] = new rb_content_option(
+                'user',
+                get_string('user', 'local_reportbuilder'),
+                ['userid' => 'base.userid']
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'enrolledcourses',
+                get_string('enrolledcourses', 'local_reportbuilder'),
+                'base.course'
         );
 
         return $contentoptions;
@@ -527,11 +585,11 @@ class source extends rb_base_source {
 
     function rb_display_completion_status($status, $row, $isexport) {
         if ($status == 1) {
-            return get_string('complete', 'local_custom_certification');
+            return get_string('complete', 'rbsource_coursecompletion');
         } else if ($status == 0) {
-            return get_string('incomplete', 'local_custom_certification');
+            return get_string('incomplete', 'rbsource_coursecompletion');
         } else {
-            return get_string('notstarted', 'local_custom_certification');
+            return get_string('notstarted', 'rbsource_coursecompletion');
         }
     }
 
@@ -559,6 +617,22 @@ class source extends rb_base_source {
         return totara_display_course_progress_bar($row->userid, $row->courseid, $status);
     }
 
+    function rb_display_enrolpluginname($name, $row, $isexport) {
+        return get_string('pluginname', 'enrol_' . $name);
+    }
+
+    function rb_filter_enrolplugins() {
+        global $CFG;
+
+        $enabled = explode(',', $CFG->enrol_plugins_enabled);
+
+        $yn = array();
+        foreach($enabled as $plugin) {
+            $yn[$plugin] = get_string('pluginname', 'enrol_' . $plugin);
+        }
+        return $yn;
+    }
+
     //
     //
     // Source specific filter display methods
@@ -567,8 +641,8 @@ class source extends rb_base_source {
 
     function rb_filter_completion_status_list() {
         return [
-                1 =>  get_string('complete', 'local_custom_certification'),
-                0 =>  get_string('incomplete', 'local_custom_certification')
+                1 =>  get_string('complete', 'rbsource_coursecompletion'),
+                0 =>  get_string('incomplete', 'rbsource_coursecompletion')
         ];
     }
 } // end of rb_source_course_completion class

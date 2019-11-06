@@ -42,6 +42,7 @@ $string['coursesstarted'] = 'Courses Started';
 $string['coursescompleted'] = 'Courses Completed';
 $string['competenciesachieved'] = 'Competencies Achieved';
 $string['progressthroughenrolled'] = 'Progress through enrolled courses';
+$string['userscoursesenrolledcompletioncount'] = 'Courses enrolled (with completion)';
 
 $string['records'] = 'Records';
 $string['required'] = 'Required';

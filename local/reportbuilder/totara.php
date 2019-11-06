@@ -120,17 +120,6 @@ function totara_load_program_settings($navinode, $context, $forceopen = false) {
         $adminnode->add(get_string('exceptions', 'totara_program', $exceptioncount), $url, navigation_node::TYPE_SETTING, null,
                     'progexceptions', new pix_icon('i/settings', get_string('exceptionsreport', 'totara_program')));
     }
-    if ($program->certifid && has_capability('totara/certification:configurecertification', $context)) {
-        $url = new moodle_url('/totara/certification/edit_certification.php', array('id' => $program->id));
-        $adminnode->add(get_string('certification', 'local_custom_certification'), $url, navigation_node::TYPE_SETTING, null,
-                    'certification', new pix_icon('i/settings', get_string('certification', 'local_custom_certification')));
-    }
-    if (!empty($CFG->enableprogramcompletioneditor) && has_capability('totara/program:editcompletion', $context)) {
-        // Certification/Program completion editor. Added Feb 2016 to 2.5.36, 2.6.29, 2.7.12, 2.9.4.
-        $url = new moodle_url('/totara/program/completion.php', array('id' => $program->id));
-        $adminnode->add(get_string('completion', 'totara_program'), $url, navigation_node::TYPE_SETTING, null,
-            'certificationcompletion', new pix_icon('i/settings', get_string('completion', 'totara_program')));
-    }
     // Roles and permissions.
     $usersnode = $adminnode->add(get_string('users'), null, navigation_node::TYPE_CONTAINER, null, 'users');
     // Override roles.

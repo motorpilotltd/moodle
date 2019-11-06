@@ -60,7 +60,7 @@ class scheduler {
     /**
      * DB row decorated object
      *
-     * @var stdClass
+     * @var \stdClass
      */
     protected $subject = null;
 
@@ -261,7 +261,7 @@ class scheduler {
     /**
      * Given scheduled report frequency and schedule data, output a human readable string.
      *
-     * @param stdClass $user - ignored
+     * @param \stdClass $user - ignored
      * @return string Human readable string describing the schedule
      */
     public function get_formatted($user = null) {
@@ -290,7 +290,7 @@ class scheduler {
                 date_default_timezone_set('UTC');
                 $out .= new \lang_string('scheduleddaily', 'local_reportbuilder',
                     strftime(get_string('strftimetime', 'langconfig'), $date->getTimestamp()), $lang);
-                core_date::set_default_server_timezone();
+                \core_date::set_default_server_timezone();
                 break;
             case self::WEEKLY:
                 $out .= new \lang_string('scheduledweekly', 'local_reportbuilder',  $calendardays[$schedule]['fullname'], $lang);

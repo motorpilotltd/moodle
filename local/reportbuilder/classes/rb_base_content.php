@@ -61,9 +61,7 @@ abstract class rb_base_content {
 class rb_user_content extends rb_base_content {
 
     const USER_OWN = 1;
-    const USER_DIRECT_REPORTS = 2;
-    const USER_INDIRECT_REPORTS = 4;
-    const USER_TEMP_REPORTS = 8;
+    const USER_COHORT_MEMBERS = 2;
 
     /**
      * Generate the SQL to apply this content restriction.
@@ -76,6 +74,7 @@ class rb_user_content extends rb_base_content {
     public function sql_restriction($field, $reportid) {
         global $CFG, $DB;
 
+        $userfield = $field;
         $userid = $this->reportfor;
 
         // remove rb_ from start of classname.
@@ -94,11 +93,27 @@ class rb_user_content extends rb_base_content {
 
         $viewownrecord = ($restriction & self::USER_OWN) == self::USER_OWN;
         if ($viewownrecord) {
-            $conditions[] = "{$field} = :self";
+            $conditions[] = "{$userfield} = :self";
             $params['self'] = $userid;
         }
 
+        $viewcohortrecords = ($restriction & self::USER_COHORT_MEMBERS) == self::USER_COHORT_MEMBERS;
+        if ($viewcohortrecords) {
+            $cohorts = array_keys(cohort_get_user_cohorts($this->reportfor));
+
+            if (!empty($cohorts)) {
+                list($cohortsql, $cohortparams) = $DB->get_in_or_equal($cohorts, SQL_PARAMS_NAMED);
+
+                $conditions[] = "{$userfield} IN (SELECT userid FROM {cohort_members} WHERE cohortid $cohortsql)";
+                $params += $cohortparams;
+            }
+        }
+
         $sql = implode(' OR ', $conditions);
+
+        if (empty($sql)) {
+            $sql = "1=1";
+        }
 
         return array(" ($sql) ", $params);
     }
@@ -129,16 +144,8 @@ class rb_user_content extends rb_base_content {
             $strings[] = get_string('contentdesc_userown', 'local_reportbuilder', $strparams);
         }
 
-        if (($who & self::USER_DIRECT_REPORTS) == self::USER_DIRECT_REPORTS) {
-            $strings[] = get_string('contentdesc_userdirect', 'local_reportbuilder', $strparams);
-        }
-
-        if (($who & self::USER_INDIRECT_REPORTS) == self::USER_INDIRECT_REPORTS) {
-            $strings[] = get_string('contentdesc_userindirect', 'local_reportbuilder', $strparams);
-        }
-
-        if (($who & self::USER_TEMP_REPORTS) == self::USER_TEMP_REPORTS) {
-            $strings[] = get_string('contentdesc_usertemp', 'local_reportbuilder', $strparams);
+        if (($who & self::USER_COHORT_MEMBERS) == self::USER_COHORT_MEMBERS) {
+            $strings[] = get_string('contentdesc_usercohortmembers', 'local_reportbuilder', $strparams);
         }
 
         if (empty($strings)) {
@@ -175,19 +182,13 @@ class rb_user_content extends rb_base_content {
         $checkgroup[] =& $mform->createElement('advcheckbox', 'user_who['.self::USER_OWN.']', '',
             get_string('userownrecords', 'local_reportbuilder'), null, array(0, 1));
         $mform->setType('user_who['.self::USER_OWN.']', PARAM_INT);
-        $checkgroup[] =& $mform->createElement('advcheckbox', 'user_who['.self::USER_DIRECT_REPORTS.']', '',
-            get_string('userdirectreports', 'local_reportbuilder'), null, array(0, 1));
-        $mform->setType('user_who['.self::USER_DIRECT_REPORTS.']', PARAM_INT);
-        $checkgroup[] =& $mform->createElement('advcheckbox', 'user_who['.self::USER_INDIRECT_REPORTS.']', '',
-            get_string('userindirectreports', 'local_reportbuilder'), null, array(0, 1));
-        $mform->setType('user_who['.self::USER_INDIRECT_REPORTS.']', PARAM_INT);
-        $checkgroup[] =& $mform->createElement('advcheckbox', 'user_who['.self::USER_TEMP_REPORTS.']', '',
-            get_string('usertempreports', 'local_reportbuilder'), null, array(0, 1));
-        $mform->setType('user_who['.self::USER_TEMP_REPORTS.']', PARAM_INT);
+        $checkgroup[] =& $mform->createElement('advcheckbox', 'user_who['.self::USER_COHORT_MEMBERS.']', '',
+            get_string('cohortmembers', 'local_reportbuilder'), null, array(0, 1));
+        $mform->setType('user_who['.self::USER_COHORT_MEMBERS.']', PARAM_INT);
 
         $mform->addGroup($checkgroup, 'user_who_group',
             get_string('includeuserrecords', 'local_reportbuilder'), html_writer::empty_tag('br'), false);
-        $usergroups = array(self::USER_OWN, self::USER_DIRECT_REPORTS, self::USER_INDIRECT_REPORTS, self::USER_TEMP_REPORTS);
+        $usergroups = array(self::USER_OWN, self::USER_COHORT_MEMBERS);
         foreach ($usergroups as $usergroup) {
             // Bitwise comparison.
             if (($who & $usergroup) == $usergroup) {
@@ -225,6 +226,172 @@ class rb_user_content extends rb_base_content {
         $whovalue = 0;
         $who = isset($fromform->user_who) ?
             $fromform->user_who : array();
+        foreach ($who as $key => $option) {
+            if ($option) {
+                $whovalue += $key;
+            }
+        }
+        $status = $status && reportbuilder::update_setting($reportid, $type,
+            'who', $whovalue);
+
+        return $status;
+    }
+}
+
+/*
+ * Restrict content by a particular user or group of users
+ */
+class rb_enrolledcourses_content extends rb_base_content {
+    const ENROLLEDCOURSES_OWN = 1;
+
+    /**
+     * Generate the SQL to apply this content restriction.
+     *
+     * @param array $field      SQL field to apply the restriction against
+     * @param integer $reportid ID of the report
+     *
+     * @return array containing SQL snippet to be used in a WHERE clause, as well as array of SQL params
+     */
+    public function sql_restriction($field, $reportid) {
+        global $DB;
+
+        $enrolledcoursesfield = $field;
+
+        // remove rb_ from start of classname.
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+        $restriction = isset($settings['who']) ? $settings['who'] : null;
+
+
+        if (empty($restriction)) {
+            return array(' (1 = 1) ', array());
+        }
+
+        $conditions = array();
+        $params = array();
+
+        $viewownrecord = ($restriction & self::ENROLLEDCOURSES_OWN) == self::ENROLLEDCOURSES_OWN;
+        if ($viewownrecord) {
+            $courses = array_keys(enrol_get_users_courses($this->reportfor));
+
+            if ($courses) {
+                list($cohortsql, $cohortparams) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
+
+                $conditions[] = "{$enrolledcoursesfield} $cohortsql";
+                $params += $cohortparams;
+            }
+        }
+
+        $sql = implode(' OR ', $conditions);
+
+        if (empty($sql)) {
+            $sql = "1=1";
+        }
+
+        return array(" ($sql) ", $params);
+    }
+
+    /**
+     * Generate a human-readable text string describing the restriction
+     *
+     * @param string $title Name of the field being restricted
+     * @param integer $reportid ID of the report
+     *
+     * @return string Human readable description of the restriction
+     */
+    public function text_restriction($title, $reportid) {
+        global $DB;
+
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+        $who = isset($settings['who']) ? $settings['who'] : 0;
+        $enrolledcoursesid = $this->reportfor;
+
+        $enrolledcourses = $DB->get_record('enrolledcourses', array('id' => $enrolledcoursesid));
+
+        $strings = array();
+        $strparams = array('field' => $title, 'enrolledcourses' => fullname($enrolledcourses));
+
+        if (($who & self::ENROLLEDCOURSES_OWN) == self::ENROLLEDCOURSES_OWN) {
+            $strings[] = get_string('contentdesc_enrolledcoursesown', 'local_reportbuilder', $strparams);
+        }
+
+        if (empty($strings)) {
+            return $title . ' ' . get_string('isnotfound', 'local_reportbuilder');
+        }
+
+        return implode(get_string('or', 'local_reportbuilder'), $strings);
+    }
+
+
+    /**
+     * Adds form elements required for this content restriction's settings page
+     *
+     * @param object &$mform Moodle form object to modify (passed by reference)
+     * @param integer $reportid ID of the report being adjusted
+     * @param string $title Name of the field the restriction is acting on
+     */
+    public function form_template(&$mform, $reportid, $title) {
+
+        // get current settings
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $enable = reportbuilder::get_setting($reportid, $type, 'enable');
+        $who = reportbuilder::get_setting($reportid, $type, 'who');
+
+        $mform->addElement('header', 'enrolledcourses_header', get_string('showbyx',
+            'local_reportbuilder', lcfirst($title)));
+        $mform->setExpanded('enrolledcourses_header');
+        $mform->addElement('checkbox', 'enrolledcourses_enable', '',
+            get_string('showbasedonx', 'local_reportbuilder', lcfirst($title)));
+        $mform->disabledIf('enrolledcourses_enable', 'contentenabled', 'eq', 0);
+        $mform->setDefault('enrolledcourses_enable', $enable);
+        $checkgroup = array();
+        $checkgroup[] =& $mform->createElement('advcheckbox', 'enrolledcourses_who['.self::ENROLLEDCOURSES_OWN.']', '',
+            get_string('enrolledcoursesownrecords', 'local_reportbuilder'), null, array(0, 1));
+        $mform->setType('enrolledcourses_who['.self::ENROLLEDCOURSES_OWN.']', PARAM_INT);
+
+        $mform->addGroup($checkgroup, 'enrolledcourses_who_group',
+            get_string('includeenrolledcoursesrecords', 'local_reportbuilder'), html_writer::empty_tag('br'), false);
+        $enrolledcoursesgroups = array(self::ENROLLEDCOURSES_OWN);
+        foreach ($enrolledcoursesgroups as $enrolledcoursesgroup) {
+            // Bitwise comparison.
+            if (($who & $enrolledcoursesgroup) == $enrolledcoursesgroup) {
+                $mform->setDefault('enrolledcourses_who['.$enrolledcoursesgroup.']', 1);
+            }
+        }
+        $mform->disabledIf('enrolledcourses_who_group', 'contentenabled', 'eq', 0);
+        $mform->disabledIf('enrolledcourses_who_group', 'enrolledcourses_enable', 'notchecked');
+        $mform->addHelpButton('enrolledcourses_header', 'reportbuilderenrolledcourses', 'local_reportbuilder');
+    }
+
+
+    /**
+     * Processes the form elements created by {@link form_template()}
+     *
+     * @param integer $reportid ID of the report to process
+     * @param object $fromform Moodle form data received via form submission
+     *
+     * @return boolean True if form was successfully processed
+     */
+    public function form_process($reportid, $fromform) {
+        $status = true;
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+
+        // enable checkbox option
+        $enable = (isset($fromform->enrolledcourses_enable) &&
+            $fromform->enrolledcourses_enable) ? 1 : 0;
+        $status = $status && reportbuilder::update_setting($reportid, $type,
+            'enable', $enable);
+
+        // Who checkbox option.
+        // Enabled options are stored as enrolledcourses_who[key] = 1 when enabled.
+        // Key is a bitwise value to be summed and stored.
+        $whovalue = 0;
+        $who = isset($fromform->enrolledcourses_who) ?
+            $fromform->enrolledcourses_who : array();
         foreach ($who as $key => $option) {
             if ($option) {
                 $whovalue += $key;

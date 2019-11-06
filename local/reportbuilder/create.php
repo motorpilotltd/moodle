@@ -58,7 +58,7 @@ if ($fromform = $mform->get_data()) {
     $todb->hidden = $fromform->hidden;
     $todb->recordsperpage = 40;
     $todb->contentmode = REPORT_BUILDER_CONTENT_MODE_NONE;
-    $todb->accessmode = REPORT_BUILDER_ACCESS_MODE_ANY; // default to limited access
+    $todb->accessmode = REPORT_BUILDER_ACCESS_MODE_ALL; // default to limited access
     $todb->embedded = 0;
     $todb->timemodified = time();
 

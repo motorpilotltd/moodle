@@ -997,39 +997,6 @@ abstract class rb_base_source {
     }
 
     /**
-     * Convert a program/certification name into an expanding link.
-     *
-     * @param string $program
-     * @param array $row
-     * @param bool $isexport
-     * @return html|string
-     */
-    public function rb_display_program_expand($program, $row, $isexport = false) {
-        if ($isexport) {
-            return format_string($program);
-        }
-
-        $attr = array('class' => totara_get_style_visibility($row, 'prog_visible'));
-        $alturl = new moodle_url('/totara/program/view.php', array('id' => $row->prog_id));
-        return $this->create_expand_link($program, 'prog_details',
-                array('expandprogid' => $row->prog_id), $alturl, $attr);
-    }
-
-    /**
-     * Certification display the certification path as string.
-     *
-     * @param string $certifpath    CERTIFPATH_X constant to describe cert or recert coursesets
-     * @param array $row            The record used to generate the table row
-     * @return string
-     */
-    function rb_display_certif_certifpath($certifpath, $row) {
-        global $CERTIFPATH;
-        if ($certifpath && isset($CERTIFPATH[$certifpath])) {
-            return get_string($CERTIFPATH[$certifpath], 'local_custom_certification');
-        }
-    }
-
-    /**
      * Expanding content to display when clicking a course.
      * Will be placed inside a table cell which is the width of the table.
      * Call required_param to get any param data that is needed.
@@ -1041,7 +1008,6 @@ abstract class rb_base_source {
         global $CFG, $DB, $USER;
         require_once($CFG->dirroot . '/local/reportbuilder/report_forms.php');
         require_once($CFG->dirroot . '/course/renderer.php');
-        require_once($CFG->dirroot . '/lib/coursecatlib.php');
 
         $courseid = required_param('expandcourseid', PARAM_INT);
         $userid = $USER->id;
@@ -1281,21 +1247,13 @@ abstract class rb_base_source {
             return '';
         }
         $attr = (isset($row->cat_visible) && $row->cat_visible == 0) ? array('class' => 'dimmed') : array();
-        $columns = array('coursecount' => 'course', 'programcount' => 'program', 'certifcount' => 'certification');
+        $columns = array('coursecount' => 'course');
         foreach ($columns as $field => $viewtype) {
             if (isset($row->{$field})) {
                 break;
             }
         }
-        switch ($viewtype) {
-            case 'program':
-            case 'certification':
-                $url = new moodle_url('/totara/program/index.php', array('categoryid' => $catid, 'viewtype' => $viewtype));
-                break;
-            default:
-                $url = new moodle_url('/course/index.php', array('categoryid' => $catid));
-                break;
-        }
+        $url = new moodle_url('/course/index.php', array('categoryid' => $catid));
         return html_writer::link($url, $category, $attr);
     }
 
@@ -1615,9 +1573,7 @@ abstract class rb_base_source {
     }
 
     function rb_filter_course_categories_list() {
-        global $CFG;
-        require_once($CFG->libdir . '/coursecatlib.php');
-        $cats = coursecat::make_categories_list();
+        $cats = \core_course_category::make_categories_list();
 
         return $cats;
     }
@@ -1826,7 +1782,7 @@ abstract class rb_base_source {
             '{user}',
             "{$alias}.idnumber = $join.$field",
             REPORT_BUILDER_RELATION_ONE_TO_ONE,
-            $join
+                [$join]
         );
 
         // Add cohort tables
@@ -2546,18 +2502,6 @@ abstract class rb_base_source {
             )
         );
 
-        $filteroptions[] = new rb_filter_option(
-            $groupname,
-            'totarasync',
-            get_string('totarasyncenableduser', 'local_reportbuilder'),
-            'select',
-            array(
-                'selectchoices' => array(0 => get_string('no'), 1 => get_string('yes')),
-                'simplemode' => true,
-                'addtypetoheading' => $addtypetoheading
-            )
-        );
-
         $this->add_cohort_user_fields_to_filters($filteroptions, $groupname);
 
         return true;
@@ -2604,8 +2548,9 @@ abstract class rb_base_source {
             '{course}',
             "course.id = $join.$field",
             REPORT_BUILDER_RELATION_ONE_TO_ONE,
-            $join
+            [$join]
         );
+
     }
 
     /**
@@ -3238,12 +3183,6 @@ abstract class rb_base_source {
         // Build the table names for this sort of custom field data.
         $fieldtable = $cf_prefix.'_info_field';
         $datatable = $cf_prefix.'_info_data';
-
-
-        if ($cf_prefix === 'facetoface_session') {
-            $fieldtable = $cf_prefix.'_field';
-            $datatable = $cf_prefix.'_data';
-        }
 
         // Check if there are any visible custom fields of this type.
         $items = $DB->get_recordset($fieldtable);

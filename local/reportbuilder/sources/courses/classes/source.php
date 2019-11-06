@@ -184,7 +184,7 @@ class source extends rb_base_source {
                 'statistics',
                 'progressthroughenrolled',
                 get_string('progressthroughenrolled', 'rbsource_courses'),
-                'COALESCE(totara_stats_courses_enrolled.number,0)',
+                'COALESCE(totara_stats_courses_enrolled_completion.number,0)',
                 array(
                         'extrafields' => ['todo' => 'totara_stats_courses_enrolled_completion.number', 'green' => 'totara_stats_courses_completed.number', 'amber' => 'course_completions_courses_started.number'],
                         'displayfunc' => 'progressbar',
@@ -241,6 +241,13 @@ class source extends rb_base_source {
                         'base.startdate'
                 ),
         );
+
+        $contentoptions[] = new rb_content_option(
+                'enrolledcourses',
+                get_string('enrolledcourses', 'local_reportbuilder'),
+                'base.id'
+        );
+
         return $contentoptions;
     }
 
