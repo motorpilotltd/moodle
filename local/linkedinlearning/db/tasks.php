@@ -33,8 +33,8 @@ $tasks = [
         [
                 'classname' => 'local_linkedinlearning\task\sync_linkedinlearning_courseprogress',
                 'blocking'  => 0,
-                'minute'    => '0',
-                'hour'      => '1',
+                'minute'    => '*',
+                'hour'      => '*',
                 'day'       => '*',
                 'dayofweek' => '*',
                 'month'     => '*'

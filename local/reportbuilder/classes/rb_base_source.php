@@ -1573,7 +1573,9 @@ abstract class rb_base_source {
     }
 
     function rb_filter_course_categories_list() {
-        $cats = \core_course_category::make_categories_list();
+        global $CFG;
+        require_once($CFG->dirroot . '/lib/coursecatlib.php');
+        $cats = \coursecat::make_categories_list();
 
         return $cats;
     }
@@ -4412,6 +4414,35 @@ abstract class rb_base_source {
             $html .= '<div class="progress-bar progress-bar-danger" style="width: ' . $percentage . '%;" role="progressbar" aria-valuenow="' .
                     $percentage . '" aria-valuemin="0" aria-valuemax="100"></div>';
         }
+
+        $html .= '</div>';
+
+        return $html;
+    }
+
+    public function rb_display_progressbarsimple($percentage, $row, $isexport = false) {
+        $percentage = round($percentage, 0);
+
+        if ($isexport) {
+            $plaintext = '[';
+            $char = "█";
+            for ($i = 0; $i < $percentage / 10; $i++) {
+                $plaintext .= $char;
+            }
+            while (mb_strlen($plaintext) < 11) {
+                $plaintext .= '▁';
+            }
+            $plaintext .= ']';
+            return $plaintext;
+        }
+
+
+
+        $html = '<div class="progress">';
+        $total = 0;
+
+        $html .= '<div class="progress-bar progress-bar-success " style="width: ' . $percentage . '%;" role="progressbar" aria-valuenow="' .
+                $percentage . '" aria-valuemin="0" aria-valuemax="100"></div>';
 
         $html .= '</div>';
 

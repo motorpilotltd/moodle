@@ -34,7 +34,7 @@ class sync_linkedinlearning_courseprogress extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('tasksynclinkedinlearningcourses', 'local_linkedinlearning');
+        return get_string('tasksynclinkedinlearningcourseprogress', 'local_linkedinlearning');
     }
 
     /**

@@ -21,5 +21,7 @@ $string['classifications'] = 'Classifications';
 $string['filteroptions'] = 'Filters';
 $string['selectfilters'] = 'Apply filters to see results';
 $string['setting:category_id'] = 'Category for new courses';
+$string['setting:courseprgogresssyncto'] = 'Course progressed synced to';
 $string['tasksynclinkedinlearningcourses'] = 'Sync linked in learning courses';
+$string['tasksynclinkedinlearningcourseprogress'] = 'Sync progress in learning courses';
 $string['title'] = 'Title';

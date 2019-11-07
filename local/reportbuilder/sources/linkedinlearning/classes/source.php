@@ -215,6 +215,41 @@ class source extends rb_base_source {
                             'joins' => 'class'
                         )
                 ),
+                new rb_column_option(
+                        'linkedincourseprogress',
+                        'progresspercentagebar',
+                        get_string('progresspercentagebar', 'rbsource_linkedinlearning'),
+                        'progress.progress_percentage',
+                        array(
+                                'displayfunc' => 'progressbarsimple',
+                                'joins'       => ['progress'],
+                                'dbdatatype'  => 'integer',
+                        )
+                ),
+                new rb_column_option(
+                        'linkedincourseprogress',
+                        'progresspercentage',
+                        get_string('progresspercentage', 'rbsource_linkedinlearning'),
+                        'progress.progress_percentage',
+                        array(
+                                'displayfunc' => 'percent',
+                                'joins'       => ['progress'],
+                                'dbdatatype'  => 'integer',
+                                'extrafields' => ['green' => 'progress.progress_percentage'],
+
+                        )
+                ),
+                new rb_column_option(
+                        'linkedincourseprogress',
+                        'timeincourse',
+                        get_string('timeincourse', 'rbsource_linkedinlearning'),
+                        'progress.seconds_viewed',
+                        array(
+                                'displayfunc' => 'duration',
+                                'dbdatatype' => 'integer',
+                                'joins'       => 'progress',
+                        )
+                ),
         );
 
         // User, course and category fields.

@@ -77,6 +77,7 @@ class rb_filter_course_multi extends rb_filter_type {
      */
     public function setupForm(&$mform) {
         global $SESSION, $DB, $SITE, $CFG;
+        require_once($CFG->dirroot . '/lib/coursecatlib.php');
 
         $label = format_string($this->label);
         $advanced = $this->advanced;
@@ -96,7 +97,7 @@ class rb_filter_course_multi extends rb_filter_type {
             }
             $coursesbycat[$c->category][] = $c;
         }
-        $list = \core_course_category::make_categories_list();
+        $list =\coursecat::make_categories_list();
 
         $select = [];
         foreach ($list as $catid => $category) {

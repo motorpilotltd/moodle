@@ -242,6 +242,7 @@ class api {
             }
 
             if (!isset($record->id)) {
+                $record->userid = 0;
                 $DB->insert_record('linkedinlearning_progress', $record);
             } else {
                 $DB->update_record('linkedinlearning_progress', $record);

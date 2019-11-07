@@ -46,6 +46,7 @@ class rb_filter_cohort extends rb_filter_type {
         global $SESSION, $CFG, $SITE, $DB;
 
         require_once("$CFG->dirroot/cohort/lib.php");
+        require_once($CFG->dirroot . '/lib/coursecatlib.php');
 
         $label = format_string($this->label);
         $advanced = $this->advanced;
@@ -59,7 +60,7 @@ class rb_filter_cohort extends rb_filter_type {
             }
             $cohortsbycat[$c->contextid][] = $c;
         }
-        $list = \core_course_category::make_categories_list();
+        $list = \coursecat::make_categories_list();
 
         $catcontmap = $DB->get_records_menu('context', ['contextlevel' => CONTEXT_COURSECAT], 'instanceid', 'instanceid, id');
 

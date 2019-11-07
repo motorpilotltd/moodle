@@ -43,6 +43,7 @@ class rb_filter_category extends rb_filter_type {
      */
     public function setupForm(&$mform) {
         global $SESSION, $CFG;
+        require_once($CFG->dirroot . '/lib/coursecatlib.php');
 
         $label = format_string($this->label);
         $advanced = $this->advanced;
@@ -53,7 +54,7 @@ class rb_filter_category extends rb_filter_type {
             html_writer::tag('span', '', array('id' => $this->name . 'title', 'class' => 'dialog-result-title')));
         $mform->setType($this->name.'_op', PARAM_TEXT);
 
-        $cats = \core_course_category::make_categories_list();
+        $cats = \coursecat::make_categories_list();
         $objs[] = $mform->createElement('autocomplete',  $this->name, $label, $cats, ['multiple' => true]);
 
         $objs[] =& $mform->createElement('checkbox', $this->name . '_rec', '', get_string('includesubcategories', 'local_reportbuilder'));
