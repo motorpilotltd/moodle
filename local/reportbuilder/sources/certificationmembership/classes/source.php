@@ -24,7 +24,7 @@
 
 namespace rbsource_certificationmembership;
 use rb_base_source;
-use coding_exception;
+use rb_content_option;
 use rb_join;
 use rb_column_option;
 use rb_filter_option;
@@ -69,6 +69,25 @@ class source extends rb_base_source {
                          SELECT cch.userid, cch.certifid
                            FROM {certif_completions_archive} cch) ccall
                    JOIN {certif} certif ON ccall.certifid = certif.id)";
+    }
+
+    protected function define_contentoptions() {
+        $contentoptions = array();
+        // Add the time created content option.
+        $contentoptions[] = new rb_content_option(
+                'user',
+                get_string('user', 'local_reportbuilder'),
+                ['userid' => 'auser.id'],
+                'auser'
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'costcentre',
+                get_string('costcentre', 'local_reportbuilder'),
+                ['costcentre' => "auser.icq"],
+                'auser'
+        );
+        return $contentoptions;
     }
 
     protected function define_joinlist() {

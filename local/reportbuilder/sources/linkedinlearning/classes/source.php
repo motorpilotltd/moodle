@@ -24,7 +24,7 @@
 
 namespace rbsource_linkedinlearning;
 use rb_base_source;
-use coding_exception;
+use rb_content_option;
 use rb_join;
 use rb_column_option;
 use rb_filter_option;
@@ -36,7 +36,7 @@ class source extends rb_base_source {
 
     public $base, $joinlist, $columnoptions, $filteroptions;
     public $defaultcolumns, $defaultfilters, $requiredcolumns;
-    public $sourcetitle;
+    public $sourcetitle, $contentoptions;
 
     public function __construct() {
         $this->base = '{linkedinlearning_course}';
@@ -46,6 +46,7 @@ class source extends rb_base_source {
         $this->requiredcolumns = $this->define_requiredcolumns();
         $this->defaultcolumns = $this->define_defaultcolumns();
         $this->defaultfilters = $this->define_defaultfilters();
+        $this->contentoptions = $this->define_contentoptions();
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_linkedinlearning');
 
         parent::__construct();
@@ -330,6 +331,27 @@ class source extends rb_base_source {
         $this->add_course_category_fields_to_filters($filteroptions);
 
         return $filteroptions;
+    }
+
+    protected function define_contentoptions() {
+        $contentoptions = array();
+
+        // Add the time created content option.
+        $contentoptions[] = new rb_content_option(
+                'user',
+                get_string('user', 'local_reportbuilder'),
+                ['userid' => 'auser.id'],
+                'auser'
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'costcentre',
+                get_string('costcentre', 'local_reportbuilder'),
+                ['costcentre' => "auser.icq"],
+                'auser'
+        );
+
+        return $contentoptions;
     }
 
     /**

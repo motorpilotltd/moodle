@@ -1891,3 +1891,6 @@ $string['includeenrolledcoursesrecords'] = '';
 $string['reportbuilderenrolledcourses'] = '';
 $string['reportbuilderenrolledcourses_help'] = '';
 $string['enrolledcoursesownrecords'] = 'Enrolled courses';
+$string['costcentre'] = 'Cost centre';
+$string['costcentreroles'] = 'Cost centre role';
+$string['accessbycostcentrerole'] = 'Access by cost centre role';

@@ -24,14 +24,13 @@
 namespace local_reportbuilder\rb\access;
 use reportbuilder;
 
-require_once($CFG->dirroot . '/cohort/lib.php');
 
 /**
  * Role based access restriction
  *
  * Limit access to reports by user role (either in system context or any context)
  */
-class cohort extends base {
+class costcentrerole extends base {
     /**
      * Get list of reports this user is allowed to access by this restriction class
      * @param int $userid reports for this user
@@ -43,7 +42,7 @@ class cohort extends base {
         $type = $this->get_type();
         $allowedreports = array();
 
-        $sql =  "SELECT rb.id AS reportid, rbs.value AS cohorts, rbs2.value as enabled
+        $sql =  "SELECT rb.id AS reportid, rbs.value AS costcentreroles, rbs2.value as enabled
                    FROM {report_builder} rb
         INNER JOIN {report_builder_settings} rbs
                      ON rb.id = rbs.reportid
@@ -55,10 +54,16 @@ class cohort extends base {
                     AND rbs2.name = ?)
                   WHERE rb.embedded = ?";
 
-        $reports = $DB->get_records_sql($sql, array($type, 'cohorts', $type, 'enable', 0));
+        $reports = $DB->get_records_sql($sql, array($type, 'costcentreroles', $type, 'enable', 0));
 
 
-        $usercohorts = array_keys(cohort_get_user_cohorts($userid));
+        $usercostcentreroles = [];
+        $usercostcentreallocations = $DB->get_records('local_costcentre_user', ['userid' => $userid]);
+        if (!empty($usercostcentreallocations)) {
+            foreach ($usercostcentreallocations as $allocation) {
+                $usercostcentreroles[] = $allocation->permissions;
+            }
+        }
 
         if (count($reports) > 0) {
             // Now loop through our reports again checking role permissions.
@@ -68,10 +73,10 @@ class cohort extends base {
                     continue;
                 }
 
-                $cohorts = explode('|', $rpt->cohorts);
+                $costcentreroles = explode('|', $rpt->costcentreroles);
 
-                foreach ($cohorts as $cohortid) {
-                    if (in_array($cohortid, $usercohorts)) {
+                foreach ($costcentreroles as $costcentreroleid) {
+                    if (in_array($costcentreroleid, $usercostcentreroles)) {
                         $allowedreports[] = $rpt->reportid;
                         break;
                     }
@@ -88,9 +93,11 @@ class cohort extends base {
      * @param integer $reportid ID of the report being adjusted
      */
     public function form_template($mform, $reportid) {
+        global $DB;
+
         $type = $this->get_type();
 
-        $cohorts = explode('|', reportbuilder::get_setting($reportid, $type, 'cohorts'));
+        $costcentreroles = explode('|', reportbuilder::get_setting($reportid, $type, 'costcentreroles'));
         $enabled =reportbuilder::get_setting($reportid, $type, 'enable');
 
         if (!isset($enabled)) {
@@ -98,22 +105,18 @@ class cohort extends base {
         }
 
         // generate the check boxes for the access form
-        $mform->addElement('header', 'accessbycohort', get_string('accessbycohort', 'local_reportbuilder'));
+        $mform->addElement('header', 'accessbycostcentrerole', get_string('accessbycostcentrerole', 'local_reportbuilder'));
 
-        $mform->addElement('checkbox', 'accessbycohort_enablecondition', get_string('enablecondition', 'local_reportbuilder'));
-        $mform->setType('accessbycohort_enablecondition', PARAM_INT);
-        $mform->setDefault('accessbycohort_enablecondition', $enabled);
+        $mform->addElement('checkbox', 'accessbycostcentrerole_enablecondition', get_string('enablecondition', 'local_reportbuilder'));
+        $mform->setType('accessbycostcentrerole_enablecondition', PARAM_INT);
+        $mform->setDefault('accessbycostcentrerole_enablecondition', $enabled);
 
-        $options = [];
-        $allcohorts = cohort_get_all_cohorts(0, 1000);
-        foreach ($allcohorts['cohorts'] as $cohort) {
-            $options[$cohort->id] = $cohort->name;
-        }
+        $options = \local_costcentre\costcentre::get_permission_list();
         $settings = array('multiple' => 'multiple', 'size' => 20, 'style' => 'width:600px');
-        $mform->addElement('select', 'cohorts', get_string('cohorts', 'cohort'), $options,
+        $mform->addElement('select', 'costcentreroles', get_string('costcentreroles', 'local_reportbuilder'), $options,
                 $settings);
 
-        $mform->setDefault('cohorts', $cohorts);
+        $mform->setDefault('costcentreroles', $costcentreroles);
     }
 
     /**
@@ -126,11 +129,8 @@ class cohort extends base {
      */
     public function form_process($reportid, $fromform) {
         $type = $this->get_type();
-
-        if (!empty($fromform->cohorts)) {
-            reportbuilder::update_setting($reportid, $type, 'cohorts', implode('|', $fromform->cohorts));
-        }
-        reportbuilder::update_setting($reportid, $type, 'enable', !empty($fromform->accessbycohort_enablecondition));
+        reportbuilder::update_setting($reportid, $type, 'costcentreroles', implode('|', $fromform->costcentreroles));
+        reportbuilder::update_setting($reportid, $type, 'enable', !empty($fromform->accessbycostcentrerole_enablecondition));
         return true;
     }
 }

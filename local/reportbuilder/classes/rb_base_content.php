@@ -241,6 +241,163 @@ class rb_user_content extends rb_base_content {
 /*
  * Restrict content by a particular user or group of users
  */
+class rb_costcentre_content extends rb_base_content {
+
+    /**
+     * Generate the SQL to apply this content restriction.
+     *
+     * @param array $field      SQL field to apply the restriction against
+     * @param integer $reportid ID of the report
+     *
+     * @return array containing SQL snippet to be used in a WHERE clause, as well as array of SQL params
+     */
+    public function sql_restriction($field, $reportid) {
+        global $CFG, $DB;
+
+        $costcentrefield = $field;
+        $userid = $this->reportfor;
+
+        // remove rb_ from start of classname.
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+        $restriction = isset($settings['costcentre_permission']) ? $settings['costcentre_permission'] : null;
+
+
+        if (empty($restriction)) {
+            return array(' (1 = 1) ', array());
+        }
+
+        $permissions = explode(',', $restriction);
+
+        $costcentres = \local_costcentre\costcentre::get_user_cost_centres($userid, $permissions);
+
+        $conditions = [];
+        $params = array();
+
+
+        if (!empty($costcentres)) {
+                list($costcentresql, $costcentreparams) = $DB->get_in_or_equal(array_keys($costcentres), SQL_PARAMS_NAMED);
+
+                $conditions[] = "{$costcentrefield} {$costcentresql}";
+                $params += $costcentreparams;
+        }
+
+        $sql = implode(' OR ', $conditions);
+
+        if (empty($sql)) {
+            $sql = "1=0";
+        }
+
+        return array(" $sql ", $params);
+    }
+
+    /**
+     * Generate a human-readable text string describing the restriction
+     *
+     * @param string $title Name of the field being restricted
+     * @param integer $reportid ID of the report
+     *
+     * @return string Human readable description of the restriction
+     */
+    public function text_restriction($title, $reportid) {
+        global $DB;
+
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+        $who = isset($settings['who']) ? $settings['who'] : 0;
+        $userid = $this->reportfor;
+
+        $user = $DB->get_record('user', array('id' => $userid));
+
+        $strings = array();
+        $strparams = array('field' => $title, 'user' => fullname($user));
+
+        if (($who & self::USER_OWN) == self::USER_OWN) {
+            $strings[] = get_string('contentdesc_userown', 'local_reportbuilder', $strparams);
+        }
+
+        if (($who & self::USER_COHORT_MEMBERS) == self::USER_COHORT_MEMBERS) {
+            $strings[] = get_string('contentdesc_usercohortmembers', 'local_reportbuilder', $strparams);
+        }
+
+        if (empty($strings)) {
+            return $title . ' ' . get_string('isnotfound', 'local_reportbuilder');
+        }
+
+        return implode(get_string('or', 'local_reportbuilder'), $strings);
+    }
+
+
+    /**
+     * Adds form elements required for this content restriction's settings page
+     *
+     * @param object &$mform Moodle form object to modify (passed by reference)
+     * @param integer $reportid ID of the report being adjusted
+     * @param string $title Name of the field the restriction is acting on
+     */
+    public function form_template(&$mform, $reportid, $title) {
+
+        // get current settings
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $enable = reportbuilder::get_setting($reportid, $type, 'enable');
+        $costcentre_permissions = reportbuilder::get_setting($reportid, $type, 'costcentre_permission');
+        $costcentre_permissions = explode(',', $costcentre_permissions);
+
+        $mform->addElement('header', 'costcentreheader', get_string('showbyx',
+            'local_reportbuilder', lcfirst($title)));
+        $mform->setExpanded('costcentreheader');
+        $mform->addElement('checkbox', 'costcentre_enable', '',
+            get_string('showbasedonx', 'local_reportbuilder', lcfirst($title)));
+        $mform->disabledIf('costcentre_enable', 'contentenabled', 'eq', 0);
+        $mform->setDefault('costcentre_enable', $enable);
+        $checkgroup = array();
+
+        $mform->addElement('select', 'costcentre_permission', get_string('costcentreroles', 'local_reportbuilder'),
+                \local_costcentre\costcentre::get_permission_list(), ['multiple' => true]);
+        $mform->setType('costcentre_permission', PARAM_INT);
+        $mform->setDefault('costcentre_permission', $costcentre_permissions);
+
+
+        $mform->disabledIf('costcentre_permission', 'contentenabled', 'eq', 0);
+        $mform->disabledIf('costcentre_permission', 'costcentre_enable', 'notchecked');
+    }
+
+
+    /**
+     * Processes the form elements created by {@link form_template()}
+     *
+     * @param integer $reportid ID of the report to process
+     * @param object $fromform Moodle form data received via form submission
+     *
+     * @return boolean True if form was successfully processed
+     */
+    public function form_process($reportid, $fromform) {
+        $status = true;
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+
+        // enable checkbox option
+        $enable = (isset($fromform->costcentre_enable) &&
+            $fromform->costcentre_enable) ? 1 : 0;
+        $status = $status && reportbuilder::update_setting($reportid, $type,
+            'enable', $enable);
+
+        if (isset($fromform->costcentre_enable)) {
+            $costcentres = implode(',', $fromform->costcentre_permission);
+            $status = $status && reportbuilder::update_setting($reportid, $type,
+                            'costcentre_permission', $costcentres);
+        }
+
+
+        return $status;
+    }
+}
+
+/*
+ * Restrict content by a particular user or group of users
+ */
 class rb_enrolledcourses_content extends rb_base_content {
     const ENROLLEDCOURSES_OWN = 1;
 

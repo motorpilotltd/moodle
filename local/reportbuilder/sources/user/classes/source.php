@@ -414,6 +414,11 @@ class source extends rb_base_source {
                 get_string('user', 'local_reportbuilder'),
                 ['userid' => 'base.id']
         );
+        $contentoptions[] = new rb_content_option(
+                'costcentre',
+                get_string('costcentre', 'local_reportbuilder'),
+                ['costcentre' => "base.icq"]
+        );
 
         return $contentoptions;
     }

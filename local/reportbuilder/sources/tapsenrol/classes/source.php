@@ -297,6 +297,13 @@ class source extends rb_base_source {
                 'course'
         );
 
+        $contentoptions[] = new rb_content_option(
+                'costcentre',
+                get_string('costcentre', 'local_reportbuilder'),
+                ['costcentre' => "auser.icq"],
+                'auser'
+        );
+
         return $contentoptions;
     }
 

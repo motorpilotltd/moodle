@@ -563,6 +563,20 @@ class source extends rb_base_source {
                 'base.timecompleted'
         );
 
+        $contentoptions[] = new rb_content_option(
+                'user',
+                get_string('user', 'local_reportbuilder'),
+                ['userid' => 'auser.id'],
+                'auser'
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'costcentre',
+                get_string('costcentre', 'local_reportbuilder'),
+                ['costcentre' => "auser.icq"],
+                'auser'
+        );
+
         return $contentoptions;
     }
 

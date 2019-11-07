@@ -24,7 +24,7 @@
 
 namespace rbsource_certificationcompletion;
 use rb_base_source;
-use coding_exception;
+use rb_content_option;
 use rb_join;
 use rb_column_option;
 use rb_filter_option;
@@ -77,6 +77,24 @@ class source extends rb_base_source {
 
     protected function get_source_joins() {
         return ['certif_completion', 'certif'];
+    }
+
+    protected function define_contentoptions() {
+        $contentoptions = array();
+        // Add the time created content option.
+        $contentoptions[] = new rb_content_option(
+                'user',
+                get_string('user', 'local_reportbuilder'),
+                ['userid' => 'base.userid']
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'costcentre',
+                get_string('costcentre', 'local_reportbuilder'),
+                ['costcentre' => "auser.icq"],
+                'auser'
+        );
+        return $contentoptions;
     }
 
     protected function define_columnoptions() {
