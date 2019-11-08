@@ -565,6 +565,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     var inputval = input.val();
                     if (inputval !== '') {
                         $('select#id_ldppotential').append($('<option>', {text: inputval, value: inputval, selected: true}));
+                        $('select#id_ldppotential').trigger('change');
                         input.val('');
                     }
                 });

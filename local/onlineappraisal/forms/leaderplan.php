@@ -89,6 +89,11 @@ class apform_leaderplan extends moodleform {
             $mform->addElement('html', $renderer->render($alert));
         }
 
+        if ($data->appraisal->viewingas === 'appraisee' && !$islocked) {
+            $importhtml = $this->get_import_html();
+            $mform->addElement('html', $importhtml);
+        }
+
         $answers = [];
         $class = 'select2-general';
         $i = 1;
@@ -384,5 +389,53 @@ class apform_leaderplan extends moodleform {
 
         $template = new \local_onlineappraisal\output\leaderplan\leaderplan_702010($data702010);
         return $renderer->render($template);
+    }
+
+    /**
+     *
+     */
+    private function get_import_html() {
+        global $DB, $PAGE;
+
+        $renderer = $PAGE->get_renderer('local_onlineappraisal', 'leaderplan');
+
+        $data = new stdClass();
+        $data->disabled = false;
+        $url = new moodle_url(
+            '/local/onlineappraisal/view.php',
+            [
+                'page' => 'leaderplan',
+                'appraisalid' => $this->_customdata->appraisal->id,
+                'view' => $this->_customdata->appraisal->viewingas,
+                'leaderplanaction' => 'import',
+                'sesskey' => sesskey(),
+            ]);
+        $data->url = $url->out();
+
+        $formrec = $DB->get_record(
+            'local_appraisal_forms',
+            [
+                'appraisalid' => $this->_customdata->appraisal->id,
+                'user_id' => $this->_customdata->appraisal->appraisee->id,
+                'form_name' => 'leaderplan'
+            ]);
+
+        if ($formrec) {
+            $fields = ['ldppotential', 'ldpstrengths', 'ldpdevelopmentareas', 'ldpdevelopmentplan'];
+            list($in, $params) = $DB->get_in_or_equal($fields, SQL_PARAMS_NAMED);
+            $params['formid'] = $formrec->id;
+            $fieldrecs = $DB->get_records_select('local_appraisal_data', "form_id = :formid AND name {$in}", $params);
+            foreach ($fieldrecs as $fieldrec) {
+                if ($fieldrec->type === 'array' && empty(unserialize($fieldrec->data))) {
+                    continue;
+                } else if (empty($fieldrec->data)) {
+                    continue;
+                }
+                $data->disabled = true;
+                break;
+            }
+        }
+
+        return $renderer->render_from_template('local_onlineappraisal/leaderplan_import', $data);
     }
 }

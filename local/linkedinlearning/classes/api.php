@@ -52,8 +52,8 @@ class api {
 
         $results = $this->callapi($url . $processedparams);
 
-        if ($results === null) {
-            mtrace('Failed to load or parse response');
+        if (!$results) {
+            return false;
         }
 
         return $results->elements;
@@ -116,7 +116,18 @@ class api {
         $curl = new \curl();
         $result = $curl->post($url);
 
+        if ($curl->info['http_code'] != 200) {
+            mtrace("Error fetching token: \n" . print_r($curl->get_raw_response(), true));
+            return false;
+        }
+
         $response = json_decode($result);
+
+        if (empty($response)) {
+            mtrace("Error fetching token: Can't parse JSON");
+            return false;
+        }
+
         $this->tokenexpirytime = time() + $response->expires_in;
         $this->token = $response->access_token;
 
@@ -129,6 +140,11 @@ class api {
         require_once($CFG->libdir . '/filelib.php');
 
         $token = $this->getaccesstoken();
+
+        if (!$token) {
+            return false;
+        }
+
         $curl = new \curl();
         $options = array(
                 'RETURNTRANSFER' => true,
@@ -147,8 +163,9 @@ class api {
 
             if (isset($result) && isset($result->serviceErrorCode)) {
                 mtrace("Error calling web service: \n" . print_r($result, true));
-                die();
             }
+
+            return false;
         }
 
         return json_decode($result);

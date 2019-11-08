@@ -73,7 +73,6 @@ class apform_addfeedback extends moodleform {
                     $this->str('addfeedbackhelp'), '');
                 $mform->setType('feedback', PARAM_RAW);
                 $mform->setDefault('feedback', $data->feedback);
-                $mform->addRule('feedback', $strrequired, 'required', null, 'client');
                 if ($this->pw == 'self') {
                     $mform->addHelpButton('feedback', 'form:addfeedback:addfeedback', 'local_onlineappraisal');
                 }
@@ -202,8 +201,13 @@ class apform_addfeedback extends moodleform {
      */
     function validation($data, $files) {
         $errors = array();
-        if (!isset($data['feedback']) || empty(trim($data['feedback']))) {
-            $errors['feedback'] = get_string('required');
+        if ($data['buttonclicked'] != 2) {
+            if (!isset($data['feedback']) || empty(trim($data['feedback']))) {
+                $errors['feedback'] = get_string('required');
+            }
+            if (!isset($data['feedback_2']) || empty(trim($data['feedback_2']))) {
+                $errors['feedback_2'] = get_string('required');
+            }
         }
         return $errors;
     }
