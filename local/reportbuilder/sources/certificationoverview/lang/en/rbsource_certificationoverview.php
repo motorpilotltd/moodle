@@ -47,3 +47,6 @@ $string['coursecompletionstatus'] = 'Completion status';
 $string['coursecompletion_-1'] = 'Not yet started';
 $string['coursecompletion_0'] = 'In progress';
 $string['coursecompletion_1'] = 'Completed';
+
+$string['complete'] = 'Complete';
+$string['incomplete'] = 'Incomplete';
