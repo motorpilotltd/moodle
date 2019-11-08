@@ -33,6 +33,9 @@ class block_report_manager extends block_base {
     }
 
     function get_content() {
+        global $CFG;
+
+        require_once("$CFG->dirroot/local/reportbuilder/totara.php");
 
         if ($this->content !== NULL) {
             return $this->content;
