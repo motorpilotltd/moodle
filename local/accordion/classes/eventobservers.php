@@ -49,34 +49,32 @@ class eventobservers {
 
         $cachedata = ['regions' => '', 'metadata' => []];
 
-        if (REGIONS_INSTALLED) {
-            $regionssql = "
-                SELECT lrrc.regionid, lrr.name
-                  FROM {local_regions_reg_cou} lrrc
-                  JOIN {local_regions_reg} lrr
-                       ON lrr.id = lrrc.regionid
-                 WHERE lrrc.courseid = {$event->objectid}
+        $regionssql = "
+            SELECT lrrc.regionid, lrr.name
+                FROM {local_regions_reg_cou} lrrc
+                JOIN {local_regions_reg} lrr
+                    ON lrr.id = lrrc.regionid
+                WHERE lrrc.courseid = {$event->objectid}
+            ";
+        $regions = $DB->get_records_sql_menu($regionssql);
+        $cachedata['regions'] = implode(', ', $regions);
+
+        $metadatafields = get_config('local_accordion', 'coursemetadata_info');
+        if ($metadatafields) {
+            $metadatasql = "
+                SELECT cif.id, cif.name, cid.data
+                    FROM {coursemetadata_info_field} cif
+                    JOIN {coursemetadata_info_category} cic
+                        ON cic.id = cif.categoryid
+                LEFT JOIN {coursemetadata_info_data} cid
+                        ON cid.fieldid = cif.id
+                            AND cid.course = {$event->objectid}
+                    WHERE cif.id IN ({$metadatafields})
+                ORDER BY cic.sortorder ASC, cif.sortorder ASC
                 ";
-            $regions = $DB->get_records_sql_menu($regionssql);
-            $cachedata['regions'] = implode(', ', $regions);
+                $cachedata['metadata'] = $DB->get_records_sql($metadatasql);
         }
-        if (COURSEMETADATA_INSTALLED) {
-            $metadatafields = get_config('local_accordion', 'coursemetadata_info');
-            if ($metadatafields) {
-                $metadatasql = "
-                    SELECT cif.id, cif.name, cid.data
-                      FROM {coursemetadata_info_field} cif
-                      JOIN {coursemetadata_info_category} cic
-                           ON cic.id = cif.categoryid
-                 LEFT JOIN {coursemetadata_info_data} cid
-                           ON cid.fieldid = cif.id
-                               AND cid.course = {$event->objectid}
-                     WHERE cif.id IN ({$metadatafields})
-                  ORDER BY cic.sortorder ASC, cif.sortorder ASC
-                    ";
-                    $cachedata['metadata'] = $DB->get_records_sql($metadatasql);
-            }
-        }
+
         $cache->set($event->objectid, $cachedata);
     }
 }
