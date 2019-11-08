@@ -239,7 +239,7 @@ class course extends \data_object {
 
         $course = new \stdClass();
         $course->fullname = $this->title;
-        $course->shortname = $this->title;
+        $course->shortname = $this->create_moodle_shortname();
         $course->summary = $this->shortdescription;
         $course->summaryformat = FORMAT_HTML;
         $course->groupmode = VISIBLEGROUPS;
@@ -684,7 +684,7 @@ class course extends \data_object {
 
         $course->visible = $this->available;
         $course->fullname = $this->title;
-        $course->shortname = $this->title;
+        $course->shortname = $this->create_moodle_shortname();
         $course->summary = $this->shortdescription;
 
 
@@ -748,5 +748,16 @@ class course extends \data_object {
 
         return $DB->get_field('course_categories', 'id', ['idnumber' => get_config('local_linkedinlearning', 'category_idnumber')],
                 MUST_EXIST);
+    }
+
+    /**
+     * Returns title prefixed by the id part of the URN.
+     * Truncated to 255 charcaters if needed.
+     *
+     * @return string
+     */
+    private function create_moodle_shortname() {
+        $lilid = str_ireplace('urn:li:lyndaCourse:', '', $this->urn);
+        return substr("{$lilid} > {$this->title}", 0, 255);
     }
 }
