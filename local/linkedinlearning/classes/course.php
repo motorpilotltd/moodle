@@ -564,7 +564,8 @@ class course extends \data_object {
         set_coursemodule_visible($feedbackcm->coursemodule, $feedbackcm->visible);
 
         // Add questions to feedback activity.
-        require_once($CFG->dirroot . '/local/linkedinlearning/data/feedback_items.php');
+        $feedbackitems = [];
+        include($CFG->dirroot . '/local/linkedinlearning/data/feedback_items.php');
         foreach ($feedbackitems as $feedbackitem) {
             $feedbackitem = (object) $feedbackitem;
             $feedbackitem->feedback = $feedback->id;
