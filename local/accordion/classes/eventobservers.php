@@ -45,7 +45,7 @@ class eventobservers {
     public static function course_updated(\core\event\course_updated $event) {
         global $DB;
 
-        $cache = cache::make('local_accordion', 'course_info');
+        $cache = \cache::make('local_accordion', 'course_info');
 
         $cachedata = ['regions' => '', 'metadata' => []];
 
