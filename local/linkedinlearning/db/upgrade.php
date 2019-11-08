@@ -72,5 +72,24 @@ function xmldb_local_linkedinlearning_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080532, 'local', 'linkedinlearning');
     }
 
+    if ($oldversion < 2016080533) {
+
+        $table = new xmldb_table('linkedinlearning_progress');
+
+        $field = new xmldb_field('first_viewed', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('last_viewed', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2016080533, 'local', 'linkedinlearning');
+    }
+
     return true;
 }

@@ -253,6 +253,8 @@ class api {
             foreach ($raw->activities as $datapoint) {
                 if ($datapoint->engagementType == 'SECONDS_VIEWED') {
                     $record->seconds_viewed = $datapoint->engagementValue;
+                    $record->first_viewed = $datapoint->firstEngagedAt / 1000;
+                    $record->last_viewed = $datapoint->lastEngagedAt / 1000;
                 } else if ($datapoint->engagementType == 'PROGRESS_PERCENTAGE') {
                     $record->progress_percentage = $datapoint->engagementValue;
                 }

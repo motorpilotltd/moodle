@@ -251,6 +251,28 @@ class source extends rb_base_source {
                                 'joins'       => 'progress',
                         )
                 ),
+                new rb_column_option(
+                        'linkedincourseprogress',
+                        'first_viewed',
+                        get_string('first_viewed', 'rbsource_linkedinlearning'),
+                        'progress.first_viewed',
+                        array(
+                                'displayfunc' => 'nice_datetime',
+                                'dbdatatype' => 'integer',
+                                'joins'       => 'progress',
+                        )
+                ),
+                new rb_column_option(
+                        'linkedincourseprogress',
+                        'last_viewed',
+                        get_string('last_viewed', 'rbsource_linkedinlearning'),
+                        'progress.last_viewed',
+                        array(
+                                'displayfunc' => 'nice_datetime',
+                                'dbdatatype' => 'integer',
+                                'joins'       => 'progress',
+                        )
+                ),
         );
 
         // User, course and category fields.
@@ -321,6 +343,18 @@ class source extends rb_base_source {
                         ),
                         'class.id',
                         'class'
+                ),
+                new rb_filter_option(
+                        'linkedincourseprogress',
+                        'first_viewed',
+                        get_string('first_viewed', 'rbsource_linkedinlearning'),
+                        'date'
+                ),
+                new rb_filter_option(
+                        'linkedincourseprogress',
+                        'last_viewed',
+                        get_string('last_viewed', 'rbsource_linkedinlearning'),
+                        'date'
                 ),
         );
 

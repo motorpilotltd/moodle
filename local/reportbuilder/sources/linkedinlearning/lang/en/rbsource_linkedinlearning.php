@@ -16,3 +16,5 @@ $string['type_linkedincourseprogress'] = 'LinkedIn Course progress';
 $string['progresspercentagebar'] = 'Progress (graphical)';
 $string['progresspercentage'] = 'Progress (percentage)';
 $string['timeincourse'] = 'Time in course';
+$string['first_viewed'] = 'First viewed';
+$string['last_viewed'] = 'Last viewed';
