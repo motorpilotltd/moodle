@@ -1,0 +1,300 @@
+
+.rb-search .mform .mform .fitem .felement label {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.rb-search .mform .mform .fgroup .felement .fdate_time_selector select {
+    width: auto;
+}
+.rb-search .mform #fitem_id_toolbarsearchtext label {
+    white-space: nowrap;
+}
+.rb-search .mform #fitem_id_toolbarsearchtext,
+.rb-search .mform #fitem_id_toolbarsearchbutton,
+.rb-search .mform #fitem_id_cleartoolbarsearchtext,
+.rb-search .mform #fitem_id_toolbarsearchtext .felement,
+.rb-search .mform #fitem_id_toolbarsearchbutton .felement,
+.rb-search .mform #fitem_id_cleartoolbarsearchtext .felement {
+    margin: 0;
+    padding: 0;
+}
+.rb-sidebar {
+    margin: 0;
+    vertical-align: top;
+    padding-right: 10px;
+    float: left;
+}
+.rb-sidebar .fcontainer .fitem .fitemtitle,
+.rb-sidebar .fcontainer .fitem .fgroup legend {
+    width: 100%;
+    margin-bottom: 5px;
+}
+.rb-sidebar input[type='text'] {
+    margin-right: 10px;
+}
+@media (max-width: 992px) {
+    .rb-sidebar {
+        width: 33.33333333%;
+    }
+}
+@media (max-width: 768px) {
+    .rb-sidebar {
+        width: 100%;
+    }
+}
+@media (max-width: 992px) {
+    .rb-has-sidebar {
+        width: 66.66666667%;
+    }
+}
+@media (max-width: 768px) {
+    .rb-has-sidebar {
+        width: 100%;
+    }
+}
+.totara-table-container {
+    border: none;
+}
+#rb_export_form {
+    clear: both;
+}
+#fgroup_id_exportgroup {
+    text-align: center;
+}
+#fgroup_id_exportgroup fieldset {
+    width: auto;
+    display: inline-block;
+}
+#fgroup_id_exportgroup fieldset .felement {
+    width: auto;
+    float: left;
+    margin: 0;
+}
+#fgroup_id_exportgroup fieldset legend {
+    float: left;
+    width: auto;
+    line-height: 30px;
+    margin-right: 10px;
+}
+#fgroup_id_exportgroup fieldset legend span {
+    width: auto;
+}
+.mform .fgroup .felement .rb-multicheck-control {
+    display: block;
+    margin-bottom: 5px;
+}
+.rb-display-table-container {
+    clear: right;
+}
+.rb-sidebar .felement > span {
+    clear: both;
+    display: block;
+}
+#fitem_id_toolbarsearchtext,
+#fitem_id_toolbarsearchbutton,
+#fitem_id_cleartoolbarsearchtext {
+    display: inline-block;
+    margin-right: 10px;
+}
+form[id^="toolbarsearch"].mform div,
+form[id^="toolbarsearch"].mform fieldset {
+    margin: 0;
+    padding: 0;
+    width: auto;
+    vertical-align: top;
+}
+form[id^="toolbarsearch"].mform .fsubmit {
+    width: auto;
+}
+
+form.rb-sidebar div.fcontainer .fitem:last-child {
+    display: none;
+}
+.reportbuilder-table .user_namewithlinks a {
+    padding-left: 5px;
+    float: left;
+}
+#team_members .user_namewithlinks .name {
+    font-size: 18px;
+    font-weight: bold;
+    padding-top: 8px;
+}
+.reportbuilder-table .user_namewithlinks ul {
+    clear: both;
+    margin: 0;
+    padding-top: 2px;
+}
+.reportbuilder-table .user_namewithlinks ul li {
+    float: left;
+    list-style-type: none;
+}
+.reportbuilder-table .user_namewithlinks li a {
+    border-left: 1px solid #dddddd;
+    font-size: 12px;
+    line-height: 10px;
+    margin: 2px;
+}
+.reportbuilder-table .user_namewithlinks li:first-child a {
+    border-left: none;
+    margin-left: 0;
+}
+.reportbuilder-table .user_actions {
+    white-space: nowrap;
+}
+/* IE does not work properly with 100% height, so let'd use http://alistapart.com/article/creating-intrinsic-ratios-for-video */
+.ie .rb-report-svggraph {
+    position: relative;
+    padding-bottom: 40%;
+    /* This is the ration of original svg size 1000x400 */
+    height: 0;
+    clear: both;
+}
+.ie .rb-report-svggraph:empty {
+    padding-bottom: 0;
+    clear: none;
+}
+.ie .rb-report-svggraph svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.rb-display-expand {
+    padding: 5px;
+    background-repeat: no-repeat;
+    background-position: 0 5px;
+    cursor: pointer;
+}
+.multicheck-items label > div {
+    display: inline;
+}
+.rb-search-menu {
+    /* stylelint-disable */
+    vertical-align: middle !important;
+    /* stylelint-enable */
+}
+.rb-genbutton {
+    float: right;
+}
+.rb-genicon {
+    cursor: pointer;
+}
+.rb-hidden {
+    display: none;
+}
+.rb-inline {
+    display: inline-block;
+}
+.path-admin-totara-reportbuilder-restrictions .header.lastcol {
+    min-width: 120px;
+}
+div.felement #id_all_sidebar_filters {
+    /* stylelint-disable */
+    display: none !important;
+    /* stylelint-enable */
+}
+.mform table .fitem {
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+}
+.mform td .fitem .fcheckbox {
+    margin-top: 8px;
+}
+
+
+div.reportbuilderform div.fitem div.col-md-3{
+    display: none!important;
+}
+
+fieldset#id_standardfilter div.fitem div.col-md-3{
+    display: none!important;;
+}
+
+fieldset#id_sidebarfilter div.fitem div.col-md-3{
+    display: none!important;;
+}
+
+.rb-sidebar .col-md-3 {
+    width: 100%;
+}
+
+.rb-sidebar .col-md-9 {
+    width: 100%;
+}
+
+.rb-sidebar .fitem {
+    clear: both;
+    display: block;
+}
+
+.progress {
+    height: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    background-color: #f5f5f5;
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+.progress-bar {
+    float: left;
+    width: 0%;
+    height: 100%;
+    font-size: 12px;
+    line-height: 20px;
+    color: #ffffff;
+    text-align: center;
+    background-color: #0f95ff;
+    -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    -webkit-transition: width 0.6s ease;
+    -o-transition: width 0.6s ease;
+    transition: width 0.6s ease;
+}
+.progress-striped .progress-bar,
+.progress-bar-striped {
+    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-size: 40px 40px;
+}
+.progress.active .progress-bar,
+.progress-bar.active {
+    -webkit-animation: progress-bar-stripes 2s linear infinite;
+    -o-animation: progress-bar-stripes 2s linear infinite;
+    animation: progress-bar-stripes 2s linear infinite;
+}
+.progress-bar-success {
+    background-color: #38c19a!important;;
+}
+.progress-striped .progress-bar-success {
+    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+.progress-bar-info {
+    background-color: #ac92ed!important;;
+}
+.progress-striped .progress-bar-info {
+    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+.progress-bar-warning {
+    background-color: #ffb41d!important;;
+}
+.progress-striped .progress-bar-warning {
+    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+.progress-bar-danger {
+    background-color: #ed5564!important;
+}
+.progress-striped .progress-bar-danger {
+    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}

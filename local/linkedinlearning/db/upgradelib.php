@@ -31,9 +31,12 @@ function local_linkedinlearning_addmethodology() {
     global $DB;
 
     $methodology = $DB->get_record('coursemetadata_info_field', ['shortname' => "Methodology"]);
-    $methodology->param1 = explode("\n", $methodology->param1);
-    $methodology->param1[] = 'LinkedIn Learning';
-    sort($methodology->param1);
-    $methodology->param1 = implode("\n", $methodology->param1);
-    $DB->update_record('coursemetadata_info_field', $methodology);
+
+    if ($methodology) {
+        $methodology->param1 = explode("\n", $methodology->param1);
+        $methodology->param1[] = 'LinkedIn Learning';
+        sort($methodology->param1);
+        $methodology->param1 = implode("\n", $methodology->param1);
+        $DB->update_record('coursemetadata_info_field', $methodology);
+    }
 }
