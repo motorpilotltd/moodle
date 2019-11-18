@@ -20,8 +20,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$tasks = array(
-        array(
+$tasks = [
+        [
                 'classname' => 'local_linkedinlearning\task\sync_linkedinlearning_courses',
                 'blocking'  => 0,
                 'minute'    => '0',
@@ -29,5 +29,14 @@ $tasks = array(
                 'day'       => '*',
                 'dayofweek' => '*',
                 'month'     => '*'
-        )
-);
+        ],
+        [
+                'classname' => 'local_linkedinlearning\task\sync_linkedinlearning_courseprogress',
+                'blocking'  => 0,
+                'minute'    => '*',
+                'hour'      => '*',
+                'day'       => '*',
+                'dayofweek' => '*',
+                'month'     => '*'
+        ]
+];

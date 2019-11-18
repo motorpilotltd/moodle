@@ -1,0 +1,116 @@
+<?php
+/*
+ * This file is part of T0tara LMS
+ *
+ * Copyright (C) 2010 onwards T0tara Learning Solutions LTD
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author Simon Coggins <simon.coggins@t0taralms.com>
+ * @package t0tara
+ * @subpackage reportbuilder
+ */
+
+/**
+ * Page containing general report settings
+ */
+
+define('REPORTBUIDLER_MANAGE_REPORTS_PAGE', true);
+define('REPORT_BUILDER_IGNORE_PAGE_PARAMETERS', true); // We are setting up report here, do not accept source params.
+
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
+require_once($CFG->dirroot . '/local/reportbuilder/report_forms.php');
+
+$id = required_param('id', PARAM_INT); // Report builder id.
+$rawreport = $DB->get_record('report_builder', array('id' => $id), '*', MUST_EXIST);
+
+$adminpage = $rawreport->embedded ? 'rbmanageembeddedreports' : 'rbmanagereports';
+admin_externalpage_setup($adminpage);
+
+$output = $PAGE->get_renderer('local_reportbuilder');
+
+$returnurl = $CFG->wwwroot . "/local/reportbuilder/general.php?id=$id";
+
+$report = new reportbuilder($id);
+$schedule = array();
+if ($report->cache) {
+    $cache = reportbuilder_get_cached($id);
+    $scheduler = new \local_reportbuilder\scheduler($cache, array('nextevent' => 'nextreport'));
+    $schedule = $scheduler->to_array();
+}
+
+// Form definition.
+$record = new stdClass();
+$record->id = $report->_id;
+$record->fullname = $report->fullname;
+$record->description = $report->description;
+$record->descriptionformat = FORMAT_HTML;
+$record->hidden = $report->hidden;
+$record->recordsperpage = $report->recordsperpage;
+$record = file_prepare_standard_editor($record, 'description', $TEXTAREA_OPTIONS, context_system::instance(),
+    'local_reportbuilder', 'report_builder', $record->id);
+
+$mform = new report_builder_edit_form(null, array('report' => $report, 'record' => $record));
+
+// form results check
+if ($mform->is_cancelled()) {
+    redirect($CFG->wwwroot . '/local/reportbuilder/index.php');
+}
+if ($fromform = $mform->get_data()) {
+
+    if (empty($fromform->submitbutton)) {
+        notice(get_string('error:unknownbuttonclicked', 'local_reportbuilder'), $returnurl);
+    }
+
+    $todb = new stdClass();
+    $todb->id = $id;
+    $todb->timemodified = time();
+    $todb->fullname = $fromform->fullname;
+    $todb->hidden = $fromform->hidden;
+    $todb->description_editor = $fromform->description_editor;
+    // ensure we show between 1 and 9999 records
+    $rpp = min(9999, max(1, (int) $fromform->recordsperpage));
+    $todb->recordsperpage = $rpp;
+    $todb = file_postupdate_standard_editor($todb, 'description', $TEXTAREA_OPTIONS, $TEXTAREA_OPTIONS['context'],
+        'local_reportbuilder', 'report_builder', $todb->id);
+
+    $DB->update_record('report_builder', $todb);
+
+    $report = new reportbuilder($id);
+    \local_reportbuilder\event\report_updated::create_from_report($report, 'general')->trigger();
+    notice(get_string('reportupdated', 'local_reportbuilder'), $returnurl, array('class' => 'notifysuccess'));
+}
+
+echo $output->header();
+
+echo $output->container_start('reportbuilder-navlinks');
+echo $output->view_all_reports_link($report->embedded) . ' | ';
+echo $output->view_report_link($report->report_url());
+echo $output->container_end();
+
+echo $output->heading(get_string('editreport', 'local_reportbuilder', format_string($report->fullname)));
+
+if ($report->get_cache_status() > 0) {
+    echo $output->cache_pending_notification($id);
+}
+
+$currenttab = 'general';
+require('tabs.php');
+
+// display the form
+$mform->display();
+
+echo $output->footer();

@@ -73,6 +73,20 @@ class costcentre {
         'usersettings' => 'load'
     );
 
+    public static function get_permission_list() {
+        return [
+        \local_costcentre\costcentre::GROUP_LEADER           => get_string('select:groupleader', 'local_costcentre'),
+                \local_costcentre\costcentre::GROUP_LEADER_APPRAISAL => get_string('select:groupleaderappraisal', 'local_costcentre'),
+                \local_costcentre\costcentre::HR_LEADER              => get_string('select:hrleader', 'local_costcentre'),
+                \local_costcentre\costcentre::HR_ADMIN               => get_string('select:hradmin', 'local_costcentre'),
+                \local_costcentre\costcentre::BUSINESS_ADMINISTRATOR =>  get_string('select:businessadmin', 'local_costcentre'),
+                \local_costcentre\costcentre::APPRAISER                 => get_string('select:appraiser', 'local_costcentre'),
+                \local_costcentre\costcentre::SIGNATORY                 => get_string('select:signatory', 'local_costcentre'),
+                \local_costcentre\costcentre::REPORTER                  => get_string('select:reporter', 'local_costcentre'),
+                \local_costcentre\costcentre::LEARNING_REPORTER         => get_string('select:learningreporter', 'local_costcentre')
+        ];
+    }
+
     /**
      * Constructor.
      *
