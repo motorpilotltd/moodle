@@ -5631,6 +5631,9 @@ function get_mailer($action='get') {
                 $mailer->clearReplyTos();
                 $mailer->clearAttachments();
                 $mailer->clearCustomHeaders();
+/* BEGIN CORE MOD */
+                $mailer->MessageID = '';
+/* END CORE MOD */
                 return $mailer;
             }
 
