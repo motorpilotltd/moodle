@@ -34,6 +34,7 @@ $string['accordion_show_region_position_desc'] = 'Determines the position that r
 
 $string['buildarea'] = 'build area';
 
+$string['cachedef_course_info'] = 'Accordion menu course data cache';
 $string['configuration'] = 'Accordion menu configuration';
 $string['configuration:headings:coursemetadata'] = 'Meta data settings';
 $string['configuration:headings:general'] = 'General settings';

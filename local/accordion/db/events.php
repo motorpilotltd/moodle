@@ -15,19 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * This file defines observers needed by local_taps.
  *
- * @package     local_admin
- * @copyright   2016 Motorpilot Ltd
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    local_accordion
+ * @copyright  2019 Motorpilot Ltd
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2017051500;
-$plugin->requires  = 2017051509; // Moodle 3.3.
-$plugin->component = 'local_accordion';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.3.0 (Build: 2017051500)';
-
-$plugin->dependencies = array();
+// List of observers.
+$observers = array(
+    array(
+        'eventname'   => '\core\event\course_updated',
+        'callback'    => '\local_accordion\eventobservers::course_updated',
+    ),
+);
