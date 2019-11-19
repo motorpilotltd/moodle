@@ -29,7 +29,7 @@ if ($ADMIN->fulltree) {
     require_once($CFG->dirroot.'/auth/saml/auth.php');
 
     $saml = new auth_plugin_saml();
-    
+
     // Get saml parameters stored in the saml_config.json.
     if (file_exists($CFG->dataroot.'/saml_config.json')) {
         $contentfile = file_get_contents($CFG->dataroot.'/saml_config.json');
@@ -87,6 +87,11 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext('auth_saml/autologin_subnet',
         get_string('autologin_subnet', 'auth_saml'),
         get_string('autologin_subnet_description', 'auth_saml'), '', PARAM_RAW));
+
+    // SAML automatic login Azure Application Proxy
+    $settings->add(new admin_setting_configselect('auth_saml/autologin_azureappproxy',
+        get_string('autologin_azureappproxy', 'auth_saml'),
+        get_string('autologin_azureappproxy_description', 'auth_saml'), 0 , $yesno));
 
     // Log file path
     $settings->add(new admin_setting_configfile('auth_saml/samllogfile',

@@ -55,8 +55,9 @@ do {
     if (!optional_param('saml', true, PARAM_BOOL)) {
         break;
     }
-    if (!empty($samlconfig->autologin_subnet)
-            && !address_in_subnet(getremoteaddr(), $samlconfig->autologin_subnet)) {
+    $subnet = !empty($samlconfig->autologin_subnet) && address_in_subnet(getremoteaddr(), $samlconfig->autologin_subnet);
+    $appproxy = !empty($samlconfig->autologin_azureappproxy) && isset($_SERVER['HTTP_X_MS_PROXY']) && $_SERVER['HTTP_X_MS_PROXY'] === 'AzureAD-Application-Proxy';
+    if (!$subnet && !$appproxy) {
         break;
     }
     $autologinurl = new moodle_url('/auth/saml/index.php');

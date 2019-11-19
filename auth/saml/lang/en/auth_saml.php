@@ -28,6 +28,8 @@ $string['autologin'] = 'SAML automatic login';
 $string['autologin_description'] = 'Automatically redirect to SAML idP without showing a login form';
 $string['autologin_subnet'] = 'SAML automatic login subnet';
 $string['autologin_subnet_description'] = 'If set, it will only attempt auto login with clients in this subnet. Format: xxx.xxx.xxx.xxx/bitmask. Separate multiple subnets with \',\' (comma).';
+$string['autologin_azureappproxy'] = 'SAML automatic login Azure App Proxy';
+$string['autologin_azureappproxy_description'] = 'If set, it will automatically redirect to SAML idP users that have come via an Azure Application Proxy.';
 
 $string['db_reset_button'] = 'Reset values to factory settings';
 $string['db_reset_error'] = 'Error reseting the saml plugin values';
