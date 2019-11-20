@@ -12,6 +12,7 @@
                 <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="primaryimageurl" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="aicclaunchurl" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="ssolaunchurl" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="publishedat" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
                 <FIELD NAME="lastupdatedat" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
                 <FIELD NAME="description" TYPE="text" NOTNULL="true" SEQUENCE="false"/>

@@ -91,5 +91,19 @@ function xmldb_local_linkedinlearning_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080533, 'local', 'linkedinlearning');
     }
 
+    if ($oldversion < 2016080535) {
+
+        $table = new xmldb_table('linkedinlearning_course');
+
+        $field = new xmldb_field('ssolaunchurl', XMLDB_TYPE_TEXT);
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        set_config('lastsuccessfulrun', 0, 'local_linkedinlearning');
+
+        upgrade_plugin_savepoint(true, 2016080535, 'local', 'linkedinlearning');
+    }
+
     return true;
 }
