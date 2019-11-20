@@ -26612,6 +26612,9 @@ fieldset[disabled] .path-mod-questionnaire #phpesp_response input[type="submit"]
 }
 /** END : Book **/
 /** SCORM **/
+#page-mod-scorm-player.content-only {
+  padding-top: 0;
+}
 #page-mod-scorm-player #header {
   padding: 10px;
 }
