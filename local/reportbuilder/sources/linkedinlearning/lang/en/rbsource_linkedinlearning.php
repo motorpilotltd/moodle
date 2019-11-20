@@ -20,3 +20,4 @@ $string['first_viewed'] = 'First viewed';
 $string['last_viewed'] = 'Last viewed';
 $string['availableinregion'] = '{$a}';
 $string['visibleinregion'] = 'Region visibility';
+$string['linkedtitle'] = 'Linked course title';

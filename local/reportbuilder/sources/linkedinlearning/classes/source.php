@@ -198,7 +198,7 @@ class source extends rb_base_source {
                             'displayfunc' => 'regionvisibility',
                             'joins'       => "regions0",
                             'extrafields' => ['regionid'        => 0,
-                                              'presentinregion' => " CASE WHEN regions0.courseid IS NULL THEN 1 ELSE 0 END ",
+                                              'presentinregion' => " CASE WHEN regions0.courseid IS NULL AND arupadvert.id IS NOT NULL THEN 1 ELSE 0 END ",
                                             'linkedinlearningmanager' => "'$has_capability'"
                             ]
                     )
@@ -213,10 +213,10 @@ class source extends rb_base_source {
                     'base.id',
                     array(
                             'displayfunc' => 'regionvisibility',
-                            'joins'       => ["regions{$id}", "regions0"],
+                            'joins'       => ["regions{$id}", "regions0", 'arupadvert'],
                             'extrafields' => ['regionid'        => $id,
                                               'presentinregion' => " CASE WHEN regions{$id}.id IS NULL THEN 0 ELSE 1 END ",
-                                              'presentglobal' => " CASE WHEN regions0.courseid IS NULL THEN 1 ELSE 0 END ",
+                                              'presentglobal' => " CASE WHEN regions0.courseid IS NULL AND arupadvert.id IS NOT NULL THEN 1 ELSE 0 END ",
                                               'linkedinlearningmanager' => "'$has_capability'"
                             ]
                     )
@@ -244,6 +244,19 @@ class source extends rb_base_source {
                         array(
                                 'dbdatatype' => 'char',
                                 'outputformat' => 'text'
+                        )
+                ),
+                new rb_column_option(
+                        'linkedincourse',
+                        'linkedtitle',
+                        get_string('linkedtitle', 'rbsource_linkedinlearning'),
+                        'base.title',
+                        array(
+                                'displayfunc' => 'linkedincourselink',
+                                'dbdatatype'   => 'char',
+                                'outputformat' => 'text',
+                                'extrafields'  => ['ssourl' => 'base.ssolaunchurl', 'moodlecourseid' => 'arupadvert.course'],
+                                'joins'        => 'arupadvert'
                         )
                 ),
                 new rb_column_option(
@@ -547,5 +560,15 @@ class source extends rb_base_source {
 
         return \html_writer::span(\html_writer::checkbox('visibleinregion', '', $checked, '',
                 $attributes));
+    }
+
+    public function rb_display_linkedincourselink($title, $row) {
+        global $CFG;
+
+        if (!empty($row->moodlecourseid)) {
+            return \html_writer::link(new \moodle_url("$CFG->wwwroot/course/view.php", ['id' => $row->moodlecourseid]), $title);
+        } else {
+            return \html_writer::link($row->ssourl, $title);
+        }
     }
 }
