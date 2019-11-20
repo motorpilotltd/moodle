@@ -241,9 +241,14 @@ class api {
         global $DB;
 
         foreach (new courseprogressiterator($this, $since) as $raw) {
+            $email = $raw->learnerDetails->email;
+            if (empty($email) && isset($raw->learnerDetails->uniqueUserId)) {
+                $email = $raw->learnerDetails->uniqueUserId;
+            }
+
             $parmams = [
                     'urn'   => $raw->contentDetails->contentUrn,
-                    'email' => $raw->learnerDetails->email
+                    'email' => $email
             ];
             $record = $DB->get_record('linkedinlearning_progress', $parmams);
 
