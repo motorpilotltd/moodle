@@ -395,6 +395,187 @@ class rb_costcentre_content extends rb_base_content {
     }
 }
 
+class rb_courseregion_content extends rb_base_content {
+
+    const USER_OWN = 1;
+    const OTHER = 2;
+    const ANY = 3;
+
+    /**
+     * Generate the SQL to apply this content restriction.
+     *
+     * @param array $field      SQL field to apply the restriction against
+     * @param integer $reportid ID of the report
+     *
+     * @return array containing SQL snippet to be used in a WHERE clause, as well as array of SQL params
+     */
+    public function sql_restriction($field, $reportid) {
+        global $DB;
+
+        // remove rb_ from start of classname.
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+
+        $courses = [];
+
+        if ($settings['regiontype'] == self::ANY) {
+            return array(" $field IS NOT NULL ", []);
+        }
+
+        if ($settings['regiontype'] == self::USER_OWN) {
+            $regionid = $this->getuserregion();
+        } else if ($settings['regiontype'] == self::OTHER) {
+            $regionid = $settings['region'];
+        }
+
+        if (isset($regionid) && $regionid !== 0) {
+            $courses += $DB->get_records_sql('SELECT courseid FROM {local_regions_reg_cou} WHERE regionid = :regionid GROUP BY courseid', ['regionid' => $regionid]);
+        }
+
+        if ($settings['regiontype'] == self::OTHER || $settings['regiontype'] == self::USER_OWN || $regionid == 0) {
+            $courses += $DB->get_records_sql('
+                SELECT c.* 
+                FROM {course} c
+                LEFT JOIN {local_regions_reg_cou} rc ON c.id = rc.courseid
+                WHERE rc.id IS NULL');
+        }
+
+        list($courseregionsql, $courseregionparams) = $DB->get_in_or_equal(array_keys($courses), SQL_PARAMS_NAMED);
+
+        return [" {$field} {$courseregionsql} ", $courseregionparams];
+    }
+
+    /**
+     * Generate a human-readable text string describing the restriction
+     *
+     * @param string $title Name of the field being restricted
+     * @param integer $reportid ID of the report
+     *
+     * @return string Human readable description of the restriction
+     */
+    public function text_restriction($title, $reportid) {
+        global $DB;
+
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+        $who = isset($settings['who']) ? $settings['who'] : 0;
+        $userid = $this->reportfor;
+
+        $user = $DB->get_record('user', array('id' => $userid));
+
+        $strings = array();
+        $strparams = array('field' => $title, 'user' => fullname($user));
+
+        if (($who & self::USER_OWN) == self::USER_OWN) {
+            $strings[] = get_string('contentdesc_userown', 'local_reportbuilder', $strparams);
+        }
+
+        if (($who & self::USER_COHORT_MEMBERS) == self::USER_COHORT_MEMBERS) {
+            $strings[] = get_string('contentdesc_usercohortmembers', 'local_reportbuilder', $strparams);
+        }
+
+        if (empty($strings)) {
+            return $title . ' ' . get_string('isnotfound', 'local_reportbuilder');
+        }
+
+        return implode(get_string('or', 'local_reportbuilder'), $strings);
+    }
+
+
+    /**
+     * Adds form elements required for this content restriction's settings page
+     *
+     * @param object &$mform Moodle form object to modify (passed by reference)
+     * @param integer $reportid ID of the report being adjusted
+     * @param string $title Name of the field the restriction is acting on
+     */
+    public function form_template(&$mform, $reportid, $title) {
+        global $DB;
+
+        // get current settings
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $enable = reportbuilder::get_setting($reportid, $type, 'enable');
+        $courseregion_type = reportbuilder::get_setting($reportid, $type, 'regiontype');
+        $regions = reportbuilder::get_setting($reportid, $type, 'region');
+
+        $mform->addElement('header', 'courseregionheader', get_string('showbyx',
+            'local_reportbuilder', lcfirst($title)));
+        $mform->setExpanded('courseregionheader');
+        $mform->addElement('checkbox', 'courseregion_enable', '',
+            get_string('showbasedonx', 'local_reportbuilder', lcfirst($title)));
+        $mform->disabledIf('courseregion_enable', 'contentenabled', 'eq', 0);
+        $mform->setDefault('courseregion_enable', $enable);
+
+        $mform->addElement('select', 'regiontype', '', [
+                self::USER_OWN => get_string('regionown', 'local_reportbuilder'),
+                self::ANY => get_string('regionany', 'local_reportbuilder'),
+                self::OTHER => get_string('regionother', 'local_reportbuilder'),
+        ]);
+        $mform->setType('regiontype', PARAM_INT);
+        $mform->disabledIf('regiontype', 'contentenabled', 'eq', 0);
+        $mform->disabledIf('regiontype', 'courseregion_enable', 'notchecked');
+        $mform->setDefault('regiontype', $courseregion_type);
+
+        $regionoptions =
+                array(0 => get_string('global', 'local_regions')) +
+                $DB->get_records_select_menu('local_regions_reg', 'userselectable = 1', array(), 'name DESC', 'id, name');
+        $mform->addElement('select', 'region', '', $regionoptions);
+        $mform->setType('region', PARAM_INT);
+        $mform->setDefault('region', $regions);
+
+        $mform->disabledIf('region', 'regiontype', 'neq', self::OTHER);
+        $mform->disabledIf('region', 'contentenabled', 'eq', 0);
+        $mform->disabledIf('region', 'courseregion_enable', 'notchecked');
+    }
+
+    /**
+     * Processes the form elements created by {@link form_template()}
+     *
+     * @param integer $reportid ID of the report to process
+     * @param object $fromform Moodle form data received via form submission
+     *
+     * @return boolean True if form was successfully processed
+     */
+    public function form_process($reportid, $fromform) {
+        $status = true;
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+
+        // enable checkbox option
+        $enable = (isset($fromform->courseregion_enable) &&
+            $fromform->courseregion_enable) ? 1 : 0;
+        $status = $status && reportbuilder::update_setting($reportid, $type,
+            'enable', $enable);
+
+        $status = $status && reportbuilder::update_setting($reportid, $type,
+                        'regiontype', $fromform->regiontype);
+
+        if (isset($fromform->courseregion_enable) && $fromform->regiontype == self::OTHER) {
+            $status = $status && reportbuilder::update_setting($reportid, $type,'region', $fromform->region);
+        }
+
+        return $status;
+    }
+
+    private $userregionid;
+    private function getuserregion() {
+        global $DB;
+
+        if (!isset($this->userregionid)) {
+            $userregion = $DB->get_record('local_regions_use', array('userid' => $this->reportfor));
+            if ($userregion) {
+                return $this->userregionid = $userregion->regionid;
+            } else {
+                $this->userregionid = false;
+            }
+        }
+
+        return $this->userregionid;
+    }
+}
+
 /*
  * Restrict content by a particular user or group of users
  */

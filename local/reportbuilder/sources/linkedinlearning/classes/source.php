@@ -39,6 +39,8 @@ class source extends rb_base_source {
     public $sourcetitle, $contentoptions;
 
     public function __construct() {
+        global $PAGE;
+
         $this->base = '{linkedinlearning_course}';
         $this->joinlist = $this->define_joinlist();
         $this->columnoptions = $this->define_columnoptions();
@@ -48,6 +50,8 @@ class source extends rb_base_source {
         $this->defaultfilters = $this->define_defaultfilters();
         $this->contentoptions = $this->define_contentoptions();
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_linkedinlearning');
+
+        $PAGE->requires->js_call_amd('local_linkedinlearning/manage', 'initialise');
 
         parent::__construct();
     }
@@ -97,14 +101,14 @@ class source extends rb_base_source {
                 ),
                 new rb_join(
                         'local_taps_course',
-                        'INNER',
+                        'LEFT',
                         '{local_taps_course}',
                         'local_taps_course.coursecode = base.urn',
                         REPORT_BUILDER_RELATION_MANY_TO_ONE
                 ),
                 new rb_join(
                         'arupadvertdatatype_taps',
-                        'INNER',
+                        'LEFT',
                         '{arupadvertdatatype_taps}',
                         'arupadvertdatatype_taps.tapscourseid = local_taps_course.courseid',
                         REPORT_BUILDER_RELATION_MANY_TO_ONE,
@@ -112,12 +116,34 @@ class source extends rb_base_source {
                 ),
                 new rb_join(
                         'arupadvert',
-                        'INNER',
+                        'LEFT',
                         '{arupadvert}',
                         'arupadvert.id = arupadvertdatatype_taps.arupadvertid',
                         REPORT_BUILDER_RELATION_MANY_TO_ONE,
                         'arupadvertdatatype_taps'
                 ),
+        );
+
+        $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true], 'name', 'id, name');
+
+        foreach (array_keys($regions) as $regionid) {
+            $joinlist[] = new rb_join(
+                    "regions{$regionid}",
+                    'LEFT',
+                    '{local_regions_reg_cou}',
+                    "regions{$regionid}.courseid = arupadvert.course AND regions{$regionid}.regionid = {$regionid}",
+                    REPORT_BUILDER_RELATION_MANY_TO_ONE,
+                    'arupadvert'
+            );
+        }
+
+        $joinlist[] = new rb_join(
+                "regions0",
+                'LEFT',
+                '(SELECT courseid, MAX(regionid) FROM {local_regions_reg_cou} GROUP BY courseid)',
+                "regions0.courseid = arupadvert.course",
+                REPORT_BUILDER_RELATION_MANY_TO_ONE,
+                'arupadvert'
         );
 
         // join users, courses and categories
@@ -126,6 +152,78 @@ class source extends rb_base_source {
         $this->add_course_category_table_to_joinlist($joinlist, 'course', 'category');
 
         return $joinlist;
+    }
+
+    private $userregionid;
+    private function getuserregion() {
+        global $DB, $USER;
+
+        if (!isset($this->userregionid)) {
+            $userregion = $DB->get_record('local_regions_use', array('userid' => $USER->id));
+            if ($userregion) {
+                return $this->userregionid = $userregion->regionid;
+            } else {
+                $this->userregionid = false;
+            }
+        }
+
+        return $this->userregionid;
+    }
+
+    public function rb_cols_generator_regionvisibility($columnoption, $hidden) {
+        global $DB;
+        $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true], 'name', 'id, name');
+
+        $has_capability = has_capability('local/linkedinlearning:manage', \context_system::instance());
+
+        if (!$has_capability) {
+            $userregion = $this->getuserregion();
+
+            if (isset($regions[$userregion])) {
+                $regions = [$userregion => $regions[$userregion]];
+            } else {
+                $regions = [];
+            }
+        }
+
+        $results = array();
+
+        if ($has_capability) {
+            $results[] = new rb_column(
+                    'linkedincourse',
+                    "regionvisibility0",
+                    get_string('global', 'local_regions'),
+                    'base.id',
+                    array(
+                            'displayfunc' => 'regionvisibility',
+                            'joins'       => "regions0",
+                            'extrafields' => ['regionid'        => 0,
+                                              'presentinregion' => " CASE WHEN regions0.courseid IS NULL THEN 1 ELSE 0 END ",
+                                            'linkedinlearningmanager' => "'$has_capability'"
+                            ]
+                    )
+            );
+        }
+
+        foreach ($regions as $id => $name) {
+            $results[] = new rb_column(
+                    'linkedincourse',
+                    "regionvisibility{$id}",
+                    get_string('availableinregion', 'rbsource_linkedinlearning', $name),
+                    'base.id',
+                    array(
+                            'displayfunc' => 'regionvisibility',
+                            'joins'       => ["regions{$id}", "regions0"],
+                            'extrafields' => ['regionid'        => $id,
+                                              'presentinregion' => " CASE WHEN regions{$id}.id IS NULL THEN 0 ELSE 1 END ",
+                                              'presentglobal' => " CASE WHEN regions0.courseid IS NULL THEN 1 ELSE 0 END ",
+                                              'linkedinlearningmanager' => "'$has_capability'"
+                            ]
+                    )
+            );
+        }
+
+        return $results;
     }
 
     /**
@@ -147,6 +245,14 @@ class source extends rb_base_source {
                                 'dbdatatype' => 'char',
                                 'outputformat' => 'text'
                         )
+                ),
+                new rb_column_option(
+                        'linkedincourse',
+                        'visibleinregion',
+                        get_string('visibleinregion', 'rbsource_linkedinlearning'),
+                        'base.id',
+                        array('columngenerator' => 'regionvisibility',
+                              'defaultheading' => get_string('visibleinregion', 'rbsource_linkedinlearning'))
                 ),
                 new rb_column_option(
                         'linkedincourse',
@@ -385,6 +491,13 @@ class source extends rb_base_source {
                 'auser'
         );
 
+        $contentoptions[] = new rb_content_option(
+                'courseregion',
+                get_string('courseregion', 'local_reportbuilder'),
+                ['courseid' => "arupadvert.course"],
+                'arupadvert'
+        );
+
         return $contentoptions;
     }
 
@@ -415,5 +528,24 @@ class source extends rb_base_source {
         $defaultfilters = [];
 
         return $defaultfilters;
+    }
+
+    public function rb_display_regionvisibility($courseid, $row) {
+        if ($row->regionid != 0 && !$row->linkedinlearningmanager) {
+            $checked = $row->presentglobal || $row->presentinregion;
+            $disabled = $checked && !$row->presentinregion;
+        } else {
+            $checked = $row->presentinregion;
+            $disabled = false;
+        }
+
+        $attributes = ['data-regionid' => $row->regionid, 'data-courseid' => $courseid, 'class' => 'regioncheck'];
+
+        if ($disabled) {
+            $attributes['disabled'] = 'disabled';
+        }
+
+        return \html_writer::span(\html_writer::checkbox('visibleinregion', '', $checked, '',
+                $attributes));
     }
 }

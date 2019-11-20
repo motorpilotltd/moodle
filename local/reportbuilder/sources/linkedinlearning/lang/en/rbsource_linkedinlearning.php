@@ -18,3 +18,5 @@ $string['progresspercentage'] = 'Progress (percentage)';
 $string['timeincourse'] = 'Time in course';
 $string['first_viewed'] = 'First viewed';
 $string['last_viewed'] = 'Last viewed';
+$string['availableinregion'] = '{$a}';
+$string['visibleinregion'] = 'Region visibility';
