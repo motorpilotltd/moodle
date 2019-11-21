@@ -140,7 +140,7 @@ class source extends rb_base_source {
         $joinlist[] = new rb_join(
                 "regions0",
                 'LEFT',
-                '(SELECT courseid, MAX(regionid) FROM {local_regions_reg_cou} GROUP BY courseid)',
+                '(SELECT courseid, MAX(regionid) maxregionid FROM {local_regions_reg_cou} GROUP BY courseid)',
                 "regions0.courseid = arupadvert.course",
                 REPORT_BUILDER_RELATION_MANY_TO_ONE,
                 'arupadvert'
