@@ -23,6 +23,7 @@
  */
 
 namespace rbsource_linkedinlearning;
+use local_linkedinlearning\course;
 use rb_base_source;
 use rb_content_option;
 use rb_join;
@@ -255,8 +256,18 @@ class source extends rb_base_source {
                                 'displayfunc' => 'linkedincourselink',
                                 'dbdatatype'   => 'char',
                                 'outputformat' => 'text',
-                                'extrafields'  => ['ssourl' => 'base.ssolaunchurl', 'moodlecourseid' => 'arupadvert.course'],
+                                'extrafields'  => ['ssourl' => 'base.ssolaunchurl', 'moodlecourseid' => 'arupadvert.course', 'lilcourseid' => 'base.id'],
                                 'joins'        => 'arupadvert'
+                        )
+                ),
+                new rb_column_option(
+                        'linkedincourse',
+                        'shortdescription',
+                        get_string('shortdescription', 'rbsource_linkedinlearning'),
+                        'base.shortdescription',
+                        array(
+                                'dbdatatype' => 'char',
+                                'outputformat' => 'text'
                         )
                 ),
                 new rb_column_option(
@@ -566,9 +577,24 @@ class source extends rb_base_source {
         global $CFG;
 
         if (!empty($row->moodlecourseid)) {
-            return \html_writer::link(new \moodle_url("$CFG->wwwroot/course/view.php", ['id' => $row->moodlecourseid]), $title);
+            $url = new \moodle_url("$CFG->wwwroot/course/view.php", ['id' => $row->moodlecourseid]);
         } else {
-            return \html_writer::link($row->ssourl, $title);
+            $url = $row->ssourl;
         }
+        return $this->create_expand_link($title, 'lil_description', array('expandcourseid' => $row->lilcourseid), $url);
+    }
+
+    /**
+     * Expanding content to display when clicking a course.
+     * Will be placed inside a table cell which is the width of the table.
+     * Call required_param to get any param data that is needed.
+     * Make sure to check that the data requested is permitted for the viewer.
+     *
+     * @return string
+     */
+    public function rb_expand_lil_description() {
+        $courseid = required_param('expandcourseid', PARAM_INT);
+        $course = course::fetch(['id' => $courseid]);
+        return \html_writer::div($course->description);
     }
 }
