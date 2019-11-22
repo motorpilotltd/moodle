@@ -262,6 +262,20 @@ class source extends rb_base_source {
                 ),
                 new rb_column_option(
                         'linkedincourse',
+                        'linkedtitlewithexpander',
+                        get_string('linkedtitlewithexpander', 'rbsource_linkedinlearning'),
+                        'base.title',
+                        array(
+                                'displayfunc' => 'linkedincourselinkwithexpander',
+                                'dbdatatype'   => 'char',
+                                'outputformat' => 'text',
+                                'extrafields'  => ['ssourl' => 'base.ssolaunchurl', 'moodlecourseid' => 'arupadvert.course', 'lilcourseid' => 'base.id'],
+                                'joins'        => 'arupadvert',
+                                'defaultheading' => get_string('linkedtitle', 'rbsource_linkedinlearning')
+                        )
+                ),
+                new rb_column_option(
+                        'linkedincourse',
                         'shortdescription',
                         get_string('shortdescription', 'rbsource_linkedinlearning'),
                         'base.shortdescription',
@@ -574,6 +588,16 @@ class source extends rb_base_source {
     }
 
     public function rb_display_linkedincourselink($title, $row) {
+        global $CFG;
+
+        if (!empty($row->moodlecourseid)) {
+            return \html_writer::link(new \moodle_url("$CFG->wwwroot/course/view.php", ['id' => $row->moodlecourseid]), $title);
+        } else {
+            return \html_writer::link($row->ssourl, $title);
+        }
+    }
+
+    public function rb_display_linkedincourselinkwithexpander($title, $row) {
         global $CFG;
 
         if (!empty($row->moodlecourseid)) {

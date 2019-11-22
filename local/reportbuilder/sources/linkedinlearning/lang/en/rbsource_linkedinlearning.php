@@ -22,3 +22,4 @@ $string['availableinregion'] = '{$a}';
 $string['visibleinregion'] = 'Region visibility';
 $string['linkedtitle'] = 'Linked course title';
 $string['shortdescription'] = 'Short Description';
+$string['linkedtitlewithexpander'] = 'Linked course title (with expander)';
