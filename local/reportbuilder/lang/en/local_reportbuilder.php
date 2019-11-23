@@ -1894,3 +1894,6 @@ $string['enrolledcoursesownrecords'] = 'Enrolled courses';
 $string['costcentre'] = 'Cost centre';
 $string['costcentreroles'] = 'Cost centre role';
 $string['accessbycostcentrerole'] = 'Access by cost centre role';
+$string['regionown'] = 'Own';
+$string['regionany'] = 'Any';
+$string['regionother'] = 'Other';

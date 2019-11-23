@@ -40,3 +40,4 @@ $string['title'] = 'Report table';
 $string['report_table:addinstance'] = 'Add a new report block';
 $string['report_table:myaddinstance'] = 'Add a new report block to the My Learning page';
 $string['viewfullreport'] = 'View full report';
+$string['config_showdescription'] = 'Show description';

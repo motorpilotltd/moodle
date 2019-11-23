@@ -41,13 +41,14 @@ require_once $CFG->dirroot . '/completion/completion_criteria_completion.php';
 
 class course extends \data_object {
     public $table = 'linkedinlearning_course';
-    public $required_fields = ['id', 'urn', 'title', 'primaryimageurl', 'aicclaunchurl', 'publishedat', 'lastupdatedat',
+    public $required_fields = ['id', 'urn', 'title', 'primaryimageurl', 'aicclaunchurl', 'ssolaunchurl', 'publishedat', 'lastupdatedat',
             'description', 'shortdescription', 'timetocomplete', 'available'];
 
     public $urn;
     public $title;
     public $primaryimageurl;
     public $aicclaunchurl;
+    public $ssolaunchurl;
     public $publishedat;
     public $lastupdatedat;
     public $description;

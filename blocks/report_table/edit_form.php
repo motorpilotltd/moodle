@@ -106,5 +106,9 @@ class block_report_table_edit_form extends block_edit_form {
         $mform->addElement('advcheckbox', 'config_hideifnoresults',
             get_string('hideblockifzeroresults', 'block_report_table'));
         $mform->setDefault('config_hideifnoresults', false);
+
+        $mform->addElement('advcheckbox', 'config_showdescription',
+            get_string('config_showdescription', 'block_report_table'));
+        $mform->setDefault('config_showdescription', false);
     }
 }
