@@ -28,7 +28,7 @@ if ($hassiteconfig || has_capability('local/linkedinlearning:manage', $context))
     require_once($CFG->dirroot.'/cohort/lib.php');
     require_once($CFG->dirroot.'/local/linkedinlearning/classes/lib.php');
 
-    $ADMIN->add('root', new admin_category('local_linkedinlearning', new lang_string('pluginname', 'local_linkedinlearning')));
+    $ADMIN->add('localplugins', new admin_category('local_linkedinlearning', new lang_string('pluginname', 'local_linkedinlearning')));
 
     $settings = new admin_settingpage('local_linkedinlearning_settings', get_string('settings', 'local_linkedinlearning'));
 

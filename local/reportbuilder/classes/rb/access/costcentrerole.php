@@ -129,7 +129,9 @@ class costcentrerole extends base {
      */
     public function form_process($reportid, $fromform) {
         $type = $this->get_type();
-        reportbuilder::update_setting($reportid, $type, 'costcentreroles', implode('|', $fromform->costcentreroles));
+        if (isset($fromform->costcentreroles)) {
+            reportbuilder::update_setting($reportid, $type, 'costcentreroles', implode('|', $fromform->costcentreroles));
+        }
         reportbuilder::update_setting($reportid, $type, 'enable', !empty($fromform->accessbycostcentrerole_enablecondition));
         return true;
     }
