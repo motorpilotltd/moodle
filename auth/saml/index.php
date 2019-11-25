@@ -117,6 +117,19 @@ session_destroy();
 
 // We load all moodle config and libs.
 require_once('../../config.php');
+
+// Check if this user should be sent to manual login page.
+if (isset($samlattributes['http://schemas.microsoft.com/ws/2008/06/identity/claims/groups'])) {
+    $bypassgroupsconfig = get_config('auth_saml', 'bypass_groups_azureproxy');
+    if ($bypassgroupsconfig) {
+        $bypassgroups = explode("\n", $bypassgroupsconfig);
+        if (!empty(array_intersect($bypassgroups, $samlattributes['http://schemas.microsoft.com/ws/2008/06/identity/claims/groups']))) {
+            header('Location: ' . $CFG->wwwroot . '/auth/saml/login.php?saml=0');
+            exit();
+        }
+    }
+}
+
 require_once($CFG->dirroot.'/login/lib.php');
 require_once('error.php');
 
