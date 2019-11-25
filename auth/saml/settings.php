@@ -91,12 +91,12 @@ if ($ADMIN->fulltree) {
     // SAML automatic login Azure Application Proxy
     $settings->add(new admin_setting_configselect('auth_saml/autologin_azureappproxy',
         get_string('autologin_azureappproxy', 'auth_saml'),
-        get_string('autologin_azureappproxy_description', 'auth_saml'), 0 , $yesno));
+        get_string('autologin_azureappproxy_description', 'auth_saml'), 0, $yesno));
 
     // SAML groups to bypass automatic login Azure Application Proxy
     $settings->add(new admin_setting_configtextarea('auth_saml/bypass_groups_azureappproxy',
         get_string('bypass_groups_azureappproxy', 'auth_saml'),
-        get_string('bypass_groups_azureappproxy_description', 'auth_saml'), '' , PARAM_ALPHANUMEXT));
+        get_string('bypass_groups_azureappproxy_description', 'auth_saml'), '', PARAM_RAW_TRIMMED));
 
     // Log file path
     $settings->add(new admin_setting_configfile('auth_saml/samllogfile',

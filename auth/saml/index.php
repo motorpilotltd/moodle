@@ -120,7 +120,7 @@ require_once('../../config.php');
 
 // Check if this user should be sent to manual login page.
 if (isset($samlattributes['http://schemas.microsoft.com/ws/2008/06/identity/claims/groups'])) {
-    $bypassgroupsconfig = get_config('auth_saml', 'bypass_groups_azureproxy');
+    $bypassgroupsconfig = get_config('auth_saml', 'bypass_groups_azureappproxy');
     if ($bypassgroupsconfig) {
         $bypassgroups = explode("\n", $bypassgroupsconfig);
         if (!empty(array_intersect($bypassgroups, $samlattributes['http://schemas.microsoft.com/ws/2008/06/identity/claims/groups']))) {
