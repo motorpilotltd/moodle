@@ -94,7 +94,7 @@ if ($ADMIN->fulltree) {
         get_string('autologin_azureappproxy_description', 'auth_saml'), 0 , $yesno));
 
     // SAML groups to bypass automatic login Azure Application Proxy
-    $settings->add(new admin_setting_configtext('auth_saml/bypass_groups_azureappproxy',
+    $settings->add(new admin_setting_configtextarea('auth_saml/bypass_groups_azureappproxy',
         get_string('bypass_groups_azureappproxy', 'auth_saml'),
         get_string('bypass_groups_azureappproxy_description', 'auth_saml'), '' , PARAM_ALPHANUMEXT));
 
