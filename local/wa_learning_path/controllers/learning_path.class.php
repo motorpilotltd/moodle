@@ -314,6 +314,13 @@ class learning_path extends \wa_learning_path\lib\base_controller {
     }
 
     private function sort_activity($a, $b) {
+        // Deal with missing title/fullname.
+        if (empty($a->title) && empty($a->fullname)) {
+            return 1;
+        } else if (empty($b->title) && empty($b->fullname)) {
+            return -1;
+        }
+
         $c1 = ($a->type == 'activity') ? $a->title : $a->fullname;
         $c2 = ($b->type == 'activity') ? $b->title : $b->fullname;
 
