@@ -24,17 +24,17 @@
 
 require_once($CFG->dirroot.'/blocks/configurable_reports/plugin.class.php');
 
-class plugin_costcentres extends plugin_base {
+class plugin_costcentres2 extends plugin_base {
 
     public function init(){
         $this->form = false;
         $this->unique = true;
-        $this->fullname = get_string('filtercostcentres', 'block_configurable_reports');
+        $this->fullname = get_string('filtercostcentres2', 'block_configurable_reports');
         $this->reporttypes = array('sql');
     }
 
     public function summary($data){
-        return get_string('filtercostcentres:summary', 'block_configurable_reports');
+        return get_string('filtercostcentres2:summary', 'block_configurable_reports');
     }
 
     public function execute($finalelements,$data){
@@ -48,7 +48,7 @@ class plugin_costcentres extends plugin_base {
             $components = cr_unserialize($this->report->components);
             $permissions = (isset($components['permissions'])) ? $components['permissions'] : [];
             foreach($permissions['elements'] as $pvalue){
-                if($pvalue['pluginname'] == "pcostcentres" && isset($pvalue['formdata']->ccroles)){
+                if($pvalue['pluginname'] == "pcostcentres2" && isset($pvalue['formdata']->ccroles)){
                     $selectedroles = $pvalue['formdata']->ccroles;
                 }
             }
@@ -56,11 +56,7 @@ class plugin_costcentres extends plugin_base {
                 $selectedroles = optional_param_array(
                         'ccroles',
                         array(
-                            \local_costcentre\costcentre::BUSINESS_ADMINISTRATOR,
-                            \local_costcentre\costcentre::REPORTER,
-                            \local_costcentre\costcentre::GROUP_LEADER,
-                            \local_costcentre\costcentre::HR_ADMIN,
-                            \local_costcentre\costcentre::HR_LEADER
+                            \local_costcentre\costcentre::LEARNING_REPORTER
                             ),
                          PARAM_INT);
             }
@@ -76,7 +72,7 @@ class plugin_costcentres extends plugin_base {
 
         $allowedcostcentres = $this->list_allowed_costcentres();
 
-        $filtercostcentre = optional_param('filter_costcentre', '', PARAM_BASE64);
+        $filtercostcentre = optional_param('filter_costcentre2', '', PARAM_BASE64);
         $filter = clean_param(base64_decode($filtercostcentre), PARAM_RAW);
 
         $filterarray = array();
@@ -88,10 +84,10 @@ class plugin_costcentres extends plugin_base {
             $filterarray[] = 'XX-XXX'; // Force a non-match.
         }
 
-        if(preg_match("/%%FILTER_COSTCENTRES%%/i", $finalelements)){
+        if(preg_match("/%%FILTER_COSTCENTRES2%%/i", $finalelements)){
             $in = "('".implode("', '", $filterarray)."')";
             $replace = " AND u.icq IN $in ";
-            return str_replace('%%FILTER_COSTCENTRES%%', $replace, $finalelements);
+            return str_replace('%%FILTER_COSTCENTRES2%%', $replace, $finalelements);
         }
 
         return $finalelements;
@@ -105,7 +101,7 @@ class plugin_costcentres extends plugin_base {
             $mform->addElement(
                 'html',
                 \html_writer::div(
-                    get_string('filtercostcentres:nocostcentres', 'block_configurable_reports'),
+                    get_string('filtercostcentres2:nocostcentres', 'block_configurable_reports'),
                     'alert alert-danger fade in'
                     )
                 );
@@ -119,7 +115,7 @@ class plugin_costcentres extends plugin_base {
             $filteroptions[base64_encode($code)] = $name;
         }
 
-        $mform->addElement('select', 'filter_costcentre', get_string('filtercostcentres:costcentre', 'block_configurable_reports'), $filteroptions);
-        $mform->setType('filter_costcentre', PARAM_BASE64);
+        $mform->addElement('select', 'filter_costcentre2', get_string('filtercostcentres2:costcentre', 'block_configurable_reports'), $filteroptions);
+        $mform->setType('filter_costcentre2', PARAM_BASE64);
     }
 }

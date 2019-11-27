@@ -30,8 +30,9 @@ require_once($CFG->dirroot."/blocks/configurable_reports/locallib.php");
 $id = required_param('id', PARAM_INT);
 $comp = required_param('comp', PARAM_ALPHA);
 $cid = optional_param('cid', '', PARAM_ALPHANUM);
-$pname = optional_param('pname', '', PARAM_ALPHA);
-
+/* BEGIN CORE MOD */
+$pname = optional_param('pname', '', PARAM_ALPHANUM);
+/* END CORE MOD */
 $moveup = optional_param('moveup', 0, PARAM_INT);
 $movedown = optional_param('movedown', 0, PARAM_INT);
 $delete = optional_param('delete', 0, PARAM_INT);
@@ -265,4 +266,3 @@ if ($pluginclass->form) {
 }
 
 echo $OUTPUT->footer();
-

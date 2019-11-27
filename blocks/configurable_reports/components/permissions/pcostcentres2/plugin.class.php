@@ -24,17 +24,17 @@
 
 require_once($CFG->dirroot.'/blocks/configurable_reports/plugin.class.php');
 
-class plugin_pcostcentres extends plugin_base{
+class plugin_pcostcentres2 extends plugin_base{
 
     function init(){
         $this->form = true;
         $this->unique = false;
-        $this->fullname = get_string('pcostcentres', 'block_configurable_reports');
+        $this->fullname = get_string('pcostcentres2', 'block_configurable_reports');
         $this->reporttypes = array('sql');
     }
 
     function summary($data){
-        return get_string('pcostcentres_summary', 'block_configurable_reports');
+        return get_string('pcostcentres2_summary', 'block_configurable_reports');
     }
 
     function execute($userid, $context, $data){
@@ -49,11 +49,7 @@ class plugin_pcostcentres extends plugin_base{
             return \local_costcentre\costcentre::is_user(
                 $userid,
                 array(
-                    \local_costcentre\costcentre::BUSINESS_ADMINISTRATOR,
-                    \local_costcentre\costcentre::REPORTER,
-                    \local_costcentre\costcentre::GROUP_LEADER,
-                    \local_costcentre\costcentre::HR_ADMIN,
-                    \local_costcentre\costcentre::HR_LEADER
+                    \local_costcentre\costcentre::LEARNING_REPORTER
                 )
             );
         }

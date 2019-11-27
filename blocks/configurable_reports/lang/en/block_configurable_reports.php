@@ -541,21 +541,31 @@ $string['badpermissions'] = 'Sorry, you do not have permission to carry out that
 
 $string['backto'] = 'Back to {$a}';
 
-$string['costcentres'] = 'Cost centres';
-$string['filtercostcentres'] = 'Filter by cost centres';
-$string['filtercostcentres:summary'] = 'Filters users based on cost centre(s) the current user has permission to view reports for<br />'
+$string['costcentres'] = 'Cost centres [Appraisal]';
+$string['filtercostcentres'] = 'Filter by cost centres [Appraisal]';
+$string['filtercostcentres:summary'] = 'Filters users based on cost centre(s) the current user has permission to view appraisal reports for<br />'
         . 'SQL queries must use <em>FROM/JOIN prefix_user u</em> (alias is important) and have <em>%%FILTER_COSTCENTRES%%</em> in the <em>WHERE</em> clause.<br />'
         . 'NB. <em>%%FILTER_COSTCENTRES%%</em> resolves to "<em>&nbsp;AND u.icq IN ([cost centres])&nbsp;</em>".';
 $string['filtercostcentres:costcentre'] = 'Cost centre';
-$string['filtercostcentres:nocostcentres'] = 'You are not assigned to view reports for any cost centres.';
+$string['filtercostcentres:nocostcentres'] = 'You are not assigned to view appraisal reports for any cost centres.';
 
-$string['pcostcentres'] = 'Cost centre';
+$string['pcostcentres'] = 'Cost centre [Appraisal]';
 $string['pcostcentres_roles'] = 'Cost centre roles';
 $string['pcostcentres_summary'] = 'Restrict access to users who have the selected roles for any cost centre(s) they have the role in.';
+
+$string['costcentres2'] = 'Cost centres [Learning]';
+$string['filtercostcentres2'] = 'Filter by cost centres [Learning]';
+$string['filtercostcentres2:summary'] = 'Filters users based on cost centre(s) the current user has permission to view learning reports for<br />'
+        . 'SQL queries must use <em>FROM/JOIN prefix_user u</em> (alias is important) and have <em>%%FILTER_COSTCENTRES2%%</em> in the <em>WHERE</em> clause.<br />'
+        . 'NB. <em>%%FILTER_COSTCENTRES2%%</em> resolves to "<em>&nbsp;AND u.icq IN ([cost centres])&nbsp;</em>".';
+$string['filtercostcentres2:costcentre'] = 'Cost centre';
+$string['filtercostcentres2:nocostcentres'] = 'You are not assigned to view learning reports for any cost centres.';
+
+$string['pcostcentres2'] = 'Cost centre [Learning]';
+$string['pcostcentres2_roles'] = 'Cost centre roles';
+$string['pcostcentres2_summary'] = 'Restrict access to users who have the selected roles for any cost centre(s) they have the role in.';
 
 $string['menu:course'] = 'Current module reports';
 $string['menu:global'] = 'Global reports';
 $string['menu:misc'] = 'Miscellaneous';
 /* END CORE MOD */
-
-

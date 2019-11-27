@@ -29,24 +29,20 @@ if (!defined('MOODLE_INTERNAL')) {
 
 require_once($CFG->libdir.'/formslib.php');
 
-class pcostcentres_form extends moodleform {
+class pcostcentres2_form extends moodleform {
     public function definition() {
         global $DB, $USER, $CFG;
 
         $mform =& $this->_form;
 
-        $mform->addElement('header',  'ccformheader', get_string('pcostcentres', 'block_configurable_reports'), '');
+        $mform->addElement('header',  'ccformheader', get_string('pcostcentres2', 'block_configurable_reports'), '');
 
         $ccroles = array(
-            \local_costcentre\costcentre::BUSINESS_ADMINISTRATOR=>"Appraisal Admin",
-            \local_costcentre\costcentre::REPORTER=>"Reporter",
-            \local_costcentre\costcentre::GROUP_LEADER=>"Group Leader",
-            \local_costcentre\costcentre::HR_ADMIN=>"HR Admin",
-            \local_costcentre\costcentre::HR_LEADER=>"HR Leader"
+            \local_costcentre\costcentre::LEARNING_REPORTER => "Learning Reporter"
         );
 
 
-        $mform->addElement('select', 'ccroles', get_string('pcostcentres_roles', 'block_configurable_reports'), $ccroles)->setMultiple(true);
+        $mform->addElement('select', 'ccroles', get_string('pcostcentres2_roles', 'block_configurable_reports'), $ccroles)->setMultiple(true);
 
         // Buttons.
         $this->add_action_buttons(true, get_string('add'));
