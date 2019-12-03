@@ -662,7 +662,7 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018010107, 'local', 'onlineappraisal');
     }
 
-    if ($oldversion < 2018010109) {
+    if ($oldversion < 201801011) {
         // Tidy up feeback contributor emails that are not trimmed.
         $spacebefore = $DB->sql_like('email', ':spacebefore');
         $spaceafter = $DB->sql_like('email', ':spaceafter');
@@ -678,7 +678,7 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         }
 
         // Onlineappraisal savepoint reached.
-        upgrade_plugin_savepoint(true, 2018010109, 'local', 'onlineappraisal');
+        upgrade_plugin_savepoint(true, 2018010111, 'local', 'onlineappraisal');
     }
 
     return true;
