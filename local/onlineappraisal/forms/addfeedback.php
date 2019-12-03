@@ -159,7 +159,9 @@ class apform_addfeedback extends moodleform {
         }
 
         $feedback = new \local_onlineappraisal\feedback($forms->appraisal);
-        $feedback->user_feedback($data);
+        if (!$feedback->user_feedback($data)) {
+            return false;
+        }
 
         if ($data->pw ==  'self') {
             $params = array('page' => 'feedback',
@@ -171,6 +173,8 @@ class apform_addfeedback extends moodleform {
             $redirect = new moodle_url('/local/onlineappraisal/view.php', $params);
             redirect($redirect);
         }
+
+        return true;
     }
 
     /**
