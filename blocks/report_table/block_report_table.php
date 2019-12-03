@@ -248,6 +248,11 @@ class block_report_table extends block_base {
         }
 
         // The table has already been rendered so just return the class.
+
+        if (!empty($this->config->showdescription)) {
+            $reporthtml = html_writer::div($report->description, 'reportdescription') . $reporthtml;
+        }
+
         $this->content->text = $reporthtml;
         $this->content->footer = html_writer::link($reporturl, get_string('viewfullreport', 'block_report_table'));
 
