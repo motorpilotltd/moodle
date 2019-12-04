@@ -69,8 +69,8 @@ $cell_url = new \moodle_url($this->url, array())
                             <?php foreach ($this->matrix->cols as $col): ?>
                                 <?php if (!$col->show || !wa_learning_path\model\learningpath::check_regions_match($this->regions, $col->region)) continue; ?>
                                 <td class="lp_col_header" title="<?php echo $col->name ?>" >
-                                    <svg version="1.1" width="18" height="160">
-                                    <text x="-150" y="14" text-anchor="start" transform="rotate(270)"><?php echo substr($col->name, 0,20) ?></text>
+                                    <svg version="1.1" width="18" height="175">
+                                    <text x="-165" y="14" text-anchor="start" transform="rotate(270)"><?php echo htmlentities(substr(html_entity_decode($col->name), 0, 20)); ?></text>
                                     </svg>
                                 </td>
                             <?php endforeach; ?>
