@@ -27,7 +27,6 @@ define('REPORT_BUILDER_IGNORE_PAGE_PARAMETERS', true); // We are setting up repo
 
 require_once(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php');
 require_once($CFG->dirroot.'/local/reportbuilder/lib.php');
-require_once($CFG->dirroot.'/local/reportbuilder/dialogs/dialog_content_cachenow.class.php');
 
 /**
  * Start report generation using process fork when it possible
@@ -96,12 +95,7 @@ function close_connection() {
 function cachenow_showresult($status, $message) {
     static $display = false;
     if (!$display && $message != '') {
-        $display = true;
-        $dialog = new totara_dialog_content_cachenow();
-        $dialog->set_status($status);
-        $dialog->set_message($message);
-
-        echo $dialog->generate_markup();
+        echo $message;
         close_connection();
     }
 }

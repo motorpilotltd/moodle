@@ -64,6 +64,15 @@ if ($ADMIN->fulltree) {
         )
     );
 
+    $rb->add(
+        new admin_setting_configcheckbox(
+            'enablereportcaching',
+            new lang_string('enablereportcaching', 'local_reportbuilder'),
+            new lang_string('enablereportcaching', 'local_reportbuilder'),
+            0
+        )
+    );
+
     // Schedule type options.
     // NOTE: these must be kept in sync with constants in
     // local/reportbuilder/lib/scheduler.php
