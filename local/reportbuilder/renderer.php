@@ -368,6 +368,7 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
             $html = html_writer::empty_tag('input', array('type' => 'button',
                 'name' => 'rb_cachenow',
                 'data-id' => $reportid,
+                'data-action' => "cachenow",
                 'class' => 'show-cachenow-dialog rb-hidden',
                 'id' => 'show-cachenow-dialog-' . $reportid,
                 'value' => $strcache
