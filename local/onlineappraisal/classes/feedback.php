@@ -292,7 +292,7 @@ class feedback {
         if ($fbexisting) {
             $this->appraisal->set_action('email', $fbexisting->id);
             $this->appraisal->failed_action('feedback_inuse');
-            return;
+            return false;
         }
 
         // Get email variables in preparation.
@@ -315,21 +315,28 @@ class feedback {
             $result = $fb->id = $DB->insert_record('local_appraisal_feedback', $fb);
         }
 
+        $this->appraisal->set_action('email', $fb->id);
+
         // If OK, email contributor.
-        if ($result) {
-            $this->appraisal->set_action('email', $fb->id);
-
-            $emailvars->emailmsg = $fb->customemail;
-
-            if ($fb->feedback_user_type == 'appraiser') {
-                $feedbackmail = new email('appraiserfeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraiser, array(), $fb->lang);
-            } else {
-                $feedbackmail = new email('appraiseefeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraisee, array(), $fb->lang);
-            }
-
-            $feedbackmail->prepare();
-            $feedbackmail->send();
+        if (!$result) {
+            return false;
         }
+
+        $emailvars->emailmsg = $fb->customemail;
+
+        if ($fb->feedback_user_type == 'appraiser') {
+            $feedbackmail = new email('appraiserfeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraiser, array(), $fb->lang);
+        } else {
+            $feedbackmail = new email('appraiseefeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraisee, array(), $fb->lang);
+        }
+
+        $feedbackmail->prepare();
+        if (!$feedbackmail->send()) {
+            $this->appraisal->failed_action('feedback');
+            return false;
+        }
+
+        return true;
     }
 
     public function get_feedback_vars($fb) {
