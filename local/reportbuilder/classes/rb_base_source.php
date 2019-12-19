@@ -1990,6 +1990,7 @@ abstract class rb_base_source {
             'department' => get_string('userdepartment', 'local_reportbuilder'),
             'address' => get_string('useraddress', 'local_reportbuilder'),
             'city' => get_string('usercity', 'local_reportbuilder'),
+            'icq' => get_string('costcentre', 'local_reportbuilder'),
         );
         foreach ($fields as $field => $name) {
             $columnoptions[] = new rb_column_option(
@@ -2372,6 +2373,7 @@ abstract class rb_base_source {
             'address' => get_string('useraddress', 'local_reportbuilder'),
             'city' => get_string('usercity', 'local_reportbuilder'),
             'email' => get_string('useremail', 'local_reportbuilder'),
+            'icq' => get_string('costcentre', 'local_reportbuilder'),
         );
         // Only include this filter if email is among fields allowed by showuseridentity setting or
         // if the current user has the 'moodle/site:config' capability.

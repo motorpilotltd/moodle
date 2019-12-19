@@ -1100,9 +1100,6 @@ $string['group_name'] = 'Group Name';
 $string['invalidemail'] = 'Invalid email';
 $string['type_arupstaff'] = 'Arup staff record';
 
-
-
-
 $string['activitycompletionunlockedtext'] = 'When you save changes, completion state for all learners who have completed this activity will be erased. If you change your mind about this, do not save the form.';
 $string['activitycompletionunlockednoresettext'] = 'Completion has been unlocked without deleting activity completion data. After this change different users may have received their completion status for different reasons.';
 $string['addanothercolumn'] = 'Add another column...';
@@ -1896,3 +1893,5 @@ $string['accessbycostcentrerole'] = 'Access by cost centre role';
 $string['regionown'] = 'Own';
 $string['regionany'] = 'Any';
 $string['regionother'] = 'Other';
+
+$string['costcentre'] = 'Cost centre';
