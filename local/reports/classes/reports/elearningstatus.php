@@ -242,7 +242,7 @@ class elearningstatus extends base {
             implode("', '", $attended) . "'";
         $enrolmentswhere .= " AND lte.bookingstatus in ($statusok) ";
 
-        $wherestring = "";
+        $wherestring = " AND ( lte.archived = '' OR lte.archived IS NULL ) ";
         $params = array();
 
         // Classnames are only used in the inclusion query.
@@ -274,7 +274,7 @@ class elearningstatus extends base {
         unset($this->setfilters['classname']);
 
         if (!$this->showall) {
-            $wherestring .= 'AND ';
+            $wherestring .= ' AND ';
             $wherestring .= $DB->sql_like('staff.LEAVER_FLAG', ':' . 'staffleaver_flag', false);
             $params['staffleaver_flag'] = 'n';
         }
@@ -286,7 +286,7 @@ class elearningstatus extends base {
                 if ($loopcount == 0) {
                     $wherestring .= ' AND ';
                     if ($numfilters > 1) {
-                        $wherestring .= '( ';
+                        $wherestring .= ' ( ';
                     }
                 } else {
                     $wherestring .= ' OR ';
@@ -324,9 +324,6 @@ class elearningstatus extends base {
             }
         }
 
-        //echo $wherestring;
-        //$wherestring = '';
-
         $sql = "SELECT lte.*, staff.*, ltc.classstatus, ltco.coursecode, ltco.courseregion
                   FROM {local_taps_enrolment} as lte
              LEFT JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
@@ -342,13 +339,13 @@ class elearningstatus extends base {
 
         // Leave out the joins for taps_class and taps_course to speed up this query
         $sqlcount = "SELECT count(lte.id) as recnum
-                  FROM {local_taps_enrolment} as lte
-                  JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
-                    ON lte.staffid = staff.EMPLOYEE_NUMBER
-             LEFT JOIN {local_taps_class} as ltc
-                    ON ltc.classid = lte.classid
-                       $enrolmentswhere
-                       $wherestring";
+                       FROM {local_taps_enrolment} as lte
+                  LEFT JOIN SQLHUB.ARUP_ALL_STAFF_V as staff
+                         ON lte.staffid = staff.EMPLOYEE_NUMBER
+                  LEFT JOIN {local_taps_class} as ltc
+                         ON ltc.classid = lte.classid
+                            $enrolmentswhere
+                            $wherestring";
 
         //$DB->set_debug(1);
         $enrolments = array();
