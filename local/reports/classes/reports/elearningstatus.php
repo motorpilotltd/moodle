@@ -386,19 +386,15 @@ class elearningstatus extends base {
                 return $allstaff;
             }
         } else if ($limited) {
-            if (!empty($wherestring)) {
-                try {
-                    $all = $DB->get_record_sql($sqlcount, $params);
-                } catch (dml_read_exception $e) {
-                    $this->errors[] = $e;
-                }
-                if (!$all) {
-                    $this->numrecords = 0;
-                } else {
-                    $this->numrecords = $all->recnum;
-                }
+            try {
+                $all = $DB->get_record_sql($sqlcount, $params);
+            } catch (dml_read_exception $e) {
+                $this->errors[] = $e;
+            }
+            if (!$all) {
+                $this->numrecords = 0;
             } else {
-                $this->numrecords = $DB->count_records('local_taps_enrolment');
+                $this->numrecords = $all->recnum;
             }
             // For the UI.
              try {

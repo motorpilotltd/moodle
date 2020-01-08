@@ -203,6 +203,7 @@ class learninghistory extends base {
         $wherestring = " WHERE ( lte.archived = '' OR lte.archived IS NULL ) ";
 
         if (!$this->showall) {
+            $wherestring .= ' AND ';
             $wherestring .= $DB->sql_like('staff.LEAVER_FLAG', ':' . 'staffleaver_flag', false);
             $params['staffleaver_flag'] = 'n';
         }
