@@ -67,7 +67,7 @@ class source extends rb_base_source {
 
         return $requiredcolumns;
     }
-    
+
     /**
      * Define some extra SQL for the base to limit the data set.
      *
@@ -233,7 +233,7 @@ class source extends rb_base_source {
                 )
         );
         $columnoptions[] = new rb_column_option(
-                'course',
+                'tapscourse',
                 'coursecode',
                 get_string('coursecode', 'local_reportbuilder'),
                 'tapscourse.coursecode',
@@ -243,10 +243,20 @@ class source extends rb_base_source {
                       'outputformat' => 'text')
         );
         $columnoptions[] = new rb_column_option(
-                'course',
+                'tapscourse',
                 'courseregion',
                 get_string('courseregion', 'local_reportbuilder'),
                 'tapscourse.courseregion',
+                array('joins'        => 'tapscourse',
+                      'displayfunc'  => 'plaintext',
+                      'dbdatatype'   => 'char',
+                      'outputformat' => 'text')
+        );
+        $columnoptions[] = new rb_column_option(
+                'tapscourse',
+                'tapscoursename',
+                get_string('coursename', 'local_reportbuilder'),
+                'tapscourse.coursename',
                 array('joins'        => 'tapscourse',
                       'displayfunc'  => 'plaintext',
                       'dbdatatype'   => 'char',
@@ -352,6 +362,74 @@ class source extends rb_base_source {
                 'class',
                 'classname',
                 get_string('classname', 'local_reportbuilder'),
+                'text'
+        );
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classstartdate',
+                get_string('classstartdate', 'local_reportbuilder'),
+                'date',
+                array('castdate' => true)
+        );
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classenddate',
+                get_string('classenddate', 'local_reportbuilder'),
+                'date',
+                array('castdate' => true)
+        );
+
+
+        $statuses = [
+                'W:Requested',
+                'Requested',
+                'Waiting Listed',
+                'Reserve',
+                'Wait1',
+                'Wait2',
+                'Wait3',
+                'Wait-Computing',
+                'W:Wait Listed',
+                'Wait Listed',
+                'Approved Place',
+                'Offered Place',
+                'Assessed',
+                'Full Attendance',
+                'Partial Attendance',
+                'Cancelled',
+                'Withdrawn',
+                'No Place',
+                'Dropped Out',
+                'Class Postponed',
+                'Class No Longer Required',
+                'Date Inappropriate',
+                'No Response',
+                'No Show',
+                'Course Full'];
+        $options = array_combine($statuses, $statuses);
+
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'bookingstatus',
+                get_string('bookingstatus', 'local_reportbuilder'),
+                'select',
+                array(
+                        'selectchoices' => $options,
+                        'simplemode' => true
+                )
+        );
+
+        $filteroptions[] = new rb_filter_option(
+                'tapscourse',
+                'tapscoursename',
+                get_string('coursename', 'local_reportbuilder'),
+                'text'
+        );
+
+        $filteroptions[] = new rb_filter_option(
+                'tapscourse',
+                'coursecode',
+                get_string('coursecode', 'local_reportbuilder'),
                 'text'
         );
         $filteroptions[] = new rb_filter_option(
