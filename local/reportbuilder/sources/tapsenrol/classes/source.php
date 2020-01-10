@@ -66,6 +66,17 @@ class source extends rb_base_source {
 
         return $requiredcolumns;
     }
+    
+    /**
+     * Define some extra SQL for the base to limit the data set.
+     *
+     * @return array The SQL and parmeters that defines the WHERE for the source.
+     */
+    protected function define_sourcewhere() {
+        $sql = 'archived = 0';
+
+        return array("($sql)", []);
+    }
 
     protected function define_columnoptions() {
         global $DB;
