@@ -432,60 +432,6 @@ class source extends rb_base_source {
                 get_string('coursecode', 'local_reportbuilder'),
                 'text'
         );
-        $filteroptions[] = new rb_filter_option(
-                'class',
-                'classstartdate',
-                get_string('classstartdate', 'local_reportbuilder'),
-                'date',
-                array('castdate' => true)
-        );
-        $filteroptions[] = new rb_filter_option(
-                'class',
-                'classenddate',
-                get_string('classenddate', 'local_reportbuilder'),
-                'date',
-                array('castdate' => true)
-        );
-
-
-        $statuses = [
-                'W:Requested',
-                'Requested',
-                'Waiting Listed',
-                'Reserve',
-                'Wait1',
-                'Wait2',
-                'Wait3',
-                'Wait-Computing',
-                'W:Wait Listed',
-                'Wait Listed',
-                'Approved Place',
-                'Offered Place',
-                'Assessed',
-                'Full Attendance',
-                'Partial Attendance',
-                'Cancelled',
-                'Withdrawn',
-                'No Place',
-                'Dropped Out',
-                'Class Postponed',
-                'Class No Longer Required',
-                'Date Inappropriate',
-                'No Response',
-                'No Show',
-                'Course Full'];
-        $options = array_combine($statuses, $statuses);
-
-        $filteroptions[] = new rb_filter_option(
-                'class',
-                'bookingstatus',
-                get_string('bookingstatus', 'local_reportbuilder'),
-                'select',
-                array(
-                        'selectchoices' => $options,
-                        'simplemode' => true
-                )
-        );
 
         return $filteroptions;
     }
