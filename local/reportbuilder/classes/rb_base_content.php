@@ -424,11 +424,15 @@ class rb_bookingstatus_content extends rb_base_content {
         if (!empty($bookingstatuss)) {
                 list($bookingstatussql, $params) = $DB->get_in_or_equal($bookingstatuss, SQL_PARAMS_NAMED);
                 $sql = "{$field} {$bookingstatussql}";
+
+                if (in_array('Full Attendance', $bookingstatuss)) {
+                    $sql = "(($sql) OR cpdid IS NOT NULL)";
+                }
         } else {
             $sql = "1=1";
         }
 
-        return array(" $sql ", $params);
+        return array(" ($sql) ", $params);
     }
 
     /**

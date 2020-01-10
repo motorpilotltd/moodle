@@ -107,9 +107,8 @@ class source extends rb_base_source {
                 'class',
                 "coursename",
                 get_string('coursename', 'local_reportbuilder'),
-                "base.coursename",
+                "coalesce(base.coursename, base.classname)",
                 array(
-                        'displayfunc'  => 'coalescecoursename',
                         'extrafields' => array('classcoursename' => 'base.classname'))
         );
         $columnoptions[] = new rb_column_option(
@@ -412,7 +411,7 @@ class source extends rb_base_source {
                 'class',
                 'bookingstatus',
                 get_string('bookingstatus', 'local_reportbuilder'),
-                'select',
+                'selectbookingstatus',
                 array(
                         'selectchoices' => $options,
                         'simplemode' => true
@@ -434,14 +433,6 @@ class source extends rb_base_source {
         );
 
         return $filteroptions;
-    }
-
-    public function rb_display_coalescecoursename($data, $row) {
-        if (!empty($data)) {
-            return $data;
-        } else {
-            return $row->classcoursename;
-        }
     }
 
     public function rb_display_bookingstatus($data, $row) {
