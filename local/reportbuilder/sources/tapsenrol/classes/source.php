@@ -359,6 +359,13 @@ class source extends rb_base_source {
 
         $filteroptions[] = new rb_filter_option(
                 'class',
+                'coursename',
+                get_string('coursename', 'local_reportbuilder'),
+                'text'
+        );
+
+        $filteroptions[] = new rb_filter_option(
+                'class',
                 'classname',
                 get_string('classname', 'local_reportbuilder'),
                 'text'
