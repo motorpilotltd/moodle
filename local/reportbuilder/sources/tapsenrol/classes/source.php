@@ -309,9 +309,9 @@ class source extends rb_base_source {
     protected function define_contentoptions() {
         $contentoptions = [
                 new rb_content_option(
-                        'archived',
-                        get_string('archived', 'rbsource_tapsenrol'),
-                        'base.archived'
+                        'bookingstatus',
+                        get_string('bookingstatus', 'rbsource_tapsenrol'),
+                        'base.bookingstatus'
                 ),
         ];
 
