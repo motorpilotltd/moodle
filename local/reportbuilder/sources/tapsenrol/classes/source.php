@@ -47,6 +47,7 @@ class source extends rb_base_source {
         $this->requiredcolumns = $this->define_requiredcolumns();
         $this->contentoptions = $this->define_contentoptions();
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_tapsenrol');
+        list($this->sourcewhere, $this->sourceparams) = $this->define_sourcewhere();
 
         $this->taps = new \local_taps\taps();
 
@@ -73,7 +74,7 @@ class source extends rb_base_source {
      * @return array The SQL and parmeters that defines the WHERE for the source.
      */
     protected function define_sourcewhere() {
-        $sql = 'archived = 0';
+        $sql = '(base.archived = 0 or base.archived is null)';
 
         return array("($sql)", []);
     }
