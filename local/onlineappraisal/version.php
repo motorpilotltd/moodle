@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018010111; // Arbitrary start of year version as already jumped past base Moodle version.
+$plugin->version   = 2018010112; // Arbitrary start of year version as already jumped past base Moodle version.
 $plugin->requires  = 2017051500; // Moodle 3.3.
 $plugin->component = 'local_onlineappraisal';
 $plugin->maturity  = MATURITY_STABLE;

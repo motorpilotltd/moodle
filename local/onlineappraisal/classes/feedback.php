@@ -298,6 +298,12 @@ class feedback {
         // Get email variables in preparation.
         $emailvars = $this->get_feedback_vars($fb);
 
+        // Checks email if belongs to existing moodle user
+        $fb->userid = null;
+        if ($user = $DB->get_record('user', array('email' => $fb->email))) {
+            $fb->userid = $user->id;
+        }
+
         // Update/create feedback.
         if (!empty($fb->id)) {
             $result = $DB->update_record('local_appraisal_feedback', $fb);
@@ -419,33 +425,28 @@ class feedback {
                 ['now' => time()],
                 'availablefrom DESC',
                 'id, name');
-
-        // Do a case insensitive comparison.
-        $like = $DB->sql_like('af.email', ':email', false);
-
         // The global Join used by the 2 queries.
+        $params = array('userid' => $USER->id);
         $join = "SELECT af.*,
                         aa.held_date, aa.face_to_face_held, aa.permissionsid, aa.archived, aa.legacy,
                         u.firstname as ufirstname, u.lastname as ulastname, u.id as appraiseeid,
                         lac.id as cohortid, lac.name as cohortname, lac.availablefrom as cohortavailablefrom
-                   FROM {local_appraisal_feedback} af
-                   JOIN {local_appraisal_appraisal} aa
-                     ON aa.id = af.appraisalid
-                   JOIN {local_appraisal_cohort_apps} laca ON aa.id = laca.appraisalid
-                   JOIN {local_appraisal_cohorts} lac ON lac.id = laca.cohortid
-                   JOIN {user} u
-                     ON u.id = aa.appraisee_userid
-                  WHERE {$like}
+                    FROM {local_appraisal_feedback} af
+                    JOIN {local_appraisal_appraisal} aa
+                        ON aa.id = af.appraisalid
+                    JOIN {local_appraisal_cohort_apps} laca ON aa.id = laca.appraisalid
+                    JOIN {local_appraisal_cohorts} lac ON lac.id = laca.cohortid
+                    JOIN {user} u
+                    ON u.id = aa.appraisee_userid
+                    WHERE af.userid = :userid
                     AND aa.deleted = 0";
 
         // Get the outstanding Feedback requests from the DB.
         $outstanding = "{$join}
                     AND aa.archived = 0
                     AND (af.received_date IS NULL OR af.received_date = 0)
-               ORDER BY lac.availablefrom ASC, aa.held_date ASC";
-
-        $outstandingrecords = $DB->get_records_sql($outstanding, array('email' => $USER->email));
-
+                    ORDER BY lac.availablefrom ASC, aa.held_date ASC";
+        $outstandingrecords = $DB->get_records_sql($outstanding, $params);
         foreach ($outstandingrecords as $or) {
             if (!\local_onlineappraisal\permissions::is_allowed('feedback:submit', $or->permissionsid, 'guest', $or->archived, $or->legacy)) {
                 continue;
@@ -461,9 +462,9 @@ class feedback {
         // Get the completed Feedback feedback requests from the DB.
         $completed = "{$join}
                     AND af.received_date > 0
-               ORDER BY lac.availablefrom DESC, af.received_date DESC";
+                    ORDER BY lac.availablefrom DESC, af.received_date DESC";
 
-        $completedrecords = $DB->get_records_sql($completed, array('email' => $USER->email));
+        $completedrecords = $DB->get_records_sql($completed, $params);
 
         $template->filterselected = optional_param('filter', key($template->filter), PARAM_INT);
         $cohortcount = array_fill_keys(array_keys($template->filter), 0);

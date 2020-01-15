@@ -663,6 +663,7 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018010111) {
+
         // Tidy up feeback contributor emails that are not trimmed.
         $spacebefore = $DB->sql_like('email', ':spacebefore');
         $spaceafter = $DB->sql_like('email', ':spaceafter');
@@ -679,6 +680,27 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
 
         // Onlineappraisal savepoint reached.
         upgrade_plugin_savepoint(true, 2018010111, 'local', 'onlineappraisal');
+    }
+
+    if ($oldversion < 2018010112) {
+        // Define field userid to be added to local_appraisal_feedback.
+        $table = new xmldb_table('local_appraisal_feedback');
+        $field = new xmldb_field('userid', XMLDB_TYPE_INTEGER, '10', null, null);
+
+        // Conditionally launch add field userid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        $records = $DB->get_records('local_appraisal_feedback');
+        foreach ($records as $record) { 
+            if ($user = $DB->get_record('user', array('email' => $record->email))) {
+                $record->userid = $user->id;
+                $DB->update_record('local_appraisal_feedback', $record);
+            }
+        }
+        // Onlineappraisal savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010112, 'local', 'onlineappraisal');
     }
 
     return true;
