@@ -662,7 +662,7 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018010107, 'local', 'onlineappraisal');
     }
 
-    if ($oldversion < 201801011) {
+    if ($oldversion < 2018010111) {
         // Tidy up feeback contributor emails that are not trimmed.
         $spacebefore = $DB->sql_like('email', ':spacebefore');
         $spaceafter = $DB->sql_like('email', ':spaceafter');
