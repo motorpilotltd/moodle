@@ -2119,7 +2119,6 @@ abstract class rb_base_source {
                 'EMAIL_ADDRESS',
                 'INTERNAL_LOCATION',
                 'LATEST_HIRE_DATE',
-                'GRADE',
                 'CORE_JOB_TITLE',
                 'GEO_REGION',
                 'COMPANY_CODE',
@@ -2151,6 +2150,18 @@ abstract class rb_base_source {
                     )
             );
         }
+        $columnoptions[] = new rb_column_option(
+                $groupname,
+                'GRADE',
+                get_string('staffgrade', 'local_reportbuilder'),
+                "{$join}.GRADE",
+                array('joins' => "{$join}",
+                      'displayfunc' => 'plaintext',
+                      'dbdatatype' => 'char',
+                      'outputformat' => 'text',
+                      'addtypetoheading' => $addtypetoheading
+                )
+        );
         $columnoptions[] = new rb_column_option(
                 $groupname,
                 'EMPLOYEE_NUMBER',

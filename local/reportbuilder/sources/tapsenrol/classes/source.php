@@ -84,8 +84,6 @@ class source extends rb_base_source {
 
         $columnoptions = [];
         // Include some standard columns, override parent so they say certification.
-        $this->add_course_category_fields_to_columns($columnoptions);
-        $this->add_course_fields_to_columns($columnoptions);
         $this->add_user_fields_to_columns($columnoptions);
         $this->add_staff_details_to_columns($columnoptions);
 
@@ -106,7 +104,7 @@ class source extends rb_base_source {
         $columnoptions[] = new rb_column_option(
                 'class',
                 "coursename",
-                get_string('coursename', 'local_reportbuilder'),
+                get_string('classcoursename', 'local_reportbuilder'),
                 "coalesce(base.coursename, base.classname)",
                 array(
                         'extrafields' => array('classcoursename' => 'base.classname'))
@@ -234,7 +232,7 @@ class source extends rb_base_source {
         $columnoptions[] = new rb_column_option(
                 'tapscourse',
                 'coursecode',
-                get_string('coursecode', 'local_reportbuilder'),
+                get_string('tapscoursecode', 'local_reportbuilder'),
                 'tapscourse.coursecode',
                 array('joins'        => 'tapscourse',
                       'displayfunc'  => 'plaintext',
@@ -244,7 +242,7 @@ class source extends rb_base_source {
         $columnoptions[] = new rb_column_option(
                 'tapscourse',
                 'courseregion',
-                get_string('courseregion', 'local_reportbuilder'),
+                get_string('tapscourseregion', 'local_reportbuilder'),
                 'tapscourse.courseregion',
                 array('joins'        => 'tapscourse',
                       'displayfunc'  => 'plaintext',
@@ -254,7 +252,7 @@ class source extends rb_base_source {
         $columnoptions[] = new rb_column_option(
                 'tapscourse',
                 'tapscoursename',
-                get_string('coursename', 'local_reportbuilder'),
+                get_string('tapscoursename', 'local_reportbuilder'),
                 'tapscourse.coursename',
                 array('joins'        => 'tapscourse',
                       'displayfunc'  => 'plaintext',
@@ -268,8 +266,6 @@ class source extends rb_base_source {
     protected function define_joinlist() {
         $joinlist = [];
 
-        $this->add_user_table_to_joinlist_on_idnumber($joinlist, 'base', 'staffid');
-
         $joinlist[] = new rb_join(
                 'tapscourse',
                 'LEFT',
@@ -277,30 +273,8 @@ class source extends rb_base_source {
                 "base.courseid = tapscourse.courseid",
                 REPORT_BUILDER_RELATION_MANY_TO_ONE
         );
-        $joinlist[] = new rb_join(
-                'arupadvertdatatype_taps',
-                'LEFT',
-                '{arupadvertdatatype_taps}',
-                "base.courseid = arupadvertdatatype_taps.tapscourseid",
-                REPORT_BUILDER_RELATION_MANY_TO_ONE
-        );
-        $joinlist[] = new rb_join(
-                'arupadvert',
-                'LEFT',
-                '{arupadvert}',
-                "arupadvertdatatype_taps.arupadvertid = arupadvert.id",
-                REPORT_BUILDER_RELATION_MANY_TO_ONE,
-                'arupadvertdatatype_taps'
-        );
 
-        $this->add_course_table_to_joinlist($joinlist, 'arupadvert', 'course', 'LEFT');
-        $this->add_context_table_to_joinlist($joinlist, 'course', 'id', CONTEXT_COURSE, 'LEFT');
-        // requires the course join
-        $this->add_course_category_table_to_joinlist($joinlist,
-                'course', 'category');
-        $this->add_core_tag_tables_to_joinlist('core', 'course', $joinlist, 'course', 'id');
-
-        $this->add_cohort_course_tables_to_joinlist($joinlist, 'course', 'id');
+        $this->add_user_table_to_joinlist_on_idnumber($joinlist, 'base', 'staffid');
 
         return $joinlist;
     }
@@ -322,13 +296,6 @@ class source extends rb_base_source {
         );
 
         $contentoptions[] = new rb_content_option(
-                'enrolledcourses',
-                get_string('enrolledcourses', 'local_reportbuilder'),
-                'course.id',
-                'course'
-        );
-
-        $contentoptions[] = new rb_content_option(
                 'costcentre',
                 get_string('costcentre', 'local_reportbuilder'),
                 ['costcentre' => "auser.icq"],
@@ -340,11 +307,6 @@ class source extends rb_base_source {
 
     protected function define_filteroptions() {
         $filteroptions = array();
-
-        $this->add_user_fields_to_filters($filteroptions);
-        $this->add_staff_fields_to_filters($filteroptions);
-        $this->add_course_category_fields_to_filters($filteroptions);
-        $this->add_course_fields_to_filters($filteroptions);
 
         $filteroptions[] = new rb_filter_option(
                 'class',
@@ -360,7 +322,7 @@ class source extends rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 'class',
                 'coursename',
-                get_string('coursename', 'local_reportbuilder'),
+                get_string('classcoursename', 'local_reportbuilder'),
                 'text'
         );
 
@@ -428,14 +390,14 @@ class source extends rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 'tapscourse',
                 'tapscoursename',
-                get_string('coursename', 'local_reportbuilder'),
+                get_string('tapscoursename', 'local_reportbuilder'),
                 'text'
         );
 
         $filteroptions[] = new rb_filter_option(
                 'tapscourse',
                 'coursecode',
-                get_string('coursecode', 'local_reportbuilder'),
+                get_string('tapscoursecode', 'local_reportbuilder'),
                 'text'
         );
 
