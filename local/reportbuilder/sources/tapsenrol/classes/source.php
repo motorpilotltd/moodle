@@ -308,6 +308,9 @@ class source extends rb_base_source {
     protected function define_filteroptions() {
         $filteroptions = array();
 
+        $this->add_user_fields_to_filters($filteroptions);
+        $this->add_staff_fields_to_filters($filteroptions);
+
         $filteroptions[] = new rb_filter_option(
                 'class',
                 'cpdorlms',
