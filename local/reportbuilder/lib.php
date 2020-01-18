@@ -484,7 +484,7 @@ class reportbuilder {
         global $CFG;
 
         if (empty($CFG->enablereportcaching)) {
-            $enablelink = new moodle_url("/".$CFG->admin."/settings.php", array('section' => 'optionalsubsystems'));
+            $enablelink = new moodle_url("/".$CFG->admin."/settings.php", array('section' => 'rbsettings'));
             return array(get_string('reportcachingdisabled', 'local_reportbuilder', $enablelink->out()));
         }
 
@@ -5043,7 +5043,7 @@ function sql_drop_table_if_exists($table) {
             $sql = "IF OBJECT_ID('dbo.{$table}','U') IS NOT NULL DROP TABLE dbo.{$table}";
             break;
         case 'mysql':
-            $sql = "DROP TABLE IF EXISTS \"{$table}\"";
+            $sql = "DROP TABLE IF EXISTS `{$table}`";
             break;
         case 'postgres':
         default:
@@ -5103,7 +5103,7 @@ function sql_table_from_select($table, $select, array $params) {
     $hashtablename = substr(md5($table), 0, 15);
     switch ($DB->get_dbfamily()) {
         case 'mysql':
-            $columnssql = "SHOW COLUMNS FROM \"{$table}\"";
+            $columnssql = "SHOW COLUMNS FROM `{$table}`";
             $indexsql = "CREATE INDEX rb_cache_{$hashtablename}_%1\$s ON {$table} (%2\$s)";
             $indexlongsql = "CREATE INDEX rb_cache_{$hashtablename}_%1\$s ON {$table} (%2\$s(%3\$d))";
             $fieldname = 'field';
@@ -5113,11 +5113,11 @@ function sql_table_from_select($table, $select, array $params) {
 
             // Do we know collation?
             $collation = $DB->get_dbcollation();
-            $charset = $DB->get_charset();
+            $charset = \local_reportbuilder\dblib\base::getbdlib()->get_charset();
             $collationsql = "DEFAULT CHARACTER SET {$charset} DEFAULT COLLATE = {$collation}";
             $rowformat = "ROW_FORMAT = Compressed";
 
-            $sql = "CREATE TABLE \"{$table}\" $enginesql $collationsql $rowformat $select";
+            $sql = "CREATE TABLE `{$table}` $enginesql $collationsql $rowformat $select";
             $trans = $DB->start_delegated_transaction();
             $result = $DB->execute($sql, $params);
             $trans->allow_commit();

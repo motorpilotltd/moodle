@@ -190,6 +190,16 @@ class source extends rb_base_source {
                         'dbdatatype' => 'boolean',
                 )
         );
+
+        $columnoptions[] = new rb_column_option(
+                'class',
+                'cpdorlms',
+                get_string('cpdorlmsbool', 'rbsource_tapsenrol'),
+                "CASE WHEN base.cpdid = '' OR base.cpdid is null THEN 0 ELSE 1 END",
+                array(
+                        'dbdatatype' => 'boolean',
+                )
+        );
         $columnoptions[] = new rb_column_option(
                 'class',
                 'bookingplaceddate',
@@ -286,8 +296,8 @@ class source extends rb_base_source {
         $contentoptions[] = new rb_content_option(
                 'user',
                 get_string('user', 'local_reportbuilder'),
-                ['userid' => 'user.id'],
-                'user'
+                ['userid' => 'auser.id'],
+                'auser'
         );
 
         $contentoptions[] = new rb_content_option(
@@ -317,14 +327,13 @@ class source extends rb_base_source {
 
         $filteroptions[] = new rb_filter_option(
                 'class',
-                'cpd',
+                'cpdorlms',
                 get_string('cpdorlms', 'rbsource_tapsenrol'),
                 'select',
                 array(
                         'selectchoices' => array(0 => get_string('lms', 'rbsource_tapsenrol'), 1 => get_string('cpd', 'rbsource_tapsenrol')),
                         'simplemode' => true
-                ),
-                "(CASE WHEN base.cpdid = '' OR base.cpdid is null THEN 0 ELSE 1 END)"
+                )
         );
 
         $filteroptions[] = new rb_filter_option(
@@ -332,6 +341,60 @@ class source extends rb_base_source {
                 'classname',
                 get_string('classname', 'local_reportbuilder'),
                 'text'
+        );
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classstartdate',
+                get_string('classstartdate', 'local_reportbuilder'),
+                'date',
+                array('castdate' => true)
+        );
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classenddate',
+                get_string('classenddate', 'local_reportbuilder'),
+                'date',
+                array('castdate' => true)
+        );
+
+
+        $statuses = [
+                'W:Requested',
+                'Requested',
+                'Waiting Listed',
+                'Reserve',
+                'Wait1',
+                'Wait2',
+                'Wait3',
+                'Wait-Computing',
+                'W:Wait Listed',
+                'Wait Listed',
+                'Approved Place',
+                'Offered Place',
+                'Assessed',
+                'Full Attendance',
+                'Partial Attendance',
+                'Cancelled',
+                'Withdrawn',
+                'No Place',
+                'Dropped Out',
+                'Class Postponed',
+                'Class No Longer Required',
+                'Date Inappropriate',
+                'No Response',
+                'No Show',
+                'Course Full'];
+        $options = array_combine($statuses, $statuses);
+
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'bookingstatus',
+                get_string('bookingstatus', 'local_reportbuilder'),
+                'select',
+                array(
+                        'selectchoices' => $options,
+                        'simplemode' => true
+                )
         );
 
         return $filteroptions;
