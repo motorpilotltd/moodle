@@ -113,6 +113,8 @@ class theme_arup_core_renderer extends theme_bootstrap_core_renderer {
      * Shows the user time.
      */
     public function display_usertime() {
+        global $USER;
+
         $usertimezone = '';
         if (!empty($USER->timezone)) {
             $usertimezone = $USER->timezone;
