@@ -1,10 +1,13 @@
 <?php
 
-$string['sourcetitle'] = 'Taps class enrolments';
-$string['type_class'] = 'Class';
+$string['sourcetitle'] = 'Taps Class Enrolments';
+$string['type_class'] = 'Taps Class';
+$string['type_tapscourse'] = 'Taps Course';
 $string['archived'] = 'Archived';
+$string['bookingstatus'] = 'Booking status';
 
 
-$string['cpdorlms'] = 'CPD or LMS';
+$string['cpdorlms'] = 'Class CPD or LMS';
+$string['cpdorlmsbool'] = 'Class CPD or LMS (boolean)';
 $string['cpd'] = 'CPD';
 $string['lms'] = 'LMS';

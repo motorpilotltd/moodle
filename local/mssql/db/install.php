@@ -30,8 +30,9 @@
 function xmldb_local_mssql_install() {
     global $DB, $CFG, $OUTPUT;
 
+    $serverinfo = $DB->get_server_info();
     // Install group_concat stored procedure to MSSQL server.
-    if ($DB->get_dbfamily() == 'mssql') {
+    if ($DB->get_dbfamily() == 'mssql' && $serverinfo['description'] !== 'mssqlubuntu') {
         // Check if assembly already exists.
         if (!$DB->get_record_sql('SELECT * FROM sys.assemblies WHERE name = ?',
                 array('GroupConcat'))) {

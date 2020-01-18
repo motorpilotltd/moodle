@@ -233,6 +233,9 @@ class feedback {
     public function store_feedback_recipient($data) {
         global $DB;
 
+        // Trim and make it lowercase for consistency.
+        $data->email = \core_text::strtolower(trim($data->email));
+
         if ($data->formid > 0) {
             $params = array(
                 'appraisalid' => $this->appraisal->appraisal->id,
@@ -246,7 +249,7 @@ class feedback {
             $fb = new stdClass();
             $fb->lang = $data->language; // Only available/set on creation.
         }
-        if (empty($fb->email) || (!empty($fb->email) && ($fb->email != \core_text::strtolower($data->email)))) {
+        if (empty($fb->email) || (!empty($fb->email) && $fb->email != $data->email)) {
             $fb->password = $this->get_random_string();
 
             // Defaults.
@@ -265,8 +268,7 @@ class feedback {
         $fb->additional_message = !empty($data->emailtext) ? $data->emailtext : ''; // Only available/set on creation.
         $fb->firstname = $data->firstname;
         $fb->lastname = $data->lastname;
-        // Make it lowercase for consistency.
-        $fb->email = \core_text::strtolower($data->email);
+        $fb->email = $data->email;
 
         if ($data->hascustomemail) {
             // Don't user nl2br() as doesn't actually remove line breaks, resulting in extra whitespace.
@@ -290,7 +292,7 @@ class feedback {
         if ($fbexisting) {
             $this->appraisal->set_action('email', $fbexisting->id);
             $this->appraisal->failed_action('feedback_inuse');
-            return;
+            return false;
         }
 
         // Get email variables in preparation.
@@ -313,21 +315,28 @@ class feedback {
             $result = $fb->id = $DB->insert_record('local_appraisal_feedback', $fb);
         }
 
+        $this->appraisal->set_action('email', $fb->id);
+
         // If OK, email contributor.
-        if ($result) {
-            $this->appraisal->set_action('email', $fb->id);
-
-            $emailvars->emailmsg = $fb->customemail;
-
-            if ($fb->feedback_user_type == 'appraiser') {
-                $feedbackmail = new email('appraiserfeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraiser, array(), $fb->lang);
-            } else {
-                $feedbackmail = new email('appraiseefeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraisee, array(), $fb->lang);
-            }
-
-            $feedbackmail->prepare();
-            $feedbackmail->send();
+        if (!$result) {
+            return false;
         }
+
+        $emailvars->emailmsg = $fb->customemail;
+
+        if ($fb->feedback_user_type == 'appraiser') {
+            $feedbackmail = new email('appraiserfeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraiser, array(), $fb->lang);
+        } else {
+            $feedbackmail = new email('appraiseefeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraisee, array(), $fb->lang);
+        }
+
+        $feedbackmail->prepare();
+        if (!$feedbackmail->send()) {
+            $this->appraisal->failed_action('feedback');
+            return false;
+        }
+
+        return true;
     }
 
     public function get_feedback_vars($fb) {
@@ -356,39 +365,43 @@ class feedback {
         if ($data->buttonclicked == 1) {
             $submitted = true;
             $this->appraisal->set_action('userfeedback', $data->feedbackid);
-        } else if ($data->buttonclicked == 2 ) {
+        } else {
+            // Default to saving as draft.
             $draft = true;
             $this->appraisal->set_action('savedraft', $data->feedbackid);
-        } else {
-            $this->appraisal->set_action('userfeedback', $data->feedbackid);
-            $this->appraisal->failed_action('feedback');
-            return;
         }
 
         // Get this feedback.
-        if ($fb = $DB->get_record('local_appraisal_feedback', array('id' => $data->feedbackid, 'password' => $data->pw))) {
-
-            $fb->feedback = $data->feedback;
-            $fb->feedback_2 = $data->feedback_2;
-            // $fb->confidential = $data->confidential;
-
-            if ($submitted) {
-                $fb->received_date = time();
-            }
-
-            // Add this to the current record.
-            if ($DB->update_record('local_appraisal_feedback', $fb)) {
-
-                if ($submitted) {
-                    // trigger completed event.
-                    $event = \local_onlineappraisal\event\feedback_completed::create(array('objectid' => $fb->id));
-                    $event->trigger();
-                }
-                if ($submitted || $draft) {
-                    $this->appraisal->complete_action('feedback');
-                }
-            }
+        $fb = $DB->get_record('local_appraisal_feedback', array('id' => $data->feedbackid, 'password' => $data->pw));
+        if (!$fb) {
+            $this->appraisal->failed_action('feedback');
+            return false;
         }
+
+        $fb->feedback = $data->feedback;
+        $fb->feedback_2 = $data->feedback_2;
+        // $fb->confidential = $data->confidential;
+
+        if ($submitted) {
+            $fb->received_date = time();
+        }
+
+        // Add this to the current record.
+        if (!$DB->update_record('local_appraisal_feedback', $fb)) {
+            $this->appraisal->failed_action('feedback');
+            return false;
+        }
+
+        if ($submitted) {
+            // trigger completed event.
+            $event = \local_onlineappraisal\event\feedback_completed::create(array('objectid' => $fb->id));
+            $event->trigger();
+        }
+        if ($submitted || $draft) {
+            $this->appraisal->complete_action('feedback');
+        }
+
+        return true;
     }
 
     /**

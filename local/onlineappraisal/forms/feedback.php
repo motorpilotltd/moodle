@@ -184,7 +184,7 @@ class apform_feedback extends moodleform {
      */
     public function store_data(\local_onlineappraisal\forms $forms, $data) {
         $feedback = new \local_onlineappraisal\feedback($forms->appraisal);
-        $feedback->store_feedback_recipient($data);
+        return $feedback->store_feedback_recipient($data);
     }
 
     /**

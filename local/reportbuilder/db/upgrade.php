@@ -60,5 +60,19 @@ function xmldb_local_reportbuilder_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017091908, 'local', 'reportbuilder');
     }
 
+    if ($oldversion < 2017091909) {
+
+        $sql = "delete
+from {tool_customlang}
+where componentid in (
+    select id
+    from {tool_customlang_components}
+    where name = 'local_reportbuilder')";
+        $DB->execute($sql);
+
+        // Iomad_track savepoint reached.
+        upgrade_plugin_savepoint(true, 2017091909, 'local', 'reportbuilder');
+    }
+
     return true;
 }

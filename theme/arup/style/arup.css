@@ -25682,6 +25682,14 @@ img.media-object {
     margin-top: 7px;
   }
 }
+@media (max-width: 480px) {
+  .navbar-nav.usermenu .moodleuser .caret {
+    display: none;
+  }
+  .navbar-nav.usermenu .setusertime {
+    display: none;
+  }
+}
 @media (max-width: 768px) {
   #moodle-navbar {
     width: 100%;

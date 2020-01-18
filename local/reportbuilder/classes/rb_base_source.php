@@ -1990,6 +1990,7 @@ abstract class rb_base_source {
             'department' => get_string('userdepartment', 'local_reportbuilder'),
             'address' => get_string('useraddress', 'local_reportbuilder'),
             'city' => get_string('usercity', 'local_reportbuilder'),
+            'icq' => get_string('costcentre', 'local_reportbuilder'),
         );
         foreach ($fields as $field => $name) {
             $columnoptions[] = new rb_column_option(
@@ -2118,7 +2119,6 @@ abstract class rb_base_source {
                 'EMAIL_ADDRESS',
                 'INTERNAL_LOCATION',
                 'LATEST_HIRE_DATE',
-                'GRADE',
                 'CORE_JOB_TITLE',
                 'GEO_REGION',
                 'COMPANY_CODE',
@@ -2140,7 +2140,7 @@ abstract class rb_base_source {
             $columnoptions[] = new rb_column_option(
                     $groupname,
                     $field,
-                    get_string($field, 'local_reportbuilder'),
+                    get_string(strtolower($field), 'local_reportbuilder'),
                     "{$join}.$field",
                     array('joins' => "{$join}",
                           'displayfunc' => 'plaintext',
@@ -2152,8 +2152,20 @@ abstract class rb_base_source {
         }
         $columnoptions[] = new rb_column_option(
                 $groupname,
+                'GRADE',
+                get_string('staffgrade', 'local_reportbuilder'),
+                "{$join}.GRADE",
+                array('joins' => "{$join}",
+                      'displayfunc' => 'plaintext',
+                      'dbdatatype' => 'char',
+                      'outputformat' => 'text',
+                      'addtypetoheading' => $addtypetoheading
+                )
+        );
+        $columnoptions[] = new rb_column_option(
+                $groupname,
                 'EMPLOYEE_NUMBER',
-                get_string('EMPLOYEE_NUMBER', 'local_reportbuilder'),
+                get_string('employee_number', 'local_reportbuilder'),
                 "{$join}.EMPLOYEE_NUMBER",
                 array('joins' => "{$join}",
                       'displayfunc' => 'plaintext',
@@ -2165,7 +2177,7 @@ abstract class rb_base_source {
         $columnoptions[] = new rb_column_option(
                 $groupname,
                 'SUP_EMPLOYEE_NUMBER',
-                get_string('SUP_EMPLOYEE_NUMBER', 'local_reportbuilder'),
+                get_string('sup_employee_number', 'local_reportbuilder'),
                 "{$join}.SUP_EMPLOYEE_NUMBER",
                 array('joins' => "{$join}",
                       'displayfunc' => 'plaintext',
@@ -2196,7 +2208,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'region',
-                get_string('REGION_NAME', 'local_reportbuilder'),
+                get_string('region_name', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('REGION_NAME'),
@@ -2209,7 +2221,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'georegion',
-                get_string('GEO_REGION', 'local_reportbuilder'),
+                get_string('geo_region', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('GEO_REGION'),
@@ -2222,7 +2234,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'location',
-                get_string('LOCATION_NAME', 'local_reportbuilder'),
+                get_string('location_name', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('LOCATION_NAME'),
@@ -2235,7 +2247,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'groupname',
-                get_string('GROUP_NAME', 'local_reportbuilder'),
+                get_string('group_name', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('GROUP_NAME'),
@@ -2248,7 +2260,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'centrename',
-                get_string('CENTRE_NAME', 'local_reportbuilder'),
+                get_string('centre_name', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('CENTRE_NAME'),
@@ -2261,7 +2273,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'centrecode',
-                get_string('CENTRE_CODE', 'local_reportbuilder'),
+                get_string('centre_code', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('CENTRE_CODE'),
@@ -2274,7 +2286,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'companycode',
-                get_string('COMPANY_CODE', 'local_reportbuilder'),
+                get_string('company_code', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('COMPANY_CODE'),
@@ -2285,9 +2297,9 @@ abstract class rb_base_source {
         );
 
         $fields = array(
-                'FIRST_NAME' => get_string('FIRST_NAME', 'local_reportbuilder'),
-                'LAST_NAME' => get_string('LAST_NAME', 'local_reportbuilder'),
-                'EMAIL_ADDRESS' => get_string('EMAIL_ADDRESS', 'local_reportbuilder'),
+                'FIRST_NAME' => get_string('first_name', 'local_reportbuilder'),
+                'LAST_NAME' => get_string('last_name', 'local_reportbuilder'),
+                'EMAIL_ADDRESS' => get_string('email_address', 'local_reportbuilder'),
         );
 
         foreach ($fields as $field => $name) {
@@ -2305,7 +2317,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'EMPLOYEE_NUMBER',
-                get_string('EMPLOYEE_NUMBER', 'local_reportbuilder'),
+                get_string('employee_number', 'local_reportbuilder'),
                 'number',
                 array('addtypetoheading' => $addtypetoheading),
                 "{$join}.EMPLOYEE_NUMBER",
@@ -2315,7 +2327,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'SUP_EMPLOYEE_NUMBER',
-                get_string('SUP_EMPLOYEE_NUMBER', 'local_reportbuilder'),
+                get_string('sup_employee_number', 'local_reportbuilder'),
                 'number',
                 array('addtypetoheading' => $addtypetoheading),
                 "{$join}.SUP_EMPLOYEE_NUMBER",
@@ -2372,6 +2384,7 @@ abstract class rb_base_source {
             'address' => get_string('useraddress', 'local_reportbuilder'),
             'city' => get_string('usercity', 'local_reportbuilder'),
             'email' => get_string('useremail', 'local_reportbuilder'),
+            'icq' => get_string('costcentre', 'local_reportbuilder'),
         );
         // Only include this filter if email is among fields allowed by showuseridentity setting or
         // if the current user has the 'moodle/site:config' capability.
