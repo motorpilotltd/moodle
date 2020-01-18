@@ -662,5 +662,24 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018010107, 'local', 'onlineappraisal');
     }
 
+    if ($oldversion < 2018010111) {
+        // Tidy up feeback contributor emails that are not trimmed.
+        $spacebefore = $DB->sql_like('email', ':spacebefore');
+        $spaceafter = $DB->sql_like('email', ':spaceafter');
+        $select = "{$spacebefore} OR {$spaceafter}";
+        $params = [
+            'spacebefore' => ' %',
+            'spaceafter' => '% ',
+        ];
+        $requests = $DB->get_records_select('local_appraisal_feedback', $select, $params);
+        foreach ($requests as $request) {
+            $request->email = trim($request->email);
+            $DB->update_record('local_appraisal_feedback', $request);
+        }
+
+        // Onlineappraisal savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010111, 'local', 'onlineappraisal');
+    }
+
     return true;
 }
