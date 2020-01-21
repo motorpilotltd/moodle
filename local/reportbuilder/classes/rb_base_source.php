@@ -786,6 +786,52 @@ abstract class rb_base_source {
         return implode('', $output);
     }
 
+    public function rb_display_iconsingle($data, $row, $isexport = false) {
+        global $CFG;
+
+        if ($isexport) {
+            return $data;
+        }
+
+        static $context;
+        if (!isset($context)) {
+            $context = context_system::instance();
+        }
+        static $imagesbyfieldid = [];
+        if (!isset($imagesbyfieldid[$row->fieldid])) {
+            $fs = get_file_storage();
+            $imagesbyfieldid[$row->fieldid] = $fs->get_area_files($context->id, 'local_coursemetadata', "icons_{$row->fieldid}");
+        }
+        static $types = ['.png', '.jpg', '.jpeg', '.gif'];
+
+        if ($imagesbyfieldid[$row->fieldid]) {
+            $filearea = "icons_{$row->fieldid}";
+            foreach ($types as $type) {
+                $filename = $data.$type;
+                foreach ($imagesbyfieldid[$row->fieldid] as $file) {
+                    if ($file->get_filename() == $filename) {
+                        $imagesrc = "{$CFG->wwwroot}/pluginfile.php/{$context->id}/local_coursemetadata/{$filearea}/{$data}{$type}";
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        if (isset($imagesrc)) {
+            return html_writer::empty_tag(
+                    'img',
+                    array(
+                            'src' => $imagesrc,
+                            'alt' => $data,
+                            'title' => $data,
+                            'class' => 'coursemetadata iconsingle'
+                    )
+            );
+        } else {
+            return html_writer::tag('span', $data, array('class' => 'coursemetadata iconsingle'));
+        }
+    }
+
     /**
      * Display correct course grade via grade or RPL as a percentage string
      *
@@ -3319,6 +3365,13 @@ abstract class rb_base_source {
                     $column_options['outputformat'] = 'text';
                     break;
 
+                case 'iconsingle':
+                    $column_options['displayfunc'] = 'iconsingle';
+                    $column_options['outputformat'] = 'text';
+                    $column_options['extrafields'] = array(
+                            "fieldid" => "{$joinname}.fieldid"
+                    );
+                    break;
                 default:
                     // Unsupported customfields. e.g multiselect
                     continue 2;
@@ -3332,8 +3385,14 @@ abstract class rb_base_source {
                     REPORT_BUILDER_RELATION_ONE_TO_ONE,
                     $join
                 );
+
+            $coltype = $cf_prefix;
+
+            if ($coltype == 'coursemetadata') {
+                $coltype = 'course';
+            }
             $columnoptions[] = new rb_column_option(
-                    $cf_prefix,
+                    $coltype,
                     $value,
                     $name,
                     $columnsql,
@@ -3346,7 +3405,7 @@ abstract class rb_base_source {
             } else {
                 if (!$nofilter) {
                     $filteroptions[] = new rb_filter_option(
-                        $cf_prefix,
+                            $coltype,
                         $value,
                         $name,
                         $filtertype,
@@ -3586,13 +3645,13 @@ abstract class rb_base_source {
         array &$filteroptions, $basetable = 'course') {
         global $CFG;
 
-        if (!file_exists($CFG->dirroot . 'local/coursemetadata/version.php')) {
+        if (!file_exists($CFG->dirroot . '/local/coursemetadata/version.php')) {
             return true;
         }
 
         return $this->add_custom_fields_for('coursemetadata',
                                             $basetable,
-                                            'courseid',
+                                            'course',
                                             $joinlist,
                                             $columnoptions,
                                             $filteroptions);
