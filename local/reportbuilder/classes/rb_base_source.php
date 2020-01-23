@@ -1761,17 +1761,23 @@ abstract class rb_base_source {
      * @param string $alias Use custom user table alias
      * @return boolean True
      */
-    protected function add_user_table_to_joinlist(&$joinlist, $join, $field, $alias = 'auser') {
+    protected function add_user_table_to_joinlist(&$joinlist, $join, $field, $alias = 'auser', $countable = false) {
         if (isset($this->addeduserjoins[$alias])) {
             debugging("User join '{$alias}' was already added to the source", DEBUG_DEVELOPER);
         } else {
             $this->addeduserjoins[$alias] = array('join' => $join);
         }
 
+        if ($countable) {
+            $jointype = 'INNER';
+        } else {
+            $jointype = 'LEFT';
+        }
+
         // join uses 'auser' as name because 'user' is a reserved keyword
         $joinlist[] = new rb_join(
             $alias,
-            'LEFT',
+                $jointype,
             '{user}',
             "{$alias}.id = $join.$field",
             REPORT_BUILDER_RELATION_ONE_TO_ONE,

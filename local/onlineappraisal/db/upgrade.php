@@ -681,5 +681,41 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018010111, 'local', 'onlineappraisal');
     }
 
+    if ($oldversion < 2018010112) {
+        $table = new xmldb_table('local_appraisal_data');
+        $index = new xmldb_index('form_field', XMLDB_INDEX_UNIQUE, array('form_id', 'name'));
+        if ($dbman->table_exists($table) && !$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+
+        $table = new xmldb_table('local_appraisal_forms');
+        $index = new xmldb_index('form_appraisal', XMLDB_INDEX_UNIQUE, array('appraisalid', 'form_name'));
+        if ($dbman->table_exists($table) && !$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Main savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010112, 'local', 'onlineappraisal');
+    }
+
+    if ($oldversion < 2018010113) {
+        $table = new xmldb_table('local_appraisal_comment');
+        $index = new xmldb_index('commentappraisalid', XMLDB_INDEX_NOTUNIQUE, array('appraisalid'));
+        if ($dbman->table_exists($table) && !$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+
+        $table = new xmldb_table('local_appraisal_checkins');
+        $index = new xmldb_index('checkinappraisalid', XMLDB_INDEX_NOTUNIQUE, array('appraisalid'));
+        if ($dbman->table_exists($table) && !$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Main savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010113, 'local', 'onlineappraisal');
+    }
+
     return true;
 }
