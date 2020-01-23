@@ -1900,3 +1900,6 @@ $string['regionany'] = 'Any';
 $string['regionother'] = 'Other';
 
 $string['costcentre'] = 'Cost centre';
+$string['columntextname'] = '{$a} (text)';
+
+$string['iscpd'] = 'Is CPD';

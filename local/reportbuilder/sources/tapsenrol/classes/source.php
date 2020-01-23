@@ -161,6 +161,16 @@ class source extends rb_base_source {
                         'dbdatatype'   => 'char',
                         'outputformat' => 'text')
         );
+        $columnoptions[] = new rb_column_option(
+                'class',
+                'classprice',
+                get_string('classprice', 'rbsource_tapsenrol'),
+                $DB->sql_concat('base.price', "' '", 'base.currencycode'),
+                array(
+                        'displayfunc'  => 'plaintext',
+                        'dbdatatype'   => 'char',
+                        'outputformat' => 'text')
+        );
 
         $enrolmentfields = ['learningdesc', 'classcategory', 'provider'];
 
@@ -300,6 +310,12 @@ class source extends rb_base_source {
                 get_string('costcentre', 'local_reportbuilder'),
                 ['costcentre' => "auser.icq"],
                 'auser'
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'iscpd',
+                get_string('iscpd', 'local_reportbuilder'),
+                'base.cpdid'
         );
 
         return $contentoptions;

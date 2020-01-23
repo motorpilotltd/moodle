@@ -3377,6 +3377,9 @@ abstract class rb_base_source {
                     $column_options['extrafields'] = array(
                             "fieldid" => "{$joinname}.fieldid"
                     );
+                    $filtertype = 'menuofchoices';
+                    $filter_options['selectchoices'] = $this->list_to_array($record->param1,"\n");
+                    $filter_options['simplemode'] = true;
                     break;
                 default:
                     // Unsupported customfields. e.g multiselect
@@ -3404,6 +3407,17 @@ abstract class rb_base_source {
                     $columnsql,
                     $column_options
                 );
+            if ($record->datatype == 'iconsingle') {
+                unset($column_options['displayfunc']);
+                $textname = get_string('columntextname', 'local_reportbuilder', $name);
+                $columnoptions[] = new rb_column_option(
+                        $coltype,
+                        $value . '_text',
+                        $textname,
+                        $columnsql,
+                        $column_options
+                );
+            }
 
             if ($record->datatype == 'file') {
                 // No filter options for files yet.

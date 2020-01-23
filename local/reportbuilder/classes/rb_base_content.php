@@ -398,6 +398,110 @@ class rb_costcentre_content extends rb_base_content {
 /*
  * Restrict content by a particular user or group of users
  */
+class rb_iscpd_content extends rb_base_content {
+
+    /**
+     * Generate the SQL to apply this content restriction.
+     *
+     * @param array $field      SQL field to apply the restriction against
+     * @param integer $reportid ID of the report
+     *
+     * @return array containing SQL snippet to be used in a WHERE clause, as well as array of SQL params
+     */
+    public function sql_restriction($field, $reportid) {
+        global $CFG, $DB;
+
+
+        // remove rb_ from start of classname.
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+
+
+        if (!isset($settings['iscpd_chk'])) {
+            return array(' (1 = 1) ', array());
+        }
+
+        if (empty($settings['iscpd_chk'])) {
+            $sql = "$field is null";
+        } else {
+            $sql = "$field is not null and $field > 0";
+        }
+        return array(" ($sql) ", []);
+    }
+
+    /**
+     * Generate a human-readable text string describing the restriction
+     *
+     * @param string $title Name of the field being restricted
+     * @param integer $reportid ID of the report
+     *
+     * @return string Human readable description of the restriction
+     */
+    public function text_restriction($title, $reportid) {
+        return '';
+    }
+
+
+    /**
+     * Adds form elements required for this content restriction's settings page
+     *
+     * @param object &$mform Moodle form object to modify (passed by reference)
+     * @param integer $reportid ID of the report being adjusted
+     * @param string $title Name of the field the restriction is acting on
+     */
+    public function form_template(&$mform, $reportid, $title) {
+
+        // get current settings
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $enable = reportbuilder::get_setting($reportid, $type, 'enable');
+        $iscpd = reportbuilder::get_setting($reportid, $type, 'iscpd_chk');
+
+        $mform->addElement('header', 'iscpdheader', get_string('showbyx',
+            'local_reportbuilder', lcfirst($title)));
+        $mform->setExpanded('iscpdheader');
+        $mform->addElement('checkbox', 'iscpd_enable', '',
+            get_string('showbasedonx', 'local_reportbuilder', lcfirst($title)));
+        $mform->disabledIf('iscpd_enable', 'contentenabled', 'eq', 0);
+        $mform->setDefault('iscpd_enable', $enable);
+
+        $mform->addElement('advcheckbox', 'iscpd_chk', get_string('iscpd', 'local_reportbuilder'));
+        $mform->setDefault('iscpd_chk', $iscpd);
+
+        $mform->disabledIf('iscpd_chk', 'iscpd_enable', 'notchecked');
+    }
+
+    /**
+     * Processes the form elements created by {@link form_template()}
+     *
+     * @param integer $reportid ID of the report to process
+     * @param object $fromform Moodle form data received via form submission
+     *
+     * @return boolean True if form was successfully processed
+     */
+    public function form_process($reportid, $fromform) {
+        $status = true;
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+
+        // enable checkbox option
+        $enable = (isset($fromform->iscpd_enable) &&
+            $fromform->iscpd_enable) ? 1 : 0;
+        $status = $status && reportbuilder::update_setting($reportid, $type,
+            'enable', $enable);
+
+        if (isset($fromform->iscpd_enable)) {
+            $status = $status && reportbuilder::update_setting($reportid, $type,
+                            'iscpd_chk', $fromform->iscpd_chk);
+        }
+
+        return $status;
+    }
+}
+
+/*
+ * Restrict content by a particular user or group of users
+ */
 class rb_bookingstatus_content extends rb_base_content {
 
     /**

@@ -11,3 +11,4 @@ $string['cpdorlms'] = 'Class CPD or LMS';
 $string['cpdorlmsbool'] = 'Class CPD or LMS (boolean)';
 $string['cpd'] = 'CPD';
 $string['lms'] = 'LMS';
+$string['classprice'] = 'Class price';
