@@ -696,7 +696,7 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
                   FROM mdl_user
                  WHERE mdl_user.email = mdl_local_appraisal_feedback.email";
 
-        $DB->execute($query, $sql);
+        $DB->execute($sql);
 
         // Onlineappraisal savepoint reached.
         upgrade_plugin_savepoint(true, 2018010113, 'local', 'onlineappraisal');
