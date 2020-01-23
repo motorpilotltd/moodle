@@ -701,7 +701,7 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         $DB->execute($sql);
 
         // Onlineappraisal savepoint reached.
-        upgrade_plugin_savepoint(true, 2018010113, 'local', 'onlineappraisal');
+        upgrade_plugin_savepoint(true, 2018010114, 'local', 'onlineappraisal');
     }
 
     // Always rebuild permissions table and cache after upgrading.
