@@ -655,9 +655,6 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Rebuild permissions table and cache.
-        \local_onlineappraisal\permissions::rebuild_permissions();
-
         // Onlineappraisal savepoint reached.
         upgrade_plugin_savepoint(true, 2018010107, 'local', 'onlineappraisal');
     }
@@ -682,7 +679,7 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018010111, 'local', 'onlineappraisal');
     }
 
-    if ($oldversion < 2018010112) {
+    if ($oldversion < 2018010113) {
         // Define field userid to be added to local_appraisal_feedback.
         $table = new xmldb_table('local_appraisal_feedback');
         $field = new xmldb_field('userid', XMLDB_TYPE_INTEGER, '10', null, null);
@@ -691,17 +688,22 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
-        $records = $DB->get_records('local_appraisal_feedback');
-        foreach ($records as $record) { 
-            if ($user = $DB->get_record('user', array('email' => $record->email))) {
-                $record->userid = $user->id;
-                $DB->update_record('local_appraisal_feedback', $record);
-            }
-        }
+
+        // Bulk update, direct in DB, query.
+        // May not be DB agnostic!
+        $sql = "UPDATE mdl_local_appraisal_feedback
+                   SET mdl_local_appraisal_feedback.userid = mdl_user.id
+                  FROM mdl_user
+                 WHERE mdl_user.email = mdl_local_appraisal_feedback.email";
+
+        $DB->execute($query, $sql);
+
         // Onlineappraisal savepoint reached.
-        upgrade_plugin_savepoint(true, 2018010112, 'local', 'onlineappraisal');
+        upgrade_plugin_savepoint(true, 2018010113, 'local', 'onlineappraisal');
     }
+
+    // Always rebuild permissions table and cache after upgrading.
+    \local_onlineappraisal\permissions::rebuild_permissions();
 
     return true;
 }
