@@ -679,7 +679,7 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018010111, 'local', 'onlineappraisal');
     }
 
-    if ($oldversion < 2018010113) {
+    if ($oldversion < 2018010114) {
         // Define field userid to be added to local_appraisal_feedback.
         $table = new xmldb_table('local_appraisal_feedback');
         $field = new xmldb_field('userid', XMLDB_TYPE_INTEGER, '10', null, null);
@@ -694,7 +694,9 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         $sql = "UPDATE mdl_local_appraisal_feedback
                    SET mdl_local_appraisal_feedback.userid = mdl_user.id
                   FROM mdl_user
-                 WHERE mdl_user.email = mdl_local_appraisal_feedback.email";
+                 WHERE mdl_user.email = mdl_local_appraisal_feedback.email
+                       AND mdl_user.suspended = 0
+                       AND mdl_user.deleted = 0";
 
         $DB->execute($sql);
 

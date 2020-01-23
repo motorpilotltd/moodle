@@ -300,7 +300,7 @@ class feedback {
 
         // Checks email if belongs to existing moodle user
         $fb->userid = null;
-        if ($user = $DB->get_record('user', array('email' => $fb->email))) {
+        if ($user = $DB->get_record('user', array('email' => $fb->email, 'suspended' => 0, 'deleted' => 0))) {
             $fb->userid = $user->id;
         }
 
