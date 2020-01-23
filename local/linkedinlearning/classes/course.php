@@ -41,13 +41,14 @@ require_once $CFG->dirroot . '/completion/completion_criteria_completion.php';
 
 class course extends \data_object {
     public $table = 'linkedinlearning_course';
-    public $required_fields = ['id', 'urn', 'title', 'primaryimageurl', 'aicclaunchurl', 'publishedat', 'lastupdatedat',
+    public $required_fields = ['id', 'urn', 'title', 'primaryimageurl', 'aicclaunchurl', 'ssolaunchurl', 'publishedat', 'lastupdatedat',
             'description', 'shortdescription', 'timetocomplete', 'available'];
 
     public $urn;
     public $title;
     public $primaryimageurl;
     public $aicclaunchurl;
+    public $ssolaunchurl;
     public $publishedat;
     public $lastupdatedat;
     public $description;
@@ -175,7 +176,7 @@ class course extends \data_object {
     private function getmoodlecourse() {
         global $DB;
 
-        $sql = "select c.* from {course} c 
+        $sql = "select c.* from {course} c
                 inner JOIN {arupadvert} aa on aa.course = c.id
                 inner JOIN {arupadvertdatatype_taps} ladt on aa.id = ladt.arupadvertid
                 inner join {local_taps_course} ltc on ladt.tapscourseid = ltc.courseid
@@ -239,7 +240,7 @@ class course extends \data_object {
 
         $course = new \stdClass();
         $course->fullname = $this->title;
-        $course->shortname = $this->title;
+        $course->shortname = $this->create_moodle_shortname();
         $course->summary = $this->shortdescription;
         $course->summaryformat = FORMAT_HTML;
         $course->groupmode = VISIBLEGROUPS;
@@ -247,7 +248,7 @@ class course extends \data_object {
         $course->defaultgroupingid = 0;
         $course->format = 'topics';
         $course->newsitems = 0;
-        $course->numsections = 2;
+        $course->numsections = 3;
         $course->enablecompletion = COMPLETION_ENABLED;
         $course->completionstartonenrol = 1;
         $course->category = $this->getlinkedinlearningcategory();
@@ -299,6 +300,9 @@ class course extends \data_object {
         course_update_section($section->course, $section, array('name' => 'LinkedIn Learning'));
 
         $section = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 2]);
+        course_update_section($section->course, $section, array('name' => 'Feedback'));
+
+        $section = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 3]);
         course_update_section($section->course, $section, array('visible' => false));
 
         // Now setup required enrolment plugins.
@@ -479,6 +483,20 @@ class course extends \data_object {
         $tapsenrolcm->groupingid = 0;
         $tapsenrolcm->completion = COMPLETION_TRACKING_AUTOMATIC;
         $tapsenrolcm->showdescription = 0;
+
+        // Availability.
+        $cohorts = array_filter(explode(',', get_config('local_linkedinlearning', 'cohorts')));
+        $children = [];
+        foreach ($cohorts as $cohort) {
+            $structure = new \stdClass();
+            $structure->id = (int) $cohort;
+            $condition = new \availability_cohort\condition($structure);
+            $children[] = $condition->save();
+        }
+        if (!empty($children)) {
+            $tapsenrolcm->availability = json_encode(\core_availability\tree::get_root_json($children, \core_availability\tree::OP_OR, true));
+        }
+
         $tapsenrolcm->coursemodule = add_course_module($tapsenrolcm);
         $tapsenrolcm->section = 0;
 
@@ -506,6 +524,63 @@ class course extends \data_object {
         $event = \core\event\course_module_created::create_from_cm($eventdata, $modcontext);
         $event->trigger();
 
+        // Add feedback activity.
+        $feedbackcm = new \stdClass();
+        $feedbackcm->course = $course->id;
+        $feedbackcm->module = $DB->get_field('modules', 'id', ['name' => 'feedback'], 'MUST_EXIST');
+        $feedbackcm->instance = 0;
+        $feedbackcm->visible = 1;
+        $feedbackcm->groupmode = VISIBLEGROUPS;
+        $feedbackcm->groupingid = 0;
+        $feedbackcm->completion = COMPLETION_TRACKING_AUTOMATIC;
+        $feedbackcm->showdescription = 0;
+        $feedbackcm->coursemodule = add_course_module($feedbackcm);
+        $feedbackcm->section = 2;
+
+        // Simple DB insertion as feedback_add_instance() does too much.
+        $feedback = new \stdClass();
+        $feedback->course = $course->id;
+        $feedback->name = 'Feedback';
+        $feedback->intro = '';
+        $feedback->introformat = 1;
+        $feedback->anonymous = 1;
+        $feedback->email_notification = 0;
+        $feedback->multiple_submit = 0;
+        $feedback->autonumbering = 0;
+        $feedback->site_after_submit = '';
+        $feedback->page_after_submit = '';
+        $feedback->page_after_submitformat = 1;
+        $feedback->publish_stats = 0;
+        $feedback->timeopen = 0;
+        $feedback->timeclose = 0;
+        $feedback->timemodified = time();
+        $feedback->completionsubmit = 1;
+        $feedback->email_addresses = null;
+
+        $feedbackcm->instance = $feedback->id = $DB->insert_record('feedback', $feedback);
+        $DB->set_field('course_modules', 'instance', $feedbackcm->instance, array('id' => $feedbackcm->coursemodule));
+
+        course_add_cm_to_section($feedbackcm->course, $feedbackcm->coursemodule, $feedbackcm->section);
+
+        set_coursemodule_visible($feedbackcm->coursemodule, $feedbackcm->visible);
+
+        // Add questions to feedback activity.
+        $feedbackitems = [];
+        include($CFG->dirroot . '/local/linkedinlearning/data/feedback_items.php');
+        foreach ($feedbackitems as $feedbackitem) {
+            $feedbackitem = (object) $feedbackitem;
+            $feedbackitem->feedback = $feedback->id;
+            $DB->insert_record('feedback_item', $feedbackitem);
+        }
+
+        $eventdata = clone $feedbackcm;
+        $eventdata->name = $feedback->name;
+        $eventdata->modname = 'feedback';
+        $eventdata->id = $eventdata->coursemodule;
+        $modcontext = \context_module::instance($eventdata->coursemodule);
+        $event = \core\event\course_module_created::create_from_cm($eventdata, $modcontext);
+        $event->trigger();
+
         // Add taps completion activity.
         $tapscompletioncm = new \stdClass();
         $tapscompletioncm->course = $course->id;
@@ -517,7 +592,7 @@ class course extends \data_object {
         $tapscompletioncm->completion = COMPLETION_TRACKING_AUTOMATIC;
         $tapscompletioncm->showdescription = 0;
         $tapscompletioncm->coursemodule = add_course_module($tapscompletioncm);
-        $tapscompletioncm->section = 2;
+        $tapscompletioncm->section = 3;
 
         $tapscompletion = new \stdClass();
         $tapscompletion->course = $course->id;
@@ -610,7 +685,7 @@ class course extends \data_object {
 
         $course->visible = $this->available;
         $course->fullname = $this->title;
-        $course->shortname = $this->title;
+        $course->shortname = $this->create_moodle_shortname();
         $course->summary = $this->shortdescription;
 
 
@@ -674,5 +749,16 @@ class course extends \data_object {
 
         return $DB->get_field('course_categories', 'id', ['idnumber' => get_config('local_linkedinlearning', 'category_idnumber')],
                 MUST_EXIST);
+    }
+
+    /**
+     * Returns title prefixed by the id part of the URN.
+     * Truncated to 255 charcaters if needed.
+     *
+     * @return string
+     */
+    private function create_moodle_shortname() {
+        $lilid = str_ireplace('urn:li:lyndaCourse:', '', $this->urn);
+        return substr("{$lilid} > {$this->title}", 0, 255);
     }
 }

@@ -655,30 +655,72 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Rebuild permissions table and cache.
-        \local_onlineappraisal\permissions::rebuild_permissions();
-
         // Onlineappraisal savepoint reached.
         upgrade_plugin_savepoint(true, 2018010107, 'local', 'onlineappraisal');
     }
 
-    if ($oldversion < 2018010110) {
+    if ($oldversion < 2018010111) {
 
-        // Define field user_id to be dropped from local_appraisal_forms.
-        $table = new xmldb_table('local_appraisal_checkins');
-        $field = new xmldb_field('type', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+        // Tidy up feeback contributor emails that are not trimmed.
+        $spacebefore = $DB->sql_like('email', ':spacebefore');
+        $spaceafter = $DB->sql_like('email', ':spaceafter');
+        $select = "{$spacebefore} OR {$spaceafter}";
+        $params = [
+            'spacebefore' => ' %',
+            'spaceafter' => '% ',
+        ];
+        $requests = $DB->get_records_select('local_appraisal_feedback', $select, $params);
+        foreach ($requests as $request) {
+            $request->email = trim($request->email);
+            $DB->update_record('local_appraisal_feedback', $request);
+        }
 
-        // Conditionally launch add field lang.
+        // Onlineappraisal savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010111, 'local', 'onlineappraisal');
+    }
+
+    if ($oldversion < 2018010114) {
+        // Define field userid to be added to local_appraisal_feedback.
+        $table = new xmldb_table('local_appraisal_feedback');
+        $field = new xmldb_field('userid', XMLDB_TYPE_INTEGER, '10', null, null);
+
+        // Conditionally launch add field userid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // Rebuild permissions table and cache.
-        \local_onlineappraisal\permissions::rebuild_permissions();
+        // Bulk update, direct in DB, query.
+        // May not be DB agnostic!
+        $sql = "UPDATE mdl_local_appraisal_feedback
+                   SET mdl_local_appraisal_feedback.userid = mdl_user.id
+                  FROM mdl_user
+                 WHERE mdl_user.email = mdl_local_appraisal_feedback.email
+                       AND mdl_user.suspended = 0
+                       AND mdl_user.deleted = 0";
+
+        $DB->execute($sql);
 
         // Onlineappraisal savepoint reached.
-        upgrade_plugin_savepoint(true, 2018010110, 'local', 'onlineappraisal');
+        upgrade_plugin_savepoint(true, 2018010114, 'local', 'onlineappraisal');
     }
+
+    if ($oldversion < 2018010115) {
+
+        // Define field type to be added to local_appraisal_checkins.
+        $table = new xmldb_table('local_appraisal_checkins');
+        $field = new xmldb_field('type', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+
+        // Conditionally launch add field type.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Onlineappraisal savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010115, 'local', 'onlineappraisal');
+    }
+
+    // Always rebuild permissions table and cache after upgrading.
+    \local_onlineappraisal\permissions::rebuild_permissions();
 
     return true;
 }

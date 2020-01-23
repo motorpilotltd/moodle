@@ -233,6 +233,9 @@ class feedback {
     public function store_feedback_recipient($data) {
         global $DB;
 
+        // Trim and make it lowercase for consistency.
+        $data->email = \core_text::strtolower(trim($data->email));
+
         if ($data->formid > 0) {
             $params = array(
                 'appraisalid' => $this->appraisal->appraisal->id,
@@ -246,7 +249,7 @@ class feedback {
             $fb = new stdClass();
             $fb->lang = $data->language; // Only available/set on creation.
         }
-        if (empty($fb->email) || (!empty($fb->email) && ($fb->email != \core_text::strtolower($data->email)))) {
+        if (empty($fb->email) || (!empty($fb->email) && $fb->email != $data->email)) {
             $fb->password = $this->get_random_string();
 
             // Defaults.
@@ -265,8 +268,7 @@ class feedback {
         $fb->additional_message = !empty($data->emailtext) ? $data->emailtext : ''; // Only available/set on creation.
         $fb->firstname = $data->firstname;
         $fb->lastname = $data->lastname;
-        // Make it lowercase for consistency.
-        $fb->email = \core_text::strtolower($data->email);
+        $fb->email = $data->email;
 
         if ($data->hascustomemail) {
             // Don't user nl2br() as doesn't actually remove line breaks, resulting in extra whitespace.
@@ -290,11 +292,17 @@ class feedback {
         if ($fbexisting) {
             $this->appraisal->set_action('email', $fbexisting->id);
             $this->appraisal->failed_action('feedback_inuse');
-            return;
+            return false;
         }
 
         // Get email variables in preparation.
         $emailvars = $this->get_feedback_vars($fb);
+
+        // Checks email if belongs to existing moodle user
+        $fb->userid = null;
+        if ($user = $DB->get_record('user', array('email' => $fb->email, 'suspended' => 0, 'deleted' => 0))) {
+            $fb->userid = $user->id;
+        }
 
         // Update/create feedback.
         if (!empty($fb->id)) {
@@ -313,21 +321,28 @@ class feedback {
             $result = $fb->id = $DB->insert_record('local_appraisal_feedback', $fb);
         }
 
+        $this->appraisal->set_action('email', $fb->id);
+
         // If OK, email contributor.
-        if ($result) {
-            $this->appraisal->set_action('email', $fb->id);
-
-            $emailvars->emailmsg = $fb->customemail;
-
-            if ($fb->feedback_user_type == 'appraiser') {
-                $feedbackmail = new email('appraiserfeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraiser, array(), $fb->lang);
-            } else {
-                $feedbackmail = new email('appraiseefeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraisee, array(), $fb->lang);
-            }
-
-            $feedbackmail->prepare();
-            $feedbackmail->send();
+        if (!$result) {
+            return false;
         }
+
+        $emailvars->emailmsg = $fb->customemail;
+
+        if ($fb->feedback_user_type == 'appraiser') {
+            $feedbackmail = new email('appraiserfeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraiser, array(), $fb->lang);
+        } else {
+            $feedbackmail = new email('appraiseefeedback', $emailvars, $fb->recipient, $this->appraisal->appraisal->appraisee, array(), $fb->lang);
+        }
+
+        $feedbackmail->prepare();
+        if (!$feedbackmail->send()) {
+            $this->appraisal->failed_action('feedback');
+            return false;
+        }
+
+        return true;
     }
 
     public function get_feedback_vars($fb) {
@@ -356,39 +371,43 @@ class feedback {
         if ($data->buttonclicked == 1) {
             $submitted = true;
             $this->appraisal->set_action('userfeedback', $data->feedbackid);
-        } else if ($data->buttonclicked == 2 ) {
+        } else {
+            // Default to saving as draft.
             $draft = true;
             $this->appraisal->set_action('savedraft', $data->feedbackid);
-        } else {
-            $this->appraisal->set_action('userfeedback', $data->feedbackid);
-            $this->appraisal->failed_action('feedback');
-            return;
         }
 
         // Get this feedback.
-        if ($fb = $DB->get_record('local_appraisal_feedback', array('id' => $data->feedbackid, 'password' => $data->pw))) {
-
-            $fb->feedback = $data->feedback;
-            $fb->feedback_2 = $data->feedback_2;
-            // $fb->confidential = $data->confidential;
-
-            if ($submitted) {
-                $fb->received_date = time();
-            }
-
-            // Add this to the current record.
-            if ($DB->update_record('local_appraisal_feedback', $fb)) {
-
-                if ($submitted) {
-                    // trigger completed event.
-                    $event = \local_onlineappraisal\event\feedback_completed::create(array('objectid' => $fb->id));
-                    $event->trigger();
-                }
-                if ($submitted || $draft) {
-                    $this->appraisal->complete_action('feedback');
-                }
-            }
+        $fb = $DB->get_record('local_appraisal_feedback', array('id' => $data->feedbackid, 'password' => $data->pw));
+        if (!$fb) {
+            $this->appraisal->failed_action('feedback');
+            return false;
         }
+
+        $fb->feedback = $data->feedback;
+        $fb->feedback_2 = $data->feedback_2;
+        // $fb->confidential = $data->confidential;
+
+        if ($submitted) {
+            $fb->received_date = time();
+        }
+
+        // Add this to the current record.
+        if (!$DB->update_record('local_appraisal_feedback', $fb)) {
+            $this->appraisal->failed_action('feedback');
+            return false;
+        }
+
+        if ($submitted) {
+            // trigger completed event.
+            $event = \local_onlineappraisal\event\feedback_completed::create(array('objectid' => $fb->id));
+            $event->trigger();
+        }
+        if ($submitted || $draft) {
+            $this->appraisal->complete_action('feedback');
+        }
+
+        return true;
     }
 
     /**
@@ -406,33 +425,28 @@ class feedback {
                 ['now' => time()],
                 'availablefrom DESC',
                 'id, name');
-
-        // Do a case insensitive comparison.
-        $like = $DB->sql_like('af.email', ':email', false);
-
         // The global Join used by the 2 queries.
+        $params = array('userid' => $USER->id);
         $join = "SELECT af.*,
                         aa.held_date, aa.face_to_face_held, aa.permissionsid, aa.archived, aa.legacy,
                         u.firstname as ufirstname, u.lastname as ulastname, u.id as appraiseeid,
                         lac.id as cohortid, lac.name as cohortname, lac.availablefrom as cohortavailablefrom
-                   FROM {local_appraisal_feedback} af
-                   JOIN {local_appraisal_appraisal} aa
-                     ON aa.id = af.appraisalid
-                   JOIN {local_appraisal_cohort_apps} laca ON aa.id = laca.appraisalid
-                   JOIN {local_appraisal_cohorts} lac ON lac.id = laca.cohortid
-                   JOIN {user} u
-                     ON u.id = aa.appraisee_userid
-                  WHERE {$like}
+                    FROM {local_appraisal_feedback} af
+                    JOIN {local_appraisal_appraisal} aa
+                        ON aa.id = af.appraisalid
+                    JOIN {local_appraisal_cohort_apps} laca ON aa.id = laca.appraisalid
+                    JOIN {local_appraisal_cohorts} lac ON lac.id = laca.cohortid
+                    JOIN {user} u
+                    ON u.id = aa.appraisee_userid
+                    WHERE af.userid = :userid
                     AND aa.deleted = 0";
 
         // Get the outstanding Feedback requests from the DB.
         $outstanding = "{$join}
                     AND aa.archived = 0
                     AND (af.received_date IS NULL OR af.received_date = 0)
-               ORDER BY lac.availablefrom ASC, aa.held_date ASC";
-
-        $outstandingrecords = $DB->get_records_sql($outstanding, array('email' => $USER->email));
-
+                    ORDER BY lac.availablefrom ASC, aa.held_date ASC";
+        $outstandingrecords = $DB->get_records_sql($outstanding, $params);
         foreach ($outstandingrecords as $or) {
             if (!\local_onlineappraisal\permissions::is_allowed('feedback:submit', $or->permissionsid, 'guest', $or->archived, $or->legacy)) {
                 continue;
@@ -448,9 +462,9 @@ class feedback {
         // Get the completed Feedback feedback requests from the DB.
         $completed = "{$join}
                     AND af.received_date > 0
-               ORDER BY lac.availablefrom DESC, af.received_date DESC";
+                    ORDER BY lac.availablefrom DESC, af.received_date DESC";
 
-        $completedrecords = $DB->get_records_sql($completed, array('email' => $USER->email));
+        $completedrecords = $DB->get_records_sql($completed, $params);
 
         $template->filterselected = optional_param('filter', key($template->filter), PARAM_INT);
         $cohortcount = array_fill_keys(array_keys($template->filter), 0);

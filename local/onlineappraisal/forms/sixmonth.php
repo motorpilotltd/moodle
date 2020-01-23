@@ -27,7 +27,7 @@ class apform_sixmonth extends moodleform {
     public function definition() {
         $data = $this->_customdata;
         $mform = $this->_form;
-        
+
         $mform->addElement('hidden', 'formid', $data->formid);
         $mform->setType('formid', PARAM_INT);
 
@@ -74,7 +74,7 @@ class apform_sixmonth extends moodleform {
         $mform->addElement('html', html_writer::tag('div', $this->str('intro'), array('class' => 'm-b-20')));
 
         // Set user type as field can be open to multiple.
-        
+
         // Last modified date for se in lang string.
         $a = $data->appraisal->six_month_review_date ? userdate($data->appraisal->six_month_review_date) : $this->str('never');
         $mform->addElement('textarearup', 'sixmonthreview', $this->str('sixmonthreview'), 'rows="6" cols="70"' . $locked, $this->str('sixmonthreviewhelp', $a), $usertype);
@@ -119,5 +119,7 @@ class apform_sixmonth extends moodleform {
         $appraisal = $forms->appraisal;
         $appraisal->set_appraisal_field('six_month_review', $data->sixmonthreview);
         $appraisal->set_appraisal_field('six_month_review_date', time());
+
+        return true;
     }
 }

@@ -39,7 +39,7 @@ switch ($action) {
         $courseids = required_param('courseids', PARAM_TEXT);
         $state = required_param('state', PARAM_BOOL);
         $courseids = explode(',', $courseids);
-        $courses = \local_linkedinlearning\linkedinlearningcourse::fetchbyids($courseids);
+        $courses = \local_linkedinlearning\course::fetchbyids($courseids);
         foreach ($courses as $course) {
             $course->setregionstate($regionid, $state);
         }

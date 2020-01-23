@@ -289,6 +289,8 @@ class apform_successionplan extends moodleform {
                             )
                     );
         }
+
+        return true;
     }
 
     private function get_userdata() {
