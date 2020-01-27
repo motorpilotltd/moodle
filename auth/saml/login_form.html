@@ -28,6 +28,13 @@ if (!empty($CFG->loginpasswordautocomplete)) {
               echo html_writer::end_tag('div');
           }
         ?>
+        <form action="<?php echo $CFG->httpswwwroot; ?>/auth/saml/index.php" method="post" id="login-auto" <?php echo $autocomplete; ?> >
+          <input type="hidden" name="wantsurl" value="<?php echo urlencode(!empty($SESSION->wantsurl) ? $SESSION->wantsurl : ''); ?>" />
+          <div class="form-input">
+              <input class="btn-primary" type="submit" value="<?php print_string('login:aruplink', 'auth_saml'); ?>" />
+            </div>
+        </form>
+        <p><?php print_string('login:ormanual', 'auth_saml'); ?></p>
         <form action="<?php echo $CFG->httpswwwroot; ?>/auth/saml/login.php" method="post" id="login" <?php echo $autocomplete; ?> >
           <input type="hidden" id="saml" name="saml" value="<?php echo optional_param('saml', true, PARAM_BOOL); ?>" />
           <input type="hidden" id="wantsurl" name="wantsurl" value="<?php echo urlencode(!empty($SESSION->wantsurl) ? $SESSION->wantsurl : ''); ?>" />
