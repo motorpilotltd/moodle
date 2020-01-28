@@ -232,7 +232,7 @@ class elearningstatus extends base {
 
         }
 
-        $enrolmentswhere = "WHERE lte.classtype = 'Self Paced' ";
+        $enrolmentswhere = "WHERE ( lte.archived = '' OR lte.archived IS NULL ) AND lte.classtype = 'Self Paced' ";
         $waitlisted = $this->taps->get_statuses('waitlisted');
         $placed = $this->taps->get_statuses('placed');
         $attended = $this->taps->get_statuses('attended');
@@ -242,7 +242,7 @@ class elearningstatus extends base {
             implode("', '", $attended) . "'";
         $enrolmentswhere .= " AND lte.bookingstatus in ($statusok) ";
 
-        $wherestring = " AND ( lte.archived = '' OR lte.archived IS NULL ) ";
+        $wherestring = '';
         $params = array();
 
         // Classnames are only used in the inclusion query.
