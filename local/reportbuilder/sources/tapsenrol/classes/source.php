@@ -420,6 +420,23 @@ class source extends rb_base_source {
                 'text'
         );
 
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classprice',
+                get_string('classprice', 'rbsource_tapsenrol'),
+                'number',
+                [],
+                'base.price'
+        );
+
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classcost',
+                get_string('classcost', 'local_reportbuilder'),
+                'number',
+                [],
+                'base.classcost'
+        );
         return $filteroptions;
     }
 
