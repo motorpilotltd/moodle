@@ -111,11 +111,13 @@
                                 </div>
                             </td>
                             <td class="cell c2">
+                            <?php if (!empty($activity->percent)): ?>
                                 <?php if(file_exists("$CFG->dirroot/$percentfilename")): ?>
                                     <img src="<?php echo $percentfile ?>" alt="<?php echo $activity->percent; ?>" class="item_icon" />
                                 <?php endif; ?>
                                     <br />
                                 <span><?php echo $activity->percent; ?>%</span>
+                            <?php endif; ?>
                             </td>
                             <td class="cell c3">
                                 <?php if($activity->type == 'module'): ?>
@@ -225,7 +227,7 @@
                 // Continue to next row.
                 return;
             }
-            if ($.inArray(parseInt($(this).data('percent')), percents) === -1) {
+            if (percents.length < 3 && $.inArray(parseInt($(this).data('percent')), percents) === -1) {
                 $(this).hide();
                 // Continue to next row.
                 return;
