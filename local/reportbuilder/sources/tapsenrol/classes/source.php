@@ -143,6 +143,19 @@ class source extends rb_base_source {
         );
         $columnoptions[] = new rb_column_option(
                 'class',
+                'classcompletiondate',
+                get_string('classcompletiondate', 'rbsource_tapsenrol'),
+                "base.classcompletiondate",
+                array(
+                        'dbdatatype'  => 'timestamp',
+                        'displayfunc' => 'classcompletiondate',
+                        'extrafields' => [
+                                'usedtimezone' => 'base.usedtimezone',
+                        ]
+                )
+        );
+        $columnoptions[] = new rb_column_option(
+                'class',
                 'classduration',
                 get_string('classduration', 'local_reportbuilder'),
                 $DB->sql_concat('base.duration', "' '", 'base.durationunits'),
@@ -365,6 +378,13 @@ class source extends rb_base_source {
                 'date',
                 array('castdate' => true)
         );
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classcompletiondate',
+                get_string('classcompletiondate', 'rbsource_tapsenrol'),
+                'date',
+                array('castdate' => true)
+        );
 
 
         $statuses = [
@@ -454,6 +474,18 @@ class source extends rb_base_source {
             $timestamp = $row->bookingplaceddate;
         }
 
+        if (empty($timestamp)) {
+            return '';
+        }
+
+        if (empty($row->usedtimezone)) {
+            return userdate($timestamp, get_string('strftimedate'), 'UTC');
+        } else {
+            return userdate($timestamp, get_string('strftimedate'), $row->usedtimezone);
+        }
+    }
+
+    public function rb_display_classcompletiondate($timestamp, $row) {
         if (empty($timestamp)) {
             return '';
         }
