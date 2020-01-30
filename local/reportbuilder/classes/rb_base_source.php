@@ -1824,7 +1824,7 @@ abstract class rb_base_source {
                 "{$alias}staff",
                 'INNER',
                 'SQLHUB.ARUP_ALL_STAFF_V',
-                "{$alias}staff.LEAVER_FLAG = 'n' AND {$alias}staff.EMPLOYEE_NUMBER = $join.$field",
+                "{$alias}staff.EMPLOYEE_NUMBER = $join.$field",
                 REPORT_BUILDER_RELATION_ONE_TO_MANY,
                 $alias
         );

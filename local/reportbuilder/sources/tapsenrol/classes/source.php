@@ -326,6 +326,13 @@ class source extends rb_base_source {
         );
 
         $contentoptions[] = new rb_content_option(
+                'leaver',
+                get_string('leaver', 'local_reportbuilder'),
+                ['leaver' => "auserstaff.LEAVER_FLAG"],
+                'auserstaff'
+        );
+
+        $contentoptions[] = new rb_content_option(
                 'iscpd',
                 get_string('iscpd', 'local_reportbuilder'),
                 'base.cpdid'
