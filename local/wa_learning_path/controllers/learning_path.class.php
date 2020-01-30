@@ -252,7 +252,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                 \wa_learning_path\lib\load_form('addactivity');
                 $this->form = new \wa_learning_path\form\addactivity_form();
                 $this->methodologylist = array_merge($this->form->get_activity_type(false), \wa_learning_path\lib\get_methodologies());
-                
+
                 // Load system context.
                 $this->systemcontext = \context_system::instance();
 
@@ -287,20 +287,20 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
                 // Count items for all conditions: region.
                 $this->count = \wa_learning_path\model\learningpath::count_activities_by_positions($this->cell->positions, $this->regions);
-                
-                    // Set a breadcrumb info.
-                    $this->base_position_cell = new \moodle_url(
-                            $this->url,
-                            array(
-                            'c' => $this->c,
-                            'a' => $this->a,
-                            'id' => (int) $this->id,
-                            'regions' => empty($this->userregion->id) ? '' : $this->userregion->id,
-                            'key' => $this->key));
 
-                    $pagetitle .= $this->get_string($this->position);
-                }
+                // Set a breadcrumb info.
+                $this->base_position_cell = new \moodle_url(
+                        $this->url,
+                        array(
+                        'c' => $this->c,
+                        'a' => $this->a,
+                        'id' => (int) $this->id,
+                        'regions' => empty($this->userregion->id) ? '' : $this->userregion->id,
+                        'key' => $this->key));
+
+                $pagetitle .= $this->get_string($this->position);
             }
+        }
 
         $PAGE->set_title($pagetitle);
 
