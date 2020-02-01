@@ -69,7 +69,7 @@ class mod_arupenrol_mod_form extends moodleform_mod {
         $actionsgroup[] = $mform->createElement('radio', 'action', '', get_string('functionality:action:3', 'arupenrol'), 3);
         $mform->addGroup($actionsgroup, 'actions', '', array('<br />'), false);
         // Default activity action.
-        $mform->setDefault('action', 1);
+        $mform->setDefault('action', 3);
 
         $mform->addElement('html', html_writer::tag('p', '&nbsp;'));
 
@@ -100,6 +100,7 @@ class mod_arupenrol_mod_form extends moodleform_mod {
         $mform->addElement('checkbox', 'enroluser', get_string('functionality:enroluser', 'arupenrol'), '', 1);
         $mform->addHelpButton('enroluser', 'functionality:enroluser', 'arupenrol');
         $mform->disabledIf('enroluser', 'action', 'eq', 1);
+        $mform->setDefault('enroluser', 1);
 
         $mform->addElement('text', 'buttontext', get_string('functionality:buttontext', 'arupenrol'), array('size' => '64'));
         $mform->setType('buttontext', PARAM_TEXT);
@@ -135,11 +136,13 @@ class mod_arupenrol_mod_form extends moodleform_mod {
         $mform->addElement('checkbox', 'unenroluser', get_string('functionality:unenroluser', 'arupenrol'), '', 1);
         $mform->addHelpButton('unenroluser', 'functionality:unenroluser', 'arupenrol');
         $mform->disabledIf('unenroluser', 'action', 'eq', 1);
+        $mform->disabledIf('unenroluser', 'enroluser', 'notchecked');
 
         $mform->addElement('text', 'unenrolbuttontext', get_string('functionality:unenrolbuttontext', 'arupenrol'), array('size' => '64'));
         $mform->setType('unenrolbuttontext', PARAM_TEXT);
         $mform->disabledIf('unenrolbuttontext', 'action', 'eq', 1);
-        $mform->disabledIf('unenrolbuttontext', 'unenroluser', 'notchecked', 1);
+        $mform->disabledIf('unenrolbuttontext', 'enroluser', 'notchecked');
+        $mform->disabledIf('unenrolbuttontext', 'unenroluser', 'notchecked');
 
         $unenrolbuttontypesgroup = array();
         foreach ($buttontypes as $buttontype) {
@@ -147,8 +150,9 @@ class mod_arupenrol_mod_form extends moodleform_mod {
         }
         $mform->addGroup($unenrolbuttontypesgroup, 'unenrolbuttontypes', get_string('functionality:unenrolbuttontype', 'arupenrol'), array(' '), false);
         $mform->setDefault('unenrolbuttontype', 'default');
-        $mform->disabledIf('unenrolbuttontext', 'action', 'eq', 1);
-        $mform->disabledIf('unenrolbuttontypes', 'unenroluser', 'notchecked', 1);
+        $mform->disabledIf('unenrolbuttontypes', 'action', 'eq', 1);
+        $mform->disabledIf('unenrolbuttontypes', 'enroluser', 'notchecked');
+        $mform->disabledIf('unenrolbuttontypes', 'unenroluser', 'notchecked');
 
         $this->standard_coursemodule_elements();
 
