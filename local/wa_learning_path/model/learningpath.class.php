@@ -2,7 +2,7 @@
 
 /**
  * Model
- * 
+ *
  * @package     wa_learning_path
  * @author      Łukasz Juchnik <lukasz.juchnik@webanywhere.co.uk>
  * @author      Bartosz Hornik <bartosz.hornik@webanywhere.co.uk>
@@ -28,7 +28,7 @@ define('WA_LEARNING_PATH_CUSTOM_FIELD_702010', '702010');
 
 /**
  * Learning path model
- * 
+ *
  * @package     local_wa_cad_integration
  * @author      Łukasz Juchnik <lukasz.juchnik@webanywhere.co.uk>
  * @author      Bartosz Hornik <bartosz.hornik@webanywhere.co.uk>
@@ -38,7 +38,7 @@ class learningpath {
 
     //'local_wa_learning_path', 'image'
 
-    const FILE_COMPONENET = 'local_wa_learning_path';
+    const FILE_COMPONENT = 'local_wa_learning_path';
     const FILE_AREA = 'image';
     const VIEW_LIST = 'list';
     const VIEW_TILES = 'tiles';
@@ -48,7 +48,7 @@ class learningpath {
     public static $positions = array('essential', 'recommended', 'elective');
 
     /**
-     * Get list of published Lerning Paths 
+     * Get list of published Lerning Paths
      * @global resource $DB
      * @return type
      */
@@ -60,13 +60,13 @@ class learningpath {
         if (is_null($userid)) {
             $userid = $USER->id;
         }
-        
+
         $where = '';
-        
+
 //        if ($extrasql) {
-//            
+//
 //        }
-        
+
         if(!is_null($region)) {
             if($region > 0) {
                 $where = " AND (EXISTS (SELECT id
@@ -96,17 +96,17 @@ class learningpath {
                     . "     COUNT(distinct lp.id) "
                     . "FROM {wa_learning_path} lp "
                     . "WHERE lp.status = :status AND lp.preview = :preview {$where}";
-            
+
             return $DB->count_records_sql($sql , $params);
-        } 
+        }
         // SQL query.
         $sql = "SELECT DISTINCT lp.*, CASE WHEN s.id IS NULL THEN 0 ELSE 1 END as subscribed
                 FROM {wa_learning_path} lp
                 LEFT JOIN {wa_learning_path_subscribe} s on s.learningpathid = lp.id AND s.userid = :s_userid AND s.status = :s_status
-                WHERE 
+                WHERE
                     lp.status = :status AND lp.preview = :preview {$where}
                 ORDER BY subscribed DESC, title ASC";
-        
+
         $records = $DB->get_records_sql($sql, $params);
 
         $ids = array();
@@ -134,14 +134,14 @@ class learningpath {
 
         return $records;
     }
-    
+
     public static function count_published_list($userid = null,  $region = null, $extrasql = '', $params = array()) {
         // SQL query.
         return self::get_published_list($userid, $region, $extrasql, $params, true);
     }
 
     /**
-     * Get list of Learning Paths 
+     * Get list of Learning Paths
      * @global type $CFG
      * @global resource $DB
      * @param type $sort
@@ -269,7 +269,7 @@ class learningpath {
     }
 
     /**
-     * Preparation keywords list 
+     * Preparation keywords list
      * @param String Keywords data
      * @return Array List of keywords.
      */
@@ -305,14 +305,20 @@ class learningpath {
         }
 
         $statussql = "";
-        
-        if (!\wa_learning_path\lib\is_contenteditor()) {
-            list ($statustmp, $params) = $DB->get_in_or_equal(array(WA_LEARNING_PATH_PUBLISH, WA_LEARNING_PATH_PUBLISH_NOT_VISIBLE), SQL_PARAMS_NAMED);
 
+        if (\wa_learning_path\lib\is_contenteditor()) {
+            // We let content editors view learning paths of any status
+        } else if (\wa_learning_path\lib\has_capability('viewdraftlearningpath')) {
+            // Can also view DRAFT learning paths.
+            list ($statustmp, $params) = $DB->get_in_or_equal(array(WA_LEARNING_PATH_PUBLISH, WA_LEARNING_PATH_PUBLISH_NOT_VISIBLE, WA_LEARNING_PATH_DRAFT), SQL_PARAMS_NAMED);
+            $statussql = " AND  lp.status {$statustmp} ";
+        } else {
+            // Can only view published (can be invisible) learning paths.
+            list ($statustmp, $params) = $DB->get_in_or_equal(array(WA_LEARNING_PATH_PUBLISH, WA_LEARNING_PATH_PUBLISH_NOT_VISIBLE), SQL_PARAMS_NAMED);
             $statussql = " AND  lp.status {$statustmp} ";
         }
-        
-        
+
+
         if (!\wa_learning_path\lib\has_capability('addlearningpath') &&
             !\wa_learning_path\lib\has_capability('deletelearningpath') &&
             !\wa_learning_path\lib\has_capability('editlearningmatrix') &&
@@ -322,14 +328,14 @@ class learningpath {
             $statussql .= " AND lp.status != :deleted ";
             $params['deleted'] = WA_LEARNING_PATH_DELETED;
         }
-        
+
         $params['id'] = (int) $id;
         $params['userid'] = (int) $userid;
         $params['global'] = 0;
         $params['s_userid'] = (int) $userid;
         $params['preview'] = 0;
         $params['s_status'] = self::SUBSCRIBE_ACTIVE;
-        
+
 
         $sql = "SELECT lp.*, CASE WHEN s.id IS NULL THEN 0 ELSE 1 END as subscribed
                 FROM {wa_learning_path} lp
@@ -367,7 +373,7 @@ class learningpath {
         $fs = \get_file_storage();
         $context = \context_system::instance();
         $files = $fs->get_area_files(
-                $context->id, \wa_learning_path\model\learningpath::FILE_COMPONENET,
+                $context->id, \wa_learning_path\model\learningpath::FILE_COMPONENT,
                 \wa_learning_path\model\learningpath::FILE_AREA, (int) $id, 'filename', false);
 
         if (empty($files) && $img) {
@@ -563,8 +569,8 @@ class learningpath {
     }
 
     /**
-     * Setup default Learning paths view 
-     * 
+     * Setup default Learning paths view
+     *
      * @global \wa_learning_path\model\type $SESSION
      * @param type $mode
      */
@@ -603,7 +609,7 @@ class learningpath {
     }
 
     /**
-     * Get default Learning paths view 
+     * Get default Learning paths view
      * @global type $SESSION
      * @return Int
      */
@@ -759,7 +765,7 @@ class learningpath {
                                                 : '';
                                     $position->methodology = isset($courses[$position->id]->methodology) ? $courses[$position->id]->methodology
                                                 : '';
-									$position->methodologyicon = $position->methodology ? \wa_learning_path\lib\get_course_methodologie_icon((int) $position->id) 
+									$position->methodologyicon = $position->methodology ? \wa_learning_path\lib\get_course_methodologie_icon((int) $position->id)
 												: '';
                                     $position->region = isset($courses[$position->id]->regionids) ? $courses[$position->id]->regionids
                                                 : array(0 => '0');
@@ -811,14 +817,14 @@ class learningpath {
     }
 
     public static function check_regions_match($selectedregions, $availableregions) {
-        
+
         if (empty($selectedregions)) {
             // If empty all regions should be visible.
             return true;
         }
-        
+
         $availableregions = is_null($availableregions) ? array() : $availableregions;
-        
+
         // If exists region Global - is visible.
         if (array_search(0, $availableregions) !== false) {
             return true;
@@ -951,7 +957,7 @@ class learningpath {
                 if (empty($activity->id)) {
                     continue;
                 }
-                
+
                 // -1 => All, 0 => Global, $region => selected in Left Nav.
                 if (self::check_regions_match($regions, $activity->region)) {
                     if ($activity->type == 'module') {

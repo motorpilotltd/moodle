@@ -2,7 +2,7 @@
 
 /**
  * wa_learning_path admin controller
- * 
+ *
  * @package     local_wa_learning_path
  * @author      Łukasz Juchnik <lukasz.juchnik@webanywhere.co.uk>
  * @author      Bartosz Hornik <bartosz.hornik@webanywhere.co.uk>
@@ -18,7 +18,7 @@ defined('MOODLE_INTERNAL') || die;
 
 /**
  * Main controller
- * 
+ *
  * @package     local_wa_learning_path
  * @author      Bartosz Hornik <bartosz.hornik@webanywhere.co.uk>
  * @author      Łukasz Juchnik <lukasz.juchnik@webanywhere.co.uk>
@@ -103,12 +103,12 @@ class admin extends \wa_learning_path\lib\base_controller {
 
                 // Deal with filemanger.
                 file_prepare_standard_filemanager(
-                        $learning_path, 
-                        'image', 
-                        $this->form->get_filemanager_params(), 
-                        $systemcontext, 
-                        \wa_learning_path\model\learningpath::FILE_COMPONENET, 
-                        \wa_learning_path\model\learningpath::FILE_AREA, 
+                        $learning_path,
+                        'image',
+                        $this->form->get_filemanager_params(),
+                        $systemcontext,
+                        \wa_learning_path\model\learningpath::FILE_COMPONENT,
+                        \wa_learning_path\model\learningpath::FILE_AREA,
                         $id);
 
                 $this->id = $id;
@@ -140,12 +140,12 @@ class admin extends \wa_learning_path\lib\base_controller {
 
             // Deal with filemanger.
             file_postupdate_standard_filemanager(
-                    $learningpath, 
-                    'image', 
-                    $this->form->get_filemanager_params(), 
-                    $systemcontext, 
-                    \wa_learning_path\model\learningpath::FILE_COMPONENET, 
-                    \wa_learning_path\model\learningpath::FILE_AREA, 
+                    $learningpath,
+                    'image',
+                    $this->form->get_filemanager_params(),
+                    $systemcontext,
+                    \wa_learning_path\model\learningpath::FILE_COMPONENT,
+                    \wa_learning_path\model\learningpath::FILE_AREA,
                     $id);
 
             if (is_null($submitdisplay)) {
@@ -161,7 +161,7 @@ class admin extends \wa_learning_path\lib\base_controller {
                 redirect(new moodle_url('?c=admin&a=edit&id='.$id));
             }
         }
-        
+
         $this->view('edit');
     }
 
@@ -174,7 +174,7 @@ class admin extends \wa_learning_path\lib\base_controller {
         if (!\wa_learning_path\lib\has_capability('amendlearningcontent') && !\wa_learning_path\lib\has_capability('editmatrixgrid')) {
             $this->no_access();
         }
-        
+
         $id = optional_param('id', null, PARAM_INT);
         $this->returnhash = optional_param('returnhash', null, PARAM_RAW);
         $submitdisplay = optional_param('submitbutton3', null, PARAM_RAW);
@@ -198,11 +198,11 @@ class admin extends \wa_learning_path\lib\base_controller {
         if ($this->form->is_cancelled()) {
             redirect(new moodle_url('?c=admin'));
         }
-        
+
         \wa_learning_path\lib\load_form('addactivity');
-        
+
         $action = new \moodle_url($this->url, array('c' => 'activity', 'a' => 'edit'));
-        
+
         $this->activity_form = new \wa_learning_path\form\addactivity_form($action->out(false), array('submit_button' => false), 'post', '', array('class' => 'wa_activity_mform'));
 
         $this->activity_form->add_hidden('c', 'activity');
@@ -297,7 +297,7 @@ class admin extends \wa_learning_path\lib\base_controller {
 
             $PAGE->navbar->add($learning_path->title);
             $PAGE->navbar->add($this->get_string('edit_matrix'));
-            
+
             if ($learning_path) {
                 $this->id = $id;
                 $this->status = $learning_path->status;
@@ -462,13 +462,13 @@ class admin extends \wa_learning_path\lib\base_controller {
         \wa_learning_path\model\learningpath::set_status($id, $status);
         echo "OK"; die;
     }
-    
+
     /**
      * Subscribe edit
      */
     public function edit_subscriptions_action() {
         $this->id = required_param('id', PARAM_INT);
-        
+
         $this->view('edit_subscriptions');
     }
 
