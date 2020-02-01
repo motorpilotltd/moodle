@@ -997,4 +997,107 @@ class learningpath {
         $DB->execute($sql, $params);
     }
 
+    /**
+     * Duplicate learning path and content.
+     */
+    public static function duplicate(int $fromid) {
+        global $CFG, $DB;
+
+        require_once($CFG->libdir . '/filestorage/file_storage.php');
+
+        $learningpath = self::get($fromid);
+
+        if (!$learningpath) {
+            throw new Exception('Could not load learning path.');
+        }
+
+        unset($learningpath->id);
+        $learningpath->title = $learningpath->title . ' - COPY';
+        $learningpath->status = WA_LEARNING_PATH_DRAFT;
+
+        // Create duplicate learning path.
+        $learningpath->id = $DB->insert_record('wa_learning_path', $learningpath);
+
+        if (!$learningpath->id) {
+            throw new Exception('Failed to save duplicated learning path.');
+        }
+
+        // Duplicate regions.
+        $regions = $DB->get_records('wa_learning_path_region', ['learningpathid' => $fromid]);
+        foreach ($regions as $region) {
+            unset($region->id);
+            $region->learningpathid = $learningpath->id;
+            $region->id = $DB->insert_record('wa_learning_path_region', $region);
+        }
+
+        $fs = \get_file_storage();
+        $filecontext = \context_system::instance();
+        $filedetails = [
+            'contextid' => $filecontext->id,
+            'component' => \wa_learning_path\model\learningpath::FILE_COMPONENT,
+            'filearea' => 'activity_description',
+            'itemid' => null,
+            'dot' => '.',
+        ];
+        $basefileselect = "contextid = :contextid AND component = :component AND itemid = :itemid AND filename != :dot";
+        $activityfileselect = $basefileselect . ' AND filearea = :filearea';
+
+        // Duplicate activities.
+        // Includes duplication of activity regions.
+        $activities = $DB->get_records('wa_learning_path_activity', ['idlearningpath' => $fromid]);
+        $activitymapping = [];
+        foreach ($activities as $activity) {
+            $activityregions = $DB->get_records('wa_learning_path_act_region', ['activityid' => $activity->id]);
+            $oldactivityid = $activity->id;
+            unset($activity->id);
+            $activity->idlearningpath = $learningpath->id;
+            $activity->id = $DB->insert_record('wa_learning_path_activity', $activity);
+            $activitymapping[$oldactivityid] = $activity->id;
+            foreach ($activityregions as $activityregion) {
+                unset($activityregion->id);
+                $activityregion->activityid = $activity->id;
+                $DB->insert_record('wa_learning_path_act_region', $activityregion);
+            }
+            // Duplicate activity files.
+            $filedetails['itemid'] = $oldactivityid;
+            $activityfiles = $DB->get_records_select('files', $activityfileselect, $filedetails);
+            foreach ($activityfiles as $activityfile) {
+                $activityfile->itemid = $activity->id;
+                $fs->create_file_from_storedfile($activityfile, $activityfile->id);
+            }
+        }
+
+        // Cycle through activities in JSON and update IDs.
+        $matrix = json_decode($learningpath->matrix, true);
+        if (!empty($matrix['activities'])) {
+            foreach ($matrix['activities'] as &$cell) {
+                foreach ($cell['positions'] as &$position) {
+                    foreach($position as &$activity) {
+                        if ($activity['type'] === 'activity') {
+                            $activity['id'] = $activitymapping[$activity['id']];
+                        }
+                    }
+                }
+            }
+        }
+        // Update record.
+        $learningpath->matrix = json_encode($matrix);
+        $DB->update_record('wa_learning_path', $learningpath);
+
+        // Get files where itemid is learningpathid and opy them to new itemid!
+        $filedetails['itemid'] = $fromid;
+        unset($filedetails['filearea']);
+        $fileareas = [
+            \wa_learning_path\model\learningpath::FILE_AREA, // Learning path image(s).
+            'introduction', // Learning path introduction file(s).
+            'content', // Cell decription file(s).
+        ];
+        list($insql, $inparams) = $DB->get_in_or_equal($fileareas, SQL_PARAMS_NAMED);
+        $fileselect = $basefileselect . " AND filearea {$insql}";
+        $files = $DB->get_records_select('files', $fileselect, array_merge($filedetails, $inparams));
+        foreach ($files as $file) {
+            $file->itemid = $learningpath->id;
+            $fs->create_file_from_storedfile($file, $file->id);
+        }
+    }
 }

@@ -259,7 +259,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                 // Load cell data.
                 $this->cell = $this->activities->{$key};
                 $this->cell->content = \file_rewrite_pluginfile_urls($this->cell->content, 'pluginfile.php',
-                        $this->systemcontext->id, 'local_wa_learning_path', 'content', 0);
+                        $this->systemcontext->id, 'local_wa_learning_path', 'content', $this->learning_path->id);
 
                 $this->position_url = new \moodle_url($this->url,
                         array(
@@ -287,6 +287,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
                 // Count items for all conditions: region.
                 $this->count = \wa_learning_path\model\learningpath::count_activities_by_positions($this->cell->positions, $this->regions);
+
 
                 // Set a breadcrumb info.
                 $this->base_position_cell = new \moodle_url(
@@ -598,7 +599,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             $this->cell = $this->activities->{$key};
 
             $this->cell->content = \file_rewrite_pluginfile_urls($this->cell->content, 'pluginfile.php',
-                $this->systemcontext->id, 'local_wa_learning_path', 'content', 0);
+                $this->systemcontext->id, 'local_wa_learning_path', 'content', $this->learning_path->id);
 
             $this->position = 'all';
 

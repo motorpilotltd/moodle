@@ -233,7 +233,7 @@ class admin extends \wa_learning_path\lib\base_controller {
                             'content',
                             $editoroptions,
                             $systemcontext,
-                            'local_wa_learning_path', 'content', 0);
+                            'local_wa_learning_path', 'content', $learning_path->id);
 
                         $act->content = $tmp->content;
                     }
@@ -330,7 +330,7 @@ class admin extends \wa_learning_path\lib\base_controller {
                                 'content',
                                 $editoroptions,
                                 $systemcontext,
-                                'local_wa_learning_path', 'content', 0
+                                'local_wa_learning_path', 'content', (int) $learning_path->id
                             );
 
                             $_REQUEST['content']['itemid'] = $_GET['content']['itemid'] = $activity->content_editor['itemid'];
@@ -361,7 +361,7 @@ class admin extends \wa_learning_path\lib\base_controller {
                         'content',
                         $editoroptions,
                         $systemcontext,
-                        'local_wa_learning_path', 'content', 0
+                        'local_wa_learning_path', 'content', (int) $learning_path->id
                     );
 
                     $learning_path->content_editor = $activity->content_editor;
@@ -472,4 +472,25 @@ class admin extends \wa_learning_path\lib\base_controller {
         $this->view('edit_subscriptions');
     }
 
+    /**
+     * Duplicate action.
+     */
+    public function duplicate_action() {
+        if (!\wa_learning_path\lib\has_capability('addlearningpath')) {
+            return $this->no_access();
+        }
+
+        $id = required_param('id', PARAM_INT);
+        \wa_learning_path\lib\load_model('learningpath');
+
+        try {
+            \wa_learning_path\model\learningpath::duplicate($id);
+        } catch (\Exception $e) {
+            echo $this->display_error($e->getMessage(), 'error');
+            die;
+        }
+
+        $this->set_flash_massage('success', $this->get_string('duplicate_success'));
+        redirect(new moodle_url('?c=admin'));
+    }
 }
