@@ -42,6 +42,10 @@ abstract class rb_base_content {
         $this->reportfor = $reportfor;
     }
 
+    public function default_sql_restriction($fields, $reportid) {
+        return array(' (1 = 1) ', array());
+    }
+
     /*
      * All sub classes must define the following functions
      */
@@ -390,6 +394,251 @@ class rb_costcentre_content extends rb_base_content {
                             'costcentre_permission', $costcentres);
         }
 
+
+        return $status;
+    }
+}
+
+/*
+ * Restrict content by a particular user or group of users
+ */
+class rb_leaver_content extends rb_base_content {
+
+    public function default_sql_restriction($leaverfield, $reportid) {
+        $sql = "{$leaverfield} = 'N'";
+
+        return array(" $sql ", []);
+    }
+
+    /**
+     * Generate the SQL to apply this content restriction.
+     *
+     * @param array $field      SQL field to apply the restriction against
+     * @param integer $reportid ID of the report
+     *
+     * @return array containing SQL snippet to be used in a WHERE clause, as well as array of SQL params
+     */
+    public function sql_restriction($leaverfield, $reportid) {
+
+        // remove rb_ from start of classname.
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+        $restriction = isset($settings['leaver_status']) ? $settings['leaver_status'] : null;
+
+
+        if (empty($restriction) || $restriction == 'all') {
+            return array(' (1 = 1) ', array());
+        }
+
+        $params = ['leaverstatus' => $restriction];
+        $sql = "{$leaverfield} = :leaverstatus";
+
+        return array(" $sql ", $params);
+    }
+
+    /**
+     * Generate a human-readable text string describing the restriction
+     *
+     * @param string $title Name of the field being restricted
+     * @param integer $reportid ID of the report
+     *
+     * @return string Human readable description of the restriction
+     */
+    public function text_restriction($title, $reportid) {
+        global $DB;
+
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+        $who = isset($settings['who']) ? $settings['who'] : 0;
+        $userid = $this->reportfor;
+
+        $user = $DB->get_record('user', array('id' => $userid));
+
+        $strings = array();
+        $strparams = array('field' => $title, 'user' => fullname($user));
+
+        if (($who & self::USER_OWN) == self::USER_OWN) {
+            $strings[] = get_string('contentdesc_userown', 'local_reportbuilder', $strparams);
+        }
+
+        if (($who & self::USER_COHORT_MEMBERS) == self::USER_COHORT_MEMBERS) {
+            $strings[] = get_string('contentdesc_usercohortmembers', 'local_reportbuilder', $strparams);
+        }
+
+        if (empty($strings)) {
+            return $title . ' ' . get_string('isnotfound', 'local_reportbuilder');
+        }
+
+        return implode(get_string('or', 'local_reportbuilder'), $strings);
+    }
+
+
+    /**
+     * Adds form elements required for this content restriction's settings page
+     *
+     * @param object &$mform Moodle form object to modify (passed by reference)
+     * @param integer $reportid ID of the report being adjusted
+     * @param string $title Name of the field the restriction is acting on
+     */
+    public function form_template(&$mform, $reportid, $title) {
+
+        // get current settings
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $enable = reportbuilder::get_setting($reportid, $type, 'enable');
+        $leaver_status = reportbuilder::get_setting($reportid, $type, 'leaver_status');
+
+        $mform->addElement('header', 'leaverheader', get_string('showbyx',
+                'local_reportbuilder', lcfirst($title)));
+        $mform->setExpanded('leaverheader');
+        $mform->addElement('checkbox', 'leaver_enable', '',
+                get_string('showbasedonx', 'local_reportbuilder', lcfirst($title)));
+        $mform->disabledIf('leaver_enable', 'contentenabled', 'eq', 0);
+        $mform->setDefault('leaver_enable', $enable);
+
+        $mform->addElement('select', 'leaver_status', get_string('leaver_status', 'local_reportbuilder'),
+                ['all' => get_string('all'), 'N' => get_string('nonleaver', 'local_reportbuilder'),
+                 'Y'   => get_string('yesleaver', 'local_reportbuilder')]);
+        $mform->setType('leaver_status', PARAM_TEXT);
+        $mform->setDefault('leaver_status', $leaver_status);
+
+        $mform->disabledIf('leaver_status', 'contentenabled', 'eq', 0);
+        $mform->disabledIf('leaver_status', 'leaver_enable', 'notchecked');
+    }
+
+
+    /**
+     * Processes the form elements created by {@link form_template()}
+     *
+     * @param integer $reportid ID of the report to process
+     * @param object $fromform Moodle form data received via form submission
+     *
+     * @return boolean True if form was successfully processed
+     */
+    public function form_process($reportid, $fromform) {
+        $status = true;
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+
+        // enable checkbox option
+        $enable = (isset($fromform->leaver_enable) &&
+            $fromform->leaver_enable) ? 1 : 0;
+        $status = $status && reportbuilder::update_setting($reportid, $type,
+            'enable', $enable);
+
+        if (isset($fromform->leaver_enable)) {
+            if (!isset($fromform->leaver_status)) {
+                $fromform->leaver_status = 'all';
+            }
+            $status = $status && reportbuilder::update_setting($reportid, $type,
+                            'leaver_status', $fromform->leaver_status);
+        }
+
+
+        return $status;
+    }
+}
+
+/*
+ * Restrict content by a particular user or group of users
+ */
+class rb_iscpd_content extends rb_base_content {
+
+    /**
+     * Generate the SQL to apply this content restriction.
+     *
+     * @param array $field      SQL field to apply the restriction against
+     * @param integer $reportid ID of the report
+     *
+     * @return array containing SQL snippet to be used in a WHERE clause, as well as array of SQL params
+     */
+    public function sql_restriction($field, $reportid) {
+        global $CFG, $DB;
+
+
+        // remove rb_ from start of classname.
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+
+
+        if (!isset($settings['iscpd_chk'])) {
+            return array(' (1 = 1) ', array());
+        }
+
+        if (empty($settings['iscpd_chk'])) {
+            $sql = "$field is null";
+        } else {
+            $sql = "$field is not null and $field > 0";
+        }
+        return array(" ($sql) ", []);
+    }
+
+    /**
+     * Generate a human-readable text string describing the restriction
+     *
+     * @param string $title Name of the field being restricted
+     * @param integer $reportid ID of the report
+     *
+     * @return string Human readable description of the restriction
+     */
+    public function text_restriction($title, $reportid) {
+        return '';
+    }
+
+
+    /**
+     * Adds form elements required for this content restriction's settings page
+     *
+     * @param object &$mform Moodle form object to modify (passed by reference)
+     * @param integer $reportid ID of the report being adjusted
+     * @param string $title Name of the field the restriction is acting on
+     */
+    public function form_template(&$mform, $reportid, $title) {
+
+        // get current settings
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $enable = reportbuilder::get_setting($reportid, $type, 'enable');
+        $iscpd = reportbuilder::get_setting($reportid, $type, 'iscpd_chk');
+
+        $mform->addElement('header', 'iscpdheader', get_string('showbyx',
+            'local_reportbuilder', lcfirst($title)));
+        $mform->setExpanded('iscpdheader');
+        $mform->addElement('checkbox', 'iscpd_enable', '',
+            get_string('showbasedonx', 'local_reportbuilder', lcfirst($title)));
+        $mform->disabledIf('iscpd_enable', 'contentenabled', 'eq', 0);
+        $mform->setDefault('iscpd_enable', $enable);
+
+        $mform->addElement('advcheckbox', 'iscpd_chk', get_string('iscpd', 'local_reportbuilder'));
+        $mform->setDefault('iscpd_chk', $iscpd);
+
+        $mform->disabledIf('iscpd_chk', 'iscpd_enable', 'notchecked');
+    }
+
+    /**
+     * Processes the form elements created by {@link form_template()}
+     *
+     * @param integer $reportid ID of the report to process
+     * @param object $fromform Moodle form data received via form submission
+     *
+     * @return boolean True if form was successfully processed
+     */
+    public function form_process($reportid, $fromform) {
+        $status = true;
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+
+        // enable checkbox option
+        $enable = (isset($fromform->iscpd_enable) &&
+            $fromform->iscpd_enable) ? 1 : 0;
+        $status = $status && reportbuilder::update_setting($reportid, $type,
+            'enable', $enable);
+
+        if (isset($fromform->iscpd_enable)) {
+            $status = $status && reportbuilder::update_setting($reportid, $type,
+                            'iscpd_chk', $fromform->iscpd_chk);
+        }
 
         return $status;
     }

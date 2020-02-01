@@ -2186,10 +2186,53 @@ class reportbuilder {
      * @return array containing SQL snippet created from content restrictions, as well as SQL params array
      */
     function get_content_restrictions($cache = false) {
+        $reportid = $this->_id;
+        $out = array();
+        $params = array();
+
         // if no content restrictions enabled return a TRUE snippet
         // use 1=1 instead of TRUE for MSSQL support
         if ($this->contentmode == REPORT_BUILDER_CONTENT_MODE_NONE) {
-            return array("( 1=1 )", array());
+            if (isset($this->contentoptions) && is_array($this->contentoptions)) {
+                foreach ($this->contentoptions as $option) {
+                    $name = $option->classname;
+                    $classname = 'rb_' . $name . '_content';
+
+                    $fields = array();
+                    foreach ($option->fields as $key => $field) {
+                        if ($cache) {
+                            $fields[$key] = 'rb_content_option_' . $key;
+                        } else {
+                            $fields[$key] = $field;
+                        }
+                    }
+
+                    // Collapse array to string if it consists of only one element
+                    // This provides backward compatibility in case fields is just
+                    // a string instead of an array.
+                    if (count($fields) === 1) {
+                        $fields = array_shift($fields);
+                    }
+
+                    if (class_exists($classname)) {
+                        $class = new $classname($this->reportfor);
+                        list($out[], $contentparams) = $class->default_sql_restriction($fields, $reportid);
+                        $params = array_merge($params, $contentparams);
+                    } else {
+                        print_error('contentclassnotexist', 'local_reportbuilder', '', $classname);
+                    }
+                }
+                // show nothing if no content restrictions enabled
+                if (count($out) == 0) {
+                    // use 1=0 instead of FALSE for MSSQL support
+                    return array('(1=0)', array());
+                }
+
+                $op = "\n    AND ";
+                return array('(' . implode($op, $out) . ')', $params);
+            } else {
+                return array("( 1=1 )", array());
+            }
         } else if ($this->contentmode == REPORT_BUILDER_CONTENT_MODE_ALL) {
             // require all to match
             $op = "\n    AND ";
@@ -2197,10 +2240,6 @@ class reportbuilder {
             // require any to match
             $op = "\n    OR ";
         }
-
-        $reportid = $this->_id;
-        $out = array();
-        $params = array();
 
         // go through the content options
         if (isset($this->contentoptions) && is_array($this->contentoptions)) {
@@ -2232,6 +2271,9 @@ class reportbuilder {
                         // this content option is enabled
                         // call function to get SQL snippet
                         list($out[], $contentparams) = $class->sql_restriction($fields, $reportid);
+                        $params = array_merge($params, $contentparams);
+                    } else {
+                        list($out[], $contentparams) = $class->default_sql_restriction($fields, $reportid);
                         $params = array_merge($params, $contentparams);
                     }
                 } else {

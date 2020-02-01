@@ -1900,3 +1900,10 @@ $string['regionany'] = 'Any';
 $string['regionother'] = 'Other';
 
 $string['costcentre'] = 'Cost centre';
+$string['columntextname'] = '{$a} (text)';
+
+$string['iscpd'] = 'Is CPD';
+$string['leaver'] = 'leaver flag';
+$string['leaver_status'] = 'Status';
+$string['yesleaver'] = 'Yes';
+$string['nonleaver'] = 'No';

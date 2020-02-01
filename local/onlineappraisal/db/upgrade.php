@@ -655,14 +655,12 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Rebuild permissions table and cache.
-        \local_onlineappraisal\permissions::rebuild_permissions();
-
         // Onlineappraisal savepoint reached.
         upgrade_plugin_savepoint(true, 2018010107, 'local', 'onlineappraisal');
     }
 
     if ($oldversion < 2018010111) {
+
         // Tidy up feeback contributor emails that are not trimmed.
         $spacebefore = $DB->sql_like('email', ':spacebefore');
         $spaceafter = $DB->sql_like('email', ':spaceafter');
@@ -680,6 +678,70 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         // Onlineappraisal savepoint reached.
         upgrade_plugin_savepoint(true, 2018010111, 'local', 'onlineappraisal');
     }
+
+    if ($oldversion < 2018010114) {
+        // Define field userid to be added to local_appraisal_feedback.
+        $table = new xmldb_table('local_appraisal_feedback');
+        $field = new xmldb_field('userid', XMLDB_TYPE_INTEGER, '10', null, null);
+
+        // Conditionally launch add field userid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Bulk update, direct in DB, query.
+        // May not be DB agnostic!
+        $sql = "UPDATE mdl_local_appraisal_feedback
+                   SET mdl_local_appraisal_feedback.userid = mdl_user.id
+                  FROM mdl_user
+                 WHERE mdl_user.email = mdl_local_appraisal_feedback.email
+                       AND mdl_user.suspended = 0
+                       AND mdl_user.deleted = 0";
+
+        $DB->execute($sql);
+
+        // Onlineappraisal savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010114, 'local', 'onlineappraisal');
+    }
+
+    if ($oldversion < 2018010115) {
+        $table = new xmldb_table('local_appraisal_data');
+        $index = new xmldb_index('form_field', XMLDB_INDEX_UNIQUE, array('form_id', 'name'));
+        if ($dbman->table_exists($table) && !$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+
+        $table = new xmldb_table('local_appraisal_forms');
+        $index = new xmldb_index('form_appraisal', XMLDB_INDEX_UNIQUE, array('appraisalid', 'form_name'));
+        if ($dbman->table_exists($table) && !$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Main savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010115, 'local', 'onlineappraisal');
+    }
+
+    if ($oldversion < 2018010116) {
+        $table = new xmldb_table('local_appraisal_comment');
+        $index = new xmldb_index('commentappraisalid', XMLDB_INDEX_NOTUNIQUE, array('appraisalid'));
+        if ($dbman->table_exists($table) && !$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+
+        $table = new xmldb_table('local_appraisal_checkins');
+        $index = new xmldb_index('checkinappraisalid', XMLDB_INDEX_NOTUNIQUE, array('appraisalid'));
+        if ($dbman->table_exists($table) && !$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Main savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010116, 'local', 'onlineappraisal');
+    }
+
+    // Always rebuild permissions table and cache after upgrading.
+    \local_onlineappraisal\permissions::rebuild_permissions();
 
     return true;
 }
