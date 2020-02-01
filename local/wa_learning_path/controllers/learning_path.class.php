@@ -2,7 +2,7 @@
 
 /**
  * wa_learning_path controller
- * 
+ *
  * @package     local_wa_learning_path
  * @author      Łukasz Juchnik <lukasz.juchnik@webanywhere.co.uk>
  * @author      Bartosz Hornik <bartosz.hornik@webanywhere.co.uk>
@@ -18,7 +18,7 @@ defined('MOODLE_INTERNAL') || die;
 
 /**
  * Learning Path controller
- * 
+ *
  * @package     local_wa_learning_path
  * @author      Bartosz Hornik <bartosz.hornik@webanywhere.co.uk>
  * @author      Łukasz Juchnik <lukasz.juchnik@webanywhere.co.uk>
@@ -44,11 +44,11 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             throw new \Exception($this->get_string('no_access') . ': local/wa_learning_path:' . $capability);
         }
     }
-    
+
     public function check_capability() {
         return  !\wa_learning_path\lib\has_capability('viewlearningpath') &&
                 !\wa_learning_path\lib\has_capability('printlearningmatrix') &&
-                !\wa_learning_path\lib\has_capability('exportlearningmatrix'); 
+                !\wa_learning_path\lib\has_capability('exportlearningmatrix');
     }
 
     public function check_and_get_learning_path($params = array()) {
@@ -57,7 +57,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         \wa_learning_path\lib\load_model('learningpath');
         $preview = optional_param('preview', 0, PARAM_INT);
         $this->id = required_param('id', PARAM_INT);
-        
+
         $this->learning_path = \wa_learning_path\model\learningpath::check_and_get($this->id);
         $this->preview = false;
 
@@ -65,7 +65,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             $this->set_flash_massage('error', $this->get_string('learning_path_not_exists_or_access_issue'));
             redirect(new moodle_url($this->url, array('c' => 'learning_path')));
         }
-        
+
         if( $this->check_capability()) {
             $this->no_access();
         }
@@ -76,15 +76,15 @@ class learning_path extends \wa_learning_path\lib\base_controller {
      */
     public function index_action() {
         global $CFG, $PAGE, $USER;
-        
+
         if( $this->check_capability()) {
             $this->no_access();
         }
-        
+
         $PAGE->set_title($this->get_string('header_learning_path_list'));
         $PAGE->set_heading($this->get_string('header_learning_path_list'));
         $PAGE->navbar->add($this->get_string('header_learning_path_list'));
-        
+
         $this->mode = optional_param('mode', null, PARAM_ALPHANUM);
         $this->region = optional_param('region', null, PARAM_INT);
 
@@ -95,16 +95,16 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         // Get user region.
         $this->userregion = \wa_learning_path\lib\get_user_region();
-        
+
         if(is_null($this->region) && empty($this->userregion)) {
             $this->region = -1;
         } else if(is_null($this->region) && !empty($this->userregion)) {
             $this->region = $this->userregion->id;
         }
-        
+
         // Get list.
         $this->list = \wa_learning_path\model\learningpath::get_published_list(null, $this->region);
-        
+
         if (!is_null($this->mode)) {
             \wa_learning_path\model\learningpath::setup_default_view($this->mode);
         }
@@ -122,7 +122,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         }
 
         $this->modeurl->param('region', (int) $this->region);
-        
+
         $this->view('index');
     }
 
@@ -161,23 +161,17 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         global $CFG, $PAGE;
 
         $this->check_and_get_learning_path($params);
-        
+
         \wa_learning_path\lib\load_model('activity');
-        
+
         // Selected rows of matrix.
         $levels = optional_param('levels', null, PARAM_RAW_TRIMMED);
-        
+
         // Selected region. default value -1 user will see content for all regions.
         $regions = optional_param('regions', null, PARAM_RAW_TRIMMED);
-        
+
         // Selected cell of matrix (cell-ID).
         $key = optional_param('key', 0, PARAM_RAW_TRIMMED);
-        // Selected position (tab).
-        $position = optional_param('position', '', PARAM_RAW_TRIMMED);
-        // Filtration parameter: Methodology.
-        $methodology = optional_param('methodology', '', PARAM_RAW_TRIMMED);
-        // Filtration parameter: Percent.
-        $percent = optional_param('percent', '0', PARAM_INT);
 
         // Moodle Page setup.
         $this->base_url = new \moodle_url($this->url, array('c' => $this->c, 'a' => $this->a, 'id' => (int) $this->id));
@@ -187,7 +181,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                 new moodle_url($this->url, array('c' => 'learning_path')));
         $PAGE->navbar->add($this->learning_path->title, $this->base_url);
         $PAGE->navbar->add($this->get_string('matrix'));
-        
+
         // Get region to display
         $this->regions = array();
         // Get user region.
@@ -206,29 +200,39 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             // Empty.
             $this->regions = array();
         }
-        
+
+        $allregionnames = \wa_learning_path\lib\get_regions();
+        $this->regionnames = array_intersect_key($allregionnames, array_fill_keys($this->regions, true));
+
         $this->levels = !empty($levels) ? explode(',', $levels) : array();
 
         $this->cell_url = new \moodle_url($this->url, array('a' => 'matrix', 'id' => (int) $this->id, 'levels' => (string) $levels, 'regions' => (string) $regions));
-        
+
         if($this->preview) {
             $this->cell_url->param('preview', (int) $this->preview);
         }
-        
+
         $this->cell = null;
-        $this->filtration = array();
 
         if (isset($this->learning_path->matrix)) {
-            $this->position = $position;
+            $this->position = 'all'; // Always 'all'...
             $this->key = $key;
             $this->matrix = json_decode($this->learning_path->matrix);
-            
+
             if ($this->matrix) {
-                $this->matrix->visivle_cols = \wa_learning_path\model\learningpath::count_visible_rows($this->matrix, $this->regions);
+                $this->matrix->visible_cols = \wa_learning_path\model\learningpath::count_visible_rows($this->matrix, $this->regions);
+                if (empty($this->matrix->visible_cols)) {
+                    $this->regionhascontent = [];
+                    foreach ($allregionnames as $regionid => $regionname) {
+                        if (\wa_learning_path\model\learningpath::count_visible_rows($this->matrix, [$regionid])) {
+                            $this->regionhascontent[$regionid] = $regionname;
+                        }
+                    }
+                }
                 $this->activities = \wa_learning_path\model\learningpath::fill_activities(@$this->matrix->activities,
                                 false, false, false, false, (bool)$this->learning_path->subscribed);
             }
-            
+
             if (!empty($key) && isset($this->activities->{$key})) {
                 // Get labels.
                 list($this->r_label, $this->c_label) = \wa_learning_path\model\learningpath::get_cell_labels($key,
@@ -237,29 +241,25 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                 $this->base_url_cell = new \moodle_url(
                         $this->url,
                         array(
-                            'c' => $this->c, 
-                            'a' => $this->a, 
-                            'id' => (int) $this->id, 
-                            'regions' => empty($this->userregion->id) ? '' : $this->userregion->id, 
+                            'c' => $this->c,
+                            'a' => $this->a,
+                            'id' => (int) $this->id,
+                            'regions' => empty($this->userregion->id) ? '' : $this->userregion->id,
                             'key' => $this->key));
-                
+
                 $pagetitle .= ' / ' . $this->r_label .', '. $this->c_label;
-        
+
                 \wa_learning_path\lib\load_form('addactivity');
                 $this->form = new \wa_learning_path\form\addactivity_form();
                 $this->methodologylist = array_merge($this->form->get_activity_type(false), \wa_learning_path\lib\get_methodologies());
-                
-                // Filtration parameters.
-                $this->filtration['methodology'] = $methodology;
-                $this->filtration['percent'] = $percent;
-                
+
                 // Load system context.
                 $this->systemcontext = \context_system::instance();
-                
+
                 // Load cell data.
                 $this->cell = $this->activities->{$key};
-                $this->cell->content = \file_rewrite_pluginfile_urls($this->cell->content, 'pluginfile.php', 
-                        $this->systemcontext->id, 'local_wa_learning_path', 'content', 0);
+                $this->cell->content = \file_rewrite_pluginfile_urls($this->cell->content, 'pluginfile.php',
+                        $this->systemcontext->id, 'local_wa_learning_path', 'content', $this->learning_path->id);
 
                 $this->position_url = new \moodle_url($this->url,
                         array(
@@ -268,52 +268,54 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                     'levels' => (string) $levels,
                     'regions' => (string) $regions,
                     'key' => $key,
-                    'methodology' => $this->filtration['methodology'],
-                    'percent' => $this->filtration['percent'],
                 ));
-                
+
                 if($this->preview) {
                     $this->position_url->param('preview', (int) $this->preview);
                 }
-                
-                // Create position: 'All'.
-                if ($this->position == 'all') {
+
+                // Sort positions.
+                foreach (['essential', 'recommended', 'elective'] as $position) {
+                    usort($this->cell->positions->{$position},
+                            array("wa_learning_path\controller\learning_path", "sort_activity"));
+                }
+
+                // Merge (sorted) individual positions.
                     $this->cell->positions->all = array_merge(
                             $this->cell->positions->essential, $this->cell->positions->recommended,
                             $this->cell->positions->elective);
-                }
 
-                // Count items for all conditions: region & filtration.
-                $this->count = \wa_learning_path\model\learningpath::count_activities_by_positions($this->cell->positions, $this->regions, $this->filtration);
-                
-                
-                if(!empty($this->position)) {
-                    // Sort items.
-                    usort($this->cell->positions->{$this->position},
-                            array("wa_learning_path\controller\learning_path", "sort_activity"));
-                    
-                    // Set a breadcrumb info.
-                    $this->base_position_cell = new \moodle_url(
-                            $this->url,
-                            array(
-                                'c' => $this->c, 
-                                'a' => $this->a, 
-                                'id' => (int) $this->id, 
-                                'regions' => empty($this->userregion->id) ? '' : $this->userregion->id, 
-                                'key' => $this->key,
-                                'position' => $this->position));
-                    
-                    $pagetitle .= $this->get_string($this->position);
-                }
+                // Count items for all conditions: region.
+                $this->count = \wa_learning_path\model\learningpath::count_activities_by_positions($this->cell->positions, $this->regions);
+
+
+                // Set a breadcrumb info.
+                $this->base_position_cell = new \moodle_url(
+                        $this->url,
+                        array(
+                        'c' => $this->c,
+                        'a' => $this->a,
+                        'id' => (int) $this->id,
+                        'regions' => empty($this->userregion->id) ? '' : $this->userregion->id,
+                        'key' => $this->key));
+
+                $pagetitle .= $this->get_string($this->position);
             }
         }
-        
+
         $PAGE->set_title($pagetitle);
-        
+
         $this->view('matrix');
     }
 
     private function sort_activity($a, $b) {
+        // Deal with missing title/fullname.
+        if (empty($a->title) && empty($a->fullname)) {
+            return 1;
+        } else if (empty($b->title) && empty($b->fullname)) {
+            return -1;
+        }
+
         $c1 = ($a->type == 'activity') ? $a->title : $a->fullname;
         $c2 = ($b->type == 'activity') ? $b->title : $b->fullname;
 
@@ -329,7 +331,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         global $CFG, $PAGE;
 
         $this->check_and_get_learning_path();
-        
+
         $subscribeid = \wa_learning_path\model\learningpath::subscribe($this->id);
 
         if ($subscribeid) {
@@ -523,19 +525,19 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         $this->matrix = json_decode($this->learning_path->matrix);
         echo "
         <style>
-        
+
         table th, table td{
             border: 1px solid #dadada;
             border-collapse: collapse;
             padding:10px;
         }
-        
+
         table{
             border-collapse: collapse;
         }
-        
+
         </style>
-        
+
         ";
         $this->view('print');
     }
@@ -561,12 +563,6 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         // Selected cell of matrix (cell-ID).
         $this->key = $key = '#'.optional_param('key', 0, PARAM_RAW_TRIMMED);
-
-        // Filtration parameter: Methodology.
-        $methodology = optional_param('methodology', '', PARAM_RAW_TRIMMED);
-
-        // Filtration parameter: Percent.
-        $percent = optional_param('percent', '0', PARAM_INT);
 
         // Load system context.
         $this->systemcontext = \context_system::instance();
@@ -610,7 +606,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             $this->cell = $this->activities->{$key};
 
             $this->cell->content = \file_rewrite_pluginfile_urls($this->cell->content, 'pluginfile.php',
-                $this->systemcontext->id, 'local_wa_learning_path', 'content', 0);
+                $this->systemcontext->id, 'local_wa_learning_path', 'content', $this->learning_path->id);
 
             $this->position = 'all';
 

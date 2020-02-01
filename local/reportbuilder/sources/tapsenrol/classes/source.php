@@ -143,6 +143,19 @@ class source extends rb_base_source {
         );
         $columnoptions[] = new rb_column_option(
                 'class',
+                'classcompletiondate',
+                get_string('classcompletiondate', 'rbsource_tapsenrol'),
+                "base.classcompletiondate",
+                array(
+                        'dbdatatype'  => 'timestamp',
+                        'displayfunc' => 'classcompletiondate',
+                        'extrafields' => [
+                                'usedtimezone' => 'base.usedtimezone',
+                        ]
+                )
+        );
+        $columnoptions[] = new rb_column_option(
+                'class',
                 'classduration',
                 get_string('classduration', 'local_reportbuilder'),
                 $DB->sql_concat('base.duration', "' '", 'base.durationunits'),
@@ -156,6 +169,16 @@ class source extends rb_base_source {
                 'classcost',
                 get_string('classcost', 'local_reportbuilder'),
                 $DB->sql_concat('base.classcost', "' '", 'base.classcostcurrency'),
+                array(
+                        'displayfunc'  => 'plaintext',
+                        'dbdatatype'   => 'char',
+                        'outputformat' => 'text')
+        );
+        $columnoptions[] = new rb_column_option(
+                'class',
+                'classprice',
+                get_string('classprice', 'rbsource_tapsenrol'),
+                $DB->sql_concat('base.price', "' '", 'base.currencycode'),
                 array(
                         'displayfunc'  => 'plaintext',
                         'dbdatatype'   => 'char',
@@ -302,6 +325,19 @@ class source extends rb_base_source {
                 'auser'
         );
 
+        $contentoptions[] = new rb_content_option(
+                'leaver',
+                get_string('leaver', 'local_reportbuilder'),
+                ['leaver' => "auserstaff.LEAVER_FLAG"],
+                'auserstaff'
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'iscpd',
+                get_string('iscpd', 'local_reportbuilder'),
+                'base.cpdid'
+        );
+
         return $contentoptions;
     }
 
@@ -346,6 +382,13 @@ class source extends rb_base_source {
                 'class',
                 'classenddate',
                 get_string('classenddate', 'local_reportbuilder'),
+                'date',
+                array('castdate' => true)
+        );
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classcompletiondate',
+                get_string('classcompletiondate', 'rbsource_tapsenrol'),
                 'date',
                 array('castdate' => true)
         );
@@ -404,6 +447,23 @@ class source extends rb_base_source {
                 'text'
         );
 
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classprice',
+                get_string('classprice', 'rbsource_tapsenrol'),
+                'number',
+                [],
+                'base.price'
+        );
+
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classcost',
+                get_string('classcost', 'local_reportbuilder'),
+                'number',
+                [],
+                'base.classcost'
+        );
         return $filteroptions;
     }
 
@@ -421,6 +481,18 @@ class source extends rb_base_source {
             $timestamp = $row->bookingplaceddate;
         }
 
+        if (empty($timestamp)) {
+            return '';
+        }
+
+        if (empty($row->usedtimezone)) {
+            return userdate($timestamp, get_string('strftimedate'), 'UTC');
+        } else {
+            return userdate($timestamp, get_string('strftimedate'), $row->usedtimezone);
+        }
+    }
+
+    public function rb_display_classcompletiondate($timestamp, $row) {
         if (empty($timestamp)) {
             return '';
         }

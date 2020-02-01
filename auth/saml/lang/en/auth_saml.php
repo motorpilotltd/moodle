@@ -62,6 +62,8 @@ $string['invalidlogin:email'] = 'Invalid login, please enter an email address.';
 
 $string['logfile'] = 'Log file path';
 $string['logfile_description'] = 'Set a filename if you want log the SAML plugin errors in a different file that the syslog (Use an absolute path or Moodle will save this file in the moodledata folder)';
+$string['login:aruplink'] = 'Log in with your Arup Account';
+$string['login:ormanual'] = 'Or enter your Moodle account details';
 
 $string['not_authorised'] = '{$a} could not be authorised.';
 

@@ -40,9 +40,54 @@ class source extends \rbsource_tapsenrol\source {
     }
 
     protected function define_columnoptions() {
-        global $DB;
-
         $columnoptions = parent::define_columnoptions();
+
+        $columnoptions[] = new rb_column_option(
+                'tapsenrol_iw_tracking',
+                "sponsoremail",
+                get_string('sponsoremail', 'rbsource_tapsenrolmoodlecourse'),
+                "tapsenrol_iw_tracking.sponsoremail",
+                [
+                        'joins' => 'tapsenrol_iw_tracking']
+        );
+
+        $columnoptions[] = new rb_column_option(
+                'tapsenrol_iw_tracking',
+                "sponsorname",
+                get_string('sponsorname', 'rbsource_tapsenrolmoodlecourse'),
+                "tapsenrol_iw_tracking.sponsorfirstname",
+                [
+                        'extrafields'     => [
+                                'sponsorlastname' => 'tapsenrol_iw_tracking.sponsorlastname'
+                        ],
+                        'displayfunc' => 'sponsorname',
+                        'joins'           => 'tapsenrol_iw_tracking'
+                ]
+        );
+
+        $columnoptions[] = new rb_column_option(
+                'tapsenrol_iw_tracking',
+                "timeapproved",
+                get_string('timeapproved', 'rbsource_tapsenrolmoodlecourse'),
+                "tapsenrol_iw_tracking.timeapproved",
+                [
+                        'displayfunc' => 'nice_date',
+                        'dbdatatype'  => 'timestamp',
+                        'joins'       => 'tapsenrol_iw_tracking'
+                ]
+        );
+
+        $columnoptions[] = new rb_column_option(
+                'tapsenrol_iw_tracking',
+                "timecancelled",
+                get_string('timecancelled', 'rbsource_tapsenrolmoodlecourse'),
+                "tapsenrol_iw_tracking.timecancelled",
+                [
+                        'displayfunc' => 'nice_date',
+                        'dbdatatype'  => 'timestamp',
+                        'joins'       => 'tapsenrol_iw_tracking'
+                ]
+        );
 
         // Include some standard columns, override parent so they say certification.
         $this->add_course_category_fields_to_columns($columnoptions);
@@ -54,6 +99,13 @@ class source extends \rbsource_tapsenrol\source {
     protected function define_joinlist() {
         $joinlist = parent::define_joinlist();
 
+        $joinlist[] = new rb_join(
+                'tapsenrol_iw_tracking',
+                'LEFT',
+                '{tapsenrol_iw_tracking}',
+                "base.enrolmentid = tapsenrol_iw_tracking.enrolmentid",
+                REPORT_BUILDER_RELATION_MANY_TO_ONE
+        );
         $joinlist[] = new rb_join(
                 'arupadvertdatatype_taps',
                 'LEFT',
@@ -102,5 +154,9 @@ class source extends \rbsource_tapsenrol\source {
         $this->add_course_fields_to_filters($filteroptions);
 
         return $filteroptions;
+    }
+
+    public function rb_display_sponsorname($sponsorfirstname, $row) {
+        return $sponsorfirstname . ' ' . $row->sponsorlastname;
     }
 }

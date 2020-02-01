@@ -12,7 +12,7 @@ $objectives_defined = \html_writer::img(new \moodle_url('/local/wa_learning_path
 $modules_and_activities_defined = \html_writer::img(new \moodle_url('/local/wa_learning_path/pix/modules_and_activities_defined.svg'), 'modules_and_activities_defined');
 $in_progress = \html_writer::img(new \moodle_url('/local/wa_learning_path/pix/in_progress.svg'), 'in_progress');
 $cell_url = new \moodle_url($this->url, array())
-        
+
 ?>
 <?php if($this->preview): ?>
     <?php echo $this->display_error($this->get_string('you_are_in_preview_mode'), 'info'); ?>
@@ -26,8 +26,18 @@ $cell_url = new \moodle_url($this->url, array())
     <?php endif; ?>
 <?php endif; ?>
 
-<?php if(empty($this->matrix) || empty($this->matrix->visivle_cols)): ?>
+<?php if(empty($this->matrix)): ?>
     <?php echo $this->display_error($this->get_string('matrix_is_empty'), 'info'); ?>
+<?php elseif (empty($this->matrix->visible_cols)): ?>
+    <?php echo html_writer::tag('p', $this->get_string('matrix_for_region_is_empty', implode(' or ', $this->regionnames))); ?>
+    <?php if (!empty($this->regionhascontent)) : ?>
+        <?php echo $this->get_string('matrix_regions_have_path'); ?>
+        <ul>
+            <?php foreach ($this->regionhascontent as $regionid => $regionname) : ?>
+            <li><?php echo html_writer::link(new \moodle_url($this->url, ['a' => 'matrix', 'id' => $this->id, 'regions' => $regionid]), $regionname); ?></li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
 <?php else: ?>
     <?php if(empty($this->preview)): ?>
         <div class="btn-group pull-right" role="group" >
@@ -45,7 +55,7 @@ $cell_url = new \moodle_url($this->url, array())
         </div>
     <?php endif; ?>
     <div class="clearfix"></div>
-    <div class="<?php if($this->matrix->visivle_cols > 12): ?>lp_matrix_scroll_enable<?php endif; ?>">
+    <div class="<?php if($this->matrix->visible_cols > 12): ?>lp_matrix_scroll_enable<?php endif; ?>">
         <div class="outer">
             <div class="inner_scroll_top">
                 <div class="inner_scroll_top_content">&nbsp;</div>
@@ -69,8 +79,8 @@ $cell_url = new \moodle_url($this->url, array())
                             <?php foreach ($this->matrix->cols as $col): ?>
                                 <?php if (!$col->show || !wa_learning_path\model\learningpath::check_regions_match($this->regions, $col->region)) continue; ?>
                                 <td class="lp_col_header" title="<?php echo $col->name ?>" >
-                                    <svg version="1.1" width="18" height="160">
-                                    <text x="-150" y="14" text-anchor="start" transform="rotate(270)"><?php echo substr($col->name, 0,20) ?></text>
+                                    <svg version="1.1" width="18" height="175">
+                                    <text x="-165" y="14" text-anchor="start" transform="rotate(270)"><?php echo htmlentities(substr(html_entity_decode($col->name), 0, 20)); ?></text>
                                     </svg>
                                 </td>
                             <?php endforeach; ?>
@@ -87,9 +97,9 @@ $cell_url = new \moodle_url($this->url, array())
                                 <?php foreach ($this->matrix->cols as $k => $col): $key = "#{$col->id}_{$row->id}"; ?>
                                     <?php if (!$col->show || !wa_learning_path\model\learningpath::check_regions_match($this->regions, $col->region)) continue; ?>
                                     <td class="lp_cell clickable <?php if(!empty($this->key) && $this->key == $key) echo "active"; ?>" id="<?php echo str_replace('#', '', $key) ?>" >
-                                        <div class="cell_icon_container">    
+                                        <div class="cell_icon_container">
                                         <a href="<?php $this->cell_url->param('key', $key); echo $this->cell_url->out(true); ?>">
-                                        <?php 
+                                        <?php
                                         if(isset($this->matrix->activities->{$key})) {
                                             $status = \wa_learning_path\model\learningpath::get_cell_info($this->activities->{$key}, $this->regions, $this->learning_path->subscribed);
                                             $object = $this->matrix->activities->{$key};
@@ -130,20 +140,20 @@ echo \html_writer::end_div();
 <script type='text/javascript'>
     $(document).ready(function(){
         $('.learning_path_matrix .inner_scroll_top_content').css('width', parseInt($('.learning_path_matrix .lp_matrix').innerWidth()) + 'px');
-        
+
         $(".learning_path_matrix .inner_scroll_top").scroll(function(){
             $(".learning_path_matrix .inner").scrollLeft($(".learning_path_matrix .inner_scroll_top").scrollLeft());
         });
-        
+
         $(".learning_path_matrix .inner").scroll(function(){
             $(".learning_path_matrix .inner_scroll_top").scrollLeft($(".learning_path_matrix .inner").scrollLeft());
         });
-    
+
         $(window).resize(function(){
             var width = parseInt($('.learning_path_matrix').innerWidth()) - 180;
             $('.learning_path_matrix .lp_matrix_scroll_enable .inner, .learning_path_matrix .inner_scroll_top').css('width', width + 'px');
         }).resize();
-        
+
         $( '.lp_matrix .lp_col_header' ).tooltip({
             position: {
                 my: "center right",
