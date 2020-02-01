@@ -191,7 +191,10 @@ $string['W'] = 'Week(s)';
 $string['Y'] = 'Year(s)';
 
 // Matrix view
-$string['matrix_is_empty'] = 'Matrix is empty';
+$string['matrix_is_empty'] = 'No path has been defined for any region.';
+$string['matrix_for_region_is_empty'] = '<p><strong>No path has been defined for {$a}.</strong></p>' . // $a should be comma separated list of regions.
+    '<p>A path has not been definied for your selected region(s).<br>Please select an alternative region from the list below.';
+$string['matrix_regions_have_path'] = '<p>Paths have been defined for:</p>';
 $string['key'] = 'Key';
 $string['no_objective_defined'] = 'No objective defined';
 $string['objectives_defined'] = 'Objectives defined';
