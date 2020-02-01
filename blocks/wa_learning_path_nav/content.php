@@ -21,7 +21,18 @@
             <br />
             <form action="<?php echo $subscribeurl ?>" method="post">
                 <input type="hidden" id="<?php echo (int) $learningpath->id ?>" />
-                <button onclick="$(this).parent().submit(); $(this).attr('disabled', true);" class="btn <?php echo ($learningpath->subscribed) ? 'btn-default' : 'btn-primary' ?> pull-right"><?php echo ($learningpath->subscribed) ? get_string('unsubscribe', $this->pluginname) : get_string('subscribe', $this->pluginname) ?></button>
+                <button
+                    onclick="$(this).parent().submit(); $(this).attr('disabled', true);"
+                    class="btn <?php echo ($learningpath->subscribed) ? 'btn-default' : 'btn-primary' ?> pull-right"
+                    data-toggle="tooltip" data-placement="bottom"
+                    <?php if ($learningpath->subscribed) : ?>
+                        title="<?php echo get_string('unsubscribe_info', 'local_wa_learning_path'); ?>"
+                    <?php else : ?>
+                        title="<?php echo get_string('subscribe_info', 'local_wa_learning_path'); ?>"
+                    <?php endif; ?>
+                    >
+                    <?php echo ($learningpath->subscribed) ? get_string('unsubscribe', $this->pluginname) : get_string('subscribe', $this->pluginname) ?>
+                </button>
             </form>
         <?php endif; ?>
     </div>
@@ -52,15 +63,15 @@
 	$(document).ready(function () {
         $('.wa_learning_path_nav_content .levels').chosen({width: "100%"});
         $('.wa_learning_path_nav_content .region').chosen({width: "100%"});
-        
+
         $('.wa_learning_path_nav_content .update_filters').click(function(){
             var levels = '';
             var regions = '';
-            
+
             if($('.wa_learning_path_nav_content .levels').val()) {
                 levels = $('.wa_learning_path_nav_content .levels').val().join();
             }
-            
+
             if($('.wa_learning_path_nav_content .region').val()) {
                 regions = $('.wa_learning_path_nav_content .region').val().join();
             }
@@ -68,8 +79,7 @@
             var url = $(this).prop('href') + '&levels=' + levels + '&regions=' + regions;
             $(this).prop('href', url);
         });
-        
-        
+
+
 	});
 </script>
-
