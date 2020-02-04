@@ -705,7 +705,42 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018010115) {
+        $table = new xmldb_table('local_appraisal_data');
+        $index = new xmldb_index('form_field', XMLDB_INDEX_UNIQUE, array('form_id', 'name'));
+        if ($dbman->table_exists($table) && !$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
 
+
+        $table = new xmldb_table('local_appraisal_forms');
+        $index = new xmldb_index('form_appraisal', XMLDB_INDEX_UNIQUE, array('appraisalid', 'form_name'));
+        if ($dbman->table_exists($table) && !$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Main savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010115, 'local', 'onlineappraisal');
+    }
+
+    if ($oldversion < 2018010116) {
+        $table = new xmldb_table('local_appraisal_comment');
+        $index = new xmldb_index('commentappraisalid', XMLDB_INDEX_NOTUNIQUE, array('appraisalid'));
+        if ($dbman->table_exists($table) && !$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+
+        $table = new xmldb_table('local_appraisal_checkins');
+        $index = new xmldb_index('checkinappraisalid', XMLDB_INDEX_NOTUNIQUE, array('appraisalid'));
+        if ($dbman->table_exists($table) && !$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Main savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010116, 'local', 'onlineappraisal');
+    }
+
+    if ($oldversion < 2018010117) {
         // Define field type to be added to local_appraisal_checkins.
         $table = new xmldb_table('local_appraisal_checkins');
         $field = new xmldb_field('type', XMLDB_TYPE_CHAR, '100', null, null, null, null);
@@ -716,7 +751,7 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         }
 
         // Onlineappraisal savepoint reached.
-        upgrade_plugin_savepoint(true, 2018010115, 'local', 'onlineappraisal');
+        upgrade_plugin_savepoint(true, 2018010117, 'local', 'onlineappraisal');
     }
 
     // Always rebuild permissions table and cache after upgrading.

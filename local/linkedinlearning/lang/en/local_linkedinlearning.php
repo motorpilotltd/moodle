@@ -26,3 +26,4 @@ $string['setting:courseprgogresssyncto'] = 'Course progressed synced to';
 $string['tasksynclinkedinlearningcourses'] = 'Sync linked in learning courses';
 $string['tasksynclinkedinlearningcourseprogress'] = 'Sync progress in learning courses';
 $string['title'] = 'Title';
+$string['cachedef_linkedinlearningcourses'] = 'Linkedin Learning courses';

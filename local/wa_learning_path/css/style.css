@@ -350,7 +350,7 @@
 }
 
 .learning_path_matrix .lp_matrix .lp_cell.clickable:hover{
-	
+
 }
 
 .learning_path_matrix .lp_matrix .lp_cell.clickable .empty_box,
@@ -395,7 +395,7 @@
 /*--- Begin ----*/
 .learning_path_matrix .lp_matrix_scroll_enable table  {
 	display: table;
-	table-layout: fixed; 
+	table-layout: fixed;
 	width: 100%;
 	/*margin-left: -100px;*/
 }
@@ -407,7 +407,7 @@
 .learning_path_matrix .lp_matrix_scroll_enable table th {
 	position:absolute;
 	*position: relative; /*ie7*/
-	left: 0; 
+	left: 0;
 	width: 180px;
 	border: none;
 }
@@ -418,7 +418,7 @@
 .learning_path_matrix .lp_matrix_scroll_enable .inner {
 	overflow-x: scroll;
 	overflow-y: visible;
-	width: 700px; 
+	width: 700px;
 	margin-left: 180px;
 }
 
@@ -432,7 +432,7 @@
 
 .learning_path_matrix .lp_matrix_scroll_enable .inner_scroll_top{
 	display: block;
-	width: 700px; 
+	width: 700px;
 	height: 20px;
 	margin-left: 180px;
 	overflow-x: scroll;
@@ -453,7 +453,7 @@
 }
 
 .learning_path_matrix .matrix_activities .is_completed{
-	margin-right: 13px; 
+	margin-right: 13px;
 	margin-top: 5px;
 	font-weight: bold;
 }
@@ -468,30 +468,35 @@
 	white-space: nowrap;
 }
 
-.learning_path_matrix .tab_content.add_scroll  {
+.learning_path_matrix .tab_content.add_scroll {
 	max-height: 570px;
 	overflow-x: hidden;
 	overflow-y: scroll;
-	
+
 }
 
-.learning_path_matrix .list_of_activities .cell{
+.learning_path_matrix .list_of_activities .cell {
 	padding: 8px;
     line-height: 1.42857143;
     vertical-align: top;
     border-top: 1px solid #ddd;
 }
 
+.learning_path_matrix .list_of_activities h4.activity_title {
+    margin-top: 0;
+}
+
+.learning_path_matrix .list_of_activities .activity-position {
+    display: inline-block;
+    padding: 0 4px;
+    border-radius: 4px
+}
+
 .learning_path_matrix .list_of_activities .cell .item_icon{
 	height: 31px;
 }
 
-
-.learning_path_matrix .filtration{
-    
-}
-
-.learning_path_matrix .filtration .filter_percent{
+.learning_path_matrix .filtration .filter_checkboxes {
 	margin-right: 50px;
 	margin-left: 4px;
 }
@@ -500,7 +505,7 @@
 	padding-left: 8px;
 }
 
-.learning_path_matrix .filtration .filter_percent input{
+.learning_path_matrix .filtration .filter_checkboxes input{
 	margin-top: 7px;
 }
 .learning_path_matrix .list_of_activities .first .cell,
@@ -517,12 +522,6 @@
 	color: black;
 }
 
-.learning_path_matrix .tab_content .activity_short_description{
-	width: 100%;
-	height: 20px;
-	overflow: hidden;
-}
-
 .learning_path_matrix .tab_content thead th{
 	text-align: center;
 }
@@ -530,10 +529,6 @@
 .learning_path_matrix .tab_content .c0{
 	text-align: center;
 	width: 1%;
-}
-.learning_path_matrix .tab_content .c0 ,plus-minus{
-	cursor: pointer;
-	color: #0f95ff;
 }
 
 .learning_path_matrix .tab_content .c2,
@@ -691,16 +686,16 @@
 }
 
 .learning_path_matrix .btn-group>.btn{
-    margin-top: 5px;   
-    margin-bottom: 5px;   
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .learning_path_content iframe{
-    max-width: 100%;   
+    max-width: 100%;
 }
 
 .wa_learning_path_content select{
-    outline: none;   
+    outline: none;
 }
 
 .wa_learning_path_content select.publ{
@@ -755,7 +750,7 @@
        float: none!important;
        margin-top: 10px;
        display: inline-block;
-   }    
+   }
 }
 
 @media (max-width: 700px) {

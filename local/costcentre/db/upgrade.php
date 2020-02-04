@@ -173,5 +173,19 @@ function xmldb_local_costcentre_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017051501, 'local', 'costcentre');
     }
 
+    if ($oldversion < 2017051505) {
+        // Add index to icq column on user table (cost centre code).
+        $table = new xmldb_table('user');
+        $index = new xmldb_index('user_icq', XMLDB_INDEX_NOTUNIQUE, ['icq']);
+
+        // Conditionally launch add index.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Costcentre savepoint reached.
+        upgrade_plugin_savepoint(true, 2017051505, 'local', 'costcentre');
+    }
+
     return true;
 }

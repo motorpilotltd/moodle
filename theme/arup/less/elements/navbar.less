@@ -73,7 +73,6 @@
         & > a {
             .hover-pop(rgba(0,0,0,0.1), 0, 250ms, 0);
         }
-
     }
     .timezone {
         &> a {
@@ -115,6 +114,14 @@
     @media (max-width: @screen-sm) {
         .moodleuser.dropdown {
             margin-top: 7px;
+        }
+    }
+    @media (max-width: @screen-xs) {
+        .moodleuser .caret {
+            display: none;
+        }
+        .setusertime {
+            display: none;
         }
     }
 }

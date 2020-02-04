@@ -101,6 +101,9 @@ class rb_filter_course_multi extends rb_filter_type {
 
         $select = [];
         foreach ($list as $catid => $category) {
+            if (!isset($coursesbycat[$catid])) {
+                continue;
+            }
             foreach ($coursesbycat[$catid] as $c) {
                 if ($c->id == $SITE->id) {
                     continue;

@@ -44,8 +44,9 @@ $edit   = optional_param('edit', null, PARAM_BOOL);    // Turn editing on and of
 $reset  = optional_param('reset', null, PARAM_BOOL);
 
 require_login();
-
-if (\core\session\manager::is_loggedinas()) {
+/* BEGIN CORE MOD */
+if (\core\session\manager::is_loggedinas() && !optional_param('itrustthisuser', false, PARAM_BOOL)) {
+/* END CORE MOD */
     // Disable access to the user's dashboard for "logged in as" sessions
     // to mitigate risks associated with loading other users' JavaScript.
     // See MDL-63786 for more information.

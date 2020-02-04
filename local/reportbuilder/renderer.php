@@ -358,18 +358,17 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
             $PAGE->requires->strings_for_js(array('cachenow_title'), 'local_reportbuilder');
             $PAGE->requires->string_for_js('ok', 'moodle');
             $strcache = get_string('cachenow', 'local_reportbuilder');
-            $PAGE->requires->js_call_amd('local_reportbuilder/cachenow-lazy', 'init', array());
+            $PAGE->requires->js_call_amd('local_reportbuilder/cachenow', 'init', array());
         }
 
         if ($icon) {
-            $html = html_writer::start_tag('div', array('class' => 'show-cachenow-dialog', 'id' => 'show-cachenow-dialog-' . $reportid, 'data-id' => $reportid));
-            $cacheicon = $this->output->flex_icon('cache', ['classes' => 'rb-genicon', 'alt' => get_string('cachereport', 'local_reportbuilder')]);
-            $html .= $cacheicon;
-            $html .= html_writer::end_tag('div');
+            $html = $this->output->action_icon('', new pix_icon('i/new', $strcache, 'core'), null,
+                    array('data-id' => $reportid, 'data-action' => "cachenow", 'title' => $strcache ));
         } else {
             $html = html_writer::empty_tag('input', array('type' => 'button',
                 'name' => 'rb_cachenow',
                 'data-id' => $reportid,
+                'data-action' => "cachenow",
                 'class' => 'show-cachenow-dialog rb-hidden',
                 'id' => 'show-cachenow-dialog-' . $reportid,
                 'value' => $strcache

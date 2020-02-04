@@ -213,7 +213,7 @@ class source extends rb_base_source {
         if (empty($cohortname)) {
             return '';
         }
-        return \html_writer::link(new moodle_url('/cohort/view.php',
+        return \html_writer::link(new \moodle_url('/cohort/view.php',
                 array('id' => $row->cohort_id)), format_string($cohortname));
     }
 

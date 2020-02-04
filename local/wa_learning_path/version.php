@@ -9,8 +9,8 @@
  * @copyright   2016 Webanywhere (http://www.webanywhere.co.uk)
  * @author      Łukasz Juchnik <lukasz.juchnik@webanywhere.co.uk>
  * @author      Bartosz Hornik <bartosz.hornik@webanywhere.co.uk>
- * @license     
- * 
+ * @license
+ *
  */
 defined('MOODLE_INTERNAL') || die;
 
@@ -19,7 +19,7 @@ defined('MOODLE_INTERNAL') || die;
 // year (YYYY), month (MM) and date (DD) of the plugin version's release.
 // Every new plugin version must have this number increased in this file,
 // which is detected by Moodle core and the upgrade process is triggered.
-$plugin->version = 2016081202;
+$plugin->version = 2016081203;
 
 
 // Specifies the minimum version number of Moodle core that this plugin requires.

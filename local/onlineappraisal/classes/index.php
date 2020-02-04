@@ -410,14 +410,26 @@ class index {
         $bitandhrl = $DB->sql_bitand('lcu.permissions', costcentre::HR_LEADER);
         $bitandhra = $DB->sql_bitand('lcu.permissions', costcentre::HR_ADMIN);
 
-        $groupssql = "SELECT DISTINCT lc.costcentre, lc.enableappraisal
-                  FROM {local_costcentre} lc
-                  JOIN {local_costcentre_user} lcu ON lcu.costcentre = lc.costcentre
-                 WHERE lcu.userid = :userid
-                       AND ({$bitandhrl} = :bitandhrl OR {$bitandhra} = :bitandhra)
-              ORDER BY lc.enableappraisal DESC, lc.costcentre ASC";
+        $groupssql = "SELECT DISTINCT lc.costcentre, lc.enableappraisal, u.department
+                        FROM {local_costcentre} lc
+                        JOIN {local_costcentre_user} lcu ON lcu.costcentre = lc.costcentre
+	                    JOIN {user} u ON u.icq = lc.costcentre
+                        JOIN (SELECT MAX(id) maxid
+                                FROM {user} inneru
+                                JOIN (SELECT MAX(timemodified) as maxtimemodified
+                                        FROM mdl_user
+                                    GROUP BY icq) groupedicq ON inneru.timemodified = groupedicq.maxtimemodified
+                            GROUP BY inneru.icq) groupedid ON u.id = groupedid.maxid
+                       WHERE lcu.userid = :userid
+                             AND ({$bitandhrl} = :bitandhrl OR {$bitandhra} = :bitandhra)
+                    ORDER BY lc.enableappraisal DESC, lc.costcentre ASC";
 
         $groups = $DB->get_records_sql($groupssql, $groupsparams);
+
+        $hrleadergroups = [];
+        if ($this->is['hrleader']) {
+            $hrleadergroups = costcentre::get_user_cost_centres($this->user->id, costcentre::HR_LEADER);
+        }
 
         $options = array('' => get_string('form:choosedots', 'local_onlineappraisal'));
         foreach($groups as $group) {
@@ -434,26 +446,12 @@ class index {
                     continue;
                 }
             }
-            // Find the group name.
-            $groupsql = "SELECT u.department
-                      FROM {user} u
-                INNER JOIN (SELECT MAX(id) maxid
-                              FROM {user} inneru
-                        INNER JOIN (SELECT MAX(timemodified) as maxtimemodified
-                                      FROM {user}
-                                     WHERE icq = :icq1) groupedicq ON inneru.timemodified = groupedicq.maxtimemodified
-                             WHERE icq = :icq2) groupedid ON u.id = groupedid.maxid
-                     WHERE u.icq = :icq3";
-            $groupparams = array_fill_keys(array('icq1', 'icq2', 'icq3'), $group->costcentre);
-            $groupname = $DB->get_field_sql($groupsql, $groupparams);
             $disabled = ($group->enableappraisal) ? '' : ' - ' . get_string('inactive', 'local_onlineappraisal');
-            $options = $options + array($group->costcentre => $group->costcentre.' - ' . $groupname . $disabled);
-            if ($this->is['hrleader']) {
-                // Check if can actually view VIP and toggle SDP/LDP (HR_LEADER _only_).
-                $this->canviewvip[$group->costcentre] =
-                        $this->cantogglesdp[$group->costcentre] =
-                        $this->cantoggleldp[$group->costcentre] = costcentre::is_user($this->user->id, costcentre::HR_LEADER, $group->costcentre);
-            }
+            $options = $options + array($group->costcentre => $group->costcentre.' - ' . $group->department . $disabled);
+            // Check if can actually view VIP and toggle SDP/LDP (HR_LEADER _only_).
+            $this->canviewvip[$group->costcentre] =
+                    $this->cantogglesdp[$group->costcentre] =
+                    $this->cantoggleldp[$group->costcentre] = array_key_exists($group->costcentre, $hrleadergroups);
         }
 
         return $options;

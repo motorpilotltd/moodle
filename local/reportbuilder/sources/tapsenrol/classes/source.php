@@ -47,6 +47,7 @@ class source extends rb_base_source {
         $this->requiredcolumns = $this->define_requiredcolumns();
         $this->contentoptions = $this->define_contentoptions();
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_tapsenrol');
+        list($this->sourcewhere, $this->sourceparams) = $this->define_sourcewhere();
 
         $this->taps = new \local_taps\taps();
 
@@ -67,13 +68,22 @@ class source extends rb_base_source {
         return $requiredcolumns;
     }
 
+    /**
+     * Define some extra SQL for the base to limit the data set.
+     *
+     * @return array The SQL and parmeters that defines the WHERE for the source.
+     */
+    protected function define_sourcewhere() {
+        $sql = '(base.archived = 0 or base.archived is null)';
+
+        return array("($sql)", []);
+    }
+
     protected function define_columnoptions() {
         global $DB;
 
         $columnoptions = [];
         // Include some standard columns, override parent so they say certification.
-        $this->add_course_category_fields_to_columns($columnoptions);
-        $this->add_course_fields_to_columns($columnoptions);
         $this->add_user_fields_to_columns($columnoptions);
         $this->add_staff_details_to_columns($columnoptions);
 
@@ -94,10 +104,9 @@ class source extends rb_base_source {
         $columnoptions[] = new rb_column_option(
                 'class',
                 "coursename",
-                get_string('coursename', 'local_reportbuilder'),
-                "base.coursename",
+                get_string('classcoursename', 'local_reportbuilder'),
+                "coalesce(base.coursename, base.classname)",
                 array(
-                        'displayfunc'  => 'coalescecoursename',
                         'extrafields' => array('classcoursename' => 'base.classname'))
         );
         $columnoptions[] = new rb_column_option(
@@ -134,6 +143,19 @@ class source extends rb_base_source {
         );
         $columnoptions[] = new rb_column_option(
                 'class',
+                'classcompletiondate',
+                get_string('classcompletiondate', 'rbsource_tapsenrol'),
+                "base.classcompletiondate",
+                array(
+                        'dbdatatype'  => 'timestamp',
+                        'displayfunc' => 'classcompletiondate',
+                        'extrafields' => [
+                                'usedtimezone' => 'base.usedtimezone',
+                        ]
+                )
+        );
+        $columnoptions[] = new rb_column_option(
+                'class',
                 'classduration',
                 get_string('classduration', 'local_reportbuilder'),
                 $DB->sql_concat('base.duration', "' '", 'base.durationunits'),
@@ -147,6 +169,16 @@ class source extends rb_base_source {
                 'classcost',
                 get_string('classcost', 'local_reportbuilder'),
                 $DB->sql_concat('base.classcost', "' '", 'base.classcostcurrency'),
+                array(
+                        'displayfunc'  => 'plaintext',
+                        'dbdatatype'   => 'char',
+                        'outputformat' => 'text')
+        );
+        $columnoptions[] = new rb_column_option(
+                'class',
+                'classprice',
+                get_string('classprice', 'rbsource_tapsenrol'),
+                $DB->sql_concat('base.price', "' '", 'base.currencycode'),
                 array(
                         'displayfunc'  => 'plaintext',
                         'dbdatatype'   => 'char',
@@ -190,6 +222,16 @@ class source extends rb_base_source {
                         'dbdatatype' => 'boolean',
                 )
         );
+
+        $columnoptions[] = new rb_column_option(
+                'class',
+                'cpdorlms',
+                get_string('cpdorlmsbool', 'rbsource_tapsenrol'),
+                "CASE WHEN base.cpdid = '' OR base.cpdid is null THEN 0 ELSE 1 END",
+                array(
+                        'dbdatatype' => 'boolean',
+                )
+        );
         $columnoptions[] = new rb_column_option(
                 'class',
                 'bookingplaceddate',
@@ -211,9 +253,9 @@ class source extends rb_base_source {
                 )
         );
         $columnoptions[] = new rb_column_option(
-                'course',
+                'tapscourse',
                 'coursecode',
-                get_string('coursecode', 'local_reportbuilder'),
+                get_string('tapscoursecode', 'local_reportbuilder'),
                 'tapscourse.coursecode',
                 array('joins'        => 'tapscourse',
                       'displayfunc'  => 'plaintext',
@@ -221,10 +263,20 @@ class source extends rb_base_source {
                       'outputformat' => 'text')
         );
         $columnoptions[] = new rb_column_option(
-                'course',
+                'tapscourse',
                 'courseregion',
-                get_string('courseregion', 'local_reportbuilder'),
+                get_string('tapscourseregion', 'local_reportbuilder'),
                 'tapscourse.courseregion',
+                array('joins'        => 'tapscourse',
+                      'displayfunc'  => 'plaintext',
+                      'dbdatatype'   => 'char',
+                      'outputformat' => 'text')
+        );
+        $columnoptions[] = new rb_column_option(
+                'tapscourse',
+                'tapscoursename',
+                get_string('tapscoursename', 'local_reportbuilder'),
+                'tapscourse.coursename',
                 array('joins'        => 'tapscourse',
                       'displayfunc'  => 'plaintext',
                       'dbdatatype'   => 'char',
@@ -237,8 +289,6 @@ class source extends rb_base_source {
     protected function define_joinlist() {
         $joinlist = [];
 
-        $this->add_user_table_to_joinlist_on_idnumber($joinlist, 'base', 'staffid');
-
         $joinlist[] = new rb_join(
                 'tapscourse',
                 'LEFT',
@@ -246,30 +296,8 @@ class source extends rb_base_source {
                 "base.courseid = tapscourse.courseid",
                 REPORT_BUILDER_RELATION_MANY_TO_ONE
         );
-        $joinlist[] = new rb_join(
-                'arupadvertdatatype_taps',
-                'LEFT',
-                '{arupadvertdatatype_taps}',
-                "base.courseid = arupadvertdatatype_taps.tapscourseid",
-                REPORT_BUILDER_RELATION_MANY_TO_ONE
-        );
-        $joinlist[] = new rb_join(
-                'arupadvert',
-                'LEFT',
-                '{arupadvert}',
-                "arupadvertdatatype_taps.arupadvertid = arupadvert.id",
-                REPORT_BUILDER_RELATION_MANY_TO_ONE,
-                'arupadvertdatatype_taps'
-        );
 
-        $this->add_course_table_to_joinlist($joinlist, 'arupadvert', 'course', 'LEFT');
-        $this->add_context_table_to_joinlist($joinlist, 'course', 'id', CONTEXT_COURSE, 'LEFT');
-        // requires the course join
-        $this->add_course_category_table_to_joinlist($joinlist,
-                'course', 'category');
-        $this->add_core_tag_tables_to_joinlist('core', 'course', $joinlist, 'course', 'id');
-
-        $this->add_cohort_course_tables_to_joinlist($joinlist, 'course', 'id');
+        $this->add_user_table_to_joinlist_on_idnumber($joinlist, 'base', 'staffid');
 
         return $joinlist;
     }
@@ -277,24 +305,17 @@ class source extends rb_base_source {
     protected function define_contentoptions() {
         $contentoptions = [
                 new rb_content_option(
-                        'archived',
-                        get_string('archived', 'rbsource_tapsenrol'),
-                        'base.archived'
+                        'bookingstatus',
+                        get_string('bookingstatus', 'rbsource_tapsenrol'),
+                        'base.bookingstatus'
                 ),
         ];
 
         $contentoptions[] = new rb_content_option(
                 'user',
                 get_string('user', 'local_reportbuilder'),
-                ['userid' => 'user.id'],
-                'user'
-        );
-
-        $contentoptions[] = new rb_content_option(
-                'enrolledcourses',
-                get_string('enrolledcourses', 'local_reportbuilder'),
-                'course.id',
-                'course'
+                ['userid' => 'auser.id'],
+                'auser'
         );
 
         $contentoptions[] = new rb_content_option(
@@ -302,6 +323,19 @@ class source extends rb_base_source {
                 get_string('costcentre', 'local_reportbuilder'),
                 ['costcentre' => "auser.icq"],
                 'auser'
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'leaver',
+                get_string('leaver', 'local_reportbuilder'),
+                ['leaver' => "auserstaff.LEAVER_FLAG"],
+                'auserstaff'
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'iscpd',
+                get_string('iscpd', 'local_reportbuilder'),
+                'base.cpdid'
         );
 
         return $contentoptions;
@@ -312,19 +346,23 @@ class source extends rb_base_source {
 
         $this->add_user_fields_to_filters($filteroptions);
         $this->add_staff_fields_to_filters($filteroptions);
-        $this->add_course_category_fields_to_filters($filteroptions);
-        $this->add_course_fields_to_filters($filteroptions);
 
         $filteroptions[] = new rb_filter_option(
                 'class',
-                'cpd',
+                'cpdorlms',
                 get_string('cpdorlms', 'rbsource_tapsenrol'),
                 'select',
                 array(
                         'selectchoices' => array(0 => get_string('lms', 'rbsource_tapsenrol'), 1 => get_string('cpd', 'rbsource_tapsenrol')),
                         'simplemode' => true
-                ),
-                "(CASE WHEN base.cpdid = '' OR base.cpdid is null THEN 0 ELSE 1 END)"
+                )
+        );
+
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'coursename',
+                get_string('classcoursename', 'local_reportbuilder'),
+                'text'
         );
 
         $filteroptions[] = new rb_filter_option(
@@ -333,16 +371,100 @@ class source extends rb_base_source {
                 get_string('classname', 'local_reportbuilder'),
                 'text'
         );
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classstartdate',
+                get_string('classstartdate', 'local_reportbuilder'),
+                'date',
+                array('castdate' => true)
+        );
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classenddate',
+                get_string('classenddate', 'local_reportbuilder'),
+                'date',
+                array('castdate' => true)
+        );
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classcompletiondate',
+                get_string('classcompletiondate', 'rbsource_tapsenrol'),
+                'date',
+                array('castdate' => true)
+        );
 
+
+        $statuses = [
+                'W:Requested',
+                'Requested',
+                'Waiting Listed',
+                'Reserve',
+                'Wait1',
+                'Wait2',
+                'Wait3',
+                'Wait-Computing',
+                'W:Wait Listed',
+                'Wait Listed',
+                'Approved Place',
+                'Offered Place',
+                'Assessed',
+                'Full Attendance',
+                'Partial Attendance',
+                'Cancelled',
+                'Withdrawn',
+                'No Place',
+                'Dropped Out',
+                'Class Postponed',
+                'Class No Longer Required',
+                'Date Inappropriate',
+                'No Response',
+                'No Show',
+                'Course Full'];
+        $options = array_combine($statuses, $statuses);
+
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'bookingstatus',
+                get_string('bookingstatus', 'local_reportbuilder'),
+                'selectbookingstatus',
+                array(
+                        'selectchoices' => $options,
+                        'simplemode' => true
+                )
+        );
+
+        $filteroptions[] = new rb_filter_option(
+                'tapscourse',
+                'tapscoursename',
+                get_string('tapscoursename', 'local_reportbuilder'),
+                'text'
+        );
+
+        $filteroptions[] = new rb_filter_option(
+                'tapscourse',
+                'coursecode',
+                get_string('tapscoursecode', 'local_reportbuilder'),
+                'text'
+        );
+
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classprice',
+                get_string('classprice', 'rbsource_tapsenrol'),
+                'number',
+                [],
+                'base.price'
+        );
+
+        $filteroptions[] = new rb_filter_option(
+                'class',
+                'classcost',
+                get_string('classcost', 'local_reportbuilder'),
+                'number',
+                [],
+                'base.classcost'
+        );
         return $filteroptions;
-    }
-
-    public function rb_display_coalescecoursename($data, $row) {
-        if (!empty($data)) {
-            return $data;
-        } else {
-            return $row->classcoursename;
-        }
     }
 
     public function rb_display_bookingstatus($data, $row) {
@@ -359,6 +481,18 @@ class source extends rb_base_source {
             $timestamp = $row->bookingplaceddate;
         }
 
+        if (empty($timestamp)) {
+            return '';
+        }
+
+        if (empty($row->usedtimezone)) {
+            return userdate($timestamp, get_string('strftimedate'), 'UTC');
+        } else {
+            return userdate($timestamp, get_string('strftimedate'), $row->usedtimezone);
+        }
+    }
+
+    public function rb_display_classcompletiondate($timestamp, $row) {
         if (empty($timestamp)) {
             return '';
         }

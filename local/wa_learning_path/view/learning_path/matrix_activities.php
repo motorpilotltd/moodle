@@ -7,26 +7,33 @@
     <h2><?php echo $this->r_label ?>, <?php echo $this->c_label ?></h2>
     <p><?php echo $this->cell->content ?></p>
     <br />
-    <form class="filtration" method="post" action="<?php echo $this->position_url; ?>#activities_tab">
-        <div class="filter_percent pull-left">
-            <input type="radio" id="percent_0" value="0" name="percent" <?php if($this->filtration['percent'] == 0) echo 'checked="1"'; ?>>
-            <label for="percent_0"><?php echo $this->get_string('all') ?></label>
+    <form class="filtration">
+        <div class="filter_checkboxes filter_position clearfix">
+            <input type="checkbox" id="position_essential" value="essential" name="position[]" checked>
+            <label for="position_"><?php echo $this->get_string('essential') ?></label>
 
-            <input type="radio" id="percent_70" value="70" name="percent" <?php if($this->filtration['percent'] == 70) echo 'checked="1"'; ?>>
+            <input type="checkbox" id="position_recommended" value="recommended" name="position[]" checked>
+            <label for="position_recommended"><?php echo $this->get_string('recommended') ?></label>
+
+            <input type="checkbox" id="position_elective" value="elective" name="position[]" checked>
+            <label for="position_elective"><?php echo $this->get_string('elective') ?></label>
+        </div>
+        <div class="filter_checkboxes filter_percent pull-left">
+            <input type="checkbox" id="percent_70" value="70" name="percent[]" checked>
             <label for="percent_70">70</label>
 
-            <input type="radio" id="percent_20" value="20" name="percent" <?php if($this->filtration['percent'] == 20) echo 'checked="1"'; ?>>
+            <input type="checkbox" id="percent_20" value="20" name="percent[]" checked>
             <label for="percent_20">20</label>
 
-            <input type="radio" id="percent_10" value="10" name="percent" <?php if($this->filtration['percent'] == 10) echo 'checked="1"'; ?>>
+            <input type="checkbox" id="percent_10" value="10" name="percent[]" checked>
             <label for="percent_10">10</label>
         </div>
         <div class="filter_methodology pull-left">
             <label><?php echo $this->get_string('filter_by_methodology') ?></label>
             <select name="methodology">
-                <option value="" <?php if($this->filtration['methodology'] == '') echo 'selected="selected"'; ?>><?php echo $this->get_string('all') ?></option>
+                <option value="" selected="selected"><?php echo $this->get_string('all') ?></option>
                 <?php foreach($this->methodologylist as $key => $type): ?>
-                    <option value="<?php echo $key ?>" <?php if($this->filtration['methodology'] == (string)$key) echo 'selected="selected"'; ?>><?php echo $type ?></option>
+                    <option value="<?php echo $key ?>"><?php echo $type ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -35,23 +42,6 @@
         <?php endif; ?>
         <div class="clearfix"></div>
     </form>
-    <div class="wa_tabs">
-        <a href="<?php $this->position_url->param('position', 'essential'); echo $this->position_url; ?>#activities_tab" class="<?php if($this->position == 'essential') echo 'current'; ?>">
-            <?php echo $this->get_string('essential') ?>&nbsp;(<?php echo $this->count['essential'] ?>)
-            <?php if(isset($this->count['new']['essential'])): ?><b><?php echo $this->get_string('new') ?></b><?php endif; ?>
-        </a>
-        <a href="<?php $this->position_url->param('position', 'recommended'); echo $this->position_url; ?>#activities_tab" class="<?php if($this->position == 'recommended') echo 'current'; ?>">
-            <?php echo $this->get_string('recommended') ?>&nbsp;(<?php echo $this->count['recommended'] ?>)
-            <?php if(isset($this->count['new']['recommended'])): ?><b><?php echo $this->get_string('new') ?></b><?php endif; ?>
-        </a>
-        <a href="<?php $this->position_url->param('position', 'elective'); echo $this->position_url; ?>#activities_tab" class="<?php if($this->position == 'elective') echo 'current'; ?>">
-            <?php echo $this->get_string('elective') ?>&nbsp;(<?php echo $this->count['elective']; ?>)
-            <?php if(isset($this->count['new']['elective'])): ?><b><?php echo $this->get_string('new') ?></b><?php endif; ?>
-        </a>
-        <a href="<?php $this->position_url->param('position', 'all'); echo $this->position_url; ?>#activities_tab" class="<?php if($this->position == 'all') echo 'current'; ?>">
-            <?php echo $this->get_string('all') ?>&nbsp;(<?php echo $this->count['all'] ?>)
-        </a>
-    </div>
     <?php if(!empty($this->position)): $first = true; ?>
         <div class="tab_content <?php if($this->count[$this->position] > 10): ?>add_scroll<?php endif; ?>">
             <div class="no-overflow">
@@ -59,74 +49,75 @@
                 <table class="list_of_activities">
                     <tbody>
                         <?php foreach($this->cell->positions->{$this->position} as $iterator => $activity): ?>
-                        <?php 
+                        <?php
                             if(empty($activity->id)){
                                 continue;
                             }
-                            
-                            if (!wa_learning_path\model\learningpath::check_regions_match($this->regions, $activity->region)) {
-                                continue;
-                            }
 
-                            // Filtration.
-                            if(!empty($this->filtration['methodology']) && $activity->methodology != $this->filtration['methodology']){
-                                continue;
-                            }
-                            if(!empty($this->filtration['percent']) && $activity->percent != $this->filtration['percent']){
+                            if (!wa_learning_path\model\learningpath::check_regions_match($this->regions, $activity->region)) {
                                 continue;
                             }
 
                             $id = $iterator . '_' . $activity->type . "_" . $activity->id;
                             $icon = '';
-                            if($activity->type == 'module'){
+                            if ($activity->type == 'module') {
                                 $title = $activity->fullname;
                                 $coursecontext = context_course::instance($activity->id);
                                 $options = array();
                                 $summary = file_rewrite_pluginfile_urls($activity->description, 'pluginfile.php', $coursecontext->id, 'course', 'summary', null);
                                 $description = format_text($summary, $activity->summaryformat, $options, $activity->id);
 
-                                $url = new \moodle_url('/course/view.php', array('id' => (int) $activity->id));          
+                                $url = new \moodle_url('/course/view.php', array('id' => (int) $activity->id));
                                 $icon = \wa_learning_path\lib\get_course_icon((int) $activity->id);
                                 $icon = empty($icon) ? '' : $icon;
-                                
+
                                 $completionfilename = $activity->completed ? "/local/wa_learning_path/pix/m_completed.png" : "/local/wa_learning_path/pix/m_incomplete.png";
-                            }else{
+                            } else {
                                 $title = $activity->title;
                                 $description = \file_rewrite_pluginfile_urls($activity->description, 'pluginfile.php', $this->systemcontext->id, 'local_wa_learning_path', 'activity_description', $activity->id);
                                 $url = new \moodle_url($this->url, array('c' => 'activity', 'a' => 'view', 'id' => (int) $activity->id));
-                            
+
                                 $completionfilename = $activity->completed ? "/local/wa_learning_path/pix/a_completed.png" : "/local/wa_learning_path/pix/a_incomplete.png";
                             }
-                            
+
                             $completionicon = new \moodle_url($completionfilename);
-                            
+
                             $percentfilename = "/local/wa_learning_path/pix/percent{$activity->percent}.png";
                             $percentfile = new \moodle_url($percentfilename);
-                            
+
                             $methodologyfilename = "/local/wa_learning_path/pix/{$activity->methodology}.svg";
                             $methodologyfile = new \moodle_url($methodologyfilename);
                         ?>
-                        <tr class="<?php if($first) echo "first"; $first = false; ?>">
+                        <tr class="<?php if($first) echo "first"; $first = false; ?>"
+                            data-position="<?php echo $activity->position; ?>" data-percent="<?php echo $activity->percent; ?>" data-methodology="<?php echo $activity->methodology; ?>" >
                             <td class="cell c0">
-                                <i class="plus-minus glyphicon glyphicon-plus" data-id="<?php echo $id ?>"></i>
+                                <span class="bg-primary activity-position"><?php echo $this->get_string($activity->position); ?></span>
                             </td>
                             <td class="cell c1">
-                                <a href="#<?php echo $title ?>" class="activity_title" data-id="<?php echo $id ?>"><?php echo $title ?></a>
-                                <div class="activity_short_description short" id="description_<?php echo $id ?>">
+                                <h4 class="activity_title"><?php echo $title ?></h4>
+                                <div class="activity_full_description" id="description_<?php echo $id ?>">
                                     <?php echo $description ?>
                                     <div class="clearfix"></div>
-                                    <?php if($activity->type == 'module' && $this->learning_path->subscribed) : ?>
-                                        <br />
+                                    <?php if ($activity->type == 'module' && $this->learning_path->subscribed) : ?>
                                         <a class="btn btn-primary" href="<?php echo $url->out() ?>"><?php echo $this->get_string('open_module') ?></a>
+                                    <?php elseif ($activity->type == 'module') : ?>
+                                        <button class="btn btn-primary disabled"
+                                                data-toggle="tooltip"
+                                                data-placement="top"
+                                                title="<?php echo $this->get_string('open_module_tooltip'); ?>">
+                                            <?php echo $this->get_string('open_module') ?>
+                                        </button>
                                     <?php endif; ?>
                                 </div>
                             </td>
                             <td class="cell c2">
+                            <?php if (!empty($activity->percent)): ?>
                                 <?php if(file_exists("$CFG->dirroot/$percentfilename")): ?>
                                     <img src="<?php echo $percentfile ?>" alt="<?php echo $activity->percent; ?>" class="item_icon" />
                                 <?php endif; ?>
                                     <br />
-                                <span><?php echo $activity->percent; ?>%</span>                                                                        
+                                <span><?php echo $activity->percent; ?>%</span>
+                            <?php endif; ?>
                             </td>
                             <td class="cell c3">
                                 <?php if($activity->type == 'module'): ?>
@@ -165,18 +156,9 @@
         </div>
     <?php endif; ?>
 </div>
- 
+
 <script type='text/javascript'>
-    $(document).ready(function(){    
-        $('.matrix_activities .activity_title').click(function(){
-            wa_learning_path.showHideItemContent(this);
-            return false;
-        });
-        
-        $('.plus-minus').click(function(){
-            wa_learning_path.showHideItemContent(this);
-        });
-        
+    $(document).ready(function(){
         $('.matrix_activities .activity_completion').click(function(e){
             var status = $(this).hasClass('no') ? 1 : 0;
             var activityid = $(this).attr('data-id');
@@ -189,7 +171,7 @@
                     return false;
                 }
             }
-            
+
             $.ajax({
                 method: "POST",
                 url: "<?php $url =  new \moodle_url($this->url, array('c' => 'activity', 'a' => 'set_completion')); echo $url->out(false); ?>",
@@ -199,10 +181,6 @@
                 window.location.reload();
             });
             return false;
-        });
-
-        $('.filtration input, .filtration select').change(function(){
-            $('form.filtration').submit();
         });
 
         $('#print_section').click(function(){
@@ -221,5 +199,43 @@
             $(this).prop('href', url);
         });
 
-    })
+        $('form.filtration :checkbox, form.filtration select').on('change', function() {
+            updateFiltered();
+        });
+
+        // Initial filtering.
+        updateFiltered();
+    });
+
+    var updateFiltered = function() {
+        var positions = $('form.filtration .filter_position :checkbox:checked').map(function(){
+            return $(this).val();
+        }).get();
+        var percents = $('form.filtration .filter_percent :checkbox:checked').map(function(){
+            return parseInt($(this).val());
+        }).get();
+        var methodology = $('form.filtration .filter_methodology select').val();
+
+        $('table.list_of_activities tr').each(function(){
+            if (methodology !== '' && $(this).data('methodology') !== methodology) {
+                $(this).hide();
+                // Continue to next row.
+                return;
+            }
+            if ($.inArray($(this).data('position'), positions) === -1) {
+                $(this).hide();
+                // Continue to next row.
+                return;
+            }
+            if (percents.length < 3 && $.inArray(parseInt($(this).data('percent')), percents) === -1) {
+                $(this).hide();
+                // Continue to next row.
+                return;
+            }
+            // All match so show element.
+            $(this).show();
+        });
+
+        $('table.list_of_activities tr').removeClass('first').filter(':visible:first').addClass('first');
+    }
 </script>
