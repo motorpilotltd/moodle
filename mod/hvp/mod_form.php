@@ -42,7 +42,10 @@ class mod_hvp_mod_form extends moodleform_mod {
         } else {
             $this->add_intro_editor(false, get_string('intro', 'hvp'));
         }
-
+/* BEGIN CORE MOD */
+        // Display content to course page.
+        $mform->addElement('checkbox', 'displaycontent', get_string('displayoncoursepage', 'hvp'));
+/* END CORE MOD */
         // Action.
         $h5paction = array();
         $h5paction[] = $mform->createElement('radio', 'h5paction', '', get_string('upload', 'hvp'), 'upload');
@@ -395,6 +398,11 @@ class mod_hvp_mod_form extends moodleform_mod {
         $data = parent::get_data();
 
         if ($data) {
+/* BEGIN CORE MOD */
+            if (empty($data->displaycontent)) {
+                $data->displaycontent = 0;
+            }
+/* END CORE MOD */
             // Check if moodleform_mod class has already taken care of the data for us.
             // If not this is an older Moodle or Totara site that we need to treat differently.
 

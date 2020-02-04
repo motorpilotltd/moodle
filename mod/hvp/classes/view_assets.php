@@ -45,12 +45,16 @@ class view_assets {
     protected $embedtype;
     protected $files;
 
-    public function __construct($cm, $course, $options = []) {
+/* BEGIN CORE MOD */
+    public function __construct($cm, $course, $options= [], $nocss = false, $nojs = false) {
+/* END CORE MOD */
         $this->cm          = $cm;
         $this->course      = $course;
         $this->core        = framework::instance();
         $this->content     = $this->core->loadContent($cm->instance);
-        $this->settings    = hvp_get_core_assets(\context_module::instance($cm->id));
+/* BEGIN CORE MOD */
+        $this->settings    = hvp_get_core_assets(\context_module::instance($cm->id), $nocss, $nojs);
+/* END CORE MOD */
         $this->jsrequires  = [];
         $this->cssrequires = [];
 
@@ -306,11 +310,24 @@ class view_assets {
     /**
      * Outputs h5p view
      */
-    public function outputview() {
+/* BEGIN CORE MOD */
+    public function outputview($addPlay = false) {
+        $overlaystr = get_string('overlay_button', 'hvp');
+        $overlayelement = "
+            <div class=\"h5p-play-overlay\" data-itemid=\"{$this->cm->id}\">
+                <button class=\"btn btn-primary\">{$overlaystr}</button>
+            </div>";
+
+        $playoverlay = $addPlay ? $overlayelement : '';
+        $hasoverlay = $addPlay ? "h5p-has-overlay" : "";
+/* END CORE MOD */
         if ($this->embedtype === 'div') {
             echo "<div class=\"h5p-content\" data-content-id=\"{$this->content['id']}\"></div>";
         } else {
-            echo "<div class=\"h5p-iframe-wrapper\">" .
+/* BEGIN CORE MOD */
+            echo "<div class=\"h5p-iframe-wrapper {$hasoverlay}\">" .
+                $playoverlay .
+/* END CORE MOD */
                  "<iframe id=\"h5p-iframe-{$this->content['id']}\"" .
                  " class=\"h5p-iframe\"" .
                  " data-content-id=\"{$this->content['id']}\"" .

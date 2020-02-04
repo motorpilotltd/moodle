@@ -74,4 +74,9 @@ if (trim(strip_tags($content['intro'], '<img>'))) {
 \mod_hvp\framework::printMessages('error', \mod_hvp\framework::messages('error'));
 
 $view->outputview();
+/* BEGIN CORE MOD */
+$url = new moodle_url('/course/view.php', array('id' => $course->id));
+$link = html_writer::link($url, get_string('backtomodule', 'hvp'));
+echo html_writer::tag('p', $link, ['class' => 'm-t-10']);
+/* END CORE MOD */
 echo $OUTPUT->footer();

@@ -64,6 +64,9 @@ $string['removeoldlogentries'] = 'Remove old H5P log entries';
 $string['removeoldmobileauthentries'] = 'Remove old H5P mobile auth entries';
 
 // Admin settings.
+/* BEGIN CORE MOD */
+$string['displayoncoursepage'] = 'Display on course page';
+/* END CORE MOD */
 $string['displayoptiondownloadnever'] = 'Never';
 $string['displayoptiondownloadalways'] = 'Always';
 $string['displayoptiondownloadpermission'] = 'Only if user has permissions to export H5P';
@@ -449,3 +452,8 @@ $string['couldnotreadfilefromzip'] = 'Unable to read file from the package: %fil
 $string['couldnotparsejsonfromzip'] = 'Unable to parse JSON from the package: %fileName';
 $string['couldnotparsepostdata'] = 'Could not parse post data.';
 $string['nombstringexteension'] = 'The mbstring PHP extension is not loaded. H5P needs this to function properly';
+
+/* BEGIN CORE MOD */
+$string['backtomodule'] = 'Back to module';
+$string['overlay_button'] = 'Click to view';
+/* END CORE MOD */
