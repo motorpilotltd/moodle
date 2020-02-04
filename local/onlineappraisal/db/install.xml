@@ -123,6 +123,9 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="commentappraisalid" UNIQUE="false" FIELDS="appraisalid"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="local_appraisal_checkins" COMMENT="Default comment for the table, please edit me">
       <FIELDS>
@@ -138,6 +141,9 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="checkinappraisalid" UNIQUE="false" FIELDS="appraisalid"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="local_appraisal_comment_subj" COMMENT="Default comment for the table, please edit me">
       <FIELDS>
@@ -184,6 +190,9 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="form_appraisal" UNIQUE="true" FIELDS="appraisalid, form_name"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="local_appraisal_data" COMMENT="Data stored from forms">
       <FIELDS>
@@ -196,6 +205,9 @@
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="form_field" UNIQUE="true" FIELDS="form_id, name"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="local_appraisal_permissions" COMMENT="Permissions for the various actions and forms">
       <FIELDS>
