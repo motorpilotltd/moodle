@@ -278,10 +278,6 @@ H5P.init = function (target) {
 
           // Free parent
           iframe.parentElement.style.height = parentHeight;
-/* BEGIN CORE MOD */
-          // IE11 not moving button when iframe resized fix!
-          window.parent.H5P.jQuery('div.h5p-play-overlay button').hide().show(0);
-/* END CORE MOD */
         };
 
         H5P.on(instance, 'resize', function () {
@@ -367,6 +363,16 @@ H5P.init = function (target) {
 
     // Resize content.
     H5P.trigger(instance, 'resize');
+
+    // Logic for hiding focus effects when using mouse
+    $element.addClass('using-mouse');
+    $element.on('mousedown keydown keyup', function (event) {
+      $element.toggleClass('using-mouse', event.type === 'mousedown');
+    });
+
+    if (H5P.externalDispatcher) {
+      H5P.externalDispatcher.trigger('initialized');
+    }
   });
 
   // Insert H5Ps that should be in iframes.
@@ -376,23 +382,6 @@ H5P.init = function (target) {
     this.contentDocument.write('<!doctype html><html class="h5p-iframe"><head>' + H5P.getHeadTags(contentId) + '</head><body><div class="h5p-content" data-content-id="' + contentId + '"/></body></html>');
     this.contentDocument.close();
   });
-/* BEGIN CORE MOD */
-  // Add click event for overlay play button
-  H5P.jQuery('.h5p-play-overlay').on('click', function () {
-    var itemid = H5P.jQuery(this).data('itemid');
-
-    H5P.jQuery.ajax({
-      type: 'POST',
-      url: M.cfg.wwwroot + '/mod/hvp/ajax.php?action=contentviewed',
-      data: {
-        id: itemid
-      }
-    });
-
-    // Remove play overlay
-    H5P.jQuery(this).hide();
-  });
-/* END CORE MOD */
 };
 
 /**
@@ -1041,7 +1030,7 @@ H5P.t = function (key, vars, ns) {
 H5P.Dialog = function (name, title, content, $element) {
   /** @alias H5P.Dialog# */
   var self = this;
-  var $dialog = H5P.jQuery('<div class="h5p-popup-dialog h5p-' + name + '-dialog">\
+  var $dialog = H5P.jQuery('<div class="h5p-popup-dialog h5p-' + name + '-dialog" role="dialog" tabindex="-1">\
                               <div class="h5p-inner">\
                                 <h2>' + title + '</h2>\
                                 <div class="h5p-scroll-content">' + content + '</div>\
@@ -1049,16 +1038,26 @@ H5P.Dialog = function (name, title, content, $element) {
                               </div>\
                             </div>')
     .insertAfter($element)
-    .click(function () {
+    .click(function (e) {
+      if (e && e.originalEvent && e.originalEvent.preventClosing) {
+        return;
+      }
+
       self.close();
     })
     .children('.h5p-inner')
-      .click(function () {
-        return false;
+      .click(function (e) {
+        e.originalEvent.preventClosing = true;
       })
       .find('.h5p-close')
         .click(function () {
           self.close();
+        })
+        .keypress(function (e) {
+          if (e.which === 13 || e.which === 32) {
+            self.close();
+            return false;
+          }
         })
         .end()
       .find('a')
@@ -1079,6 +1078,7 @@ H5P.Dialog = function (name, title, content, $element) {
       $dialog.addClass('h5p-open'); // Fade in
       // Triggering an event, in case something has to be done after dialog has been opened.
       H5P.jQuery(self).trigger('dialog-opened', [$dialog]);
+      $dialog.focus();
     }, 1);
   };
 
@@ -1090,6 +1090,8 @@ H5P.Dialog = function (name, title, content, $element) {
     setTimeout(function () {
       $dialog.remove();
       H5P.jQuery(self).trigger('dialog-closed', [$dialog]);
+      $element.attr('tabindex', '-1');
+      $element.focus();
     }, 200);
   };
 };
@@ -1370,11 +1372,11 @@ H5P.openEmbedDialog = function ($element, embedCode, resizeCode, size, instance)
       var $expander = H5P.jQuery(this);
       var $content = $expander.next();
       if ($content.is(':visible')) {
-        $expander.removeClass('h5p-open').text(H5P.t('showAdvanced'));
+        $expander.removeClass('h5p-open').text(H5P.t('showAdvanced')).attr('aria-expanded', 'true');
         $content.hide();
       }
       else {
-        $expander.addClass('h5p-open').text(H5P.t('hideAdvanced'));
+        $expander.addClass('h5p-open').text(H5P.t('hideAdvanced')).attr('aria-expanded', 'false');
         $content.show();
       }
       $dialog.find('.h5p-embed-code-container').each(function () {
@@ -1385,6 +1387,7 @@ H5P.openEmbedDialog = function ($element, embedCode, resizeCode, size, instance)
     $dialog.find('.h5p-expander').click(expand).keypress(function (event) {
       if (event.keyCode === 32) {
         expand.apply(this);
+        return false;
       }
     });
   }).on('dialog-closed', function () {

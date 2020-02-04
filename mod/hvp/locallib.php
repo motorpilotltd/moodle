@@ -37,7 +37,7 @@ function hvp_get_core_settings($context) {
     global $USER, $CFG;
 
     $systemcontext = \context_system::instance();
-    $basepath = $CFG->httpswwwroot . '/';
+    $basepath = \mod_hvp\view_assets::getsiteroot() . '/';
 
     // Check permissions and generate ajax paths.
     $ajaxpaths = array();
@@ -90,10 +90,8 @@ function hvp_get_core_settings($context) {
  * @param \context_course|\context_module $context
  * @return array
  */
-/* BEGIN CORE MOD */
-function hvp_get_core_assets($context, $nojs = false, $nocss = false) {
-/* END CORE MOD */
-    global $CFG, $PAGE;
+function hvp_get_core_assets($context) {
+    global $PAGE;
 
     // Get core settings.
     $settings = \hvp_get_core_settings($context);
@@ -108,24 +106,20 @@ function hvp_get_core_assets($context, $nojs = false, $nocss = false) {
     $cachebuster = \hvp_get_cache_buster();
 
     // Use relative URL to support both http and https.
-    $liburl = $CFG->httpswwwroot . '/mod/hvp/library/';
+    $liburl = \mod_hvp\view_assets::getsiteroot() . '/mod/hvp/library/';
     $relpath = '/' . preg_replace('/^[^:]+:\/\/[^\/]+\//', '', $liburl);
-/* BEGIN CORE MOD */
-    if (!$nocss) {
-        // Add core stylesheets.
-        foreach (\H5PCore::$styles as $style) {
-            $settings['core']['styles'][] = $relpath . $style . $cachebuster;
-            $PAGE->requires->css(new moodle_url($liburl . $style . $cachebuster));
-        }
+
+    // Add core stylesheets.
+    foreach (\H5PCore::$styles as $style) {
+        $settings['core']['styles'][] = $relpath . $style . $cachebuster;
+        $PAGE->requires->css(new moodle_url($liburl . $style . $cachebuster));
     }
-    if (!$nojs) {
-        // Add core JavaScript.
-        foreach (\H5PCore::$scripts as $script) {
-            $settings['core']['scripts'][] = $relpath . $script . $cachebuster;
-            $PAGE->requires->js(new moodle_url($liburl . $script . $cachebuster), true);
-        }
+    // Add core JavaScript.
+    foreach (\H5PCore::$scripts as $script) {
+        $settings['core']['scripts'][] = $relpath . $script . $cachebuster;
+        $PAGE->requires->js(new moodle_url($liburl . $script . $cachebuster), true);
     }
-/* END CORE MOD */
+
     return $settings;
 }
 
@@ -160,7 +154,7 @@ function hvp_add_editor_assets($id = null, $mformid = null) {
     );
 
     // Use relative URL to support both http and https.
-    $url = $CFG->httpswwwroot . '/mod/hvp/';
+    $url = \mod_hvp\view_assets::getsiteroot() . '/mod/hvp/';
     $url = '/' . preg_replace('/^[^:]+:\/\/[^\/]+\//', '', $url);
 
     // Make sure files are reloaded for each plugin update.
@@ -193,7 +187,8 @@ function hvp_add_editor_assets($id = null, $mformid = null) {
     $PAGE->requires->js(new moodle_url('/mod/hvp/' . $languagescript . $cachebuster), true);
 
     // Add JavaScript settings.
-    $filespathbase = "{$CFG->httpswwwroot}/pluginfile.php/{$context->id}/mod_hvp/";
+    $root = \mod_hvp\view_assets::getsiteroot();
+    $filespathbase = "{$root}/pluginfile.php/{$context->id}/mod_hvp/";
     $contentvalidator = \mod_hvp\framework::instance('contentvalidator');
     $editorajaxtoken = \H5PCore::createToken('editorajax');
     $settings['editor'] = array(
@@ -222,7 +217,7 @@ function hvp_add_editor_assets($id = null, $mformid = null) {
         $context = \context_module::instance($cm->id);
 
         // Override content URL.
-        $contenturl = "{$CFG->httpswwwroot}/pluginfile.php/{$context->id}/mod_hvp/content/{$id}";
+        $contenturl = "{$root}/pluginfile.php/{$context->id}/mod_hvp/content/{$id}";
         $settings['contents']['cid-' . $id]['contentUrl'] = $contenturl;
     }
 
@@ -401,8 +396,6 @@ function hvp_content_upgrade_progress($libraryid) {
  *                to upgrade script
  */
 function hvp_get_library_upgrade_info($name, $major, $minor) {
-    global $CFG;
-
     $library = (object) array(
         'name' => $name,
         'version' => (object) array(
@@ -418,7 +411,7 @@ function hvp_get_library_upgrade_info($name, $major, $minor) {
     $context = \context_system::instance();
     $libraryfoldername = "{$library->name}-{$library->version->major}.{$library->version->minor}";
     if (\mod_hvp\file_storage::fileExists($context->id, 'libraries', '/' . $libraryfoldername . '/', 'upgrades.js')) {
-        $basepath = $CFG->httpswwwroot . '/';
+        $basepath = \mod_hvp\view_assets::getsiteroot() . '/';
         $library->upgradesScript = "{$basepath}pluginfile.php/{$context->id}/mod_hvp/libraries/{$libraryfoldername}/upgrades.js";
     }
 

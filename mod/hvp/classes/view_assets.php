@@ -45,18 +45,12 @@ class view_assets {
     protected $embedtype;
     protected $files;
 
-/* BEGIN CORE MOD */
-    public function __construct($cm, $course, $options= [], $nocss = false, $nojs = false) {
-/* END CORE MOD */
-        global $CFG;
-
+    public function __construct($cm, $course, $options = []) {
         $this->cm          = $cm;
         $this->course      = $course;
         $this->core        = framework::instance();
         $this->content     = $this->core->loadContent($cm->instance);
-/* BEGIN CORE MOD */
-        $this->settings    = hvp_get_core_assets(\context_module::instance($cm->id), $nocss, $nojs);
-/* END CORE MOD */
+        $this->settings    = hvp_get_core_assets(\context_module::instance($cm->id));
         $this->jsrequires  = [];
         $this->cssrequires = [];
 
@@ -71,6 +65,7 @@ class view_assets {
 
         // Add JavaScript settings for this content.
         $cid                                  = 'cid-' . $this->content['id'];
+        $root = self::getsiteroot();
         $this->settings['contents'][ $cid ]   = array(
             'library'         => \H5PCore::libraryToString($this->content['library']),
             'jsonContent'     => $this->getfilteredparameters(),
@@ -80,8 +75,8 @@ class view_assets {
             'resizeCode'      => $this->getresizecode($displayoptions[ \H5PCore::DISPLAY_OPTION_EMBED ]),
             'title'           => $this->content['title'],
             'displayOptions'  => $displayoptions,
-            'url'             => "{$CFG->httpswwwroot}/mod/hvp/view.php?id={$this->cm->id}",
-            'contentUrl'      => "{$CFG->httpswwwroot}/pluginfile.php/{$context->id}/mod_hvp/content/{$this->content['id']}",
+            'url'             => "{$root}/mod/hvp/view.php?id={$this->cm->id}",
+            'contentUrl'      => "{$root}/pluginfile.php/{$context->id}/mod_hvp/content/{$this->content['id']}",
             'metadata'        => $this->content['metadata'],
             'contentUserData' => array(
                 0 => content_user_data::load_pre_loaded_user_data($this->content['id'])
@@ -153,13 +148,12 @@ class view_assets {
      * @return string
      */
     private function getembedcode($embedenabled) {
-        global $CFG;
-
         if ( ! $embedenabled) {
             return '';
         }
 
-        $embedurl = new \moodle_url("{$CFG->httpswwwroot}/mod/hvp/embed.php?id={$this->cm->id}");
+        $root = self::getsiteroot();
+        $embedurl = new \moodle_url("{$root}/mod/hvp/embed.php?id={$this->cm->id}");
 
         return "<iframe src=\"{$embedurl->out()}\" width=\":w\" height=\":h\" frameborder=\"0\" " .
                "allowfullscreen=\"allowfullscreen\"></iframe>";
@@ -173,13 +167,11 @@ class view_assets {
      * @return string
      */
     private function getresizecode($embedenabled) {
-        global $CFG;
-
         if ( ! $embedenabled) {
             return '';
         }
 
-        $resizeurl = new \moodle_url($CFG->httpswwwroot . '/mod/hvp/library/js/h5p-resizer.js');
+        $resizeurl = new \moodle_url(self::getsiteroot() . '/mod/hvp/library/js/h5p-resizer.js');
 
         return "<script src=\"{$resizeurl->out()}\" charset=\"UTF-8\"></script>";
     }
@@ -207,8 +199,6 @@ class view_assets {
      * Generates assets depending on embed type
      */
     private function generateassets() {
-        global $CFG;
-
         if ($this->embedtype === 'div') {
             $context = \context_system::instance();
             $hvppath = "/pluginfile.php/{$context->id}/mod_hvp";
@@ -223,7 +213,7 @@ class view_assets {
                     $url = $hvppath . $url;
                 }
                 $this->settings['loadedJs'][] = $url;
-                $this->jsrequires[]           = new \moodle_url($isexternal ? $url : $CFG->httpswwwroot . $url);
+                $this->jsrequires[]           = new \moodle_url($isexternal ? $url : self::getsiteroot() . $url);
             }
 
             // Schedule stylesheets for loading through Moodle.
@@ -236,7 +226,7 @@ class view_assets {
                     $url = $hvppath . $url;
                 }
                 $this->settings['loadedCss'][] = $url;
-                $this->cssrequires[]           = new \moodle_url($isexternal ? $url : $CFG->httpswwwroot . $url);
+                $this->cssrequires[]           = new \moodle_url($isexternal ? $url : self::getsiteroot() . $url);
             }
         } else {
             // JavaScripts and stylesheets will be loaded through h5p.js.
@@ -296,7 +286,7 @@ class view_assets {
      * Adds js assets to current page
      */
     public function addassetstopage() {
-        global $PAGE, $CFG;
+        global $PAGE;
 
         foreach ($this->jsrequires as $script) {
             $PAGE->requires->js($script, true);
@@ -310,30 +300,17 @@ class view_assets {
         $PAGE->requires->data_for_js('H5PIntegration', $this->settings, true);
 
         // Add xAPI collector script.
-        $PAGE->requires->js(new \moodle_url($CFG->httpswwwroot . '/mod/hvp/xapi-collector.js'), true);
+        $PAGE->requires->js(new \moodle_url(self::getsiteroot() . '/mod/hvp/xapi-collector.js'), true);
     }
 
     /**
      * Outputs h5p view
      */
-/* BEGIN CORE MOD */
-    public function outputview($addPlay = false) {
-        $overlaystr = get_string('overlay_button', 'hvp');
-        $overlayelement = "
-            <div class=\"h5p-play-overlay\" data-itemid=\"{$this->cm->id}\">
-                <button class=\"btn btn-primary\">{$overlaystr}</button>
-            </div>";
-
-        $playoverlay = $addPlay ? $overlayelement : '';
-        $hasoverlay = $addPlay ? "h5p-has-overlay" : "";
-/* END CORE MOD */
+    public function outputview() {
         if ($this->embedtype === 'div') {
             echo "<div class=\"h5p-content\" data-content-id=\"{$this->content['id']}\"></div>";
         } else {
-/* BEGIN CORE MOD */
-            echo "<div class=\"h5p-iframe-wrapper {$hasoverlay}\">" .
-                $playoverlay .
-/* END CORE MOD */
+            echo "<div class=\"h5p-iframe-wrapper\">" .
                  "<iframe id=\"h5p-iframe-{$this->content['id']}\"" .
                  " class=\"h5p-iframe\"" .
                  " data-content-id=\"{$this->content['id']}\"" .
@@ -353,5 +330,20 @@ class view_assets {
         if ($this->content === null) {
             print_error('invalidhvp');
         }
+    }
+
+    /**
+     * Gets the site root absolute address
+     *
+     * @return string Root address for the site
+     */
+    public static function getsiteroot() {
+        global $CFG;
+        // In Moodle 3.4 version wwwroot is always the same as httpswwwroot
+        if ($CFG->version < 2017111300) {
+            return $CFG->httpswwwroot;
+        }
+
+        return $CFG->wwwroot;
     }
 }

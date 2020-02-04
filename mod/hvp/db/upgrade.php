@@ -339,25 +339,7 @@ function hvp_upgrade_2017060900() {
         }
     }
 }
-/* BEGIN CORE MOD */
-/**
- * Adds new field displaycontent to check if content should be displayed in course page
- */
-function hvp_upgrade_2018012201() {
-    global $DB;
-    $dbman = $DB->get_manager();
 
-    $table = new xmldb_table('hvp');
-
-    // Define field displaycontent to be added to hvp.
-    $displaycontent = new xmldb_field('displaycontent', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
-
-    // Add field display_content if not defined already.
-    if (!$dbman->field_exists($table, $displaycontent)) {
-        $dbman->add_field($table, $displaycontent);
-    }
-}
-/* END CORE MOD */
 function hvp_upgrade_2018090300() {
     global $DB;
     $dbman = $DB->get_manager();
@@ -517,9 +499,6 @@ function xmldb_hvp_upgrade($oldversion) {
         2017040500,
         2017050900,
         2017060900,
-/* BEGIN CORE MOD */
-        2018012201,
-/* END CORE MOD */
         2018090300,
         2019022600,
         2019030700
