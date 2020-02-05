@@ -104,6 +104,7 @@ $string['byuserenable'] = 'Show records by user';
 $string['cache'] = 'Enable Report Caching';
 $string['cachedef_rb_ignored_embedded'] = 'Report builder ignored embedded reports cache';
 $string['cachedef_rb_ignored_sources'] = 'Report builder ignored report sources cache';
+$string['cachedef_rb_staff_filter_options'] = 'Report builder staff filter options cache';
 $string['cachegenfail'] = 'The last attempt to generate cache failed. Please try again later.';
 $string['cachegenstarted'] = 'Cache generation started at {$a}. This process can take several minutes.';
 $string['cachenow'] = 'Generate Now';
