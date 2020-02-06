@@ -116,7 +116,7 @@ class source extends \rbsource_appraisal\source {
         }
 
         // Combine the results.
-        $report->set_post_config_restrictions(array("$sql", $params));
+        $report->set_post_config_restrictions(array("(base.deleted = 0 AND $sql)", $params));
     }
 
     /**

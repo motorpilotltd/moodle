@@ -91,7 +91,7 @@ class source extends rb_base_source {
         list($sql, $params) = $DB->get_in_or_equal(array_keys($results), SQL_PARAMS_NAMED);
 
         // Combine the results.
-        $report->set_post_config_restrictions(array("auser.icq $sql", $params));
+        $report->set_post_config_restrictions(array("(base.deleted = 0 AND auser.icq $sql)", $params));
     }
 
     /**
