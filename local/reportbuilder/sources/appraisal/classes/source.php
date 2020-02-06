@@ -142,6 +142,21 @@ class source extends rb_base_source {
                         REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
                 new rb_join(
+                        'cohortapp',
+                        'INNER',
+                        '{local_appraisal_cohort_apps}',
+                        'cohortapp.appraisalid = base.id',
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
+                ),
+                new rb_join(
+                        'cohort',
+                        'INNER',
+                        '{local_appraisal_cohorts}',
+                        'cohort.id = cohortapp.cohortid',
+                        REPORT_BUILDER_RELATION_ONE_TO_MANY,
+                        'cohortapp'
+                ),
+                new rb_join(
                         'data',
                         'LEFT',
                         '{local_appraisal_data}',
@@ -349,6 +364,16 @@ class source extends rb_base_source {
                                 'dbdatatype'  => 'boolean',
                         )
                 ),
+                new rb_column_option(
+                        'appraisal',
+                        'cycle',
+                        get_string('cycle', 'rbsource_appraisal'),
+                        "cohort.name",
+                        array(
+                                'dbdatatype' => 'integer',
+                                'joins'       => 'cohort'
+                        )
+                ),
         ];
 
         // User, course and category fields.
@@ -373,6 +398,11 @@ class source extends rb_base_source {
      * @return array
      */
     protected function define_filteroptions() {
+        global $DB;
+
+        $cycles = $DB->get_records_sql('select lac.name from {local_appraisal_cohorts} lac order by lac.name');
+        $cycles = array_keys($cycles);
+        $cycles = array_combine($cycles, $cycles);
 
         $filteroptions = array(
                 new rb_filter_option(
@@ -404,6 +434,15 @@ class source extends rb_base_source {
                         'due_date',
                         get_string('due_date', 'rbsource_appraisal'),
                         'date'
+                ),
+                new rb_filter_option(
+                        'appraisal',
+                        'cycle',
+                        get_string('cycle', 'rbsource_appraisal'),
+                        'select',
+                        [
+                                'selectchoices' => $cycles
+                        ]
                 ),
         );
 

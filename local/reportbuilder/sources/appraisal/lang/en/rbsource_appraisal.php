@@ -27,3 +27,4 @@ $string['status_history'] = 'Status history';
 $string['successionplan'] = 'Succession plan';
 $string['leaderplan'] = 'Leader plan';
 $string['mycostcentres'] = 'User cost centres';
+$string['cycle'] = 'Cycle';
