@@ -740,6 +740,17 @@ function xmldb_local_onlineappraisal_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018010116, 'local', 'onlineappraisal');
     }
 
+    if ($oldversion < 2018010117) {
+        $table = new xmldb_table('local_appraisal_users');
+        $index = new xmldb_index('settinguserid', XMLDB_INDEX_NOTUNIQUE, array('setting', 'userid'));
+        if ($dbman->table_exists($table) && !$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Main savepoint reached.
+        upgrade_plugin_savepoint(true, 2018010117, 'local', 'onlineappraisal');
+    }
+
     // Always rebuild permissions table and cache after upgrading.
     \local_onlineappraisal\permissions::rebuild_permissions();
 

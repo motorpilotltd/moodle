@@ -107,14 +107,14 @@ class source extends rb_base_source {
                         'LEFT',
                         '(select appraisalid, count(id) as count from {local_appraisal_checkins} group by appraisalid)',
                         'checkinsstats.appraisalid = base.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
                 new rb_join(
                         'feedback',
                         'LEFT',
                         '{local_appraisal_feedback}',
                         'feedback.appraisalid = base.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                        REPORT_BUILDER_RELATION_ONE_TO_MANY
                 ),
                 new rb_join(
                         'feedbackstats',
@@ -125,28 +125,28 @@ class source extends rb_base_source {
                             group by appraisalid
                             )',
                         'feedbackstats.appraisalid = base.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
                 new rb_join(
                         'forms',
                         'LEFT',
                         '{local_appraisal_forms}',
                         'forms.appraisalid = base.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
                 new rb_join(
                         'formstats',
                         'LEFT',
                         '(select appraisalid, count(form_name) fieldcount from {local_appraisal_forms} group by appraisalid)',
                         'formstats.appraisalid = base.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
                 new rb_join(
                         'data',
                         'LEFT',
                         '{local_appraisal_data}',
                         'data.form_id = forms.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE,
+                        REPORT_BUILDER_RELATION_ONE_TO_MANY,
                         'forms'
                 )
         );

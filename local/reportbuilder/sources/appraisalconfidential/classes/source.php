@@ -133,7 +133,7 @@ class source extends \rbsource_appraisal\source {
                 'LEFT',
                 '{local_appraisal_checkins}',
                 'checkins.appraisalid = base.id',
-                REPORT_BUILDER_RELATION_MANY_TO_ONE
+                REPORT_BUILDER_RELATION_ONE_TO_MANY
         );
 
         $joinlist[] = new rb_join(
@@ -141,15 +141,15 @@ class source extends \rbsource_appraisal\source {
                 'LEFT',
                 '{local_appraisal_comment}',
                 'comments.appraisalid = base.id',
-                REPORT_BUILDER_RELATION_MANY_TO_ONE
+                REPORT_BUILDER_RELATION_ONE_TO_MANY
         );
 
         $joinlist[] = new rb_join(
                 'vips',
-                'INNER',
+                'LEFT',
                 '{local_appraisal_users}',
                 "setting = 'appraisalvip' and userid = base.appraisee_userid",
-                REPORT_BUILDER_RELATION_MANY_TO_ONE
+                REPORT_BUILDER_RELATION_ONE_TO_MANY
         );
 
         $addedforms = [];
