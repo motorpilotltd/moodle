@@ -433,6 +433,16 @@ class source extends rb_base_source {
                 )
         );
 
+        $filteroptions[] = new rb_filter_option(
+                'user',
+                'mycostcentre',
+                get_string('mycostcentres', 'rbsource_appraisal'),
+                'costcentre_multi',
+                [],
+                'auser.icq',
+                'auser'
+        );
+
         // user, course and category filters
         $this->add_user_fields_to_filters($filteroptions);
         $this->add_staff_fields_to_filters($filteroptions);
