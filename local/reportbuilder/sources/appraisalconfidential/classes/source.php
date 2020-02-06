@@ -75,7 +75,8 @@ class source extends \rbsource_appraisal\source {
                 \local_costcentre\costcentre::HR_LEADER,
                 \local_costcentre\costcentre::HR_ADMIN,
                 \local_costcentre\costcentre::GROUP_LEADER,
-                \local_costcentre\costcentre::SIGNATORY
+                \local_costcentre\costcentre::SIGNATORY,
+                \local_costcentre\costcentre::REPORTER
         ];
 
         $bitand = [];
