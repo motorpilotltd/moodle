@@ -200,7 +200,7 @@ class source extends rb_base_source {
                         get_string('held_date', 'rbsource_appraisal'),
                         "base.held_date",
                         array(
-                                'displayfunc' => 'nice_datetime',
+                                'displayfunc' => 'nice_date',
                                 'dbdatatype'  => 'timestamp'
                         )
                 ),
