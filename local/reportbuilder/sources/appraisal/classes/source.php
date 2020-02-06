@@ -59,7 +59,7 @@ class source extends rb_base_source {
 
         $requiredcolumns[] = new rb_column(
                 'user',
-                'icq',
+                'icqfilter',
                 '',
                 "auser.icq",
                 array(
