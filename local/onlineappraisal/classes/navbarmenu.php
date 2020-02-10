@@ -74,7 +74,7 @@ class navbarmenu {
                     )";
 
         $params = array($user->id, $user->id, $user->id, $user->id);
-    
+
         if ($appraisals = $DB->get_records_sql($sql, $params)) {
             foreach ($appraisals as $appraisal) {
                 if ($appraisal->appraisee_userid == $user->id) {
@@ -118,7 +118,7 @@ class navbarmenu {
                 // Reset all numbers.
                 $myapproles->appraisee = clone($baseapproles);
 
-            } 
+            }
         }
 
         // Find costcentre roles.
@@ -128,8 +128,7 @@ class navbarmenu {
         $myapproles->costcentreadmin->is = has_capability('local/costcentre:administer', \context_system::instance()) || costcentre::is_user($user->id, costcentre::BUSINESS_ADMINISTRATOR);
 
         $sort = 'received_date DESC, lastname ASC, firstname ASC';
-        $like = $DB->sql_like('email', ':email', false);
-        $feedbacks = $DB->get_records_select('local_appraisal_feedback', $like, array('email' => $user->email), $sort);
+        $feedbacks = $DB->get_records('local_appraisal_feedback', ['userid' => $user->id], $sort);
         foreach ($feedbacks as $feedback) {
             $appraisal = $DB->get_record('local_appraisal_appraisal', array('id' => $feedback->appraisalid, 'deleted' => 0));
             if (!$appraisal) {

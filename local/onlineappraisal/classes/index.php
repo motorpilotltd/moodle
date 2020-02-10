@@ -167,8 +167,7 @@ class index {
         // Is contributor?
         // This is _very_ similar to code in \local_onlineappraisal\navbarmenu.
         $sort = 'received_date DESC, lastname ASC, firstname ASC';
-        $like = $DB->sql_like('email', ':email', false);
-        $feedbacks = $DB->get_records_select('local_appraisal_feedback', $like, array('email' => $this->user->email), $sort);
+        $feedbacks = $DB->get_records('local_appraisal_feedback', ['userid' => $this->user->id], $sort);
         foreach ($feedbacks as $feedback) {
             $appraisal = $DB->get_record('local_appraisal_appraisal', array('id' => $feedback->appraisalid, 'deleted' => 0));
             if (!$appraisal) {
