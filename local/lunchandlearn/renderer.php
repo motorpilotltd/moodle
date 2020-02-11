@@ -586,4 +586,74 @@ class local_lunchandlearn_renderer extends plugin_renderer_base {
 
         return $button;
     }
+
+    public function bulk_attendance_upload(lunchandlearn $session, moodleform $form) {
+        $content = '';
+
+        $content .= html_writer::tag('h3', get_string('bulkattendanceupload:title', 'local_lunchandlearn'));
+
+        if ($session->scheduler->get_date() > time()) {
+            $content .= html_writer::tag('p', get_string('bulkattendanceupload:notafter', 'local_lunchandlearn'));
+            return $content;
+        }
+
+        $content .= $form->render();
+
+        return $content;
+    }
+
+    public function bulk_attendance_summary($users, $errors) {
+        $content = '';
+        $attendedusers = [];
+
+        $content = html_writer::start_div('alert alert-success');
+        $content .= html_writer::tag('p', get_string('bulkattendanceupload:summary:added', 'local_lunchandlearn'));
+        $content .= html_writer::start_tag('p');
+        foreach ($users['attended'] as $user) {
+            $attendedusers[] = "{$user->idnumber}, {$user->firstname} {$user->lastname} ({$user->email})";
+        }
+        $content .= implode(html_writer::empty_tag('br'), $attendedusers);
+        $content .= html_writer::end_tag('p');
+        $content .= html_writer::end_div();
+
+        if (!empty($errors)) {
+            $content = html_writer::start_div('alert alert-danger');
+            $content .= html_writer::tag('p', get_string('bulkattendanceupload:summary:errors', 'local_lunchandlearn'));
+            $content .= html_writer::start_tag('p');
+            foreach ($errors as $staffid => $error) {
+                $user = $users['found'][$staffid];
+                $output = '';
+                $output .= html_writer::start_tag('ul');
+                $output .= html_writer::tag(
+                    'li',
+                    "{$user->idnumber}, {$user->firstname} {$user->lastname} ({$user->email})"
+                );
+                $output .= html_writer::tag(
+                    'ul',
+                    html_writer::tag(
+                        'li',
+                        $error
+                    )
+                );
+                $output .= html_writer::end_tag('ul');
+                $failedusers[] = $output;
+            }
+            $content .= implode("\n", $failedusers);
+            $content .= html_writer::end_tag('p');
+            $content .= html_writer::end_div();
+        }
+
+        return $content;
+    }
+
+    public function wrapped_link($url, $string) {
+        $content = '';
+
+        $content .= html_writer::tag(
+            'p',
+            html_writer::link($url, get_string($string, 'local_lunchandlearn'))
+        );
+
+        return $content;
+    }
 }
