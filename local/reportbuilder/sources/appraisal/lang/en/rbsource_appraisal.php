@@ -28,3 +28,5 @@ $string['successionplan'] = 'Succession plan';
 $string['leaderplan'] = 'Leader plan';
 $string['mycostcentres'] = 'User cost centres';
 $string['cycle'] = 'Cycle';
+$string['outof'] = '{$a->number} out of {$a->total}.';
+$string['feedbackproportion'] = 'Feedback status';

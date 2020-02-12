@@ -295,6 +295,20 @@ class source extends rb_base_source {
                 ),
                 new rb_column_option(
                         'appraisal',
+                        'feedbackproportion',
+                        get_string('feedbackproportion', 'rbsource_appraisal'),
+                        "coalesce(feedbackstats.receivedcount, 0)",
+                        array(
+                                'dbdatatype' => 'integer',
+                                'joins'       => 'feedbackstats',
+                                'displayfunc' => 'feedbackproportion',
+                                'extrafields' => array(
+                                        'feedbackrequestedcount' => 'coalesce(feedbackstats.count, 0)'
+                                ),
+                        )
+                ),
+                new rb_column_option(
+                        'appraisal',
                         'archived',
                         get_string('archived', 'rbsource_appraisal'),
                         "base.archived",
@@ -525,6 +539,10 @@ class source extends rb_base_source {
      */
     public function rb_display_appraisalstatus($id, $record, $isexport) {
         return get_string("status:$id", 'local_onlineappraisal');
+    }
+
+    public function rb_display_feedbackproportion($number, $record, $isexport) {
+        return get_string("outof", 'rbsource_appraisal', (object)['number' => $number, 'total' => $record->feedbackrequestedcount]);
     }
 
     public function rb_display_appraisalstatushistory($ids, $record, $isexport) {
