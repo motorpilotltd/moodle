@@ -60,7 +60,7 @@ class mod_arupevidence_upload_form extends moodleform
         }
 
         $mform->addElement('date_selector', 'completiondate',  get_string('completiondate', 'mod_arupevidence'), array('timezone' => 0));
-        $mform->setDefault('completiondate', $defaultdate);
+
         if (isset($this->_arupevidence->requireexpirydate) && $this->_arupevidence->requireexpirydate) {
             if ($this->_arupevidence->mustendmonth) {
                 $choices = array(
