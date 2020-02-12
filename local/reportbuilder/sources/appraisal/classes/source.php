@@ -105,7 +105,7 @@ class source extends rb_base_source {
                 new rb_join(
                         'checkinsstats',
                         'LEFT',
-                        '(select appraisalid, count(id) as count from {local_appraisal_checkins} group by appraisalid)',
+                        '(select appraisalid, count(id) as count, max(created_date) as latest from {local_appraisal_checkins} group by appraisalid)',
                         'checkinsstats.appraisalid = base.id',
                         REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
@@ -270,6 +270,17 @@ class source extends rb_base_source {
                         "checkinsstats.count",
                         array(
                                 'dbdatatype' => 'integer',
+                                'joins'       => 'checkinsstats'
+                        )
+                ),
+                new rb_column_option(
+                        'appraisal',
+                        'latestcheckin',
+                        get_string('latestcheckin', 'rbsource_appraisal'),
+                        "checkinsstats.latest",
+                        array(
+                                'displayfunc' => 'nice_datetime',
+                                'dbdatatype'  => 'timestamp',
                                 'joins'       => 'checkinsstats'
                         )
                 ),
