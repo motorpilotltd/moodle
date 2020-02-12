@@ -23,9 +23,6 @@ class mod_arupevidence_upload_form extends moodleform
     /*** @var array $_arupevidence */
     protected $_arupevidence;
 
-    /*** @var array $_arupevidenceuser */
-    protected $_arupevidenceuser;
-
     public function definition() {
         global $COURSE, $PAGE;
         $mform = $this->_form;
@@ -63,7 +60,6 @@ class mod_arupevidence_upload_form extends moodleform
         }
 
         $mform->addElement('date_selector', 'completiondate',  get_string('completiondate', 'mod_arupevidence'), array('timezone' => 0));
-        $defaultdate = isset($this->_arupevidenceuser->completiondate) ? $this->_arupevidenceuser->completiondate : time();
         $mform->setDefault('completiondate', $defaultdate);
         if (isset($this->_arupevidence->requireexpirydate) && $this->_arupevidence->requireexpirydate) {
             if ($this->_arupevidence->mustendmonth) {
@@ -84,27 +80,22 @@ class mod_arupevidence_upload_form extends moodleform
                 $choicesyears = array_combine(range(1950,2030), range(1950,2030));
 
                 // Months selection
-                $defaultvalue = (isset($this->_arupevidenceuser->expirydate) && $this->_arupevidenceuser->expirydate) ? date('m', $this->_arupevidenceuser->expirydate) : '';
                 $mform->addElement(
                     'select',
                     'expirymonth',
                     get_string('label:expirydate', 'mod_arupevidence'),
                     array('' => get_string('selectmonth', 'mod_arupevidence')) + $choices, array('style'=>'width:140px')
                 );
-                $mform->setDefault('expirymonth', $defaultvalue);
 
                 // Years selection
-                $defaultvalue = (isset($this->_arupevidenceuser->expirydate) && $this->_arupevidenceuser->expirydate) ? date('Y', $this->_arupevidenceuser->expirydate) : '';
                 $mform->addElement(
                     'select',
                     'expiryyear',
                     '',
                     array('' => get_string('selectyear', 'mod_arupevidence')) + $choicesyears, array('style'=>'width:130px')
                 );
-                $mform->setDefault('expiryyear', $defaultvalue);
             } else {
                 $mform->addElement('date_selector', 'expirydate',  get_string('label:expirydate', 'mod_arupevidence'), array('timezone' => 0));
-                $mform->setDefault('expirydate', isset($this->_arupevidenceuser->expirydate)? $this->_arupevidenceuser->expirydate : '');
 
             }
 
@@ -112,38 +103,34 @@ class mod_arupevidence_upload_form extends moodleform
             $choices = array(get_string('none'), 1,2,3,4,5,6,7,8,9,10,11,12);
             $mform->addElement('select', 'validityperiod', get_string('validityperiod', 'mod_arupevidence'), $choices);
             $mform->addRule('validityperiod', null, 'required', null, 'client');
-            $mform->setDefault('validityperiod', isset($this->_arupevidenceuser->validityperiod)? $this->_arupevidenceuser->validityperiod : '');
 
             $mform->addElement('select', 'validityperiodunit', '', array('m' => 'Month(s)', 'y' => 'Year(s)', '' => get_string('none')));
             $mform->addRule('validityperiodunit', null, 'required', null, 'client');
-            $mform->setDefault('validityperiodunit', isset($this->_arupevidenceuser->validityperiodunit)? $this->_arupevidenceuser->validityperiodunit : '');
         }
 
-        $fileoptions = array(
-            'subdirs' => 0,
-            'maxfiles' => 1,
-            'maxbytes' => $COURSE->maxbytes
-        );
-        $mform->addElement('filemanager', 'completioncertificate',
-            get_string('uploadcertificate', 'mod_arupevidence'),
-            null, $fileoptions);
+        if ($this->_arupevidence->requireupload) {
+            $fileoptions = array(
+                'subdirs' => 0,
+                'maxfiles' => 1,
+                'maxbytes' => $COURSE->maxbytes
+            );
+            $mform->addElement('filemanager', 'completioncertificate',
+                get_string('uploadcertificate', 'mod_arupevidence'),
+                null, $fileoptions);
 
-        $aeuserid = isset($this->_arupevidenceuser->userid) ? $this->_arupevidenceuser->userid : null ;
-
-        $entryid = $aeuserid;
-        $farea = null;
-        if (isset($this->_arupevidenceuser->itemid) && isset($this->_arupevidenceuser->completion)
-            && $this->_arupevidenceuser->completion) {
-
-            $entryid = $this->_arupevidenceuser->itemid;
-            $farea =  $this->_arupevidence->cpdlms;
-
+            $draftitemid = file_get_submitted_draft_itemid("completioncertificate");
+            $filearea = arupevidence_fileareaname(null);
+            file_prepare_draft_area($draftitemid, $this->_customdata['contextid'], 'mod_arupevidence', $filearea, null,
+                $fileoptions);
+            $mform->setDefault("completioncertificate", $draftitemid);
         }
-        $draftitemid = file_get_submitted_draft_itemid("completioncertificate");
-        $filearea = arupevidence_fileareaname($farea);
-        file_prepare_draft_area($draftitemid, $this->_customdata['contextid'], 'mod_arupevidence', $filearea, $entryid,
-            $fileoptions);
-        $mform->setDefault("completioncertificate", $draftitemid);
+
+        // Declarations
+        if (!empty($this->_customdata['declarations'])) {
+            foreach ($this->_customdata['declarations'] as $declaration) {
+                $mform->addElement('checkbox', 'declaration-'.$declaration->id, '', $declaration->declaration);
+            }
+        }
 
         if (isset($this->_arupevidence->cpdlms) && $this->_arupevidence->cpdlms == ARUPEVIDENCE_CPD) {
             $this->add_taps_fields($mform);
@@ -164,8 +151,7 @@ class mod_arupevidence_upload_form extends moodleform
         $mform->addElement('hidden', 'requirevalidityperiod', $this->_arupevidence->requirevalidityperiod);
         $mform->setType('requirevalidityperiod', PARAM_INT);
 
-        $defaultvalue = !empty($this->_arupevidenceuser->validityexpirydate) ? $this->_arupevidenceuser->validityexpirydate : 0;
-        $mform->addElement('hidden', 'validityexpirydate', $defaultvalue);
+        $mform->addElement('hidden', 'validityexpirydate');
         $mform->setType('validityexpirydate', PARAM_INT);
 
         $this->add_action_buttons(true, get_string('upload'));
@@ -174,7 +160,7 @@ class mod_arupevidence_upload_form extends moodleform
     public function add_taps_fields(MoodleQuickForm $mform) {
         $taps = new \local_taps\taps();
 
-        $defaults = !empty($this->_arupevidenceuser)? $this->_arupevidenceuser : $this->_arupevidence ;
+        $defaults = $this->_arupevidence;
 
         $mform->addElement('header', 'tapstemplate', get_string('cpdformheader', 'mod_arupevidence'));
 
@@ -262,6 +248,14 @@ class mod_arupevidence_upload_form extends moodleform
             if (!$diffmonth) {
                 $element = !empty($data['expirydate']) ? 'expirydate' : 'expirymonth';
                 $errors[$element] = get_string('error:expirydate', 'mod_arupevidence');
+            }
+        }
+
+        if (!empty($this->_customdata['declarations'])) {
+            foreach ($this->_customdata['declarations'] as $declaration) {
+                if (!isset($data['declaration-'.$declaration->id])) {
+                    $errors['declaration-'.$declaration->id] = get_string('error:declaration:required', 'mod_arupevidence');
+                }
             }
         }
 

@@ -156,10 +156,10 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
                     $agreeddeclaration[] = $declaration->id;
 
                     // Tagging declaration to agreed
-                    if ($declartion_agreed = $DB->get_record('arupevidence_declarations', array('id' => $declaration->id, 'has_agreed' => 0))) {
+                    if ($declaration_agreed = $DB->get_record('arupevidence_declarations', array('id' => $declaration->id, 'has_agreed' => 0))) {
                         // Update declaration has_agreed
-                        $declartion_agreed->has_agreed = 1;
-                        $DB->update_record('arupevidence_declarations', $declartion_agreed);
+                        $declaration_agreed->has_agreed = 1;
+                        $DB->update_record('arupevidence_declarations', $declaration_agreed);
                     }
                 }
             }

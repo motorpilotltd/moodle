@@ -59,9 +59,11 @@ $PAGE->set_url($uploadurl);
 
 $output = $PAGE->get_renderer('mod_arupevidence');
 $content = '';
+$declarations = $DB->get_records('arupevidence_declarations', array('arupevidenceid' => $ahb->id), 'id ASC');
 $customdata = array(
     'contextid' => $context->id,
-    'arupevidence' => $ahb
+    'arupevidence' => $ahb,
+    'declarations' => $declarations
 );
 
 $mform = new mod_arupevidence_upload_form($uploadurl, $customdata);
@@ -159,6 +161,23 @@ if ($mform->is_cancelled()) {
         $arupevidencedata = array_merge($arupevidencedata, $cpddetails);
     }
 
+    // Saving declaration agreement
+    $agreeddeclaration = [];
+    if (!empty($declarations)) {
+        foreach ($declarations as $declaration) {
+            if (isset($data->{'declaration-'.$declaration->id}) && $data->{'declaration-'.$declaration->id}) {
+                $agreeddeclaration[] = $declaration->id;
+
+                // Tagging declaration to agreed
+                if ($declaration_agreed = $DB->get_record('arupevidence_declarations', array('id' => $declaration->id, 'has_agreed' => 0))) {
+                    // Update declaration has_agreed
+                    $declaration_agreed->has_agreed = 1;
+                    $DB->update_record('arupevidence_declarations', $declaration_agreed);
+                }
+            }
+        }
+    }
+
     // Archive any current records.
     $updatesql = "UPDATE {arupevidence_users} SET archived = 1, timemodified = :timemodified WHERE arupevidenceid = :arupevidenceid AND userid = :userid";
     $updateparams = [
@@ -174,6 +193,7 @@ if ($mform->is_cancelled()) {
     $ahbuser->completion = ($ahb->approvalrequired)? 0 : 1 ;
     $ahbuser->itemid = ($ahb->cpdlms == ARUPEVIDENCE_LMS)? $enrolment->enrolmentid : null;
     $ahbuser->approved = null;
+    $ahbuser->declarations = !empty($agreeddeclaration)? json_encode($agreeddeclaration): null;
     $ahbuser->timemodified = time();
     $ahbuser->uploadedby = $USER->id;
 

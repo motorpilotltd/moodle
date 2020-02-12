@@ -807,7 +807,7 @@ EOS;
             $inparams
         );
         $select = "staffid = :staffid AND classid = :classid AND (archived = 0 OR archived IS NULL) AND active = 1 AND {$compare} {$in}";
-        $existingenrolments = $DB->get_records_select('local_taps_enrolment', $select, $params);
+        $existingenrolments = $DB->count_records_select('local_taps_enrolment', $select, $params);
         if ($existingenrolments) {
             $result->success = false;
             $result->status = 'ALREADY_ENROLLED';
