@@ -323,7 +323,7 @@ class source extends \rbsource_appraisal\source {
             return $data;
         } else if ($row->type == 'array') {
             $decoded = unserialize($data);
-            if (!$decoded) {
+            if (!is_array($decoded)) {
                 return $data;
             }
             return implode(', ', $decoded);
