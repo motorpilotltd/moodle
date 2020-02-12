@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 $string['modulename'] = 'Arup Evidence Upload';
 $string['modulenameplural'] = 'Arup Evidence Uploads';
 $string['modulename_help'] = 'Arup Evidence Upload allow users to upload evidence of completion for approval.';
+$string['arupevidence:addevidence'] = 'Can upload evidence on behalf of others';
 $string['arupevidence:addinstance'] = 'Add a new Arup Evidence Upload';
 $string['arupevidence:admin'] = 'Admin access to Arup Evidence Upload';
 $string['arupevidence:approvecompletion'] = 'Approve completion for Arup Evidence Upload';
@@ -110,11 +111,13 @@ $string['status:approvedevidence'] = '{$a->numberofapproved} approved evidence';
 $string['status:uploadcomplete'] = 'Upload Complete';
 $string['status:awaiting'] = 'Awaiting evidence to be uploaded';
 
+$string['label:class'] = 'Select Class';
 $string['label:expirydate'] = 'Expiry Date';
 $string['label:enrolment'] = 'Select Enrolment';
 $string['instructions'] = 'Instructions';
 
 $string['button:uploadevidence'] = 'Upload Evidence';
+$string['button:uploadotherevidence'] = 'Upload user evidence';
 $string['button:amendsubmission'] = 'Amend Submission';
 $string['button:validate'] = 'Validate';
 $string['button:viewsubmission'] = 'View Submission';
@@ -205,3 +208,14 @@ $string['email:reject:content'] = 'Dear {$a->userfirstname},
 <p>Kindly review and update your evidence.</p>
 <p>Your evidence link: <a href="{$a->evidenceeditlink}">{$a->evidenceeditlink}</a></p>
 <p>Kind Regards,<br>{$a->approverfirstname}</p>';
+
+$string['uploadotherevidence'] = 'If you wish to upload evidence on behalf of another user please do so by using the Upload User Evidence button.';
+$string['label:uploadforuser'] = 'Upload on behalf of';
+$string['placeholder:uploadforuser'] = 'Choose user';
+$string['uploadforuser'] = 'Upload on behalf of user';
+$string['uploadforuser:error:enrolmentdiffclass'] = 'Upload on behalf of user failed due to the user already having an active, approved, enrolment on a different class to that chosen.';
+$string['uploadforuser:error:enrolmentfailed'] = 'Upload on behalf of user failed due to an issue creating the enrolment on the chosen class.';
+$string['uploadforuser:error:enrolmentnotplaced'] = 'Upload on behalf of user failed due to the user already having an active enrolment that is not in the approved state.';
+$string['uploadforuser:help:general'] = 'Any existing uploads for the chosen user will be archived when you upload on their behalf.';
+$string['uploadforuser:help:lms'] = 'If necessary, an approved enrolment will be automatically created for the user on the selected class.';
+$string['uploadforuser:success'] = 'You have successfully uploaded evidence on behalf of the chosen user.';

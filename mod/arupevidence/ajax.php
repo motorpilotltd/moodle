@@ -232,12 +232,12 @@ if (!empty($action)) {
     echo json_encode($result);
     exit;
 
-} else if (has_capability('mod/arupevidence:addinstance', context_course::instance($courseid), $USER->id)) {
+} else if (has_any_capability(['mod/arupevidence:addinstance', 'mod/arupevidence:addevidence'], context_course::instance($courseid), $USER->id)) {
     $usertextconcat = $DB->sql_concat('firstname', "' '", 'lastname', "' ('", 'email', "')'");
     $searchconcat = $DB->sql_concat('firstname', "' '", 'lastname', "' '", 'email', "' '", 'idnumber');
     $searchlike = $DB->sql_like($searchconcat, ":searchterm", false);
     $params = array('searchterm'=> "%$searchterm%");
-    $where = "deleted = 0 AND suspended = 0 AND confirmed = 1 AND $searchlike";
+    $where = "idnumber != '' AND deleted = 0 AND suspended = 0 AND confirmed = 1 AND $searchlike";
     $totalcount = $DB->count_records_select('user', $where, $params);
     $userlist = $DB->get_records_select_menu('user', $where, $params, 'lastname ASC', "id, $usertextconcat", ($page - 1) * 25, $page * 25);
 

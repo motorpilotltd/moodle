@@ -18,7 +18,7 @@
  * The main arupevidence configuration form
  *
  * @package    mod_arupevidence
- * @copyright  2017 Xantico Ltd 
+ * @copyright  2017 Xantico Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -260,6 +260,7 @@ class mod_arupevidence_mod_form extends moodleform_mod {
             }
 
         }
+
         parent::set_data($defaultvalues);
     }
 

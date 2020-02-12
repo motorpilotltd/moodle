@@ -18,7 +18,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
-class mod_arupevidence_completion_form extends moodleform
+class mod_arupevidence_upload_form extends moodleform
 {
     /*** @var array $_arupevidence */
     protected $_arupevidence;
@@ -27,41 +27,39 @@ class mod_arupevidence_completion_form extends moodleform
     protected $_arupevidenceuser;
 
     public function definition() {
-        global $COURSE, $PAGE, $USER;
+        global $COURSE, $PAGE;
         $mform = $this->_form;
 
         // Disable change checker as interferes with validity period modal confirmation.
         $mform->disable_form_change_checker();
 
-        $this->_arupevidenceuser = $this->_customdata['arupevidenceuser'] ? $this->_customdata['arupevidenceuser'] : null;
         $this->_arupevidence = $this->_customdata['arupevidence'] ? $this->_customdata['arupevidence'] : null;
 
         if ($this->_arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
-            $defaultenrolment = !empty($this->_arupevidenceuser->itemid)? $this->_arupevidenceuser->itemid : '';
-
             $taps = new \local_taps\taps();
-            $user = !empty($this->_arupevidenceuser->userid) ?
-                core_user::get_user($this->_arupevidenceuser->userid, '*', MUST_EXIST) : $USER;
-            $classchoices = array();
-            $hasplacedenrolment = false;
-            if ($enrolments = $taps->get_enroled_classes($user->idnumber, $COURSE->idnumber, true, false)) {
-
-                foreach ($enrolments as $enrolment) {
-                    if ($taps->is_status($enrolment->bookingstatus, 'placed')) {
-                        $classchoices[$enrolment->enrolmentid] = $enrolment->classname;
-                        $hasplacedenrolment = true;
-                    }
-                }
-
-                if (count($classchoices) > 1) {
-                    $classchoices = array(''=>get_string('chooseclass', 'mod_arupevidence')) + $classchoices;
-                }
-
+            $classes = $taps->get_course_classes($COURSE->idnumber);
+            $classchoices = ['' => get_string('chooseclass', 'mod_arupevidence')];
+            foreach ($classes as $class) {
+                $classchoices[$class->classid] = $class->classname;
             }
+        }
 
-            if (!$hasplacedenrolment) {
-                $mform->addElement('html', \html_writer::tag('div', get_string('noenrolments', 'mod_arupevidence'), ['class' => 'alert alert-danger']));
-            }
+        $mform->addElement(
+            'select',
+            'ahbuserid',
+            get_string('label:uploadforuser', 'mod_arupevidence'),
+            array('' => ''),
+            array('class' => 'select2-user', 'data-placeholder' => get_string('placeholder:uploadforuser', 'mod_arupevidence'))
+        );
+
+        if ($this->_arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
+            $mform->addElement(
+                'select',
+                'classid',
+                get_string('label:class', 'mod_arupevidence'),
+                $classchoices, array('style'=>'width:140px')
+            );
+            $mform->addRule('classid', null, 'required', null, 'client');
         }
 
         $mform->addElement('date_selector', 'completiondate',  get_string('completiondate', 'mod_arupevidence'), array('timezone' => 0));
@@ -120,83 +118,36 @@ class mod_arupevidence_completion_form extends moodleform
             $mform->addRule('validityperiodunit', null, 'required', null, 'client');
             $mform->setDefault('validityperiodunit', isset($this->_arupevidenceuser->validityperiodunit)? $this->_arupevidenceuser->validityperiodunit : '');
         }
-        if ($this->_arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
-            $mform->addElement(
-                'select',
-                'enrolmentid',
-                get_string('label:enrolment', 'mod_arupevidence'),
-                $classchoices, array('style'=>'width:140px')
-            );
-            $mform->addRule('enrolmentid', null, 'required', null, 'client');
-            $mform->setDefault('enrolmentid', $defaultenrolment);
-        }
 
-        if ($this->_arupevidence->requireupload) {
-            $fileoptions = array(
-                'subdirs' => 0,
-                'maxfiles' => 1,
-                'maxbytes' => $COURSE->maxbytes
-            );
-            $mform->addElement('filemanager', 'completioncertificate',
-                get_string('uploadcertificate', 'mod_arupevidence'),
-                null, $fileoptions);
+        $fileoptions = array(
+            'subdirs' => 0,
+            'maxfiles' => 1,
+            'maxbytes' => $COURSE->maxbytes
+        );
+        $mform->addElement('filemanager', 'completioncertificate',
+            get_string('uploadcertificate', 'mod_arupevidence'),
+            null, $fileoptions);
 
-            $aeuserid = isset($this->_arupevidenceuser->userid) ? $this->_arupevidenceuser->userid : null ;
+        $aeuserid = isset($this->_arupevidenceuser->userid) ? $this->_arupevidenceuser->userid : null ;
 
-            $entryid = $aeuserid;
-            $farea = null;
-            if (isset($this->_arupevidenceuser->itemid) && isset($this->_arupevidenceuser->completion)
-                && $this->_arupevidenceuser->completion) {
+        $entryid = $aeuserid;
+        $farea = null;
+        if (isset($this->_arupevidenceuser->itemid) && isset($this->_arupevidenceuser->completion)
+            && $this->_arupevidenceuser->completion) {
 
-                $entryid = $this->_arupevidenceuser->itemid;
-                $farea =  $this->_arupevidence->cpdlms;
-
-            }
-            $draftitemid = file_get_submitted_draft_itemid("completioncertificate");
-            $filearea = arupevidence_fileareaname($farea);
-            file_prepare_draft_area($draftitemid, $this->_customdata['contextid'], 'mod_arupevidence', $filearea, $entryid,
-                $fileoptions);
-            $mform->setDefault("completioncertificate", $draftitemid);
-        }
-        // Declarations
-        if (!empty($this->_customdata['declarations'])) {
-            $agreeddeclarations = !empty($this->_arupevidenceuser->declarations)? json_decode($this->_arupevidenceuser->declarations): [];
-
-
-            foreach ($this->_customdata['declarations'] as $declaration) {
-                $mform->addElement('checkbox', 'declaration-'.$declaration->id, '', $declaration->declaration);
-                if (in_array($declaration->id, $agreeddeclarations)) {
-                    $mform->setDefault('declaration-'.$declaration->id, 1);
-                }
-            }
-        }
-
-        if(!empty($this->_arupevidenceuser)) {
-            $mform->addElement('hidden', 'timemodified', $this->_arupevidenceuser->timemodified);
-            $mform->setType('timemodified', PARAM_INT);
-
-            $mform->addElement('hidden', 'approved', $this->_arupevidenceuser->approved);
-            $mform->setType('approved', PARAM_INT);
-
-            $mform->addElement('hidden', 'completion', $this->_arupevidenceuser->completion);
-            $mform->setType('completion', PARAM_INT);
-        }
-
-
-        // user was editing existing an arupevidenceuser
-        if(isset($this->_customdata['action']) && !empty($this->_customdata['action'])) {
-            $mform->addElement('hidden', 'action', $this->_customdata['action']);
-            $mform->setType('action', PARAM_ALPHA);
-            $mform->addElement('hidden', 'ahbuserid', $this->_arupevidenceuser->id);
-            $mform->setType('ahbuserid', PARAM_INT);
+            $entryid = $this->_arupevidenceuser->itemid;
+            $farea =  $this->_arupevidence->cpdlms;
 
         }
+        $draftitemid = file_get_submitted_draft_itemid("completioncertificate");
+        $filearea = arupevidence_fileareaname($farea);
+        file_prepare_draft_area($draftitemid, $this->_customdata['contextid'], 'mod_arupevidence', $filearea, $entryid,
+            $fileoptions);
+        $mform->setDefault("completioncertificate", $draftitemid);
 
         if (isset($this->_arupevidence->cpdlms) && $this->_arupevidence->cpdlms == ARUPEVIDENCE_CPD) {
             $this->add_taps_fields($mform);
         }
-
-
 
         if (!empty($this->_arupevidence->expectedvalidityperiod) && !empty($this->_arupevidence->expectedvalidityperiodunit)) {
             // Validity period confirmation modal.
@@ -279,6 +230,8 @@ class mod_arupevidence_completion_form extends moodleform
             $data->expirydate = strtotime($data->expiryyear . $data->expirymonth . $lastday);
         }
 
+        $data->ahbuserid = optional_param('ahbuserid', null, PARAM_INT);
+
         return $data;
     }
 
@@ -309,14 +262,6 @@ class mod_arupevidence_completion_form extends moodleform
             if (!$diffmonth) {
                 $element = !empty($data['expirydate']) ? 'expirydate' : 'expirymonth';
                 $errors[$element] = get_string('error:expirydate', 'mod_arupevidence');
-            }
-        }
-
-        if (!empty($this->_customdata['declarations'])) {
-            foreach ($this->_customdata['declarations'] as $declaration) {
-                if (!isset($data['declaration-'.$declaration->id])) {
-                    $errors['declaration-'.$declaration->id] = get_string('error:declaration:required', 'mod_arupevidence');
-                }
             }
         }
 

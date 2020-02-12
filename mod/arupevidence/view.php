@@ -286,7 +286,6 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
         $content .= html_writer::end_div();
 
     } else {
-
         $content .= $mform->render();
     }
 

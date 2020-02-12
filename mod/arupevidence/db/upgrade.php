@@ -18,7 +18,7 @@
  * Upgrade code for mod_arupevidence
  *
  * @package     mod_arupevidence
- * @copyright   2017 Xantico Ltd 
+ * @copyright   2017 Xantico Ltd
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -220,6 +220,7 @@ function xmldb_arupevidence_upgrade($oldversion) {
         // Savepoint reached.
         upgrade_plugin_savepoint(true, 2015111619, 'mod', 'arupevidence');
     }
+
     // additional fields for evidence settings
     if ($oldversion < 2015111621) {
 
@@ -263,5 +264,20 @@ function xmldb_arupevidence_upgrade($oldversion) {
 
         upgrade_plugin_savepoint(true, 2015111621, 'mod', 'arupevidence');
     }
+
+    // Additional field, uploadedby, when added on behalf of user.
+    if ($oldversion < 2017051501) {
+        $table = new xmldb_table('arupevidence_users');
+        $field = new xmldb_field('uploadedby', XMLDB_TYPE_INTEGER, '10');
+
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+        $dbman->add_field($table, $field);
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2017051501, 'mod', 'arupevidence');
+    }
+
     return true;
 }

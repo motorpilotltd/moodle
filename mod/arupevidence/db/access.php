@@ -18,7 +18,7 @@
  * This file definies capabilities needed by mod_arupevidence.
  *
  * @package    mod_arupevidence
- * @copyright  2017 Xantico Ltd 
+ * @copyright  2017 Xantico Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -45,6 +45,14 @@ $capabilities = array(
         ),
         'mod/arupevidence:admin' => array(
             'riskbitmask' => RISK_XSS,
+            'captype' => 'write',
+            'contextlevel' => CONTEXT_COURSE,
+            'archetypes' => array(
+                'manager' => CAP_ALLOW,
+            ),
+        ),
+        'mod/arupevidence:addevidence' => array(
+            'riskbitmask' => RISK_PERSONAL | RISK_SPAM,
             'captype' => 'write',
             'contextlevel' => CONTEXT_COURSE,
             'archetypes' => array(
