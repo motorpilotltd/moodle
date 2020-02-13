@@ -26,7 +26,11 @@ if ($cpdid) {
     $action = 'edit';
 }
 
-$redirecturl = new moodle_url('/my/index.php', array('tab' => $tab));
+if ($tab == 'rbreport') {
+    $redirecturl = new moodle_url('/local/reportbuilder/report.php', array('id' => $instance));
+} else {
+    $redirecturl = new moodle_url('/my/index.php', array('tab' => $tab));
+}
 
 if (!isset($SESSION->block_arup_mylearning)) {
     $SESSION->block_arup_mylearning = new stdClass ();

@@ -7,6 +7,7 @@ $string['archived'] = 'Archived';
 $string['bookingstatus'] = 'Booking status';
 
 
+$string['actions'] = 'Actions';
 $string['cpdorlms'] = 'Class CPD or LMS';
 $string['cpdorlmsbool'] = 'Class CPD or LMS (boolean)';
 $string['cpd'] = 'CPD';
