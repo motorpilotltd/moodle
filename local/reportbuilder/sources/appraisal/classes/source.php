@@ -255,6 +255,16 @@ class source extends rb_base_source {
                 ),
                 new rb_column_option(
                         'appraisal',
+                        'statusgraph',
+                        get_string('appraisalstatusgraph', 'rbsource_appraisal'),
+                        "base.statusid",
+                        array(
+                                'displayfunc' => 'appraisalstatusgraph',
+                                'class'       => ['path-local-onlineappraisal']
+                        )
+                ),
+                new rb_column_option(
+                        'appraisal',
                         'fieldcount',
                         get_string('fieldcount', 'rbsource_appraisal'),
                         "formstats.fieldcount",
@@ -564,5 +574,20 @@ class source extends rb_base_source {
             $retval[] = get_string("status:$id", 'local_onlineappraisal');
         }
         return implode(', ', $retval);
+    }
+
+    public function rb_display_appraisalstatusgraph($statusid, $record, $isexport) {
+        $progress = new \stdClass();
+        $progress->count = max(array(0, $statusid - 1));
+        $progress->percentage = $progress->count ? round(100 * ($progress->count / 6)) : 0;
+        $progress->text = get_string('status:' . $statusid, 'local_onlineappraisal');
+
+        return "
+                <div class='progress' data-toggle='tooltip' title='$progress->text' data-container='body'>
+                    <div class='progress-bar' role='progressbar' aria-valuenow='$progress->percentage' aria-valuemin='0' aria-valuemax='100' style='width: $progress->percentage%;'>
+                      <span class='sr-only'>$progress->count/6</span>
+                    </div>
+                </div>
+         ";
     }
 }

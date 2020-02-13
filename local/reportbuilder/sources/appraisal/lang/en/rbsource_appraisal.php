@@ -31,3 +31,4 @@ $string['cycle'] = 'Cycle';
 $string['outof'] = '{$a->number} out of {$a->total}.';
 $string['feedbackproportion'] = 'Feedback status';
 $string['latestcheckin'] = 'Latest check-in';
+$string['appraisalstatusgraph'] = 'Status graph';
