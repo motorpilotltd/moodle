@@ -14,6 +14,7 @@ $string['completed_date'] = 'Completed date';
 $string['modified_date'] = 'Modified date';
 $string['due_date'] = 'Due date';
 $string['face_to_face_held'] = 'Face to face held';
+$string['appraisalstatus'] = 'Appraisal status';
 $string['statusid'] = 'Status';
 $string['fieldcount'] = 'Field count';
 $string['checkins'] = 'Check-ins';

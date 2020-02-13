@@ -547,6 +547,11 @@ class source extends rb_base_source {
                 ['costcentre' => "auser.icq"],
                 'auser'
         );
+        $contentoptions[] = new rb_content_option(
+                'appraisalstatus',
+                get_string('appraisalstatus', 'local_reportbuilder'),
+                ['statusid' => "base.statusid"]
+        );
 
         return $contentoptions;
     }
