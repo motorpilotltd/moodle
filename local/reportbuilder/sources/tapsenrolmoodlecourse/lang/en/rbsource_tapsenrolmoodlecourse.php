@@ -7,4 +7,5 @@ $string['sponsoremail'] = 'Sponsor Email';
 $string['sponsorname'] = 'Sponsor Name';
 $string['timeapproved'] = 'Time Approved';
 $string['timecancelled'] = 'Time Cancelled';
+$string['coursenameincmoodle'] = 'Linked course name (inc. Moodle)';
 $string['type_tapsenrol_iw_tracking'] = 'Workflow';

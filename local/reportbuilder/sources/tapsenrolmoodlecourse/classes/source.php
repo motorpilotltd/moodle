@@ -89,6 +89,18 @@ class source extends \rbsource_tapsenrol\source {
                 ]
         );
 
+        $columnoptions[] = new rb_column_option(
+                'class',
+                "coursenameincmoodle",
+                get_string('coursenameincmoodle', 'rbsource_tapsenrolmoodlecourse'),
+                "coalesce(course.fullname, base.coursename, base.classname)",
+                array(
+                        'joins'       => 'course',
+                        'extrafields' => array('moodlecourseid' => 'course.id', 'enrolmentid' => 'base.id', 'learningdesc' => 'base.learningdesc'),
+                        'displayfunc' => 'coursenamelink'
+                )
+        );
+
         // Include some standard columns, override parent so they say certification.
         $this->add_course_category_fields_to_columns($columnoptions);
         $this->add_course_fields_to_columns($columnoptions);
@@ -158,5 +170,36 @@ class source extends \rbsource_tapsenrol\source {
 
     public function rb_display_sponsorname($sponsorfirstname, $row) {
         return $sponsorfirstname . ' ' . $row->sponsorlastname;
+    }
+
+    public function rb_display_coursenamelink($coursename, $row) {
+        if (!empty($row->moodlecourseid)) {
+            $url = new \moodle_url(
+                    '/course/view.php',
+                    array('id' => $row->moodlecourseid)
+            );
+
+            return $this->create_expand_link($coursename, 'course_details', array('expandcourseid' => $row->moodlecourseid), $url);
+        } else if (!empty($row->learningdesc)) {
+            return $this->create_expand_link($coursename, 'tapslearningdescription', array('expandenrolmentid' => $row->enrolmentid));
+        }
+
+        return $coursename;
+    }
+
+    /**
+     * Expanding content to display when clicking a course.
+     * Will be placed inside a table cell which is the width of the table.
+     * Call required_param to get any param data that is needed.
+     * Make sure to check that the data requested is permitted for the viewer.
+     *
+     * @return string
+     */
+    public function rb_expand_tapslearningdescription() {
+        global $DB;
+
+        $courseid = required_param('expandenrolmentid', PARAM_INT);
+
+        return $DB->get_field('local_taps_enrolment', 'learningdesc', ['id' => $courseid]);
     }
 }
