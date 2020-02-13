@@ -47,6 +47,8 @@ if (!isset($SESSION->arupevidence)) {
 $context = context_module::instance($cm->id);
 $contextcourse = context_course::instance($course->id);
 
+require_capability('mod/arupevidence:addevidence', $context);
+
 $ahb = $DB->get_record('arupevidence',  array('id' => $cm->instance));
 
 $courseurl = new moodle_url('/course/view.php', array('id' => $course->id));
@@ -72,6 +74,11 @@ if ($mform->is_cancelled()) {
 } else if($data = $mform->get_data()) {
     $foruser = core_user::get_user($data->ahbuserid, '*', MUST_EXIST);
 
+    // Replacements for language strings.
+    $a = new stdClass();
+    $a->userfullname = fullname($foruser);
+    $a->userstaffid = $foruser->idnumber;
+
     // First enrol on the class if not already enrolled.
     if ($ahb->cpdlms == ARUPEVIDENCE_LMS) {
         $tapsenrols = $DB->get_records('tapsenrol', array('course' => $COURSE->id));
@@ -82,32 +89,41 @@ if ($mform->is_cancelled()) {
         // Are they already enrolled, and in a suitable state?
         $existingenrolments = $tapsenrol->taps->get_enroled_classes($foruser->idnumber, $tapsenrol->get_tapscourse()->courseid, true);
         foreach ($existingenrolments as $existingenrolment) {
+            $a->enrolmentcoursename = $existingenrolment->coursename;
+            $a->enrolmentclassname = $existingenrolment->classname;
+            $a->enrolmentbookingstatus = $existingenrolment->bookingstatus;
             if (!$tapsenrol->taps->is_status($existingenrolment->bookingstatus, 'placed')) {
                 $SESSION->arupevidence->alert = new stdClass();
-                $SESSION->arupevidence->alert->message = get_string('uploadforuser:error:enrolmentnotplaced', 'mod_arupevidence');
+                $SESSION->arupevidence->alert->message = get_string('uploadforuser:error:enrolmentnotplaced', 'mod_arupevidence', $a);
                 $SESSION->arupevidence->alert->type = 'alert-danger';
                 redirect($courseurl);
             }
             if ($existingenrolment->classid != $data->classid) {
                 $SESSION->arupevidence->alert = new stdClass();
-                $SESSION->arupevidence->alert->message = get_string('uploadforuser:error:enrolmentdiffclass', 'mod_arupevidence');
+                $SESSION->arupevidence->alert->message = get_string('uploadforuser:error:enrolmentdiffclass', 'mod_arupevidence', $a);
                 $SESSION->arupevidence->alert->type = 'alert-danger';
                 redirect($courseurl);
             }
+            unset($a->enrolmentcoursename);
+            unset($a->enrolmentclassname);
+            unset($a->enrolmentbookingstatus);
         }
         // Either false or single placed enrolment on correct class!
         $enrolment = reset($existingenrolments);
-
         if (!$enrolment) {
             $enrolresult = $tapsenrol->enrol_employee($data->classid, $foruser->idnumber, true);
             if (!$enrolresult->success) {
+                $a->message = $enrolresult->message;
                 $SESSION->arupevidence->alert = new stdClass();
-                $SESSION->arupevidence->alert->message = get_string('uploadforuser:error:enrolmentfailed', 'mod_arupevidence');
+                $SESSION->arupevidence->alert->message = get_string('uploadforuser:error:enrolmentfailed', 'mod_arupevidence', $a);
                 $SESSION->arupevidence->alert->type = 'alert-danger';
                 redirect($courseurl);
             }
             $enrolment = $enrolresult->enrolment;
         }
+        $a->enrolmentcoursename = $enrolment->coursename;
+        $a->enrolmentclassname = $enrolment->classname;
+        $a->enrolmentbookingstatus = $enrolment->bookingstatus;
     }
 
     // Set itemid as the userid of the user being submitted for.
@@ -224,7 +240,7 @@ if ($mform->is_cancelled()) {
     }
     // Add message to session.
     $SESSION->arupevidence->alert = new stdClass();
-    $SESSION->arupevidence->alert->message = get_string('uploadforuser:success', 'mod_arupevidence');
+    $SESSION->arupevidence->alert->message = get_string('uploadforuser:success', 'mod_arupevidence', $a);
     $SESSION->arupevidence->alert->type = 'alert-success';
     redirect($courseurl);
 } else {

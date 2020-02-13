@@ -213,9 +213,17 @@ $string['uploadotherevidence'] = 'If you wish to upload evidence on behalf of an
 $string['label:uploadforuser'] = 'Upload on behalf of';
 $string['placeholder:uploadforuser'] = 'Choose user';
 $string['uploadforuser'] = 'Upload on behalf of user';
-$string['uploadforuser:error:enrolmentdiffclass'] = 'Upload on behalf of user failed due to the user already having an active, approved, enrolment on a different class to that chosen.';
-$string['uploadforuser:error:enrolmentfailed'] = 'Upload on behalf of user failed due to an issue creating the enrolment on the chosen class.';
-$string['uploadforuser:error:enrolmentnotplaced'] = 'Upload on behalf of user failed due to the user already having an active enrolment that is not in the approved state.';
+$string['uploadforuser:error:enrolmentdiffclass'] = 'Upload on behalf of user failed due to the user already having an active, approved, enrolment on a different class to that chosen.<br>
+User: {$a->userfullname} ({$a->userstaffid})<br>
+Enrolment: {$a->enrolmentcoursename} | {$a->enrolmentclassname} | {$a->enrolmentbookingstatus}';
+$string['uploadforuser:error:enrolmentfailed'] = 'Upload on behalf of user failed due to an issue creating the enrolment on the chosen class.<br>
+User: {$a->userfullname} ({$a->userstaffid})<br>
+Information:<br>{$a->message}';
+$string['uploadforuser:error:enrolmentnotplaced'] = 'Upload on behalf of user failed due to the user already having an active enrolment that is not in the approved state.<br>
+User: {$a->userfullname} ({$a->userstaffid})<br>
+Enrolment: {$a->enrolmentcoursename} | {$a->enrolmentclassname} | {$a->enrolmentbookingstatus}';
 $string['uploadforuser:help:general'] = 'Any existing uploads for the chosen user will be archived when you upload on their behalf.';
 $string['uploadforuser:help:lms'] = 'If necessary, an approved enrolment will be automatically created for the user on the selected class.';
-$string['uploadforuser:success'] = 'You have successfully uploaded evidence on behalf of the chosen user.';
+$string['uploadforuser:success'] = 'You have successfully uploaded evidence on behalf of the chosen user.<br>
+User: {$a->userfullname} ({$a->userstaffid})<br>
+Enrolment: {$a->enrolmentcoursename} | {$a->enrolmentclassname} | {$a->enrolmentbookingstatus}';
