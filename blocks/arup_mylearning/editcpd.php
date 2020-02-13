@@ -28,7 +28,9 @@ if ($cpdid) {
 
 if ($tab == 'rbreport') {
     $redirecturl = new moodle_url('/local/reportbuilder/report.php', array('id' => $instance));
+    $context = context_system::instance();
 } else {
+    $context = context_block::instance($instance);
     $redirecturl = new moodle_url('/my/index.php', array('tab' => $tab));
 }
 
@@ -46,7 +48,6 @@ if (!get_config('local_taps', 'version')) {
 
 require_login();
 
-$context = context_block::instance($instance);
 
 $taps = new \local_taps\taps();
 
