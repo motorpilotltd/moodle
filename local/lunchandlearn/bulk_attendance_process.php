@@ -118,6 +118,7 @@ if ($processform->is_submitted()) {
             }
             $users['attended'][$user->id] = $user;
         }
+        $session->lock();
     }
 }
 
