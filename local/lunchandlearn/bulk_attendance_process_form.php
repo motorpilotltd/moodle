@@ -56,25 +56,29 @@ class bulk_attendance_process_form extends moodleform {
 
         $mform->addElement('header', 'staffids', 'Users being Added');
 
-        $notfound = html_writer::start_div('alert alert-warning');
-        $notfound .= html_writer::tag('p', get_string('bulkattendanceupload:form:notfound', 'local_lunchandlearn'));
-        $notfound .= html_writer::start_tag('p');
-        $notfound .= implode(html_writer::empty_tag('br'), $this->_customdata['users']['notfound']);
-        $notfound .= html_writer::end_tag('p');
-        $notfound .= html_writer::end_div();
-        $mform->addElement('static', 'usersnotfound', '', $notfound);
-
-        $found = html_writer::start_div('alert alert-success');
-        $found .= html_writer::tag('p', get_string('bulkattendanceupload:form:found', 'local_lunchandlearn'));
-        $found .= html_writer::start_tag('p');
-        $foundusers = [];
-        foreach ($this->_customdata['users']['found'] as $founduser) {
-            $foundusers[] = "{$founduser->idnumber}, {$founduser->firstname} {$founduser->lastname} ({$founduser->email})";
+        if (!empty($this->_customdata['users']['notfound'])) {
+            $notfound = html_writer::start_div('alert alert-warning');
+            $notfound .= html_writer::tag('p', get_string('bulkattendanceupload:form:notfound', 'local_lunchandlearn'));
+            $notfound .= html_writer::start_tag('p');
+            $notfound .= implode(html_writer::empty_tag('br'), $this->_customdata['users']['notfound']);
+            $notfound .= html_writer::end_tag('p');
+            $notfound .= html_writer::end_div();
+            $mform->addElement('static', 'usersnotfound', '', $notfound);
         }
-        $found .= implode(html_writer::empty_tag('br'), $foundusers);
-        $found .= html_writer::end_tag('p');
-        $found .= html_writer::end_div();
-        $mform->addElement('static', 'usersfound', '', $found);
+
+        if (!empty($this->_customdata['users']['found'])) {
+            $found = html_writer::start_div('alert alert-success');
+            $found .= html_writer::tag('p', get_string('bulkattendanceupload:form:found', 'local_lunchandlearn'));
+            $found .= html_writer::start_tag('p');
+            $foundusers = [];
+            foreach ($this->_customdata['users']['found'] as $founduser) {
+                $foundusers[] = "{$founduser->idnumber}, {$founduser->firstname} {$founduser->lastname} ({$founduser->email})";
+            }
+            $found .= implode(html_writer::empty_tag('br'), $foundusers);
+            $found .= html_writer::end_tag('p');
+            $found .= html_writer::end_div();
+            $mform->addElement('static', 'usersfound', '', $found);
+        }
 
         $this->add_action_buttons(true, get_string('bulkattendanceupload:form:submit', 'local_lunchandlearn'));
     }
