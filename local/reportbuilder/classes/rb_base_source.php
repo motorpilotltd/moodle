@@ -2590,9 +2590,18 @@ abstract class rb_base_source {
 
     public function rb_filter_staffcolumn($columnname) {
         global $DB;
+        static $options = [];
 
-        $val = $DB->get_records_sql("select distinct($columnname) from SQLHUB.ARUP_ALL_STAFF_V where $columnname IS NOT NULL AND $columnname <> '' ORDER BY $columnname");
-        return array_combine(array_keys($val), array_keys($val));
+        if (empty($options[$columnname])) {
+            $cache = cache::make('local_reportbuilder', 'rb_staff_filter_options');
+            $options[$columnname] = $cache->get($columnname);
+
+            if (empty($options[$columnname])) {
+                $options[$columnname] = $DB->get_records_sql("select distinct($columnname) from SQLHUB.ARUP_ALL_STAFF_V where $columnname IS NOT NULL AND $columnname <> '' ORDER BY $columnname");
+                $cache->set($columnname, $options[$columnname]);
+            }
+        }
+        return array_combine(array_keys($options[$columnname]), array_keys($options[$columnname]));
     }
 
     /**
