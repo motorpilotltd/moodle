@@ -1052,6 +1052,7 @@ abstract class rb_base_source {
      */
     public function rb_expand_course_details() {
         global $CFG, $DB, $USER;
+        require_once($CFG->dirroot . '/lib/coursecatlib.php');
         require_once($CFG->dirroot . '/local/reportbuilder/report_forms.php');
         require_once($CFG->dirroot . '/course/renderer.php');
 
@@ -1108,14 +1109,12 @@ abstract class rb_base_source {
             } else {
                 $formdata['status'] = get_string('coursestatusenrolled', 'local_reportbuilder');
 
-                $progress = totara_display_course_progress_bar($userid, $courseid);
-                $formdata['progress'] = $progress;
 
                 // Course not finished, so no end date for course.
                 $formdata['enddate'] = '';
             }
             $formdata['url'] = new moodle_url('/course/view.php', array('id' => $courseid));
-            $formdata['action'] =  get_string('launchcourse', 'totara_program');
+            $formdata['action'] =  get_string('launchcourse', 'local_reportbuilder');
         } else {
             $formdata['status'] = get_string('coursestatusnotenrolled', 'local_reportbuilder');
 
@@ -2590,9 +2589,18 @@ abstract class rb_base_source {
 
     public function rb_filter_staffcolumn($columnname) {
         global $DB;
+        static $options = [];
 
-        $val = $DB->get_records_sql("select distinct($columnname) from SQLHUB.ARUP_ALL_STAFF_V where $columnname IS NOT NULL AND $columnname <> '' ORDER BY $columnname");
-        return array_combine(array_keys($val), array_keys($val));
+        if (empty($options[$columnname])) {
+            $cache = cache::make('local_reportbuilder', 'rb_staff_filter_options');
+            $options[$columnname] = $cache->get($columnname);
+
+            if (empty($options[$columnname])) {
+                $options[$columnname] = $DB->get_records_sql("select distinct($columnname) from SQLHUB.ARUP_ALL_STAFF_V where $columnname IS NOT NULL AND $columnname <> '' ORDER BY $columnname");
+                $cache->set($columnname, $options[$columnname]);
+            }
+        }
+        return array_combine(array_keys($options[$columnname]), array_keys($options[$columnname]));
     }
 
     /**

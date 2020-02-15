@@ -288,7 +288,6 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                 // Count items for all conditions: region.
                 $this->count = \wa_learning_path\model\learningpath::count_activities_by_positions($this->cell->positions, $this->regions);
 
-
                 // Set a breadcrumb info.
                 $this->base_position_cell = new \moodle_url(
                         $this->url,
