@@ -1908,3 +1908,5 @@ $string['leaver'] = 'leaver flag';
 $string['leaver_status'] = 'Status';
 $string['yesleaver'] = 'Yes';
 $string['nonleaver'] = 'No';
+$string['appraisalstatus'] = 'Appraisal status';
+$string['launchcourse'] = 'Launch course';

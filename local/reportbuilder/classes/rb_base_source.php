@@ -1052,6 +1052,7 @@ abstract class rb_base_source {
      */
     public function rb_expand_course_details() {
         global $CFG, $DB, $USER;
+        require_once($CFG->dirroot . '/lib/coursecatlib.php');
         require_once($CFG->dirroot . '/local/reportbuilder/report_forms.php');
         require_once($CFG->dirroot . '/course/renderer.php');
 
@@ -1108,14 +1109,12 @@ abstract class rb_base_source {
             } else {
                 $formdata['status'] = get_string('coursestatusenrolled', 'local_reportbuilder');
 
-                $progress = totara_display_course_progress_bar($userid, $courseid);
-                $formdata['progress'] = $progress;
 
                 // Course not finished, so no end date for course.
                 $formdata['enddate'] = '';
             }
             $formdata['url'] = new moodle_url('/course/view.php', array('id' => $courseid));
-            $formdata['action'] =  get_string('launchcourse', 'totara_program');
+            $formdata['action'] =  get_string('launchcourse', 'local_reportbuilder');
         } else {
             $formdata['status'] = get_string('coursestatusnotenrolled', 'local_reportbuilder');
 
