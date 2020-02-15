@@ -21,7 +21,11 @@ $instance = required_param('instance', PARAM_INT);
 $cpdid = required_param('cpdid', PARAM_INT);
 $confirm = optional_param('confirm', 0, PARAM_INT);
 
-$redirecturl = new moodle_url('/my/index.php', array('tab' => $tab));
+if ($tab == 'rbreport') {
+    $redirecturl = new moodle_url('/local/reportbuilder/report.php', array('id' => $instance));
+} else {
+    $redirecturl = new moodle_url('/my/index.php', array('tab' => $tab));
+}
 
 if (!isset($SESSION->block_arup_mylearning)) {
     $SESSION->block_arup_mylearning = new stdClass ();

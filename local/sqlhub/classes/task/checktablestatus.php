@@ -53,10 +53,24 @@ class checktablestatus extends \core\task\scheduled_task {
         $DB2->connect($cfg->dbhost, $cfg->dbuser, $cfg->dbpass, $cfg->dbname, false, $cfg->dboptions);
         $dbman2 = $DB2->get_manager();
         $table = new \xmldb_table('ARUP_ALL_STAFF_V');
-        $index = new \xmldb_index('arupallstafv_emp_ix', XMLDB_INDEX_UNIQUE, array('EMPLOYEE_NUMBER'));
-        if ($dbman2->table_exists($table) && !$dbman2->index_exists($table, $index)) {
-            // Use of execute to avoid field names being forced to lowercase when using database_manager::add_index().
-            $DB2->execute('CREATE UNIQUE INDEX arupallstafv_emp_ix ON SQLHUB.ARUP_ALL_STAFF_V (EMPLOYEE_NUMBER)');
+        $indexes = [
+            new \xmldb_index('arupallstafv_emp_ix', XMLDB_INDEX_UNIQUE, array('EMPLOYEE_NUMBER')),
+            new \xmldb_index('arupallstafv_reg_ix', XMLDB_INDEX_NOTUNIQUE, array('REGION_NAME')),
+            new \xmldb_index('arupallstafv_geo_ix', XMLDB_INDEX_NOTUNIQUE, array('GEO_REGION')),
+            new \xmldb_index('arupallstafv_loc_ix', XMLDB_INDEX_NOTUNIQUE, array('LOCATION_NAME')),
+            new \xmldb_index('arupallstafv_gro_ix', XMLDB_INDEX_NOTUNIQUE, array('GROUP_NAME')),
+            new \xmldb_index('arupallstafv_ccc_ix', XMLDB_INDEX_NOTUNIQUE, array('CENTRE_CODE')),
+            new \xmldb_index('arupallstafv_ccn_ix', XMLDB_INDEX_NOTUNIQUE, array('CENTRE_NAME')),
+            new \xmldb_index('arupallstafv_com_ix', XMLDB_INDEX_NOTUNIQUE, array('COMPANY_CODE')),
+        ];
+        foreach ($indexes as $index) {
+            if ($dbman2->table_exists($table) && !$dbman2->index_exists($table, $index)) {
+                $name = $index->getName();
+                $fields = implode(', ', $index->getFields());
+                $unique = ($index->getUnique()) ? 'UNIQUE' : '';
+                // Use of execute to avoid field names being forced to lowercase when using database_manager::add_index().
+                $DB2->execute("CREATE {$unique} INDEX {$name} ON SQLHUB.ARUP_ALL_STAFF_V ({$fields})");
+            }
         }
     }
 }

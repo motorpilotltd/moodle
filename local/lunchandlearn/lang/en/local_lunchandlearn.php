@@ -293,3 +293,20 @@ $string['loadmore'] = 'Load more learning events&hellip;';
 $string['loadfiltered'] = 'Filtering learning events&hellip;';
 
 $string['lunchandlearn:view'] = 'Allow user to view learning events';
+
+// Bulk attendance uploads.
+$string['bulkattendanceupload:form:csvfile'] = 'Upload Attendance CSV';
+$string['bulkattendanceupload:form:csvfile:error'] = 'No staff ids found.';
+$string['bulkattendanceupload:form:details'] = 'Details for learning history';
+$string['bulkattendanceupload:form:found'] = 'The following users will be added as having attended and have their learning histories updated:';
+$string['bulkattendanceupload:form:help'] = 'CSV file must be comma separated and contain Staff IDs in the first column (any non-numeric values in this column will be ignored).<br>After submitting the file will be pre-processed for confirmation before updating attendance.';
+$string['bulkattendanceupload:form:notfound'] = 'The following Staff IDs could not be linked with Moodle user accounts:';
+$string['bulkattendanceupload:form:submit'] = 'Add Attendees';
+$string['bulkattendanceupload:form:upload'] = 'Upload';
+$string['bulkattendanceupload:help'] = 'Bulk Attendance Upload (CSV)';
+$string['bulkattendanceupload:notafter'] = 'You can only bulk upload attendance after the event.';
+$string['bulkattendanceupload:summary:added'] = 'The following users have been added as attendees:';
+$string['bulkattendanceupload:summary:errors'] = 'The following users could not be added as attendees:';
+$string['bulkattendanceupload:title'] = 'Bulk Attendance Upload (CSV)';
+
+$string['returntosession'] = 'Return to session information';

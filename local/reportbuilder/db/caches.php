@@ -38,4 +38,11 @@ $definitions = array(
         'staticacceleration' => true,
         'staticaccelerationsize' => 2,
     ),
+
+    'rb_staff_filter_options' => array(
+        'mode' => cache_store::MODE_REQUEST,
+        'simplekeys' => true,
+        'simpledata' => false,
+        'staticacceleration' => true,
+    ),
 );

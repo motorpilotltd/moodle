@@ -61,7 +61,7 @@ class costcentrerole extends base {
         $usercostcentreallocations = $DB->get_records('local_costcentre_user', ['userid' => $userid]);
         if (!empty($usercostcentreallocations)) {
             foreach ($usercostcentreallocations as $allocation) {
-                $usercostcentreroles[] = $allocation->permissions;
+                $usercostcentreroles[$allocation->permissions] = $allocation->permissions;
             }
         }
 
@@ -73,13 +73,22 @@ class costcentrerole extends base {
                     continue;
                 }
 
-                $costcentreroles = explode('|', $rpt->costcentreroles);
+                $requiredroles = explode('|', $rpt->costcentreroles);
 
-                foreach ($costcentreroles as $costcentreroleid) {
-                    if (in_array($costcentreroleid, $usercostcentreroles)) {
-                        $allowedreports[] = $rpt->reportid;
-                        break;
-                    }
+
+                $bitand = [];
+                foreach ($requiredroles as $role) {
+                    $bitand[] = $DB->sql_bitand('permissions',  $role) . ' = ' .$role;
+                }
+                $bitand = '(' . implode(' OR ', $bitand) . ')';
+
+                $results = $DB->count_records_sql(
+                        "select count(costcentre) from {local_costcentre_user} where userid = :userid AND $bitand",
+                        ['userid' => $userid]
+                );
+
+                if ($results > 0) {
+                    $allowedreports[] = $rpt->reportid;
                 }
             }
         }

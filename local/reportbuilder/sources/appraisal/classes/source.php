@@ -59,7 +59,7 @@ class source extends rb_base_source {
 
         $requiredcolumns[] = new rb_column(
                 'user',
-                'icq',
+                'icqfilter',
                 '',
                 "auser.icq",
                 array(
@@ -91,7 +91,7 @@ class source extends rb_base_source {
         list($sql, $params) = $DB->get_in_or_equal(array_keys($results), SQL_PARAMS_NAMED);
 
         // Combine the results.
-        $report->set_post_config_restrictions(array("auser.icq $sql", $params));
+        $report->set_post_config_restrictions(array("(base.deleted = 0 AND auser.icq $sql)", $params));
     }
 
     /**
@@ -105,16 +105,16 @@ class source extends rb_base_source {
                 new rb_join(
                         'checkinsstats',
                         'LEFT',
-                        '(select appraisalid, count(id) as count from {local_appraisal_checkins} group by appraisalid)',
+                        '(select appraisalid, count(id) as count, max(created_date) as latest from {local_appraisal_checkins} group by appraisalid)',
                         'checkinsstats.appraisalid = base.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
                 new rb_join(
                         'feedback',
                         'LEFT',
                         '{local_appraisal_feedback}',
                         'feedback.appraisalid = base.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                        REPORT_BUILDER_RELATION_ONE_TO_MANY
                 ),
                 new rb_join(
                         'feedbackstats',
@@ -125,28 +125,43 @@ class source extends rb_base_source {
                             group by appraisalid
                             )',
                         'feedbackstats.appraisalid = base.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
                 new rb_join(
                         'forms',
                         'LEFT',
                         '{local_appraisal_forms}',
                         'forms.appraisalid = base.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
                 new rb_join(
                         'formstats',
                         'LEFT',
                         '(select appraisalid, count(form_name) fieldcount from {local_appraisal_forms} group by appraisalid)',
                         'formstats.appraisalid = base.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
+                ),
+                new rb_join(
+                        'cohortapp',
+                        'INNER',
+                        '{local_appraisal_cohort_apps}',
+                        'cohortapp.appraisalid = base.id',
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
+                ),
+                new rb_join(
+                        'cohort',
+                        'INNER',
+                        '{local_appraisal_cohorts}',
+                        'cohort.id = cohortapp.cohortid',
+                        REPORT_BUILDER_RELATION_ONE_TO_MANY,
+                        'cohortapp'
                 ),
                 new rb_join(
                         'data',
                         'LEFT',
                         '{local_appraisal_data}',
                         'data.form_id = forms.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE,
+                        REPORT_BUILDER_RELATION_ONE_TO_MANY,
                         'forms'
                 )
         );
@@ -185,7 +200,7 @@ class source extends rb_base_source {
                         get_string('held_date', 'rbsource_appraisal'),
                         "base.held_date",
                         array(
-                                'displayfunc' => 'nice_datetime',
+                                'displayfunc' => 'nice_date',
                                 'dbdatatype'  => 'timestamp'
                         )
                 ),
@@ -240,6 +255,16 @@ class source extends rb_base_source {
                 ),
                 new rb_column_option(
                         'appraisal',
+                        'statusgraph',
+                        get_string('appraisalstatusgraph', 'rbsource_appraisal'),
+                        "base.statusid",
+                        array(
+                                'displayfunc' => 'appraisalstatusgraph',
+                                'class'       => ['path-local-onlineappraisal']
+                        )
+                ),
+                new rb_column_option(
+                        'appraisal',
                         'fieldcount',
                         get_string('fieldcount', 'rbsource_appraisal'),
                         "formstats.fieldcount",
@@ -255,6 +280,17 @@ class source extends rb_base_source {
                         "checkinsstats.count",
                         array(
                                 'dbdatatype' => 'integer',
+                                'joins'       => 'checkinsstats'
+                        )
+                ),
+                new rb_column_option(
+                        'appraisal',
+                        'latestcheckin',
+                        get_string('latestcheckin', 'rbsource_appraisal'),
+                        "checkinsstats.latest",
+                        array(
+                                'displayfunc' => 'nice_datetime',
+                                'dbdatatype'  => 'timestamp',
                                 'joins'       => 'checkinsstats'
                         )
                 ),
@@ -276,6 +312,20 @@ class source extends rb_base_source {
                         array(
                                 'dbdatatype' => 'integer',
                                 'joins'       => 'feedbackstats'
+                        )
+                ),
+                new rb_column_option(
+                        'appraisal',
+                        'feedbackproportion',
+                        get_string('feedbackproportion', 'rbsource_appraisal'),
+                        "coalesce(feedbackstats.receivedcount, 0)",
+                        array(
+                                'dbdatatype' => 'integer',
+                                'joins'       => 'feedbackstats',
+                                'displayfunc' => 'feedbackproportion',
+                                'extrafields' => array(
+                                        'feedbackrequestedcount' => 'coalesce(feedbackstats.count, 0)'
+                                ),
                         )
                 ),
                 new rb_column_option(
@@ -349,6 +399,16 @@ class source extends rb_base_source {
                                 'dbdatatype'  => 'boolean',
                         )
                 ),
+                new rb_column_option(
+                        'appraisal',
+                        'cycle',
+                        get_string('cycle', 'rbsource_appraisal'),
+                        "cohort.name",
+                        array(
+                                'dbdatatype' => 'integer',
+                                'joins'       => 'cohort'
+                        )
+                ),
         ];
 
         // User, course and category fields.
@@ -373,6 +433,11 @@ class source extends rb_base_source {
      * @return array
      */
     protected function define_filteroptions() {
+        global $DB;
+
+        $cycles = $DB->get_records_sql('select lac.name from {local_appraisal_cohorts} lac order by lac.name');
+        $cycles = array_keys($cycles);
+        $cycles = array_combine($cycles, $cycles);
 
         $filteroptions = array(
                 new rb_filter_option(
@@ -405,6 +470,15 @@ class source extends rb_base_source {
                         get_string('due_date', 'rbsource_appraisal'),
                         'date'
                 ),
+                new rb_filter_option(
+                        'appraisal',
+                        'cycle',
+                        get_string('cycle', 'rbsource_appraisal'),
+                        'select',
+                        [
+                                'selectchoices' => $cycles
+                        ]
+                ),
         );
 
         $allstatusoptions = [];
@@ -431,6 +505,16 @@ class source extends rb_base_source {
                         'selectchoices' => array(0 => get_string('no'), 1 => get_string('yes')),
                         'simplemode' => true
                 )
+        );
+
+        $filteroptions[] = new rb_filter_option(
+                'user',
+                'mycostcentre',
+                get_string('mycostcentres', 'rbsource_appraisal'),
+                'costcentre_multi',
+                [],
+                'auser.icq',
+                'auser'
         );
 
         // user, course and category filters
@@ -463,6 +547,11 @@ class source extends rb_base_source {
                 ['costcentre' => "auser.icq"],
                 'auser'
         );
+        $contentoptions[] = new rb_content_option(
+                'appraisalstatus',
+                get_string('appraisalstatus', 'local_reportbuilder'),
+                ['statusid' => "base.statusid"]
+        );
 
         return $contentoptions;
     }
@@ -478,6 +567,10 @@ class source extends rb_base_source {
         return get_string("status:$id", 'local_onlineappraisal');
     }
 
+    public function rb_display_feedbackproportion($number, $record, $isexport) {
+        return get_string("outof", 'rbsource_appraisal', (object)['number' => $number, 'total' => $record->feedbackrequestedcount]);
+    }
+
     public function rb_display_appraisalstatushistory($ids, $record, $isexport) {
         $ids = explode('|', $ids);
 
@@ -486,5 +579,20 @@ class source extends rb_base_source {
             $retval[] = get_string("status:$id", 'local_onlineappraisal');
         }
         return implode(', ', $retval);
+    }
+
+    public function rb_display_appraisalstatusgraph($statusid, $record, $isexport) {
+        $progress = new \stdClass();
+        $progress->count = max(array(0, $statusid - 1));
+        $progress->percentage = $progress->count ? round(100 * ($progress->count / 6)) : 0;
+        $progress->text = get_string('status:' . $statusid, 'local_onlineappraisal');
+
+        return "
+                <div class='progress' data-toggle='tooltip' title='$progress->text' data-container='body'>
+                    <div class='progress-bar' role='progressbar' aria-valuenow='$progress->percentage' aria-valuemin='0' aria-valuemax='100' style='width: $progress->percentage%;'>
+                      <span class='sr-only'>$progress->count/6</span>
+                    </div>
+                </div>
+         ";
     }
 }

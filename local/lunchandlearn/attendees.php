@@ -19,7 +19,7 @@ require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot . '/local/lunchandlearn/lib.php');
 require_once($CFG->dirroot . '/local/lunchandlearn/attendee_form.php');
 require_once($CFG->dirroot . '/local/lunchandlearn/signup_form.php');
-
+require_once($CFG->dirroot . '/local/lunchandlearn/bulk_attendance_upload_form.php');
 
 admin_externalpage_setup('lunchandlearnlist');
 
@@ -227,6 +227,10 @@ switch ($action) {
         exit;
 }
 
+$bulkurl = new moodle_url('/local/lunchandlearn/bulk_attendance_process.php');
+$bulkform = new bulk_attendance_upload_form($bulkurl, false);
+$bulkform->set_data(['id' => $session->get_id()]);
+
 $renderer = $PAGE->get_renderer('local_lunchandlearn');
 
 $renderer->errors = $errors;
@@ -272,4 +276,6 @@ if (!empty($SESSION->tapserror)) {
 }
 print $renderer->summary_session($session);
 print $renderer->list_session_attendees($session);
+// Ability to bulk upload attendance.
+print $renderer->bulk_attendance_upload($session, $bulkform);
 print $OUTPUT->footer();

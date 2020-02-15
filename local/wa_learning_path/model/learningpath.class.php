@@ -1008,7 +1008,7 @@ class learningpath {
         $learningpath = self::get($fromid);
 
         if (!$learningpath) {
-            throw new Exception('Could not load learning path.');
+            throw new \Exception('Could not load learning path.');
         }
 
         unset($learningpath->id);
@@ -1019,7 +1019,7 @@ class learningpath {
         $learningpath->id = $DB->insert_record('wa_learning_path', $learningpath);
 
         if (!$learningpath->id) {
-            throw new Exception('Failed to save duplicated learning path.');
+            throw new \Exception('Failed to save duplicated learning path.');
         }
 
         // Duplicate regions.
