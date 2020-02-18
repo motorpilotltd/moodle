@@ -1128,8 +1128,10 @@ class rb_courseregion_content extends rb_base_content {
         $status = $status && reportbuilder::update_setting($reportid, $type,
             'enable', $enable);
 
-        $status = $status && reportbuilder::update_setting($reportid, $type,
-                        'regiontype', $fromform->regiontype);
+        if (isset($fromform->regiontype)) {
+            $status = $status && reportbuilder::update_setting($reportid, $type,
+                            'regiontype', $fromform->regiontype);
+        }
 
         if (isset($fromform->courseregion_enable) && $fromform->regiontype == self::OTHER) {
             $status = $status && reportbuilder::update_setting($reportid, $type,'region', $fromform->region);
