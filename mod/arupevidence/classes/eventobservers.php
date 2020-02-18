@@ -120,7 +120,7 @@ class eventobservers {
             'userid2' => $completion->userid,
             ];
 
-        $ausql = "SELECT au.*, cm.id as cmid
+        $ausql = "SELECT au.*, a.course, cm.id as cmid
                        FROM {course_modules} cm
                        JOIN {modules} m ON m.id = cm.module
                        JOIN {arupevidence} a ON cm.instance = a.id
@@ -172,7 +172,7 @@ class eventobservers {
 
         $eventparams = array(
             'context' => \context_module::instance($au->cmid),
-            'courseid' => $event->courseid,
+            'courseid' => $au->course,
             'objectid' => $au->arupevidenceid,
             'relateduserid' => $completion->userid,
             'other' => $other,
