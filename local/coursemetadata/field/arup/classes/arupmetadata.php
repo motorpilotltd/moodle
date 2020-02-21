@@ -82,8 +82,14 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
     }
 
     public function export_for_template(\renderer_base $output) {
-
         global $CFG, $OUTPUT, $DB, $PAGE;
+
+        if (! $PAGE->user_is_editing()) {
+            $cache = \cache::make('coursemetadatafield_arup', 'renderable');
+            if ($export = $cache->get($this->get_course()->id)) {
+                return $export;
+            }
+        }
 
         $data = new \stdClass();
 
@@ -162,7 +168,11 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
                 $data->trainers[] = $trainer;
             }
         }
-        $data->url = new moodle_url('course/view.php', ['id' => $this->get_course()->id]);
+        $data->url = new moodle_url('/course/view.php', ['id' => $this->get_course()->id]);
+
+        if (! $PAGE->user_is_editing()) {
+            $cache->set($this->get_course()->id, $data);
+        }
         return $data;
     }
 
@@ -360,5 +370,17 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Observer for \core\event\course_updated event. Clears metadata cache.
+     *
+     * @param \core\event\course_updated $event
+     * @return void
+     */
+    public static function course_updated(\core\event\course_updated $event) {
+        $course = $event->get_record_snapshot('course', $event->objectid);
+        $cache = \cache::make('coursemetadatafield_arup', 'renderable');
+        $cache->delete($course->id);
     }
 }

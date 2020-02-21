@@ -15,19 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * coursemetadatafield_arup field.
+ * Event observers for course metadata for Arup courses.
  *
  * @package    coursemetadatafield_arup
- * @copyright  Andrew Hancox <andrewdchancox@googlemail.com>
+ * @copyright  Bas Brands <bas@sonsbeekmedia.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2015111614;
-$plugin->requires  = 2015111600; // Moodle 3.0.
-$plugin->component = 'coursemetadatafield_arup';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.0.0 (Build: 2015111600)';
-
-$plugin->dependencies = array();
+// List of observers.
+$observers = array(
+    array(
+        'eventname' => '\core\event\course_updated',
+        'callback'  => 'coursemetadatafield_arup\arupmetadata::course_updated',
+    ),
+);

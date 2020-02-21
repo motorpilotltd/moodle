@@ -32,4 +32,7 @@ $definitions = array(
         'staticacceleration' => true,
         'staticaccelerationsize' => 30,
     ),
+    'renderable' => array(
+    	'mode' => cache_store::MODE_APPLICATION
+    )
 );
