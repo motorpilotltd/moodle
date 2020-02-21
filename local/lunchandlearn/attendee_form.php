@@ -62,7 +62,7 @@ class attendee_form extends moodleform {
         $mform->setDefault('p_learning_method', 'LUNCH_AND_LEARN');
 
         $mform->addElement('editor', 'p_learning_desc', get_string('p_learning_desc', 'local_lunchandlearn'));
-        $mform->setType('p_learning_desc', PARAM_RAW);
+        $mform->setType('p_learning_desc', PARAM_CLEANHTML);
 
         $mform->addElement('header', 'notice', 'Notice');
         $mform->addElement('static', 'lockmessage', '', html_writer::div(get_string('lockmessage', 'local_lunchandlearn'), 'alert alert-warning'));
