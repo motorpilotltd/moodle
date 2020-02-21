@@ -300,17 +300,56 @@ class lunchandlearn extends lal_base {
         // Load attachments...
         $draftitemid = file_get_submitted_draft_itemid('attachments');
         $context = context_system::instance();
-        file_prepare_draft_area($draftitemid, $context->id, 'local_lunchandlearn', 'attachment', $this->get_id());
+        $options = array(
+            'maxfiles' => 5,
+            'maxbytes' => get_max_upload_file_size(),
+            'subdirs' => 0,
+            'accepted_types' => [
+                'png',
+                'jpg',
+                'jpeg',
+                'gif',
+                'bmp',
+                'tif',
+                'tiff',
+                'svg',
+                'webm',
+                'mp4',
+                'ogg',
+                'mp3',
+                'wav',
+                'txt',
+                'pdf',
+                'rtf',
+                'doc',
+                'docx',
+                'xls',
+                'xlsx',
+                'ppt',
+                'pptx',
+                'odt',
+                'ods',
+                'odp',
+            ],
+        );
+        file_prepare_draft_area($draftitemid, $context->id, 'local_lunchandlearn', 'attachment', $this->get_id(), $options);
         $mform->set_data(array('attachments' => $draftitemid));
         // Prepare editor.
         $recorded = new stdClass;
         $recorded->recorded = $this->get_recording();
         $recorded->recordedformat = FORMAT_HTML;
         $data = file_prepare_standard_editor($recorded, 'recorded', array(
-                    'trusttext' => true,
+                    'trusttext' => false,
                     'maxfiles' => 5,
                     'maxbytes' => get_max_upload_file_size(),
-                    'subdirs' => true,
+                    'subdirs' => false,
+                    'accepted_types' => [
+                        'mp4',
+                        'ogg',
+                        'mp3',
+                        'wav',
+                        'wmv'
+                    ],
                     'context' => context_system::instance()
                 ), context_system::instance(),
                                      'local_lunchandlearn', 'entry', $this->get_id());

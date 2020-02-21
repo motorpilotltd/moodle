@@ -157,6 +157,8 @@ class lunchandlearn_form extends moodleform {
 
         $mform->addElement('header', 'sessionmaterial', get_string('sessionmaterials', 'local_lunchandlearn'));
         $options = array(
+            'maxfiles' => 5,
+            'maxbytes' => get_max_upload_file_size(),
             'subdirs' => 0,
             'accepted_types' => [
                 'png',
@@ -247,9 +249,16 @@ class lunchandlearn_form extends moodleform {
         $mform->addElement('editor', 'recorded_editor', get_string('recordedsession', 'local_lunchandlearn'), array('rows' => 10), array(
                     'trusttext' => false,
                     'collapsed' => true,
-                    'subdirs' => true,
                     'maxfiles' => 5,
                     'maxbytes' => get_max_upload_file_size(),
+                    'subdirs' => false,
+                    'accepted_types' => [
+                        'mp4',
+                        'ogg',
+                        'mp3',
+                        'wav',
+                        'wmv'
+                    ],
                     'context' => context_system::instance()));
         $mform->setType('recorded_editor', PARAM_CLEANHTML);
     }
