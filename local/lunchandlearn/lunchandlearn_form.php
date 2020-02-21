@@ -156,7 +156,37 @@ class lunchandlearn_form extends moodleform {
         $mform->addHelpButton('joindetail', 'eventjoindetail', 'local_lunchandlearn');
 
         $mform->addElement('header', 'sessionmaterial', get_string('sessionmaterials', 'local_lunchandlearn'));
-        $mform->addElement('filemanager', 'attachments', get_string('sessionmaterials', 'local_lunchandlearn'));
+        $options = array(
+            'subdirs' => 0,
+            'accepted_types' => [
+                'png',
+                'jpg',
+                'jpeg',
+                'gif',
+                'bmp',
+                'tif',
+                'tiff',
+                'svg',
+                'webm',
+                'mp4',
+                'ogg',
+                'mp3',
+                'wav',
+                'txt',
+                'pdf',
+                'rtf',
+                'doc',
+                'docx',
+                'xls',
+                'xlsx',
+                'ppt',
+                'pptx',
+                'odt',
+                'ods',
+                'odp',
+            ],
+        );
+        $mform->addElement('filemanager', 'attachments', get_string('sessionmaterials', 'local_lunchandlearn'), null, $options);
         $mform->addHelpButton('attachments', 'sessionmaterials', 'local_lunchandlearn');
 
         if (false === $lal->scheduler->has_past()) {
