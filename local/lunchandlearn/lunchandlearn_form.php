@@ -99,14 +99,14 @@ class lunchandlearn_form extends moodleform {
 
         $mform->addElement('textarea', 'summary', get_string('eventsummary','local_lunchandlearn'), array('cols' => '80','rows' => 10,'maxlength' => 150));
         // Old code: ->setValue(array('text' => $lal->get_summary()));?
-        $mform->setType('summary', PARAM_RAW);
+        $mform->setType('summary', PARAM_CLEANHTML);
         $mform->addHelpButton('summary', 'eventsummary','local_lunchandlearn');
         $mform->addRule('summary', get_string('error:summarylen', 'local_lunchandlearn', 150), 'maxlength', 150, 'client');
         $mform->addRule('summary', get_string('required'), 'required');
 
         $mform->addElement('editor', 'description', get_string('eventdescription','local_lunchandlearn'))
               ->setValue(array('text' => $lal->get_description()));
-        $mform->setType('description', PARAM_RAW);
+        $mform->setType('description', PARAM_CLEANHTML);
         $mform->addHelpButton('description', 'eventdescription', 'local_lunchandlearn');
 
         $mform->addElement('header', 'schedulegroup', get_string('schedulegroup', 'local_lunchandlearn'));
@@ -152,11 +152,43 @@ class lunchandlearn_form extends moodleform {
 
         $mform->addElement('editor', 'joindetail', get_string('eventjoindetail','local_lunchandlearn'))
               ->setValue(array('text' => $lal->get_joindetail()));
-        $mform->setType('joindetail', PARAM_RAW);
+        $mform->setType('joindetail', PARAM_CLEANHTML);
         $mform->addHelpButton('joindetail', 'eventjoindetail', 'local_lunchandlearn');
 
         $mform->addElement('header', 'sessionmaterial', get_string('sessionmaterials', 'local_lunchandlearn'));
-        $mform->addElement('filemanager', 'attachments', get_string('sessionmaterials', 'local_lunchandlearn'));
+        $options = array(
+            'maxfiles' => 5,
+            'maxbytes' => get_max_upload_file_size(),
+            'subdirs' => 0,
+            'accepted_types' => [
+                '.png',
+                '.jpg',
+                '.jpeg',
+                '.gif',
+                '.bmp',
+                '.tif',
+                '.tiff',
+                '.svg',
+                '.webm',
+                '.mp4',
+                '.ogg',
+                '.mp3',
+                '.wav',
+                '.txt',
+                '.pdf',
+                '.rtf',
+                '.doc',
+                '.docx',
+                '.xls',
+                '.xlsx',
+                '.ppt',
+                '.pptx',
+                '.odt',
+                '.ods',
+                '.odp',
+            ],
+        );
+        $mform->addElement('filemanager', 'attachments', get_string('sessionmaterials', 'local_lunchandlearn'), null, $options);
         $mform->addHelpButton('attachments', 'sessionmaterials', 'local_lunchandlearn');
 
         if (false === $lal->scheduler->has_past()) {
@@ -215,13 +247,20 @@ class lunchandlearn_form extends moodleform {
         $mform->addElement('header', 'recordedsession', get_string('recordedsession', 'local_lunchandlearn'));
 
         $mform->addElement('editor', 'recorded_editor', get_string('recordedsession', 'local_lunchandlearn'), array('rows' => 10), array(
-                    'trusttext' => true,
+                    'trusttext' => false,
                     'collapsed' => true,
-                    'subdirs' => true,
                     'maxfiles' => 5,
                     'maxbytes' => get_max_upload_file_size(),
+                    'subdirs' => false,
+                    'accepted_types' => [
+                        '.mp4',
+                        '.ogg',
+                        '.mp3',
+                        '.wav',
+                        '.wmv'
+                    ],
                     'context' => context_system::instance()));
-        $mform->setType('recorded', PARAM_RAW);
+        $mform->setType('recorded_editor', PARAM_CLEANHTML);
     }
 
     public function menuify($records, $default='', $key='id', $value='name') {
