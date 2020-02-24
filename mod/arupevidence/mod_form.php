@@ -169,7 +169,7 @@ class mod_arupevidence_mod_form extends moodleform_mod {
 
         $mform->addElement('editor', 'learningdesc', get_string('cpd:learningdesc', 'block_arup_mylearning'));
         $mform->disabledIf('learningdesc', 'cpdlms', 'neq', ARUPEVIDENCE_CPD);
-        $mform->setType('learningdesc', PARAM_RAW);
+        $mform->setType('learningdesc', PARAM_CLEANHTML);
     }
 
     public function add_completion_rules() {
