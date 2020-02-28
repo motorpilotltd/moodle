@@ -30,7 +30,7 @@ define(['jquery', 'core/modal_factory', 'core/templates', 'core/str', 'core/noti
 
         var showhidecolumnsmodal = {
             init: function (id, shortname, columnscontext) {
-                var addblocklink = $("div.showhidecolumns button, div.showhidecolumns input");
+                var addblocklink = $("[data-action='showcolumns']");
 
                 var titlePromise = Str.get_string('showhidecolumns', 'local_reportbuilder')
                     .fail(Notification.exception);
@@ -44,7 +44,7 @@ define(['jquery', 'core/modal_factory', 'core/templates', 'core/str', 'core/noti
                     type: ModalFactory.types.DEFAULT,
                 }, addblocklink);
 
-                $('body').on('click', '#column-checkboxes input', function () {
+                $('body').on('click', '#column-checkboxes input', function (e) {
                     var selheader = '#' + shortname + ' th.' + $(this).attr('name');
                     var sel = '#' + shortname + ' td.' + $(this).attr('name');
                     var value = $(this).is(':checked') ? 1 : 0;

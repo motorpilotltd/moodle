@@ -258,7 +258,7 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
      * @param integer $sid Saved search ID if a saved search is active (optional)
      * @return No return value but prints export select form
      */
-    public function export_select($report, $sid = 0) {
+    public function export_select($report, $sid = 0, $html = true) {
         global $CFG, $PAGE;
         require_once($CFG->dirroot . '/local/reportbuilder/export_form.php');
 
@@ -286,7 +286,11 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
         }
 
         $export = new report_builder_export_form($url, compact('id', 'sid', 'extparams'), 'post', '', array('id' => 'rb_export_form'));
-        $export->display();
+        if ($html) {
+            $export->display();
+        } else {
+            $export->render();
+        }
     }
 
     /**
@@ -913,5 +917,15 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
         $template_data->report_list = $this->report_list_export_for_template($reports, $canedit);
 
         return $this->render_from_template('local_reportbuilder/myreports', $template_data);
+    }
+
+    /**
+     * Notifications override
+     */
+    public function notification($text, $state) {
+        $context = (object)[];
+        $context->text = $text;
+        $context->state = $state;
+        return $this->render_from_template('local_reportbuilder/notification', $context);
     }
 }

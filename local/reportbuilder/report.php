@@ -32,7 +32,8 @@ require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
 $format    = optional_param('format', '', PARAM_ALPHANUM);
 $id = required_param('id', PARAM_INT);
 $sid = optional_param('sid', '0', PARAM_INT);
-$debug = optional_param('debug', 0, PARAM_INT);
+$debug = optional_param('debug', 1, PARAM_INT);
+$simplesearch = optional_param('simplesearch', 0, PARAM_TEXT);
 
 require_login();
 
@@ -84,55 +85,38 @@ $output = $PAGE->get_renderer('local_reportbuilder');
 
 echo $output->header();
 
+$template = new stdClass();
+$template->formurl = new moodle_url('/local/reportbuilder/report.php', ['id' => $id]);
+$template->hasdisabledfilters = $report->has_disabled_filters();
+$template->simplesearch = $simplesearch;
+
 if ($report->has_disabled_filters()) {
-    global $OUTPUT;
-    echo $OUTPUT->notification(get_string('filterdisabledwarning', 'local_reportbuilder'), 'warning');
+    $template->notification = $OUTPUT->notification(get_string('filterdisabledwarning', 'local_reportbuilder'), 'warning');
 }
 
 // This must be done after the header and before any other use of the report.
 list($tablehtml, $debughtml) = $output->report_html($report, $debug);
 
+$template->table = $tablehtml;
+$template->debug =  $debughtml;
+$template->directlink = $report->display_redirect_link();
 $report->display_redirect_link();
 
 // Display heading including filtering stats.
-if ($graph) {
-    $heading = $fullname;
-} else {
-    $heading = $fullname . ': ' . $output->result_count_info($report);
-}
-echo $output->heading($heading);
-echo $debughtml;
+$template->heading = $fullname;
+$template->numrecords = $output->result_count_info($report);
 
 // print report description if set
-echo $output->print_description($report->description, $report->_id);
+$template->description = $output->print_description($report->description, $report->_id);
 
-// print filters
+$template->search = $report->display_search(false);
+$template->sidebar = $report->display_sidebar_search(false);
 
-echo html_writer::start_div('row');
-echo html_writer::start_div('col-md-6');
-$report->display_search();
-echo html_writer::end_div();
-echo html_writer::end_div();
-
-echo html_writer::start_div('row');
-$sidebar = $report->display_sidebar_search();
-if ($sidebar) {
-    echo html_writer::start_div('col-md-2');
-    echo $sidebar;
-    echo html_writer::end_div();
-}
-
-
-if ($sidebar) {
-    echo html_writer::start_div('col-md-10');
-} else {
-    echo html_writer::start_div('col-md-12');
-}
 // print saved search buttons if appropriate
-echo $report->display_saved_search_options();
+$template->savedsearch = $report->display_saved_search_options();
 // Show results.
 if ($graph) {
-    print $report->print_feedback_results();
+    $template->feedback = $report->print_feedback_results();
 } else {
     $columns = [];
     $hiddencolumns = $report->js_get_hidden_columns();
@@ -147,18 +131,12 @@ if ($graph) {
             ['id' => $report->_id,
              'shortname' => $report->shortname,
              'columnscontext' => (object)['columns' => $columns]]);
-    echo $OUTPUT->single_button('', get_string('showhidecolumns', 'local_reportbuilder'), 'get', ['class' => 'showhidecolumns']);
-
-    echo $tablehtml;
+    $template->button = $OUTPUT->single_button('', get_string('showhidecolumns', 'local_reportbuilder'), 'get', ['class' => 'showhidecolumns']);
 }
 
 // Export button.
-echo html_writer::start_div('row');
-echo html_writer::start_div('col-md-4');
-$output->export_select($report, $sid);
-echo html_writer::end_div();
-echo html_writer::end_div();
+$template->export = $output->export_select($report, $sid, false);
 
-echo html_writer::end_div();
+echo $OUTPUT->render_from_template('local_reportbuilder/report', $template);
 
 echo $output->footer();

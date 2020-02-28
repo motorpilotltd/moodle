@@ -1361,6 +1361,15 @@ class reportbuilder {
                 }
             }
         }
+
+        $simplesearch = optional_param('simplesearch', 0, PARAM_TEXT);
+        $clearsearch = optional_param('clearsearch', 0, PARAM_INT);
+        if ($simplesearch) {
+            $SESSION->reportbuilder[$this->get_uniqueid()]['toolbarsearchtext'] = $simplesearch;
+        } else {
+            unset($SESSION->reportbuilder[$this->get_uniqueid()]['toolbarsearchtext']);
+        }
+
         $mformtoolbar = new report_builder_toolbar_search_form(null);
         $adddatatoolbar = $mformtoolbar->get_data(false);
         if ($adddatatoolbar || $clearfilters) {
@@ -1832,7 +1841,7 @@ class reportbuilder {
      *
      * @return Nothing returned but prints the search box
      */
-    public function display_search() {
+    public function display_search($html = true) {
         global $CFG;
 
         $standard_filters = $this->get_standard_filters();
@@ -1840,10 +1849,16 @@ class reportbuilder {
             return;
         }
 
+        $class = $html ? ['class' => 'rb-search'] : [];
+
         require_once($CFG->dirroot . '/local/reportbuilder/report_forms.php');
         $mformstandard = new report_builder_standard_search_form($this->get_current_url(),
-                array('fields' => $standard_filters), 'post', '', array('class' => 'rb-search'));
-        $mformstandard->display();
+                array('fields' => $standard_filters), 'post', '', $class);
+        if ($html) {
+            return $mformstandard->display();
+        } else {
+            return $mformstandard->render();
+        }
     }
 
     /**
@@ -1851,7 +1866,7 @@ class reportbuilder {
      *
      * @return Nothing returned but prints the search box
      */
-    public function display_sidebar_search() {
+    public function display_sidebar_search($html = true) {
         global $CFG, $PAGE;
 
         $sidebarfilters = $this->get_sidebar_filters();
@@ -4065,14 +4080,18 @@ class reportbuilder {
     /**
      * If a redirect url has been specified in the source then output a redirect link.
      */
-    public function display_redirect_link() {
+    public function display_redirect_link($html = true) {
         if (isset($this->src->redirecturl)) {
             if (isset($this->src->redirectmessage)) {
                 $message = '&laquo; ' . $this->src->redirectmessage;
             } else {
                 $message = '&laquo; ' . get_string('selectitem', 'local_reportbuilder');
             }
-            echo html_writer::link($this->src->redirecturl, $message);
+            if ($html) {
+                echo html_writer::link($this->src->redirecturl, $message);
+            } else {
+                return html_writer::link($this->src->redirecturl, $message);
+            }
         }
     }
 
