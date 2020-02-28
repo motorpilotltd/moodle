@@ -155,7 +155,8 @@ class apform_addfeedback extends moodleform {
                 $data->feedback_user_type = 'appraisee';
             }
             $data->confidential = 0;
-            $data->id = $DB->insert_record('local_appraisal_feedback', $data);
+            // Need to set feedbackid for upcoming check.
+            $data->feedbackid = $data->id = $DB->insert_record('local_appraisal_feedback', $data);
         }
 
         $feedback = new \local_onlineappraisal\feedback($forms->appraisal);

@@ -23,7 +23,8 @@
  */
 
 function block_carousel_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload,
-array $options=array()) {
+                                   array $options = []) {
+    global $CFG;
 
     $fullpath = "/$context->id/block_carousel/$filearea/0/".$args[0];
 
@@ -31,6 +32,10 @@ array $options=array()) {
     if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
         send_file_not_found();
     }
+
     $lifetime = isset($CFG->filelifetime) ? $CFG->filelifetime : 86400;
+    $options['cacheability'] = 'public';
+    $options['immutable'] = true;
+
     send_stored_file($file, $lifetime, 0, $forcedownload, $options);
 }

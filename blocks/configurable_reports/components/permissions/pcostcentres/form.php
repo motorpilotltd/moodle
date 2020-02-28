@@ -44,7 +44,7 @@ class pcostcentres_form extends moodleform {
             \local_costcentre\costcentre::HR_ADMIN=>"HR Admin",
             \local_costcentre\costcentre::HR_LEADER=>"HR Leader"
         );
-        
+
 
         $mform->addElement('select', 'ccroles', get_string('pcostcentres_roles', 'block_configurable_reports'), $ccroles)->setMultiple(true);
 

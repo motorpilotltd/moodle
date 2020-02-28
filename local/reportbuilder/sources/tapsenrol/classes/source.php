@@ -23,6 +23,7 @@
  */
 
 namespace rbsource_tapsenrol;
+
 use rb_base_source;
 use rb_join;
 use rb_column_option;
@@ -89,7 +90,7 @@ class source extends rb_base_source {
 
         $classfields = ['classname', 'classtype', 'location'];
 
-        foreach($classfields as $stafffield) {
+        foreach ($classfields as $stafffield) {
             $columnoptions[] = new rb_column_option(
                     'class',
                     "$stafffield",
@@ -118,11 +119,11 @@ class source extends rb_base_source {
                         'dbdatatype'  => 'timestamp',
                         'displayfunc' => 'classenddate',
                         'extrafields' => [
-                                'usedtimezone' => 'base.usedtimezone',
-                                'classtype' => 'base.classtype',
-                                'bookingstatus' => 'base.bookingstatus',
+                                'usedtimezone'        => 'base.usedtimezone',
+                                'classtype'           => 'base.classtype',
+                                'bookingstatus'       => 'base.bookingstatus',
                                 'classcompletiondate' => 'base.classcompletiondate',
-                                'cpdid' => 'base.cpdid'
+                                'cpdid'               => 'base.cpdid'
                         ]
                 )
         );
@@ -135,8 +136,8 @@ class source extends rb_base_source {
                         'dbdatatype'  => 'timestamp',
                         'displayfunc' => 'classstartdate',
                         'extrafields' => [
-                                'classtype' => 'base.classtype',
-                                'usedtimezone' => 'base.usedtimezone',
+                                'classtype'         => 'base.classtype',
+                                'usedtimezone'      => 'base.usedtimezone',
                                 'bookingplaceddate' => 'base.bookingplaceddate'
                         ]
                 )
@@ -187,7 +188,7 @@ class source extends rb_base_source {
 
         $enrolmentfields = ['learningdesc', 'classcategory', 'provider'];
 
-        foreach($enrolmentfields as $enrolmentfield) {
+        foreach ($enrolmentfields as $enrolmentfield) {
             $columnoptions[] = new rb_column_option(
                     'class',
                     "$enrolmentfield",
@@ -208,7 +209,7 @@ class source extends rb_base_source {
                         'displayfunc'  => 'bookingstatus',
                         'dbdatatype'   => 'char',
                         'outputformat' => 'text',
-                        'extrafields' => array('cpdid' => 'base.cpdid')
+                        'extrafields'  => array('cpdid' => 'base.cpdid')
                 )
         );
 
@@ -219,7 +220,18 @@ class source extends rb_base_source {
                 "base.cpdid",
                 array(
                         'displayfunc' => 'cpdorlms',
-                        'dbdatatype' => 'boolean',
+                        'dbdatatype'  => 'boolean',
+                )
+        );
+
+        $columnoptions[] = new rb_column_option(
+                'class',
+                'actions',
+                get_string('actions', 'rbsource_tapsenrol'),
+                "base.id",
+                array(
+                        'displayfunc' => 'actions',
+                        'extrafields' => array('cpdid' => 'base.cpdid', 'locked' => 'base.locked')
                 )
         );
 
@@ -239,7 +251,7 @@ class source extends rb_base_source {
                 "base.bookingplaceddate",
                 array(
                         'displayfunc' => 'nice_datetime',
-                        'dbdatatype' => 'timestamp'
+                        'dbdatatype'  => 'timestamp'
                 )
         );
         $columnoptions[] = new rb_column_option(
@@ -249,7 +261,7 @@ class source extends rb_base_source {
                 "base.expirydate",
                 array(
                         'displayfunc' => 'nice_datetime',
-                        'dbdatatype' => 'timestamp'
+                        'dbdatatype'  => 'timestamp'
                 )
         );
         $columnoptions[] = new rb_column_option(
@@ -353,8 +365,9 @@ class source extends rb_base_source {
                 get_string('cpdorlms', 'rbsource_tapsenrol'),
                 'select',
                 array(
-                        'selectchoices' => array(0 => get_string('lms', 'rbsource_tapsenrol'), 1 => get_string('cpd', 'rbsource_tapsenrol')),
-                        'simplemode' => true
+                        'selectchoices' => array(0 => get_string('lms', 'rbsource_tapsenrol'),
+                                                 1 => get_string('cpd', 'rbsource_tapsenrol')),
+                        'simplemode'    => true
                 )
         );
 
@@ -393,7 +406,6 @@ class source extends rb_base_source {
                 array('castdate' => true)
         );
 
-
         $statuses = [
                 'W:Requested',
                 'Requested',
@@ -429,7 +441,7 @@ class source extends rb_base_source {
                 'selectbookingstatus',
                 array(
                         'selectchoices' => $options,
-                        'simplemode' => true
+                        'simplemode'    => true
                 )
         );
 
@@ -529,5 +541,62 @@ class source extends rb_base_source {
         } else {
             return get_string('lms', 'rbsource_tapsenrol');
         }
+    }
+
+    public function rb_display_actions($item, $row) {
+        global $OUTPUT;
+
+        static $hascapabilities;
+
+        if (!isset($hascapabilities)) {
+            $hascapabilities = array('addcpd' => false, 'editcpd' => false, 'deletecpd' => false);
+            foreach ($hascapabilities as $capability => &$hascapability) {
+                $hascapability = has_capability('block/arup_mylearning:' . $capability, \context_system::instance());
+            }
+        }
+
+        if (empty($row->cpdid)) {
+            return '';
+        }
+
+        $reportid = optional_param('id', null, PARAM_INT);
+        if (empty($reportid)) {
+            return '';
+        }
+
+        $oput = '';
+
+        if ($hascapabilities['editcpd'] && !$row->locked) {
+            $editcpdurl = new \moodle_url(
+                    '/blocks/arup_mylearning/editcpd.php',
+                    array('cpdid' => $row->cpdid, 'tab' => 'rbreport', 'instance' => $reportid)
+            );
+            $oput .= $OUTPUT->action_icon(
+                    $editcpdurl,
+                    new \pix_icon(
+                            't/editstring',
+                            get_string('editcpd', 'block_arup_mylearning')
+                    ),
+                    null,
+                    array('class' => 'action-icon extra-action')
+            );
+        }
+        if ($hascapabilities['deletecpd'] && !$row->locked) {
+            $deletecpdurl = new \moodle_url(
+                    '/blocks/arup_mylearning/deletecpd.php',
+                    array('cpdid' => $row->cpdid, 'tab' => 'rbreport', 'instance' => $reportid)
+            );
+            $oput .= $OUTPUT->action_icon(
+                    $deletecpdurl,
+                    new \pix_icon(
+                            'icon_delete',
+                            get_string('deletecpd', 'block_arup_mylearning'),
+                            'block_arup_mylearning'
+                    ),
+                    null,
+                    array('class' => 'action-icon extra-action')
+            );
+        }
+        return $oput;
     }
 }

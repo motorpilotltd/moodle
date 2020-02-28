@@ -86,7 +86,7 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
         $mform->addRule('durationunitscode', null, 'required', null, 'client');
 
         $mform->addElement('editor', 'learningdesc', get_string('cpd:learningdesc', 'block_arup_mylearning'));
-        $mform->setType('learningdesc', PARAM_RAW);
+        $mform->setType('learningdesc', PARAM_CLEANHTML);
 
         $mform->addElement('text', 'location', get_string('cpd:location', 'block_arup_mylearning'));
         $mform->setType('location', PARAM_TEXT);

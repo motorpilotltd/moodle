@@ -75,7 +75,8 @@ class source extends \rbsource_appraisal\source {
                 \local_costcentre\costcentre::HR_LEADER,
                 \local_costcentre\costcentre::HR_ADMIN,
                 \local_costcentre\costcentre::GROUP_LEADER,
-                \local_costcentre\costcentre::SIGNATORY
+                \local_costcentre\costcentre::SIGNATORY,
+                \local_costcentre\costcentre::REPORTER
         ];
 
         $bitand = [];
@@ -115,7 +116,7 @@ class source extends \rbsource_appraisal\source {
         }
 
         // Combine the results.
-        $report->set_post_config_restrictions(array("$sql", $params));
+        $report->set_post_config_restrictions(array("(base.deleted = 0 AND $sql)", $params));
     }
 
     /**
@@ -132,7 +133,7 @@ class source extends \rbsource_appraisal\source {
                 'LEFT',
                 '{local_appraisal_checkins}',
                 'checkins.appraisalid = base.id',
-                REPORT_BUILDER_RELATION_MANY_TO_ONE
+                REPORT_BUILDER_RELATION_ONE_TO_MANY
         );
 
         $joinlist[] = new rb_join(
@@ -140,15 +141,15 @@ class source extends \rbsource_appraisal\source {
                 'LEFT',
                 '{local_appraisal_comment}',
                 'comments.appraisalid = base.id',
-                REPORT_BUILDER_RELATION_MANY_TO_ONE
+                REPORT_BUILDER_RELATION_ONE_TO_MANY
         );
 
         $joinlist[] = new rb_join(
                 'vips',
-                'INNER',
+                'LEFT',
                 '{local_appraisal_users}',
                 "setting = 'appraisalvip' and userid = base.appraisee_userid",
-                REPORT_BUILDER_RELATION_MANY_TO_ONE
+                REPORT_BUILDER_RELATION_ONE_TO_MANY
         );
 
         $addedforms = [];
@@ -322,7 +323,7 @@ class source extends \rbsource_appraisal\source {
             return $data;
         } else if ($row->type == 'array') {
             $decoded = unserialize($data);
-            if (!$decoded) {
+            if (!is_array($decoded)) {
                 return $data;
             }
             return implode(', ', $decoded);

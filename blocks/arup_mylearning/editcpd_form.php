@@ -80,7 +80,7 @@ class block_arup_mylearning_editcpd_form extends moodleform {
         $mform->setAdvanced('expirydate');
 
         $mform->addElement('editor', 'learningdesc', get_string('cpd:learningdesc', 'block_arup_mylearning'));
-        $mform->setType('learningdesc', PARAM_RAW);
+        $mform->setType('learningdesc', PARAM_CLEANHTML);
 
         $mform->addElement('hidden', 'cpdid');
         $mform->setType('cpdid', PARAM_INT);
