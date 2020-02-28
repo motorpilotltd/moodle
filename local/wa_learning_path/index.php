@@ -34,8 +34,6 @@ if(!\wa_learning_path\lib\is_ajax()) {
     $PAGE->requires->jquery();
     $PAGE->requires->jquery_plugin('ui');
     $PAGE->requires->jquery_plugin('ui-css');
-    // Include a main JS library: wa_lib.
-    $PAGE->requires->js(new \moodle_url($CFG->wwwroot . '/local/wa_learning_path/js/wa_lib.js'));
     $PAGE->requires->css(new \moodle_url($CFG->wwwroot . '/local/wa_learning_path/css/style.css'));
 }
 
@@ -49,4 +47,3 @@ $controller = new $controllername;
 
 // It will throw an exceptiopn if there isn't the action method.
 $controller->{$actionname . '_action'}();
-

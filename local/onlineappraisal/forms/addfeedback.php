@@ -155,11 +155,14 @@ class apform_addfeedback extends moodleform {
                 $data->feedback_user_type = 'appraisee';
             }
             $data->confidential = 0;
-            $data->id = $DB->insert_record('local_appraisal_feedback', $data);
+            // Need to set feedbackid for upcoming check.
+            $data->feedbackid = $data->id = $DB->insert_record('local_appraisal_feedback', $data);
         }
 
         $feedback = new \local_onlineappraisal\feedback($forms->appraisal);
-        $feedback->user_feedback($data);
+        if (!$feedback->user_feedback($data)) {
+            return false;
+        }
 
         if ($data->pw ==  'self') {
             $params = array('page' => 'feedback',
@@ -171,6 +174,8 @@ class apform_addfeedback extends moodleform {
             $redirect = new moodle_url('/local/onlineappraisal/view.php', $params);
             redirect($redirect);
         }
+
+        return true;
     }
 
     /**
@@ -201,7 +206,7 @@ class apform_addfeedback extends moodleform {
      */
     function validation($data, $files) {
         $errors = array();
-        if ($data['buttonclicked'] != 2) {
+        if (!isset($data['buttonclicked']) || $data['buttonclicked'] != 2) {
             if (!isset($data['feedback']) || empty(trim($data['feedback']))) {
                 $errors['feedback'] = get_string('required');
             }

@@ -324,6 +324,8 @@ class apform_leaderplan extends moodleform {
                             )
                     );
         }
+
+        return true;
     }
 
     private function get_userdata() {

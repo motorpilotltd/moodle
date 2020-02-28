@@ -786,6 +786,52 @@ abstract class rb_base_source {
         return implode('', $output);
     }
 
+    public function rb_display_iconsingle($data, $row, $isexport = false) {
+        global $CFG;
+
+        if ($isexport) {
+            return $data;
+        }
+
+        static $context;
+        if (!isset($context)) {
+            $context = context_system::instance();
+        }
+        static $imagesbyfieldid = [];
+        if (!isset($imagesbyfieldid[$row->fieldid])) {
+            $fs = get_file_storage();
+            $imagesbyfieldid[$row->fieldid] = $fs->get_area_files($context->id, 'local_coursemetadata', "icons_{$row->fieldid}");
+        }
+        static $types = ['.png', '.jpg', '.jpeg', '.gif'];
+
+        if ($imagesbyfieldid[$row->fieldid]) {
+            $filearea = "icons_{$row->fieldid}";
+            foreach ($types as $type) {
+                $filename = $data.$type;
+                foreach ($imagesbyfieldid[$row->fieldid] as $file) {
+                    if ($file->get_filename() == $filename) {
+                        $imagesrc = "{$CFG->wwwroot}/pluginfile.php/{$context->id}/local_coursemetadata/{$filearea}/{$data}{$type}";
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        if (isset($imagesrc)) {
+            return html_writer::empty_tag(
+                    'img',
+                    array(
+                            'src' => $imagesrc,
+                            'alt' => $data,
+                            'title' => $data,
+                            'class' => 'coursemetadata iconsingle'
+                    )
+            );
+        } else {
+            return html_writer::tag('span', $data, array('class' => 'coursemetadata iconsingle'));
+        }
+    }
+
     /**
      * Display correct course grade via grade or RPL as a percentage string
      *
@@ -1006,6 +1052,7 @@ abstract class rb_base_source {
      */
     public function rb_expand_course_details() {
         global $CFG, $DB, $USER;
+        require_once($CFG->dirroot . '/lib/coursecatlib.php');
         require_once($CFG->dirroot . '/local/reportbuilder/report_forms.php');
         require_once($CFG->dirroot . '/course/renderer.php');
 
@@ -1062,14 +1109,12 @@ abstract class rb_base_source {
             } else {
                 $formdata['status'] = get_string('coursestatusenrolled', 'local_reportbuilder');
 
-                $progress = totara_display_course_progress_bar($userid, $courseid);
-                $formdata['progress'] = $progress;
 
                 // Course not finished, so no end date for course.
                 $formdata['enddate'] = '';
             }
             $formdata['url'] = new moodle_url('/course/view.php', array('id' => $courseid));
-            $formdata['action'] =  get_string('launchcourse', 'totara_program');
+            $formdata['action'] =  get_string('launchcourse', 'local_reportbuilder');
         } else {
             $formdata['status'] = get_string('coursestatusnotenrolled', 'local_reportbuilder');
 
@@ -1715,17 +1760,23 @@ abstract class rb_base_source {
      * @param string $alias Use custom user table alias
      * @return boolean True
      */
-    protected function add_user_table_to_joinlist(&$joinlist, $join, $field, $alias = 'auser') {
+    protected function add_user_table_to_joinlist(&$joinlist, $join, $field, $alias = 'auser', $countable = false) {
         if (isset($this->addeduserjoins[$alias])) {
             debugging("User join '{$alias}' was already added to the source", DEBUG_DEVELOPER);
         } else {
             $this->addeduserjoins[$alias] = array('join' => $join);
         }
 
+        if ($countable) {
+            $jointype = 'INNER';
+        } else {
+            $jointype = 'LEFT';
+        }
+
         // join uses 'auser' as name because 'user' is a reserved keyword
         $joinlist[] = new rb_join(
             $alias,
-            'LEFT',
+                $jointype,
             '{user}',
             "{$alias}.id = $join.$field",
             REPORT_BUILDER_RELATION_ONE_TO_ONE,
@@ -1772,7 +1823,7 @@ abstract class rb_base_source {
                 "{$alias}staff",
                 'INNER',
                 'SQLHUB.ARUP_ALL_STAFF_V',
-                "{$alias}staff.LEAVER_FLAG = 'n' AND {$alias}staff.EMPLOYEE_NUMBER = $join.$field",
+                "{$alias}staff.EMPLOYEE_NUMBER = $join.$field",
                 REPORT_BUILDER_RELATION_ONE_TO_MANY,
                 $alias
         );
@@ -1990,6 +2041,7 @@ abstract class rb_base_source {
             'department' => get_string('userdepartment', 'local_reportbuilder'),
             'address' => get_string('useraddress', 'local_reportbuilder'),
             'city' => get_string('usercity', 'local_reportbuilder'),
+            'icq' => get_string('costcentre', 'local_reportbuilder'),
         );
         foreach ($fields as $field => $name) {
             $columnoptions[] = new rb_column_option(
@@ -2118,7 +2170,6 @@ abstract class rb_base_source {
                 'EMAIL_ADDRESS',
                 'INTERNAL_LOCATION',
                 'LATEST_HIRE_DATE',
-                'GRADE',
                 'CORE_JOB_TITLE',
                 'GEO_REGION',
                 'COMPANY_CODE',
@@ -2140,7 +2191,7 @@ abstract class rb_base_source {
             $columnoptions[] = new rb_column_option(
                     $groupname,
                     $field,
-                    get_string($field, 'local_reportbuilder'),
+                    get_string(strtolower($field), 'local_reportbuilder'),
                     "{$join}.$field",
                     array('joins' => "{$join}",
                           'displayfunc' => 'plaintext',
@@ -2152,8 +2203,20 @@ abstract class rb_base_source {
         }
         $columnoptions[] = new rb_column_option(
                 $groupname,
+                'GRADE',
+                get_string('staffgrade', 'local_reportbuilder'),
+                "{$join}.GRADE",
+                array('joins' => "{$join}",
+                      'displayfunc' => 'plaintext',
+                      'dbdatatype' => 'char',
+                      'outputformat' => 'text',
+                      'addtypetoheading' => $addtypetoheading
+                )
+        );
+        $columnoptions[] = new rb_column_option(
+                $groupname,
                 'EMPLOYEE_NUMBER',
-                get_string('EMPLOYEE_NUMBER', 'local_reportbuilder'),
+                get_string('employee_number', 'local_reportbuilder'),
                 "{$join}.EMPLOYEE_NUMBER",
                 array('joins' => "{$join}",
                       'displayfunc' => 'plaintext',
@@ -2165,7 +2228,7 @@ abstract class rb_base_source {
         $columnoptions[] = new rb_column_option(
                 $groupname,
                 'SUP_EMPLOYEE_NUMBER',
-                get_string('SUP_EMPLOYEE_NUMBER', 'local_reportbuilder'),
+                get_string('sup_employee_number', 'local_reportbuilder'),
                 "{$join}.SUP_EMPLOYEE_NUMBER",
                 array('joins' => "{$join}",
                       'displayfunc' => 'plaintext',
@@ -2196,7 +2259,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'region',
-                get_string('REGION_NAME', 'local_reportbuilder'),
+                get_string('region_name', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('REGION_NAME'),
@@ -2209,7 +2272,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'georegion',
-                get_string('GEO_REGION', 'local_reportbuilder'),
+                get_string('geo_region', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('GEO_REGION'),
@@ -2222,7 +2285,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'location',
-                get_string('LOCATION_NAME', 'local_reportbuilder'),
+                get_string('location_name', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('LOCATION_NAME'),
@@ -2235,7 +2298,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'groupname',
-                get_string('GROUP_NAME', 'local_reportbuilder'),
+                get_string('group_name', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('GROUP_NAME'),
@@ -2248,7 +2311,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'centrename',
-                get_string('CENTRE_NAME', 'local_reportbuilder'),
+                get_string('centre_name', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('CENTRE_NAME'),
@@ -2261,7 +2324,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'centrecode',
-                get_string('CENTRE_CODE', 'local_reportbuilder'),
+                get_string('centre_code', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('CENTRE_CODE'),
@@ -2274,7 +2337,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'companycode',
-                get_string('COMPANY_CODE', 'local_reportbuilder'),
+                get_string('company_code', 'local_reportbuilder'),
                 "select",
                 array(
                         'selectchoices' => $this->rb_filter_staffcolumn('COMPANY_CODE'),
@@ -2285,9 +2348,9 @@ abstract class rb_base_source {
         );
 
         $fields = array(
-                'FIRST_NAME' => get_string('FIRST_NAME', 'local_reportbuilder'),
-                'LAST_NAME' => get_string('LAST_NAME', 'local_reportbuilder'),
-                'EMAIL_ADDRESS' => get_string('EMAIL_ADDRESS', 'local_reportbuilder'),
+                'FIRST_NAME' => get_string('first_name', 'local_reportbuilder'),
+                'LAST_NAME' => get_string('last_name', 'local_reportbuilder'),
+                'EMAIL_ADDRESS' => get_string('email_address', 'local_reportbuilder'),
         );
 
         foreach ($fields as $field => $name) {
@@ -2305,7 +2368,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'EMPLOYEE_NUMBER',
-                get_string('EMPLOYEE_NUMBER', 'local_reportbuilder'),
+                get_string('employee_number', 'local_reportbuilder'),
                 'number',
                 array('addtypetoheading' => $addtypetoheading),
                 "{$join}.EMPLOYEE_NUMBER",
@@ -2315,7 +2378,7 @@ abstract class rb_base_source {
         $filteroptions[] = new rb_filter_option(
                 $groupname,
                 'SUP_EMPLOYEE_NUMBER',
-                get_string('SUP_EMPLOYEE_NUMBER', 'local_reportbuilder'),
+                get_string('sup_employee_number', 'local_reportbuilder'),
                 'number',
                 array('addtypetoheading' => $addtypetoheading),
                 "{$join}.SUP_EMPLOYEE_NUMBER",
@@ -2372,6 +2435,7 @@ abstract class rb_base_source {
             'address' => get_string('useraddress', 'local_reportbuilder'),
             'city' => get_string('usercity', 'local_reportbuilder'),
             'email' => get_string('useremail', 'local_reportbuilder'),
+            'icq' => get_string('costcentre', 'local_reportbuilder'),
         );
         // Only include this filter if email is among fields allowed by showuseridentity setting or
         // if the current user has the 'moodle/site:config' capability.
@@ -2525,9 +2589,18 @@ abstract class rb_base_source {
 
     public function rb_filter_staffcolumn($columnname) {
         global $DB;
+        static $options = [];
 
-        $val = $DB->get_records_sql("select distinct($columnname) from SQLHUB.ARUP_ALL_STAFF_V where $columnname IS NOT NULL AND $columnname <> '' ORDER BY $columnname");
-        return array_combine(array_keys($val), array_keys($val));
+        if (empty($options[$columnname])) {
+            $cache = cache::make('local_reportbuilder', 'rb_staff_filter_options');
+            $options[$columnname] = $cache->get($columnname);
+
+            if (empty($options[$columnname])) {
+                $options[$columnname] = $DB->get_records_sql("select distinct($columnname) from SQLHUB.ARUP_ALL_STAFF_V where $columnname IS NOT NULL AND $columnname <> '' ORDER BY $columnname");
+                $cache->set($columnname, $options[$columnname]);
+            }
+        }
+        return array_combine(array_keys($options[$columnname]), array_keys($options[$columnname]));
     }
 
     /**
@@ -3306,6 +3379,16 @@ abstract class rb_base_source {
                     $column_options['outputformat'] = 'text';
                     break;
 
+                case 'iconsingle':
+                    $column_options['displayfunc'] = 'iconsingle';
+                    $column_options['outputformat'] = 'text';
+                    $column_options['extrafields'] = array(
+                            "fieldid" => "{$joinname}.fieldid"
+                    );
+                    $filtertype = 'menuofchoices';
+                    $filter_options['selectchoices'] = $this->list_to_array($record->param1,"\n");
+                    $filter_options['simplemode'] = true;
+                    break;
                 default:
                     // Unsupported customfields. e.g multiselect
                     continue 2;
@@ -3319,13 +3402,30 @@ abstract class rb_base_source {
                     REPORT_BUILDER_RELATION_ONE_TO_ONE,
                     $join
                 );
+
+            $coltype = $cf_prefix;
+
+            if ($coltype == 'coursemetadata') {
+                $coltype = 'course';
+            }
             $columnoptions[] = new rb_column_option(
-                    $cf_prefix,
+                    $coltype,
                     $value,
                     $name,
                     $columnsql,
                     $column_options
                 );
+            if ($record->datatype == 'iconsingle') {
+                unset($column_options['displayfunc']);
+                $textname = get_string('columntextname', 'local_reportbuilder', $name);
+                $columnoptions[] = new rb_column_option(
+                        $coltype,
+                        $value . '_text',
+                        $textname,
+                        $columnsql,
+                        $column_options
+                );
+            }
 
             if ($record->datatype == 'file') {
                 // No filter options for files yet.
@@ -3333,7 +3433,7 @@ abstract class rb_base_source {
             } else {
                 if (!$nofilter) {
                     $filteroptions[] = new rb_filter_option(
-                        $cf_prefix,
+                            $coltype,
                         $value,
                         $name,
                         $filtertype,
@@ -3573,13 +3673,13 @@ abstract class rb_base_source {
         array &$filteroptions, $basetable = 'course') {
         global $CFG;
 
-        if (!file_exists($CFG->dirroot . 'local/coursemetadata/version.php')) {
+        if (!file_exists($CFG->dirroot . '/local/coursemetadata/version.php')) {
             return true;
         }
 
         return $this->add_custom_fields_for('coursemetadata',
                                             $basetable,
-                                            'courseid',
+                                            'course',
                                             $joinlist,
                                             $columnoptions,
                                             $filteroptions);

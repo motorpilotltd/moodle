@@ -118,7 +118,7 @@ if ($type == 'future' || $type == 'past') {
                 $a .= "<br />FAILED: User (Moodle User ID: {$userid}) not found.";
                 continue;
             }
-            
+
             $username = fullname($user);
 
             // Does a not cancelled enrolment exist?.
@@ -387,7 +387,7 @@ EOJ;
     if ($fromform) {
         $a = '';
         $process = true;
-        
+
         // Process form.
         $enrolments = optional_param_array('enrolmentid', array(), PARAM_INT);
 
@@ -426,7 +426,12 @@ EOJ;
                 $compare = $DB->sql_compare_text('bookingstatus');
 
                 $where .= " AND {$compare} {$in}";
-                $sql = "SELECT id FROM {local_taps_enrolment} WHERE staffid = :staffid AND classid = :classid AND {$compare} {$in}";
+                $sql = "SELECT id
+                          FROM {local_taps_enrolment}
+                         WHERE staffid = :staffid
+                               AND classid = :classid
+                               AND (archived = 0 OR archived IS NULL) AND active = 1
+                               AND {$compare} {$in}";
                 $params = array_merge(
                         array('staffid' => $enrolment->staffid, 'classid' => $targetclass->classid),
                         $inparams

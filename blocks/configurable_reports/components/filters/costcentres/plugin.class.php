@@ -40,7 +40,7 @@ class plugin_costcentres extends plugin_base {
     public function execute($finalelements,$data){
         return $this->execute_sql($finalelements, $data);
     }
-    
+
     private function list_allowed_costcentres(){
         global $USER;
         $allowedcostcentres = array();
@@ -67,13 +67,13 @@ class plugin_costcentres extends plugin_base {
             $allowedcostcentres = \local_costcentre\costcentre::get_user_cost_centres(
                     $USER->id,
                     $selectedroles
-            ); 
+            );
         }
         return $allowedcostcentres;
     }
 
     private function execute_sql($finalelements, $data) {
-        
+
         $allowedcostcentres = $this->list_allowed_costcentres();
 
         $filtercostcentre = optional_param('filter_costcentre', '', PARAM_BASE64);

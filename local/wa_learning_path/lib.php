@@ -11,7 +11,7 @@
 
 /**
  * Serves wa_learning_path files.
- * 
+ *
  * @param stdClass $course course object
  * @param cm_info $cm course module object
  * @param context $context context object
@@ -36,7 +36,7 @@ function local_wa_learning_path_pluginfile($course, $cm, $context, $filearea, $a
     $filename = array_pop($args);
     $filepath = '/';
     $itemid = (int) reset($args);
-    $file = $fs->get_file($context->id, \wa_learning_path\model\learningpath::FILE_COMPONENET, $filearea, $itemid,
+    $file = $fs->get_file($context->id, \wa_learning_path\model\learningpath::FILE_COMPONENT, $filearea, $itemid,
             $filepath, $filename);
     if (!$file or $file->is_directory()) {
         send_file_not_found();

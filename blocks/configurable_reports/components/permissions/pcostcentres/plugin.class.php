@@ -25,7 +25,7 @@
 require_once($CFG->dirroot.'/blocks/configurable_reports/plugin.class.php');
 
 class plugin_pcostcentres extends plugin_base{
-    
+
     function init(){
         $this->form = true;
         $this->unique = false;

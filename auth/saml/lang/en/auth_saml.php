@@ -28,6 +28,10 @@ $string['autologin'] = 'SAML automatic login';
 $string['autologin_description'] = 'Automatically redirect to SAML idP without showing a login form';
 $string['autologin_subnet'] = 'SAML automatic login subnet';
 $string['autologin_subnet_description'] = 'If set, it will only attempt auto login with clients in this subnet. Format: xxx.xxx.xxx.xxx/bitmask. Separate multiple subnets with \',\' (comma).';
+$string['autologin_azureappproxy'] = 'SAML automatic login Azure App Proxy';
+$string['autologin_azureappproxy_description'] = 'If set, it will automatically redirect to SAML idP users that have come via an Azure Application Proxy.';
+$string['bypass_groups_azureappproxy'] = 'Groups to bypass Azure App Proxy auto login';
+$string['bypass_groups_azureappproxy_description'] = 'Groups IDs (AAD) for which automatic SAML login, when coming from Azure Application Proxy, will be bypassed. One ID per line.';
 
 $string['db_reset_button'] = 'Reset values to factory settings';
 $string['db_reset_error'] = 'Error reseting the saml plugin values';
@@ -58,6 +62,8 @@ $string['invalidlogin:email'] = 'Invalid login, please enter an email address.';
 
 $string['logfile'] = 'Log file path';
 $string['logfile_description'] = 'Set a filename if you want log the SAML plugin errors in a different file that the syslog (Use an absolute path or Moodle will save this file in the moodledata folder)';
+$string['login:aruplink'] = 'Log in with your Arup Account';
+$string['login:ormanual'] = 'Or enter your Moodle account details';
 
 $string['not_authorised'] = '{$a} could not be authorised.';
 

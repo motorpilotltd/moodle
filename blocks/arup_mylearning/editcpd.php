@@ -26,7 +26,13 @@ if ($cpdid) {
     $action = 'edit';
 }
 
-$redirecturl = new moodle_url('/my/index.php', array('tab' => $tab));
+if ($tab == 'rbreport') {
+    $redirecturl = new moodle_url('/local/reportbuilder/report.php', array('id' => $instance));
+    $context = context_system::instance();
+} else {
+    $context = context_block::instance($instance);
+    $redirecturl = new moodle_url('/my/index.php', array('tab' => $tab));
+}
 
 if (!isset($SESSION->block_arup_mylearning)) {
     $SESSION->block_arup_mylearning = new stdClass ();
@@ -42,7 +48,6 @@ if (!get_config('local_taps', 'version')) {
 
 require_login();
 
-$context = context_block::instance($instance);
 
 $taps = new \local_taps\taps();
 

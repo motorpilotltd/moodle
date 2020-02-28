@@ -562,7 +562,7 @@ function threesixty_user_listing($activity, $groupids, $url){
         $printbutton = html_writer::start_tag('form', array('action' => $printurl, 'method' => 'post'));
         $printbutton .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'a', 'value' => $activity->id));
         foreach ($groupids as $groupid) {
-            $printbutton .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'groupid[]', 'value' => $groupid));
+            $printbutton .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'groupids[]', 'value' => $groupid));
         }
         $printbutton .= html_writer::empty_tag('input', array('type' => 'submit', 'name' => 'submit', 'value' => get_string('printreport:all', 'threesixty'), 'class' => 'btn-primary'));
 

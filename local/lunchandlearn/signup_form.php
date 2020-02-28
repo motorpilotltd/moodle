@@ -53,7 +53,7 @@ class signup_form extends moodleform {
             }
 
             $mform->addElement('textarea', 'requirements', get_string('eventrequirements','local_lunchandlearn'), array('cols' => 40, 'rows' => 5));
-            $mform->setType('requirements', PARAM_RAW);
+            $mform->setType('requirements', PARAM_CLEANHTML);
             $mform->addHelpButton('requirements', 'eventrequirements', 'local_lunchandlearn');
 
             $radioarray=array();
@@ -93,7 +93,7 @@ class signup_form extends moodleform {
 
         } else if ($action == 'cancel' && $USER->id != $lal->userid) {
             $mform->addElement('textarea', 'notes', get_string('eventnotescancel','local_lunchandlearn'), array('cols' => 40, 'rows' => 5));
-            $mform->setType('notes', PARAM_RAW);
+            $mform->setType('notes', PARAM_CLEANHTML);
             $mform->addHelpButton('notes', 'eventnotescancel', 'local_lunchandlearn');
         }
 

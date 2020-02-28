@@ -627,7 +627,11 @@ class block_arup_mylearning_content {
                         $data = $th->{$field};
                         break;
                 }
-                $this->_worksheets[0]->write($row, $col, $data);
+                if (in_array($field, ['duration'])) {
+                    $this->_worksheets[0]->write_number($row, $col, $data);
+                } else {
+                    $this->_worksheets[0]->write_string($row, $col, $data);
+                }
                 $col++;
             }
             $row++;
@@ -762,7 +766,7 @@ class block_arup_mylearning_content {
             $cells[] = clone($cell);
 
             // Score.
-            if ($hh->score) {
+            if (is_numeric($hh->score)) {
                 if ($hh->score <= 1) {
                     // Convert to percentage.
                     $hh->score = $hh->score * 100;

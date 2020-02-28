@@ -117,7 +117,7 @@ class apform_userinfo extends moodleform {
          * @param string fieldname
          * @param string label
          * @param array options
-         * @param string hiddenfieldname. 
+         * @param string hiddenfieldname.
          */
         // The hidden field.
         $mform->addElement('hidden', 'facetoface', $data->appraisal->held_date);
@@ -128,7 +128,7 @@ class apform_userinfo extends moodleform {
         $mform->setType('facetofacedate', PARAM_TEXT);
         $mform->setDefault('facetofacedate', $facetofacedate);
         $mform->disabledIf('facetofacedate', 'facetofaceedit', 'eq', APPRAISAL_FIELD_LOCKED);
-        
+
         $mform->addElement('advcheckbox', 'facetofaceheld', '', $this->str('facetofaceheld'), array('group' => 1), array(0, 1));
         $mform->setDefault('facetofaceheld', $data->appraisal->face_to_face_held);
         $mform->disabledIf('facetofaceheld', 'facetofaceheldedit', 'eq', APPRAISAL_FIELD_LOCKED);
@@ -149,7 +149,7 @@ class apform_userinfo extends moodleform {
                 get_string('form:nextpage', 'local_onlineappraisal'), array('class' => 'btn btn-success')));
         }
     }
-    
+
     private function str($string, $a = null) {
         return get_string('form:userinfo:' . $string, 'local_onlineappraisal', $a);
     }
@@ -169,7 +169,9 @@ class apform_userinfo extends moodleform {
         if (!empty($data->operationaljobtitle)) {
             $appraisal->set_appraisal_field('operational_job_title', $data->operationaljobtitle);
         }
-        $appraisal->set_appraisal_field('face_to_face_held', $data->facetofaceheld);        
+        $appraisal->set_appraisal_field('face_to_face_held', $data->facetofaceheld);
+
+        return true;
     }
 
     /**

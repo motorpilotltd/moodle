@@ -153,7 +153,7 @@ class scheduled_reports_new_form extends moodleform {
                         }
                         $details = user_get_user_details($user);
                         return $OUTPUT->render_from_template(
-                                'core_search/form-user-selector-suggestion', $details);
+                                'local_reportbuilder/form-user-selector-suggestion', $details);
                     }
             );
             $mform->addElement('autocomplete', 'systemusers', get_string('systemusers', 'local_reportbuilder'), array(), $options);

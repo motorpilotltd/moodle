@@ -319,7 +319,6 @@ class admin {
     public function setup_groups() {
         global $DB;
 
-
         $joins = array();
         $wheres = array(
             "lc.enableappraisal = 1",
@@ -343,50 +342,28 @@ class admin {
         $join = implode("\n", $joins);
         $where = implode("\n AND ", $wheres);
 
+        $concat = $DB->sql_concat('u.icq', "' - '", 'u.department');
+
         $sql = "
-            SELECT
-                DISTINCT(lc.costcentre)
-            FROM {local_costcentre} lc
-            {$join}
-            WHERE
-                {$where}
-            ORDER BY
-                lc.costcentre ASC";
+            SELECT u.icq, {$concat}
+              FROM {local_costcentre} lc
+              {$join}
+              JOIN {user} u
+                   ON u.icq = lc.costcentre
+              JOIN (
+                    SELECT MAX(id) maxid
+                      FROM {user} inneru
+                      JOIN (
+                            SELECT MAX(timemodified) as maxtimemodified
+                              FROM {user}
+                          GROUP BY icq
+                      ) groupedicq ON inneru.timemodified = groupedicq.maxtimemodified
+                  GROUP BY inneru.icq
+                   ) groupedid ON u.id = groupedid.maxid
+             WHERE {$where}
+            ORDER BY lc.costcentre ASC";
 
-        $groups = $DB->get_records_sql($sql, $params);
-
-        $this->groups = array();
-        foreach($groups as $group) {
-            // Find the group name.
-            $sql = "
-                SELECT
-                    u.department
-                FROM
-                    {user} u
-                INNER JOIN
-                    (SELECT
-                        MAX(id) maxid
-                    FROM
-                        {user} inneru
-                    INNER JOIN
-                        (SELECT
-                            MAX(timemodified) as maxtimemodified
-                        FROM
-                            {user}
-                        WHERE
-                            icq = :icq1
-                        ) groupedicq
-                        ON inneru.timemodified = groupedicq.maxtimemodified
-                    WHERE
-                        icq = :icq2
-                    ) groupedid
-                    ON u.id = groupedid.maxid
-                WHERE
-                    u.icq = :icq3";
-            $params = array_fill_keys(array('icq1', 'icq2', 'icq3'), $group->costcentre);
-            $groupname = $DB->get_field_sql($sql, $params);
-            $this->groups = $this->groups + array($group->costcentre => $group->costcentre.' - ' . $groupname);
-        }
+        $this->groups = $DB->get_records_sql_menu($sql, $params);
 
         if (empty($this->groupid)) {
             reset($this->groups);

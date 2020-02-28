@@ -184,51 +184,53 @@ EOS;
         if (isset($SITE->id) && array_key_exists($SITE->id, $courses)) {
             unset($courses[$SITE->id]);
         }
+        $cache = cache::make('local_accordion', 'course_info');
+        $coursedata = $cache->get_many(array_keys($courses));
         foreach ($courses as $course) {
             context_helper::preload_from_record($course);
             if ($course->visible > 0
                 || has_capability('moodle/course:viewhiddencourses', context_course::instance($course->id))) {
-                if (REGIONS_INSTALLED) {
-                    $regionssql = <<<EOS
-SELECT
-    lrrc.regionid, lrr.name
-FROM
-    {local_regions_reg_cou} lrrc
-JOIN
-    {local_regions_reg} lrr
-    ON lrr.id = lrrc.regionid
-WHERE
-    lrrc.courseid = {$course->id}
-EOS;
-                    $regions = $DB->get_records_sql_menu($regionssql);
-                    $course->regions = implode(', ', $regions);
-                }
-                if (COURSEMETADATA_INSTALLED) {
-                    $metadatafields = get_config('local_accordion', 'coursemetadata_info');
-                    if ($metadatafields) {
-                        $metadatasql = <<<EOS
-SELECT
-    cif.id, cif.name, cid.data
-FROM
-    {coursemetadata_info_field} cif
-JOIN
-    {coursemetadata_info_category} cic
-    ON cic.id = cif.categoryid
-LEFT JOIN
-    {coursemetadata_info_data} cid
-    ON cid.fieldid = cif.id
-    AND cid.course = {$course->id}
-WHERE
-    cif.id IN ({$metadatafields})
-ORDER BY
-    cic.sortorder ASC, cif.sortorder ASC
-EOS;
-                        $course->metadata = $DB->get_records_sql($metadatasql);
-                    } else {
-                        $course->metadata = array();
+
+                $course->regions = '';
+                $course->metadata = [];
+                if (!$coursedata[$course->id]) {
+                    if (REGIONS_INSTALLED) {
+                        $regionssql = "
+                            SELECT lrrc.regionid, lrr.name
+                              FROM {local_regions_reg_cou} lrrc
+                              JOIN {local_regions_reg} lrr
+                                   ON lrr.id = lrrc.regionid
+                             WHERE lrrc.courseid = {$course->id}
+                            ";
+                        $regions = $DB->get_records_sql_menu($regionssql);
+                        $course->regions = implode(', ', $regions);
                     }
+                    if (COURSEMETADATA_INSTALLED) {
+                        $metadatafields = get_config('local_accordion', 'coursemetadata_info');
+                        if ($metadatafields) {
+                            $metadatasql = "
+                                SELECT cif.id, cif.name, cid.data
+                                  FROM {coursemetadata_info_field} cif
+                                  JOIN {coursemetadata_info_category} cic
+                                       ON cic.id = cif.categoryid
+                             LEFT JOIN {coursemetadata_info_data} cid
+                                       ON cid.fieldid = cif.id
+                                           AND cid.course = {$course->id}
+                                 WHERE cif.id IN ({$metadatafields})
+                              ORDER BY cic.sortorder ASC, cif.sortorder ASC
+                                ";
+                            $course->metadata = $DB->get_records_sql($metadatasql);
+                        }
+                    }
+                    $cache->set($course->id, [
+                        'regions' => $course->regions,
+                        'metadata' => $course->metadata,
+                    ]);
+                } else {
+                    $course->regions = $coursedata[$course->id]['regions'];
+                    $course->metadata = $coursedata[$course->id]['metadata'];
                 }
-                $visiblecourses [$course->id] = $course;
+                $visiblecourses[$course->id] = $course;
             }
         }
 
