@@ -43,7 +43,7 @@ class rb_filter_cohort extends rb_filter_type {
      * @param object $mform a MoodleForm object to setup
      */
     public function setupForm(&$mform) {
-        global $SESSION, $CFG, $SITE, $DB;
+        global $SESSION, $CFG, $SITE, $DB, $PAGE;
 
         require_once("$CFG->dirroot/cohort/lib.php");
         require_once($CFG->dirroot . '/lib/coursecatlib.php');
@@ -84,6 +84,9 @@ class rb_filter_cohort extends rb_filter_type {
         }
 
         $mform->addElement('autocomplete',  $this->name, $label, $select, ['multiple' => true]);
+
+        $mform->disabledIf($this->name . '[]', $this->name.'_op', 'eq', 0);
+        $PAGE->requires->js_call_amd('local_reportbuilder/autocompletedisabled', 'watchautocomplete', [$this->name . '[]']);
 
         if ($advanced) {
             $mform->setAdvanced($this->name);
