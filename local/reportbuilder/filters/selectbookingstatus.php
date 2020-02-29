@@ -23,6 +23,8 @@
  * @subpackage reportbuilder
  */
 
+require_once("$CFG->dirroot/local/reportbuilder/filters/select.php");
+
 /**
  * Generic filter based on a list of values.
  */

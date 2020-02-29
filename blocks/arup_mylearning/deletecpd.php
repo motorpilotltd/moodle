@@ -23,8 +23,10 @@ $confirm = optional_param('confirm', 0, PARAM_INT);
 
 if ($tab == 'rbreport') {
     $redirecturl = new moodle_url('/local/reportbuilder/report.php', array('id' => $instance));
+    $context = context_system::instance();
 } else {
     $redirecturl = new moodle_url('/my/index.php', array('tab' => $tab));
+    $context = context_block::instance($instance);
 }
 
 if (!isset($SESSION->block_arup_mylearning)) {
@@ -40,8 +42,6 @@ if (!get_config('local_taps', 'version')) {
 }
 
 require_login();
-
-$context = context_block::instance($instance);
 
 require_capability('block/arup_mylearning:deletecpd', $context);
 
