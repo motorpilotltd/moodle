@@ -251,7 +251,9 @@ class editor_framework implements \H5peditorStorage {
         // Generate local tmp file path.
         $uniqueh5pid = uniqid('hvp-');
         $filename = $uniqueh5pid . '.h5p';
+/* BEGIN CORE MOD */
         $directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $uniqueh5pid;
+/* END CORE MOD */
         $filepath = $directory . DIRECTORY_SEPARATOR . $filename;
 
         if (!is_dir($directory)) {

@@ -120,7 +120,9 @@ class file_storage implements \H5PFileStorage {
     public function getTmpPath() {
         global $CFG;
 
+/* BEGIN CORE MOD */
         return sys_get_temp_dir() . uniqid('/hvp-');
+/* END CORE MOD */
     }
 
     /**
