@@ -120,7 +120,7 @@ class file_storage implements \H5PFileStorage {
     public function getTmpPath() {
         global $CFG;
 
-        return $CFG->tempdir . uniqid('/hvp-');
+        return sys_get_temp_dir() . uniqid('/hvp-');
     }
 
     /**
