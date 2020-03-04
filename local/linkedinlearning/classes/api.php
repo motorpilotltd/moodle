@@ -256,7 +256,11 @@ class api {
                     $record->seconds_viewed = $datapoint->engagementValue;
                     $record->first_viewed = $datapoint->firstEngagedAt / 1000;
                     $record->last_viewed = $datapoint->lastEngagedAt / 1000;
-                } else if ($datapoint->engagementType == 'PROGRESS_PERCENTAGE') {
+                } else if (
+                        $datapoint->engagementType == 'PROGRESS_PERCENTAGE'
+                        &&
+                        (empty($record->progress_percentage) || $record->progress_percentage < $datapoint->engagementValue)
+                ) {
                     $record->progress_percentage = $datapoint->engagementValue;
                 }
             }
