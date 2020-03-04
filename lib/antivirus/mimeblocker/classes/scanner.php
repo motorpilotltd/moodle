@@ -48,9 +48,7 @@ class scanner extends \core\antivirus\scanner {
      * @return void.
      */
     public function __construct() {
-/* BEGIN CORE MOD */
         parent::__construct();
-/* END CORE MOD */
     }
 
     /**
@@ -59,9 +57,7 @@ class scanner extends \core\antivirus\scanner {
      * @return bool True if all necessary config settings been entered.
      */
     public function is_configured() {
-/* BEGIN CORE MOD */
         return true;
-/* END CORE MOD */
     }
 
     /**
@@ -78,12 +74,11 @@ class scanner extends \core\antivirus\scanner {
             debugging("File is not readable ($file / $filename).");
             return self::SCAN_RESULT_FOUND;
         }
-/* BEGIN CORE MOD */
+
         $fs = get_file_storage();
         $f_mimetype = $fs::mimetype($file, $filename); // Get the mimetype of the file based on filename
         $f_extension = \core_filetypes::get_file_extension($f_mimetype);
         $default_mimetypes = \core_filetypes::get_types();
-/* END CORE MOD */
         $detected_mimetype = null;
         // Check mimetype using php functions.
         if (function_exists('finfo_file')) {
@@ -104,7 +99,7 @@ class scanner extends \core\antivirus\scanner {
         if ($detected_mimetype == 'application/x-gzip') {
             $detected_mimetype = 'application/vnd.moodle.backup';
         }
-/* BEGIN CORE MOD */
+
         if (isset($default_mimetypes[$f_extension]) && !empty($default_mimetypes[$f_extension])) {
             // Get the mime type info base on the extension and compare it to the real detected mimetype by mimeblocker/finfo_file
             $match_type = $default_mimetypes[$f_extension];
@@ -112,16 +107,14 @@ class scanner extends \core\antivirus\scanner {
         } else {
             $return = 0;
         }
-/* END CORE MOD */
+
         if ($return == 1) {
             return self::SCAN_RESULT_OK;
         } else if ($return == 0) {
             // MIME type not allowed! custom exception will be throw and not return back at \core\antivirus\manager::scan_file
             unlink($file);
             require_once('mimeblocker_exception.php');
-/* BEGIN CORE MOD */
             throw new mimeblocker_exception('notmatch');
-/* END CORE MOD */
         }
 
         return $return;
