@@ -48,9 +48,9 @@ class scanner extends \core\antivirus\scanner {
      * @return void.
      */
     public function __construct() {
+/* BEGIN CORE MOD */
         parent::__construct();
-        // create array of allowed mimetypes based on config setting
-        $this->allowed_mimetypes = explode(";", trim($this->get_config('allowedmimetypes')));
+/* END CORE MOD */
     }
 
     /**
@@ -59,10 +59,9 @@ class scanner extends \core\antivirus\scanner {
      * @return bool True if all necessary config settings been entered.
      */
     public function is_configured() {
-        if ($this->get_config('allowedmimetypes') != '') {
-            return (bool) $this->allowed_mimetypes;
-        }
-        return false;
+/* BEGIN CORE MOD */
+        return true;
+/* END CORE MOD */
     }
 
     /**
@@ -111,8 +110,7 @@ class scanner extends \core\antivirus\scanner {
             $match_type = $default_mimetypes[$f_extension];
             $return = $match_type['type'] == $detected_mimetype? true: false;
         } else {
-            // Check if result is in the array of allowed mimetypes.
-            $return = in_array($detected_mimetype, $this->allowed_mimetypes);
+            $return = 0;
         }
 /* END CORE MOD */
         if ($return == 1) {
@@ -128,42 +126,4 @@ class scanner extends \core\antivirus\scanner {
 
         return $return;
     }
-
-    /**
-     *
-     * To identify extension of the MIME type.
-     *
-     * @param string MIME type
-     * @return array MIME type extention
-     */
-    public static function extension_filter($mime) {
-        $types = \core_filetypes::get_types();
-        $extensions = [];
-        foreach ($types as $key => $type) {
-            if ($type['type'] === $mime) {
-                $extensions[] = $key;
-            }
-        }
-
-        if (count($extensions)) {
-            return $extensions;
-        }
-    }
-
-    /**
-     * To get comma separate extension on the basis of allowed MIME types configure by administrator.
-     *
-     * @return string types of allowed extensions based on allowed MIME types.
-     */
-    public function get_allowed_file_extensions() {
-
-        $extensions = [];
-
-        foreach ($this->allowed_mimetypes as $mime) {
-            array_push($extensions, ...self::extension_filter($mime));
-        }
-
-        return implode(", ", $extensions);
-    }
 }
-    

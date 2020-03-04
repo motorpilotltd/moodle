@@ -26,13 +26,6 @@
  */
 $string['pluginname'] = 'Mime Blocker antivirus';
 $string['privacy:metadata'] = 'The Mime Blocker antivirus plugin does not store any personal data.';
-$string['quarantinedir'] = 'Quarantine directory';
 $string['unknownerror'] = 'There was an unknown error with Mime Blocker.';
-$string['allowedmimetypes'] = 'Allowed mime types';
-$string['allowedmimetypesdesc'] =
-        'Provide a list of allowed mimetypes separated by ";". For example: "text/xml;image/png;application/pdf"';
-$string['virusfound'] = ' You can only upload one of the following file types : {$a->types}.';
 $string['invalidtypes'] = 'The provided list contains invalid types';
-/* BEGIN CORE MOD */
-$string['notmatch'] = 'Invalid file type or the type did not match on the file’s information.';
-/* END CORE MOD */
+$string['notmatch'] = 'Invalid file type or the type did not match with the file information.';

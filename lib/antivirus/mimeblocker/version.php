@@ -26,9 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version = 2019082904;              // The current plugin version (Date: YYYYMMDDXX).
-/* BEGIN CORE MOD */
 $plugin->requires = 2017051509;               // Requires this Moodle version.
-/* END CORE MOD */
-$plugin->release = '3.5';
+$plugin->release = '3.3';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->component = 'antivirus_mimeblocker';
