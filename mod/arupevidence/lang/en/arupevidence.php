@@ -190,7 +190,8 @@ $string['email:subject'] = 'New {$a->coursename} Evidence Upload for approval';
 $string['email:body'] = '<p>Dear {$a->approverfirstname},</p>
 <p>I have requested approval of my {$a->coursename} Evidence Upload.</p>
 <p>Please visit your <a href="{$a->approvalurl}">approvals page</a> to review my request.</p>
-<p>Kind regards,<br>{$a->userfirstname}</p>';
+<p>Kind regards,<br>{$a->userfirstname}</p>
+<p>Employment Category: {$a->employmentcategory}</p>';
 
 $string['email:reject:subject'] = '{$a->coursename} Evidence Upload not approved';
 $string['email:reject:content'] = 'Dear {$a->userfirstname},
