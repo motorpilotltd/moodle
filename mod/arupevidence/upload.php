@@ -224,7 +224,10 @@ if ($mform->is_cancelled()) {
     if($ahb->approvalrequired) {
         $approverlists = arupevidence_get_user_approvers($ahb, $contextcourse);
 
-        $user = clone($USER);
+        $foruser->employmentcategory = $DB->get_field_sql(
+            'SELECT EMPLOYMENT_CATEGORY FROM SQLHUB.ARUP_ALL_STAFF_V WHERE EMPLOYEE_NUMBER = :staffid',
+            ['staffid' => (int) $foruser->idnumber]
+        );
         foreach ($approverlists as $approverto) {
             $subject = get_string('email:subject', 'mod_arupevidence', array(
                 'coursename' => $course->fullname,
@@ -233,9 +236,10 @@ if ($mform->is_cancelled()) {
                 'coursename' => $course->fullname,
                 'approverfirstname' => $approverto->firstname,
                 'approvalurl' => $approveurl->out(),
-                'userfirstname' => $user->firstname,
+                'userfirstname' => $foruser->firstname,
+                'employmentcategory' => $foruser->employmentcategory,
             ));
-            $sendnotification = arupevidence_send_email($approverto, $user, $subject, $messagebody);
+            $sendnotification = arupevidence_send_email($approverto, $foruser, $subject, $messagebody);
         }
     }
     // Add message to session.

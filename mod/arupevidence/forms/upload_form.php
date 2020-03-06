@@ -48,6 +48,7 @@ class mod_arupevidence_upload_form extends moodleform
             array('' => ''),
             array('class' => 'select2-user', 'data-placeholder' => get_string('placeholder:uploadforuser', 'mod_arupevidence'))
         );
+        $mform->addRule('ahbuserid', null, 'required', null, 'client');
 
         if ($this->_arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
             $mform->addElement(
@@ -262,4 +263,26 @@ class mod_arupevidence_upload_form extends moodleform
         return $errors;
     }
 
+    public function set_data($defaultvalues) {
+        global $DB;
+
+        if (!empty($defaultvalues['ahbuserid'])) {
+            $usertextconcat = $DB->sql_concat('firstname', "' '", 'lastname', "' ('", 'email', "')'");
+            $params = array('ahbuserid'=> $defaultvalues['ahbuserid']);
+            $where = "id = :ahbuserid";
+            $userlist = $DB->get_records_select_menu('user', $where, $params, 'lastname ASC', "id, $usertextconcat");
+            $select = $this->_form->getElement('ahbuserid');
+            foreach ($userlist as $value => $text) {
+                $select->addOption($text, $value, array('selected' => 'selected'));
+            }
+        }
+
+        parent::set_data($defaultvalues);
+    }
+
+    public function render() {
+        $this->set_data(['ahbuserid' => optional_param('ahbuserid', null, PARAM_INT)]);
+
+        return parent::render();
+    }
 }
