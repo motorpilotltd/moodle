@@ -44,7 +44,7 @@ class rb_filter_badge extends rb_filter_type {
      * @param object $mform a MoodleForm object to setup
      */
     public function setupForm(&$mform) {
-        global $SESSION, $DB;
+        global $SESSION, $DB, $PAGE;
         $label = format_string($this->label);
         $advanced = $this->advanced;
 
@@ -54,6 +54,9 @@ class rb_filter_badge extends rb_filter_type {
             $opts[$badge->id] = $badge->name;
         }
         $mform->addElement('autocomplete',  $this->name, $label, $opts, ['multiple' => true]);
+
+        $mform->disabledIf($this->name . '[]', $this->name.'_op', 'eq', 0);
+        $PAGE->requires->js_call_amd('local_reportbuilder/autocompletedisabled', 'watchautocomplete', [$this->name . '[]']);
 
         if ($advanced) {
             $mform->setAdvanced($this->name);

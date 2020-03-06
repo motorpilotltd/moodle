@@ -76,7 +76,7 @@ class rb_filter_costcentre_multi extends rb_filter_type {
      * @param object $mform a MoodleForm object to setup
      */
     public function setupForm(&$mform) {
-        global $SESSION, $DB, $USER, $CFG;
+        global $SESSION, $DB, $USER, $CFG, $PAGE;
         require_once($CFG->dirroot . '/lib/coursecatlib.php');
 
         $label = format_string($this->label);
@@ -111,6 +111,9 @@ class rb_filter_costcentre_multi extends rb_filter_type {
         $select = array_combine($centres, $centres);
 
         $objs[] = $mform->createElement('autocomplete',  $this->name, $label, $select, ['multiple' => true]);
+
+        $mform->disabledIf($this->name . '[]', $this->name.'_op', 'eq', 0);
+        $PAGE->requires->js_call_amd('local_reportbuilder/autocompletedisabled', 'watchautocomplete', [$this->name . '[]']);
 
         // Create a group for the elements.
         $grp =& $mform->addElement('group', $this->name.'_grp', $label, $objs, '', false);

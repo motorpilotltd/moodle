@@ -42,7 +42,7 @@ class rb_filter_category extends rb_filter_type {
      * @param object $mform a MoodleForm object to setup
      */
     public function setupForm(&$mform) {
-        global $SESSION, $CFG;
+        global $SESSION, $CFG, $PAGE;
         require_once($CFG->dirroot . '/lib/coursecatlib.php');
 
         $label = format_string($this->label);
@@ -63,6 +63,9 @@ class rb_filter_category extends rb_filter_type {
         // Create a group for the elements.
         $grp =& $mform->addElement('group', $this->name.'_grp', $label, $objs, '', false);
         $mform->addHelpButton($grp->_name, 'reportbuilderdialogfilter', 'local_reportbuilder');
+
+        $mform->disabledIf($this->name . '[]', $this->name.'_op', 'eq', 0);
+        $PAGE->requires->js_call_amd('local_reportbuilder/autocompletedisabled', 'watchautocomplete', [$this->name . '[]']);
 
         if ($advanced) {
             $mform->setAdvanced($this->name.'_grp');
