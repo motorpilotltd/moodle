@@ -197,7 +197,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
             $user = clone($USER);
             $user->employmentcategory = $DB->get_field_sql(
                 'SELECT EMPLOYMENT_CATEGORY FROM SQLHUB.ARUP_ALL_STAFF_V WHERE EMPLOYEE_NUMBER = :staffid',
-                (int) $user->idnumber
+                ['staffid' => (int) $foruser->idnumber]
             );
             foreach ($approverlists as $approverto) {
                 $subject = get_string('email:subject', 'mod_arupevidence', array(
