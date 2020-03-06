@@ -33,6 +33,8 @@ if (!$cm = get_coursemodule_from_id('arupevidence', $id)) {
     print_error('invalidcoursemodule');
 }
 
+$cm = cm_info::create($cm);
+
 if(!$course = $DB->get_record('course', array('id' => $cm->course))){
     print_error('coursemisconf');
 }
@@ -50,8 +52,7 @@ $contextcourse = context_course::instance($course->id);
 require_capability('mod/arupevidence:addevidence', $context);
 
 $ahb = $DB->get_record('arupevidence',  array('id' => $cm->instance));
-
-$courseurl = new moodle_url('/course/view.php', array('id' => $course->id));
+$courseurl = course_get_format($course)->get_view_url($cm->sectionnum);
 $uploadurl = new moodle_url('/mod/arupevidence/upload.php', array('id' => $id));
 $approveurl = new moodle_url('/mod/arupevidence/approve.php', array('id' => $id));
 
@@ -78,6 +79,7 @@ if ($mform->is_cancelled()) {
     $a = new stdClass();
     $a->userfullname = fullname($foruser);
     $a->userstaffid = $foruser->idnumber;
+    $a->enrolmentdetails = '';
 
     // First enrol on the class if not already enrolled.
     if ($ahb->cpdlms == ARUPEVIDENCE_LMS) {
@@ -121,9 +123,11 @@ if ($mform->is_cancelled()) {
             }
             $enrolment = $enrolresult->enrolment;
         }
-        $a->enrolmentcoursename = $enrolment->coursename;
-        $a->enrolmentclassname = $enrolment->classname;
-        $a->enrolmentbookingstatus = $enrolment->bookingstatus;
+        $enrolmentdetails = new stdClass();
+        $enrolmentdetails->enrolmentcoursename = $enrolment->coursename;
+        $enrolmentdetails->enrolmentclassname = $enrolment->classname;
+        $enrolmentdetails->enrolmentbookingstatus = $enrolment->bookingstatus;
+        $a->enrolmentdetails = get_string('uploadforuser:success:enrolmentdetails', 'mod_arupevidence');
     }
 
     // Set itemid as the userid of the user being submitted for.

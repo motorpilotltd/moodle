@@ -226,5 +226,7 @@ Enrolment: {$a->enrolmentcoursename} | {$a->enrolmentclassname} | {$a->enrolment
 $string['uploadforuser:help:general'] = 'Any existing uploads for the chosen user will be archived when you upload on their behalf.';
 $string['uploadforuser:help:lms'] = 'If necessary, an approved enrolment will be automatically created for the user on the selected class.';
 $string['uploadforuser:success'] = 'You have successfully uploaded evidence on behalf of the chosen user.<br>
-User: {$a->userfullname} ({$a->userstaffid})<br>
+User: {$a->userfullname} ({$a->userstaffid})
+{$a->enrolmentdetails}';
+$string['uploadforuser:success:enrolmentdetails'] ='<br>
 Enrolment: {$a->enrolmentcoursename} | {$a->enrolmentclassname} | {$a->enrolmentbookingstatus}';
