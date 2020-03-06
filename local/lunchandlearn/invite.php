@@ -29,6 +29,8 @@ $mform->set_data(array('id' => $lal->get_id()));
 
 $PAGE->set_url($url);
 
+require_capability('local/lunchandlearn:edit', $PAGE->context);
+
 if (optional_param('action', '', PARAM_ALPHA) === 'send') {
     $messagehtml = required_param('body', PARAM_TEXT);
     $messagetext = strip_tags($messagehtml);
@@ -67,4 +69,3 @@ print $OUTPUT->box($mform->display());
 print $OUTPUT->box_end();
 
 print $OUTPUT->footer();
-

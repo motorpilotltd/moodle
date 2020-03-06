@@ -1,11 +1,14 @@
 (function ( $ ) {
-
+    var iscancelclick = false;
+    $('#lunchandlearnform').on('click','#id_cancel', function() {
+        iscancelclick = true;
+    });
     // Hand over form submission to modal so stop default event.
-    $('input[type="submit"]').filter(function(){
+    $('input[type="submit"]').filter(function() {
         return $(this).data('toggle') === 'modal';
     }).closest('form').submit(function(e){
         var modalsubmit = $(this).data('modal-submit');
-        if (typeof modalsubmit === 'undefined' || modalsubmit === false) {
+        if (iscancelclick === false && (typeof modalsubmit === 'undefined' || modalsubmit === false)) {
             e.preventDefault();
         }
     });

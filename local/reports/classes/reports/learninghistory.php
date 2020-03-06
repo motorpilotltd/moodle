@@ -200,13 +200,12 @@ class learninghistory extends base {
         }
 
         $params = array();
-        $wherestring = '';
+        $wherestring = " WHERE ( lte.archived = '' OR lte.archived IS NULL ) ";
 
         if (!$this->showall) {
-            $wherestring = 'WHERE ';
+            $wherestring .= ' AND ';
             $wherestring .= $DB->sql_like('staff.LEAVER_FLAG', ':' . 'staffleaver_flag', false);
             $params['staffleaver_flag'] = 'n';
-            $wherestring .= " AND ( lte.archived = '' OR lte.archived IS NULL )";
         }
 
         foreach ($this->setfilters as $filter) {
@@ -429,7 +428,7 @@ class learninghistory extends base {
         $returnfile = new stdClass();
 
         $filename = 'report_'.(time()).'.csv';
-        $tempfile = $CFG->dataroot . '/temp/' . $filename;
+        $tempfile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $filename;
         $returnfile->filename = $filename;
         $returnfile->tempfile = $tempfile;
         $delimiter = get_config('local_reports', 'csvseparator');

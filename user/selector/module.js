@@ -34,7 +34,10 @@ M.core_user.init_user_selector = function (Y, name, hash, extrafields, lastsearc
         /** Array of fields to display for each user, in addition to fullname. */
         extrafields: extrafields,
         /** Number of seconds to delay before submitting a query request */
-        querydelay : 0.5,
+/* BEGIN CORE MOD */
+// Increase delay to avoid too many requests queuing up.
+        querydelay : 2,
+/* END CORE MOD */
         /** The input element that contains the search term. */
         searchfield : Y.one('#' + name + '_searchtext'),
         /** The clear button. */

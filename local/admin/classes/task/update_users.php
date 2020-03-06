@@ -59,7 +59,7 @@ class update_users extends \core\task\scheduled_task {
         $extendedusernamechars = $CFG->extendedusernamechars;
         // Allow any characters.
         $CFG->extendedusernamechars = true;
-        
+
         // Open second connection as we need no prefix.
         $cfg = $DB->export_dbconfig();
         if (!isset($cfg->dboptions)) {
@@ -80,7 +80,7 @@ class update_users extends \core\task\scheduled_task {
         $email = '';
 
         $userupdate = new user_update();
-        
+
         mtrace('Begin user update Hub <-> Moodle...');
 
         foreach ($actions as $action) {
@@ -101,6 +101,9 @@ class update_users extends \core\task\scheduled_task {
                 $email .= "\n";
             }
         }
+
+        // Ensure all added users have policyagreed flagged as true.
+        $DB->set_field('user', 'policyagreed', 1, ['auth' => 'saml', 'policyagreed' => 0]);
 
         $url = new moodle_url('/local/admin/user_report.php');
         $urltext = 'See ' . $url->out() . ' for full logs.';

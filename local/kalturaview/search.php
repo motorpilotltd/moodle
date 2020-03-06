@@ -4,9 +4,10 @@ use local_kalturaview\output;
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 
-require_once($CFG->dirroot . '/local/kaltura/locallib.php');
-
 require_login(SITEID, false);
+require_capability('local/search:view', context_system::instance());
+
+require_once($CFG->dirroot . '/local/kaltura/locallib.php');
 
 $searchterm = optional_param('search', '', PARAM_TEXT);
 

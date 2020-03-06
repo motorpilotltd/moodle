@@ -80,7 +80,7 @@ class admin {
         $this->groupcohort = $this->get_groupcohort();
 
         // Check if this user is allowed to view admin.
-        if (!$this->can_view_admin()) {
+        if (!$this->can_view_admin() && !is_siteadmin($USER)) {
             print_error('error:noaccess', 'local_onlineappraisal');
         }
 
@@ -124,17 +124,28 @@ class admin {
      * Define the configured pages.
      */
     public function admin_pages() {
-        $pagesarray = array(
-            'allstaff' => true,
-            'initialise' => false,
-            'inprogress' => false,
-            'complete' => false,
-            'archived' => false
-        );
+        global $USER;
+
+        if ($this->can_view_admin()) {
+            $pagesarray = array(
+                'allstaff' => true,
+                'initialise' => false,
+                'inprogress' => false,
+                'complete' => false,
+                'archived' => false
+            );
+        } else {
+            $pagesarray = [];
+        }
 
         // Only add 'deleted' page if allowed to permanently delete appraisals.
         if (has_capability('local/onlineappraisal:deleteappraisal', \context_system::instance())) {
             $pagesarray['deleted'] = false;
+        }
+
+        // Display appraisal cycle page for site admin only
+        if (is_siteadmin($USER)) {
+            $pagesarray = ['cycle' => true] + $pagesarray;
         }
 
         $pagesarray['help'] = false;
@@ -154,6 +165,9 @@ class admin {
                         $page->popup = true;
                         $page->noform = true;
                     }
+                    break;
+                case 'cycle':
+                    $page->url = new moodle_url('/local/onlineappraisal/admin.php', array('page' => $name));
                     break;
             }
 
@@ -270,6 +284,11 @@ class admin {
                 $formhtml = '';
                 $page = new \local_onlineappraisal\output\help\help();
                 $pagehtml = $PAGE->get_renderer('local_onlineappraisal', 'help')->render($page);
+            } else if ($this->page === 'cycle') {
+                $formhtml = '';
+                $class = "\\local_onlineappraisal\\output\\admin\\{$this->page}";
+                $page = new $class($this);
+                $pagehtml = $this->renderer->render($page);
             } else {
                 $formhtml = !empty($this->form) ? $this->form->render() : '';
                 $class = "\\local_onlineappraisal\\output\\admin\\{$this->page}";
@@ -300,7 +319,6 @@ class admin {
     public function setup_groups() {
         global $DB;
 
-
         $joins = array();
         $wheres = array(
             "lc.enableappraisal = 1",
@@ -324,50 +342,28 @@ class admin {
         $join = implode("\n", $joins);
         $where = implode("\n AND ", $wheres);
 
+        $concat = $DB->sql_concat('u.icq', "' - '", 'u.department');
+
         $sql = "
-            SELECT
-                DISTINCT(lc.costcentre)
-            FROM {local_costcentre} lc
-            {$join}
-            WHERE
-                {$where}
-            ORDER BY
-                lc.costcentre ASC";
+            SELECT u.icq, {$concat}
+              FROM {local_costcentre} lc
+              {$join}
+              JOIN {user} u
+                   ON u.icq = lc.costcentre
+              JOIN (
+                    SELECT MAX(id) maxid
+                      FROM {user} inneru
+                      JOIN (
+                            SELECT MAX(timemodified) as maxtimemodified
+                              FROM {user}
+                          GROUP BY icq
+                      ) groupedicq ON inneru.timemodified = groupedicq.maxtimemodified
+                  GROUP BY inneru.icq
+                   ) groupedid ON u.id = groupedid.maxid
+             WHERE {$where}
+            ORDER BY lc.costcentre ASC";
 
-        $groups = $DB->get_records_sql($sql, $params);
-
-        $this->groups = array();
-        foreach($groups as $group) {
-            // Find the group name.
-            $sql = "
-                SELECT
-                    u.department
-                FROM
-                    {user} u
-                INNER JOIN
-                    (SELECT
-                        MAX(id) maxid
-                    FROM
-                        {user} inneru
-                    INNER JOIN
-                        (SELECT
-                            MAX(timemodified) as maxtimemodified
-                        FROM
-                            {user}
-                        WHERE
-                            icq = :icq1
-                        ) groupedicq
-                        ON inneru.timemodified = groupedicq.maxtimemodified
-                    WHERE
-                        icq = :icq2
-                    ) groupedid
-                    ON u.id = groupedid.maxid
-                WHERE
-                    u.icq = :icq3";
-            $params = array_fill_keys(array('icq1', 'icq2', 'icq3'), $group->costcentre);
-            $groupname = $DB->get_field_sql($sql, $params);
-            $this->groups = $this->groups + array($group->costcentre => $group->costcentre.' - ' . $groupname);
-        }
+        $this->groups = $DB->get_records_sql_menu($sql, $params);
 
         if (empty($this->groupid)) {
             reset($this->groups);

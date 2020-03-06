@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111603;
+$plugin->version   = 2015111604;
 $plugin->requires  = 2015111600; // Moodle 3.0.x.
 $plugin->component = 'local_search';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.0.0 (Build: 2015111600)';
+$plugin->release   = '3.0.4 (Build: 2015111604)';

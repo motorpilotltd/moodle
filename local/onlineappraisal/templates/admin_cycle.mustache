@@ -1,0 +1,75 @@
+
+<h2>{{#str}}cycle, local_onlineappraisal{{/str}}</h2>
+
+{{#form}}
+    <form id="{{id}}" class="admin_cycle m-b-15 m-t-20 form-inline clearfix" data-button="{{buttonprocessing}}">
+        <div class="form-group row col-md-12 m-b-15">
+            <label for="inputname" class="col-sm-2">{{#str}}form:cycle:name, local_onlineappraisal{{/str}}</label>
+            <div class="input-group">
+                <input type="text" name="name" class="form-control col-sm-5" id="inputname">
+            </div>
+        </div>
+
+        <div class="form-group row col-md-12 m-b-15">
+            <label class="col-sm-2" for="oa-init-availablefrom">{{#str}}form:cycle:availablefrom, local_onlineappraisal{{/str}}</label>
+            <div class="input-group date">
+                <input type="hidden" name="availablefrom" {{#availablefrom}}value="{{.}}"{{/availablefrom}}>
+                <input id="oa-init-availablefrom" type="text" class="form-control datepicker" autocomplete="off"/>
+                <div class="input-group-addon">
+                    <i class="fa fa-lg fa-calendar"></i>
+                </div>
+            </div>
+            <div class="help-block pull-right m-l-5 m-b-0 hidden">{{#str}}error:duedate, local_onlineappraisal{{/str}}</div>
+        </div>
+
+        {{#hiddeninputs}}
+            <input type="hidden" name="{{name}}" value="{{value}}">
+        {{/hiddeninputs}}
+
+        <div class="form-group row col-md-5 m-b-10">
+            <div class="col-sm-10">
+                <button id="submitcycle" type="submit" class="btn btn-primary" data-confirm="todo: confirmtext">{{#str}}form:add, local_onlineappraisal{{/str}}</button>
+                <button id="cancelcycle" class="btn btn-default" style="display:none">{{#str}}form:cancel, local_onlineappraisal{{/str}}</button>
+            </div>
+        </div>
+    </form>
+{{/form}}
+<h3 class="clearfix">
+    {{#str}}admin:toptext:appraisalcycle:list, local_onlineappraisal, {{cohort}}{{/str}}
+</h3>
+<table class="table table-bordered table-reportlinks col-md-10">
+    <thead>
+    <tr>
+        <th class="col-md-3">{{#str}}form:cycle:name, local_onlineappraisal{{/str}}</th>
+        <th class="col-md-6">{{#str}}form:cycle:availablefrom, local_onlineappraisal{{/str}}</th>
+        <th class="col-md-1">{{#str}}form:cycle:action, local_onlineappraisal{{/str}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#cohorts}}
+        <tr>
+
+            <td>{{name}}</td>
+            <td>{{availablefromdate}}</td>
+            <td>
+                {{^notavailable}}
+                    <button class="edit-cycle btn btn-primary"
+                            data-id="{{id}}"
+                            data-name="{{name}}"
+                            data-availablefrom="{{availablefrom}}"
+                            data-availablefromdate="{{availablefromdate}}">{{#str}}form:edit, local_onlineappraisal{{/str}}</button>
+                {{/notavailable}}
+                {{#notavailable}}
+                    <button type="button" class="btn btn-primary" disabled>Edit</button>
+                {{/notavailable}}
+
+            </td>
+        </tr>
+    {{/cohorts}}
+    {{^cohorts}}
+        <tr>
+            <td colspan="4" class="text-center"><i>{{#str}}admin:cycle:nodata, local_onlineappraisal{{/str}}</i></td>
+        </tr>
+    {{/cohorts}}
+    </tbody>
+</table>

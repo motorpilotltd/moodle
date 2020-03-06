@@ -79,4 +79,11 @@ class renderer extends \local_onlineappraisal\output\renderer {
 
         return $this->render_from_template('local_onlineappraisal/admin_deleted', $templatevars);
     }
+
+    public function render_cycle(\local_onlineappraisal\output\admin\cycle $cycle) {
+        // Call the export_for_template function.
+        $templatevars = $cycle->export_for_template($this);
+
+        return $this->render_from_template('local_onlineappraisal/admin_cycle', $templatevars);
+    }
 }

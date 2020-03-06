@@ -1,6 +1,10 @@
 <?php
 
 require_once("../../config.php");
+
+require_login(SITEID, false);
+require_capability('local/search:view', context_system::instance());
+
 require_once("lib.php");
 
 $search = optional_param('search', '', PARAM_TEXT);

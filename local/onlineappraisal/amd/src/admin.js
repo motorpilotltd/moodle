@@ -141,6 +141,95 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                 initdatepicker.focus();
             });
 
+
+            // Appraisal cycle page
+
+            // Cached button strings
+            var strings = [
+                {key: 'form:update', component: 'local_onlineappraisal'},
+                {key: 'form:add', component: 'local_onlineappraisal'}
+            ];
+            var strformupdate, strformadd;
+            str.get_strings(strings).done(function(s) {
+                strformupdate = s[0];
+                strformadd    = s[1];
+            }).fail(notification.exception);
+
+            //  Availablefrom datepicker
+            var initavailablefrom = $('#oa-init-availablefrom');
+            // Datepicker configuration
+            initavailablefrom.datepicker({
+                autoclose: true,
+                startDate: new Date(),
+                format: {
+                    toDisplay: function (date, format, language) {
+                        return dp.toDisplay(date, format.format, language);
+                    },
+                    toValue: function (date, format, language, assumeNearby) {
+                        return dp.toValue(date, format.format, language, assumeNearby);
+                    },
+                    format: args.dateformat
+                },
+                // In case of fixed navbar.
+                zIndexOffset: 1030,
+                defaultDate: new Date()
+            }).datepicker('setDate', '0');
+
+            initavailablefrom.on('changeDate', function() {
+                    initavailablefrom.prev('input[name=availablefrom]')
+                        .val(initavailablefrom.datepicker('getUTCDate').getTime() / 1000);
+                });
+
+            initavailablefrom.next('.input-group-addon').on('click', function (){
+                initavailablefrom.focus();
+            });
+
+            // Appraisal cycle form add/update
+            var appraisalcycleform = $('form#oa-form-appraisalcycle');
+            appraisalcycleform.submit(function(e){
+                // Set up variables.
+                var self = $(this);
+                var btnsubmit = self.find('#submitcycle');
+
+                if (self.data('submit')) {
+                    return;
+                }
+
+                e.preventDefault();
+                // Set processing state and disable button.
+                btnsubmit.prop('disabled', true);
+                btnsubmit.html('<i class="fa fa-lg fa-fw fa-spinner fa-spin"></i><span class="sr-only">' +
+                    self.data('button') +
+                    '</span>');
+                self.data('submit', true);
+                self.submit();
+            });
+
+
+            // Process edit appraisal cycle
+            $('.edit-cycle').click(function(){
+                var self = $(this);
+
+                appraisalcycleform.find('#inputname').val(self.data('name'));
+                appraisalcycleform.find('#cancelcycle').css('display','inline');
+                appraisalcycleform.find('#submitcycle').html(strformupdate);
+                appraisalcycleform.find('input[name=action]').val('update');
+                appraisalcycleform.find('input[name=id]').val(self.data('id'));
+
+                initavailablefrom.datepicker('setDate', self.data('availablefromdate'));
+
+            });
+            // Cancel editing appraisal cycle
+            appraisalcycleform.find('#cancelcycle').click(function(e){
+                e.preventDefault();
+                var self = $(this);
+                initavailablefrom.datepicker('setDate', '0');
+                appraisalcycleform.find('#inputname').val('');
+                appraisalcycleform.find('input[name=action]').val('add');
+                appraisalcycleform.find('input[name=id]').val('');
+                appraisalcycleform.find('#submitcycle').html(strformadd);
+                self.css('display','none');
+            });
             // Start/Lock/Update appraisal cycle.
             $('form.oa-form-allstaff').submit(function(e){
                 // Set up variables.

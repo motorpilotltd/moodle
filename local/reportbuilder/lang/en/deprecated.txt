@@ -1,0 +1,3 @@
+allreports,local_reportbuilder
+error:reporturlnotset,local_reportbuilder
+isrelativetotoday,local_reportbuilder

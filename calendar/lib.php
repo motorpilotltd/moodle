@@ -1096,7 +1096,7 @@ function calendar_get_events($tstart, $tend, $users, $groups, $courses, $withdur
     }
 
 /* BEGIN CORE MOD */
-    if (calendar_show_event_type(CALENDAR_EVENT_LUNCHANDLEARN)) {
+    if (has_capability('local/lunchandlearn:view', context_system::instance()) && calendar_show_event_type(CALENDAR_EVENT_LUNCHANDLEARN)) {
         global $CFG;
         require_once ($CFG->dirroot . '/local/lunchandlearn/lib.php');
         $regionid = lunchandlearn_get_region();
@@ -2147,8 +2147,10 @@ function calendar_filter_controls(moodle_url $returnurl) {
         $seturl->param('var', 'showuser');
         $content .= calendar_filter_controls_element($seturl, CALENDAR_EVENT_USER);
 /* BEGIN CORE MOD */
-        $seturl->param('var', 'showlunchandlearn');
-        $content .= calendar_filter_controls_element($seturl, CALENDAR_EVENT_LUNCHANDLEARN);
+        if (has_capability('local/lunchandlearn:view', context_system::instance())) {
+            $seturl->param('var', 'showlunchandlearn');
+            $content .= calendar_filter_controls_element($seturl, CALENDAR_EVENT_LUNCHANDLEARN);
+        }
 /* END CORE MOD */
     }
     $content .= \html_writer::end_tag('ul');

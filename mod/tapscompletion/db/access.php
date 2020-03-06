@@ -43,4 +43,13 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+
+    'mod/tapscompletion:setautocompletion' => array(
+        'riskbitmask' => RISK_CONFIG,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        )
+    ),
 );

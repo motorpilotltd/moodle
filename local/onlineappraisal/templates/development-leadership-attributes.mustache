@@ -1,0 +1,26 @@
+<table class="table oa-table-leadership-attributes oa-multi-column text-center hidden" data-type="{{type}}">
+    <thead>
+        <tr>
+        {{#headings}}
+            <th scope="col" data-column="{{.}}">{{.}}</th>
+        {{/headings}}
+        </tr>
+    </thead>
+    <tbody>
+    {{#rows}}
+        <tr>
+        {{#cells}}
+            {{#empty}}
+            <td></td>
+            {{/empty}}
+            {{^empty}}
+            <td data-attribute="{{name}}"><button class="btn btn-default" data-option="{{option}}" data-selected="false" {{disabled}}>{{name}}</button>{{!
+            }}<i role="button"
+                 class="fa fa-info-circle fa-lg fa-fw"
+                 data-toggle="popover" data-content="{{info}}" data-html="true" data-container="body"></i></td>
+            {{/empty}}
+        {{/cells}}
+        </tr>
+    {{/rows}}
+    </tbody>
+</table>

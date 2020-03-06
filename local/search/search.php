@@ -7,6 +7,9 @@ require_once("../../config.php");
 require_once("lib.php");
 require_once($CFG->dirroot.'/lib/coursecatlib.php');
 
+require_login(SITEID, false);
+require_capability('local/search:view', context_system::instance());
+
 $search = optional_param('search', '', PARAM_TEXT);
 $page      = optional_param('page', 1, PARAM_INT) - 1; // courses run form zero-index
 $perpage   = optional_param('perpage', 10, PARAM_INT);

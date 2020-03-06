@@ -1,0 +1,29 @@
+{{!
+    This file is part of the Online Appraisal Plugin for Arup.
+}}
+{{!
+    @template local_onlineappraisal/printer_leadershipattributes
+
+    PDF Content : Leadership attributes for chosen roles
+}}
+<div style="width: 90%; margin: auto; color: black; font-size: 0.8em;">
+    <div style="text-align: right; border-bottom: 1px solid black; color: black; font-size: 1.25em;">{{#str}}pdf:heading:leadershipattributes, local_onlineappraisal{{/str}}</div>
+    <div style="display: inline-block; text-align: left; width: auto; margin-right: auto;">
+    {{#table}}
+        <table style="width: 100%; border: 1px solid black;" cellpadding="5">
+            <tr style="border: 1px solid black;" nobr="true">
+            {{#headings}}
+                <td colspan="2" style="text-align: center; border: 1px solid black; font-size: 1.25em; width: 50%;"><strong>{{{.}}}</strong></td>
+            {{/headings}}
+            </tr>
+            {{#rows}}
+            <tr style="border: 1px solid black;" nobr="true">
+                {{#cells}}
+                <td style="border: 1px solid black; width: {{width}}%;">{{{content}}}</td>
+                {{/cells}}
+            </tr>
+            {{/rows}}
+        </table>
+    {{/table}}
+    </div>
+</div>

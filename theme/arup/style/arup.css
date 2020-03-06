@@ -25682,6 +25682,14 @@ img.media-object {
     margin-top: 7px;
   }
 }
+@media (max-width: 480px) {
+  .navbar-nav.usermenu .moodleuser .caret {
+    display: none;
+  }
+  .navbar-nav.usermenu .setusertime {
+    display: none;
+  }
+}
 @media (max-width: 768px) {
   #moodle-navbar {
     width: 100%;
@@ -26612,6 +26620,9 @@ fieldset[disabled] .path-mod-questionnaire #phpesp_response input[type="submit"]
 }
 /** END : Book **/
 /** SCORM **/
+#page-mod-scorm-player.content-only {
+  padding-top: 0;
+}
 #page-mod-scorm-player #header {
   padding: 10px;
 }

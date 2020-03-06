@@ -1087,13 +1087,12 @@ function page_get_doc_link_path(moodle_page $page) {
  * @return boolean
  */
 function validate_email($address) {
+/* BEGIN CORE MOD - BACKPORTED */
+    global $CFG;
+    require_once($CFG->libdir.'/phpmailer/moodle_phpmailer.php');
 
-    return (bool)preg_match('#^[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+'.
-                 '(\.[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+)*'.
-                  '@'.
-                  '[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.'.
-                  '[-!\#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$#',
-                  $address);
+    return moodle_phpmailer::validateAddress($address);
+/* END CORE MOD - BACKPORTED */
 }
 
 /**

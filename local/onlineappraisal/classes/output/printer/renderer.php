@@ -77,4 +77,11 @@ class renderer extends \local_onlineappraisal\output\renderer {
 
         return $this->render_from_template('local_onlineappraisal/printer_leaderplan', $templatevars);
     }
+
+    public function render_leadershipattributes(\local_onlineappraisal\output\printer\leadershipattributes $leadershipattributes) {
+        // Call the export_for_template function.
+        $templatevars = $leadershipattributes->export_for_template($this);
+
+        return $this->render_from_template('local_onlineappraisal/printer_leadershipattributes', $templatevars);
+    }
 }

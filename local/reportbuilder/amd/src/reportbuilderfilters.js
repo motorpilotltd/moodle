@@ -1,0 +1,710 @@
+define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
+    function ($, templates, ModalFactory, ModalEvents) {
+        var reportbuilderfilters = {
+            // optional php params and defaults defined here, args passed to init method
+            // below will override these values
+            config: {},
+            loadingimg: '',
+            deleteicon: '',
+            upicon: '',
+            downicon: '',
+            spacer: '',
+            filterselector: 'div.filter_selector select, select.filter_selector',
+            newfilterselector: 'div.new_standard_filter_selector select, div.new_sidebar_filter_selector select, select.new_standard_filter_selector, select.new_sidebar_filter_selector',
+            filternametextselector: 'div.filter_name_text input, input.filter_name_text',
+            searchcolumnselectselector: 'div.search_column_selector select, select.search_column_selector',
+            customnamecheckselector: 'div.filter_custom_name_checkbox input, input.filter_custom_name_checkbox',
+            advcheckselector: 'div.filter_advanced_checkbox input, input.filter_advanced_checkbox',
+            newsearchcolumnselector: 'div.new_search_column_selector select, select.new_search_column_selector',
+            notnewfilterselector: 'div.filter_selector select:not(.new_standard_filter_selector, [name="new_standard_filter_selector"]), select.filter_selector:not(.new_standard_filter_selector, [name="new_standard_filter_selector"])',
+
+            /**
+             * module initialisation method called by php js_init_call()
+             *
+             * @param string    args supplied in JSON format
+             */
+            init: function (args) {
+                // if defined, parse args into this module's config object
+                if (args) {
+                    var jargs = $.parseJSON(args);
+                    for (var a in jargs) {
+                        this.config[a] = jargs[a];
+                    }
+                }
+
+                var that = this;
+                var iconscache = [];
+                iconscache.push(templates.renderPix('i/loading', 'core', M.util.get_string('saving', 'local_reportbuilder')));
+                iconscache.push(templates.renderPix('t/delete', 'core', M.util.get_string('delete', 'local_reportbuilder')));
+                iconscache.push(templates.renderPix('t/up', 'core', M.util.get_string('moveup', 'local_reportbuilder')));
+                iconscache.push(templates.renderPix('t/down', 'core', M.util.get_string('movedown', 'local_reportbuilder')));
+                iconscache.push(templates.renderPix('spacer', ''));
+
+                $.when.apply($, iconscache).then(function (loadingicon, deleteicon, upicon, downicon, spacer) {
+                    that.loadingimg = loadingicon;
+                    that.deleteicon = deleteicon;
+                    that.upicon = upicon;
+                    that.downicon = downicon;
+                    that.spacer = spacer;
+                    // Do setup.
+                    that.rb_init_filter_rows();
+                    that.rb_init_search_column_rows();
+                });
+
+            },
+
+            rb_init_filter_rows: function () {
+
+                var module = this;
+
+                // Disable the new filter name field on page load.
+                $('#id_newstandardcustomname').prop('disabled', true);
+                $('#id_newsidebarcustomname').prop('disabled', true);
+
+                // Disable uncustomised headers on page load.
+                $(reportbuilderfilters.customnamecheckselector).not(':checked').each(function () {
+                    var textElement = $(reportbuilderfilters.filternametextselector, $(this).parents('tr:first'));
+                    textElement.prop('disabled', true);
+                });
+
+                // Disable onbeforeunload for advanced checkbox.
+                $(reportbuilderfilters.advcheckselector).off('click');
+                $(reportbuilderfilters.advcheckselector).on('click', function () {
+                    window.onbeforeunload = null;
+                });
+
+                // Handle changes to the filter pulldowns.
+                $(reportbuilderfilters.filterselector).off('change');
+                $(reportbuilderfilters.filterselector).on('change', function () {
+                    window.onbeforeunload = null;
+                    var changedSelector = $(this).val();
+                    var newContent = module.config.rb_filter_headings[changedSelector];
+                    var textElement = $(reportbuilderfilters.filternametextselector, $(this).parents('tr:first'));
+
+                    textElement.val(newContent);  // Insert new content.
+                });
+
+                // Handle changes to the customise checkbox.
+                // Use click instead of change event for IE.
+                $(reportbuilderfilters.customnamecheckselector).off('click');
+                $(reportbuilderfilters.customnamecheckselector).on('click', function () {
+                    window.onbeforeunload = null;
+                    var textElement = $(reportbuilderfilters.filternametextselector, $(this).parents('tr:first'));
+                    if ($(this).is(':checked')) {
+                        // Enable the textbox when checkbox isn't checked.
+                        textElement.prop('disabled', false);
+                    } else {
+                        // Disable the textbox when checkbox is checked.
+                        // And reset text contents back to default.
+                        textElement.prop('disabled', true);
+                        var changedSelector = $(reportbuilderfilters.filterselector, $(this).parents('tr:first')).val();
+                        var newContent = module.config.rb_filter_headings[changedSelector];
+                        textElement.val(newContent);
+                    }
+                });
+
+                // Handle changes to the 'Add another filter...' selector.
+                $(reportbuilderfilters.newfilterselector).on('change', function () {
+                    window.onbeforeunload = null;
+                    var region = $(this).attr('id').substring(6, $(this).attr('id').indexOf("filter"));
+                    var addbutton = module.rb_init_filter_addbutton($(this), region);
+                    var advancedCheck = $('#id_new' + region + 'advanced');
+                    var newNameBox = $(reportbuilderfilters.filternametextselector, $(this).parents('tr:first'));
+                    var newCheckBox = $(reportbuilderfilters.customnamecheckselector, $(this).parents('tr:first'));
+                    var selectedval = $(this).val();
+
+                    if (selectedval == 0) {
+                        // Clean out the selections.
+                        advancedCheck.prop('disabled', true);
+                        advancedCheck.removeAttr('checked');
+                        newNameBox.val('');
+                        newNameBox.prop('disabled', true);
+                        addbutton.remove();
+                        newCheckBox.removeAttr('checked');
+                        newCheckBox.prop('disabled', true);
+                    } else {
+                        // Reenable it (binding above will fill the value)
+                        advancedCheck.prop('disabled', false);
+                        newCheckBox.prop('disabled', false);
+                    }
+                });
+
+                // Set up delete button events.
+                module.rb_init_filter_deletebuttons();
+                // Set up 'move' button events.
+                module.rb_init_filter_movedown_btns();
+                module.rb_init_filter_moveup_btns();
+            },
+
+            rb_init_search_column_rows: function () {
+                var module = this;
+
+                // Handle changes to the search column pulldowns.
+                $(reportbuilderfilters.searchcolumnselectselector).off('change');
+                $(reportbuilderfilters.searchcolumnselectselector).on('change', function () {
+                    window.onbeforeunload = null;
+                });
+
+                // Handle changes to the 'Add another search column...' selector.
+                $(reportbuilderfilters.newsearchcolumnselector).on('change', function () {
+                    window.onbeforeunload = null;
+                    var addbutton = module.rb_init_search_column_addbutton($(this));
+                    var selectedval = $(this).val();
+
+                    if (selectedval == 0) {
+                        // Clean out the selections.
+                        addbutton.remove();
+                    } else {
+                        // Reenable it (binding above will fill the value).
+                    }
+                });
+
+                // Set up delete button events.
+                module.rb_init_search_column_deletebuttons();
+            },
+
+            rb_init_filter_addbutton: function (filterselector, region) {
+                var module = this;
+                var advancedCheck = $('#id_new' + region + 'advanced');
+                var customnameCheck = $('#id_new' + region + 'customname');
+                var optionsbox = advancedCheck.closest('td').next('td');
+                var selector = filterselector.closest('td');
+                var newfilterinput = filterselector.closest('tr').clone();  // Clone of current 'Add new filter...' tr.
+                newfilterinput.find("input:text").val(""); // Reset value.
+                var addbutton = optionsbox.find('.additembtn');
+                if (addbutton.length == 0) {
+                    addbutton = module.rb_get_btn_add(module.config.rb_reportid);
+                } else {
+                    // Button already initialised.
+                    return addbutton;
+                }
+
+                // Add save button to options.
+                optionsbox.prepend(addbutton);
+                addbutton.off('click');
+                addbutton.on('click', function (e) {
+                    e.preventDefault();
+                    var newfiltername = $('#id_new' + region + 'filtername').val();
+                    $.ajax({
+                        url: M.cfg.wwwroot + '/local/reportbuilder/ajax/filter.php',
+                        type: "POST",
+                        data: ({
+                            action: 'add', sesskey: module.config.user_sesskey, id: module.config.rb_reportid,
+                            filter: filterselector.val(), advanced: Number(advancedCheck.is(':checked')), region: region,
+                            customname: Number(customnameCheck.is(':checked')), filtername: newfiltername
+                        }),
+                        beforeSend: function () {
+                            addbutton.html(module.loadingimg);
+                        },
+                        success: function (o) {
+                            if (o.length > 0) {
+                                // Add action buttons to row.
+                                var fid = parseInt(o);
+                                var deletebutton = module.rb_get_filter_btn_delete(module.config.rb_reportid, fid);
+
+                                var upbutton = '';
+                                var uppersibling = filterselector.closest('tr').prev('tr');
+                                if (uppersibling.find(reportbuilderfilters.filterselector).length > 0) {
+                                    // Create an up button for the newly added filter, to be added below.
+                                    var upbutton = module.rb_get_filter_btn_up(module.config.rb_reportid, fid);
+                                }
+
+                                addbutton.remove();
+                                optionsbox.prepend(deletebutton, upbutton);
+                                module.config.rb_filters++;
+
+                                // Set row atts.
+                                $('#id_new' + region + 'filter').parents('.fitem').removeClass('new_standard_filter_selector');
+                                $('#id_new' + region + 'filter').parents('.fitem').removeClass('new_sidebar_filter_selector');
+                                $('#id_new' + region + 'filter').removeClass('new_standard_filter_selector');
+                                $('#id_new' + region + 'filter').removeClass('new_sidebar_filter_selector');
+                                var filterbox = selector;
+                                var customname = $('#id_new' + region + 'customname');
+                                var nametext = $('#id_new' + region + 'filtername');
+                                filterbox.find(reportbuilderfilters.filterselector).attr('name', 'filter' + fid);
+                                filterbox.find('optgroup[label=New]').remove();
+                                filterbox.find(reportbuilderfilters.filterselector).attr('id', 'id_filter' + fid);
+                                customname.attr('id', 'id_customname' + fid);
+                                customname.attr('name', 'customname' + fid);
+                                nametext.attr('id', 'id_filtername' + fid);
+                                nametext.attr('name', 'filtername' + fid);
+                                advancedCheck.attr('name', 'advanced' + fid);
+                                advancedCheck.attr('id', 'id_advanced' + fid);
+                                advancedCheck.closest('tr').attr('fid', fid);
+
+                                // Append a new filter select box
+                                filterbox.closest('table').append(newfilterinput);
+
+                                module.rb_reload_filter_option_btns(uppersibling);
+
+                                // Remove added filter from the new filter selector.
+                                var filtertype = filterselector.val().split('-')[0];
+                                var filterval = filterselector.val().split('-')[1];
+                                $('.new_standard_filter_selector optgroup option[value=' + filtertype + '-' + filterval + ']').remove();
+                                $('.new_sidebar_filter_selector optgroup option[value=' + filtertype + '-' + filterval + ']').remove();
+
+                                module.rb_init_filter_rows();
+
+                            } else {
+                                alert('Error');
+                            }
+
+                        },
+                        error: function (h, t, e) {
+                            alert('Error');
+                        }
+                    }); // Ajax.
+                }); // Click event.
+
+                return addbutton;
+            },
+
+            rb_init_search_column_addbutton: function (searchcolumnselector) {
+                var module = this;
+                var optionsbox = searchcolumnselector.closest('td').next('td');
+                var selector = searchcolumnselector.closest('td');
+                var newsearchcolumninput = searchcolumnselector.closest('tr').clone();  // Clone of current 'Add new search column...' tr.
+                newsearchcolumninput.find("input:text").val(""); // Reset value.
+                var addbutton = optionsbox.find('.additembtn');
+                if (addbutton.length == 0) {
+                    addbutton = module.rb_get_btn_add(module.config.rb_reportid);
+                } else {
+                    // Button already initialised.
+                    return addbutton;
+                }
+
+                // Add save button to options.
+                optionsbox.prepend(addbutton);
+                addbutton.off('click');
+                addbutton.on('click', function (e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: M.cfg.wwwroot + '/local/reportbuilder/ajax/searchcolumn.php',
+                        type: "POST",
+                        data: ({
+                            action: 'add', sesskey: module.config.user_sesskey, id: module.config.rb_reportid,
+                            searchcolumn: searchcolumnselector.val()
+                        }),
+                        beforeSend: function () {
+                            addbutton.html(module.loadingimg);
+                        },
+                        success: function (o) {
+                            if (o.length > 0) {
+                                // Add action buttons to row.
+                                var searchcolumnid = parseInt(o);
+                                var deletebutton = module.rb_get_search_column_btn_delete(module.config.rb_reportid, searchcolumnid);
+
+                                addbutton.remove();
+                                optionsbox.prepend(deletebutton);
+                                module.config.rb_filters++;
+
+                                // Set row atts.
+                                $('#id_newsearchcolumn').removeClass('new_search_column_selector');
+                                var searchcolumnbox = selector;
+                                searchcolumnbox.find(reportbuilderfilters.searchcolumnselectselector).attr('name', 'searchcolumn' + searchcolumnid);
+                                searchcolumnbox.find('select optgroup[label=New]').remove();
+                                searchcolumnbox.find(reportbuilderfilters.searchcolumnselectselector).attr('id', 'id_searchcolumn' + searchcolumnid);
+
+                                // Set the id of the new searchcolumn tr
+                                selector.closest('tr').attr('searchcolumnid', searchcolumnid);
+
+                                // Append a new filter select box
+                                searchcolumnbox.closest('table').append(newsearchcolumninput);
+
+                                // Remove added filter from the new filter selector.
+                                var searchcolumntype = searchcolumnselector.val().split('-')[0];
+                                var searchcolumnval = searchcolumnselector.val().split('-')[1];
+                                $('.new_search_column_selector optgroup option[value=' + searchcolumntype + '-' + searchcolumnval + ']').remove();
+
+                                module.rb_init_search_column_rows();
+
+                            } else {
+                                alert('Error');
+                            }
+
+                        },
+                        error: function (h, t, e) {
+                            alert('Error');
+                        }
+                    }); // Ajax.
+                }); // Click event.
+
+                return addbutton;
+            },
+
+            rb_init_filter_deletebuttons: function () {
+                var module = this;
+                $('.reportbuilderform table .deletefilterbtn').off('click');
+                $('.reportbuilderform table .deletefilterbtn').on('click', function (e) {
+                    e.preventDefault();
+                    var clickedbtn = $(this);
+
+                    var title = M.util.get_string('confirm', 'moodle');
+
+                    var confirmstr = M.util.get_string('confirmfilterdelete', 'local_reportbuilder');
+                    if (module.config.rb_initial_display && module.config.rb_filters == 1) {
+                        var a = '';
+                        if (module.config.rb_global_initial_display == 1) {
+                            a = M.util.get_string('confirmfilterdelete_grid_enabled', 'local_reportbuilder');
+                        }
+                        confirmstr = M.util.get_string('confirmfilterdelete_rid_enabled', 'local_reportbuilder', a);
+                    }
+                    var filterrow = $(this).closest('tr');
+
+                    ModalFactory.create({
+                        title: title,
+                        body: confirmstr,
+                        type: ModalFactory.types.CONFIRM,
+                    })
+                        .done(function (modal) {
+                            modal.getRoot().on(ModalEvents.yes, function () {
+                                module.config.rb_filters--;
+
+                                $.ajax({
+                                    url: M.cfg.wwwroot + '/local/reportbuilder/ajax/filter.php',
+                                    type: "POST",
+                                    data: ({action: 'delete', sesskey: module.config.user_sesskey, id: module.config.rb_reportid, fid: filterrow.attr('fid')}),
+                                    beforeSend: function () {
+                                        clickedbtn.replaceWith(module.loadingimg);
+                                    },
+                                    success: function (o) {
+                                        if (o.length > 0) {
+                                            o = JSON.parse(o);
+
+                                            var uppersibling = filterrow.prev('tr');
+                                            var lowersibling = filterrow.next('tr');
+
+                                            // Remove filter row.
+                                            filterrow.remove();
+
+                                            // Fix sibling buttons.
+                                            if (uppersibling.find(reportbuilderfilters.filterselector).length > 0) {
+                                                module.rb_reload_filter_option_btns(uppersibling);
+                                            }
+                                            if (lowersibling.find(reportbuilderfilters.notnewfilterselector).length > 0) {
+                                                module.rb_reload_filter_option_btns(lowersibling);
+                                            }
+
+                                            var nlabel = o.typelabel;
+                                            var issidebarfilter = $('#id_all_sidebar_filters').find('option[value=' + o.type + '-' + o.value + ']').length > 0;
+
+                                            // Add deleted filter to new standard filter selector.
+                                            var standardoptgroup = $(".new_standard_filter_selector optgroup[label='" + nlabel + "']");
+                                            if (standardoptgroup.length == 0) {
+                                                // Create optgroup and append to select.
+                                                standardoptgroup = $('<optgroup label="' + nlabel + '"></optgroup>');
+                                                $('.new_standard_filter_selector').append(standardoptgroup);
+                                            }
+                                            if (standardoptgroup.find('option[value=' + o.type + '-' + o.value + ']').length == 0) {
+                                                standardoptgroup.append('<option value="' + o.type + '-' + o.value + '">' +
+                                                    rb_filter_headings[o.type + '-' + o.value] + '</option>');
+                                            }
+                                            // Add deleted filter to new sidebar filter selector.
+                                            if (issidebarfilter) {
+                                                var sidebaroptgroup = $('[name="new_sidebar_filter_selector"] optgroup[label="' + nlabel + '"]');
+                                                if (sidebaroptgroup.length == 0) {
+                                                    // Create optgroup and append to select.
+                                                    sidebaroptgroup = $('<optgroup label="' + nlabel + '"></optgroup>');
+                                                    $('[name="new_sidebar_filter_selector"]').append(sidebaroptgroup);
+                                                }
+                                                if (sidebaroptgroup.find('option[value="' + o.type + '-' + o.value + '"]').length == 0) {
+                                                    sidebaroptgroup.append('<option value="' + o.type + '-' + o.value + '">' +
+                                                        rb_filter_headings[o.type + '-' + o.value] + '</option>');
+                                                }
+                                            }
+
+                                            module.rb_init_filter_rows();
+
+                                        } else {
+                                            alert('Error');
+                                        }
+
+                                    },
+                                    error: function (h, t, e) {
+                                        alert('Error');
+                                    }
+                                }); // Ajax.
+                            });
+                            modal.show();
+
+                            modal.getRoot().on(ModalEvents.hidden, function() {
+                                modal.destroy();
+                            });
+                        });
+
+                });
+
+                function rb_ucwords(str) {
+                    return (str + '').replace(/^([a-z])|\s+([a-z])/g, function ($1) {
+                        return $1.toUpperCase();
+                    });
+                }
+            },
+
+            rb_init_search_column_deletebuttons: function () {
+                var module = this;
+                $('.reportbuilderform table .deletesearchcolumnbtn').off('click');
+                $('.reportbuilderform table .deletesearchcolumnbtn').on('click', function (e) {
+                    e.preventDefault();
+                    var clickedbtn = $(this);
+
+                    var title = M.util.get_string('confirm', 'moodle');
+
+                    var confirmstr = M.util.get_string('confirmsearchcolumndelete', 'local_reportbuilder');
+                    if (module.config.rb_initial_display && module.config.rb_filters == 1) {
+                        var a = '';
+                        if (module.config.rb_global_initial_display == 1) {
+                            a = M.util.get_string('confirmfilterdelete_grid_enabled', 'local_reportbuilder');
+                        }
+                        confirmstr = M.util.get_string('confirmfilterdelete_rid_enabled', 'local_reportbuilder', a);
+                    }
+
+                    var searchcolumnrow = $(this).closest('tr');
+
+
+                    ModalFactory.create({
+                        title: title,
+                        body: confirmstr,
+                        type: ModalFactory.types.CONFIRM,
+                    })
+                        .done(function (modal) {
+                            modal.getRoot().on(ModalEvents.yes, function () {
+
+                                module.config.rb_filters--;
+                                $.ajax({
+                                    url: M.cfg.wwwroot + '/local/reportbuilder/ajax/searchcolumn.php',
+                                    type: "POST",
+                                    data: ({
+                                        action: 'delete', sesskey: module.config.user_sesskey, id: module.config.rb_reportid,
+                                        searchcolumnid: searchcolumnrow.attr('searchcolumnid')
+                                    }),
+                                    beforeSend: function () {
+                                        clickedbtn.replaceWith(module.loadingimg);
+                                    },
+                                    success: function (o) {
+                                        if (o.length > 0) {
+                                            o = JSON.parse(o);
+
+                                            // Remove search column row.
+                                            searchcolumnrow.remove();
+
+                                            // Add deleted search column to new search column selector.
+                                            var nlabel = o.typelabel;  // Determine the optgroup label.
+                                            var optgroup = $(".new_search_column_selector optgroup[label='" + nlabel + "']");
+                                            if (optgroup.length == 0) {
+                                                // Create optgroup and append to select.
+                                                optgroup = $('<optgroup label="' + nlabel + '"></optgroup>');
+                                                $('.new_search_column_selector').append(optgroup);
+                                            }
+                                            if (optgroup.find('option[value=' + o.type + '-' + o.value + ']').length == 0) {
+                                                optgroup.append('<option value="' + o.type + '-' + o.value + '">' +
+                                                    rb_search_column_headings[o.type + '-' + o.value] + '</option>');
+                                            }
+
+                                            module.rb_init_search_column_rows();
+
+                                        } else {
+                                            alert('Error');
+                                        }
+
+                                    },
+                                    error: function (h, t, e) {
+                                        alert('Error');
+                                    }
+                                }); // Ajax.
+                            });
+                            modal.show();
+
+                            modal.getRoot().on(ModalEvents.hidden, function() {
+                                modal.destroy();
+                            });
+                        });
+
+                });
+
+                function rb_ucwords(str) {
+                    return (str + '').replace(/^([a-z])|\s+([a-z])/g, function ($1) {
+                        return $1.toUpperCase();
+                    });
+                }
+            },
+
+            rb_init_filter_movedown_btns: function () {
+                var module = this;
+                $('.reportbuilderform table .movefilterdownbtn').off('click');
+                $('.reportbuilderform table .movefilterdownbtn').on('click', function (e) {
+                    e.preventDefault();
+
+                    var filterrow = $(this).closest('tr');
+
+                    var filterrowclone = filterrow.clone();
+                    // Set the selected option, cause for some reason this don't clone so well...
+                    filterrowclone.find(reportbuilderfilters.filterselector).find('option[value=' + filterrow.find(reportbuilderfilters.filterselector).val() + ']').attr('selected', 'selected');
+
+                    var lowersibling = filterrow.next('tr');
+
+                    var lowersiblingclone = lowersibling.clone();
+                    // Set the selected option, cause for some reason this don't clone so well...
+                    lowersiblingclone.find(reportbuilderfilters.filterselector).find('option[value=' + lowersibling.find(reportbuilderfilters.filterselector).val() + ']').attr('selected', 'selected');
+
+                    $.ajax({
+                        url: M.cfg.wwwroot + '/local/reportbuilder/ajax/filter.php',
+                        type: "POST",
+                        data: ({action: 'movedown', sesskey: module.config.user_sesskey, id: module.config.rb_reportid, fid: filterrow.attr('fid')}),
+                        beforeSend: function () {
+                            lowersibling.html(module.loadingimg);
+                            filterrow.html(module.loadingimg);
+                            filterrowclone.find('td *').hide();
+                            lowersiblingclone.find('td *').hide();
+                        },
+                        success: function (o) {
+                            if (o.length > 0) {
+                                // Switch!
+                                filterrow.replaceWith(lowersiblingclone);
+                                lowersibling.replaceWith(filterrowclone);
+
+                                filterrowclone.find('td *').fadeIn();
+                                lowersiblingclone.find('td *').fadeIn();
+
+                                // Fix option buttons.
+                                module.rb_reload_filter_option_btns(filterrowclone);
+                                module.rb_reload_filter_option_btns(lowersiblingclone);
+
+                                module.rb_init_filter_rows();
+
+                            } else {
+                                alert('Error');
+                            }
+
+                        },
+                        error: function (h, t, e) {
+                            alert('Error');
+                        }
+                    }); // Ajax.
+
+                });
+            },
+
+
+            rb_init_filter_moveup_btns: function () {
+                var module = this;
+                $('.reportbuilderform table .movefilterupbtn').off('click');
+                $('.reportbuilderform table .movefilterupbtn').on('click', function (e) {
+                    e.preventDefault();
+                    var clickedbtn = $(this);
+
+                    var filterrow = $(this).closest('tr');
+                    var filterrowclone = filterrow.clone();
+                    // Set the selected option, cause for some reason this don't clone so well...
+                    filterrowclone.find(reportbuilderfilters.filterselector).find('option[value=' + filterrow.find(reportbuilderfilters.filterselector).val() + ']').attr('selected', 'selected');
+
+                    var uppersibling = filterrow.prev('tr');
+
+                    var uppersiblingclone = uppersibling.clone();
+                    // Set the selected option, cause for some reason this don't clone so well...
+                    uppersiblingclone.find(reportbuilderfilters.filterselector).find('option[value=' + uppersibling.find(reportbuilderfilters.filterselector).val() + ']').attr('selected', 'selected');
+
+                    $.ajax({
+                        url: M.cfg.wwwroot + '/local/reportbuilder/ajax/filter.php',
+                        type: "POST",
+                        data: ({action: 'moveup', sesskey: module.config.user_sesskey, id: module.config.rb_reportid, fid: filterrow.attr('fid')}),
+                        beforeSend: function () {
+                            uppersibling.html(module.loadingimg);
+                            filterrow.html(module.loadingimg);
+
+                            filterrowclone.find('td *').hide();
+                            uppersiblingclone.find('td *').hide();
+                        },
+                        success: function (o) {
+                            if (o.length > 0) {
+                                // Switch!
+                                filterrow.replaceWith(uppersiblingclone);
+                                uppersibling.replaceWith(filterrowclone);
+
+                                filterrowclone.find('td *').fadeIn();
+                                uppersiblingclone.find('td *').fadeIn();
+
+                                // Fix option buttons.
+                                module.rb_reload_filter_option_btns(filterrowclone);
+                                module.rb_reload_filter_option_btns(uppersiblingclone);
+
+                                module.rb_init_filter_rows();
+
+                            } else {
+                                alert('Error');
+                            }
+
+                        },
+                        error: function (h, t, e) {
+                            alert('Error');
+                        }
+                    }); // Ajax.
+
+                });
+            },
+
+            rb_reload_filter_option_btns: function (filterrow) {
+                var module = this;
+                var optionbox = filterrow.children('td').filter(':last');
+
+                optionbox.empty();
+
+                // Replace btns with updated ones.
+                var fid = filterrow.attr('fid');
+                var deletebtn = module.rb_get_filter_btn_delete(module.config.rb_reportid, fid);
+                var upbtn = this.spacer;
+                if (filterrow.prev('tr').find(reportbuilderfilters.filterselector).length > 0) {
+                    upbtn = module.rb_get_filter_btn_up(module.config.rb_reportid, fid);
+                }
+                var downbtn = this.spacer;
+                if (filterrow.next('tr').next('tr').find(reportbuilderfilters.filterselector).length > 0) {
+                    downbtn = module.rb_get_filter_btn_down(module.config.rb_reportid, fid);
+                }
+
+                optionbox.append(deletebtn, upbtn, downbtn);
+            },
+
+
+            rb_reload_search_column_option_btns: function (searchcolumnrow) {
+                var module = this;
+                var optionbox = searchcolumnrow.children('td').filter(':last');
+
+                optionbox.empty();
+
+                // Replace btns with updated ones.
+                var searchcolumnid = searchcolumnrow.attr('searchcolumnid');
+                var deletebtn = module.rb_get_search_column_btn_delete(module.config.rb_reportid, searchcolumnid);
+
+                optionbox.append(deletebtn);
+            },
+
+
+            rb_get_filter_btn_delete: function (reportid, fid) {
+                return $('<a href=' + M.cfg.wwwroot + '/local/reportbuilder/filters.php?id=' + reportid + '&fid=' + fid +
+                    '&d=1" class="deletefilterbtn action-icon">' + this.deleteicon + '</a>');
+            },
+
+            rb_get_search_column_btn_delete: function (reportid, searchcolumnid) {
+                return $('<a href=' + M.cfg.wwwroot + '/local/reportbuilder/filters.php?id=' + reportid + '&searchcolumnid=' +
+                    searchcolumnid + '&d=1" class="deletesearchcolumnbtn action-icon">' + this.deleteicon + '</a>');
+            },
+
+            rb_get_filter_btn_up: function (reportid, fid) {
+                return $('<a href=' + M.cfg.wwwroot + '/local/reportbuilder/filters.php?id=' + reportid + '&fid=' + fid +
+                    '&m=up" class="movefilterupbtn action-icon">' + this.upicon + '</a>');
+            },
+
+            rb_get_filter_btn_down: function (reportid, fid) {
+                return $('<a href=' + M.cfg.wwwroot + '/local/reportbuilder/filters.php?id=' + reportid + '&fid=' + fid +
+                    '&m=down" class="movefilterdownbtn action-icon">' + this.downicon + '</a>');
+            },
+
+            rb_get_btn_add: function (reportid) {
+                return $('<a href=' + M.cfg.wwwroot + '/local/reportbuilder/filters.php?id=' + reportid +
+                    '" class="additembtn"><input class="btn btn-secondary" type="button" value="' + M.util.get_string('add', 'local_reportbuilder') +
+                    '" /></a>');
+            }
+
+        };
+        return reportbuilderfilters;
+    });

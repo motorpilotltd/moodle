@@ -1,0 +1,12 @@
+.block_report_table .instantreportwait {
+    display: block;
+    position: absolute;
+}
+
+.block_report_table .rb-display-table-container {
+    width: 100%;
+}
+
+.block_report_table .rb-loading .totara-table-container {
+    opacity: 0.5;
+}

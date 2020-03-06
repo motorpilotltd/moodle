@@ -72,6 +72,7 @@ $string['staffid'] = 'Staff ID';
 
 $string['tapscompletion:addinstance'] = 'Add a new linked course completion';
 $string['tapscompletion:updatecompletion'] = 'Update linked course completion';
+$string['tapscompletion:setautocompletion'] = 'Set automatic linked course completion';
 $string['tapscompletion'] = 'Arup linked course completion ';
 $string['tapscourse'] = 'Linked course';
 $string['tapscourse_help'] = 'Linked course selection is determined by the Arup advert activity.';

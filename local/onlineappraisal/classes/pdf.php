@@ -42,13 +42,14 @@ class pdf extends \pdf {
     /**
      * Constructor.
      */
-    public function __construct() {
-        parent::__construct('P', 'mm', 'A4', true, 'UTF-8');
+    public function __construct($orientation = 'P') {
+        $orientation = in_array($orientation, ['P', 'L']) ? $orientation : 'P';
+        parent::__construct($orientation, 'mm', 'A4', true, 'UTF-8');
     }
 
     /**
      * Set custom header HTML.
-     * 
+     *
      * @param string $html
      */
     public function set_customheaderhtml($html) {
@@ -60,7 +61,7 @@ class pdf extends \pdf {
      */
     public function Header() {
         global $CFG;
-        
+
         if (preg_match('/[\x{4e00}-\x{9fa5}]+/u', $this->customheaderhtml)) {
             // Chinese.
             $this->SetFont('cid0cs', '', 10, $CFG->dirroot . '/local/onlineappraisal/fonts/cid0cs.php');

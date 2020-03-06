@@ -196,27 +196,32 @@ class forms {
             redirect($this->get_redirect_url(true));
         }
 
+        $stored = false;
         if ($this->form->is_submitted() && $haspermission && ($data = $this->form->get_data())) {
             // Grab this now as it's unset prior to storing data in DB.
             $continue = isset($data->submitcontinue);
             // Allows forms to process data in a different way.
             if (method_exists($this->form, 'store_data')) {
-                $this->form->store_data($this, $data);
+                $stored = $this->form->store_data($this, $data);
             } else {
-                $this->store_data($data);
+                $stored = $this->store_data($data);
             }
 
-            // Alert may already be set.
-            if (empty($this->appraisal->called->done) ) {
-                appraisal::set_alert($strings->saved, 'success');
-            }
+            if ($stored) {
+                // Alert may already be set.
+                if (empty($this->appraisal->called->done) ) {
+                    appraisal::set_alert($strings->saved, 'success');
+                }
 
-            if ($continue) {
-                $this->appraisal->redirect_to_nextpage();
-            }
+                if ($continue) {
+                    $this->appraisal->redirect_to_nextpage();
+                }
 
-            redirect($this->get_redirect_url());
-        } else if ($this->form->is_submitted()) {
+                redirect($this->get_redirect_url());
+            }
+        }
+
+        if ($this->form->is_submitted()) {
             // Form was submitted but there was an error, probably in validation or may not have permission).
             // Alert may already be set.
             if (empty($this->appraisal->called->done) ) {
@@ -345,6 +350,8 @@ class forms {
                 $datarecord->id = $DB->insert_record('local_appraisal_data', $datarecord);
             }
         }
+
+        return true;
     }
 
     /**

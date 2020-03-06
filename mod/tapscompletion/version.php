@@ -24,11 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version      = 2015111606;
+$plugin->version      = 2015111607;
 $plugin->requires     = 2015111600; // Moodle 3.0.
 $plugin->component    = 'mod_tapscompletion';
 $plugin->maturity     = MATURITY_STABLE;
-$plugin->release      = "3.0.6 (Build: {$plugin->version})";
+$plugin->release      = "3.0.7 (Build: {$plugin->version})";
 
 $plugin->dependencies = array(
     'local_taps' => 2015111601,

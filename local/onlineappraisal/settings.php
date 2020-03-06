@@ -46,6 +46,11 @@ if ($hassiteconfig) {
     $description = get_string('setting:quicklinks_desc', 'local_onlineappraisal');
     $settings->add(new admin_setting_configtextarea($name, $title, $description, ''));
 
+    $name = 'local_onlineappraisal/activateleadershipattributes';
+    $title = get_string('setting:activateleadershipattributes','local_onlineappraisal');
+    $description = get_string('setting:activateleadershipattributes_desc', 'local_onlineappraisal');
+    $settings->add(new admin_setting_configtext($name, $title, $description, '', PARAM_INT));
+
     $html = '';
     if (optional_param('rebuild_permissions', false, PARAM_BOOL)) {
         \local_onlineappraisal\permissions::rebuild_permissions();

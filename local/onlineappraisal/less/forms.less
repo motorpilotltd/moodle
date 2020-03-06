@@ -125,6 +125,22 @@
         &.femptylabel.oa-repeating-element .fitemtitle {
             display: none;
         }
+        &.appraisee {
+            .felement {
+                select,
+                .select2-selection {
+                    border-color: @appraisee;
+                }
+                .select2-container--disabled {
+                    .select2-selection {
+                        border-color: #aaa;
+                    }
+                    .select2-selection__choice {
+                        background-color: #fff;
+                    }
+                }
+            }
+        }
     }
     &.admin_group {
         position: relative;
@@ -179,7 +195,7 @@
     #id_submitcontinue {
         .button-variant(@btn-success-color; @btn-success-bg; @btn-success-border);
     }
-    @media (min-width: 768px) {
+    @media (min-width: @screen-sm-min) {
         .dl-horizontal {
             dt {
                 width: 150px;
@@ -200,6 +216,13 @@
     button.oa-add-repeating-element {
         display: none;
         margin: 0 0 10px 0;
+    }
+    @media (min-width: @screen-md-min) {
+        #oa-leadershiproles-links {
+            position: absolute;
+            right: 0;
+            z-index: 2;
+        }
     }
 }
 
@@ -277,4 +300,13 @@ form.form-inline {
     button {
         margin-bottom: 5px;
     }
+}
+
+// Hide disabled select2 options.
+.select2-container--default .select2-results__option[aria-disabled=true] {
+    display: none;
+}
+
+i.fa-info-circle {
+    color: #999999;
 }

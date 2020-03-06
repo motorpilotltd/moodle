@@ -199,7 +199,7 @@ $time = time();
                 <a date="<?php echo $time ?>" courseid='<?php echo $module->id ?>' methodology='<?php echo @$module->methodology ?>' href=""><?php echo $module->fullname ?> <?php echo $module->region ? '('.$this->get_string('region').' '.$module->region.')' : ''; ?></a>
             <?php endforeach; ?>
         </div>
-        
+
         <?php echo $this->get_string('tab_heading') ?> <select>
             <option value="<?php echo WA_LEARNING_PATH_ESSENTIAL ?>"><?php echo $this->get_string('essential') ?></option>
             <option value="<?php echo WA_LEARNING_PATH_RECOMMENDED ?>"><?php echo $this->get_string('recommended') ?></option>
@@ -285,18 +285,18 @@ $time = time();
     wa_save_new_activity = function() {
         if (!wa_block_new_activity) {
             wa_block_new_activity = true;
-            
+
             if(typeof tinymce !== 'undefined') {
                 tinymce.get("activity_description_id").save();
             }
-            
+
             var form = $('#dialog_create_activity_id .wa_activity_mform');
-            
+
             $(form).find('input[name="region"]').attr('name', 'temp');
             var obj = form.serialize();
             $(form).find('input[name="temp"]').attr('name', 'region');
 
-            
+
             $.ajax({
                 type: "POST",
                 url: form.prop('action') + "&lpid=<?php echo $this->id ?>",
@@ -322,7 +322,7 @@ $time = time();
                     } else if(response.status && response.status === 'ERROR'){
 						var field;
 						for ( field in response.errors) {
-							
+
 							var msg = $('<span>').addClass('error').html(response.errors[field]);
 							$('#dialog_create_activity [name="' + field + '"]').parent().find('span.error, br').remove();
 							$('#dialog_create_activity [name="' + field + '"]').parent().prepend(msg);
@@ -339,7 +339,7 @@ $time = time();
             });
         }
     };
-	
+
 	title_validation = function() {
 		var obj = $('#dialog_create_activity input[name="title"]');
 			$(obj).parent().find('span.error, br').remove();
@@ -348,10 +348,10 @@ $time = time();
 			$(obj).parent().prepend(msg);
 		}
 	};
-	
+
 	$('#dialog_create_activity input[name="title"]').change( title_validation );
 	$('#dialog_create_activity input[name="title"]').blur( title_validation );
-    
+
     wa_activity_clear_form = function() {
         $('.wa_activity_mform input[name="title"]').val('');
         $('.wa_activity_mform select[name="region[]"]').val('0');
@@ -365,7 +365,7 @@ $time = time();
         $('.wa_activity_mform select[name="subject"]').val('PD');
         $('.wa_activity_mform #id_learningdescriptioneditable').html('');
     };
-    
+
     wa_create_new_activity = function() {
         var buttons = [
              {
@@ -586,7 +586,7 @@ $time = time();
             }
 
             $(this).find('> div:nth-child('+(i + 1)+')').swapWith($(this).find('> div:nth-child('+(i + 2)+')'));
-            
+
             if (!j) {
                 $(this).find('> div:nth-child('+(i + 1)+') .select').val(s2);
                 $(this).find('> div:nth-child('+(i + 2)+') .select').val(s1);
@@ -633,7 +633,7 @@ $time = time();
     var wa_edit_el = false;
     wa_edit_name = function(el) {
         wa_edit_el = el;
-        $("#dialog_edit").find('input').val($(el).parent().parent().find('.name').html());
+        $("#dialog_edit").find('input').val($(el).parent().parent().find('.name').text());
 
         var buttons = [
             {
@@ -685,7 +685,7 @@ $time = time();
 
             $('#id_content_editoreditable').html(content);
             $('#id_content_editor_ifr').contents().find('body').html(content);
-            
+
             $('#activitiyform .essential > div').remove();
             $('#activitiyform .recommended > div').remove();
             $('#activitiyform .elective > div').remove();

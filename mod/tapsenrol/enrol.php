@@ -28,12 +28,15 @@ if ($id) {
     $tapsenrol = new tapsenrol($t, 'instance');
 }
 
+//SET context/url in case we get redirected by require_login().
+$PAGE->set_context(context_module::instance($tapsenrol->cm->id));
+$PAGE->set_url('/mod/tapsenrol/enrol.php', array('id' => $tapsenrol->cm->id, 'classid' => $classid));
+
 // Check login and get context.
 require_login($tapsenrol->course, false, $tapsenrol->cm);
 
 $heading = get_string('reviewenrolment', 'tapsenrol') . get_string('separator', 'tapsenrol') . $tapsenrol->course->fullname;
 
-$PAGE->set_url('/mod/tapsenrol/enrol.php', array('id' => $tapsenrol->cm->id, 'classid' => $classid));
 $PAGE->set_title($heading);
 $PAGE->set_heading($heading);
 

@@ -346,3 +346,32 @@ $string['linkedtapscourseid_help'] = 'Optionally select linked course(s) to conn
         . 'On initial completion check it will take the completion time of the most recently completed linked course enrolment and complete the certificate.<br /><br />'
         . 'This will take precedence over any existing Moodle course completions so care should be taken when applying to certifications with courses that may already be completed in Moodle.';
 $string['noapplicablecourses'] = 'No applicable linked courses available';
+
+
+
+
+$string['certifexpandlink'] = 'Certification Expander';
+$string['certificationid'] = 'Certification ID';
+$string['certificationidnumber'] = 'Certification ID number';
+$string['certifname'] = 'Certification Name';
+$string['certificationidnumber_help'] = 'The ID number of a certification is only used when matching this certification against external systems - it is never displayed within Moodle. If you have an official code name for this certification then use it here ... otherwise you can leave it blank.';
+
+$string['certificationsummary'] = 'Certification Summary';
+
+$string['findcertifications'] = 'Find certifications';
+$string['certificationname'] = 'Certification name';
+$string['certificationshortname'] = 'Certification shortname';
+$string['certificationidnumber'] = 'Certification ID number';
+$string['certificationid'] = 'Certification ID';
+$string['certificationexpandlink'] = 'Certification expand link';
+$string['certificationvisible'] = 'Certification visible';
+
+$string['activeperiod'] = 'Active period';
+$string['windowperiod'] = 'Window period';
+$string['recertdatetype'] = 'Recertification date type';
+
+$string['complete'] = 'Complete';
+$string['incomplete'] = 'Incomplete';
+$string['notstarted'] = 'Not started';
+$string['eventcontentupdated'] = 'Content updated';
+$string['certifvisible'] = 'Certification Visible';

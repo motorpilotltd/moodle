@@ -201,6 +201,9 @@ function tapsenrol_cm_info_view(cm_info $cm) {
                         $canviewclasses = true;
                     }
                 }
+                if ($canviewclasses) {
+                    $canviewclasses = $cm->uservisible;
+                }
             }
 
             if ($canview) {
@@ -213,7 +216,9 @@ function tapsenrol_cm_info_view(cm_info $cm) {
                 $a = new stdClass();
                 $a->course = core_text::strtolower(get_string('course'));
                 $a->reason = '';
-                if (!$canviewclasses && !empty($regions)) {
+                if (!$canviewclasses && !empty($cm->availableinfo)) {
+                    $a->reason = '<br>' . \core_availability\info::format_info($cm->availableinfo, $cm->get_course());
+                } else if (!$canviewclasses && !empty($regions)) {
                     $a->reason = get_string('cannotenrol:regions', 'tapsenrol', implode(', ', $regions));
                 }
                 $enrolmentoutput = $renderer->alert(html_writer::tag('p', get_string('cannotenrol', 'tapsenrol', $a)), 'alert-warning', false);

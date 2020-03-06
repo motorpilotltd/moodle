@@ -306,6 +306,10 @@ class auth_plugin_saml extends auth_plugin_ldap {
 
         $userupdated = new stdClass();
 
+        if (empty($user->policyagreed)) {
+            $userupdated->policyagreed = 1;
+        }
+
         if (empty($user->email) && validate_email($username)) {
             $userupdated->email = $username;
         }
