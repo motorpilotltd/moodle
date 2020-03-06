@@ -63,10 +63,6 @@ class learningpath {
 
         $where = '';
 
-//        if ($extrasql) {
-//
-//        }
-
         if(!is_null($region)) {
             if($region > 0) {
                 $where = " AND (EXISTS (SELECT id
@@ -474,24 +470,6 @@ class learningpath {
 
         require_once($CFG->dirroot . '/local/wa_learning_path/classes/event/learning_path_created.php');
         require_once($CFG->dirroot . '/local/wa_learning_path/classes/event/learning_path_updated.php');
-
-//        if (isset($data->content_editor)) {
-//            $data->introduction = $data->content_editor['text'];
-//            $data->format = $data->content_editor['format'];
-//            $data->itemid = $data->content_editor['itemid'];
-//        }
-//
-//        if (isset($data->content_editor)) {
-//            $data->introduction = $data->introduction_editor['text'];
-//            $data->format = $data->introduction_editor['format'];
-//            $data->itemid = $data->introduction_editor['itemid'];
-//        } else {
-//            if (!$data->introduction) {
-//                $data->introduction = '';
-//                $data->format = 1;
-//                $data->itemid = 0;
-//            }
-//        }
 
         if (!isset($data->introduction)) {
             $data->introduction = '';
@@ -932,8 +910,10 @@ class learningpath {
         $return = new \stdClass();
         $return->modules_count = 0;
         $return->activities_count = 0;
+        $return->activities_completed = 0;
         $return->in_progress = false;
         $return->objectives_defined = false;
+        $return->completed = false;
 
         $positions = isset($cell->positions) ? $cell->positions : array();
         $content = trim($cell->content);
@@ -958,15 +938,24 @@ class learningpath {
                         if (isset($activity->enrolled) && $activity->enrolled) {
                             $return->in_progress = true;
                         }
+    
+                        if (isset($activity->completed) && $activity->completed) {
+                            $return->activities_completed++;
+                        }
                     }
                     if ($activity->type == 'activity') {
                         $return->activities_count++;
                         if (isset($activity->completed) && $activity->completed) {
+                            $return->activities_completed++;
                             $return->in_progress = true;
                         }
                     }
                 }
             }
+        }
+        
+        if(($return->activities_count + $return->modules_count) === $return->activities_completed && $return->in_progress) {
+            $return->completed = true;
         }
 
         return $return;
@@ -1008,7 +997,7 @@ class learningpath {
         $learningpath = self::get($fromid);
 
         if (!$learningpath) {
-            throw new \Exception('Could not load learning path.');
+            throw new Exception('Could not load learning path.');
         }
 
         unset($learningpath->id);
@@ -1019,7 +1008,7 @@ class learningpath {
         $learningpath->id = $DB->insert_record('wa_learning_path', $learningpath);
 
         if (!$learningpath->id) {
-            throw new \Exception('Failed to save duplicated learning path.');
+            throw new Exception('Failed to save duplicated learning path.');
         }
 
         // Duplicate regions.

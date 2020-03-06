@@ -47,7 +47,6 @@ class admin extends \wa_learning_path\lib\base_controller {
      */
     public function edit_action($data = array()) {
         global $USER, $PAGE;
-
         $id = optional_param('id', null, PARAM_INT);
         if (!\wa_learning_path\lib\has_capability('addlearningpath')) {
             if ($id) {
@@ -65,11 +64,13 @@ class admin extends \wa_learning_path\lib\base_controller {
         \wa_learning_path\lib\load_form('introduction');
 
         $this->form = new \wa_learning_path\form\introduction_form();
+        
         $this->form->add_hidden('c', 'admin');
         $this->form->add_hidden('a', 'edit');
 
         if ($this->form->is_cancelled()) {
-            redirect(new moodle_url('?c=admin'));
+            $url = new \moodle_url($this->url, array('c' => 'learning_path', 'a' => 'view', 'id' => $id));
+            redirect($url);
         }
 
         $editoroptions = $this->form->get_editor_params();
@@ -170,7 +171,9 @@ class admin extends \wa_learning_path\lib\base_controller {
      */
     public function edit_matrix_action() {
         global $PAGE, $CFG, $USER;
-
+        $PAGE->set_pagelayout('base');
+        $PAGE->requires->js_call_amd('local_wa_learning_path/learning_path_edit', 'init');
+        
         if (!\wa_learning_path\lib\has_capability('amendlearningcontent') && !\wa_learning_path\lib\has_capability('editmatrixgrid')) {
             $this->no_access();
         }
@@ -196,7 +199,8 @@ class admin extends \wa_learning_path\lib\base_controller {
         $systemcontext = \context_system::instance();
 
         if ($this->form->is_cancelled()) {
-            redirect(new moodle_url('?c=admin'));
+            $url = new \moodle_url($this->url, array('c' => 'learning_path', 'a' => 'matrix', 'id' => $id));
+            redirect($url);
         }
 
         \wa_learning_path\lib\load_form('addactivity');
@@ -273,7 +277,7 @@ class admin extends \wa_learning_path\lib\base_controller {
                     \wa_learning_path\model\learningpath::link_activities_to_learning_path($id, $ids);
                 }
             }
-
+    
             \wa_learning_path\model\learningpath::set_matrix($matrix->id, json_encode($matrix_data));
             $message = $this->get_string('learning_matrix_saved_success');
             $this->set_flash_massage('success', $message);

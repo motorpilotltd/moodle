@@ -5,7 +5,7 @@
         <a href="<?php echo (new moodle_url('/local/wa_learning_path/?c=admin&a=edit_subscriptions&id='.$this->id)); ?>"><?php echo $this->get_string('tab_subscriptions') ?></a>
     </div>
 <?php endif; ?>
-
+<div class="lpath-edit-matrix">
 <div id="editing_matrix">
     <?php
     $this->display_error($this->get_flash_massage('success'), 'success');
@@ -14,59 +14,51 @@
 
     global $OUTPUT;
     ?>
-
-    <div class="legend_container">
-        <div class="legend">
-            <?php echo $this->get_string('key') ?>:<br />
-            <?php echo html_writer::empty_tag('img', array('src' => new \moodle_url('/local/wa_learning_path/img/plus1.png'), 'alt' => $this->get_string('up'), 'class' => '')) ?>
-            <?php echo $this->get_string('no_objective_defined') ?>
-            <br />
-            <?php echo html_writer::empty_tag('img', array('src' => new \moodle_url('/local/wa_learning_path/img/plus2.png'), 'alt' => $this->get_string('up'), 'class' => '')) ?>
-            <?php echo $this->get_string('objectives_defined') ?>
-            <br />
-            <?php echo html_writer::empty_tag('img', array('src' => new \moodle_url('/local/wa_learning_path/img/plus3.png'), 'alt' => $this->get_string('up'), 'class' => '')) ?>
-            <?php echo $this->get_string('both_defined') ?>
-        </div>
-    </div>
-
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <?php if (\wa_learning_path\lib\has_capability('editmatrixgrid')): ?>
-    <div class="buttons">
-        <button class="add_row">
-            <?php echo $this->get_string('add_row') ?>
-        </button>
-
-        <button class="add_column">
-            <?php echo $this->get_string('add_column') ?>
-        </button>
-    </div>
-    <?php endif; ?>
-
-    <div class="wa_matrix">
-        <div class="cols">
-            <div class="empty"></div>
-        </div>
-    </div>
-
-    <?php if (\wa_learning_path\lib\has_capability('editmatrixgrid')): ?>
-        <div class="buttons">
-            <button class="add_row">
+    <div class="wrapper">
+        <div id="main">
+            <div class="wa_matrix">
+                <div class="cols">
+                    <div class="empty"></div>
+                </div>
+            </div>
+    
+            <?php if (\wa_learning_path\lib\has_capability('editmatrixgrid')): ?>
+            
+            <button class="add_row" style="width: 95%;margin: 20px 40px 0 0;">
                 <?php echo $this->get_string('add_row') ?>
             </button>
-
-            <button class="add_column">
-                <?php echo $this->get_string('add_column') ?>
-            </button>
+            
+            <?php endif; ?>
         </div>
-    <?php endif; ?>
+        <button class="add_column button-right">
+            <span class="button-text"><?php echo $this->get_string('add_column') ?></span>
+        </button>
+    </div>
+
+    <div class="legend_container pull-right">
+        <div class="legend">
+            <div class="legend_item">
+                <?php echo $this->get_icon_html('icon_ai_no_objectives'); ?>
+                <?php echo $this->get_string('no_objective_defined') ?>
+            </div>
+            <div class="legend_item">
+                <?php echo $this->get_icon_html('icon_ai_objectives'); ?>
+                <?php echo $this->get_string('objectives_defined') ?>
+            </div>
+            <div class="legend_item">
+                <?php echo $this->get_icon_html('icon_ai_modules_and_objectives'); ?>
+                <?php echo $this->get_string('both_defined') ?>
+            </div>
+        </div>
+    </div>
+<div class="clearfix">
+</div>
+   
 
     <div class="wa_hide">
         <div class="col_header">
             <div class="m3">
+<!--                <span class="label label-default">Default</span>-->
                 <select class="select" multiple="1">
                     <?php $regions = \wa_learning_path\lib\get_regions(); foreach($regions as $k => $region): ?>
                     <option value="<?php echo $k ?>" <?php if ($k == 0) echo "selected='1'"; ?>><?php echo $region ?></option>
@@ -75,65 +67,35 @@
             </div>
 
             <div>
-                <?php
-                if (\wa_learning_path\lib\has_capability('editmatrixgrid')):
+                <span class="name">
+                    <span class="text"></span>
+                    <?php
+                        if (\wa_learning_path\lib\has_capability('editmatrixgrid')):
 
-                    echo html_writer::link(new \moodle_url($this->url, array('a' => 'edit', 'id' => $this->id)),
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
-                        array('title' => $this->get_string('edit'), 'class' => 'btn', 'onclick' => "wa_edit_name(this); return false;"));
-                    echo html_writer::link(new \moodle_url($this->url, array('a' => 'hide', 'id' => $this->id)),
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/hide'), 'alt' => $this->get_string('hide'), 'class' => 'iconsmall')),
-                        array('title' => $this->get_string('hide'), 'class' => 'btn wa_hide2', 'onclick' => "wa_toggle(this); return false;"));
-                    echo html_writer::link(new \moodle_url($this->url, array('a' => 'show', 'id' => $this->id)),
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/show'), 'alt' => $this->get_string('show'), 'class' => 'iconsmall')),
-                        array('title' => $this->get_string('show'), 'class' => 'btn wa_show', 'onclick' => "wa_toggle(this); return false;"));
-                    echo html_writer::link(new \moodle_url($this->url, array('a' => 'delete', 'id' => $this->id)),
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/delete'), 'alt' => $this->get_string('delete'), 'class' => 'iconsmall')),
-                        array('title' => $this->get_string('delete'), 'class' => 'btn', 'onclick' => "wa_delete_col(this); return false;"));
+                            echo html_writer::link(new \moodle_url($this->url, array('a' => 'edit', 'id' => $this->id)),
+                                $this->get_icon_html('icon_edit'),
+                                array('title' => $this->get_string('edit'), 'class' => 'btn', 'data-toggle' => 'modal'));
+                        endif;
+                    ?>
+                    <span class="tooltip"></span>
+                </span>
 
-                    echo html_writer::link(new \moodle_url($this->url, array('a' => 'left', 'id' => $this->id)),
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/left'), 'alt' => $this->get_string('left'), 'class' => 'iconsmall')),
-                        array('title' => $this->get_string('left'), 'class' => 'btn left', 'onclick' => "wa_left_col(this); return false;"));
-                    echo html_writer::link(new \moodle_url($this->url, array('a' => 'right', 'id' => $this->id)),
-                        html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/right'), 'alt' => $this->get_string('right'), 'class' => 'iconsmall')),
-                        array('title' => $this->get_string('right'), 'class' => 'btn right', 'onclick' => "wa_right_col(this); return false;"));
-
-                endif;
-                ?>
-                <br />
-                <span class="name">NAME</span>
             </div>
         </div>
 
         <div class="row_header">
-            <div class="name">
-                NAME
-            </div>
-            <?php if (\wa_learning_path\lib\has_capability('editmatrixgrid')): ?>
-            <div>
-                <?php
-                echo html_writer::link(new \moodle_url($this->url, array('a' => 'up', 'id' => $this->id)),
-                    html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/up'), 'alt' => $this->get_string('up'), 'class' => 'iconsmall')),
-                    array('title' => $this->get_string('up'), 'class' => 'btn up', 'onclick' => "wa_up_row(this); return false;"));
-                echo html_writer::link(new \moodle_url($this->url, array('a' => 'down', 'id' => $this->id)),
-                    html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/down'), 'alt' => $this->get_string('down'), 'class' => 'iconsmall')),
-                    array('title' => $this->get_string('down'), 'class' => 'btn down', 'onclick' => "wa_down_row(this); return false;"));
+            <span class="name">
+                    <span class="text"></span>
+                <?php if (\wa_learning_path\lib\has_capability('editmatrixgrid')): ?>
+                        <?php
+                            echo html_writer::link(new \moodle_url($this->url, array('a' => 'edit', 'id' => $this->id)),
+                                $this->get_icon_html('icon_edit'),
+                                array('title' => $this->get_string('edit'), 'class' => 'btn edit', 'data-toggle' => 'modal'));
+                        ?>
+                <?php endif; ?>
+                <span class="tooltip"></span>
+            </span>
 
-                echo html_writer::link(new \moodle_url($this->url, array('a' => 'edit', 'id' => $this->id)),
-                    html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/edit'), 'alt' => $this->get_string('edit'), 'class' => 'iconsmall')),
-                    array('title' => $this->get_string('edit'), 'class' => 'btn edit', 'onclick' => "wa_edit_name(this); return false;"));
-                echo html_writer::link(new \moodle_url($this->url, array('a' => 'hide', 'id' => $this->id)),
-                    html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/hide'), 'alt' => $this->get_string('hide'), 'class' => 'iconsmall')),
-                    array('title' => $this->get_string('hide'), 'class' => 'btn wa_hide2', 'onclick' => "wa_toggle(this); return false;"));
-                echo html_writer::link(new \moodle_url($this->url, array('a' => 'show', 'id' => $this->id)),
-                    html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/show'), 'alt' => $this->get_string('show'), 'class' => 'iconsmall')),
-                    array('title' => $this->get_string('show'), 'class' => 'btn wa_show ', 'onclick' => "wa_toggle(this); return false;"));
-                echo html_writer::link(new \moodle_url($this->url, array('a' => 'delete', 'id' => $this->id)),
-                    html_writer::empty_tag('img', array('src' => $OUTPUT->image_url('t/delete'), 'alt' => $this->get_string('delete'), 'class' => 'iconsmall')),
-                    array('title' => $this->get_string('delete'), 'class' => 'btn delete', 'onclick' => "wa_delete_row(this); return false;"));
-                ?>
-            </div>
-            <?php endif; ?>
         </div>
     </div>
 
@@ -146,6 +108,77 @@
     <h2></h2>
     <?php $this->activityform->display(); ?>
 </div>
+<div class="modal fade" id="myModalColumn" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" type="button" class="btn btn-default pull-right" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></a>
+                <h1 class="modal-title" id="myModalLabel"><?php echo get_string('columnModalLabel', 'local_wa_learning_path'); ?></h1>
+            </div>
+            <div class="modal-body">
+                <div class="form-inline">
+                    <div class="form-group col-xs-9">
+                        <input type="text" name="name" id="name" class="form-control">
+                    </div>
+                    <div class="form-group col-xs-3">
+                        <label for="position" class="col-xs-8 control-label positionLabel"><?php echo get_string('columnPosition', 'local_wa_learning_path'); ?></label>
+                        <input type="text" name="position" class=" col-xs-4" id="position" placeholder="">
+                    </div>
+                </div>
+                <div class="form-inline visibleRow">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label for="inputPassword3" class="col-sm-12 control-label">
+                                <input type="checkbox" id="visible"> <?php echo get_string('visible', 'local_wa_learning_path'); ?>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button type="submit" id="cancel" class="btn btn-default pull-right"><?php echo get_string('cancel', 'local_wa_learning_path'); ?></button>
+                    <button type="submit" id="save" data-id="" class="btn btn-primary pull-right"><?php echo get_string('save', 'local_wa_learning_path'); ?></button>
+                    <button type="submit" id="delete" data-id="" data-dismiss="modal" aria-label="Close" class="btn pull-right"><?php echo get_string('deleteColumn', 'local_wa_learning_path'); ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModalRow" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" type="button" class="btn btn-default pull-right" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></a>
+                <h1 class="modal-title" id="myModalLabel"><?php echo get_string('rowModalLabel', 'local_wa_learning_path'); ?></h1>
+            </div>
+            <div class="modal-body">
+                <div class="form-inline">
+                    <div class="form-group col-xs-10">
+                        <input type="text" name="name" id="name" class="form-control">
+                    </div>
+                    <div class="form-group col-xs-2">
+                        <label for="position" class="col-xs-8 control-label positionLabel"><?php echo get_string('rowPosition', 'local_wa_learning_path'); ?></label>
+                        <input type="text" name="position" class="col-xs-4" id="position" placeholder="">
+                    </div>
+                </div>
+                <div class="form-inline visibleRow">
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label for="inputPassword3" class="col-sm-12 control-label">
+                                <input type="checkbox" id="visible"> <?php echo get_string('visible', 'local_wa_learning_path'); ?>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button type="submit" id="cancel" class="btn btn-default pull-right"><?php echo get_string('cancel', 'local_wa_learning_path'); ?></button>
+                    <button type="submit" id="save" data-id="" class="btn btn-primary pull-right"><?php echo get_string('save', 'local_wa_learning_path'); ?></button>
+                    <button type="submit" id="delete" data-id="" data-dismiss="modal" aria-label="Close" class="btn pull-right"><?php echo get_string('deleteRow', 'local_wa_learning_path'); ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div id="test_activity">
 
@@ -153,7 +186,6 @@
 
 <?php
 $time = time();
-//$this->form->display();
 ?>
 <div class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-front ui-dialog-buttons ui-draggable hide" tabindex="-1" role="dialog" aria-describedby="dialog_create_activity" aria-labelledby="ui-id-2" id="dialog_create_activity_id" style="height: auto; width: 750px; /*top: 374px; left: 558px;*/ display: block;">
 	<div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix ui-draggable-handle">
@@ -178,9 +210,6 @@ $time = time();
 </div>
 <div class="hide">
     <div id="dialog_info" title="<?php echo $this->get_string('info') ?>" class="dialog"></div>
-    <div id="dialog_edit" title="<?php echo $this->get_string('edit_name') ?>" class="dialog">
-        <input style='width: 100%;' type="text" name="name" value="" />
-    </div>
 </div>
 
 <div id="wa_activity_form" class="hide">
@@ -273,7 +302,7 @@ $time = time();
 <div id="dialog-message2" style="display: none;" title="<?php echo $this->get_string('information') ?>">
     <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><?php echo $this->get_string('choose_element') ?></p>
 </div>
-
+</div>
 <script>
     var dialog_confirm, delete_el, delete_type;
     var wa_status = 0, wa_isloading, wa_to_add, wa_to_add_activity;
@@ -391,7 +420,7 @@ $time = time();
 
     var wa_plus = '<?php
         echo html_writer::link('#id',
-        html_writer::empty_tag('img', array('src' => new \moodle_url('/local/wa_learning_path/img/plus1.png'), 'alt' => $this->get_string('edit'), 'class' => '')),
+            $this->get_icon_html('icon_ai_no_objectives'),
         array('title' => $this->get_string('up'), 'class' => '', 'onclick' => ""));
         ?>';
 
@@ -405,7 +434,15 @@ $time = time();
 
             var r = $('.wa_hide .col_header').clone();
             r.attr('id', col.id);
-            r.find('.name').html(col.name);
+            
+            r.find('.tooltip').html(col.name);
+            r.attr('title', col.name);
+            var currentHtml = r.find('.name').html();
+            var name = col.name.replace(/^(.{18}[.]*).*/, "$1");
+            if(name.length < col.name.length) {
+                name = name+'...';
+            }
+            r.find('.name .text').html( name );
             if (col.region) {
                 r.find('.select').val(col.region);
             }
@@ -423,7 +460,7 @@ $time = time();
             if ($('.wa_matrix .wa_row').length) {
                 $('.wa_matrix').find('> div').each(function () {
                     if (!$(this).hasClass('cols')) {
-                        var r = $('<div class="cell">'+wa_plus+'</div>');
+                        var r = $('<div class="cell" data-column="'+col.id+'">'+wa_plus+'</div>');
                         $(r).find('a').attr('href', '#'+col.id+'_'+$(this).attr('id'));
                         $(r).appendTo($(this));
                     }
@@ -433,6 +470,20 @@ $time = time();
 
         wa_fix_left_right_buttons();
         wa_set_greyed_cells();
+        $('.cell').on('mouseenter', function() {
+            var column = $(this).data('column');
+
+            $('.cell').each(function() {
+                $(this).removeClass('cell-highlight');
+
+                if($(this).data('column') == column) {
+                    $(this).addClass('cell-highlight');
+                }
+            });
+
+            $(this).parent().find('.cell').addClass('cell-highlight');
+        });
+        calculate_width_and_height();
     }
 
     wa_add_row = function(row) {
@@ -442,10 +493,19 @@ $time = time();
             if (!row.id) {
                 row.id = wa_gen_id();
             }
-
+            var width = $('.wa_matrix').width();
             var html_row = $('<div class="wa_row" id="'+row.id+'" />');
             var html_row_header = $('.wa_hide .row_header').clone();
-            html_row_header.find('.name').html(row.name);
+
+            html_row_header.find('.tooltip').html(row.name);
+            html_row_header.attr('title', row.name);
+            var currentHtml = html_row_header.find('.name').html();
+            var name = row.name.replace(/^(.{20}[.]*).*/, "$1");
+            if(name.length < row.name.length) {
+                name = name+'...';
+            }
+            html_row_header.find('.tooltip').html(row.name);
+            html_row_header.find('.name .text').html(name);
             if (!row.show) {
                 html_row_header.attr('show', 'no');
                 html_row_header.find('.wa_hide2').hide();
@@ -460,17 +520,60 @@ $time = time();
             }
 
             $('.wa_matrix .col_header').each(function () {
-                var r = $('<div class="cell">'+wa_plus+'</div>');
+                var r = $('<div class="cell" data-column="'+$(this).attr('id')+'">'+wa_plus+'</div>');
                 $(r).find('a').attr('href', '#'+$(this).attr('id')+"_"+row.id);
                 r.appendTo(html_row);
             })
 
             html_row.appendTo($('.wa_matrix'));
+            $('.wa_matrix').width(width);
             wa_fix_up_down_buttons();
             wa_set_greyed_cells();
+
+            $('.cell').on('mouseenter', function() {
+                var column = $(this).data('column');
+
+                $('.cell').each(function() {
+                    $(this).removeClass('cell-highlight');
+
+                    if($(this).data('column') == column) {
+                        $(this).addClass('cell-highlight');
+                    }
+                });
+
+                $(this).parent().find('.cell').addClass('cell-highlight');
+            });
+            
+            calculate_width_and_height();
         }
     }
 
+    calculate_width_and_height = function () {
+        var height = 0;
+        var row_amount = $('.wa_row').length;
+        $('.wa_row .row_header').each(function() {
+            height = height + $(this).height();
+        });
+
+        $('.wa_row .row_header').each(function() {
+            $(this).height( height / row_amount);
+            $(this).width(120);
+        })
+
+        var width = $('.cols').width() - 120;
+        var col_amount = $('.col_header').length -1;
+
+        $('.col_header').each(function() {
+            $(this).width( width / col_amount );
+        });
+        
+        $('.cell').each(function() {
+            $(this).attr('style', 'width: '+ (width / col_amount) + 'px !important;height: '+ (height / row_amount) + 'px !important;');
+        });
+        
+        $('.add_row').width( $('.wa_matrix').width() - 20 );
+    }
+    
     wa_set_greyed_cells = function() {
         $('.wa_matrix .cell').removeClass('greyed');
 
@@ -631,29 +734,6 @@ $time = time();
     }
 
     var wa_edit_el = false;
-    wa_edit_name = function(el) {
-        wa_edit_el = el;
-        $("#dialog_edit").find('input').val($(el).parent().parent().find('.name').text());
-
-        var buttons = [
-            {
-                text: "<?php echo $this->get_string('save') ?>",
-                class: "wa_blue_button",
-                click: function() {
-                    $(wa_edit_el).parent().parent().find('.name').html($("#dialog_edit").find('input').val());
-                    $(this).dialog("close");
-                }
-            },
-            {
-                text: "<?php echo $this->get_string('cancel') ?>",
-                click: function() {
-                    $( this ).dialog( "close" );
-                }
-            },
-        ];
-
-        $("#dialog_edit").dialog({ resizable: false, width: '650px', buttons: buttons });
-    }
 
     wa_edit_activity = function() {
         var hash = location.hash;
@@ -668,10 +748,10 @@ $time = time();
             $('.selectpicker').val('');
 
             var plus = $('.wa_matrix a[href="' + hash + '"]');
-            var row = $(plus).parents('.wa_row').find('.name').html();
+            var row = $(plus).parents('.wa_row').find('.name .tooltip').html();
 
             var i = $(plus).parents('.cell').index() + 1;
-            var col = $('.wa_matrix .cols div:nth-child(' + i + ') .name').html();
+            var col = $('.wa_matrix .cols div:nth-child(' + i + ') .name .tooltip').html();
 
             $('#editing_activity h2').html(row+', '+col);
 
@@ -848,13 +928,13 @@ $time = time();
     wa_save = function() {
         var cols = [];
         $('.wa_matrix .col_header').each(function() {
-            var col = { id: $(this).attr('id'), region: $(this).find('.select').val(), name: $(this).find('.name').html(), show: $(this).attr('show') == 'yes' }
+            var col = { id: $(this).attr('id'), region: $(this).find('.select').val(), name: $(this).find('.name .tooltip').html(), show: $(this).attr('show') == 'yes' }
             cols.push(col);
         })
 
         var rows = [];
         $('.wa_matrix .row_header').each(function() {
-            var row = { id: $(this).parent().attr('id'), name: $(this).find('.name').html(), show: $(this).attr('show') == 'yes' }
+            var row = { id: $(this).parent().attr('id'), name: $(this).find('.name .tooltip').html(), show: $(this).attr('show') == 'yes' }
             rows.push(row);
         })
 
@@ -866,12 +946,12 @@ $time = time();
         $.each(wa_activities, function(k) {
             if (!hash || hash == k) {
                 if (this.positions.essential.length || this.positions.recommended.length || this.positions.elective.length) {
-                    $('a[href="'+k+'"] img').attr('src', "<?php echo new \moodle_url('/local/wa_learning_path/img/plus3.png') ?>");
+                    $('a[href="'+k+'"] i').attr('class', '<?php echo $this->get_icon_class('icon_ai_objectives'); ?>');
                 } else {
                     if (this.content) {
-                        $('a[href="'+k+'"] img').attr('src', "<?php echo new \moodle_url('/local/wa_learning_path/img/plus2.png') ?>");
+                        $('a[href="'+k+'"] i').attr('class', '<?php echo $this->get_icon_class('icon_ai_modules_and_objectives'); ?>');
                     } else {
-                        $('a[href="'+k+'"] img').attr('src', "<?php echo new \moodle_url('/local/wa_learning_path/img/plus1.png') ?>");
+                        $('a[href="'+k+'"] i').attr('class', '<?php echo $this->get_icon_class('icon_ai_no_objectives'); ?>');
                     }
                 }
             }
@@ -1081,7 +1161,5 @@ $time = time();
         <?php */ else: ?>
             location.hash = '#';
         <?php endif; ?>
-
-        //wa_edit_activity();
     });
 </script>

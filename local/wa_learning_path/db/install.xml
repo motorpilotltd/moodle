@@ -17,12 +17,14 @@
                 <FIELD NAME="status"        TYPE="int"  LENGTH="10"		NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" PREVIOUS="id"		NEXT="region" />
                 <FIELD NAME="preview"        TYPE="int"  LENGTH="10"		NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" PREVIOUS="id"		NEXT="region" />
                 <FIELD NAME="timecreated"   TYPE="int"	LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="false" PREVIOUS="region" />
+                parentid
+                roleid
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"  NEXT="unique_au" />
             </KEYS>
         </TABLE>
-
+        nowa tabela z rola (wa_learning_path_roles)
         <TABLE NAME="wa_learning_path_region" COMMENT="WA Learning paths regions">
             <FIELDS>
                 <FIELD NAME="id"            TYPE="int"  LENGTH="10"     NOTNULL="true"  UNSIGNED="true" SEQUENCE="true"  NEXT="name" />

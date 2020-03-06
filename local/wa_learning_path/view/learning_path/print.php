@@ -21,7 +21,6 @@
             <?php for ($c = 0; $c < count($this->matrix->cols); $c++): if ($this->matrix->cols[$c]->show) { ?>
                 <td>
                     <?php
-//                        $id = '#' . $this->matrix->rows[$r]->id . '_' . $this->matrix->cols[$c]->id;
                         $id = '#' . $this->matrix->cols[$c]->id . '_' . $this->matrix->rows[$r]->id;
                         if (isset($this->matrix->activities->{$id}) && $this->matrix->activities->{$id}->content) {
                            echo strip_tags($this->matrix->activities->{$id}->content);

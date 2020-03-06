@@ -219,8 +219,6 @@ class activity extends \wa_learning_path\lib\base_controller {
         $script .= substr($headcode, $loadpos, $cfgpos - $loadpos);
         // And finally the initalisation calls for those libraries
         $endcode = $PAGE->requires->get_end_code();
-//        echo preg_replace('/<\/?(script|link)[^>]*>/', '', $endcode); "<br />";
-//        $script .= preg_replace('/<\/?(script|link)[^>]*>/', '', $endcode);
         $script .= $endcode;
 
         $return['html'] = $html;
@@ -262,16 +260,6 @@ class activity extends \wa_learning_path\lib\base_controller {
         \wa_learning_path\lib\load_model('activity');
 
         $this->activity = \wa_learning_path\model\activity::get($this->id);
-//        var_dump($PAGE->navigation);
-//        if ($home = $PAGE->navigation->find('wa_lp_learning_path_management', \global_navigation::TYPE_CUSTOM)) {
-//            var_dump($home);
-//            $home->remove();
-//        }
-//        die;
-//        $PAGE->set_url(new \moodle_url($this->url, array('c' => $this->c, 'a' => 'index', 'id' => (int) $this->id)));
-//        $PAGE->navbar->add($this->get_string('menu_plugin_navigation'));
-//        $PAGE->navbar->add($this->get_string('header_learning_activity_management'),
-//                new moodle_url($this->url, array('c' => 'activity')));
         $PAGE->navbar->add($this->activity->title);
 
         $PAGE->set_title($this->get_string('header_landing_page') . ': ' . $this->activity->title);
@@ -295,18 +283,33 @@ class activity extends \wa_learning_path\lib\base_controller {
      */
     public function set_completion_action() {
         $this->id = optional_param('activityid', null, PARAM_INT);
+        $learningpathid = optional_param('learningpathid', 0, PARAM_INT);
         $completion = optional_param('completion', null, PARAM_BOOL);
 
         \wa_learning_path\lib\load_model('activity');
 
         $s = \wa_learning_path\model\activity::set_completion($this->id, (int) $completion);
-
+        
         if ($s == 0) {
-            $this->set_flash_massage('success', $this->get_string('activity_completion_unset_success'));
+            $completionfilename = "/local/wa_learning_path/pix/a_incomplete.png";
+            $completionicon = new \moodle_url($completionfilename);
+    
+            $url =  new \moodle_url($this->url, array('c' => 'activity', 'a' => 'set_completion'));
+            $html = '<img src="'.$completionicon.'" data-url="'.$url->out(false).'" data-lpathid="'.$learningpathid.'" data-id="'.$this->id.'" alt=""" class="activity_completion no" />';
+            $html .= '<div class="mark_as_complete">'.$this->get_string('mark_as_complete') . '</div>';
         } else {
-            $this->set_flash_massage('success', $this->get_string('activity_completion_set_success'));
+            $completionfilename = "/local/wa_learning_path/pix/a_completed.png";
+            $completionicon = new \moodle_url($completionfilename);
+    
+            $url =  new \moodle_url($this->url, array('c' => 'activity', 'a' => 'set_completion'));
+            $html = '<img src="'.$completionicon.'" data-url="'.$url->out(false).'" data-lpathid="'.$learningpathid.'" data-id="'.$this->id.'" alt=""" class="activity_completion yes" />';
         }
-        die('OK: ' . $s);
+    
+        ob_start();
+    
+        echo $html;
+    
+        return ob_get_contents();
     }
 
 }

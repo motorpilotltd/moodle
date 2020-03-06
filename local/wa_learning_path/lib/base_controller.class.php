@@ -55,12 +55,12 @@ class base_controller {
         $this->controllername = (new \ReflectionClass($this))->getShortName();
         $this->url = new \moodle_url('/local/wa_learning_path/index.php', array('c' => $this->controllername));
         $this->isajax = \wa_learning_path\lib\is_ajax();
-
+        $this->config = get_config('local_wa_learning_path');
+        
         $this->c = optional_param('c', 'main', PARAM_FILE); // Controller name.
         $this->a = optional_param('a', 'index', PARAM_FILE); // Action name.
 
         $PAGE->set_pagelayout('standard');
-//        $PAGE->set_url(new \moodle_url($this->url, array('c' => $this->c, 'a' => $this->a)));
         $PAGE->set_url(new \moodle_url($this->url, array('c' => $this->c, 'a' => 'index')));
         $PAGE->set_title($this->get_string('title'));
 
@@ -71,6 +71,15 @@ class base_controller {
         $PAGE->set_pagelayout('admin');
     }
 
+    public function get_icon_html($iconName, $customClass = '') {
+        $iconClass = $this->get_icon_class($iconName);
+        return '<i class="' . $customClass . ' ' . $iconClass . '"></i>';
+    }
+    
+    public function get_icon_class($iconName) {
+        return $this->config->{$iconName};
+    }
+    
     public function forward($controllername, $actionname, $params = array()) {
         require_once("controllers/" . $controllername . ".class.php");
         $controllername = "\\wa_learning_path\\controller\\" . $controllername;

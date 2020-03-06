@@ -7,12 +7,19 @@
  * @copyright   2016 Webanywhere (http://www.webanywhere.co.uk)
  */
 
+.learning_path h2 {
+    margin-left: 5px;
+}
+.learning_path h2 i {
+    margin-bottom: 1px;
+}
 .wa_tabs {
     margin-bottom: 20px;
     font-size: 0px;
     border-bottom: 1px solid #DDD;
     padding-bottom: -3px;
-    height: 38px
+    height: 38px;
+    margin-left: 10px;
 }
 
 .padd_5{
@@ -67,14 +74,170 @@
 
 .wa_matrix {
 	display: table;
-	width: 100%;
+    min-width:95%;
+    margin-right:1%;
 	border-collapse: separate;
-	border-spacing: 2px;
     margin-top: 8px;
+}
+
+.cell-highlight {
+    background-color: rgba(15, 149, 255, 0.2) !important;
 }
 
 .wa_matrix .btn {
 	padding: 0;
+}
+.button-right{
+    position: absolute;
+    top:0;
+    right:0;
+    height: calc(100% - 61px);
+    width: 3%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin:0;
+}
+
+.button-export {
+    margin-left: 10px !important;
+}
+.fa-lpath-cell {
+    line-height: 44px;
+}
+
+.fa {
+    vertical-align:middle;
+}
+
+.button-print .fa {
+    margin-right: 10px;
+}
+
+.button-export .fa {
+    margin-right: 10px;
+}
+
+.button-text{
+    display: block;
+    transform-origin: top left;
+    direction: rtl;
+    -ms-writing-mode: bt-lr;
+    writing-mode: vertical-lr;
+}
+
+.edit-btn {
+    border-color: #ec87c0;
+    background-color: #ec87c0;
+    color: white;
+}
+
+.edit-btn:hover {
+    border-color: #8a4c6f;
+    background-color: #b56592;
+    color: white;
+}
+
+.subscribe-btn {
+    background-color: #38C19A;
+    border-color: #38C19A;
+    color: white;
+}
+
+.subscribe-btn:hover {
+    background-color: #30AA8C;
+    border-color: #30AA8C;
+    color: white;
+}
+
+#print_section {
+    margin-right: 10px;
+}
+
+.button-subscribe {
+    border: 0;
+}
+
+.button-subscribe span {
+    vertical-align: middle;
+}
+
+.button-subscribe i {
+    margin-right: 5px;
+    margin-bttom: 1px;
+}
+.wa-btn {
+    padding: 10px 20px 10px 20px ;
+}
+
+.matrix-text-left {
+
+    text-align: left;
+    margin: auto;
+    padding: 10px 0;
+    display: block;
+    transform-origin: top right;
+    direction: ltr;
+    -ms-writing-mode: bt-lr;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    transform-origin:center;
+    overflow-wrap: normal;
+}
+.modal-text-left {
+    text-align: center;
+    display: block;
+    transform-origin: top right;
+    direction: ltr;
+    -ms-writing-mode: bt-lr;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    transform-origin:center;
+    overflow-wrap: normal;
+}
+
+.modal-text-right {
+    text-align: center;
+    display: block;
+    transform-origin: top left;
+    direction: rtl;
+    -ms-writing-mode: bt-lr;
+    writing-mode: vertical-rl;
+}
+.column-left{
+    position: absolute;
+    top:0;
+    left:0;
+    height: 100%;
+    width: 15%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin:0;
+}
+
+.column-right{
+    position: absolute;
+    top:0;
+    right:0;
+    height: 100%;
+    width: 15%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin:0;
+}
+
+
+#matrixform {
+    margin-top: 40px;
+    width:100%;
+}
+
+#matrixform .fgroup {
+    width: 100%;
+    text-align: right;
+    margin: 0;
 }
 
 .wa_matrix > div {
@@ -83,7 +246,7 @@
 }
 
 .wa_matrix > div > div {
-	border: 1px solid #888;
+	/*border: 1px solid #888;*/
 	display: table-cell;
 }
 
@@ -111,19 +274,19 @@
 }
 
 #editing_matrix .legend {
-    position: absolute;
-    top: -14px;
-    left: 12px;
-    border: 1px solid #888;
+    margin-top: 15px;
     padding: 5px 10px;
-    font-size: 11px;
+    font-size: 14px;
 }
 
 #editing_matrix .legend_container {
     position: relative;
 }
 
-#editing_matrix .legend img {
+.legend .legend_item {
+    float: right;
+}
+.legend img {
     margin: 2px 10px 2px 0;
     width: 25px;
     vertical-align: middle;
@@ -131,36 +294,105 @@
 
 #editing_matrix .legend > :nth-child(2) {
     margin-left: 0px;
-    margin-top: 8px;
 }
 
+.filter-navbar {
+    background-color: #e5f3ff;
+    margin-bottom: 20px;
+}
+
+#editing_matrix #main {
+    width: calc(98% - 20px);
+    min-height: 300px;
+}
+
+#editing_matrix .wrapper {
+    display:block;
+    position: relative;
+}
 #editing_matrix .buttons {
 	text-align: right;
 	margin-top: 5px;
 }
 
-.wa_matrix .cell {
-	text-align: center;
-	border: 1px solid #888;
+.matrix-activities-title {
+    font-size: 22px;
+    font-family: times new roman,times,serif;
 }
 
+.wa_matrix .cell {
+	text-align: center;
+    vertical-align: middle;
+}
+
+.wa_matrix .cell a {
+    color: #3c3c3b;
+}
+
+.wa_matrix .cell a:hover {
+    color: #3c3c3b;
+}
 .wa_matrix .name {
 	max-width: 350px;
 	overflow: hidden;
 	display: inline-block;
+    vertical-align:middle;
 }
 
 .wa_matrix .wa_row > div {
-    line-height: 35px;
+    line-height: 25px;
 }
 
+.wa_matrix .wa_row .cell,
+.wa_matrix .wa_row .row_header,
+.wa_matrix .col_header {
+    border-top: 2px solid #e6e6e6;
+    border-left: 2px solid #e6e6e6;
+    padding: 4px;
+    font-size: 12px;
+}
+
+.wa_matrix .wa_row .row_header i,
+.wa_matrix .col_header i {
+    color: #333;
+}
+.wa_matrix .col_header:last-of-type {
+    border-right: 2px solid #e6e6e6;
+}
+
+.wa_matrix .wa_row .cell:last-of-type {
+    border-right: 2px solid #e6e6e6;
+}
+
+.wa_matrix .wa_row:last-of-type .cell,
+.wa_matrix .wa_row:last-of-type .row_header {
+    border-bottom: 2px solid #e6e6e6;
+}
 .wa_matrix .row_header > div {
 	display: table-cell;
 }
 
 .wa_matrix .row_header > div:nth-child(2) {
-	width: 133px;
+	/*width: 133px;*/
 	text-align: right;
+}
+
+.name .tooltip {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.name:hover .tooltip {
+    visibility: visible;
 }
 
 #global_lerning_paths_list tr .c2{
@@ -173,9 +405,17 @@
 }
 
 .learning_path_global_list,
-.learning_path_matrix,
-.learning_path{
-	margin-bottom: 20px;
+.learning_path_matrix{
+    margin-left: 10px;
+}
+
+.lpath-edit-matrix {
+    margin-left: 10px;
+}
+
+.learning_path {
+    margin-bottom: 20px;
+    margin-left:5px;
 }
 
 #global_learning_paths_list tr .c1{
@@ -259,8 +499,44 @@
 .learning_path .learning_path_content .right{
     float: left;
     width: 35%;
+}
+
+.learning_path .learning_path_content .right .details {
     border: 1px solid #bcbec0;
 }
+
+.lpath-header {
+    font-family: "Times New Roman",Georgia,Times,serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: #000;
+    line-height: 1.1;
+    padding-top: 5px;
+}
+
+.region,
+.levels {
+    padding: 5px;
+    background-color: white;
+    color: #222222;
+    margin: 10px 10px 10px 15px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    min-width: 300px;
+
+}
+.custom-select:after {
+    content: "\2304"; /* down arrow */
+    position: relative;
+    right: 35px;
+    top:-3px;
+    pointer-events:none;
+    font-size: 20px;
+    color: #222222;
+}
+
+
 
 .learning_path .learning_path_content .right img.learning_path_image{
     max-width: 100%;
@@ -289,14 +565,16 @@
 
 .learning_path_matrix .outer .lp_matrix {
 	width: 100%;
+    margin-bottom: 40px;
 }
 
 .learning_path_matrix .lp_matrix .lp_empty{
-	border: none;
+	/*border-right: 1px solid #bbb;*/
 }
 
 .learning_path_matrix .lp_matrix .lp_row_header{
 	vertical-align: middle;
+    /*border-right: 1px solid #bbb;*/
 }
 
 .learning_path_matrix .lp_matrix .lp_row_header .cell_container{
@@ -309,8 +587,9 @@
 .learning_path_matrix .lp_matrix .lp_col_header{
 	text-align: center;
 	font-weight: bold;
-	border: none;
+    /*border-right: 1px solid #bbb;*/
 	background: none;
+    vertical-align: bottom;
 }
 
 .learning_path_matrix .lp_matrix td,
@@ -322,6 +601,9 @@
 
 .learning_path_matrix .lp_matrix .lp_cell{
 	text-align: center;
+    min-height: 54px;
+    min-width:38px;
+    /*border-right: 1px solid #bbb;*/
 }
 
 .learning_path_matrix .lp_matrix .lp_cell .cell_icon_container{
@@ -359,6 +641,28 @@
 	height: 44px;
 	cursor: pointer;
 }
+.fa-info-circle {
+    color: #bcbec0;
+}
+.fa-check-square-o {
+    color: #38C19A;
+}
+.fa-tasks {
+    color: #0f95ff;
+}
+
+.fa-spinner {
+    color: #874245;
+}
+
+.legend_item .fa {
+    margin-right: 10px;
+}
+
+.legend_item {
+    margin-right: 15px;
+}
+
 
 .learning_path_matrix .lp_empty .legend{
 	text-align: left;
@@ -370,6 +674,11 @@
 	font-size: 10px;
 }
 
+.modal-body{
+    padding: 5px 15px 5px 15px;
+    max-height: 600px;
+    overflow-y: scroll;
+}
 .learning_path_matrix .lp_empty .legend .key{
 	font-size: 14px;
 	padding-left: 5px;
@@ -382,22 +691,32 @@
 .learning_path_matrix .lp_empty .legend .legend_item{
 	margin: 3px 0px 3px 3px;
 }
-
+.legend .legend_item .empty_label {
+    margin: 11px 0 0px 30px;
+}
+.legend .legend_item .empty_box {
+    width: 25px;
+    height: 25px;
+    margin-right: 2px;
+}
 .learning_path_matrix .lp_empty .legend .legend_item .empty_box,
-.learning_path_matrix .lp_empty .legend .legend_item img{
+.learning_path_matrix .lp_empty .legend .legend_item img {
 	width: 25px;
 	height: 25px;
 	display: inline-block;
 	margin-right: 2px;
 }
 
+.navigate-cells {
+    border: 0;
+    font-size: 16px;
+}
 /* Table scroll */
 /*--- Begin ----*/
 .learning_path_matrix .lp_matrix_scroll_enable table  {
 	display: table;
 	table-layout: fixed;
 	width: 100%;
-	/*margin-left: -100px;*/
 }
 
 .learning_path_matrix .lp_matrix_scroll_enable table td, .learning_path_matrix .lp_matrix_scroll_enable table th {
@@ -408,7 +727,7 @@
 	position:absolute;
 	*position: relative; /*ie7*/
 	left: 0;
-	width: 180px;
+	width: 100%;
 	border: none;
 }
 .learning_path_matrix .lp_matrix_scroll_enable .outer {
@@ -419,7 +738,7 @@
 	overflow-x: scroll;
 	overflow-y: visible;
 	width: 700px;
-	margin-left: 180px;
+	margin-left: 200px;
 }
 
 .learning_path_matrix .lp_matrix_scroll_enable td,
@@ -432,16 +751,23 @@
 
 .learning_path_matrix .lp_matrix_scroll_enable .inner_scroll_top{
 	display: block;
-	width: 700px;
+	width: 900px;
 	height: 20px;
-	margin-left: 180px;
+	margin-left: 200px;
 	overflow-x: scroll;
 	overflow-y: hidden;
 }
 
-.learning_path_matrix .matrix_activities{
-	margin-top: 10px;
-	border: 10px solid #eee;
+.matrix-activities-description {
+    display: block;
+    position:relative;
+    min-height: 300px;
+}
+
+.matrix-activities-description-text {
+    width: 70%;
+    margin-left: 15%;
+    margin-right: 15%;
 }
 
 .learning_path_matrix .matrix_activities .fl-r {
@@ -726,7 +1052,21 @@
     background: #DDD;
     text-decoration: none;
 }
+.col_header .name a > i,
+.row_header .name a > i{
+    margin-bottom: 5px;
+}
+.add_row, .add_column {
+    border-radius:0;
+    color: #0f95ff;
+    background-color: #f7f5f5;
+    padding: 10px;
+    border: 0;
+}
 
+.add_row:hover, .add_column:hover {
+    color: #0f95ff;
+}
 #activitiyform .add_info {
     color: #090;
     padding: 5.5px 10px;
@@ -753,12 +1093,12 @@
    }
 }
 
-@media (max-width: 700px) {
-    .learning_path .learning_path_content .right,
-    .learning_path .learning_path_content .left{
-        width: 100%
-    }
-}
+/*@media (max-width: 700px) {*/
+    /*.learning_path .learning_path_content .right,*/
+    /*.learning_path .learning_path_content .left{*/
+        /*width: 100%*/
+    /*}*/
+/*}*/
 
 #id_asubmitbutton,
 .wa_blue_button {
@@ -775,4 +1115,59 @@
 
 .greyed .cell, .greyed.cell {
     background-color: #DDD;
+}
+
+
+/** MODALS  */
+.modal-body #name {
+    width: 100%;
+}
+
+.modal-body .visibleRow {
+    margin-left: 10px;
+}
+
+.buttons {
+    margin-top: 15px;
+    margin-bottom:10px;
+}
+
+.checkbox .control-label {
+    margin-top: 15px;
+}
+
+#myModalColumn .modal-body,
+#myModalRow .modal-body{
+    padding: 5px 15px 15px 15px;
+}
+
+.modal-body #position {
+    height: 30px;
+    padding: 4px 12px;
+    font-size: 14px;
+    color: #555;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}
+
+.modal-body #position:focus {
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+    box-shadow:inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+}
+
+.modal-body .positionLabel {
+    margin-top: 6px;
+}
+
+.modal-body #delete {
+    color: #ed5564;
+    background-color: #fff;
+    border-color: #ccc;
+}
+
+.modal-body #delete:hover {
+    background-color: #e6e6e6;
+    border-color: #adadad;
 }
