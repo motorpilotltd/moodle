@@ -18,7 +18,7 @@
  * Upgrade code for mod_arupevidence
  *
  * @package     mod_arupevidence
- * @copyright   2017 Xantico Ltd 
+ * @copyright   2017 Xantico Ltd
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -263,5 +263,53 @@ function xmldb_arupevidence_upgrade($oldversion) {
 
         upgrade_plugin_savepoint(true, 2015111621, 'mod', 'arupevidence');
     }
+    // New fields.
+    if ($oldversion < 2017051504) {
+        $tables = [
+            new xmldb_table('arupevidence'),
+            new xmldb_table('arupevidence_users'),
+        ];
+        $fields = [
+            'arupevidence' => [
+                new xmldb_field('expectedvalidity', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1),
+                new xmldb_field('exemption', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0),
+                new xmldb_field('exemptionquestion', XMLDB_TYPE_TEXT),
+                new xmldb_field('exemptioninfo', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0),
+                new xmldb_field('exemptioninfoquestion', XMLDB_TYPE_TEXT),
+                new xmldb_field('exemptioncompletion', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0),
+                new xmldb_field('exemptionvalidity', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0),
+            ],
+            'arupevidence_users' => [
+                new xmldb_field('exempt', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0),
+                new xmldb_field('exemptreason', XMLDB_TYPE_TEXT),
+            ]
+        ];
+
+        foreach ($tables as $table) {
+            foreach ($fields[$table->getName()] as $field) {
+                // Conditionally launch add field.
+                if (!$dbman->field_exists($table, $field)) {
+                    $dbman->add_field($table, $field);
+                }
+            }
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2017051504, 'mod', 'arupevidence');
+    }
+
+    // Change field as can be optional if exempt.
+    if ($oldversion < 2017051505) {
+        $table = new xmldb_table('arupevidence_users');
+        $field = new xmldb_field('completiondate', XMLDB_TYPE_INTEGER, '10');
+
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->change_field_notnull($table, $field);
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2017051505, 'mod', 'arupevidence');
+    }
+
     return true;
 }

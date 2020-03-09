@@ -39,7 +39,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     // NOTE: should disabled when editing the instance with cms selected
                     $('#id_learningdesceditable').attr('contenteditable', false);
                 }
-                selectcpdlms.on('change', function (e) {
+                selectcpdlms.on('change', function() {
                     if ($(this).val() == 0 && $(this).val().length !== 0) { // cms selected
                         $('#id_learningdesceditable').attr('contenteditable', true);
                         $('#id_learningdesceditable').removeClass('disabledesc');
@@ -62,14 +62,14 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         url: cfg.wwwroot + '/mod/arupevidence/ajax.php',
                         dataType: 'json',
                         delay: 250,
-                        data: function (params) {
+                        data: function(params) {
                             return {
                                 q: params.term,
                                 courseid: courseid,
                                 page: params.page
                             };
                         },
-                        processResults: function (data, params) {
+                        processResults: function(data, params) {
                             params.page = params.page || 1;
 
                             return {
