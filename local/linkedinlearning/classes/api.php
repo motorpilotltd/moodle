@@ -65,7 +65,7 @@ class api {
         $url = "https://api.linkedin.com/v2/learningActivityReports?";
         $params = [
                 'q'                             => 'criteria',
-                'count'                         => '10',
+                'count'                         => '500',
                 'timeOffset.unit'               => 'WEEK',
                 'timeOffset.duration'           => '2',
                 'aggregationCriteria.primary'   => 'INDIVIDUAL',
