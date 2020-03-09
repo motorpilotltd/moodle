@@ -75,7 +75,7 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
-            $mform->setType('name', PARAM_CLEAN);
+            $mform->setType('name', PARAM_CLEANHTML);
         }
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
@@ -98,12 +98,16 @@ class mod_arupevidence_mod_form extends moodleform_mod {
 
         $mform->addElement('advcheckbox', 'deleteevidence', get_string('deleteevidence', 'mod_arupevidence'));
 
+        $mform->addElement('advcheckbox', 'expectedvalidity', get_string('expectedvalidity', 'mod_arupevidence'));
+
         $choices = array(get_string('none'), 1,2,3,4,5,6,7,8,9,10,11,12);
         $mform->addElement('select', 'expectedvalidityperiod', get_string('expectedvalidityperiod', 'mod_arupevidence'), $choices);
         $mform->setDefault('expectedvalidityperiod', '');
+        $mform->disabledIf('expectedvalidityperiod', 'expectedvalidity', 'unchecked');
 
         $mform->addElement('select', 'expectedvalidityperiodunit', '', array('m' => 'Month(s)', 'y' => 'Year(s)', '' => get_string('none')));
         $mform->setDefault('expectedvalidityperiodunit', '');
+        $mform->disabledIf('expectedvalidityperiodunit', 'expectedvalidity', 'unchecked');
 
         $mform->addElement('advcheckbox', 'approvalrequired', get_string('approvalrequired', 'mod_arupevidence'));
 
@@ -156,6 +160,8 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         $mform->addElement('static', 'completionfake', '', '');
 
         // Declarations section
+        $mform->addElement('header', 'declarations', get_string('declarationsheader', 'mod_arupevidence'));
+
         // Has agreed declaration hidden field flag
         $mform->addElement('hidden', 'hasagreeddeclaration', 0);
         $mform->setType('hasagreeddeclaration', PARAM_INT);
@@ -195,8 +201,31 @@ class mod_arupevidence_mod_form extends moodleform_mod {
             get_string('declaration:add', 'mod_arupevidence'),
             true
         );
-
         $mform->disabledIf('declarationadds', 'hasagreeddeclaration', 'eq', 1);
+
+        // Exemption section.
+        $mform->addElement('header', 'exemptionsection', get_string('exemptionheader', 'mod_arupevidence'));
+
+        $mform->addElement('advcheckbox', 'exemption', get_string('exemption', 'mod_arupevidence'));
+
+        $mform->addElement('textarea', 'exemptionquestion', get_string('exemptionquestion', 'mod_arupevidence'));
+        $mform->setType('exemptionquestion', PARAM_TEXT);
+        $mform->disabledIf('exemptionquestion', 'exemption', 'unchecked');
+
+        $mform->addElement('advcheckbox', 'exemptioninfo', get_string('exemptioninfo', 'mod_arupevidence'));
+        $mform->disabledIf('exemptioninfo', 'exemption', 'unchecked');
+
+        $mform->addElement('textarea', 'exemptioninfoquestion', get_string('exemptioninfoquestion', 'mod_arupevidence'));
+        $mform->setType('exemptioninfoquestion', PARAM_TEXT);
+        $mform->disabledIf('exemptioninfoquestion', 'exemption', 'unchecked');
+        $mform->disabledIf('exemptioninfoquestion', 'exemptioninfo', 'unchecked');
+
+        $mform->addElement('advcheckbox', 'exemptioncompletion', get_string('exemptioncompletion', 'mod_arupevidence'));
+        $mform->disabledIf('exemptioncompletion', 'exemption', 'unchecked');
+
+        $mform->addElement('advcheckbox', 'exemptionvalidity', get_string('exemptionvalidity', 'mod_arupevidence'));
+        $mform->disabledIf('exemptionvalidity', 'exemption', 'unchecked');
+        $mform->disabledIf('exemptionvalidity', 'expectedvalidity', 'unchecked');
 
         $this->add_taps_fields($mform);
 
@@ -205,7 +234,7 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
-    public function add_taps_fields(MoodleQuickForm $mform) {
+    private function add_taps_fields(MoodleQuickForm $mform) {
         $taps = new \local_taps\taps();
 
         $mform->addElement('header', 'tapstemplate', get_string('cpdformheader', 'mod_arupevidence'));

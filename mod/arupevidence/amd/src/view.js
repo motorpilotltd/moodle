@@ -26,14 +26,22 @@ define(['jquery', 'theme_bootstrap/bootstrap'],
     function($) {
 
     return /** @alias module:mod_arupevidence/view */ {
-        init: function (validityperiod, validityperiodunit) {
-            if (validityperiod != '0' && validityperiod.length != 0) {
-                $('input[type="submit"][name="submitbutton"]').click(function(e){
+        init: function(validity, validityperiod, validityperiodunit, skipvalidityexemption) {
+            var checkvalidity = validity && validityperiod != '0' && validityperiod.length != 0;
+            var checkvalidityexemption = checkvalidity && skipvalidityexemption == '0';
+            if (checkvalidity || checkvalidityexemption) {
+                $('input[type="submit"][name="submitbutton"]').click(function(e) {
+                    var self = $(this);
+
+                    if (!checkvalidityexemption && $('#id_exempt').is(':checked')) {
+                        self.closest('form').submit();
+                        return;
+                    }
+
                     // Preparing validity, value is counted as months
                     var vpnum = parseInt(validityperiod);
                     var vpunit = (validityperiodunit == 'y') ? 12 : 1;
                     var validity = vpnum * vpunit;
-                    var self = $(this);
 
                     var uservalidity = 0;
 
@@ -61,7 +69,7 @@ define(['jquery', 'theme_bootstrap/bootstrap'],
                         uservalidity = uservalidityperiod * uservalidityperiodunit;
 
                         var validityexpirydate = validitydateinfo(completion_date, uservalidity, 'm', false);
-                        validityexpirydate = validityexpirydate.getTime()/1000 | 0; // eslint-disable-line
+                        validityexpirydate = validityexpirydate.getTime() / 1000 | 0; // eslint-disable-line
                         $('input[name="validityexpirydate"]').val(validityexpirydate);
 
                         if (uservalidity < validity) {
@@ -98,7 +106,7 @@ define(['jquery', 'theme_bootstrap/bootstrap'],
                         e.preventDefault(); // stop form submission
                         $('#validity-confirm-modal').modal('show');
 
-                        $('#validity-confirm-modal').on('click', '#validity-confirm-btn', function(){
+                        $('#validity-confirm-modal').on('click', '#validity-confirm-btn', function() {
                             $(this).modal('hide');
                             self.closest('form').submit();
                         });
@@ -108,7 +116,6 @@ define(['jquery', 'theme_bootstrap/bootstrap'],
                 });
             }
         },
-
     };
 
     /**

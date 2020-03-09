@@ -210,6 +210,20 @@ $string['email:reject:content'] = 'Dear {$a->userfirstname},
 <p>Your evidence link: <a href="{$a->evidenceeditlink}">{$a->evidenceeditlink}</a></p>
 <p>Kind Regards,<br>{$a->approverfirstname}</p>';
 
+$string['declarationsheader'] = 'Declarations';
+$string['expectedvalidity'] = 'Set expected validity (submission check)';
+$string['exemptionheader'] = 'Exemption';
+$string['exemption'] = 'Allow exemption';
+$string['exemptionquestion'] = 'Exemption question';
+$string['exemptioninfo'] = 'Require exemption info';
+$string['exemptioninfoquestion'] = 'Exemption info question';
+$string['exemptioncompletion'] = 'Do not require completion date if exempt';
+$string['exemptionvalidity'] = 'Do not check validity period if exempt';
+$string['label:exempt'] = 'Exempt';
+$string['label:exemptreason'] = 'Reason for exemption';
+$string['approve:exempt'] = 'Exempt';
+$string['approve:exemptreason'] = 'Exemption Info';
+
 $string['uploadotherevidence'] = 'If you wish to upload evidence on behalf of another user please do so by using the Upload User Evidence button.';
 $string['label:uploadforuser'] = 'Upload on behalf of';
 $string['placeholder:uploadforuser'] = 'Choose user';

@@ -51,6 +51,9 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
         $table->head[] = get_string('approve:datecompleted', 'mod_arupevidence');
         $table->head[] = get_string('approve:expirydate', 'mod_arupevidence');
         $table->head[] = get_string('approve:certificatelink', 'mod_arupevidence');
+        if ($this->arupevidence->exemption) {
+            $table->head[] = get_string('approve:exempt', 'mod_arupevidence');
+        }
         if ($isreject) {
             $table->head[] = get_string('reject:daterejected', 'mod_arupevidence');
             $table->head[] = get_string('reject:rejectedby', 'mod_arupevidence');
@@ -98,6 +101,24 @@ class mod_arupevidence_renderer extends plugin_renderer_base {
                 $cell->text = $this->format_user_certificatelink($usercompletion);
                 $cell->attributes['class'] = 'text-left';
                 $cells[] = clone($cell);
+
+                // Exemption details.
+                if ($this->arupevidence->exemption) {
+                    $cell->text = $usercompletion->exempt ? get_string('yes') : get_string('no');
+                    if ($this->arupevidence->exemptioninfo && !empty($usercompletion->exemptreason)) {
+                        $cell->text .= '&nbsp;' . html_writer::tag('i', '', [
+                            'class' => 'fa fa-info-circle',
+                            'data-toggle' => 'popover',
+                            'title' => get_string('approve:exemptreason', 'mod_arupevidence'),
+                            'data-content' => s($usercompletion->exemptreason),
+                            'data-html' => true,
+                            'style' => 'cursor:pointer',
+                        ]);
+                    }
+                    $cell->attributes['class'] = 'text-left';
+                    $cells[] = clone($cell);
+                }
+
 
                 if ($isreject) {
                     // Date Approved

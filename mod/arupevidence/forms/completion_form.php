@@ -67,6 +67,7 @@ class mod_arupevidence_completion_form extends moodleform
         $mform->addElement('date_selector', 'completiondate',  get_string('completiondate', 'mod_arupevidence'), array('timezone' => 0));
         $defaultdate = isset($this->_arupevidenceuser->completiondate) ? $this->_arupevidenceuser->completiondate : time();
         $mform->setDefault('completiondate', $defaultdate);
+
         if (isset($this->_arupevidence->requireexpirydate) && $this->_arupevidence->requireexpirydate) {
             if ($this->_arupevidence->mustendmonth) {
                 $choices = array(
@@ -83,7 +84,7 @@ class mod_arupevidence_completion_form extends moodleform
                     '11' => "November",
                     '12' => "December");
 
-                $choicesyears = array_combine(range(1950,2030), range(1950,2030));
+                $choicesyears = array_combine(range(2030, 1950, -1), range(2030, 1950, -1));
 
                 // Months selection
                 $defaultvalue = (isset($this->_arupevidenceuser->expirydate) && $this->_arupevidenceuser->expirydate) ? date('m', $this->_arupevidenceuser->expirydate) : '';
@@ -158,10 +159,10 @@ class mod_arupevidence_completion_form extends moodleform
                 $fileoptions);
             $mform->setDefault("completioncertificate", $draftitemid);
         }
+
         // Declarations
         if (!empty($this->_customdata['declarations'])) {
             $agreeddeclarations = !empty($this->_arupevidenceuser->declarations)? json_decode($this->_arupevidenceuser->declarations): [];
-
 
             foreach ($this->_customdata['declarations'] as $declaration) {
                 $mform->addElement('checkbox', 'declaration-'.$declaration->id, '', $declaration->declaration);
@@ -182,21 +183,21 @@ class mod_arupevidence_completion_form extends moodleform
             $mform->setType('completion', PARAM_INT);
         }
 
-
-        // user was editing existing an arupevidenceuser
+        // User was editing an existing entry.
         if(isset($this->_customdata['action']) && !empty($this->_customdata['action'])) {
             $mform->addElement('hidden', 'action', $this->_customdata['action']);
             $mform->setType('action', PARAM_ALPHA);
             $mform->addElement('hidden', 'ahbuserid', $this->_arupevidenceuser->id);
             $mform->setType('ahbuserid', PARAM_INT);
+        }
 
+        if (!empty($this->_arupevidence->exemption)) {
+            $this->add_exemption_fields($mform);
         }
 
         if (isset($this->_arupevidence->cpdlms) && $this->_arupevidence->cpdlms == ARUPEVIDENCE_CPD) {
             $this->add_taps_fields($mform);
         }
-
-
 
         if (!empty($this->_arupevidence->expectedvalidityperiod) && !empty($this->_arupevidence->expectedvalidityperiodunit)) {
             // Validity period confirmation modal.
@@ -220,7 +221,28 @@ class mod_arupevidence_completion_form extends moodleform
         $this->add_action_buttons(true, get_string('upload'));
     }
 
-    public function add_taps_fields(MoodleQuickForm $mform) {
+    private function add_exemption_fields(MoodleQuickForm $mform) {
+        //$defaults = !empty($this->_arupevidenceuser)? $this->_arupevidenceuser : $this->_arupevidence ;
+
+        $mform->addElement('header', 'exemptionsection', get_string('exemptionheader', 'mod_arupevidence'));
+
+        $mform->addElement('advcheckbox', 'exempt', $this->_arupevidence->exemptionquestion);
+        $mform->setDefault('exempt', !empty($this->_arupevidenceuser->exempt) ? $this->_arupevidenceuser->exempt : 0);
+
+        if ($this->_arupevidence->exemptioninfo) {
+            $mform->addElement('textarea', 'exemptreason', $this->_arupevidence->exemptioninfoquestion);
+            $mform->disabledIf('exemptreason', 'exempt', 'notchecked');
+            $mform->setDefault('exemptreason', !empty($this->_arupevidenceuser->exemptreason) ? $this->_arupevidenceuser->exemptreason : '');
+            $mform->addRule('exemptreason', null, 'required', null, 'client');
+        }
+
+        // Disable completion date if required.
+        if (!empty($this->_arupevidence->exemptioncompletion)) {
+            $mform->disabledIf('completiondate', 'exempt', 'checked');
+        }
+    }
+
+    private function add_taps_fields(MoodleQuickForm $mform) {
         $taps = new \local_taps\taps();
 
         $defaults = !empty($this->_arupevidenceuser)? $this->_arupevidenceuser : $this->_arupevidence ;
@@ -249,7 +271,6 @@ class mod_arupevidence_completion_form extends moodleform
         $mform->addElement('date_selector', 'classstartdate', get_string('cpd:classstartdate', 'block_arup_mylearning'), array('optional' => true, 'timezone' => 0));
         $mform->setAdvanced('classstartdate');
         $mform->setDefault('classstartdate', !empty($defaults->classstartdate) ? $defaults->classstartdate : '');
-
 
         $mform->addElement('text', 'classcost', get_string('cpd:classcost', 'block_arup_mylearning'));
         $mform->setType('classcost', PARAM_TEXT);

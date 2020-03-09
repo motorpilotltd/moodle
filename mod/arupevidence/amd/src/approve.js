@@ -37,7 +37,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     cm_id = $(this).data('cmid');
                     actiontype = $(this).data('actiontype');
 
-                    $('#'+ actiontype +'-evidence-modal').modal('show');
+                    $('#' + actiontype + '-evidence-modal').modal('show');
                 });
 
 
@@ -52,9 +52,8 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                                 '<i class="fa fa-lg fa-fw fa-spinner fa-spin"></i><span class="sr-only">' + s + '</span>'
                             );
                         }).fail(notification.exception);
-                        var rejectmessage = _thismodal.find('#reject-message').length != 0
-                            ? _thismodal.find('#reject-message').val()
-                            : '';
+                        var rejectmessage =
+                            _thismodal.find('#reject-message').length != 0 ? _thismodal.find('#reject-message').val() : '';
                         $.ajax({
                             async: false,
                             type: 'POST',

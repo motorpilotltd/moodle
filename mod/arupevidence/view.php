@@ -149,6 +149,17 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
             $arupevidencedata = array_merge($arupevidencedata, $cpddetails);
         }
 
+        if ($ahb->exemption) {
+            $exemptiondetails = [
+                'exempt' => $data->exempt,
+                'exemptreason' => $data->exemptreason,
+            ];
+            $arupevidencedata = array_merge($arupevidencedata, $exemptiondetails);
+            if ($data->exempt && $ahb->exemptioncompletion) {
+                $arupevidencedata['completiondate'] = null;
+            }
+        }
+
         // Saving declaration agreement
         $agreeddeclaration = [];
         if (!empty($declarations)) {
@@ -274,7 +285,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
         // Approved By
         $user = $DB->get_record('user', array('id' => $ahbuser->approverid), 'firstname, lastname, email');
         $label = html_writer::label(get_string('approve:approvedby', 'mod_arupevidence'), 'approvedbylabel');
-        $fullname = $user->firstname . ' ' . $user->lastname . '(' . $user->email . ')';
+        $fullname = $user->firstname . ' ' . $user->lastname . ' (' . $user->email . ')';
         $value = html_writer::div($fullname ,'approvedbylabel');
         $table->data[] = array($label, $value);
 
@@ -284,6 +295,19 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
         $linkfile = html_writer::link($certificatelink,'');
         $value = html_writer::div($certificatelink ,'completiondatedisplay');
         $table->data[] = array($label, $value);
+
+        // Exemption details.
+        if ($ahb->exemption) {
+            $label = html_writer::label(get_string('label:exempt', 'mod_arupevidence'), 'exempt');
+            $value = html_writer::div($ahbuser->exempt ? get_string('yes') : get_string('no'));
+            $table->data[] = array($label, $value);
+
+            if ($ahbuser->exempt && $ahb->exemptioninfo) {
+                $label = html_writer::label(get_string('label:exemptreason', 'mod_arupevidence'), 'exempt');
+                $value = html_writer::div(s($ahbuser->exemptreason));
+                $table->data[] = array($label, $value);
+            }
+        }
 
         $content .= $output->alert(get_string('approve:requestapproved', 'mod_arupevidence'), 'alert alert-warning', false);
 
@@ -303,8 +327,10 @@ $PAGE->set_url($viewurl);
 $PAGE->requires->css('/mod/arupevidence/styles.css');
 
 $arguments = array(
+    'validity' => $ahb->expectedvalidity,
     'validityperiod' =>  $ahb->expectedvalidityperiod,
     'validityperiodunit' => $ahb->expectedvalidityperiodunit,
+    'skipvalidityexemption' => $ahb->exemption && $ahb->exemptionvalidity,
 );
 $PAGE->requires->js_call_amd('mod_arupevidence/view', 'init', $arguments);
 
