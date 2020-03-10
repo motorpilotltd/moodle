@@ -56,7 +56,7 @@ class api {
             return false;
         }
 
-        return $results->elements;
+        return $results;
     }
 
     public function getcourseprogress($start, $since) {
@@ -87,7 +87,7 @@ class api {
             return false;
         }
 
-        return $results->elements;
+        return $results;
     }
 
     private $config;
