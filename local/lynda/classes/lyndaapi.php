@@ -303,7 +303,7 @@ class lyndaapi {
                         $raw->CourseDuration,
                         'MIN',
                         ['p_learning_method' => 'ECO', 'p_subject_catetory' => 'PD', 'p_learning_desc' => $description,
-                         'p_providerid'      => $raw->CourseID]
+                         'p_providerid'      => $raw->CourseID, 'locked' => true]
                 );
                 mtrace('Created CPD record for ' . $raw->Username);
             }
