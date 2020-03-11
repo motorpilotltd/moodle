@@ -16,7 +16,7 @@
 
 $string['lunchandlearn:myaddinstance'] = 'Add a new Learning Event block to My home';
 $string['lunchandlearn:addinstance'] = 'Add a new Learning Event block';
-$string['pluginname'] = 'Lunch and Learn';
+$string['pluginname'] = 'Learning Event';
 $string['blocktitle'] = 'Learning Event';
 
 $string['upcomingsessions'] = 'Upcoming Sessions';
