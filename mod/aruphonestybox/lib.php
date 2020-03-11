@@ -53,8 +53,11 @@ function aruphonestybox_supports($feature) {
  * @return int The id of the newly inserted newmodule record
  */
 function aruphonestybox_add_instance(stdClass $aruphonestybox, mod_aruphonestybox_mod_form $mform = null) {
-    global $DB;
+    global $COURSE, $DB;
 
+    $aruphonestybox->classname = $COURSE->fullname;
+    $aruphonestybox->classtype = 'LB';
+    $aruphonestybox->provider = 'Learning Burst';
     $aruphonestybox->learningdesc = $aruphonestybox->learningdesc['text'];
     $aruphonestybox->timecreated = time();
 
@@ -68,8 +71,11 @@ function aruphonestybox_add_instance(stdClass $aruphonestybox, mod_aruphonestybo
  * @return boolean Success/Fail
  */
 function aruphonestybox_update_instance(stdClass $aruphonestybox, mod_aruphonestybox_mod_form $mform = null) {
-    global $DB;
+    global $COURSE, $DB;
 
+    $aruphonestybox->classname = $COURSE->fullname;
+    $aruphonestybox->classtype = 'LB';
+    $aruphonestybox->provider = 'Learning Burst';
     $aruphonestybox->learningdesc = $aruphonestybox->learningdesc['text'];
     $aruphonestybox->timemodified = time();
     $aruphonestybox->id = $aruphonestybox->instance;
@@ -198,7 +204,9 @@ function aruphonestybox_sendtotaps($id, $user, &$debug=array()) {
         'p_certificate_number' => $data->certificateno,
         'p_certificate_expiry_date' => empty($data->expirydate) ? null : $data->expirydate,
         'p_learning_desc' => $data->learningdesc,
-        'p_health_and_safety_category' => $data->healthandsafetycategory
+        'p_health_and_safety_category' => $data->healthandsafetycategory,
+        'p_providerid' => $data->course,
+        'locked' => true,
     );
 
     $taps = new \local_taps\taps();
