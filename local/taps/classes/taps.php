@@ -105,7 +105,8 @@ class taps {
             'IM' => 'Institute Meetings',
             'IC' => 'Internal Courses',
             'L' => 'Language',
-            'LUNCH_AND_LEARN' => 'Lunch and Learn',
+            'LB' => 'Learning Burst',
+            'LE' => 'Learning Event',
             'OT' => 'Other Training',
             'ILT' => 'Papers',
             'P' => 'Presentations',
@@ -961,7 +962,7 @@ EOS;
             $enrolment->classcompletiontime = (empty($completiontime) ? time() : $completiontime);
             try {
                 $usedtimezone = new DateTimeZone($enrolment->usedtimezone);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $usedtimezone = new DateTimeZone('UTC');
             }
             $enrolment->classcompletiondate = usergetmidnight($enrolment->classcompletiontime, $usedtimezone); // Midnight of same day as completion time.
