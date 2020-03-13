@@ -1,0 +1,28 @@
+#page-auth-saml-login {
+    .mform .fitemtitle, .form-label {
+        text-align: left;
+    }
+    .loginbox {
+        @extend .well;
+        padding: 1.5rem;
+        input[type="text"],
+        input[type="password"] {
+            @extend .form-control;
+        }
+        input[type="submit"] {
+            margin-left: 0;
+            margin-top: 14px;
+            @extend .btn;
+            @extend .btn-primary;
+        }
+        label {
+            line-height: 20px;
+        }
+        #form-field-username {
+            margin-bottom: 10px;
+        }
+        .forgetpass {
+            margin: 5px 0;
+        }
+    }
+}

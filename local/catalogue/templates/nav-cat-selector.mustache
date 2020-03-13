@@ -1,0 +1,21 @@
+<div class="dropdown ml-md-auto" data-region="select-category">
+    <div class="d-flex">
+        <span class="font-italic font-weight-bold mr-1">{{#str}}category{{/str}}:</span>
+        <a  id="selectcategorydropdown"
+            class="dropdown-toggle text-truncate"
+            href="#"
+            role="button"
+            id="selectCategoryLink"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+        >
+            {{selectcategorystring}}
+        </a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="selectCategoryLink">
+            {{#subcategories}}
+                <a class="dropdown-item" href="{{{baseurl}}}?showcatid={{id}}&page=new#new" data-value="{{id}}" data-name="{{name}}" data-action="select-category" data-pref="cat" aria-label="{{#str}} aria:category, local_catalogue, {{name}} {{/str}}" aria-controls="courses-view-{{uniqid}}">{{name}}</a>
+            {{/subcategories}}
+        </div>
+    </div>
+</div>

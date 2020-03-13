@@ -1,0 +1,28 @@
+<div class="w-100">
+    {{#panels}}
+        <div class="panellayout py-5 position-relative">
+            <div class="foreground row no-gutters panelmetadata col-12 px-1">
+                <div class="paneltitles mb-2">
+                    <h5 class="paneltitle italic font-weight-normal text-muted">{{title}}</h5>
+                    <h3 class="paneltitle">{{subtitle}}</h3>
+                </div>
+                <div class="panellink ml-auto mt-3">
+                    {{#linkurl}}
+                    <a href="{{linkurl}}" class="iconlink text-muted headings-font italic d-flex align-items-center">
+                        <span class="linktext">{{linktext}}</span>
+                        <i class="fa fa-arrow-circle-right fa-md ml-3"></i>
+                    </a>
+                    {{/linkurl}}
+                </div>
+            </div>
+            <div class="foreground row no-gutters panelbody col-12 px-0">
+                {{{panelcontent}}}
+            </div>
+            {{#background}}
+            <div class="backgroundpanel h-100 row">
+                {{{background.panelcontent}}}
+            </div>
+            {{/background}}
+        </div>
+    {{/panels}}
+</div>

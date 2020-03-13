@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of the Workplace aruponepage course format
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,11 +18,14 @@
  * Version details
  *
  * @package    format_aruponepage
+ * @author     2019 <bas@sonsbeekmedia.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2015111600;
-$plugin->requires = 2015111600;
-$plugin->component = 'format_aruponepage';
+// This plugin is part of Moodle Workplace product.
+$plugin->component    = 'format_aruponepage';
+$plugin->version      = 2019122000;
+$plugin->requires     = 2015111600;
+$plugin->maturity     = MATURITY_STABLE;

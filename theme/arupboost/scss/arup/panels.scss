@@ -1,0 +1,201 @@
+.block_panels {
+    .backgroundpanel {
+        display: none;
+    }
+    @include media-breakpoint-up(lg) {
+        .backgroundpanel {
+            width: calc(100vw - 50px);
+            position: absolute;
+            display: flex;
+            top: 0;
+            left: 50%;
+            right: 50%;
+            margin-left: calc(-50vw);
+            margin-right: -50vw;
+            z-index: 0;
+            .image.large {
+                background-size: contain;
+                background-repeat: no-repeat;
+                height: 100%;
+            }
+            .left .image.large {
+                background-position: left bottom;
+            }
+            .right .image.large {
+                background-position: right top;
+            }
+            .image.large .hideinblock {
+                display: none;
+            }
+        }
+        .foreground {
+            z-index: 1;
+        }
+    }
+}
+
+body:not(.editing) {
+    .block_panels {
+        border: 0;
+        .card-header {
+            display: none !important;
+        }
+        .card-body {
+            padding: 0 !important;
+            .card-text {
+                margin: 0 !important;
+                .container-fluid {
+                    padding: 0;
+                }
+            }
+        }
+    }
+}
+
+.nodesc .carddesc {
+    display: none;
+}
+
+.lunchandlearn-small {
+    .day {
+        font-size: 2.5rem;
+        line-height: 1;
+    }
+}
+
+.lunchandlearn-large {
+    .day {
+        font-size: 4rem;
+        line-height: 1;
+    }
+}
+.carousel-indicators li {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 3px;
+    background-color: rgba(0,0,0,.5);
+    &.active {
+        background-color: rgba(0,0,0,.9);
+    }
+}
+
+.carousel {
+    .prev-next {
+        position: absolute;
+        z-index: 1;
+        width: 100%;
+        .carousel-prev {
+            position: absolute;
+            left: 0;
+            margin-top: -30px;
+        }
+        .carousel-next {
+            position: absolute;
+            right: 0;
+            margin-top: -30px;
+        }
+    }
+}
+.fadeout-container {
+    position: relative;
+    overflow: hidden;
+    .fadeout {
+        width: 100%;
+        position: absolute;
+        bottom: 0; padding: 10px;
+        // background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff);
+    }
+}
+.all-100 {
+    height: 100%;
+    & > .carousel-item {
+        height: 100%;
+        & > .card {
+            height: 100%;
+            & > .card-body {
+                height: 100%;
+                & > .panellayout {
+                    height: 100%;
+                }
+            }
+        }
+    }
+}
+
+.path-local-panels {
+    .editcontrols {
+        .card-body {
+            padding: 0.75rem 0.5rem;
+        }
+        .row {
+            margin: 0 -0.25rem 1rem -0.25rem;
+        }
+        transition: width 0.25s;
+        .datasourceconfig,
+        .datasourcetypeselector {
+            .col-md-3,
+            .col-md-9 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+            .form-autocomplete-selection {
+                margin: 0;
+                min-height: 0;
+            }
+            .col-md-3 {
+                font-weight: 700;
+            }
+            .tag {
+                white-space: normal;
+            }
+        }
+        .editformwrapper {
+            position: sticky;
+            top: 115px;
+            min-width: 200px;
+        }
+        #fgroup_id_addpanelarray {
+            position: absolute;
+            top: -50px;
+            right: -5px;
+        }
+        #fgroup_id_buttonar,
+        #fgroup_id_addpanelarray {
+            margin: 0;
+            .col-md-3 {
+                display: none;
+            }
+            .col-md-9 {
+                flex: 0 0 100%;
+                max-width: 100%;
+                padding: 0;
+            }
+        }
+        .mform fieldset.collapsible legend {
+            display: none;
+        }
+        .mform fieldset {
+            border: 0;
+            margin: 0;
+        }
+        .mform fieldset .col-md-3,
+        .mform fieldset .col-md-9 {
+            padding: 0 5px;
+        }
+    }
+    .image.large {
+        background-image: none !important;
+    }
+
+    .editpanels .card-header {
+        min-height: 51px;
+    }
+
+    div.editpanels .zonecontent:empty {
+        min-height: 150px;
+        border-color: gray;
+        border-style: dashed;
+        margin: 2px;
+    }
+}

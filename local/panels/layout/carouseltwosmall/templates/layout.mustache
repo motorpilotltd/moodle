@@ -1,0 +1,48 @@
+<div class="col-md-6" data-region="zone" data-zone="0">
+    <div id="arupcarousel{{uniqid}}" class=" carousel slide m-1" data-ride="carousel" >
+        <!-- Indicators -->
+        {{#multislides}}
+            <ol class="carousel-indicators p-2 mb-0">
+                {{#slides}}
+                    <li data-target="#arupcarousel{{uniqid}}" data-slide-to="{{slidenum}}" class="{{active}}">
+                    </li>
+                {{/slides}}
+            </ol>
+        {{/multislides}}
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+            {{#slides}}
+                <div class="carousel-item {{active}}">
+                    <div class="card border-0">
+                        <div class="card-body zonecontent p-0">{{{content}}}</div>
+                    </div>
+                </div>
+            {{/slides}}
+        </div>
+
+        <!-- Controls -->
+        {{#multislides}}
+            <div>
+                <a class="carousel-control-prev" href="#arupcarousel{{uniqid}}" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">{{#str}} previous, core {{/str}}</span>
+                </a>
+                <a class="carousel-control-next" href="#arupcarousel{{uniqid}}" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">{{#str}} next, core {{/str}}</span>
+                </a>
+            </div>
+        {{/multislides}}
+    </div>
+</div>
+<div class="col-md-6">
+    <div class="row no-gutters">
+        <div class="col-6" data-region="zone" data-zone="1">
+            <div class="p-1 zonecontent h-100">{{{zone1content}}}</div>
+        </div>
+        <div class="col-6" data-region="zone" data-zone="2">
+            <div class="p-1 zonecontent h100">{{{zone2content}}}</div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,77 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_catalogue/categories
+
+    This template renders the main content area for the myoverview block.
+
+    Example context (json):
+    {}
+}}
+<div id="local-catalogue-categories-{{uniqid}}" class="local-catalogue-categories">
+    {{^viewsingle}}
+    <div class="d-flex mt-4">
+        <div class="cataloguetitles mb-2">
+            <h5 class="cataloguetitle italic text-muted">{{#str}}titlesmall, local_catalogue{{/str}}</h5>
+            <h3 class="cataloguetitle">{{#str}}title, local_catalogue{{/str}}</h3>
+        </div>
+        <div class="ml-auto ml-1">
+            {{{editbutton}}}
+        </div>
+    </div>
+    {{/viewsingle}}
+    {{#viewsingle}}
+        {{#subcategories}}
+            {{#active}}
+            <div class="row no-gutters categories-container d-none d-md-flex mb-md-4">
+                <div class="container-fluid p-0" data-region="catrow" data-catid="{{id}}">
+                    <div class="row">
+                        <div class="col-md-3 mb-1 ">
+                            <div class="catalogue-category {{^viewsingle}} p-2{{/viewsingle}}">
+                                {{< local_catalogue/category_card}}
+                                    {{$footer}}{{/footer}}
+                                {{/ local_catalogue/category_card}}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <p>{{{desc}}}</p>
+                            <a href={{{editlink}}}>{{#str}}edit{{/str}}</a>
+                        </div>
+                        <div class="col-md-3 d-flex">
+                            <div class="ml-md-auto d-flex w-100 mt-3 p-3 mt-md-0 p-md-0 catactions" data-region="catactions">
+                                {{> local_catalogue/nav-cat-selector }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/active}}
+        {{/subcategories}}
+    {{/viewsingle}}
+    {{^viewsingle}}
+    <div class="row no-gutters categories-container {{^viewsingle}}px-1 categories-view{{/viewsingle}}">
+        {{#subcategories}}
+            <div class="col-md-3 mb-1 ">
+                <div class="catalogue-category {{^viewsingle}} px-1 py-2{{/viewsingle}}">
+                    {{< local_catalogue/category_card}}
+                    {{/ local_catalogue/category_card}}
+                </div>
+            </div>
+        {{/subcategories}}
+    </div>
+    {{/viewsingle}}
+</div>

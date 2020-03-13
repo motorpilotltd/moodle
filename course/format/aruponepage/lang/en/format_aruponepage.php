@@ -15,28 +15,38 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'format_aruponepage', language 'en'
+ * Strings for course format.
  *
- * @package   format_aruponepage
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    format_aruponepage
+ * @copyright  2018 Moodle Pty Ltd <support@moodle.com>
+ * @author     2018 <bas@sonsbeekmedia.nl>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['accordioneffect'] = 'Accordion effect';
+$string['accordioneffect_help'] = 'Select Yes to close open sections when opening another section';
+$string['collapsesection'] = 'Collapse section {$a}';
+$string['currentsection'] = 'This aruponepage';
+$string['deletesection'] = 'Delete section';
+$string['emptysection'] = 'This section is empty';
+$string['expandsection'] = 'Expand section {$a}';
+$string['hidefromothers'] = 'Hide section';
+$string['highlight'] = 'Highlight section';
+$string['page-course-view-aruponepages'] = 'Any course main page in Arup Onepage format';
+$string['page-course-view-aruponepages-x'] = 'Any course page in Arup Onepage format';
+$string['pluginname'] = 'Arup One Page';
+$string['privacy:metadata'] = 'The Workplace list format plugin stores user\'s preference about open sections on courses.';
+$string['privacy:metadata:opensections'] = 'The list of sections the user keeps open on courses.';
+$string['remhighlight'] = 'Disable highlight';
+$string['section0name'] = 'General';
+$string['section_completion'] = 'This section is {$a}% completed';
+$string['showfromothers'] = 'Show section';
 $string['currentsection'] = 'This topic';
 $string['editsection'] = 'Edit topic';
 $string['deletesection'] = 'Delete topic';
 $string['sectionname'] = 'Topic';
-$string['pluginname'] = 'Arup Single Page format';
-$string['section0name'] = 'General';
-$string['page-course-view-aruponepage'] = 'Any course main page in Arup Single Page format';
-$string['page-course-view-aruponepage-x'] = 'Any course page in Arup Single Page format';
-$string['hidefromothers'] = 'Hide topic';
-$string['showfromothers'] = 'Show topic';
-
-$string['toc'] = 'Table of contents';
-
 $string['home'] = 'home';
 $string['previous'] = 'previous';
 $string['next'] = 'next';
-
-$string['replacesectionlinks'] = 'Replace Section Links';
-$string['replacesectionlinksdesc'] = 'Inject section parameters into "back to course" links.';
+$string['startcourse'] = 'Start the course';
+$string['toc'] = 'Table of contents';

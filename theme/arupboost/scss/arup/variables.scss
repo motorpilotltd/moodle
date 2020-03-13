@@ -1,0 +1,129 @@
+// Theme colours
+$primary010:  #DD4628;
+$primary020:  #BD462B;
+
+$black:       #000000;
+$gray100:     #21252a;
+$gray090:     #343a40;
+$gray080:     #495057;
+$gray070:     #868e96;
+$gray060:     #adb5bd;
+$gray050:     #777777;
+$gray040:     #939598;
+$gray030:     #BCBEC0;
+$gray020:     #E6E7E8;
+$gray010:     #f1f2f2;
+
+$text:        #3C3C3B;
+$white:       #FFFFFF;
+
+$blue010:     #0F95FF;
+$blue020:     #007FFF;
+$blue030:     #2D96F8;
+
+$yellow010:   #FFB41D;
+$yellow020:   #FC9C10;
+
+$red010:      #dd4628;
+$red020:      #DB4453;
+
+$pink010:     #EC87C0;
+$pink020:     #D770AD;
+
+$purple010:   #AC92ED;
+$purple020:   #967BDC;
+
+$green010:    #38C19A;
+$green020:    #30AA8C;
+
+$method-classroom:      #ffb41d;
+$method-learningburst:  #30aa8c;
+$method-elearning:      #9888cc;
+$method-masters:        #ec87c0;
+$method-virtual:        #bd462b;
+$method-other:          #0f95ff;
+
+$frontpageimage: "none" !default;
+$loginbackground: "none" !default;
+// Body
+$body-bg:     $white;
+$body-color:  $text;
+
+// Typography
+$font-size-base: 0.875rem;
+$font-family-sans-serif:      Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
+$headings-font-family:        libre_baskerville !default;
+
+$headings-color: #3c3c3b;
+$headings-font-weight: 700;
+
+$font-size-root: 14px !default;
+
+$enable-rounded: false !default;
+
+$navbar-height: 60px;
+
+$blocks-column-width : 250px;
+
+$h1-font-size:                28px;
+$h2-font-size:                22px;
+$h3-font-size:                20px;
+$h4-font-size:                18px;
+$h5-font-size:                14px;
+
+
+$screen-xs:                  480px;
+$screen-sm:                  768px;
+$screen-md:                  992px;
+$screen-lg:                  1200px;
+
+$card-group-margin: .25rem;
+$link-color: $blue030;
+$link-hover-color: #007fff;
+$primary: $blue010 !default;
+$accent:  $red020;
+
+$drawer-width: 210px;
+$drawer-padding-x: 0;
+$drawer-padding-y: 0;
+
+$breadcrumb-divider: quote(">");
+
+$custom-control-indicator-bg: #FFF;
+$custom-control-indicator-checked-bg: $gray040;
+$custom-control-indicator-size: 1.2rem;
+
+//$dropdown-divider-bg: $accent;
+$table-dark-bg: #939598;
+$table-dark-border-color: #939598;
+
+$hasmegamenu: false;
+
+$theme-colors: () !default;
+$theme-colors: map-merge((
+  "primary":    $primary,
+  "blue010":    $blue010,
+  "blue020":    $blue020,
+  "blue030":    $blue030,
+  "green010":   $green010,
+  "green020":   $green020,
+  "purple010":  $purple010,
+  "purple020":  $purple020,
+  "pink010":    $pink010,
+  "pink020":    $pink020,
+  "red010":     $red010,
+  "red020":     $red020,
+  "yellow010":  $yellow010,
+  "yellow020":  $yellow020,
+  "gray090":    $gray090,
+  "gray080":    $gray080,
+  "gray070":    $gray070,
+  "gray060":    $gray060,
+  "gray050":    $gray050,
+  "gray040":    $gray040,
+  "gray030":    $gray030,
+  "gray020":    $gray020,
+  "gray010":    $gray010,
+  "text": $text,
+  "black": $black
+), $theme-colors);

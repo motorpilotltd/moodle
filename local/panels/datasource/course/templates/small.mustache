@@ -1,0 +1,33 @@
+<div class="panellayout course h-100 {{classes}}">
+    <div class="card h-100 linkcard flex-column arupavcminfo {{ advertclass }}">
+
+        <div class="av_image_wrapper position-relative" style="overflow: hidden">
+            {{#courseimage}}
+            <div class="position-absolute w-100 h-100 d-block">
+                <div class="d-flex flex-column h-100">
+                    <div style="min-height: 1px; margin-top: auto; margin-bottom: auto;">
+                        <img src="{{{courseimage}}}" class="img-responsive d-block">
+                    </div>
+                </div>
+            </div>
+            {{/courseimage}}
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAHCAQMAAAAtrT+LAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAANQTFRF7+/v7Je6jQAAAENJREFUeJztwYEAAAAAw6D5U1/hAFUBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALwGsYoAAQbjkYoAAAAASUVORK5CYII=" class="img-responsive">
+            {{#icon}}
+                <div class="adverticon-container position-absolute p-2" style="left: 0; bottom: 0;">
+                    <img src="{{{ icon }}}" class="adverticon">
+                </div>
+            {{/icon}}
+        </div>
+        <div class="av_metadata av_metadata_border bg-white">
+            <div class="mr-2 mb-2">
+                <a class="font-size-h4 stretched-link text-text" href="{{{ url }}}">
+                    {{ name }}
+                </a>
+            </div>
+            <div class="fadeout-container carddesc" style="height: 4rem" >
+                {{{ description_text }}}
+                <div class="fadeout"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,7 @@
+.ie11 {
+	.catalogue-card-deck {
+	    .card {
+	        flex-basis: calc(33.333% - 0.7rem);
+	    }
+    }
+}

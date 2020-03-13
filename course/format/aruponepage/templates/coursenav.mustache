@@ -1,0 +1,91 @@
+{{!
+    This file is part of The Arup Onpage course format
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    @package    format_aruponepage/coursenav
+    @copyright  2019 Bas Brands <bas@sonsbeekmedia.nl>
+    @author     Bas Brands
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+{{!
+    @template format_aruponepage/coursenav
+
+    Example json {
+    }
+}}
+<div class="showchaptersaction" data-region="sectionnav-control">
+    <span class="fa-stack fa-2x icon-hover" aria-controls="sectionnav" data-action="show-sections" role="button">
+        <i class="fas fa-circle fa-stack-2x text-primary showhover"></i>
+        <i class="fas fa-list-ol fa-stack-1x fa-inverse"></i>
+    </span>
+</div>
+
+<div class="chapters mb-5 {{{ methodology }}}" data-region="sectionnav">
+    <div class="backdrop"></div>
+    <button class="d-lg-none btn btn-dark closenav" data-action="close-nav">
+        <i class="fa fa-2x fa-times"></i>
+    </button>
+    <div id="sectionnav" class="navigationwrapper">
+        <div class="d-flex mb-2 align-items-center">
+            <h2 class="m-0">Chapters</h2>
+        </div>
+        <div class="list-group brand-font" role="navigation" aria-multiselectable="true">
+            {{#sections}}
+                <a class="list-group-item list-group-item-action border-0 p-0 mb-1" href="{{{url}}}">
+                    <div class="d-flex p-2 align-items-center border position-relative
+                        {{#selected}}bg-white border-active{{/selected}}
+                        {{^selected}}bg-gray010{{/selected}}"
+                    >
+                        {{#number}}
+                        <span class="number position-absolute btn rounded-circle sectionnumber mr-3 nomargin
+                            {{#selected}}bg-white border-active{{/selected}}{{^selected}}bg-gray020{{/selected}}"
+                            style="left: -1rem;"
+                        >
+                            {{{number}}}
+                        </span>
+                        {{/number}}
+                        {{^number}}
+                            <span class="number position-absolute bg-gray020 rounded-circle sectionnumber p-2 nomargin text-center border
+                            {{#selected}}bg-white border-active{{/selected}}{{^selected}}bg-gray020{{/selected}}
+                            "
+                            style='left: -1rem; width: 35px;'>
+                            {{#pix}} e/bullet_list, core {{/pix}}
+                            </span>
+                        {{/number}}
+                        <span class="text-truncate pl-4 py-1 ">
+                            {{{title}}}
+                        </span>
+                        {{#completion.completed}}
+                            <span class="text-success ml-auto">
+                                {{#pix}} i/checked, core {{/pix}}
+                            </span>
+                        {{/completion.completed}}
+                        {{^completion.completed}}
+                            <span class=" ml-auto">
+                                {{#availability}}
+                                <span class="availability">
+                                    <button class="btn btn-link  px-md-4 iconlarge nomargin popover-dismiss" data-toggle="popover" data-html="true" data-content="{{availability}}">
+                                        {{#pix}} i/lock, core {{/pix}}
+                                    </button>
+                                </span>
+                                {{/availability}}
+                            </span>
+                        {{/completion.completed}}
+                    </div>
+                </a>
+            {{/sections}}
+        </div>
+    </div>
+</div>

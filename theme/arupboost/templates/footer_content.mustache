@@ -1,0 +1,36 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    Page footer content.
+}}
+<div id="footercontent" data-contextid="{{output.pagecontextid}}" class="d-flex flex-nowrap flex-fill">
+    <div class="p-3 mr-3">
+        {{{output.footerlinks}}}
+    </div>
+    <div data-region="customfooter-content" class="d-flex flex-wrap flex-fill">
+        <div class="placeholder" style="height: 217px">
+        </div>
+    </div>
+</div>
+{{#output.is_logged_in}}
+{{#js}}
+require(['jquery', 'theme_arupboost/footer'], function($, Footer) {
+    var root = $('#footercontent');
+    Footer.init(root);
+});
+{{/js}}
+{{/output.is_logged_in}}

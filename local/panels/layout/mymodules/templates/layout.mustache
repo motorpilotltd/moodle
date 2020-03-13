@@ -1,0 +1,44 @@
+<div class="panellayout col-12 tiny-slider-container">
+    <div class="tiny-slider slider-{{uniqid}} d-flex">
+      {{#courses}}
+      <div class="item" data-region="zone" data-zone="0">
+          <div class="p-1 zonecontent h-100">{{{.}}}</div>
+      </div>
+      {{/courses}}
+    </div>
+</div>
+{{#js}}
+require(
+[
+    'theme_arupboost/tinyslider',
+],
+function(
+    tinySlider
+) {
+
+    var tns = tinySlider.tns;
+
+    var options = {
+        'base': {
+          container: '.slider-{{uniqid}}',
+          items: 2,
+          controlsContainer: false,
+          nav: false,
+          arrowKeys: true,
+          controls: true,
+          // loop: false,
+          slideBy: 'page',
+          speed: 900,
+          mouseDrag: true,
+          controlsText: ['<span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i><i class="fas fa-chevron-double-left fa-stack-1x fa-inverse"></i></span>', '<span class="fa-stack fa-lg"><i class="fas fa-circle fa-stack-2x"></i><i class="fas fa-chevron-double-right fa-stack-1x fa-inverse"></i></span>'],
+          responsive: {
+            768: {
+              items: 4
+            }
+          }
+        }
+    };
+
+    tns(options['base']);
+});
+{{/js}}

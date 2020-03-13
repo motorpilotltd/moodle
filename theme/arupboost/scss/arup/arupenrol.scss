@@ -1,0 +1,171 @@
+.path-course-view {
+    li.arupenrol-hidden {
+        display: none;
+    }
+    li.arupenrol,
+    li.tapsenrol {
+        .mod-indent-outer,
+        .contentwithoutlink, {
+            display: block;
+        }
+        form {
+            text-align: right;
+            label {
+                margin-right: 5px;
+            }
+            input[type="text"] {
+                margin-right: 5px;
+            }
+        }
+    }
+}
+.editing.path-course-view {
+    li.arupenrol-hidden {
+        display: inherit;
+    }
+}
+
+.thead-dark > .thead {
+    color: $table-dark-color;
+    background-color: $table-dark-bg;
+    border-color: $table-dark-border-color;
+    font-style: italic;
+}
+
+.flextable {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: $spacer;
+    background-color: $table-bg; // Reset for nesting within parents with `background-color`.
+
+
+    .cell-1 {
+        width: 100%;
+    }
+    .cell-2 {
+        width: 50%;
+    }
+    .cell-3 {
+        width: 33.33333%;
+    }
+    .cell-4 {
+        width: 25%;
+    }
+    .cell-5 {
+        width: 20%;
+    }
+    .cell-6 {
+        width: 16.6666%;
+    }
+    .cell-7 {
+        width: 14.28571%;
+    }
+    .cell-8 {
+        width: 12.5%;
+    }
+    .cell-9 {
+        width: 11.11111%;
+    }
+    .cell-10 {
+        width:  10%;
+    }
+
+    .cell-hidden-sm {
+        display: none;
+    }
+
+    @include media-breakpoint-up(sm) {
+        .cell-md-1 {
+            width: 100%;
+        }
+        .cell-md-2 {
+            width: 50%;
+        }
+        .cell-md-3 {
+            width: 33.33333%;
+        }
+        .cell-md-4 {
+            width: 25%;
+        }
+        .cell-md-5 {
+            width: 20%;
+        }
+        .cell-md-6 {
+            width: 16.6666%;
+        }
+        .cell-md-7 {
+            width: 14.28571%;
+        }
+        .cell-md-8 {
+            width: 12.5%;
+        }
+        .cell-md-9 {
+            width: 11.11111%;
+        }
+        .cell-md-10 {
+            width:  10%;
+        }
+        .cell-hidden-sm {
+            display: block;
+        }
+    }
+    .thead {
+        display: none;
+    }
+
+    .tr {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    @include media-breakpoint-down(sm) {
+        .cell-end {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .cell-strong {
+            font-weight: bold;
+        }
+        .cell-pt {
+            padding-top: $table-cell-padding !important;
+        }
+        .cell-pb {
+            padding-bottom: $table-cell-padding !important;
+        }
+        .cell-italic {
+            font-style: italic;
+        }
+    }
+
+    @include media-breakpoint-up(sm) {
+        .thead {
+            display: flex;
+            flex-wrap: wrap;
+        }
+    }
+    .th,
+    .td {
+        padding: 0 $table-cell-padding;
+        vertical-align: top;
+        @include media-breakpoint-up(sm) {
+            padding: $table-cell-padding;
+            border-top: $table-border-width solid $table-border-color;
+        }
+    }
+
+    .th {
+        vertical-align: bottom;
+    }
+
+    .table {
+        background-color: $body-bg;
+    }
+}
+
+.flextable {
+    .tr:nth-of-type(even) {
+        background-color: $table-accent-bg;
+    }
+}
+

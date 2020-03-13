@@ -1,0 +1,36 @@
+<div class="panellayout lunchandlearn lunchandlearn-small h-100 d-flex flex-column {{classes}}">
+	<div class="bg-gray050 p-2" style="min-height: 70px;">
+		<div class="media">
+			<div class="day brand-font text-yellow010 mr-2">
+				{{#userdate}}{{date}},%d{{/userdate}}
+			</div>
+			<div class="media-body p-1">
+				<h4 class="date text-yellow010 mb-1">{{#userdate}}{{date}},{{#str}}strftimemonthyear, langconfig{{/str}}{{/userdate}}</h4>
+				<div class="d-flex">
+					{{#office}}
+					<h5 class="location italic text-white mb-0">{{office}}</h5>
+					{{/office}}
+					{{#office}}
+						{{#room}}
+							<span class="text-white italic">,&nbsp;</span>
+						{{/room}}
+					{{/office}}
+					{{#room}}
+						<h5 class="location italic text-white mb-0">{{room}}</h5>
+					{{/room}}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="info bg-white p-2 border-left border-right border-bottom flex-fill d-flex flex-column">
+	    <div class="name mb-3 flex-fill">{{name}}</div>
+	    <div class="footerinfo d-flex">
+	    	<div class="ml-auto">
+			    <a href="{{actionurl}}" class="btn btn-info btn-blue020 btn-sm icon-nomargin {{actionclass}}">
+			    	{{#str}}signup, local_lunchandlearn{{/str}}
+			    	{{#pix}}e/left_to_right, core{{/pix}}
+			    </a>
+			</div>
+		</div>
+	</div>
+</div>

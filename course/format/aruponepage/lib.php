@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of the aruponepage course format
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,19 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains main class for the Arup Single Page course format 
- * @package   format_aruponepage
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Required lib functions
+ *
+ * @package    format_aruponepage
+ * @author     2019 <bas@sonsbeekmedia.nl>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot. '/course/format/lib.php');
 
 /**
- * Main class for the Arup Single Page course format
+ * Main class for the WPlist course format
  *
  * @package    format_aruponepage
+ * @author     2019 <bas@sonsbeekmedia.nl>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license    Moodle Workplace License, distribution is restricted, contact support@moodle.com
  */
 class format_aruponepage extends format_base {
 
@@ -41,31 +45,13 @@ class format_aruponepage extends format_base {
     }
 
     /**
-     * Returns the display name of the given section that the course prefers.
-     *
-     * Use section name is specified by user. Otherwise use default ("Topic #")
-     *
-     * @param int|stdClass $section Section object from database or just field section.section
-     * @return string Display name that the course format prefers, e.g. "Topic 2"
-     */
-    public function get_section_name($section) {
-        $section = $this->get_section($section);
-        if ((string)$section->name !== '') {
-            return format_string($section->name, true,
-                    array('context' => context_course::instance($this->courseid)));
-        } else {
-            return $this->get_default_section_name($section);
-        }
-    }
-
-    /**
-     * Returns the default section name for the Arup Single Page course format.
+     * Returns the default section name for the topics course format.
      *
      * If the section number is 0, it will use the string with key = section0name from the course format's lang file.
      * If the section number is not 0, the base implementation of format_base::get_default_section_name which uses
      * the string with the key = 'sectionname' from the course format's lang file + the section number will be used.
      *
-     * @param stdClass $section Section object from database or just field course_sections section
+     * @param stdClass|section_info $section Section object from database or just field course_sections section
      * @return string The default value for the section name.
      */
     public function get_default_section_name($section) {
@@ -76,6 +62,24 @@ class format_aruponepage extends format_base {
             // Use format_base::get_default_section_name implementation which
             // will display the section name in "Topic n" format.
             return parent::get_default_section_name($section);
+        }
+    }
+
+    /**
+     * Returns the display name of the given section that the course prefers.
+     *
+     * Use section name is specified by user. Otherwise use default ("Topic #")
+     *
+     * @param int|stdClass|section_info $section Section object from database or just field section.section
+     * @return string Display name that the course format prefers, e.g. "Topic 2"
+     */
+    public function get_section_name($section) {
+        $section = $this->get_section($section);
+        if ((string)$section->name !== '') {
+            return format_string($section->name, true,
+                    array('context' => context_course::instance($this->courseid), 'escape' => false));
+        } else {
+            return self::get_default_section_name($section);
         }
     }
 
@@ -114,7 +118,7 @@ class format_aruponepage extends format_base {
             } else {
                 $usercoursedisplay = $course->coursedisplay;
             }
-            if ($sectionno != 0 && $usercoursedisplay == COURSE_DISPLAY_MULTIPAGE) {
+            if ($sectionno != 0) {
                 $url->param('section', $sectionno);
             } else {
                 if (empty($CFG->linkcoursesections) && !empty($options['navigation'])) {
@@ -147,31 +151,7 @@ class format_aruponepage extends format_base {
      * @param navigation_node $node The course node within the navigation
      */
     public function extend_course_navigation($navigation, navigation_node $node) {
-        global $PAGE;
-        // if section is specified in course/view.php, make sure it is expanded in navigation
-        if ($navigation->includesectionnum === false) {
-            $selectedsection = optional_param('section', null, PARAM_INT);
-            if ($selectedsection !== null && (!defined('AJAX_SCRIPT') || AJAX_SCRIPT == '0') &&
-                    $PAGE->url->compare(new moodle_url('/course/view.php'), URL_MATCH_BASE)) {
-                $navigation->includesectionnum = $selectedsection;
-            }
-        }
 
-        // check if there are callbacks to extend course navigation
-        parent::extend_course_navigation($navigation, $node);
-
-        // We want to remove the general section if it is empty.
-        $modinfo = get_fast_modinfo($this->get_course());
-        $sections = $modinfo->get_sections();
-        if (!isset($sections[0])) {
-            // The general section is empty to find the navigation node for it we need to get its ID.
-            $section = $modinfo->get_section_info(0);
-            $generalsection = $node->get($section->id, navigation_node::TYPE_SECTION);
-            if ($generalsection) {
-                // We found the node - now remove it.
-                $generalsection->remove();
-            }
-        }
     }
 
     /**
@@ -181,11 +161,12 @@ class format_aruponepage extends format_base {
      *
      * @return array This will be passed in ajax respose
      */
-    function ajax_section_move() {
+    public function ajax_section_move() {
         global $PAGE;
         $titles = array();
         $course = $this->get_course();
         $modinfo = get_fast_modinfo($course);
+        /** @var format_aruponepage_renderer $renderer */
         $renderer = $this->get_renderer($PAGE);
         if ($renderer && ($sections = $modinfo->get_section_info_all())) {
             foreach ($sections as $number => $section) {
@@ -196,7 +177,7 @@ class format_aruponepage extends format_base {
     }
 
     /**
-     * Returns the list of blocks to be automatically added for the newly created course
+     * Returns the aruponepage of blocks to be automatically added for the newly created course
      *
      * @return array of default blocks, must contain two keys BLOCK_POS_LEFT and BLOCK_POS_RIGHT
      *     each of values is an array of block names (for left and right side columns)
@@ -211,11 +192,6 @@ class format_aruponepage extends format_base {
     /**
      * Definitions of the additional options that this course format uses for course
      *
-     * Arup Single Page format uses the following options:
-     * - coursedisplay
-     * - numsections
-     * - hiddensections
-     *
      * @param bool $foreditform
      * @return array of options
      */
@@ -224,16 +200,16 @@ class format_aruponepage extends format_base {
         if ($courseformatoptions === false) {
             $courseconfig = get_config('moodlecourse');
             $courseformatoptions = array(
-                'numsections' => array(
-                    'default' => $courseconfig->numsections,
-                    'type' => PARAM_INT,
-                ),
                 'hiddensections' => array(
                     'default' => $courseconfig->hiddensections,
                     'type' => PARAM_INT,
                 ),
                 'coursedisplay' => array(
                     'default' => $courseconfig->coursedisplay,
+                    'type' => PARAM_INT,
+                ),
+                'accordioneffect' => array(
+                    'default' => 0,
                     'type' => PARAM_INT,
                 ),
             );
@@ -249,11 +225,6 @@ class format_aruponepage extends format_base {
                 $sectionmenu[$i] = "$i";
             }
             $courseformatoptionsedit = array(
-                'numsections' => array(
-                    'label' => new lang_string('numberweeks'),
-                    'element_type' => 'select',
-                    'element_attributes' => array($sectionmenu),
-                ),
                 'hiddensections' => array(
                     'label' => new lang_string('hiddensections'),
                     'help' => 'hiddensections',
@@ -277,6 +248,18 @@ class format_aruponepage extends format_base {
                     ),
                     'help' => 'coursedisplay',
                     'help_component' => 'moodle',
+                ),
+                'accordioneffect' => array(
+                    'label' => new lang_string('accordioneffect', 'format_aruponepage'),
+                    'element_type' => 'select',
+                    'element_attributes' => array(
+                        array(
+                            0 => new lang_string('no'),
+                            1 => new lang_string('yes')
+                        )
+                    ),
+                    'help' => 'accordioneffect',
+                    'help_component' => 'format_aruponepage',
                 )
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions, $courseformatoptionsedit);
@@ -294,31 +277,31 @@ class format_aruponepage extends format_base {
      * @return array array of references to the added form elements.
      */
     public function create_edit_form_elements(&$mform, $forsection = false) {
+        global $COURSE;
         $elements = parent::create_edit_form_elements($mform, $forsection);
 
-        // Increase the number of sections combo box values if the user has increased the number of sections
-        // using the icon on the course page beyond course 'maxsections' or course 'maxsections' has been
-        // reduced below the number of sections already set for the course on the site administration course
-        // defaults page.  This is so that the number of sections is not reduced leaving unintended orphaned
-        // activities / resources.
-        if (!$forsection) {
-            $maxsections = get_config('moodlecourse', 'maxsections');
-            $numsections = $mform->getElementValue('numsections');
-            $numsections = $numsections[0];
-            if ($numsections > $maxsections) {
-                $element = $mform->getElement('numsections');
-                for ($i = $maxsections+1; $i <= $numsections; $i++) {
-                    $element->addOption("$i", $i);
-                }
+        if (!$forsection && (empty($COURSE->id) || $COURSE->id == SITEID)) {
+            // Add "numsections" element to the create course form - it will force new course to be prepopulated
+            // with empty sections.
+            // The "Number of sections" option is no longer available when editing course, instead teachers should
+            // delete and add sections when needed.
+            $courseconfig = get_config('moodlecourse');
+            $max = (int)$courseconfig->maxsections;
+            $element = $mform->addElement('select', 'numsections', get_string('numberweeks'), range(0, $max ?: 52));
+            $mform->setType('numsections', PARAM_INT);
+            if (is_null($mform->getElementValue('numsections'))) {
+                $mform->setDefault('numsections', $courseconfig->numsections);
             }
+            array_unshift($elements, $element);
         }
+
         return $elements;
     }
 
     /**
      * Updates format options for a course
      *
-     * In case if course format was changed to 'aruponepage', we try to copy options
+     * In case if course format was changed to 'topics', we try to copy options
      * 'coursedisplay', 'numsections' and 'hiddensections' from the previous format.
      * If previous course format did not have 'numsections' option, we populate it with the
      * current number of sections
@@ -329,7 +312,6 @@ class format_aruponepage extends format_base {
      * @return bool whether there were any changes to the options values
      */
     public function update_course_format_options($data, $oldcourse = null) {
-        global $DB;
         $data = (array)$data;
         if ($oldcourse !== null) {
             $oldcourse = (array)$oldcourse;
@@ -338,33 +320,11 @@ class format_aruponepage extends format_base {
                 if (!array_key_exists($key, $data)) {
                     if (array_key_exists($key, $oldcourse)) {
                         $data[$key] = $oldcourse[$key];
-                    } else if ($key === 'numsections') {
-                        // If previous format does not have the field 'numsections'
-                        // and $data['numsections'] is not set,
-                        // we fill it with the maximum section number from the DB
-                        $maxsection = $DB->get_field_sql('SELECT max(section) from {course_sections}
-                            WHERE course = ?', array($this->courseid));
-                        if ($maxsection) {
-                            // If there are no sections, or just default 0-section, 'numsections' will be set to default
-                            $data['numsections'] = $maxsection;
-                        }
                     }
                 }
             }
         }
-        $changed = $this->update_format_options($data);
-        if ($changed && array_key_exists('numsections', $data)) {
-            // If the numsections was decreased, try to completely delete the orphaned sections (unless they are not empty).
-            $numsections = (int)$data['numsections'];
-            $maxsection = $DB->get_field_sql('SELECT max(section) from {course_sections}
-                        WHERE course = ?', array($this->courseid));
-            for ($sectionnum = $maxsection; $sectionnum > $numsections; $sectionnum--) {
-                if (!$this->delete_section($sectionnum, false)) {
-                    break;
-                }
-            }
-        }
-        return $changed;
+        return $this->update_format_options($data);
     }
 
     /**
@@ -377,5 +337,52 @@ class format_aruponepage extends format_base {
      */
     public function can_delete_section($section) {
         return true;
+    }
+
+    /**
+     * Returns whether this course format allows the activity to
+     * have "triple visibility state" - visible always, hidden on course page but available, hidden.
+     *
+     * @param stdClass|cm_info $cm course module (may be null if we are displaying a form for adding a module)
+     * @param stdClass|section_info $section section where this module is located or will be added to
+     * @return bool
+     */
+    public function allow_stealth_module_visibility($cm, $section) {
+        return !$section->section || $section->visible;
+    }
+}
+
+
+/**
+ * Get the current user preferences that are available
+ *
+ * @return mixed Array representing current options along with defaults
+ */
+function format_aruponepage_user_preferences() {
+    $preferences['/^format_aruponepage_opensections_(\d)+$/'] = array(
+        'isregex' => true,
+        'type' => PARAM_RAW,
+        'null' => NULL_NOT_ALLOWED,
+        'default' => '[]'
+    );
+    return $preferences;
+}
+
+/**
+ * Implements callback inplace_editable() allowing to edit values in-place
+ *
+ * @param string $itemtype
+ * @param int $itemid
+ * @param mixed $newvalue
+ * @return \core\output\inplace_editable
+ */
+function format_aruponepage_inplace_editable($itemtype, $itemid, $newvalue) {
+    global $DB, $CFG;
+    require_once($CFG->dirroot . '/course/lib.php');
+    if ($itemtype === 'sectionname' || $itemtype === 'sectionnamenl') {
+        $section = $DB->get_record_sql(
+            'SELECT s.* FROM {course_sections} s JOIN {course} c ON s.course = c.id WHERE s.id = ? AND c.format = ?',
+            array($itemid, 'aruponepage'), MUST_EXIST);
+        return course_get_format($section->course)->inplace_editable_update_section_name($section, $itemtype, $newvalue);
     }
 }

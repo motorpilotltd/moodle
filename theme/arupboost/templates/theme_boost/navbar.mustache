@@ -1,0 +1,120 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    Page navbar.
+
+    Example context (json):
+    {
+        "output": {
+            "is_logged_in": true,
+            "should_display_navbar_logo": true,
+            "get_compact_logo_url": "http://example.com/image.png",
+            "custom_menu": "<li>..</li>",
+            "workplace_menu": "<div class='dropdown'>Workplace Menu</div>",
+            "page_heading_menu": "<li>..</li>",
+            "search_box": "<div><input type='text'></div>",
+            "navbar_plugin_output": "<div class='dropdown'>Messaging</div>",
+            "usermenu": "<div class='dropdown'>John Doe</div>"
+        },
+        "config": { "wwwroot": "#" },
+        "sitename": "Moodle Site",
+        "wpnavbarexamplecontext": true
+    }
+}}
+<span id="arup-top-nav">
+    <nav class="fixed-top navbar navbar-light hide-megamenu bg-white moodle-has-zindex d-flex flex-nowrap{{#output.hasmegamenu}}flex-column{{/output.hasmegamenu}} align-items-stretch py-0 " aria-label="{{#str}}sitemenubar, admin{{/str}}" data-nav-status="toggle">
+        <div class="d-none d-xl-flex align-items-center">
+            {{> theme_arupboost/drawer_toggle}}
+        </div>
+        <div class="container-fluid p-0 d-flex flex-nowrap align-items-stretch">
+            {{#output.hasmegamenu}}
+            <ul class="nav navbar-nav flex-row align-items-stretch">
+                <li class="dropdown nav-item d-flex">
+                    <a
+                        class="btn px-3 nocaret navbar-link iconlarge btn-navbar d-flex align-self-stretch align-items-center"
+                        href="#megamenu"
+                        role="button"
+                        id="megamenulink"
+                        data-toggle="collapse"
+                        data-target="#megamenu"
+                        aria-expanded="false"
+                        aria-controls="megamenu"
+                    >
+                        {{#pix}} i/menubars, core {{/pix}}
+                    </a>
+                </li>
+            </ul>
+            {{/output.hasmegamenu}}
+            <div class="d-xl-none d-flex align-items-center">
+                {{> theme_arupboost/drawer_toggle}}
+            </div>
+            <a href="{{{ wwwroot }}}" class="navbar-brand flex-fill">
+                {{#output.arup_logo}}
+                    <img src="{{{ output.arup_logo }}}">
+                {{/output.arup_logo}}
+                {{#output.appraisal_logo}}
+                     <img src="{{{ output.appraisal_logo }}}" style="max-height: 50px;">
+                {{/output.appraisal_logo}}
+            </a>
+
+            <ul class="nav navbar-nav flex-row align-items-stretch d-none d-lg-flex">
+                {{{ output.custom_menu }}}
+                {{{ output.page_heading_menu }}}
+            </ul>
+            <ul class="nav navbar-nav flex-row flex-nowrap ml-auto align-items-stretch">
+                <li class="nav-item">
+                    <a class="nav-link search nomargin px-3" title="search" href="#" data-action="show-search" data-target="#searchmodal">
+                    {{#pix}} i/search, core {{/pix}}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link setusertime mr-md-2" title="setusertime" href="#" data-action="set-timezone" data-target="#timezonemodal">
+                    {{{ output.display_usertime }}}
+                    </a>
+                </li>
+                <li class="nav-item d-flex align-items-center">
+                    {{{ output.user_menu }}}
+                </li>
+            </ul>
+        </div>
+        {{{ output.mega_menu }}}
+    </nav>
+    {{> theme_arupboost/timezonemodal }}
+    {{> theme_arupboost/searchmodal }}
+</span>
+
+{{#js}}
+require(
+[
+    'jquery',
+    'theme_arupboost/selecttimezone',
+    'theme_arupboost/search',
+    'theme_arupboost/navbar'
+],
+function(
+    $,
+    SelectTimezone,
+    Search,
+    Navbar
+) {
+    var root = $('#arup-top-nav');
+    SelectTimezone.init(root);
+    Search.init(root);
+    Navbar.init(root);
+});
+{{/js}}
+

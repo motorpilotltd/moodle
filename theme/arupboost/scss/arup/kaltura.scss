@@ -1,0 +1,14 @@
+.kaltura-placeholder {
+    .placeholderimage {
+        align-self: center;
+        width: 100%;
+        max-width: 450px;
+    }
+    .playicon {
+        color: #000000;
+        opacity: 0.75;
+        &:hover {
+            opacity: 1;
+        }
+    }
+}

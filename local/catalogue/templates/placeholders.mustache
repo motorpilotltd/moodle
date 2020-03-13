@@ -1,0 +1,39 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_catalogue/placeholders
+
+    This template renders the loading placeholders for the myoverview block.
+
+    Example context (json):
+    {}
+}}
+<div data-region="loading-placeholder-content" aria-hidden="true" class="placeholders">
+    <div class="card-deck catalogue-card-deck position-relative" >
+        <div class="position-absolute w-100" style="z-index: 1">
+            <div class="text-center mt-5">
+                <div class="fa-spin">
+                    <i class="fa fa-2x fa-spinner"></i>
+                </div>
+            </div>
+        </div>
+
+        {{> local_catalogue/placeholder-course }}
+        {{> local_catalogue/placeholder-course }}
+        {{> local_catalogue/placeholder-course }}
+    </div>
+</div>

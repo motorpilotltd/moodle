@@ -1,0 +1,100 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_aruponepage/coursemodule
+
+    This template renders action menu for each course.
+
+    Example context (json):
+    {
+        "editing": false,
+        "availability": "Not available until..",
+        "text": "Module description text",
+        "cmname": "Quiz Math 01",
+        "editoptions": "<div class='dropdown'>edit</div>",
+        "moveicons": "<div><i class='fa fa-arrows'></i></div>",
+        "mod": {
+            "id": 234,
+            "section": 245,
+            "uservisible": true,
+            "afterlink": "<a href='..'>Linkname</a>"
+        }
+    }
+}}
+<div id="module-{{mod.id}}"
+    data-region="module"
+    data-module="{{mod.id}}"
+    class="aruponepage-group-item p-0 {{^editing}}my-3{{/editing}}{{#editing}}border-bottom{{/editing}} w-100
+        {{^mod.uservisible}} notavailable bg-gray020 {{/mod.uservisible}}
+
+        activity type-{{mod.modname}} {{mod.extraclasses}}"
+>
+    <div class="d-flex module-content position-relative align-items-center {{^editing}}p-3{{/editing}}">
+
+        {{#editing}}
+            {{{moveicons}}}
+        {{/editing}}
+
+
+        <div class="d-flex flex-fill flex-column {{#editing}}py-2{{/editing}}">
+            {{#cmname}}
+            <div class="cmname d-flex iconlarge">
+                {{{cmname}}}
+                {{#completion}}
+                    <span class="completion ml-auto pl-2 pr-4">
+                        {{{completion}}}
+                    </span>
+                {{/completion}}
+            </div>
+            {{/cmname}}
+            {{#text}}
+                <div class="text mt-2 mb-2">
+                    {{{text}}}
+                </div>
+                {{^cmname}}
+                    {{#completion}}
+                    <span class="completion ml-auto pl-2 pr-4">
+                        {{{completion}}}
+                    </span>
+                    {{/completion}}
+                {{/cmname}}
+            {{/text}}
+        </div>
+
+
+
+        {{#mod.afterlink}}
+            <span class="afterlink">
+                {{{mod.afterlink}}}
+            </span>
+        {{/mod.afterlink}}
+
+        {{#availability}}
+            <span class="availability iconlarge nomargin">
+                <button class="btn btn-link border-0 py-3 px-md-4 popover-dismiss" data-toggle="popover" data-html="true" data-content="{{availability}}">
+                    {{#pix}} i/lock, core {{/pix}}
+                </button>
+            </span>
+        {{/availability}}
+
+        {{#editing}}
+            <span class="editoptions ml-auto align-self-stretch d-flex p-2">
+                {{{editoptions}}}
+            </span>
+        {{/editing}}
+    </div>
+</div>

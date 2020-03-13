@@ -1,0 +1,35 @@
+<div class="panellayout lunchandlearn lunchandlearn-large {{classes}}">
+	<div class="bg-gray050 p-3">
+		<div class="media border-bottom border-yellow010 pb-1">
+			<div class="day brand-font text-yellow010 mr-2">
+				{{#userdate}}{{date}},%d{{/userdate}}
+			</div>
+			<div class="media-body p-1">
+				<h4 class="date text-yellow010 mb-3">{{#userdate}}{{date}},{{#str}}strftimemonthyear, langconfig{{/str}}{{/userdate}}</h4>
+				<h5 class="location italic text-white mb-0">{{office}}, {{room}}</h5>
+			</div>
+		</div>
+		<div class="d-flex mt-2 text-gray020 italic">
+			<div class="day-word">
+				{{#userdate}}{{date}},%A{{/userdate}}
+			</div>
+			<div class="ml-auto">
+				{{#userdate}}{{date}},%H:%M{{/userdate}} {{ timezone }}
+			</div>
+		</div>
+	</div>
+	<div class="info p-3 border-left border-right border-bottom">
+	<h3 class="title">{{name}}</h3>
+    <div class="description">{{{description}}}</div>
+    <div class="summary mb-3">{{{summary}}}</div>
+	    <div class="footerinfo d-flex text-gray050">
+	    	<div class="attendanceinfo">{{{attendanceinfo}}}</div>
+	    	<div class="ml-auto">
+			    <a href="{{actionurl}}" class="btn btn-info btn-blue020 btn-sm icon-nomargin {{actionclass}}">
+			    	{{#str}}signup, local_lunchandlearn{{/str}}
+			    	{{#pix}}e/left_to_right, core{{/pix}}
+			    </a>
+			</div>
+		</div>
+	</div>
+</div>

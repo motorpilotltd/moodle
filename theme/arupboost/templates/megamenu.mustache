@@ -1,0 +1,65 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_arupboost/megamenu
+
+    This template renders the main content area for the myoverview block.
+
+    Example context (json):
+    {}
+}}
+
+<div
+    id="megamenu"
+    class="collapse "
+    data-region="megamenu"
+    role="navigation">
+
+    <div data-region="megamenu-content" class="container-fluid d-flex flex-column mt-0 arup-megamenu p-0 " aria-labelledby="megamenulink">
+        <div class="w-100 py-2 px-4">
+            <hr class="megamenu-hr mx-md-5">
+        </div>
+
+        <div class="card-columns px-md-5 pb-2">
+            {{#sections}}
+            <div class="card border-0">
+                <div class="card-body">
+                    <h5 class="card-title pl-2 mb-3">{{title}}</h5>
+                        <ul class="list-unstyled m-0 pl-2">
+                        {{#content}}
+                            <li><a class="link" href={{{url}}}>{{title}}</a>
+                        {{/content}}
+                        </ul>
+                </div>
+            </div>
+            {{/sections}}
+
+        </div>
+       <a
+            class="btn btn-outline-secondary closemenu nomargin ml-auto mr-auto mb-3"
+            href="#megamenu"
+            role="button"
+            id="megamenulink"
+            data-toggle="collapse"
+            data-target="#megamenu"
+            aria-expanded="false"
+            aria-controls="megamenu"
+        >
+            {{#pix}} e/cancel, core {{/pix}}
+        </a>
+    </div>
+</div>

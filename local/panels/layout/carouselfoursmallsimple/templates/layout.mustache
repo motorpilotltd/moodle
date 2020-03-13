@@ -1,0 +1,74 @@
+<div class="col-md-6 pb-2" data-region="zone" data-zone="0">
+    <div id="arupcarousel{{uniqid}}" class="carousel h-100 d-flex align-items-center slide m-1" data-ride="carousel">
+        <!-- Indicators -->
+        {{#multislides}}
+            <ol class="carousel-indicators  p-2" style="bottom: 0;">
+                {{#slides}}
+                    <li data-target="#arupcarousel{{uniqid}}" data-slide-to="{{slidenum}}" class="{{active}}">
+                    </li>
+                {{/slides}}
+            </ol>
+        {{/multislides}}
+
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" role="listbox">
+            {{#slides}}
+                <div class="carousel-item resize-{{uniqid}} {{active}}">
+                    <div class="card border-0">
+                        <div class="card-body h-100 zonecontent p-0">{{{content}}}</div>
+                    </div>
+                </div>
+            {{/slides}}
+        </div>
+
+        <!-- Controls -->
+        {{#multislides}}
+            <div class="prev-next">
+                <a class="btn p-0 carousel-prev" href="#arupcarousel{{uniqid}}" role="button" data-slide="prev">
+                    <span class="fa-stack fa-lg">
+                        <i class="fas fa-circle fa-stack-2x"></i>
+                        <i class="fas fa-chevron-double-left fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <span class="sr-only">{{#str}} previous, core {{/str}}</span>
+                </a>
+                <a class="btn p-0 carousel-next" href="#arupcarousel{{uniqid}}" role="button" data-slide="next">
+                    <span class="fa-stack fa-lg">
+                        <i class="fas fa-circle fa-stack-2x"></i>
+                        <i class="fas fa-chevron-double-right fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <span class="sr-only">{{#str}} next, core {{/str}}</span>
+                </a>
+            </div>
+        {{/multislides}}
+    </div>
+</div>
+<div class="col-md-6">
+    <div class="row no-gutters panellayout">
+        <div class="col-6" data-region="zone" data-zone="1">
+            <div class="p-1 h-100 zonecontent nodesc">{{{zone1content}}}</div>
+        </div>
+        <div class="col-6" data-region="zone" data-zone="2">
+            <div class="p-1 h-100 zonecontent nodesc">{{{zone2content}}}</div>
+        </div>
+    </div>
+    <div class="row no-gutters panellayout">
+        <div class="col-6" data-region="zone" data-zone="3">
+            <div class="p-1 h-100 zonecontent nodesc">{{{zone3content}}}</div>
+        </div>
+        <div class="col-6" data-region="zone" data-zone="4">
+            <div class="p-1 h-100 zonecontent nodesc">{{{zone4content}}}</div>
+        </div>
+    </div>
+</div>
+{{#js}}
+require(
+[
+    'local_panels/carousel',
+],
+function(
+    carousel
+) {
+
+    carousel.init('.resize-{{uniqid}}');
+});
+{{/js}}

@@ -1,0 +1,78 @@
+<div id="editpanels-{{uniqid}}" class="editpanels">
+    <div class="row">
+        <div class="previewpanels col-md-9" data-region="previewpanels">
+            {{#panels}}
+                <div class="panelroweditgroup mb-5 bg-white" data-region="panel-row" data-panelid="{{panelid}}">
+                    <div class="d-flex align-items-center p-2 bg-gray010 border-left border-right border-top">
+                        <a class="btn btn-link" data-action="movepanel">
+                            <span tabindex="0" role="button" aria-haspopup="true" data-drag-type="move" title="Move panel">
+                                {{#pix}} i/dragdrop, core {{/pix}}
+                            </span>
+                        </a>
+                        <h3 class="panelname m-0" data-region="panelname">Panel {{panelid}}</h3>
+                        <a class="btn btn-link ml-auto" href="#" data-action="editpanel">
+                            {{#pix}}t/edit{{/pix}}
+                        </a>
+                        <a class="btn btn-link" href="#" data-action="deletepanel">
+                            {{#pix}}t/delete{{/pix}}
+                        </a>
+                    </div>
+                    <div class="row no-gutters panellayout border">
+                        <div class="row no-gutters panelmetadata col-12">
+                            {{#backgroundpanel}}
+                                <div class="alert alert-info w-50 ml-auto mr-auto my-3">
+                                    {{#str}}backgroundpanelinfo, local_panels{{/str}}
+                                </div>
+                            {{/backgroundpanel}}
+                            {{^backgroundpanel}}
+                            {{^title}}
+                                <div class="badge badge-warning ml-1 my-1">
+                                    {{#str}}notitle, local_panels{{/str}}
+                                </div>
+                            {{/title}}
+                            {{^subtitle}}
+                                <div class="badge badge-warning ml-1 my-1">
+                                    {{#str}}nosubtitle, local_panels{{/str}}
+                                </div>
+                            {{/subtitle}}
+                            {{/backgroundpanel}}
+                            <div class="paneltitles my-2 mx-2">
+                                {{#title}}
+                                <h5 class="paneltitle italic font-weight-normal text-muted">{{title}}</h5>
+                                {{/title}}
+                                {{#subtitle}}
+                                <h3 class="paneltitle">{{subtitle}}</h3>
+                                {{/subtitle}}
+                            </div>
+                            <div class="panellink">
+                                <a href="{{linkurl}}">{{linktext}}</a>
+                            </div>
+                        </div>
+                        <div class="row no-gutters panelbody col-12">
+                            {{{panelcontent}}}
+                        </div>
+                    </div>
+                </div>
+            {{/panels}}
+        </div>
+        <div class="editcontrols col-md-3 p-0" data-region="editcontrols">
+            <div class="editformwrapper w-100">
+                <div class="card mt-5">
+                    <div class="card-header d-flex align-items-center p-2 bg-gray010 border-bottom">
+                        <h3 class="currentform m-0" data-region="currentform">{{#newpanelid}}{{#str}}panel, local_panels{{/str}} {{newpanelid}}{{/newpanelid}}</h3>
+                    </div>
+                    <div class="card-body">
+                        {{{form}}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{#js}}
+    require(['jquery', 'local_panels/editpanelset', 'local_panels/reorderpanels'], function($, EditPanelSet, ReorderPanels) {
+    var root = $('#editpanels-{{uniqid}}');
+    EditPanelSet.init(root);
+    ReorderPanels.init(root);
+    });
+{{/js}}

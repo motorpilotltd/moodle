@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<libraries>
+  <library>
+    <location>amd/src/imagehandler_cropworker.js</location>
+    <name>Croppie by Foliotek</name>
+    <license>(MIT)</license>
+    <version>2.6.4</version>
+    <licenseversion></licenseversion>
+  </library>
+  <library>
+    <location>amd/src/tinyslider.js</location>
+    <name>Tiny Slider 2 by Ganlanyuan</name>
+    <license>(MIT)</license>
+    <version>2.9.2</version>
+    <licenseversion></licenseversion>
+  </library>
+</libraries>

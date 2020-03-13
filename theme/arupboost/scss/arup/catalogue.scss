@@ -1,0 +1,204 @@
+.catalogue-card-deck {
+    .card {
+        flex-basis: calc(33.333% - 0.5rem);
+        flex-grow: 0;
+        flex-shrink: 0;
+        .courseimage-bg {
+            width: 100%;
+            height: 120px;
+            background-size: cover;
+        }
+    }
+}
+.catalogue-list-group {
+    .courseinfocontainer {
+        padding: 1rem;
+    }
+    .list-group-item {
+        .courseimage-bg {
+            width: 300px;
+            height: 160px;
+            background-size: cover;
+        }
+    }
+}
+@include media-breakpoint-down(sm) {
+    .catalogue-list-group {
+        .list-group-item .courseimage-bg {
+            width: 80px;
+            height: 80px;
+        }
+        .courseinfocontainer {
+            padding: 0.5rem;
+        }
+        .listimage {
+            border-left: 1px solid #dee2e6;
+            border-top: 1px solid #dee2e6;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0.5rem;
+        }
+    }
+}
+
+
+.stretched-link {
+  &::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    // Just in case `pointer-events: none` is set on a parent
+    pointer-events: auto;
+    content: "";
+    // IE10 bugfix, see https://stackoverflow.com/questions/16947967/ie10-hover-pseudo-class-doesnt-work-without-background-color
+    background-color: rgba(0, 0, 0, 0);
+  }
+}
+
+.custom-control-label {
+    line-height: 25px;
+    // Background-color and (when enabled) gradient
+    &::before {
+        border: 2px solid $gray040;
+    }
+}
+
+.icon-no-margin .icon {
+    margin-right: 0;
+}
+
+.local-catalogue {
+    min-height: 390px;
+    #selectcategorydropdown {
+        max-width: 150px;
+    }
+    .subcatloadmore {
+        display: none;
+    }
+    .subcatshowsubset {
+        .subcategories {
+            .subcat:nth-of-type(1n+6) {
+                display: none;
+            }
+            .subcat {
+                visibility: visible;
+            }
+        }
+        .subcatloadmore {
+            display: block;
+        }
+    }
+    .catalogueloadmore {
+        a:hover, a:focus {
+            text-decoration: none;
+        }
+    }
+    .catalogueloadmore.disabled {
+        display: none;
+    }
+    .filter-types {
+        .btn-more {
+            display: none;
+            padding: .25rem;
+            width: 28px;
+            height: 28px;
+        }
+        .btn-less {
+            display: block;
+            padding: .25rem;
+            width: 28px;
+            height: 28px;
+        }
+    }
+    .filter-types.showcollapsed {
+        .btn-more {
+            display: block;
+        }
+        .btn-less {
+            display: none;
+        }
+        .custom-control {
+            display: none;
+        }
+        .custom-control.show {
+            display: block;
+        }
+        .subcatloadmore {
+            display: none;
+        }
+    }
+}
+.local-catalogue-categories .categories-view {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.showfiltersaction {
+    display: none;
+}
+
+@include media-breakpoint-down(sm) {
+    .showfiltersaction {
+        position: fixed;
+        display: block;
+        right: 5px;
+        bottom: 5px;
+        z-index: 100;
+    }
+    .catactions {
+        background-color: $gray010;
+    }
+    .local-catalogue .filters {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 15000;
+        transform: scale(0);
+        transition: transform 0s .195s,-webkit-transform 0s .195s;
+        &.showfilters {
+            transform: scale(1) translateZ(0);
+            transition: transform 0s,-webkit-transform 0s;
+            .backdrop {
+                opacity: .5;
+                transition: opacity .225s,transform 0s,-webkit-transform 0s;
+            }
+            .coursetypes {
+                transform: translateX(-100%);
+                transition: transform .225s,-webkit-transform .225s;
+            }
+        }
+        .backdrop {
+            opacity: 0;
+            z-index: 99;
+            left: 0;
+            display: block;
+            width: 100%;
+            background-color: #2d2d2d;
+            position: absolute;
+            top: 0;
+            height: 100%;
+        }
+        .coursetypes {
+            background-color: #fff;
+            outline-width: 0;
+            left: 100%;
+            width: calc(100% - 50px);
+            z-index: 15000;
+            position: absolute;
+            top: 0;
+            height: 100%;
+            overflow-y: scroll;
+        }
+        .closefilters {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            top: 0;
+            z-index: 100;
+        }
+    }
+}

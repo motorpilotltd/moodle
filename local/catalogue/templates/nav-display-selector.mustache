@@ -1,0 +1,44 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_catalogue/nav-display-selector
+
+    This template renders display dropdown.
+
+    Example context (json):
+    {
+        "cards": true,
+        "list": false,
+        "summary": false
+    }
+}}
+<div class="d-flex" data-region="select-display">
+    <a class="btn btn-lg mb-1 ml-md-2 {{#cards}}btn-secondary active{{/cards}}{{^cards}}btn-outline-secondary{{/cards}}"
+        href="#" data-display-option="display" data-value="cards" data-pref="cards"
+        aria-label="{{#str}} aria:card, local_catalogue {{/str}}" aria-controls="courses-view-{{uniqid}}"
+    >
+        {{#str}} card, local_catalogue {{/str}}
+        <i class="fas fa-th"></i>
+    </a>
+
+    <a class="btn btn-lg mb-1 {{#list}}btn-secondary active{{/list}}{{^list}}btn-outline-secondary{{/list}}"
+        href="#" data-display-option="display" data-value="list" data-pref="list"
+        aria-label="{{#str}} aria:list, local_catalogue {{/str}}" aria-controls="courses-view-{{uniqid}}">
+        {{#str}} list, local_catalogue {{/str}}
+        <i class="fas fa-list"></i>
+    </a>
+</div>

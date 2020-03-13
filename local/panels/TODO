@@ -1,0 +1,9 @@
+Add /remove panels to panel set
+Change layout of panel
+Update preview to show source type
+Filter data sources by region
+Persistence
+    manage panel sets
+    associate with block
+Flesh out templates/data model of panelsets
+    Integrate with course manager rebuild

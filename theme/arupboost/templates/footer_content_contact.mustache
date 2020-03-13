@@ -1,0 +1,40 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    Page footer content.
+}}
+{{#content}}
+    <div class="footer-contact d-flex flex-column align-items-center p-3 mx-3" style="max-width: 33%;">
+        <pre>{{{content}}}</pre>
+    </div>
+{{/content}}
+{{#contacts}}
+<div class="footer-contact d-flex flex-column align-items-center p-3 mx-3" style="max-width: 33%;">
+    <img src="{{{profileimageurl}}}" class="rounded-circle footer-contact-picture grayscale ">
+    <div class="name italic small mt-3">{{ fullname }}</div>
+    <div class="town brand-font small">{{ town }}</div>
+    <div class="icons mt-2">
+        <span class="email text-blue030">
+            <a href="mailto:{{ email }}">{{#pix}} a/envelope, theme {{/pix}}</a>
+        </span>
+        <span class="telephone text-blue030">
+            {{#pix}} a/phone, theme {{/pix}}
+        </span>
+    </div>
+</div>
+{{/contacts}}
+
