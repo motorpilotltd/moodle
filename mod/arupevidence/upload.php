@@ -181,6 +181,17 @@ if ($mform->is_cancelled()) {
         $arupevidencedata = array_merge($arupevidencedata, $cpddetails);
     }
 
+    if ($ahb->exemption) {
+        $exemptiondetails = [
+            'exempt' => $data->exempt,
+            'exemptreason' => $data->exemptreason,
+        ];
+        $arupevidencedata = array_merge($arupevidencedata, $exemptiondetails);
+        if ($data->exempt && $ahb->exemptioncompletion) {
+            $arupevidencedata['completiondate'] = null;
+        }
+    }
+
     // Saving declaration agreement
     $agreeddeclaration = [];
     if (!empty($declarations)) {

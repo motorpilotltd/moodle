@@ -78,7 +78,7 @@ class mod_arupevidence_upload_form extends moodleform
                     '11' => "November",
                     '12' => "December");
 
-                $choicesyears = array_combine(range(1950,2030), range(1950,2030));
+                    $choicesyears = array_combine(range(2030, 1950, -1), range(2030, 1950, -1));
 
                 // Months selection
                 $mform->addElement(
@@ -133,6 +133,10 @@ class mod_arupevidence_upload_form extends moodleform
             }
         }
 
+        if (!empty($this->_arupevidence->exemption)) {
+            $this->add_exemption_fields($mform);
+        }
+
         if (isset($this->_arupevidence->cpdlms) && $this->_arupevidence->cpdlms == ARUPEVIDENCE_CPD) {
             $this->add_taps_fields($mform);
         }
@@ -158,7 +162,25 @@ class mod_arupevidence_upload_form extends moodleform
         $this->add_action_buttons(true, get_string('upload'));
     }
 
-    public function add_taps_fields(MoodleQuickForm $mform) {
+    private function add_exemption_fields(MoodleQuickForm $mform) {
+        $mform->addElement('header', 'exemptionsection', get_string('exemptionheader', 'mod_arupevidence'));
+
+        $mform->addElement('advcheckbox', 'exempt', $this->_arupevidence->exemptionquestion);
+        $mform->setDefault('exempt', !empty($this->_arupevidenceuser->exempt) ? $this->_arupevidenceuser->exempt : 0);
+
+        if ($this->_arupevidence->exemptioninfo) {
+            $mform->addElement('textarea', 'exemptreason', $this->_arupevidence->exemptioninfoquestion);
+            $mform->disabledIf('exemptreason', 'exempt', 'notchecked');
+            $mform->setDefault('exemptreason', !empty($this->_arupevidenceuser->exemptreason) ? $this->_arupevidenceuser->exemptreason : '');
+        }
+
+        // Disable completion date if required.
+        if (!empty($this->_arupevidence->exemptioncompletion)) {
+            $mform->disabledIf('completiondate', 'exempt', 'checked');
+        }
+    }
+
+    private function add_taps_fields(MoodleQuickForm $mform) {
         $taps = new \local_taps\taps();
 
         $defaults = $this->_arupevidence;
@@ -258,6 +280,10 @@ class mod_arupevidence_upload_form extends moodleform
                     $errors['declaration-'.$declaration->id] = get_string('error:declaration:required', 'mod_arupevidence');
                 }
             }
+        }
+
+        if ($this->_arupevidence->exemptioninfo && !empty($data['exempt']) && empty($data->exemptreason)) {
+            $errors['exemptreason'] = get_string('required');
         }
 
         return $errors;
