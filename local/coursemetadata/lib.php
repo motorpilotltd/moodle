@@ -329,7 +329,9 @@ function coursemetadata_delete_field($id) {
     // but show the field as missing until manually corrected to something else.
 
     // Need to rebuild course cache to update the info.
-    rebuild_course_cache();
+    if (empty($CFG->upgraderunning)) {
+        rebuild_course_cache();
+    }
 
     // Try to remove the record from the database.
     $DB->delete_records('coursemetadata_info_field', array('id' => $id));
