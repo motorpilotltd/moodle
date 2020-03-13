@@ -341,8 +341,15 @@ class mod_arupevidence_completion_form extends moodleform
             }
         }
 
-        if ($this->_arupevidence->exemptioninfo && !empty($data['exempt']) && empty($data->exemptreason)) {
+        if ($this->_arupevidence->exemptioninfo && !empty($data['exempt']) && empty($data['exemptreason'])) {
             $errors['exemptreason'] = get_string('required');
+        }
+
+        if ($this->_arupevidence->requireupload && empty($data['exempt'])) {
+            $draftfiles = file_get_drafarea_files($data['completioncertificate']);
+            if (empty($draftfiles->list)) {
+                $errors['completioncertificate'] = get_string('required');
+            }
         }
 
         return $errors;
