@@ -58,21 +58,19 @@
 </table>
 
 {{#form}}
-<form id={{id}} class="oa-form-allstaff form-inline m-b-15" {{#confirm}}data-confirm="{{.}}"{{/confirm}} data-button="{{buttonprocessing}}">
+<form id={{id}} class="oa-form-allstaff form-inline mb-1" {{#confirm}}data-confirm="{{.}}"{{/confirm}} data-button="{{buttonprocessing}}">
     {{#hiddeninputs}}
         <input type="hidden" name="{{name}}" value="{{value}}">
     {{/hiddeninputs}}
     <div class="form-group">
-        <label class="media-middle m-b-0" for="oa-init-duedate">{{#str}}admin:duedate:default, local_onlineappraisal{{/str}}</label>
-        <div class="input-group date">
+        <label class="media-middle mr-2" for="oa-init-duedate">{{#str}}admin:duedate:default, local_onlineappraisal{{/str}}</label>
+        <div class="input-group date mr-1">
             <input type="hidden" name="duedate" {{#groupcohort.duedate}}value="{{.}}"{{/groupcohort.duedate}}>
             <input id="oa-init-duedate" type="text" class="form-control datepicker" autocomplete="off"
                 {{#duedate}}data-y="{{y}}" data-m="{{m}}" data-d="{{d}}"{{/duedate}}/>
-            <div class="input-group-addon">
-                <i class="fa fa-lg fa-calendar"></i>
-            </div>
+            {{> local_onlineappraisal/calendar_button_append }}
         </div>
-        <div class="help-block pull-right m-l-5 m-b-0 hidden">{{#str}}error:duedate, local_onlineappraisal{{/str}}</div>
+        <div class="help-block pull-right ml-1 mb-0 hidden">{{#str}}error:duedate, local_onlineappraisal{{/str}}</div>
     </div>
     <div class="form-group">
         <button type="submit" class="btn btn-primary" data-confirm="{{confirmtext}}">{{buttontext}}</button>

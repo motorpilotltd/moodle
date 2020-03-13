@@ -1,7 +1,7 @@
 
 {{#hasmenu}}
 {{^inappraisal}}
-<li class="Appraisal">
+<li class="Appraisal nav-item">
     <a href="{{{appraisalurl}}}"
     title="Appraisal">
         {{#str}}appraisal, local_onlineappraisal{{/str}}
@@ -15,8 +15,8 @@
 {{#inappraisal}}
     {{#appraisee.is}}
         {{#appraisee.active}}
-            <li>
-                <a class="appraisal-link" href="{{{appraiseelink}}}"
+            <li class="nav-item">
+                <a class="appraisal-link nav-link" href="{{{appraiseelink}}}"
                 title="{{#str}}navbar:currentappraisal, local_onlineappraisal{{/str}}">
                     {{#str}}navbar:currentappraisal, local_onlineappraisal{{/str}}
                     {{#appraisee.new}}
@@ -27,15 +27,15 @@
         {{/appraisee.active}}
     {{/appraisee.is}}
     {{#hasdashboardlinks}}
-    <li>
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#dashboardlinks" title="Appraisal">
+    <li class="dropdown nav-item">
+        <a class="dropdown-toggle nav-link" data-toggle="dropdown" href="#dashboardlinks" title="Appraisal">
             {{#str}}index, local_onlineappraisal{{/str}}
             <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
         {{#appraisee.is}}
             <li>
-                <a class="appraisal-link" href="{{{dashboardlink}}}"
+                <a class="appraisal-link dropdown-item" href="{{{dashboardlink}}}"
                 title="{{#str}}navbar:appraiseedashboard, local_onlineappraisal{{/str}}">
                     {{#str}}navbar:appraiseedashboard, local_onlineappraisal{{/str}}
                 </a>
@@ -47,7 +47,7 @@
         {{/firstdivider}}
         {{#appraiser.is}}
             <li>
-                <a class="appraisal-link" href="{{{appraiserlink}}}"
+                <a class="appraisal-link dropdown-item" href="{{{appraiserlink}}}"
                 title="{{#str}}navbar:appraiserdashboard, local_onlineappraisal{{/str}}">
                     {{#str}}navbar:appraiserdashboard, local_onlineappraisal{{/str}}
                     {{#appraiser.active}}
@@ -58,7 +58,7 @@
         {{/appraiser.is}}
         {{#signoff.is}}
             <li>
-                <a class="appraisal-link" href="{{{signofflink}}}"
+                <a class="appraisal-link dropdown-item" href="{{{signofflink}}}"
                 title="{{#str}}navbar:signoffdashboard, local_onlineappraisal{{/str}}">
                     {{#str}}navbar:signoffdashboard, local_onlineappraisal{{/str}}
                     {{#signoff.active}}
@@ -69,7 +69,7 @@
         {{/signoff.is}}
         {{#feedback.is}}
             <li>
-                <a class="appraisal-link" href="{{{feedbacklink}}}"
+                <a class="appraisal-link dropdown-item" href="{{{feedbacklink}}}"
                 title="{{#str}}navbar:contribdashboard, local_onlineappraisal{{/str}}">
                     {{#str}}navbar:contribdashboard, local_onlineappraisal{{/str}}
                     {{#feedback.active}}
@@ -82,15 +82,15 @@
     </li>
     {{/hasdashboardlinks}}
     {{#hasadminlinks}}
-    <li>
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#dashboardlinks" title="Appraisal">
+    <li class="dropdown nav-item">
+        <a class="dropdown-toggle nav-link" data-toggle="dropdown" href="#dashboardlinks" title="Appraisal">
             {{#str}}admin, local_onlineappraisal{{/str}}
             <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
         {{#itadmin}}
             <li>
-                <a class="appraisal-link" href="{{{itadminlink}}}"
+                <a class="dropdown-item appraisal-link" href="{{{itadminlink}}}"
                 title="{{#str}}navbar:itadmindashboard, local_onlineappraisal{{/str}}">
                     {{#str}}navbar:itadmindashboard, local_onlineappraisal{{/str}}
                 </a>
@@ -98,7 +98,7 @@
         {{/itadmin}}
         {{#businessadmin.is}}
             <li>
-                <a class="appraisal-link" href="{{{businessadminlink}}}"
+                <a class="dropdown-item appraisal-link" href="{{{businessadminlink}}}"
                 title="{{#str}}navbar:businessadmindashboard, local_onlineappraisal{{/str}}">
                     {{#str}}navbar:businessadmindashboard, local_onlineappraisal{{/str}}
                 </a>
@@ -106,7 +106,7 @@
         {{/businessadmin.is}}
         {{#costcentreadmin.is}}
             <li>
-                <a class="appraisal-link" href="{{{costcentreadminlink}}}"
+                <a class="dropdown-item appraisal-link" href="{{{costcentreadminlink}}}"
                 title="{{#str}}navbar:costcentreadmindashboard, local_onlineappraisal{{/str}}">
                     {{#str}}navbar:costcentreadmindashboard, local_onlineappraisal{{/str}}
                 </a>
@@ -114,7 +114,7 @@
         {{/costcentreadmin.is}}
         {{#groupleader.is}}
             <li>
-                <a class="appraisal-link" href="{{{groupleaderlink}}}"
+                <a class="dropdown-item appraisal-link" href="{{{groupleaderlink}}}"
                 title="{{#str}}navbar:groupleaderdashboard, local_onlineappraisal{{/str}}">
                     {{#str}}navbar:groupleaderdashboard, local_onlineappraisal{{/str}}
                     {{#groupleader.active}}
@@ -125,7 +125,7 @@
         {{/groupleader.is}}
         {{#hrleader.is}}
             <li>
-                <a class="appraisal-link" href="{{{hrleaderlink}}}"
+                <a class="dropdown-item appraisal-link" href="{{{hrleaderlink}}}"
                 title="{{#str}}navbar:hrleaderdashboard, local_onlineappraisal{{/str}}">
                     {{#str}}navbar:hrleaderdashboard, local_onlineappraisal{{/str}}
                 </a>
@@ -134,14 +134,14 @@
         </ul>
     </li>
     {{/hasadminlinks}}
-    <li>
-        <a class="appraisal-link" href="{{{moodleurl}}}"
+    <li class="nav-item">
+        <a class="appraisal-link nav-link" href="{{{moodleurl}}}"
             title="{{#str}}navbar:returntomoodle, local_onlineappraisal{{/str}}">
             {{#str}}navbar:returntomoodle, local_onlineappraisal{{/str}}
         </a>
     </li>
-    <li>
-        <a class="appraisal-link" href="{{{helpurl}}}"
+    <li class="nav-item">
+        <a class="appraisal-link nav-link" href="{{{helpurl}}}"
             title="{{#str}}help, local_onlineappraisal{{/str}}">
             {{#str}}help, local_onlineappraisal{{/str}}
         </a>

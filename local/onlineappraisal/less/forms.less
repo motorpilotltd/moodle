@@ -1,6 +1,5 @@
 .mform {
     .input-group {
-        max-width: 300px;
         &.ldppotentialnew {
             max-width: 505px;
 
@@ -89,6 +88,9 @@
                 margin-bottom:0;
                 border-bottom-right-radius: 0;
                 border-top-right-radius: 0;
+                padding: .375rem .75rem;
+                font-size: .875rem;
+                line-height: 1.5;
             }
             input + .input-group-addon {
                 cursor: pointer;
@@ -179,6 +181,10 @@
             margin: 0;
         }
     }
+    .well.emailmsg,
+    #editmsg {
+        margin-left: 40px;
+    }
     .well.emailmsg {
         .placeholder {
             visibility: hidden;
@@ -187,6 +193,40 @@
             }
         }
         max-width: 635px;
+    }
+    #customemailmsg {
+        margin-left: 40px;
+    }
+
+    #fitem_id_appraisalfile {
+        .col-md-3 {
+            max-width: 100%;
+            flex: 0 0 100%;
+        }
+    }
+
+    .fitem_ftextarea textarea {
+        padding: .375rem .75rem
+    }
+
+    [data-groupname="buttonar"],
+    #fitem_id_customemailmsg {
+        .col-md-3 {
+            display: none;
+        }
+    }
+    [data-groupname="buttonar"] {
+        .col-md-9 {
+            padding-top: 40px;
+            padding-bottom: 40px;
+            max-width: 100%;
+            flex: 0 0 100%;
+            justify-content: center;
+        }
+    }
+    .well-sm {
+        padding: 0.5rem;
+        background-color: #f5f5f5;
     }
     //Used in feedback listing
     .input-group.inline-edit {
@@ -293,12 +333,6 @@
     .badge {
         color: @background;
         background-color: @color;
-    }
-}
-
-form.form-inline {
-    button {
-        margin-bottom: 5px;
     }
 }
 

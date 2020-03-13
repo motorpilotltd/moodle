@@ -4,7 +4,7 @@
 {{#islegacy}}
     <div class="alert alert-warning" role="alert">{{#str}}overview:alert:legacy, local_onlineappraisal{{/str}}</div>
 {{/islegacy}}
-<div class="oa-progress-panel p-15 p-b-10">
+<div class="oa-progress-panel p-3 mb-5">
     <div class="oa-tagline">{{tagline}}</div>
     <h2>{{#str}}appraisal:progress, local_onlineappraisal{{/str}}</h2>
     <p class="oa-last-saved">{{#str}}overview:lastsaved, local_onlineappraisal, {{lastsaved}}{{/str}}</p>
@@ -13,11 +13,11 @@
     {{/progress}}
 </div>
 
-<div>
-    <div class="oa-overview col-md-6 p-l-0">
-        <h2>{{currentstatus}}</h2>
+<div class="row mb-5">
+    <div class="oa-overview col-md-6">
+        <h2 class="mb-5">{{currentstatus}}</h2>
         {{#overview}}
-            <div class="m-b-20">
+            <div class="mb-4">
                 {{{content}}}
             </div>
             {{#overviewmessage}}
@@ -26,7 +26,7 @@
                 </div>
             {{/overviewmessage}}
             {{#hasbuttons}}
-                <form id="oa-overview-form" class="row m-b-10 hidden" method="POST">
+                <form id="oa-overview-form" class="row mb-2 hidden" method="POST">
                     <input type="hidden" name="sesskey" value="{{{sesskey}}}" />
                     <input type="hidden" name="page" value="overview" />
                     <input type="hidden" name="appraisalid" value="{{{appraisalid}}}" />
@@ -38,8 +38,8 @@
                         <span class="help-block hidden">{{#str}}error:comment:validation, local_onlineappraisal{{/str}}</span>
                     </div>
                     <div class="col-xs-12">
-                        <button id="oa-overview-cancel" name="button" value="reset" type="reset" class="btn btn-default pull-right">{{#str}}form:cancel, local_onlineappraisal{{/str}}</button>
-                        <button id="oa-overview-submit" name="button" value="submit" type="submit" class="btn btn-primary pull-right">{{#str}}overview:button:submitit, local_onlineappraisal{{/str}}</button>
+                        <button id="oa-overview-cancel" name="button" value="reset" type="reset" class="btn btn-secondary pull-right ml-1">{{#str}}form:cancel, local_onlineappraisal{{/str}}</button>
+                        <button id="oa-overview-submit" name="button" value="submit" type="submit" class="btn btn-primary pull-right ml-1">{{#str}}overview:button:submitit, local_onlineappraisal{{/str}}</button>
                         <button id="oa-overview-return" name="button" value="return" type="submit" class="btn btn-primary pull-right">{{#str}}overview:button:returnit, local_onlineappraisal{{/str}}</button>
                     </div>
                 </form>
@@ -47,11 +47,11 @@
                 <div class="oa-overview-buttons">
                 {{#buttons}}
                     {{#islink}}
-                    <a href="{{href}}" class="m-0 m-b-10 btn{{#class}} {{.}}{{/class}}">{{text}}</a>
+                    <a href="{{href}}" class="m-0 mb-2 btn{{#class}} {{.}}{{/class}}">{{text}}</a>
                     {{/islink}}
                     {{^islink}}
                     <button type="{{type}}"
-                            class="m-0 m-b-10 btn{{#class}} {{.}}{{/class}}{{#disabled}} disabled{{/disabled}}"
+                            class="m-0 mb-2 btn{{#class}} {{.}}{{/class}}{{#disabled}} disabled{{/disabled}}"
                             {{#hastitle}}
                                 title="{{#title}}{{{message}}}{{^last}}<br /><br />{{/last}}{{/title}}"
                                 data-html="true"
@@ -66,14 +66,16 @@
             {{/hasbuttons}}
         {{/overview}}
     </div>
-    <div class="col-md-6 p-r-0">
-        <h2 class="pull-left">Activity Log</h2>
-        <div class="oa-user-panel pull-right m-t-10">
-            {{#users}}
-                <div class="oa-user-panel-{{type}}">
-                    <img src="{{imageurl}}" data-toggle="tooltip" data-placement="left" title="{{fullname}} | {{role}}" />
-                </div>
-            {{/users}}
+    <div class="col-md-6">
+        <div class="d-flex mb-3">
+            <h2 >Activity Log</h2>
+            <div class="oa-user-panel ml-auto ">
+                {{#users}}
+                    <div class="oa-user-panel-{{type}}">
+                        <img src="{{imageurl}}" data-toggle="tooltip" data-placement="left" title="{{fullname}} | {{role}}" />
+                    </div>
+                {{/users}}
+            </div>
         </div>
         <div class="clear oa-comments-panel">
             {{#comments}}

@@ -1,5 +1,5 @@
 <h2>{{#str}}complete, local_onlineappraisal{{/str}}</h2>
-<div class="m-b-15">
+<div class="mb-1">
     {{#str}}admin:toptext:complete, local_onlineappraisal{{/str}}
 </div>
 
@@ -55,13 +55,13 @@
                 </td>
                 <td class="text-center w-1">
                     {{^suspended}}
-                        <button class="oa-inline-edit btn btn-default m-l-0" type="button" autocomplete="off" title="{{#str}}form:edit, local_onlineappraisal{{/str}}">
+                        <button class="oa-inline-edit btn btn-outline-secondary rounded ml-0" type="button" autocomplete="off" title="{{#str}}form:edit, local_onlineappraisal{{/str}}">
                             <i class="fa fa-lg fa-fw fa-pencil"><span class="sr-only">{{#str}}form:edit, local_onlineappraisal{{/str}}</span></i>
                         </button>
-                        <button class="oa-inline-save btn btn-default m-l-0 hidden" type="button" autocomplete="off" title="{{#str}}form:save, local_onlineappraisal{{/str}}">
+                        <button class="oa-inline-save btn btn-outline-secondary rounded ml-0 hidden" type="button" autocomplete="off" title="{{#str}}form:save, local_onlineappraisal{{/str}}">
                             <i class="fa fa-lg fa-fw fa-save"><span class="sr-only">{{#str}}form:save, local_onlineappraisal{{/str}}</span></i>
                         </button>
-                        <button class="oa-inline-undo btn btn-default m-l-0 hidden" type="button" autocomplete="off" title="{{#str}}form:undo, local_onlineappraisal{{/str}}">
+                        <button class="oa-inline-undo btn btn-outline-secondary rounded ml-0 hidden" type="button" autocomplete="off" title="{{#str}}form:undo, local_onlineappraisal{{/str}}">
                             <i class="fa fa-lg fa-fw fa-undo"><span class="sr-only">{{#str}}form:undo, local_onlineappraisal{{/str}}</span></i>
                         </button>
                     {{/suspended}}
@@ -72,17 +72,15 @@
     </table>
     <div class="clearfix">
         <form id="oa-bulk-actions" class="form-inline pull-right">
-            <div class="form-group">
-                <label class="media-middle m-b-0" for="oa-bulk-actions-select">{{#str}}admin:bulkactions, local_onlineappraisal{{/str}}</label>
-                <select class="form-control m-b-0" id="oa-bulk-actions-select" autocomplete="off">
-                    <option value="">{{#str}}form:choosedots, local_onlineappraisal{{/str}}</option>
-                    <option value="email">{{#str}}admin:email, local_onlineappraisal{{/str}}</option>
-                </select>
-            </div>
+            <label class="media-middle mr-2" for="oa-bulk-actions-select">{{#str}}admin:bulkactions, local_onlineappraisal{{/str}}</label>
+            <select class="form-control custom-select" id="oa-bulk-actions-select" autocomplete="off">
+                <option value="">{{#str}}form:choosedots, local_onlineappraisal{{/str}}</option>
+                <option value="email">{{#str}}admin:email, local_onlineappraisal{{/str}}</option>
+            </select>
             <button type="submit" class="btn btn-primary">{{#str}}form:go, local_onlineappraisal{{/str}}</button>
         </form>
     </div>
-    <div id="oa-bulk-alert" class="alert m-t-5 hidden" role="alert">
+    <div id="oa-bulk-alert" class="alert mt-1 hidden" role="alert">
         <div class="alert-message"></div>
     </div>
 {{/usercount}}

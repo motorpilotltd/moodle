@@ -55,9 +55,9 @@ define(['jquery', 'local_onlineappraisal/datepicker'], function($, dp) {
                 $("[name="+hiddenfield+"]").val(timestamp);
             });
 
-            $('.dateselect .input-group-addon').on('click', function (){
+            $('[data-action="select-date"]').on('click', function (){
                 datepicker.focus();
-            });                
+            });
         }
     };
 });

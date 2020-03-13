@@ -22,9 +22,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.0
  */
-define(['jquery', 'core/config'], function($, cfg) { 
+define(['jquery', 'core/config'], function($, cfg) {
     return /** @alias module:local_onlineappraisal/feedback */ {
-        
+
         replacestrings: function() {
             var appraisalid = $("[name=appraisalid]").val();
             var view = $("[name=view]").val();

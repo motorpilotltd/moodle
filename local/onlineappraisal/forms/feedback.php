@@ -55,7 +55,7 @@ class apform_feedback extends moodleform {
         $mform->setType('hascustomemail', PARAM_INT);
 
         $title = $data->formid > 0 ? 'title:resend' : 'title';
-        $mform->addElement('html', html_writer::tag('h2', $this->str($title)));
+        $mform->addElement('html', html_writer::tag('h2', $this->str($title), ['class' => 'mb-5']));
 
         $mform->addElement('text', 'firstname', $this->str('firstname'));
         $mform->setType('firstname', PARAM_RAW);
@@ -88,7 +88,7 @@ class apform_feedback extends moodleform {
             }
 
             $mform->addElement('html', '<span id="editmsg" class="btn btn-default m-b-5" title="'.$this->str('providefirstnamelastname').'">' . $this->str('editemail') . '</span>');
-            $mform->addElement('html', '<div id="emailmsg" class="well emailmsg">
+            $mform->addElement('html', '<div id="emailmsg" class="well emailmsg p-4 bg-light my-2">
                 <span  id="emailtextstart">' . $emailtext->start . '</span>');
 
             $mform->addElement('textarea', 'emailtext', '', 'rows="15" cols="70"');
@@ -97,7 +97,7 @@ class apform_feedback extends moodleform {
 
             $customemailclass = ' class="hidden"';
         } else {
-            $mform->addElement('html', '<div class="alert alert-warning">'.$this->str('resendhelp').'</div>');
+            $mform->addElement('html', '<div class="alert alert-warning mx-5">'.$this->str('resendhelp').'</div>');
         }
 
         $mform->addElement('html', '<div id="customemailmsg"'.$customemailclass.'>');

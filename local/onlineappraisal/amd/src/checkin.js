@@ -73,7 +73,7 @@ define(['jquery', 'core/config', 'core/str', 'core/templates', 'core/notificatio
                                     data: ''
                                 };
                             }
-                            
+
                             alert.hide().removeClass('hidden');
                             if (data.success) {
                                 str.get_string('form:add', 'local_onlineappraisal').done(function(s) {

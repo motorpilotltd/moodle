@@ -4,7 +4,7 @@
         same base select on a page (e.g. AJAX on table rows).
     }}
     <label class="{{label.class}}" for="{{selectid}}{{#id}}-{{id}}{{/id}}">{{label.label}}</label>
-    <select class="form-control" id="{{selectid}}{{#id}}-{{id}}{{/id}}" autocomplete="off">
+    <select class="form-control custom-select" id="{{selectid}}{{#id}}-{{id}}{{/id}}" autocomplete="off">
     {{#options}}
         <option value="{{value}}" {{#selected}}selected="selected"{{/selected}}>{{name}}</option>
     {{/options}}

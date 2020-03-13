@@ -1,16 +1,16 @@
 <h2>{{heading}}</h2>
-<div class="m-b-15">
+<div class="mb-5">
     {{toptext}}
 </div>
 {{^isappraisee}}
-<form id="oa-index-search" class="hidden form-horizontal m-b-10">
+<form id="oa-index-search" class="hidden form-horizontal my-5">
     <input type="hidden" name="page" value="{{page}}" />
     <label class="sr-only" for="oa-filter-select">{{#ishrleader}}{{#str}}index:search:hrleader, local_onlineappraisal{{/str}}{{/ishrleader}}{{^ishrleader}}{{#str}}index:search, local_onlineappraisal{{/str}}{{/ishrleader}}</label>
-    <select name="appraisee" id="oa-index-search-select" class="form-control" autocomplete="off" data-placeholder="{{#ishrleader}}{{#str}}index:search:hrleader, local_onlineappraisal{{/str}}{{/ishrleader}}{{^ishrleader}}{{#str}}index:search, local_onlineappraisal{{/str}}{{/ishrleader}}">
+    <select name="appraisee" id="oa-index-search-select" class="form-control custom-select" autocomplete="off" data-placeholder="{{#ishrleader}}{{#str}}index:search:hrleader, local_onlineappraisal{{/str}}{{/ishrleader}}{{^ishrleader}}{{#str}}index:search, local_onlineappraisal{{/str}}{{/ishrleader}}">
         {{{searchoption}}}
     </select>
     <button type="submit" value="1" name="search" class="btn btn-primary">{{#str}}form:go, local_onlineappraisal{{/str}}</button>
-    <button type="submit" value="0" name="search" class="btn btn-default">{{#str}}form:clear, local_onlineappraisal{{/str}}</button>
+    <button type="submit" value="0" name="search" class="btn btn-outline-secondary">{{#str}}form:clear, local_onlineappraisal{{/str}}</button>
 </form>
 {{/isappraisee}}
 {{^showtables}}
@@ -26,7 +26,7 @@
     <form id="oa-filter" class="hidden form-inline pull-right">
         <div class="form-group">
             <label class="sr-only" for="oa-filter-select">{{#str}}form:filter, local_onlineappraisal{{/str}}</label>
-            <select class="form-control m-b-0" id="oa-filter-select" autocomplete="off">
+            <select class="form-control custom-select mb-2" id="oa-filter-select" autocomplete="off">
                 <option value="0">{{#str}}form:all, local_onlineappraisal{{/str}}</option>
                 {{^ishrleader}}
                 <option value="action">{{#str}}index:awaiting, local_onlineappraisal{{/str}}</option>
@@ -69,12 +69,12 @@
     {{>local_onlineappraisal/index_table}}
     {{#toggleleaversurl}}
     <div class="text-right">
-        <a href="{{{toggleleaversurl}}}" class="btn btn-default btn-xs">{{toggleleaversstr}}</a>
+        <a href="{{{toggleleaversurl}}}" class="btn btn-outline-secondary rounded btn-xs">{{toggleleaversstr}}</a>
     </div>
     {{/toggleleaversurl}}
 {{/archived}}
 {{^archived}}
-<div class="alert alert-warning" role="alert">
+<div class="alert alert-warning mt-2" role="alert">
     <i class="fa fa-exclamation-triangle"></i>
     {{#isappraisee}}
         {{#str}}appraisals:noarchived:you, local_onlineappraisal{{/str}}

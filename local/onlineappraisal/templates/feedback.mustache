@@ -12,7 +12,7 @@
     Appraisee: appraiseename
     <hr>
     </div>
-    <a id="feedback" class="btn btn-default">feedback</a>
+    <a id="feedback" class="btn btn-outline-secondary rounded">feedback</a>
 }}
 
 <hr class="tophr">
@@ -20,7 +20,7 @@
 
 {{^hasform}}
 <h2>{{#str}}feedback, local_onlineappraisal{{/str}}</h2>
-<div class="m-b-10">
+<div class="mb-2">
 {{#str}}feedback_intro, local_onlineappraisal{{/str}}
 </div>
 {{/hasform}}
@@ -33,13 +33,13 @@
     {{#canadd}}
     <a href="{{{link}}}" class="btn btn-primary">{{#str}}addfeedback, local_onlineappraisal{{/str}}</a>
     {{#linkreceivedfeedback}}
-    <a href="{{{linkreceivedfeedback}}}" class="btn btn-default">{{#str}}addreceivedfeedback, local_onlineappraisal{{/str}}</a>
+    <a href="{{{linkreceivedfeedback}}}" class="btn btn-link">{{#str}}addreceivedfeedback, local_onlineappraisal{{/str}}</a>
     {{/linkreceivedfeedback}}
     {{/canadd}}
 {{/hasrequests}}
 
 {{#hasrequests}}
-<table class="generaltable m-b-0">
+<table class="generaltable mb-0 mt-4">
     <thead>
         <tr>
             <th>{{#str}}feedback_contributor, local_onlineappraisal{{/str}}</th>
@@ -72,12 +72,12 @@
             <td class="w-1">
                 {{#hasactions}}
                     <div class="dropdown">
-                        <button id="oa-actions-{{id}}" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="table-button">
-                            {{#str}}actions, local_onlineappraisal{{/str}} <span class="caret"></span>
+                        <button id="oa-actions-{{id}}" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-outline-secondary dropdown-toggle rounded">
+                            {{#str}}actions, local_onlineappraisal{{/str}}
                         </button>
-                        <ul class="dropdown-menu pull-right" aria-labelledby="oa-current-{{id}}">
+                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="oa-current-{{id}}">
                             {{#actions}}
-                            <li><a href="{{{url}}}">{{name}}</a></li>
+                                <a class="dropdown-item" href="{{{url}}}">{{name}}</a>
                             {{/actions}}
                         </ul>
                     </div>
@@ -133,7 +133,7 @@
     {{/requests}}
     </tbody>
 </table>
-<div class="m-b-15 p-l-5 small">
+<div class="mb-1 p-l-5 small">
     {{#str}}feedbackrequests:legend, local_onlineappraisal{{/str}}
 </div>
 <a href="{{{nextpage}}}" class="btn btn-success">{{#str}}form:nextpage, local_onlineappraisal{{/str}}</a>

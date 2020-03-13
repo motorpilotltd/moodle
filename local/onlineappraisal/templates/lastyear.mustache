@@ -1,4 +1,4 @@
-<div class="lastyearboxes m-t-10 {{type}}">
+<div class="lastyearboxes mt-2 {{type}}">
     <a class="btn btn-warning" data-toggle="collapse" href="#{{type}}" aria-expanded="false" aria-controls="collapseExample">
         {{#development}}
             {{#str}}form:lastyear:cardinfo:developmentlink, local_onlineappraisal{{/str}}
@@ -13,7 +13,7 @@
     <div class="row">
     {{#lastyear}}
         <div class="col-md-12">
-            <div class="panel panel-default m-t-10">
+            <div class="panel panel-default mt-2">
                 <div class="panel-heading">
                     {{{question}}}
                 </div>
@@ -33,7 +33,7 @@
     </div>
     {{/hasdata}}
     {{^hasdata}}
-        <div class="alert alert-warning m-t-10" role="alert">
+        <div class="alert alert-warning mt-2" role="alert">
             {{#str}}form:lastyear:cardinfo:none, local_onlineappraisal{{/str}}
         </div>
     {{/hasdata}}

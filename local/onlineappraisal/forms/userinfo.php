@@ -146,7 +146,7 @@ class apform_userinfo extends moodleform {
             $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
         } else {
             $mform->addElement('html', html_writer::link($data->nexturl,
-                get_string('form:nextpage', 'local_onlineappraisal'), array('class' => 'btn btn-success')));
+                get_string('form:nextpage', 'local_onlineappraisal'), array('class' => 'btn btn-success my-4')));
         }
     }
 

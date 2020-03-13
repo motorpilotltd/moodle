@@ -71,7 +71,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                 str.get_string('admin:processingdots', 'local_onlineappraisal').done(function(s) {
                     self.html('<i class="fa fa-lg fa-fw fa-spinner fa-spin"></i><span class="sr-only">' + s + '</span>');
                 }).fail(notification.exception);
-                
+
                 // Get due date.
                 var datepicker = $('#oa-bulkupload-duedate');
                 var duedate = datepicker.datepicker('getUTCDate');

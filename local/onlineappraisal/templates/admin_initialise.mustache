@@ -1,29 +1,27 @@
 <h2>{{#str}}initialise, local_onlineappraisal{{/str}}</h2>
-<div class="m-b-15">
+<div class="mb-1">
     {{#str}}admin:toptext:initialise, local_onlineappraisal{{/str}}
 </div>
 
 {{#usercount}}
-    <div class="form-inline m-b-15">
+    <div class="form-inline mb-1">
         <div class="form-group">
-            <label class="media-middle m-b-0" for="oa-init-duedate">{{#str}}admin:duedate, local_onlineappraisal{{/str}}</label>
+            <label class="media-middle mr-2" for="oa-init-duedate">{{#str}}admin:duedate, local_onlineappraisal{{/str}}</label>
             <div class="input-group date">
                 <input type="hidden" name="duedate" {{#groupcohort.duedate}}value="{{.}}"{{/groupcohort.duedate}}>
                 <input id="oa-init-duedate" type="text" class="form-control datepicker" autocomplete="off"
                 {{#duedate}}data-y="{{y}}" data-m="{{m}}" data-d="{{d}}"{{/duedate}}/>
-                <div class="input-group-addon">
-                    <i class="fa fa-lg fa-calendar"></i>
-                </div>
+                {{> local_onlineappraisal/calendar_button_append }}
             </div>
-            <div class="help-block  pull-right m-l-5 m-b-0 hidden">{{#str}}error:duedate, local_onlineappraisal{{/str}}</div>
+            <div class="help-block pull-right ml-1 mb-0 hidden">{{#str}}error:duedate, local_onlineappraisal{{/str}}</div>
         </div>
     </div>
     <table class="generaltable oa-initialise-table">
         <thead>
             <tr>
                 <td colspan="{{#groupleaderactive}}6{{/groupleaderactive}}{{^groupleaderactive}}5{{/groupleaderactive}}" class="oa-expand-table text-right">
-                    <span class="oa-expand-link">{{#str}}admin:initialise:wideview, local_onlineappraisal{{/str}}<i class="fa fa-expand m-l-5"></i></span>
-                    <span class="oa-compress-link hidden">{{#str}}admin:initialise:standardview, local_onlineappraisal{{/str}}<i class="fa fa-compress m-l-5"></i></span>
+                    <span class="oa-expand-link">{{#str}}admin:initialise:wideview, local_onlineappraisal{{/str}}<i class="fa fa-expand ml-1"></i></span>
+                    <span class="oa-compress-link hidden">{{#str}}admin:initialise:standardview, local_onlineappraisal{{/str}}<i class="fa fa-compress ml-1"></i></span>
                 </td>
             </tr>
             <tr>

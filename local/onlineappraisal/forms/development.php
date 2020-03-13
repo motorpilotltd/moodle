@@ -159,7 +159,7 @@ class apform_development extends moodleform {
             $mform->addElement('html', self::get_renderer()->render_from_template('local_onlineappraisal/modal_save_nag', new stdClass()));
         } else {
             $mform->addElement('html', html_writer::link($data->nexturl,
-                get_string('form:nextpage', 'local_onlineappraisal'), array('class' => 'btn btn-success')));
+                get_string('form:nextpage', 'local_onlineappraisal'), array('class' => 'btn btn-success my-4')));
         }
     }
 

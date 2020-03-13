@@ -33,7 +33,7 @@ define(['jquery', 'local_onlineappraisal/autosize'],
          */
         init: function() {
             $('#oa-overview-form').hide().removeClass('hidden');
-            
+
             $('.oa-overview-buttons button').click(function(e){
                 e.preventDefault();
                 var self = $(this);
@@ -49,7 +49,7 @@ define(['jquery', 'local_onlineappraisal/autosize'],
                 autosize($('#oa-overview-comment'));
                 $('#oa-overview-comment').focus();
             });
-            
+
             $('#oa-overview-cancel').click(function(e){
                 e.preventDefault();
                 var self = $(this);
@@ -63,7 +63,7 @@ define(['jquery', 'local_onlineappraisal/autosize'],
             $('#oa-overview-return').click(function(e){
                 e.preventDefault();
                 var self = $(this);
-                
+
                 var form = self.closest('form');
                 var comment = form.find('#oa-overview-comment');
                 var formgroup = comment.closest('.form-group');

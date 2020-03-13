@@ -1,4 +1,4 @@
-<table id="oa-{{#iscurrent}}current{{/iscurrent}}{{#isarchived}}archived{{/isarchived}}-table" class="table generaltable">
+<table id="oa-{{#iscurrent}}current{{/iscurrent}}{{#isarchived}}archived{{/isarchived}}-table" class="table generaltable mb-5">
     <thead>
         <tr>
         {{^isappraisee}}
@@ -25,7 +25,7 @@
     <tbody>
         <tr class="oa-empty-filter hidden">
             <td colspan="{{#isgroupleader}}9{{/isgroupleader}}{{#ishrleader}}11{{/ishrleader}}{{^isgroupleader}}{{^ishrleader}}8{{/ishrleader}}{{/isgroupleader}}">
-                <div class="alert alert-warning m-b-0" role="alert">
+                <div class="alert alert-warning mb-0" role="alert">
                     <i class="fa fa-exclamation-triangle"></i>
                     {{#str}}index:emptyfilter, local_onlineappraisal{{/str}}
                 </div>
@@ -68,13 +68,13 @@
                 </span>
                 {{#iscurrent}}{{^suspended}}
                     {{#permissions.editf2f}}
-                        <button class="oa-f2f-edit btn btn-xs btn-default m-0" type="button" autocomplete="off" title="{{#str}}form:edit, local_onlineappraisal{{/str}}">
+                        <button class="oa-f2f-edit btn btn-xs btn-outline-secondary rounded m-0" type="button" autocomplete="off" title="{{#str}}form:edit, local_onlineappraisal{{/str}}">
                             <i class="fa fa-fw fa-pencil"><span class="sr-only">{{#str}}form:edit, local_onlineappraisal{{/str}}</span></i>
                         </button>
-                        <button class="oa-f2f-save btn btn-xs btn-default m-0 hidden" type="button" autocomplete="off" title="{{#str}}form:save, local_onlineappraisal{{/str}}">
+                        <button class="oa-f2f-save btn btn-xs btn-outline-secondary rounded m-0 hidden" type="button" autocomplete="off" title="{{#str}}form:save, local_onlineappraisal{{/str}}">
                             <i class="fa fa-fw fa-save"><span class="sr-only">{{#str}}form:save, local_onlineappraisal{{/str}}</span></i>
                         </button>
-                        <button class="oa-f2f-undo btn btn-xs btn-default m-0 hidden" type="button" autocomplete="off" title="{{#str}}form:undo, local_onlineappraisal{{/str}}">
+                        <button class="oa-f2f-undo btn btn-xs btn-outline-secondary rounded m-0 hidden" type="button" autocomplete="off" title="{{#str}}form:undo, local_onlineappraisal{{/str}}">
                             <i class="fa fa-fw fa-undo"><span class="sr-only">{{#str}}form:undo, local_onlineappraisal{{/str}}</span></i>
                         </button>
                     {{/permissions.editf2f}}
@@ -83,7 +83,7 @@
             <td class="text-center w-1">
                 <i class="fa fa-2x fa-fw
                           {{#face_to_face_held}}fa-check-square{{/face_to_face_held}}
-                          {{^face_to_face_held}}fa-square-o{{/face_to_face_held}}
+                          {{^face_to_face_held}}fa-square{{/face_to_face_held}}
                           {{#iscurrent}}{{^suspended}}
                             {{#permissions.togglef2f}} oa-togglef2f{{^held_date}} disabled{{/held_date}}{{/permissions.togglef2f}}
                           {{/suspended}}{{/iscurrent}}"
@@ -108,7 +108,7 @@
             <td class="text-center w-1">
                 <i class="fa fa-2x fa-fw
                           {{#successionplan}}fa-check-square{{/successionplan}}
-                          {{^successionplan}}fa-square-o{{/successionplan}}
+                          {{^successionplan}}fa-square{{/successionplan}}
                           {{#iscurrent}}{{^suspended}}
                             {{#permissions.togglesuccessionplan}} oa-togglesuccessionplan{{/permissions.togglesuccessionplan}}
                           {{/suspended}}{{/iscurrent}}"
@@ -122,7 +122,7 @@
             <td class="text-center w-1">
                 <i class="fa fa-2x fa-fw
                           {{#leaderplan}}fa-check-square{{/leaderplan}}
-                          {{^leaderplan}}fa-square-o{{/leaderplan}}
+                          {{^leaderplan}}fa-square{{/leaderplan}}
                           {{#iscurrent}}{{^suspended}}
                             {{#permissions.toggleleaderplan}} oa-toggleleaderplan{{/permissions.toggleleaderplan}}
                           {{/suspended}}{{/iscurrent}}"
@@ -137,50 +137,48 @@
             <td class="text-center w-1{{#suspended}} oa-user-suspended{{/suspended}}">
                 {{#permissions.haspermissions}}
                 <div class="dropdown pull-right oa-actions">
-                    <button id="oa-actions-{{id}}" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{#str}}actions, local_onlineappraisal{{/str}} <span class="caret"></span>
+                    <button id="oa-actions-{{id}}" class="btn btn-outline-secondary rounded dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{#str}}actions, local_onlineappraisal{{/str}}
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="oa-current-{{id}}">
+                    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="oa-current-{{id}}">
                     {{^suspended}}{{#permissions.start}}
-                        <li><a href="{{urls.start}}">{{#str}}index:start, local_onlineappraisal{{/str}}</a></li>
+                        <a class="dropdown-item" href="{{urls.start}}">{{#str}}index:start, local_onlineappraisal{{/str}}</a>
                     {{/permissions.start}}{{/suspended}}
                     {{#permissions.view}}
-                        <li><a href="{{urls.view}}">{{#str}}index:view, local_onlineappraisal{{/str}}</a></li>
+                        <a class="dropdown-item" href="{{urls.view}}">{{#str}}index:view, local_onlineappraisal{{/str}}</a>
                     {{/permissions.view}}
                     {{#permissions.printappraisal}}
-                        <li><a class="oa-actions-print" href="{{urls.printappraisal}}">{{#str}}index:printappraisal, local_onlineappraisal{{/str}}</a></li>
+                        <a class="dropdown-item oa-actions-print" href="{{urls.printappraisal}}">{{#str}}index:printappraisal, local_onlineappraisal{{/str}}</a>
                     {{/permissions.printappraisal}}
                     {{#permissions.printfeedback}}
-                        <li><a class="oa-actions-print" href="{{urls.printfeedback}}">{{#str}}index:printfeedback, local_onlineappraisal{{/str}}</a></li>
+                        <a class="dropdown-item oa-actions-print" href="{{urls.printfeedback}}">{{#str}}index:printfeedback, local_onlineappraisal{{/str}}</a>
                     {{/permissions.printfeedback}}
                     {{#permissions.printsuccessionplan}}
-                        <li><a class="oa-actions-print" href="{{urls.printsuccessionplan}}">{{#str}}index:printsuccessionplan, local_onlineappraisal{{/str}}</a></li>
+                        <a class="dropdown-item oa-actions-print" href="{{urls.printsuccessionplan}}">{{#str}}index:printsuccessionplan, local_onlineappraisal{{/str}}</a>
                     {{/permissions.printsuccessionplan}}
                     {{#permissions.printleaderplan}}
-                        <li><a class="oa-actions-print" href="{{urls.printleaderplan}}">{{#str}}index:printleaderplan, local_onlineappraisal{{/str}}</a></li>
+                        <a class="dropdown-item oa-actions-print" href="{{urls.printleaderplan}}">{{#str}}index:printleaderplan, local_onlineappraisal{{/str}}</a>
                     {{/permissions.printleaderplan}}
                     {{^suspended}}{{#permissions.togglef2f}}
-                            <li>
-                                <a class="oa-togglef2f{{^held_date}} disabled{{/held_date}}"
-                                   href="{{urls.togglef2f}}"
-                                   data-complete="{{#str}}index:togglef2f:complete, local_onlineappraisal{{/str}}"
-                                   data-notcomplete="{{#str}}index:togglef2f:notcomplete, local_onlineappraisal{{/str}}"
-                                   {{^held_date}}data-toggle="tooltip" data-container="body" title="{{#str}}error:f2fdate, local_onlineappraisal{{/str}}"{{/held_date}}>
-                                {{#face_to_face_held}}
-                                    {{#str}}index:togglef2f:notcomplete, local_onlineappraisal{{/str}}
-                                {{/face_to_face_held}}
-                                {{^face_to_face_held}}
-                                    {{#str}}index:togglef2f:complete, local_onlineappraisal{{/str}}
-                                {{/face_to_face_held}}
-                                </a>
-                            </li>
+                        <a class="dropdown-item oa-togglef2f{{^held_date}} disabled{{/held_date}}"
+                           href="{{urls.togglef2f}}"
+                           data-complete="{{#str}}index:togglef2f:complete, local_onlineappraisal{{/str}}"
+                           data-notcomplete="{{#str}}index:togglef2f:notcomplete, local_onlineappraisal{{/str}}"
+                           {{^held_date}}data-toggle="tooltip" data-container="body" title="{{#str}}error:f2fdate, local_onlineappraisal{{/str}}"{{/held_date}}>
+                        {{#face_to_face_held}}
+                            {{#str}}index:togglef2f:notcomplete, local_onlineappraisal{{/str}}
+                        {{/face_to_face_held}}
+                        {{^face_to_face_held}}
+                            {{#str}}index:togglef2f:complete, local_onlineappraisal{{/str}}
+                        {{/face_to_face_held}}
+                        </a>
                     {{/permissions.togglef2f}}{{/suspended}}
                     </ul>
                 </div>
                 {{/permissions.haspermissions}}
                 {{^permissions.haspermissions}}
                     {{#permissions.notstarted}}
-                        <div class="alert alert-warning m-0 p-5" role="alert"
+                        <div class="alert alert-warning m-0 p-1" role="alert"
                              style="cursor: default;"
                              data-toggle="tooltip"
                              title="{{#str}}index:notstarted:tooltip, local_onlineappraisal{{/str}}">

@@ -48,6 +48,16 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
         return width;
     };
 
+    var datepickerError = function(datepicker) {
+        var datepickerContainer = datepicker.closest('.form-group');
+        var datepickerHelp = datepickerContainer.find('.help-block');
+        var datepickerBtn = datepickerContainer.find('[data-action="select-date"]');
+
+        datepicker.addClass('is-invalid');
+        datepickerHelp.removeClass('hidden');
+        datepickerBtn.removeClass('btn-secondary').addClass('btn-danger');
+    };
+
     return /** @alias module:local_onlineappraisal/admin */ {
         // Public variables and functions.
         /**
@@ -64,7 +74,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
             $('#id_cohortid').change(function() {
                 $(this).closest('form').submit();
             });
-            
+
             // Select all toggle.
             $('#oa-appraisal-select-all').click(function(){
                 // Toggle visible.
@@ -106,7 +116,6 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                 $('#oa-appraisal-select-all').prop('checked', false);
             });
 
-            
             // Datepicker - 'allstaff' and 'initialise' pages.
             var initdatepicker = $('#oa-init-duedate');
             initdatepicker.prop('readonly', true).css({
@@ -137,7 +146,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                 var originaldate = new Date(initdatepicker.data('y'), initdatepicker.data('m') - 1, initdatepicker.data('d'));
                 initdatepicker.datepicker('update', originaldate);
             }
-            initdatepicker.next('.input-group-addon').on('click', function (){
+            initdatepicker.next('.input-group-append').find('[data-action="select-date"]').on('click', function (){
                 initdatepicker.focus();
             });
 
@@ -256,7 +265,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                 // No due date.
                 if (Object.prototype.toString.call(duedate) !== "[object Date]") {
                     var headeroffset = $('#header').outerHeight(true);
-                    datepicker.closest('.form-group').addClass('has-error').find('.help-block').hide().removeClass('hidden').show();
+                    datepickerError(datepicker);
                     $('html, body').animate({
                         scrollTop: datepicker.offset().top - headeroffset
                     }, 500);
@@ -264,7 +273,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                     btn.prop('disabled', false);
                     btn.blur();
                     datepicker.datepicker().on('changeDate', function(){
-                        datepicker.closest('.form-group').removeClass('has-error').find('.help-block').hide();
+                        datepickerError(datepicker);
                         $('html, body').animate({
                             scrollTop: btn.offset().top - headeroffset
                         }, 500);
@@ -320,7 +329,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                 // Get due date.
                 var datepicker = $('#oa-init-duedate');
                 var duedate = datepicker.datepicker('getUTCDate');
-                
+
                 // No appraiser or sign off.
                 if (appraiserid < 1 || signoffid < 1) {
                     str.get_string('error:selectusers', 'local_onlineappraisal').done(function(s) {
@@ -550,7 +559,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                     }).fail(notification.exception);
                     return;
                 }
-                
+
                 var f2fdate = null;
                 if (datepicker.length) {
                     var date = datepicker.siblings('span');
@@ -767,7 +776,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                     }).fail(notification.exception);
                     return;
                 }
-                
+
                 if (selected.length < 1) {
                     str.get_string('error:noselection', 'local_onlineappraisal').done(function(s) {
                         alert.find('.alert-message').text(s);
@@ -1067,7 +1076,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'local_onlinea
                     glselect.prop('disabled', true);
                 }
             });
-            
+
             // Assigning appraisal.
             $('.oa-toggle-assign').click(function(e){
                 e.preventDefault();

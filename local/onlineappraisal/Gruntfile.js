@@ -72,7 +72,6 @@ module.exports = function(grunt) {
                 )
             }
         },
-        
     });
 
     // Load contrib tasks.

@@ -52,7 +52,7 @@ define(['jquery', 'core/str', 'core/notification'],
                     if (btn == 2) {
                         str.get_string('form:addfeedback:saveddraft', 'local_onlineappraisal').done(function(d) {
                             notification.alert('Save Draft', d, 'OK');
-                            setTimeout( function () { 
+                            setTimeout( function () {
                                 myform.unbind('submit').submit();
                             }, 4000);
                         });
