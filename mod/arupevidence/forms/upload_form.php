@@ -282,7 +282,7 @@ class mod_arupevidence_upload_form extends moodleform
             }
         }
 
-        if ($this->_arupevidence->exemptioninfo && !empty($data['exempt']) && empty($data->exemptreason)) {
+        if ($this->_arupevidence->exemptioninfo && !empty($data['exempt']) && empty($data['exemptreason'])) {
             $errors['exemptreason'] = get_string('required');
         }
 
