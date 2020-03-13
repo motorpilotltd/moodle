@@ -222,8 +222,6 @@ class mod_arupevidence_completion_form extends moodleform
     }
 
     private function add_exemption_fields(MoodleQuickForm $mform) {
-        //$defaults = !empty($this->_arupevidenceuser)? $this->_arupevidenceuser : $this->_arupevidence ;
-
         $mform->addElement('header', 'exemptionsection', get_string('exemptionheader', 'mod_arupevidence'));
 
         $mform->addElement('advcheckbox', 'exempt', $this->_arupevidence->exemptionquestion);
@@ -233,7 +231,6 @@ class mod_arupevidence_completion_form extends moodleform
             $mform->addElement('textarea', 'exemptreason', $this->_arupevidence->exemptioninfoquestion);
             $mform->disabledIf('exemptreason', 'exempt', 'notchecked');
             $mform->setDefault('exemptreason', !empty($this->_arupevidenceuser->exemptreason) ? $this->_arupevidenceuser->exemptreason : '');
-            $mform->addRule('exemptreason', null, 'required', null, 'client');
         }
 
         // Disable completion date if required.
@@ -339,6 +336,10 @@ class mod_arupevidence_completion_form extends moodleform
                     $errors['declaration-'.$declaration->id] = get_string('error:declaration:required', 'mod_arupevidence');
                 }
             }
+        }
+
+        if ($this->_arupevidence->exemptioninfo && !empty($data['exempt']) && empty($data->exemptreason)) {
+            $errors['exemptreason'] = get_string('required');
         }
 
         return $errors;

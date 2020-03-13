@@ -145,11 +145,11 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         $mform->addRule('cpdlms', null, 'required', null, 'client');
         $mform->setDefault('cpdlms', '');
 
-        $mform->addElement('checkbox', 'setcoursecompletion', get_string('setcoursecompletion', 'mod_arupevidence'));
+        $mform->addElement('advcheckbox', 'setcoursecompletion', get_string('setcoursecompletion', 'mod_arupevidence'));
         $mform->addHelpButton('setcoursecompletion', 'setcoursecompletion', 'mod_arupevidence');
         $mform->setDefault('setcoursecompletion', 1);
 
-        $mform->addElement('checkbox', 'setcertificationcompletion', get_string('setcertificationcompletion', 'mod_arupevidence'));
+        $mform->addElement('advcheckbox', 'setcertificationcompletion', get_string('setcertificationcompletion', 'mod_arupevidence'));
         $mform->addHelpButton('setcertificationcompletion', 'setcertificationcompletion', 'mod_arupevidence');
         $mform->setDefault('setcertificationcompletion', 1);
 
@@ -254,7 +254,6 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         $mform->addElement('select', 'durationunitscode', get_string('cpd:durationunitscode', 'block_arup_mylearning'), $taps->get_durationunitscode());
         $mform->disabledIf('durationunitscode', 'cpdlms', 'neq', ARUPEVIDENCE_CPD);
 
-
         $mform->addElement('editor', 'learningdesc', get_string('cpd:learningdesc', 'block_arup_mylearning'));
         $mform->disabledIf('learningdesc', 'cpdlms', 'neq', ARUPEVIDENCE_CPD);
         $mform->setType('learningdesc', PARAM_RAW);
@@ -298,20 +297,9 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         if (!$data) {
             return false;
         }
-        if(empty($data->approvalrequired) || empty($_POST['approvalrequired'])) {
-            $data->approvalrequired = 0;
-        }
 
         if(empty($data->requireexpirydate) || empty($_POST['requireexpirydate'])) {
             $data->requireexpirydate = 0;
-        }
-
-        if(empty($data->requireupload) || empty($_POST['requireupload'])) {
-            $data->requireupload = 0;
-        }
-
-        if(empty($data->deleteevidence) || empty($_POST['deleteevidence'])) {
-            $data->deleteevidence = 0;
         }
 
         if(empty($data->mustendmonth) || empty($_POST['mustendmonth'])) {
@@ -329,7 +317,9 @@ class mod_arupevidence_mod_form extends moodleform_mod {
 
     public function validation($data, $files) {
         global $DB, $CFG, $COURSE;
+
         $errors = parent::validation($data, $files);
+
         if (isset($data['cpdlms']) && $data['cpdlms'] == ARUPEVIDENCE_CPD) {
             if (empty($data['classname'])) {
                 $errors['classname'] = get_string('error:cpdrequired', 'mod_arupevidence');
@@ -368,6 +358,16 @@ class mod_arupevidence_mod_form extends moodleform_mod {
                 $errors['cpdlms'] = get_string('error:mustlinkedcourse', 'mod_arupevidence');
             }
         }
+
+        if (!empty($data['exemption'])) {
+            if(empty($data['exemptionquestion'])) {
+                $errors['exemptionquestion'] = get_string('required');
+            }
+            if (!empty($data['exemptioninfo']) && empty($data['exemptioninfoquestion'])) {
+                $errors['exemptioninfoquestion'] = get_string('required');
+            }
+        }
+
         return $errors;
     }
 
