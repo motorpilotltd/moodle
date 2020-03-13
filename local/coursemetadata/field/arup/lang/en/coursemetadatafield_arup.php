@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['arup:viewsharelink'] = 'View share link';
 $string['pluginname'] = 'Arup course meta data';
 $string['accreditation'] = 'Accreditation';
 $string['advertblockimage'] = 'Image for advert block';

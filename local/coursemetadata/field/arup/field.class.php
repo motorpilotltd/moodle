@@ -66,10 +66,6 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
                 get_string('description', 'coursemetadatafield_arup', $altword));
         $mform->setType('arupmeta_description_editor', PARAM_RAW); // No XSS prevention here, users must be trusted.
 
-        $mform->addElement('filemanager', 'advertblockimage', get_string('advertblockimage', 'coursemetadatafield_arup'), null,
-                $filemanageroptions);
-        $mform->addHelpButton('advertblockimage', 'advertblockimage', 'coursemetadatafield_arup');
-
         $mform->addElement('editor', 'arupmeta_objectives_editor', get_string('objectives', 'coursemetadatafield_arup', $altword));
         $mform->setType('arupmeta_objectives_editor', PARAM_RAW); // No XSS prevention here, users must be trusted.
 
@@ -160,20 +156,6 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
         }
 
         $arupmetadata->save();
-
-        $context = context_course::instance($this->courseid);
-        $draftitemid = $data->advertblockimage;
-        file_save_draft_area_files($draftitemid, $context->id, 'coursemetadatafield_arup', 'originalblockimage', 0);
-        $fs = get_file_storage();
-
-        $newimages = $fs->get_area_files($context->id, 'coursemetadatafield_arup', 'originalblockimage', false,
-                'itemid, filepath, filename', false);
-        $newimage = array_pop($newimages);
-        if (!is_null($newimage) && $newimage->get_imageinfo()) {
-            $this->arupadvert_process_blockimage($context->id, $newimage);
-        } else {
-            $fs->delete_area_files($context->id, 'coursemetadatafield_arup');
-        }
 
         parent::edit_save_data($data);
     }

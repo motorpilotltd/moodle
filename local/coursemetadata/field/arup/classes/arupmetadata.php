@@ -73,12 +73,13 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
     private function get_role_id() {
         $cache = \cache::make('coursemetadatafield_arup', 'roleid');
         $roleid = $cache->get('roleid');
-        if ($roleid === false) {
+        if (!$roleid) {
             global $DB;
+
             $roleid = $DB->get_field('coursemetadata_info_field', 'param1', ['datatype' => 'arup']);
             $cache->set('roleid', $roleid);
         }
-        return $cache->get('roleid');
+        return $roleid;
     }
 
     public function export_for_template(\renderer_base $output) {
@@ -135,6 +136,8 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
 
         $data->courseimage = $this->get_image_url();
 
+        $data->editableimage = $this->get_editable_image();
+
         $data->canviewshare =
                 has_capability('coursemetadatafield/arup:viewsharelink', \context_course::instance($this->get_course()->id));
         $data->description = json_encode(format_string($this->get_course()->summary));
@@ -154,16 +157,16 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
         $data->duration = $this->formatduration();
 
         $roleid = $this->get_role_id();
-
         $data->trainers = [];
         if (!empty($roleid)) {
             $users = get_role_users($roleid, \context_course::instance($this->course), false, \user_picture::fields('u'));
             foreach ($users as $user) {
-                $profileurl = new \moodle_url('user/profile.php', ['id' => $user->id]);
+                $profileurl = new \moodle_url('/user/profile.php', ['id' => $user->id]);
                 $trainer = new \stdClass();
                 $trainer->id = $user->id;
                 $trainer->fullname = fullname($user);
-                $trainer->image = $output->user_picture($user, array('size' => 100));
+                $userpicture = new \user_picture($user);
+                $trainer->imageurl = $userpicture->get_url($PAGE);
                 $trainer->profileurl = $profileurl->out();
                 $data->trainers[] = $trainer;
             }
@@ -319,8 +322,24 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
         }
     }
 
+    public function get_editable_image() {
+        global $OUTPUT;
+        // the theme renderer will add resize
+        $arupboost = new \theme_arupboost\arupboost();
+        return $arupboost->arupboostimage('course', $this->get_course()->id,
+            $this->get_image_url(), $OUTPUT->image_url('categoryimage', 'local_catalogue')->out());
+    }
+
     public function get_image_url() {
+        $arupboost = new \theme_arupboost\arupboost();
         $context = \context_course::instance($this->get_course()->id);
+
+        $croppedimage = $arupboost->arupboostimage_url($context->id, 'theme_arupboost', 'course_cropped');
+        if ($croppedimage) { return $croppedimage; };
+
+        $originalimage = $arupboost->arupboostimage_url($context->id, 'theme_arupboost', 'course');
+        if ($originalimage) { return $originalimage; };
+
         $fs = get_file_storage();
         $files = $fs->get_area_files($context->id, 'coursemetadatafield_arup', 'blockimage', 0);
 
@@ -334,9 +353,8 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
                     $file->get_filepath(),
                     $file->get_filename(),
                     false);
-        } else {
-            return false;
         }
+        return '';
     }
 
     public function get_region() {

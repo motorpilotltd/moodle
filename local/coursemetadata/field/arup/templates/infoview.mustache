@@ -3,17 +3,22 @@
     </h2>
     {{#hassections}}
         <div class="avblock {{#courseimage}} border-top-0 {{/courseimage}} {{#hassections}}to-right{{/hassections}} shadow-1 clearblock">
-            {{#courseimage}}
-                <div class="av_image_wrapper position-relative">
-                    <img src="{{{courseimage}}}" class="img-responsive">
-                    {{#icon}}
-                        <div class="adverticon-container position-absolute" style="left: 0; bottom: 0;">
-                            <img src="{{{ icon }}}" class="adverticon">
-                        </div>
-                    {{/icon}}
+        <div class="av_image_wrapper position-relative" style="overflow: hidden">
+            {{#editableimage}}
+            <div class="position-absolute w-100 h-100 d-block">
+                <div class="d-flex flex-column h-100">
+                    {{{editableimage}}}
                 </div>
-            {{/courseimage}}
-            <div class="av_metadata av_metadata_bg av_metadata_border">
+            </div>
+            {{/editableimage}}
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAHCAQMAAAAtrT+LAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAANQTFRF7+/v7Je6jQAAAENJREFUeJztwYEAAAAAw6D5U1/hAFUBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALwGsYoAAQbjkYoAAAAASUVORK5CYII=" class="img-responsive">
+            {{#icon}}
+                <div class="adverticon-container position-absolute p-2" style="left: 0; bottom: 0;">
+                    <img src="{{{ icon }}}" class="adverticon">
+                </div>
+            {{/icon}}
+        </div>
+            <div class="av_metadata av_metadata_bg av_metadata_border w-100">
                 <div class="mb-3">
                     {{{ description_text }}}
                 </div>
@@ -38,17 +43,15 @@
             </div>
         </div>
 
-        {{#trainers}}
-            <a href="{{{profileurl}}}">{{{image}}} {{{fullname}}}</a>
-        {{/trainers}}
-
     <div class="avtext">
         <div class="arupav_summary_wrapper">
             {{#sections}}
-            {{#showheadings}}
-            <h3 class="avheading">{{heading}}</h3>
-            {{/showheadings}}
-            <p>{{{text}}}</p>
+            <div class="section pb-3">
+                {{#showheadings}}
+                <h3 class="avheading">{{heading}}</h3>
+                {{/showheadings}}
+                <p>{{{text}}}</p>
+            </div>
             {{/sections}}
         </div>
     </div>
