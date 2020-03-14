@@ -39,10 +39,27 @@ class courseiterator implements \Iterator {
         }
     }
 
+    private $totalinresultset = null;
+    private function loaddata() {
+        if ($this->position === $this->totalinresultset) {
+            return [];
+        }
+
+        $response = $this->api->getcourses($this->position, $this->since);
+
+        if (isset($response->elements)) {
+            $this->totalinresultset = $response->paging->total;
+            return $response->elements;
+        }
+
+        return [];
+    }
+
     public function rewind() {
         $this->position = 0;
         $this->positionoffset = 0;
-        $this->currentpage = $this->api->getcourses(0, $this->since);
+        $this->totalinresultset = null;
+        $this->currentpage = $this->loaddata();
 
         if (!empty($this->currentpage)) {
             mtrace('Loaded page of course details.');
@@ -65,7 +82,7 @@ class courseiterator implements \Iterator {
     public function valid() {
         if(!isset($this->currentpage[$this->position - $this->positionoffset])) {
             $this->positionoffset = $this->position;
-            $this->currentpage = $this->api->getcourses($this->position, $this->since);
+            $this->currentpage = $this->loaddata();
 
             if (!empty($this->currentpage)) {
                 mtrace('Loaded page of course details.');
