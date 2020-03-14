@@ -33,6 +33,7 @@ if (!$cm = get_coursemodule_from_id('arupevidence', $id)) {
     print_error('invalidcoursemodule');
 }
 
+$cm = cm_info::create($cm);
 
 if(!$course = $DB->get_record('course', array('id' => $cm->course))){
     print_error('coursemisconf');
@@ -49,7 +50,7 @@ $ahb = $DB->get_record('arupevidence',  array('id' => $cm->instance));
 
 require_login($course, false, $cm);
 
-$courseurl = new moodle_url('/course/view.php', array('id' => $course->id));
+$courseurl = course_get_format($course)->get_view_url($cm->sectionnum);
 $viewurl = new moodle_url('/mod/arupevidence/view.php', array('id' => $id));
 $approveurl = new moodle_url('/mod/arupevidence/approve.php', array('id' => $id));
 $outputcache = '';
@@ -64,14 +65,15 @@ if(!empty($ahbuserid)) {
 }
 
 $ahbuser = $DB->get_record('arupevidence_users', $params, '*', IGNORE_MULTIPLE);
-
+$declarations = $DB->get_records('arupevidence_declarations', array('arupevidenceid' => $ahb->id), 'id ASC');
 $output = $PAGE->get_renderer('mod_arupevidence');
 $content = '';
 $customdata = array(
     'arupevidenceuser' => $ahbuser,
     'action' => $action,
     'contextid' => $context->id,
-    'arupevidence' => $ahb
+    'arupevidence' => $ahb,
+    'declarations' => $declarations
 );
 
 $mform = new mod_arupevidence_completion_form($viewurl, $customdata);
@@ -93,34 +95,38 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
         $html_btn = html_writer::tag('button', get_string('reviewchanges', 'mod_arupevidence'));
         $content .= html_writer::link($editahbuserpage_url, $html_btn);
     } else {
-        $itemid = (isset($data->action) && $data->action == 'edit') && isset($data->ahbuserid) ? $ahbuser->userid : $USER->id ;
-        file_save_draft_area_files(
-            $data->completioncertificate,
-            $context->id,
-            'mod_arupevidence',
-            'certificate',
-            $itemid, // set userid as itemid
-            array(
-                'subdirs' => 0,
-                'maxbytes' => $COURSE->maxbytes,
-                'maxfiles' => 1
-            )
-        );
+        $PAGE->set_url($viewurl); // prevent warning upon redirection
 
-        try {
-            // escape/remove special characters
-            $fs = get_file_storage();
-            $files = $fs->get_area_files($context->id, 'mod_arupevidence', 'certificate', $itemid);
-            if ($files) {
-                foreach ($files as $file) {
-                    $pattern = "/[^A-Za-z0-9\_\s\-\.]/";
-                    if (($itemid == $file->get_itemid() && $file->get_source() != null && preg_match($pattern, $file->get_filename()))) {
-                        $newfilename = core_text::specialtoascii($file->get_filename());
-                        $file->rename($file->get_filepath(), $newfilename);
+        if (isset($data->completioncertificate)) {
+            $itemid = (isset($data->action) && $data->action == 'edit') && isset($data->ahbuserid) ? $ahbuser->userid : $USER->id ;
+            file_save_draft_area_files(
+                $data->completioncertificate,
+                $context->id,
+                'mod_arupevidence',
+                'certificate',
+                $itemid, // set userid as itemid
+                array(
+                    'subdirs' => 0,
+                    'maxbytes' => $COURSE->maxbytes,
+                    'maxfiles' => 1
+                )
+            );
+
+            try {
+                // escape/remove special characters
+                $fs = get_file_storage();
+                $files = $fs->get_area_files($context->id, 'mod_arupevidence', 'certificate', $itemid);
+                if ($files) {
+                    foreach ($files as $file) {
+                        $pattern = "/[^A-Za-z0-9\_\s\-\.]/";
+                        if (($itemid == $file->get_itemid() && $file->get_source() != null && preg_match($pattern, $file->get_filename()))) {
+                            $newfilename = core_text::specialtoascii($file->get_filename());
+                            $file->rename($file->get_filepath(), $newfilename);
+                        }
                     }
                 }
-            }
-        } catch (Exception $e) {}
+            } catch (Exception $e) {}
+        }
 
         $arupevidencedata = array(
             'completiondate' => $data->completiondate,
@@ -143,6 +149,33 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
             $arupevidencedata = array_merge($arupevidencedata, $cpddetails);
         }
 
+        if ($ahb->exemption) {
+            $exemptiondetails = [
+                'exempt' => $data->exempt,
+                'exemptreason' => $data->exemptreason,
+            ];
+            $arupevidencedata = array_merge($arupevidencedata, $exemptiondetails);
+            if ($data->exempt && $ahb->exemptioncompletion) {
+                $arupevidencedata['completiondate'] = null;
+            }
+        }
+
+        // Saving declaration agreement
+        $agreeddeclaration = [];
+        if (!empty($declarations)) {
+            foreach ($declarations as $declaration) {
+                if (isset($data->{'declaration-'.$declaration->id}) && $data->{'declaration-'.$declaration->id}) {
+                    $agreeddeclaration[] = $declaration->id;
+
+                    // Tagging declaration to agreed
+                    if ($declaration_agreed = $DB->get_record('arupevidence_declarations', array('id' => $declaration->id, 'has_agreed' => 0))) {
+                        // Update declaration has_agreed
+                        $declaration_agreed->has_agreed = 1;
+                        $DB->update_record('arupevidence_declarations', $declaration_agreed);
+                    }
+                }
+            }
+        }
         $neworrejected = false;
         if(isset($data->action) && $data->action == 'edit') {
             // Modify existing completion information
@@ -159,7 +192,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
             $ahbuser->rejected = null;
             $ahbuser->rejectedbyid = null;
             $ahbuser->rejectmessage = null;
-
+            $ahbuser->declarations = !empty($agreeddeclaration)? json_encode($agreeddeclaration): null;
             $DB->update_record('arupevidence_users', $ahbuser);
         } else {
             // New completion information arupevidence_users
@@ -178,6 +211,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
             $ahbuser->completion = ($ahb->approvalrequired)? 0 : 1 ;
             $ahbuser->itemid = ($ahb->cpdlms == ARUPEVIDENCE_LMS)? $data->enrolmentid : null;
             $ahbuser->approved = null;
+            $ahbuser->declarations = !empty($agreeddeclaration)? json_encode($agreeddeclaration): null;
             $ahbuser->timemodified = time();
 
             // Appends input data from user
@@ -195,6 +229,10 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
             $approverlists = arupevidence_get_user_approvers($ahb, $contextcourse);
 
             $user = clone($USER);
+            $user->employmentcategory = $DB->get_field_sql(
+                'SELECT EMPLOYMENT_CATEGORY FROM SQLHUB.ARUP_ALL_STAFF_V WHERE EMPLOYEE_NUMBER = :staffid',
+                ['staffid' => (int) $user->idnumber]
+            );
             foreach ($approverlists as $approverto) {
                 $subject = get_string('email:subject', 'mod_arupevidence', array(
                     'coursename' => $course->fullname,
@@ -204,6 +242,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
                     'approverfirstname' => $approverto->firstname,
                     'approvalurl' => $approveurl->out(),
                     'userfirstname' => $user->firstname,
+                    'employmentcategory' => $user->employmentcategory,
                 ));
                 $sendnotification = arupevidence_send_email($approverto, $user, $subject, $messagebody);
             }
@@ -246,7 +285,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
         // Approved By
         $user = $DB->get_record('user', array('id' => $ahbuser->approverid), 'firstname, lastname, email');
         $label = html_writer::label(get_string('approve:approvedby', 'mod_arupevidence'), 'approvedbylabel');
-        $fullname = $user->firstname . ' ' . $user->lastname . '(' . $user->email . ')';
+        $fullname = $user->firstname . ' ' . $user->lastname . ' (' . $user->email . ')';
         $value = html_writer::div($fullname ,'approvedbylabel');
         $table->data[] = array($label, $value);
 
@@ -257,6 +296,19 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
         $value = html_writer::div($certificatelink ,'completiondatedisplay');
         $table->data[] = array($label, $value);
 
+        // Exemption details.
+        if ($ahb->exemption) {
+            $label = html_writer::label(get_string('label:exempt', 'mod_arupevidence'), 'exempt');
+            $value = html_writer::div($ahbuser->exempt ? get_string('yes') : get_string('no'));
+            $table->data[] = array($label, $value);
+
+            if ($ahbuser->exempt && $ahb->exemptioninfo) {
+                $label = html_writer::label(get_string('label:exemptreason', 'mod_arupevidence'), 'exempt');
+                $value = html_writer::div(s($ahbuser->exemptreason));
+                $table->data[] = array($label, $value);
+            }
+        }
+
         $content .= $output->alert(get_string('approve:requestapproved', 'mod_arupevidence'), 'alert alert-warning', false);
 
         $content .= html_writer::start_div('container col-md-12 arupevidence-table');
@@ -264,7 +316,6 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
         $content .= html_writer::end_div();
 
     } else {
-
         $content .= $mform->render();
     }
 
@@ -276,8 +327,10 @@ $PAGE->set_url($viewurl);
 $PAGE->requires->css('/mod/arupevidence/styles.css');
 
 $arguments = array(
+    'validity' => $ahb->expectedvalidity,
     'validityperiod' =>  $ahb->expectedvalidityperiod,
     'validityperiodunit' => $ahb->expectedvalidityperiodunit,
+    'skipvalidityexemption' => $ahb->exemption && $ahb->exemptionvalidity,
 );
 $PAGE->requires->js_call_amd('mod_arupevidence/view', 'init', $arguments);
 

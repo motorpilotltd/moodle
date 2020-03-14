@@ -18,55 +18,49 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
-class mod_arupevidence_completion_form extends moodleform
+class mod_arupevidence_upload_form extends moodleform
 {
     /*** @var array $_arupevidence */
     protected $_arupevidence;
 
-    /*** @var array $_arupevidenceuser */
-    protected $_arupevidenceuser;
-
     public function definition() {
-        global $COURSE, $PAGE, $USER;
+        global $COURSE, $PAGE;
         $mform = $this->_form;
 
         // Disable change checker as interferes with validity period modal confirmation.
         $mform->disable_form_change_checker();
 
-        $this->_arupevidenceuser = $this->_customdata['arupevidenceuser'] ? $this->_customdata['arupevidenceuser'] : null;
         $this->_arupevidence = $this->_customdata['arupevidence'] ? $this->_customdata['arupevidence'] : null;
 
         if ($this->_arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
-            $defaultenrolment = !empty($this->_arupevidenceuser->itemid)? $this->_arupevidenceuser->itemid : '';
-
             $taps = new \local_taps\taps();
-            $user = !empty($this->_arupevidenceuser->userid) ?
-                core_user::get_user($this->_arupevidenceuser->userid, '*', MUST_EXIST) : $USER;
-            $classchoices = array();
-            $hasplacedenrolment = false;
-            if ($enrolments = $taps->get_enroled_classes($user->idnumber, $COURSE->idnumber, true, false)) {
-
-                foreach ($enrolments as $enrolment) {
-                    if ($taps->is_status($enrolment->bookingstatus, 'placed')) {
-                        $classchoices[$enrolment->enrolmentid] = $enrolment->classname;
-                        $hasplacedenrolment = true;
-                    }
-                }
-
-                if (count($classchoices) > 1) {
-                    $classchoices = array(''=>get_string('chooseclass', 'mod_arupevidence')) + $classchoices;
-                }
-
-            }
-
-            if (!$hasplacedenrolment) {
-                $mform->addElement('html', \html_writer::tag('div', get_string('noenrolments', 'mod_arupevidence'), ['class' => 'alert alert-danger']));
+            $classes = $taps->get_course_classes($COURSE->idnumber);
+            $classchoices = ['' => get_string('chooseclass', 'mod_arupevidence')];
+            foreach ($classes as $class) {
+                $classchoices[$class->classid] = $class->classname;
             }
         }
 
+        $mform->addElement(
+            'select',
+            'ahbuserid',
+            get_string('label:uploadforuser', 'mod_arupevidence'),
+            array('' => ''),
+            array('class' => 'select2-user', 'data-placeholder' => get_string('placeholder:uploadforuser', 'mod_arupevidence'))
+        );
+        $mform->addRule('ahbuserid', null, 'required', null, 'client');
+
+        if ($this->_arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
+            $mform->addElement(
+                'select',
+                'classid',
+                get_string('label:class', 'mod_arupevidence'),
+                $classchoices, array('style'=>'width:140px')
+            );
+            $mform->addRule('classid', null, 'required', null, 'client');
+        }
+
         $mform->addElement('date_selector', 'completiondate',  get_string('completiondate', 'mod_arupevidence'), array('timezone' => 0));
-        $defaultdate = isset($this->_arupevidenceuser->completiondate) ? $this->_arupevidenceuser->completiondate : time();
-        $mform->setDefault('completiondate', $defaultdate);
 
         if (isset($this->_arupevidence->requireexpirydate) && $this->_arupevidence->requireexpirydate) {
             if ($this->_arupevidence->mustendmonth) {
@@ -84,30 +78,25 @@ class mod_arupevidence_completion_form extends moodleform
                     '11' => "November",
                     '12' => "December");
 
-                $choicesyears = array_combine(range(2030, 1950, -1), range(2030, 1950, -1));
+                    $choicesyears = array_combine(range(2030, 1950, -1), range(2030, 1950, -1));
 
                 // Months selection
-                $defaultvalue = (isset($this->_arupevidenceuser->expirydate) && $this->_arupevidenceuser->expirydate) ? date('m', $this->_arupevidenceuser->expirydate) : '';
                 $mform->addElement(
                     'select',
                     'expirymonth',
                     get_string('label:expirydate', 'mod_arupevidence'),
                     array('' => get_string('selectmonth', 'mod_arupevidence')) + $choices, array('style'=>'width:140px')
                 );
-                $mform->setDefault('expirymonth', $defaultvalue);
 
                 // Years selection
-                $defaultvalue = (isset($this->_arupevidenceuser->expirydate) && $this->_arupevidenceuser->expirydate) ? date('Y', $this->_arupevidenceuser->expirydate) : '';
                 $mform->addElement(
                     'select',
                     'expiryyear',
                     '',
                     array('' => get_string('selectyear', 'mod_arupevidence')) + $choicesyears, array('style'=>'width:130px')
                 );
-                $mform->setDefault('expiryyear', $defaultvalue);
             } else {
                 $mform->addElement('date_selector', 'expirydate',  get_string('label:expirydate', 'mod_arupevidence'), array('timezone' => 0));
-                $mform->setDefault('expirydate', isset($this->_arupevidenceuser->expirydate)? $this->_arupevidenceuser->expirydate : '');
 
             }
 
@@ -115,21 +104,9 @@ class mod_arupevidence_completion_form extends moodleform
             $choices = array(get_string('none'), 1,2,3,4,5,6,7,8,9,10,11,12);
             $mform->addElement('select', 'validityperiod', get_string('validityperiod', 'mod_arupevidence'), $choices);
             $mform->addRule('validityperiod', null, 'required', null, 'client');
-            $mform->setDefault('validityperiod', isset($this->_arupevidenceuser->validityperiod)? $this->_arupevidenceuser->validityperiod : '');
 
             $mform->addElement('select', 'validityperiodunit', '', array('m' => 'Month(s)', 'y' => 'Year(s)', '' => get_string('none')));
             $mform->addRule('validityperiodunit', null, 'required', null, 'client');
-            $mform->setDefault('validityperiodunit', isset($this->_arupevidenceuser->validityperiodunit)? $this->_arupevidenceuser->validityperiodunit : '');
-        }
-        if ($this->_arupevidence->cpdlms == ARUPEVIDENCE_LMS) {
-            $mform->addElement(
-                'select',
-                'enrolmentid',
-                get_string('label:enrolment', 'mod_arupevidence'),
-                $classchoices, array('style'=>'width:140px')
-            );
-            $mform->addRule('enrolmentid', null, 'required', null, 'client');
-            $mform->setDefault('enrolmentid', $defaultenrolment);
         }
 
         if ($this->_arupevidence->requireupload) {
@@ -142,53 +119,18 @@ class mod_arupevidence_completion_form extends moodleform
                 get_string('uploadcertificate', 'mod_arupevidence'),
                 null, $fileoptions);
 
-            $aeuserid = isset($this->_arupevidenceuser->userid) ? $this->_arupevidenceuser->userid : null ;
-
-            $entryid = $aeuserid;
-            $farea = null;
-            if (isset($this->_arupevidenceuser->itemid) && isset($this->_arupevidenceuser->completion)
-                && $this->_arupevidenceuser->completion) {
-
-                $entryid = $this->_arupevidenceuser->itemid;
-                $farea =  $this->_arupevidence->cpdlms;
-
-            }
             $draftitemid = file_get_submitted_draft_itemid("completioncertificate");
-            $filearea = arupevidence_fileareaname($farea);
-            file_prepare_draft_area($draftitemid, $this->_customdata['contextid'], 'mod_arupevidence', $filearea, $entryid,
+            $filearea = arupevidence_fileareaname(null);
+            file_prepare_draft_area($draftitemid, $this->_customdata['contextid'], 'mod_arupevidence', $filearea, null,
                 $fileoptions);
             $mform->setDefault("completioncertificate", $draftitemid);
         }
 
         // Declarations
         if (!empty($this->_customdata['declarations'])) {
-            $agreeddeclarations = !empty($this->_arupevidenceuser->declarations)? json_decode($this->_arupevidenceuser->declarations): [];
-
             foreach ($this->_customdata['declarations'] as $declaration) {
                 $mform->addElement('checkbox', 'declaration-'.$declaration->id, '', $declaration->declaration);
-                if (in_array($declaration->id, $agreeddeclarations)) {
-                    $mform->setDefault('declaration-'.$declaration->id, 1);
-                }
             }
-        }
-
-        if(!empty($this->_arupevidenceuser)) {
-            $mform->addElement('hidden', 'timemodified', $this->_arupevidenceuser->timemodified);
-            $mform->setType('timemodified', PARAM_INT);
-
-            $mform->addElement('hidden', 'approved', $this->_arupevidenceuser->approved);
-            $mform->setType('approved', PARAM_INT);
-
-            $mform->addElement('hidden', 'completion', $this->_arupevidenceuser->completion);
-            $mform->setType('completion', PARAM_INT);
-        }
-
-        // User was editing an existing entry.
-        if(isset($this->_customdata['action']) && !empty($this->_customdata['action'])) {
-            $mform->addElement('hidden', 'action', $this->_customdata['action']);
-            $mform->setType('action', PARAM_ALPHA);
-            $mform->addElement('hidden', 'ahbuserid', $this->_arupevidenceuser->id);
-            $mform->setType('ahbuserid', PARAM_INT);
         }
 
         if (!empty($this->_arupevidence->exemption)) {
@@ -214,8 +156,7 @@ class mod_arupevidence_completion_form extends moodleform
         $mform->addElement('hidden', 'requirevalidityperiod', $this->_arupevidence->requirevalidityperiod);
         $mform->setType('requirevalidityperiod', PARAM_INT);
 
-        $defaultvalue = !empty($this->_arupevidenceuser->validityexpirydate) ? $this->_arupevidenceuser->validityexpirydate : 0;
-        $mform->addElement('hidden', 'validityexpirydate', $defaultvalue);
+        $mform->addElement('hidden', 'validityexpirydate');
         $mform->setType('validityexpirydate', PARAM_INT);
 
         $this->add_action_buttons(true, get_string('upload'));
@@ -242,7 +183,7 @@ class mod_arupevidence_completion_form extends moodleform
     private function add_taps_fields(MoodleQuickForm $mform) {
         $taps = new \local_taps\taps();
 
-        $defaults = !empty($this->_arupevidenceuser)? $this->_arupevidenceuser : $this->_arupevidence ;
+        $defaults = $this->_arupevidence;
 
         $mform->addElement('header', 'tapstemplate', get_string('cpdformheader', 'mod_arupevidence'));
 
@@ -268,6 +209,7 @@ class mod_arupevidence_completion_form extends moodleform
         $mform->addElement('date_selector', 'classstartdate', get_string('cpd:classstartdate', 'block_arup_mylearning'), array('optional' => true, 'timezone' => 0));
         $mform->setAdvanced('classstartdate');
         $mform->setDefault('classstartdate', !empty($defaults->classstartdate) ? $defaults->classstartdate : '');
+
 
         $mform->addElement('text', 'classcost', get_string('cpd:classcost', 'block_arup_mylearning'));
         $mform->setType('classcost', PARAM_TEXT);
@@ -296,6 +238,8 @@ class mod_arupevidence_completion_form extends moodleform
             $lastday = date('t',strtotime($data->expiryyear . $data->expirymonth . '01'));
             $data->expirydate = strtotime($data->expiryyear . $data->expirymonth . $lastday);
         }
+
+        $data->ahbuserid = optional_param('ahbuserid', null, PARAM_INT);
 
         return $data;
     }
@@ -352,4 +296,26 @@ class mod_arupevidence_completion_form extends moodleform
         return $errors;
     }
 
+    public function set_data($defaultvalues) {
+        global $DB;
+
+        if (!empty($defaultvalues['ahbuserid'])) {
+            $usertextconcat = $DB->sql_concat('firstname', "' '", 'lastname', "' ('", 'email', "')'");
+            $params = array('ahbuserid'=> $defaultvalues['ahbuserid']);
+            $where = "id = :ahbuserid";
+            $userlist = $DB->get_records_select_menu('user', $where, $params, 'lastname ASC', "id, $usertextconcat");
+            $select = $this->_form->getElement('ahbuserid');
+            foreach ($userlist as $value => $text) {
+                $select->addOption($text, $value, array('selected' => 'selected'));
+            }
+        }
+
+        parent::set_data($defaultvalues);
+    }
+
+    public function render() {
+        $this->set_data(['ahbuserid' => optional_param('ahbuserid', null, PARAM_INT)]);
+
+        return parent::render();
+    }
 }

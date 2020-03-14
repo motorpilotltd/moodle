@@ -21,36 +21,12 @@
  * @since      3.0
  */
 
-define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstrap/bootstrap', 'mod_arupevidence/select2'],
-    function($, cfg, str, notification) {
-        return /** @alias module:mod_arupevidence/enhance */ {
+define(['jquery', 'core/config', 'theme_bootstrap/bootstrap', 'mod_arupevidence/select2'],
+    function($, cfg) {
+        return /** @alias module:mod_arupevidence/upload */ {
             // Public variables and functions.
-            /**
-             * Add form enhancement via select2.
-             *
-             * @method initialise
-             * @param args
-             */
-            initialise: function(args) {
-                // NOTE: temporary fix for disabling learningdesc(an atto editor)
-                var selectcpdlms = $('#id_cpdlms');
-
-
-                if (selectcpdlms.val() != 0) {
-                    // NOTE: should disabled when editing the instance with cms selected
-                    $('#id_learningdesceditable').attr('contenteditable', false);
-                }
-                selectcpdlms.on('change', function() {
-                    if ($(this).val() == 0 && $(this).val().length !== 0) { // cms selected
-                        $('#id_learningdesceditable').attr('contenteditable', true);
-                        $('#id_learningdesceditable').removeClass('disabledesc');
-                    } else {
-                        $('#id_learningdesceditable').addClass('disabledesc');
-                        $('#id_learningdesceditable').attr('contenteditable', false);
-
-                    }
-                });
-
+            // Add form enhancement via select2.
+            init: function(args) {
                 var courseid = args;
                 $('select.select2').select2({
                     width: '75%'
@@ -83,16 +59,6 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         cache: true
                     }
                 });
-                str.get_string('alert:restrictedaccess:tooltip', 'mod_arupevidence').done(function(s) {
-                    $('.mform').tooltip({
-                        selector: '.select2-container--disabled',
-                        title: s
-                    });
-                    $('input:checkbox:disabled').tooltip({
-                        title: s
-                    });
-                }).fail(notification.exception);
-
             }
         };
     });
