@@ -165,7 +165,9 @@ class framework implements \H5PFrameworkInterface {
             @set_time_limit(0);
 
             // Generate local tmp file path.
-            $localfolder = $CFG->tempdir . uniqid('/hvp-');
+/* BEGIN CORE MOD */
+            $localfolder = sys_get_temp_dir() . uniqid('/hvp-');
+/* END CORE MOD */
             $stream = $localfolder . '.h5p';
 
             // Add folder and file paths to H5P Core.

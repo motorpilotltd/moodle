@@ -239,7 +239,9 @@ class mod_hvp_mod_form extends moodleform_mod {
                 $file = reset($files);
                 $interface = \mod_hvp\framework::instance('interface');
 
-                $path = $CFG->tempdir . uniqid('/hvp-');
+/* BEGIN CORE MOD */
+                $path = sys_get_temp_dir() . uniqid('/hvp-');
+/* END CORE MOD */
                 $interface->getUploadedH5pFolderPath($path);
                 $path .= '.h5p';
                 $interface->getUploadedH5pPath($path);
