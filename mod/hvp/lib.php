@@ -484,6 +484,9 @@ function hvp_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload
             }
 
             $itemid = 0;
+/* BEGIN CORE MOD */
+            $options['cacheability'] = 'public';
+/* END CORE MOD */
             break;
 
         case 'content':
