@@ -170,7 +170,7 @@ function hvp_cm_info_dynamic(cm_info $cm) {
 
             $export = '';
 /* BEGIN CORE MOD */
-            if ($displayoptions[\H5PCore::DISPLAY_OPTION_DOWNLOAD] && get_config('mod_hvp', 'export') !== 0) {
+            if ($displayoptions[\H5PCore::DISPLAY_OPTION_DOWNLOAD] && get_config('mod_hvp', 'export') !== '0') {
 /* END CORE MOD */
                 // Find course context.
                 $context = \context_course::instance($hvp->course);

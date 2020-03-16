@@ -63,7 +63,7 @@ class framework implements \H5PFrameworkInterface {
 
             $language = self::get_language();
 /* BEGIN CORE MOD */
-            $export = get_config('mod_hvp', 'export') !== 0;
+            $export = get_config('mod_hvp', 'export') !== '0';
 /* END CORE MOD */
 
             $core = new \H5PCore($interface, $fs, $url, $language, $export);
