@@ -126,8 +126,9 @@ class view_assets {
      */
     private function getexportsettings($downloadenabled) {
         global $CFG;
-
-        if ( ! $downloadenabled || (isset($CFG->mod_hvp_export) && $CFG->mod_hvp_export === false)) {
+/* BEGIN CORE MOD */
+        if ( ! $downloadenabled || get_config('mod_hvp', 'export') === 0) {
+/* END CORE MOD */
             return '';
         }
 
