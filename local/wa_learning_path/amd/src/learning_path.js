@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery', 'theme_bootstrap/bootstrap', 'core/str'], function($, bootstrap) {
+define(['jquery', 'theme_bootstrap/bootstrap', 'core/str', 'local_wa_learning_path/select2'], function($, bootstrap) {
 
     "use strict"; // jshint ;_;
     return {
@@ -19,16 +19,21 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str'], function($, bootstra
                     $('#myModal #print_section').click(function(){
                         var levels = '';
                         var regions = '';
+                        var roles = '';
 
-                        if($('.levels').val()) {
-                            levels = $('.levels').val().join();
+                        if($('select[name="levels"]').val()) {
+                            levels = $('select[name="levels"]').val().join();
+                        }
+
+                        if($('select[name="roles"]').val()) {
+                            roles = $('select[name="roles"]').val().join();
                         }
 
                         if($('.region').val()) {
                             regions = $('.region').val().join();
                         }
 
-                        var url = $(this).prop('href') + '&levels=' + levels + '&regions=' + regions;
+                        var url = $(this).prop('href') + '&levels=' + levels + '&regions=' + regions + '&role=' + roles;
                         $(this).prop('href', url);
                     });
 
@@ -112,13 +117,50 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str'], function($, bootstra
                 });
             };
 
+            var updateLevels = function(urlFromSelect) {
+                var levels = '';
+                var regions = '';
+                var roles = '';
+
+                if($('select[name="levels"]').val()) {
+                    levels = $('select[name="levels"]').val();
+                }
+
+                if($('select[name="roles"]').val()) {
+                    roles = $('select[name="roles"]').val();
+                }
+
+                if($('.learning_path_matrix .region').val()) {
+                    regions = $('.learning_path_matrix .region').val();
+                }
+
+                var url = urlFromSelect + '&levels=' + levels + '&regions=' + regions + '&role=' + roles;
+                window.location = url;
+            };
+
             $(document).ready(function($) {
+                $('select[name="levels"]').select2({
+                    placeholder: "Select level",
+                });
+
+                $('select[name="levels"]').on('select2:select', function() {
+                    updateLevels($(this).data('url'));
+                });
+
+                $('select[name="levels"]').on('select2:unselect', function() {
+                    updateLevels($(this).data('url'));
+                });
+
                 $('a[data-toggle="modal"]').on('click', function() {
                     loadModal(this.href);
 
                     // Now return a false (negating the link action) to prevent Bootstrap's JS 3.1.1
                     // from throwing a 'preventDefault' error due to us overriding the anchor usage.
                     return false;
+                });
+
+                $("#myModal").on('hide.bs.modal', function(){
+                    $('.popover').remove();
                 });
 
                 $('.cell_icon_container').on('mouseover', function() {
@@ -129,6 +171,7 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str'], function($, bootstra
 
                     $('.lp_cell').each(function() {
                         $(this).removeClass('cell-highlight');
+                        $(this).removeClass('marked-cell');
 
                         var current_col_and_row = $(this).attr('id').replace('#','').split('_');
                         var current_col = current_col_and_row[0];
@@ -138,6 +181,25 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str'], function($, bootstra
                             $(this).addClass('cell-highlight');
                         }
                     });
+
+                    $('.lp_row_header').each(function() {
+                        $(this).removeClass('cell-highlight');
+
+                        if($(this).data('row') == row) {
+                            $(this).addClass('cell-highlight');
+                        }
+                    });
+
+                    $('.lp_col_header').each(function() {
+                        $(this).removeClass('cell-highlight');
+
+                        if($(this).data('column') == col) {
+                            $(this).addClass('cell-highlight');
+                        }
+                    });
+
+                    $(this).parent().removeClass('cell-highlight');
+                    $(this).parent().addClass('marked-cell');
                 });
             });
         },

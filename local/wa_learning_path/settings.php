@@ -9,7 +9,6 @@
  * @copyright   2016 Webanywhere (http://www.webanywhere.co.uk)
  */
 defined('MOODLE_INTERNAL') || die;
-
 // Content of this file has been provided by client:
 // http://issues.webanywhere.co.uk/issues/47226
     
@@ -181,4 +180,47 @@ if ($hassiteconfig) {
             'fa fa-chevron-right'
         )
     );
+    
+    require_once($CFG->dirroot . '/local/wa_learning_path/lib/lib.php');
+    
+    $allregions = \wa_learning_path\lib\get_regions();
+    
+    $defaultSettings = [
+        'class_global' => 'label-primary',
+        'shortcut_global' => 'Gl',
+        'class_americas' => 'label-danger',
+        'shortcut_americas' => 'Am',
+        'class_australasia' => 'label-warning',
+        'shortcut_australasia' => 'Au',
+        'class_eastasia' => 'label-success',
+        'shortcut_eastasia' => 'Ea',
+        'class_europe' => 'label-info',
+        'shortcut_europe' => 'Eu',
+        'class_ukimea' => 'label-default',
+        'shortcut_ukimea' => 'Uk'
+    ];
+    
+    foreach($allregions as $region) {
+        $string['region_shortcut'] = 'Shortcut for region: {$a}';
+        $string['region_class'] = 'Label class for region: {$a}';
+        
+        $regionName =str_replace(' ', '', strtolower($region));
+        $settings->add(
+            new admin_setting_configtext(
+                'local_wa_learning_path/shortcut_' . $regionName,
+                get_string('region_shortcut', 'local_wa_learning_path', $region),
+                '',
+                $defaultSettings['shortcut_' . $regionName]
+            )
+        );
+    
+        $settings->add(
+            new admin_setting_configtext(
+                'local_wa_learning_path/class_' . $regionName,
+                get_string('region_class', 'local_wa_learning_path', $region),
+                '',
+                $defaultSettings['class_' . $regionName]
+            )
+        );
+    }
 }

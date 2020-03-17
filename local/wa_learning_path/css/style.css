@@ -72,7 +72,7 @@
 
 .wa_hide { display: none; }
 
-.wa_matrix {
+#editing_matrix .wa_matrix {
 	display: table;
     min-width:95%;
     margin-right:1%;
@@ -80,8 +80,24 @@
     margin-top: 8px;
 }
 
+#editing_role_matrix .wa_matrix {
+    display: table;
+    min-width:95%;
+    border-collapse: separate;
+    margin-top: 8px;
+}
+
 .cell-highlight {
-    background-color: rgba(15, 149, 255, 0.2) !important;
+    background-color: rgba(229, 243, 255,0.9) !important;
+}
+
+#editing_role .label-primary {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+#editing_role .col-title {
+    word-break: break-word;
 }
 
 .wa_matrix .btn {
@@ -91,12 +107,21 @@
     position: absolute;
     top:0;
     right:0;
-    height: calc(100% - 61px);
+    height: calc(100% - 61px - 60px);
     width: 3%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     margin:0;
+}
+
+
+select.custom-select {
+    padding: 10px;
+    background-color: white;
+    border: 2px solid #BBBBBB;
+    margin-right: 20px;
+    width: 150px;
 }
 
 .button-export {
@@ -150,6 +175,10 @@
     color: white;
 }
 
+.matrix-activities-title img {
+    margin-bottom: 3px;
+}
+
 #print_section {
     margin-right: 10px;
 }
@@ -169,9 +198,17 @@
 .wa-btn {
     padding: 10px 20px 10px 20px ;
 }
-
+.matrix-text-left img.icon {
+    transform-origin: top right;
+    direction: ltr;
+    -ms-writing-mode: bt-lr;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    transform-origin:center;
+    overflow-wrap: normal;
+}
 .matrix-text-left {
-
+    max-height: 225px;
     text-align: left;
     margin: auto;
     padding: 10px 0;
@@ -240,6 +277,10 @@
     margin: 0;
 }
 
+#matrixform #id_cancel {
+    margin-left: 5px;
+}
+
 .wa_matrix > div {
 	display: table-row;
 	width: 100%;
@@ -304,6 +345,14 @@
 #editing_matrix #main {
     width: calc(98% - 20px);
     min-height: 300px;
+    margin-top: 20px;
+}
+
+#editing_role_matrix #main {
+    width: 100%;
+    min-height: 300px;
+    margin-top: 20px;
+    margin-right:0;
 }
 
 #editing_matrix .wrapper {
@@ -329,6 +378,24 @@
     color: #3c3c3b;
 }
 
+.wa_matrix .cell .fitemtitle {
+    display: none;
+}
+
+.wa_matrix .checkbox-cell.selected,
+.cell-selected {
+    background-color: #fffaa5!important;
+}
+
+.cell-highlight.cell-selected {
+    background-color: #c5ffdd!important;
+}
+
+.wa_matrix .checkbox-cell input[type=checkbox] {
+    width: 20px;
+    height: 20px;
+}
+
 .wa_matrix .cell a:hover {
     color: #3c3c3b;
 }
@@ -344,12 +411,35 @@
 }
 
 .wa_matrix .wa_row .cell,
-.wa_matrix .wa_row .row_header,
+.wa_matrix .wa_row .row_header {
+    border-top: 2px solid #e6e6e6;
+    border-left: 2px solid #e6e6e6;
+    padding: 4px;
+    font-size: 12px;
+}
+
 .wa_matrix .col_header {
     border-top: 2px solid #e6e6e6;
     border-left: 2px solid #e6e6e6;
     padding: 4px;
     font-size: 12px;
+    vertical-align: bottom;
+}
+
+.wa_matrix .col_header span.label {
+    margin-right: 3px; margin-bottom: 3px;
+}
+
+#editing_role .fitem {
+    margin: 5px 0px 0px 5px;
+}
+#editing_role .col_header {
+    /*max-width: 70px;*/
+    overflow-wrap: break-word;
+}
+
+#editing_role .row_header {
+    min-width: 150px;
 }
 
 .wa_matrix .wa_row .row_header i,
@@ -514,8 +604,20 @@
     padding-top: 5px;
 }
 
-.region,
-.levels {
+.levels-multiselect {
+    padding: 5px;
+    background-color: white;
+    color: #222222;
+    margin: 10px 10px 10px 15px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    min-width: 450px;
+    max-height: 50px;
+    margin-bottom: 10px;
+}
+.filter-navbar .region,
+.filter-navbar .levels {
     padding: 5px;
     background-color: white;
     color: #222222;
@@ -624,7 +726,13 @@
 
 .learning_path_matrix .lp_matrix .lp_cell .cell_icon_container:hover{
 	padding: 0px;
-	border: 4px solid #eee;
+}
+
+.marked-cell {
+    -webkit-box-shadow:inset 0px 0px 0px 4px #0f95ff;
+    -moz-box-shadow:inset 0px 0px 0px 4px #0f95ff;
+    box-shadow:inset 0px 0px 0px 4px #0f95ff;
+    padding:0;
 }
 
 .learning_path_matrix .lp_matrix .lp_cell.active .cell_icon_container{
@@ -1056,7 +1164,7 @@
 .row_header .name a > i{
     margin-bottom: 5px;
 }
-.add_row, .add_column {
+.add_row, .add_column, .role-button {
     border-radius:0;
     color: #0f95ff;
     background-color: #f7f5f5;
@@ -1064,8 +1172,37 @@
     border: 0;
 }
 
-.add_row:hover, .add_column:hover {
+.role-button {
+    height: 42px;
+    width: 3%;
+    text-align: center;
+}
+
+.add_column {
+    margin-top: 62px;
+}
+
+.buttons a:hover {
+
+}
+.create-role-button {
+    color: black;
+    background-color: white;
+    border: 2px solid #BBBBBB;
+    padding: 10px
+}
+
+.create-role-button:hover {
+    color: black;
+    background-color: #e6e6e6;
+    border-color: #adadad;
+    text-decoration: none;
+}
+
+.add_row:hover, .add_column:hover, .role-button:hover{
     color: #0f95ff;
+    background-color: #e6e6e6;
+    border-color: #adadad;
 }
 #activitiyform .add_info {
     color: #090;
@@ -1117,10 +1254,10 @@
     background-color: #DDD;
 }
 
-
 /** MODALS  */
 .modal-body #name {
     width: 100%;
+    margin-bottom: 10px;
 }
 
 .modal-body .visibleRow {
@@ -1129,7 +1266,15 @@
 
 .buttons {
     margin-top: 15px;
-    margin-bottom:10px;
+}
+
+.buttons .buttons-label {
+    line-height: 40px;
+    color: #939598;
+    margin-right: 10px;
+}
+.buttons select.custom-select {
+    margin-right: 20px;
 }
 
 .checkbox .control-label {
@@ -1170,4 +1315,92 @@
 .modal-body #delete:hover {
     background-color: #e6e6e6;
     border-color: #adadad;
+}
+
+#role_activity_description {
+    background-color: #F2F2F2;
+    border-color: #adadad;
+    padding: 4px;
+    margin-bottom: 15px;
+}
+
+.edit_role #id_moodle .fitem .fitemtitle {
+    width: 15% !important;
+}
+
+.edit_role #id_moodle .fitem .felement {
+    width: 85% !important;
+}
+
+.edit_role .row_header {
+    min-height: 46px;
+}
+
+.edit_activities .cell .fitem {
+    margin-bottom:0px;
+}
+
+.edit_activities .wa_matrix > div:first-child > div:first-child {
+    border-top: 2px solid #e6e6e6;
+    border-left: 2px solid #e6e6e6;
+}
+
+.edit_activities .cols {
+    background-color: #F2F2F2;
+}
+
+.edit_activities .cols .col_header {
+    height: 46px;
+    vertical-align:middle;
+}
+
+.edit_activities .wa_matrix > div:first-child > div:not(:first-child) {
+    text-align: center;
+}
+
+.edit_activities .wa_row > div:first-child {
+    text-align: left;
+}
+
+.edit_activities .cell .felement {
+    width: 100%;
+}
+
+.edit_activities #editing_matrix .wa_matrix {
+    min-width: 100%;
+    margin-right:0;
+    margin-top:0;
+}
+
+.edit_activities #editing_matrix #main {
+    width: 100%;
+    margin-top: 0;
+    min-height: 100px;
+}
+
+.edit_matrix_view .cell:hover {
+    -webkit-box-shadow:inset 0px 0px 0px 4px #0f95ff;
+    -moz-box-shadow:inset 0px 0px 0px 4px #0f95ff;
+    box-shadow:inset 0px 0px 0px 4px #0f95ff;
+}
+
+#myModalColumn .select {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#myModalColumn .select-regions {
+    padding: 0;
+}
+
+#editing_role .col_header .label {
+    margin-right: 3px;
+    margin-bottom: 3px;
+}
+
+.select2-selection {
+    margin-top:10px;
+    margin-left:10px;
+    margin-bottom: 10px;
 }

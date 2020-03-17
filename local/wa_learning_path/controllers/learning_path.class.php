@@ -78,13 +78,43 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             $this->no_access();
         }
     }
+
+    public function is_visible($activity, $type)
+    {
+        $visible = true;
+        foreach ($this->cellData['activities'] as $act) {
+            if ($act->itemid == $activity && $act->type = $type) {
+                $visible = $act->visible;
+            }
+        }
+
+        return $visible;
+    }
+
+    public function change_activity_position($activity, $newPosition, &$activities)
+    {
+        $activitiesToRemove = [];
+        foreach ($activities->{$activity->position} as $index => $act) {
+            if ($act->position != $newPosition && $act->id == $activity->id && $act->type == $activity->type) {
+                $activitiesToRemove[$act->type] = $act->id;
+                $movedActivity = $act;
+                unset($activities->{$activity->position}[$index]);
+                $movedActivity->oldposition = $movedActivity->position;
+                $movedActivity->position = $newPosition;
+                $activities->{$newPosition}[] = $movedActivity;
+            }
+        }
+    }
     
     public function matrix_activities_action($params = []) {
-        global $CFG, $PAGE;
+        global $CFG, $PAGE, $DB;
         
         $this->check_and_get_learning_path($params);
         \wa_learning_path\lib\load_model('activity');
-    
+
+        // Selected role.
+        $role = optional_param('role', null, PARAM_INT);
+
         // Selected rows of matrix.
         $levels = optional_param('levels', null, PARAM_RAW_TRIMMED);
     
@@ -118,6 +148,18 @@ class learning_path extends \wa_learning_path\lib\base_controller {
     
         $allregionnames = \wa_learning_path\lib\get_regions();
         $this->regionnames = array_intersect_key($allregionnames, array_fill_keys($this->regions, true));
+
+        if ($key) {
+            $activitiesData = $DB->get_records('wa_learning_path_role_act', ['roleid' => $role, 'activityid' => substr($key, 1)]);
+        }
+
+        $cellData = [];
+        if ($activitiesData) {
+            $cellData['description'] = reset($activitiesData)->overridedescription;
+            foreach ($activitiesData as $data) {
+                $cellData['activities'][$data->type . '_' . $data->itemid] = $data;
+            }
+        }
     
         $this->levels = !empty($levels) ? explode(',', $levels) : array();
     
@@ -128,10 +170,12 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         }
     
         $this->cell = null;
-    
+
+        $this->cellData = $cellData;
+
+        $this->key = $key;
         if (isset($this->learning_path->matrix)) {
             $this->position = 'all'; // Always 'all'...
-            $this->key = $key;
             $this->matrix = json_decode($this->learning_path->matrix);
         
             if ($this->matrix) {
@@ -146,12 +190,24 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                 }
                 $this->activities = \wa_learning_path\model\learningpath::fill_activities(@$this->matrix->activities,
                     false, false, false, false, (bool)$this->learning_path->subscribed);
+
+                if ($this->cellData) {
+                    foreach ($this->activities->{$key}->positions as $positionName => $position) {
+                        foreach ($position as $activity) {
+                            $overridePosition = $this->cellData['activities'][$activity->type . '_' . $activity->id]->overrideere;
+                            if ($overridePosition && $overridePosition != $positionName) {
+                                $this->change_activity_position($activity, $overridePosition, $this->activities->{$key}->positions);
+                            }
+                        }
+                    }
+                }
             }
         
             if (!empty($key) && isset($this->activities->{$key})) {
                 // Get labels.
                 list($this->r_label, $this->c_label) = \wa_learning_path\model\learningpath::get_cell_labels($key,
                     $this->matrix);
+
                 // Set a breadcrumb info.
                 $this->base_url_cell = new \moodle_url(
                     $this->url,
@@ -204,6 +260,15 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                 $pagetitle .= $this->get_string($this->position);
                 
                 list($columnId, $this->rowId) = explode('_', str_replace('#', '', $this->key));
+
+                foreach($this->matrix->cols as $col) {
+                    if($col->id === $columnId) {
+                        if (isset($col->description)) {
+                            $this->headerTooltip = $col->description;
+                        }
+                    }
+                }
+
                 $this->locate_previous_and_next_cells($columnId);
             }
         }
@@ -238,7 +303,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             $key =  '#'.$previousColumnId . '_' . $this->rowId;
             
             if(empty($this->activities->{$key})) {
-                return false;
+               return false;
             }
             
             return !is_null($this->activities->{$key});
@@ -368,9 +433,11 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         $this->subscribeButton = '<a type="button" href="' . $subscribeUrl . '" class="btn  ' . $class .'">' .$label . '</a>';
     }
     public function matrix_action($params = array()) {
-        global $CFG, $PAGE;
+        global $CFG, $PAGE, $DB;
         $PAGE->set_pagelayout('base');
+        $PAGE->requires->css(new moodle_url('/local/wa_learning_path/css/select2.min.css'));
         $PAGE->requires->js_call_amd('local_wa_learning_path/learning_path', 'init');
+        
         $this->check_and_get_learning_path($params);
         $PAGE->set_button($this->generateNavbarButton(
             'amendlearningcontent',
@@ -382,6 +449,11 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         $this->generateSubscribeButton();
         \wa_learning_path\lib\load_model('activity');
 
+        // Selected role.
+        $roleId = optional_param('role', null, PARAM_INT);
+        if($roleId === '0') {
+            $roleId = null;
+        }
         // Selected rows of matrix.
         $levels = optional_param('levels', null, PARAM_RAW_TRIMMED);
         if($levels === '0') {
@@ -405,6 +477,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         $PAGE->navbar->add($this->learning_path->title, $view_url);
         $PAGE->navbar->add($this->get_string('matrix'));
 
+        $this->pluginname = 'local_wa_learning_path';
         // Get region to display
         $this->regions = array();
         // Get user region.
@@ -425,6 +498,23 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         $allregionnames = \wa_learning_path\lib\get_regions();
         $this->regionnames = array_intersect_key($allregionnames, array_fill_keys($this->regions, true));
+        $allroles = $DB->get_records('wa_learning_path_role', ['learningpathid' => $this->id], 'name','id, name, visible');
+
+        $enabledActivities = [];
+        if ($roleId) {
+            $role = $DB->get_record('wa_learning_path_role', ['learningpathid' => $this->id, 'id' => $roleId]);
+            $matrix = json_decode($this->learning_path->matrix);
+
+            foreach ($matrix->activities as $id => $activity) {
+                if (in_array($role->id, $activity->enabledForRoles)) {
+                    $enabledActivities[] = $id;
+                }
+            }
+        }
+
+        $this->enabledActivities = $enabledActivities;
+        $this->role = $role ?? null;
+        $this->roles = $allroles;
 
         $this->levels = (!empty($levels)) ? explode(',', $levels) : array();
 
@@ -731,13 +821,15 @@ class learning_path extends \wa_learning_path\lib\base_controller {
      * Export learning path to excel file.
      */
     public function print_action() {
+        global $CFG, $DB;
         if (!\wa_learning_path\lib\has_capability('printlearningmatrix')) {
             return $this->no_access('printlearningmatrix');
         }
 
+        $role = optional_param('role', null, PARAM_INT);
+
         $this->check_and_get_learning_path();
 
-        global $CFG;
         require_once($CFG->dirroot . '/lib/excellib.class.php');
 
         \wa_learning_path\lib\load_model('learningpath');
@@ -745,9 +837,65 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         // Get the matrix
         $this->matrix = json_decode($this->learning_path->matrix);
+
+
+        $cellDesc = [];
+        if ($role) {
+            $enabledActivities = [];
+            if ($role) {
+                foreach ($this->matrix->activities as $id => $activity) {
+                    if (in_array($role, $activity->enabledForRoles)) {
+                        $id = substr($id, 1); // Strip the '#'
+                        $enabledActivities[] = $id;
+                        $cellDesc[$id] = $activity->content;
+                    }
+                }
+            }
+
+            $cellData = $DB->get_records('wa_learning_path_role_act', ['roleid' => $role]);
+
+            foreach ($cellData as $index => $cell) {
+                if ($cell->overridedescription) {
+                    $cellDesc[$cell->activityid] = $cell->overridedescription;
+                } else {
+                    $cellDesc[$cell->activityid] = $this->matrix->activities->{'#' . $cell->activityid}->content;
+                }
+            }
+        }
+
+        $this->role = $role;
+        $this->cellDesc = $cellDesc;
+
         echo "
         <style>
-
+        
+        h2.print-learning-journey {
+            color: #0a1e46;
+        }
+        
+        .print-learning-journey tr td:nth-child(2) {
+            background-color: #d9e2f3;
+        }
+        
+        .print-learning-journey th {
+            color: #0a1e46;
+            border-bottom: 2px solid #0a1e46;
+            border-top:0;
+            border-left:0;
+            border-right:0;
+        }
+        
+        .print-learning-journey tr {
+            border-bottom: 2px dashed #0a1e46;
+            border-top:0;
+            border-left:0;
+            border-right:0;
+        }
+        
+        .print-learning-journey td {
+            border:0;
+        }
+        
         table th, table td{
             border: 1px solid #dadada;
             border-collapse: collapse;

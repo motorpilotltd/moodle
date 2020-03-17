@@ -5,7 +5,7 @@ global $USER, $OUTPUT, $CFG, $PAGE;
 
 echo \html_writer::start_div('learning_path');
 $heading = $this->learning_path->title;
-if(!$preview) {
+if(!$this->preview) {
     $heading .= $this->subscribeButton;
 }
 echo $OUTPUT->heading($heading);
@@ -38,7 +38,7 @@ $subscribeurl = new \moodle_url(
 
 <div class="clearfix"></div>
 <div class="learning_path_content">
-	<div class="left"><?php echo $this->learning_path->introduction ?></div>
+	<div class="left"><?php echo format_text($this->learning_path->introduction); ?></div>
 	<div class="right">
         <div class="details">
             <?php echo \wa_learning_path\model\learningpath::get_image_url($this->learning_path->id, true) ?>

@@ -56,7 +56,6 @@ class admin extends \wa_learning_path\lib\base_controller {
             }
         }
 
-
         $submitdisplay = optional_param('submitbutton3', null, PARAM_RAW);
         $submitsaveandclose = optional_param('submitbutton2', null, PARAM_RAW);
 
@@ -166,22 +165,318 @@ class admin extends \wa_learning_path\lib\base_controller {
         $this->view('edit');
     }
 
-    /**
-     * Create or edit learing path.
-     */
-    public function edit_matrix_action() {
-        global $PAGE, $CFG, $USER;
+    public function edit_role_action()
+    {
+        global $PAGE, $DB;
         $PAGE->set_pagelayout('base');
-        $PAGE->requires->js_call_amd('local_wa_learning_path/learning_path_edit', 'init');
+
+        if (!\wa_learning_path\lib\has_capability('amendlearningcontent') && !\wa_learning_path\lib\has_capability('editmatrixgrid')) {
+            $this->no_access();
+        }
+
+        $id = optional_param('id', null, PARAM_INT);
+        $editRole = optional_param('role', null, PARAM_INT);
+        $editRoleCancel = optional_param('role_id', null, PARAM_INT);
+        $this->returnhash = optional_param('returnhash', null, PARAM_RAW);
+        $submitsaveandedit = optional_param('submitbutton2', null, PARAM_RAW);
+        $submitsaveandreturn = optional_param('submitbutton3', null, PARAM_RAW);
+
+        \wa_learning_path\lib\load_form('edit_role');
+        \wa_learning_path\lib\load_model('learningpath');
+
+        $action = new \moodle_url($this->url);
+    
+        $addEditRole = $this->get_string('add_role');
+        if(!is_null($editRole)) {
+            $addEditRole = $this->get_string('edit_role');
+        }
         
+        $params = [
+            'id' => $id,
+            'role_id' => $editRole
+        ];
+    
+        $this->form = new \wa_learning_path\form\edit_role_form($action, $params);
+        $this->form->add_hidden('c', 'admin');
+        $this->form->add_hidden('a', 'edit_role');
+
+        if ($this->form->is_cancelled()) {
+            redirect(new moodle_url('?c=admin&a=edit_matrix&id=' . $id . '&role=' . $editRoleCancel));
+        }
+
+        $this->modules = \wa_learning_path\lib\get_modules();
+
+        if ($data = $this->form->get_data()) {
+
+            $learningPath = \wa_learning_path\model\learningpath::get($id);
+
+            $enabledActivities = [];
+            foreach ($data as $field => $value) {
+                if (substr($field, 0, 9) == 'activity-') {
+                    if ($value == 1) {
+                        $enabledActivities[] = '#' . substr($field, 9);
+                    }
+                }
+            }
+
+            $role = new \stdClass();
+            $role->name = $data->rolename;
+            $role->visible = $data->rolevisible;
+            $role->description = $data->roledesc;
+            $role->learningpathid = $id;
+
+            $lp = new \stdClass();
+            $lp->id = $id;
+
+            if (!$data->role_id) {
+                $roleId = $DB->insert_record('wa_learning_path_role', $role);
+
+                if (!$learningPath->parent) {
+                    $lp->parent = $roleId;
+                }
+            } else {
+                $role->id = $data->role_id;
+                $DB->update_record('wa_learning_path_role', $role);
+                $roleId = $data->role_id;
+            }
+
+            $matrix = json_decode($data->matrix);
+            foreach ($matrix->activities as $activityId => &$activity) {
+                if (!isset($activity->enabledForRoles)) {
+                    $activity->enabledForRoles = [];
+                }
+
+                if (in_array($activityId, $enabledActivities)) {
+                    if (!in_array($roleId, $activity->enabledForRoles)) {
+                        $activity->enabledForRoles[] = $roleId;
+                    }
+                } else {
+                    foreach (array_keys($activity->enabledForRoles, $roleId) as $index) {
+                        unset($activity->enabledForRoles[$index]);
+                    }
+                }
+            }
+
+            $lp->matrix = json_encode($matrix);
+
+            $DB->update_record('wa_learning_path', $lp);
+
+            if (!is_null($submitsaveandedit)) {
+                redirect(new moodle_url('?c=admin&a=edit_matrix&id=' . $id . '&role=' . $roleId));
+            } elseif (!is_null($submitsaveandreturn)) {
+                redirect(new moodle_url('?c=admin&a=edit_matrix&id=' . $id));
+            } else {
+                redirect(new moodle_url('?c=admin&a=edit_role&id='.$id.'&role='.$roleId));
+            }
+        }
+
+        if ($id) {
+            // Edit a learning_path.
+            $learning_path = \wa_learning_path\model\learningpath::get($id);
+            if (!$learning_path) {
+                $this->forward('admin', 'index', array());
+                return;
+            }
+
+            $PAGE->navbar->add($learning_path->title);
+            $PAGE->navbar->add($this->get_string('edit_matrix'));
+
+            if ($learning_path) {
+                $this->id = $id;
+                $this->status = $learning_path->status;
+                $learning_path->learningpath_id = $learning_path->id;
+
+                $roles = $DB->get_records('wa_learning_path_role', ['learningpathid' => $id]);
+                foreach ($roles as $role) {
+                    $this->roles[$role->id] = $role->name;
+                }
+            }
+
+            $this->form->add_header($learning_path->title);
+            $this->form->set_data($learning_path);
+
+
+            if (isset($learning_path->matrix)) {
+                $matrix = json_decode($learning_path->matrix);
+            }
+        }
+    
+    
+        $PAGE->navbar->add($addEditRole);
+
+        if (!isset($this->columns)) {
+            $this->columns = array(array('name' => $this->get_string('default_column'), 'show' => 1));
+        }
+
+        if (!isset($this->rows)) {
+            $this->rows = array(array('name' => $this->get_string('default_row'), 'show' => 1));
+        }
+
+        $this->view('edit_role');
+    }
+
+    public function edit_activity_action()
+    {
+        global $PAGE, $DB;
+        $PAGE->set_pagelayout('base');
+
         if (!\wa_learning_path\lib\has_capability('amendlearningcontent') && !\wa_learning_path\lib\has_capability('editmatrixgrid')) {
             $this->no_access();
         }
 
         $id = optional_param('id', null, PARAM_INT);
         $this->returnhash = optional_param('returnhash', null, PARAM_RAW);
+        $submitsave = optional_param('submitbutton', null, PARAM_RAW);
+        $submitsaveandreturn = optional_param('submitbutton2', null, PARAM_RAW);
+        $roleId = optional_param('roleid', null, PARAM_INT);
+        $activityId = optional_param('activityid', null, PARAM_ALPHANUMEXT);
+
+        \wa_learning_path\lib\load_form('edit_activity');
+        \wa_learning_path\lib\load_model('learningpath');
+
+
+        $action = new \moodle_url($this->url, ['id' => $id, 'roleid' => $roleId, 'activityid' => $activityId]);
+
+        $activityData = $DB->get_records('wa_learning_path_role_act', ['activityid' => $activityId, 'roleid' => $roleId]);
+        $this->form = new \wa_learning_path\form\edit_activity_form($action, ['id' => $id, 'roleid' => $roleId, 'activityid' => $activityId, 'activitydata' => $activityData]);
+        $this->form->add_hidden('c', 'admin');
+        $this->form->add_hidden('a', 'edit_activity');
+
+        if ($this->form->is_cancelled()) {
+            redirect(new moodle_url('?c=admin&a=edit_matrix&id='.$id.'&role='.$roleId));
+        }
+
+        $this->modules = \wa_learning_path\lib\get_modules();
+
+        if ($data = $this->form->get_data()) {
+            $activityEdit = new \stdClass();
+            $activityEdit->roleid = $data->roleid;
+            $activityEdit->activityid = $data->activityid;
+            $activityEdit->overridedescription = $data->overridedescription['text'] ? $data->overridedescription['text'] : null;
+
+            foreach ($data as $field => $value) {
+                if (substr($field, 0, 4) != 'act_')
+                    continue;
+
+                if (substr($field, 0, 9) == 'act_type_') {
+                    $activityEdit->type = $value;
+                    $activityEdit->itemid = substr($field, 9);
+                }
+
+                if ($data->{'act_overrideere_' . $activityEdit->itemid} != 'default') {
+                    $activityEdit->overrideere = $data->{'act_overrideere_' . $activityEdit->itemid};
+                } else {
+                    $activityEdit->overrideere = null;
+                }
+                $activityEdit->activityvisible = $data->{'act_activityvisible_' . $activityEdit->itemid};
+
+                if (!$act = $DB->get_record('wa_learning_path_role_act', [
+                    'roleid' => $activityEdit->roleid,
+                    'itemid' => $activityEdit->itemid,
+                    'type' => $activityEdit->type,
+                    'activityid' => $activityEdit->activityid
+                ])) {
+                    $DB->insert_record('wa_learning_path_role_act', $activityEdit);
+                } else {
+                    $activityUpdate = new \stdClass();
+                    $activityUpdate->id = $act->id;
+                    $activityUpdate->overrideere = $activityEdit->overrideere;
+                    $activityUpdate->visible = $activityEdit->activityvisible;
+                    $activityUpdate->overridedescription = $activityEdit->overridedescription;
+                    $DB->update_record('wa_learning_path_role_act', $activityUpdate);
+                }
+            }
+
+            if (!is_null($submitsaveandreturn)) {
+                redirect(new moodle_url('?c=admin&a=edit_matrix&id=' . $id . '&role=' . $roleId));
+            } elseif (!is_null($submitsave)) {
+                redirect(new moodle_url('?c=admin&a=edit_activity&id=' . $id . '&roleid=' . $roleId . '&activityid=' . $data->activityid));
+            }
+        }
+
+        if ($id) {
+            // Edit a learning_path.
+            $learningPath = \wa_learning_path\model\learningpath::get($id);
+            if (!$learningPath) {
+                $this->forward('admin', 'index', array());
+                return;
+            }
+
+            $PAGE->navbar->add($learningPath->title);
+            $PAGE->navbar->add($this->get_string('edit_matrix'));
+
+            $roleName = $DB->get_record('wa_learning_path_role', ['id' => $roleId])->name;
+
+            if ($learningPath) {
+                $this->id = $id;
+                $this->status = $learningPath->status;
+                $learningPath->learningpath_id = $learningPath->id;
+
+                $matrix = json_decode($learningPath->matrix);
+                list($colId, $rowId) = explode('_', $activityId);
+
+                foreach ($matrix->cols as $col) {
+                    if ($col->id == $colId) {
+                        $this->cellTitle = $col->name;
+                    }
+                }
+
+                foreach ($matrix->rows as $row) {
+                    if ($row->id == $rowId) {
+                        $this->cellLevel = $row->name;
+                    }
+                }
+
+                $this->roles = [];
+                $roles = $DB->get_records('wa_learning_path_role', ['learningpathid' => $id]);
+                foreach ($roles as $role) {
+                    $this->roles[$role->id] = $role->name;
+                }
+            }
+
+            $header = $this->get_string('cell_editing_header', [
+                'cellTitle' => $this->cellTitle,
+                'cellLevel' => $this->cellLevel,
+                'roleName' => $roleName
+            ]);
+            $PAGE->navbar->add($header);
+
+            $this->form->add_header($header);
+            $this->form->set_data($learningPath);
+
+        }
+
+        if (!isset($this->columns)) {
+            $this->columns = array(array('name' => $this->get_string('default_column'), 'show' => 1));
+        }
+
+        if (!isset($this->rows)) {
+            $this->rows = array(array('name' => $this->get_string('default_row'), 'show' => 1));
+        }
+
+        $this->view('edit_activity');
+    }
+
+    /**
+     * Create or edit learing path.
+     */
+    public function edit_matrix_action() {
+        global $PAGE, $CFG, $USER, $DB;
+
+        $PAGE->set_pagelayout('base');
+        $PAGE->requires->js_call_amd('local_wa_learning_path/learning_path_edit', 'init');
+
+        if (!\wa_learning_path\lib\has_capability('amendlearningcontent') && !\wa_learning_path\lib\has_capability('editmatrixgrid')) {
+            $this->no_access();
+        }
+
+        $id = optional_param('id', null, PARAM_INT);
+        $roleId = optional_param('role', null, PARAM_INT);
+        $this->returnhash = optional_param('returnhash', null, PARAM_RAW);
         $submitdisplay = optional_param('submitbutton3', null, PARAM_RAW);
         $submitsaveandclose = optional_param('submitbutton2', null, PARAM_RAW);
+
+        $this->base_url = new \moodle_url($this->url, array('c' => 'admin', 'a' => 'edit_matrix', 'id' => (int) $id));
 
         \wa_learning_path\lib\load_form('matrix');
         \wa_learning_path\lib\load_form('activity');
@@ -216,13 +511,24 @@ class admin extends \wa_learning_path\lib\base_controller {
         $this->modules = \wa_learning_path\lib\get_modules();
         $this->activities_list = \wa_learning_path\model\activity::get_list('title', 'ASC', 0, 99999,  $extrasql = ' (idlearningpath = 0 or idlearningpath = '.(int)$id.')');
 
+        $lp = \wa_learning_path\model\learningpath::get($id);
+        if ($lp->matrix) {
+            $enabledForRoles = [];
+            $matrix = json_decode($lp->matrix);
+            foreach ($matrix->activities as $hash => $activity) {
+                if (isset($activity->enabledForRoles)) {
+                    $enabledForRoles[$hash] = $activity->enabledForRoles;
+                }
+            }
+        }
+
         if ($matrix = $this->form->get_data()) {
             // Edit a learning_path.
             $learning_path = \wa_learning_path\model\learningpath::get($id);
 
             $matrix_data = json_decode($matrix->matrix);
             if ($matrix_data) {
-                foreach ($matrix_data->activities as &$act) {
+                foreach ($matrix_data->activities as $key => &$act) {
                     $tmp = new \stdClass();
                     $itemid = optional_param('activitydraftid', 0, PARAM_INT);
                     if (isset($act->content)) {
@@ -240,6 +546,11 @@ class admin extends \wa_learning_path\lib\base_controller {
                             'local_wa_learning_path', 'content', $learning_path->id);
 
                         $act->content = $tmp->content;
+
+                        $act->enabledForRoles = [];
+                        if (isset($enabledForRoles[$key])) {
+                            $act->enabledForRoles = $enabledForRoles[$key];
+                        }
                     }
                 }
             }
@@ -277,7 +588,9 @@ class admin extends \wa_learning_path\lib\base_controller {
                     \wa_learning_path\model\learningpath::link_activities_to_learning_path($id, $ids);
                 }
             }
-    
+
+            $matrix_data->activities = \wa_learning_path\model\learningpath::fill_activities(@$matrix_data->activities, $this->modules, $this->activities_list);
+
             \wa_learning_path\model\learningpath::set_matrix($matrix->id, json_encode($matrix_data));
             $message = $this->get_string('learning_matrix_saved_success');
             $this->set_flash_massage('success', $message);
@@ -306,6 +619,16 @@ class admin extends \wa_learning_path\lib\base_controller {
                 $this->id = $id;
                 $this->status = $learning_path->status;
                 $learning_path->learningpath_id = $learning_path->id;
+
+
+                $this->roles = [];
+                $roles = $DB->get_records('wa_learning_path_role', ['learningpathid' => $id]);
+                foreach ($roles as $role) {
+                    $this->roles[$role->id] = $role->name;
+                }
+
+                if ($roleId)
+                    $this->role = $roleId;
             }
 
             //$this->form->add_header($this->get_string('edit_path_matrix'));

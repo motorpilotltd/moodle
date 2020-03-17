@@ -1,7 +1,7 @@
 <?php
-    global $CFG;
+global $CFG;
 ?>
-a name="activities_tab"></a>
+<a name="activities_tab"></a>
 <div class="matrix_activities padd_5" >
     <div class="matrix-activities-description">
         <?php
@@ -22,9 +22,20 @@ a name="activities_tab"></a>
                 <a id='print_section' type="button" href="<?php echo new \moodle_url($this->url, array('a' => 'print_section', 'id' => $this->id, 'ajax' => 1, 'key' => str_replace('#', '', $this->key))) ?>" class="btn button-print btn-default pull-right"><?php echo $this->get_icon_html('icon_print') . $this->get_string('print_section') ?></a>
             <?php endif; ?>
 
-            <span class="matrix-activities-title"><?php echo $this->r_label ?>, <?php echo $this->c_label ?></span>
-            <p><?php echo $this->cell->content ?></p>
-            
+            <span class="matrix-activities-title"><?php echo $this->r_label ?>, <?php echo $this->c_label ?>
+                <?php if (isset($this->headerTooltip) && $this->headerTooltip): ?>
+                    <a class="btn-link help" role="button" data-container="body" data-toggle="popover" data-placement="right" data-content="<div class=&quot;no-overflow&quot;><p><?php echo $this->headerTooltip; ?></p>
+                    </div> " data-html="true" tabindex="0" data-trigger="focus">
+                        <img class="icon " alt="<?php echo $this->get_string('description'); ?>" title="<?php echo $this->headerTooltip; ?>" src="<?php echo $OUTPUT->image_url('help', 'moodle')->out(false); ?>">
+                    </a>
+                <?php endif; ?>
+            </span>
+            <?php if ($this->cellData && $this->cellData['description']): ?>
+                <p><?php echo format_text($this->cellData['description']) ?></p>
+            <?php else: ?>
+                <p><?php echo format_text($this->cell->content) ?></p>
+            <?php endif; ?>
+
         </div>
             <?php
                 if(!empty($this->matrix->cols[$this->nextColumn]->name) && !is_null($this->nextColumn)){
@@ -44,7 +55,7 @@ a name="activities_tab"></a>
     <form class="filtration">
         <div class="filter_checkboxes filter_position clearfix">
             <input type="checkbox" id="position_essential" value="essential" name="position[]" checked>
-            <label for="position_"><?php echo $this->get_string('essential') ?></label>
+            <label for="position_essential"><?php echo $this->get_string('essential') ?></label>
 
             <input type="checkbox" id="position_recommended" value="recommended" name="position[]" checked>
             <label for="position_recommended"><?php echo $this->get_string('recommended') ?></label>
@@ -76,7 +87,7 @@ a name="activities_tab"></a>
         <?php endif; ?>
         <div class="clearfix"></div>
     </form>
-    
+
     <?php if(!empty($this->position)): $first = true; ?>
         <div class="tab_content <?php if($this->count[$this->position] > 10): ?>add_scroll<?php endif; ?>">
             <div class="no-overflow">
@@ -93,9 +104,16 @@ a name="activities_tab"></a>
                                 continue;
                             }
 
+                            if ($this->cellData) {
+                                if (!$this->is_visible($activity->id, $activity->type)) {
+                                    continue;
+                                }
+                            }
+
                             $id = $iterator . '_' . $activity->type . "_" . $activity->id;
                             $icon = '';
                             if ($activity->type == 'module') {
+
                                 $title = $activity->fullname;
                                 $coursecontext = context_course::instance($activity->id);
                                 $options = array();

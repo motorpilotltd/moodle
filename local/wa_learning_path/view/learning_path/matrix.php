@@ -27,11 +27,15 @@ $preview = optional_param('preview', 0, PARAM_INT);
 
     <div class="btn-group pull-right" role="group" >
         <?php if (\wa_learning_path\lib\has_capability('printlearningmatrix')): ?>
-            <a type="button" href="<?php echo new \moodle_url($this->url, array('a' => 'print', 'id' => $this->id, 'ajax' => 1)) ?>" class="btn button-print btn-default "><?php echo $this->get_icon_html('icon_print') . $this->get_string('print_matrix') ?></a>
+            <?php if ($this->role): $params = ['a' => 'print', 'id' => $this->id, 'ajax' => 1, 'role' => $this->role->id]; ?>
+            <?php else: $params = ['a' => 'print', 'id' => $this->id, 'ajax' => 1]; endif; ?>
+            <a type="button" href="<?php echo new \moodle_url($this->url, $params) ?>" class="btn button-print btn-default "><?php echo $this->get_icon_html('icon_print') . $this->get_string('print_matrix') ?></a>
         <?php endif; ?>
         
         <?php if (\wa_learning_path\lib\has_capability('exportlearningmatrix')): ?>
-            <a type="button" href="<?php echo new \moodle_url($this->url, array('a' => 'excel', 'id' => $this->id)) ?>" class="btn button-export btn-default"><?php echo $this->get_icon_html('icon_print') . $this->get_string('export_matrix') ?></a>
+            <?php if ($this->role): $params = ['a' => 'excel', 'id' => $this->id, 'role' => $this->role->id]; ?>
+            <?php else: $params = ['a' => 'excel', 'id' => $this->id]; endif; ?>
+            <a type="button" href="<?php echo new \moodle_url($this->url, $params) ?>" class="btn button-export btn-default"><?php echo $this->get_icon_html('icon_print') . $this->get_string('export_matrix') ?></a>
         <?php endif; ?>
     </div>
 <?php endif; ?>
@@ -67,16 +71,38 @@ $preview = optional_param('preview', 0, PARAM_INT);
         <?php
             $matrix = json_decode($this->learning_path->matrix);
             $allregions = \wa_learning_path\lib\get_regions();
+
+            $noRoleVisible = true;
+            if (isset($this->roles)) {
+                foreach ($this->roles as $role) {
+                    if ($role->visible) {
+                        $noRoleVisible = false;
+                        break;
+                    }
+                }
+            }
         ?>
-        <div class="custom-select pull-left">
-            <select name="levels" class="levels" data-url="<?php echo $this->base_url; ?>" data-placeholder="<?php echo get_string('all_levels', 'local_wa_learning_path') ?>"  >
-                <option value="0"><?php echo get_string('all_levels', 'local_wa_learning_path') ?></option>
-                <?php foreach($matrix->rows as $level): ?>
-                    <?php if(!$level->show) continue; ?>
-                    <option value="<?php echo $level->id ?>" <?php if (in_array($level->id, $this->levels)) echo 'selected="selected"'; ?>><?php echo $level->name ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
+       
+            <?php if (!$this->roles || $noRoleVisible): ?>
+              <div class="pull-left">
+                <select name="levels" class="levels-multiselect" data-url="<?php echo $this->base_url; ?>" data-placeholder="<?php echo get_string('all_levels', 'local_wa_learning_path') ?>" multiple="1" >
+                    <?php foreach($matrix->rows as $level): ?>
+                        <?php if(!$level->show) continue; ?>
+                        <option value="<?php echo $level->id ?>" <?php if (in_array($level->id, $this->levels)) echo 'selected="selected"'; ?>><?php echo $level->name ?></option>
+                    <?php endforeach; ?>
+                </select>
+              </div>
+            <? else: ?>
+            <div class="custom-select pull-left">
+                <select name="roles" class="levels" data-url="<?php echo $this->base_url; ?>" data-placeholder="<?php echo get_string('all_roles', 'local_wa_learning_path') ?>"  >
+                    <option value="0"><?php echo get_string('all_roles', 'local_wa_learning_path') ?></option>
+                    <?php foreach($this->roles as $role): ?>
+                        <?php if(!$role->visible) continue; ?>
+                        <option value="<?php echo $role->id ?>" <?php if ($this->role && $role->id == $this->role->id) echo 'selected="selected"'; ?>><?php echo $role->name ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <? endif; ?>
 
         <div class="custom-select pull-left">
             <select name="region" class="region" data-url="<?php echo $this->base_url; ?>" data-placeholder="<?php echo get_string('all_regions', $this->pluginname) ?>">
@@ -102,20 +128,27 @@ $preview = optional_param('preview', 0, PARAM_INT);
                             </th>
                             <?php foreach ($this->matrix->cols as $col): ?>
                                 <?php if (!$col->show || !wa_learning_path\model\learningpath::check_regions_match($this->regions, $col->region)) continue; ?>
-                                <td class="lp_col_header" title="<?php echo $col->name ?>" >
+                                <td class="lp_col_header" data-column="<?php echo $col->id; ?>" title="<?php echo $col->name ?>" >
                                     <?php
                                         $wrappedText = wordwrap(htmlentities(html_entity_decode(($col->name))), 25, '<br>');
                                         $wraps = explode('<br>', $wrappedText);
                                         $text = implode('<br>', array_splice($wraps,0,2));
                                     ?>
-                                    <span class="matrix-text-left"><?php echo $text; ?></span>
+                                    <span class="matrix-text-left"><?php echo $text; ?>
+                                        <?php if (isset($col->description) && $col->description): ?>
+                                            <a class="btn-link help" role="button" data-container="body" data-toggle="popover" data-placement="right" data-content="<div class=&quot;no-overflow&quot;><p><?php echo $col->description; ?></p>
+                                            </div> " data-html="true" tabindex="0" data-trigger="focus">
+                                                <img class="icon " alt="<?php echo $this->get_string('description'); ?>" title="" src="<?php echo $OUTPUT->image_url('help', 'moodle')->out(false); ?>">
+                                            </a>
+                                        <?php endif; ?>
+                                    </span>
                                 </td>
                             <?php endforeach; ?>
                         </tr>
                         <?php foreach ($this->matrix->rows as $k => $row): ?>
                             <?php if (!$row->show || (!empty($this->levels) && !in_array($row->id, $this->levels) ) ) continue; ?>
                             <tr class="">
-                                <th class="lp_row_header" title="<?php echo $this->matrix->rows[$k]->name ?>" >
+                                <th class="lp_row_header" data-row="<?php echo $row->id; ?>" title="<?php echo $this->matrix->rows[$k]->name ?>" >
                                     <?php if (!$this->matrix->rows[$k]->show) continue; ?>
                                     <div class="cell_container">
                                         <?php echo $this->matrix->rows[$k]->name ?>
@@ -123,9 +156,9 @@ $preview = optional_param('preview', 0, PARAM_INT);
                                 </th>
                                 <?php foreach ($this->matrix->cols as $k => $col): $key = "#{$col->id}_{$row->id}"; ?>
                                     <?php if (!$col->show || !wa_learning_path\model\learningpath::check_regions_match($this->regions, $col->region)) continue; ?>
-                                    <td class="lp_cell clickable <?php if(!empty($this->key) && $this->key == $key) echo "active"; ?>" id="<?php echo str_replace('#', '', $key) ?>" >
+                                    <td class="lp_cell clickable <?php if(!empty($this->key) && $this->key == $key) echo "active"; ?> <?php if (in_array($key, $this->enabledActivities)) echo 'cell-selected'; ?>" id="<?php echo str_replace('#', '', $key) ?>" >
                                         <div class="cell_icon_container">
-                                        <a class="trigger-modal" href="<?php $this->cell_url->param('key', $key); echo $this->cell_url->out(true); ?>" data-toggle="modal" data-target="#myModal">
+                                        <a class="trigger-modal" href="<?php $this->cell_url->param('key', $key); if (isset($this->role->id)) $this->cell_url->param('role', $this->role->id); echo $this->cell_url->out(true); ?>" data-toggle="modal" data-target="#myModal">
                                         <?php
                                         if(isset($this->matrix->activities->{$key})) {
                                             $status = \wa_learning_path\model\learningpath::get_cell_info($this->activities->{$key}, $this->regions, $this->learning_path->subscribed);
@@ -222,36 +255,88 @@ echo \html_writer::end_div();
                 my: "right center"
             }
         });
-        
-        $('select[name="levels"]').change(function() {
+
+        $('select[name="levels"]').on('select2:select', function (e) {
             var levels = '';
             var regions = '';
+            var roles = '';
 
-            if($('.learning_path_matrix .levels').val()) {
-                levels = $('.learning_path_matrix .levels').val();
+            if($('select[name="levels"]').val()) {
+                levels = $('select[name="levels"]').val();
+            }
+
+            if($('select[name="roles"]').val()) {
+                roles = $('select[name="roles"]').val();
             }
 
             if($('.learning_path_matrix .region').val()) {
                 regions = $('.learning_path_matrix .region').val();
             }
 
-            var url = $(this).data('url') + '&levels=' + levels + '&regions=' + regions;
+            var url = $(this).data('url') + '&levels=' + levels + '&regions=' + regions + '&role=' + roles;
             window.location = url;
         });
+        
+        // $('select[name="levels"]').change(function() {
+        //     var levels = '';
+        //     var regions = '';
+        //     var roles = '';
+        //
+        //     if($('select[name="levels"]').val()) {
+        //         levels = $('select[name="levels"]').val();
+        //     }
+        //
+        //     if($('select[name="roles"]').val()) {
+        //         roles = $('select[name="roles"]').val();
+        //     }
+        //
+        //     if($('.learning_path_matrix .region').val()) {
+        //         regions = $('.learning_path_matrix .region').val();
+        //     }
+        //
+        //     var url = $(this).data('url') + '&levels=' + levels + '&regions=' + regions + '&role=' + roles;
+        //     window.location = url;
+        // });
         
         $('select[name="region"]').change(function() {
             var levels = '';
             var regions = '';
+            var roles = '';
+            
+            if($('select[name="levels"]').val()) {
+                levels = $('select[name="levels"]').val();
+            }
 
-            if($('.learning_path_matrix .levels').val()) {
-                levels = $('.learning_path_matrix .levels').val();
+            if($('select[name="roles"]').val()) {
+                roles = $('select[name="roles"]').val();
+            }
+            
+            if($('.learning_path_matrix .region').val()) {
+                regions = $('.learning_path_matrix .region').val();
+            }
+
+            var url = $(this).data('url') + '&levels=' + levels + '&regions=' + regions + '&role=' + roles;
+            window.location = url;
+        });
+
+        $('select[name="roles"]').change(function() {
+            var levels = '';
+            var regions = '';
+            var roles = '';
+
+            if($('select[name="levels"]').val()) {
+                levels = $('select[name="levels"]').val();
+            }
+
+            if($('select[name="roles"]').val()) {
+                roles = $('select[name="roles"]').val();
             }
 
             if($('.learning_path_matrix .region').val()) {
                 regions = $('.learning_path_matrix .region').val();
             }
 
-            var url = $(this).data('url') + '&levels=' + levels + '&regions=' + regions;
+            var url = $(this).data('url') + '&levels=' + levels + '&regions=' + regions + '&role=' + roles;
             window.location = url;
         });
     })

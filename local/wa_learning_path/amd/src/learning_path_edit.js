@@ -71,13 +71,14 @@ define(['jquery', 'theme_bootstrap/bootstrap'], function($, bootstrap) {
                     height = height + $(this).height();
                 });
 
+
                 $('.wa_row .row_header').each(function() {
                     // $(this).height( height / amount );
                     $(this).height( height / row_amount);
                     $(this).width(120);
                 })
 
-                var width = $('.cols').width() - 120;
+                var width = $('#main').width() - 55;
                 var col_amount = $('.col_header').length -1;
 
                 $('.col_header').each(function() {
@@ -86,8 +87,6 @@ define(['jquery', 'theme_bootstrap/bootstrap'], function($, bootstrap) {
 
                 $('.cell').each(function() {
                     $(this).attr('style', 'width: '+ (width / col_amount) + 'px !important;height: '+ (height / row_amount) + 'px !important;');
-
-                    // $(this).height( (height / amount));
                 });
 
                 $('.add_row').width( $('.wa_matrix').width() - 20 );
@@ -156,10 +155,15 @@ define(['jquery', 'theme_bootstrap/bootstrap'], function($, bootstrap) {
                 $('.col_header a[data-toggle="modal"]').on('click', function() {
                     var columnId = $(this).parent().parent().parent().attr('id');
                     var name = $('#'+columnId+' .name .tooltip').text();
+                    var description = $('#' + columnId).attr('description');
+                    var regions = $('#' + columnId + ' .select').val();
+
                     $('#myModalColumn #delete').attr('data-id', columnId);
                     $('#myModalColumn #save').attr('data-id', columnId);
                     $('#myModalColumn #name').val(name);
+                    $('#myModalColumn #description').val(description);
                     $('#myModalColumn #position').val(getColumnPosition(columnId)-1);
+                    $('#myModalColumn #regions').val(regions);
 
                     if($('#' + columnId).attr('show') == 'yes') {
                         $('#myModalColumn #visible').prop('checked', true);
@@ -191,6 +195,7 @@ define(['jquery', 'theme_bootstrap/bootstrap'], function($, bootstrap) {
                 });
 
                 $('#myModalColumn #save').on('click', function() {
+                    var description = $('#myModalColumn #description').val();
                     var name = $('#myModalColumn #name').val();
                     var shortenName = name.replace(/^(.{18}[.]*).*/, "$1");
                     if(shortenName.length < name.length) {
@@ -200,8 +205,22 @@ define(['jquery', 'theme_bootstrap/bootstrap'], function($, bootstrap) {
                     var position = $('#myModalColumn #position').val();
                     var columnId = $(this).attr('data-id');
                     var visible = $('#myModalColumn #visible').is(':checked');
+                    var regions = $('#myModalColumn #regions').val();
+
+                    $('#' + columnId + ' .m3 span').each(function() {
+                        if(!$(this).hasClass('hide')) {
+                            $(this).addClass('hide');
+                        }
+                    });
+
+                    regions.forEach(function(region) {
+                        $('#' + columnId + ' .m3 span[id="'+region+'"]').removeClass('hide');
+                    });
+
+                    $('#'+columnId).attr('description', description);
                     $('#'+columnId+' .name .tooltip').text(name);
                     $('#'+columnId+' .name .text').text(shortenName);
+                    $('#' + columnId + ' .select').val(regions);
 
                     moveColumn(columnId, position);
                     updateVisibility(columnId, visible, 'column');
@@ -262,16 +281,41 @@ define(['jquery', 'theme_bootstrap/bootstrap'], function($, bootstrap) {
 
                 $('.cell').on('mouseenter', function() {
                     var column = $(this).data('column');
+                    var row = $(this).parent().attr('id');
 
                     $('.cell').each(function() {
                         $(this).removeClass('cell-highlight');
+                        $(this).removeClass('marked-cell');
 
                         if($(this).data('column') == column) {
                             $(this).addClass('cell-highlight');
                         }
+
+                        if($(this).data('row') == row) {
+                            $(this).addClass('cell-highlight');
+                        }
                     });
 
-                    $(this).parent().find('.cell').addClass('cell-highlight');
+                    $('.col_header').each(function() {
+                        $(this).removeClass('cell-highlight');
+
+                        if($(this).attr('id') == column) {
+                            $(this).addClass('cell-highlight');
+                        }
+                    });
+
+                    var row = $(this).data('row');
+                    $('.row_header').each(function() {
+                        $(this).removeClass('cell-highlight');
+
+                        if($(this).data('row') == row) {
+                            $(this).addClass('cell-highlight');
+                        }
+                    });
+                    //
+                    // $(this).parent().find('.cell').addClass('cell-highlight');
+                    $(this).removeClass('cell-highlight');
+                    $(this).addClass('marked-cell');
                 });
             });
         },

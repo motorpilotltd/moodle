@@ -294,7 +294,8 @@ $string['print_matrix'] = 'Print matrix';
 $string['choose_element'] = 'Please choose an element to add';
 $string['element_has_been_added'] = 'Element has been added';
 $string['export_matrix'] = 'Export to Excel';
-$string['all_levels'] = "Select role";
+$string['all_levels'] = "Select filter";
+$string['all_roles'] = "Select role";
 $string['region_text_part1'] = 'Showing content for ';
 $string['region_text_part2'] = ' region';
 
@@ -367,3 +368,37 @@ $string['icon_ai_modules_and_objectives_desc'] = '';
 $string['icon_modal_navigation_icon'] = '[AI] Navigation chevron button in modal window';
 $string['icon_modal_navigation_icon_desc'] = '';
 
+$string['create_role_based_lp'] = 'Create role based LP';
+$string['role_title'] = 'Role Title';
+$string['role_visible'] = 'Role Visible';
+$string['role_desc'] = 'Role Description';
+$string['select_cells'] = 'Select cells';
+$string['save_and_return_to_lp'] = 'Save & Return to LP';
+$string['save_and_return'] = 'Save & Return';
+$string['save_and_edit_role_activities'] = 'Save & Edit Role Activities';
+$string['override_description'] = 'Override Description';
+$string['cell_editing_header'] = '{$a->cellTitle} - {$a->cellLevel} for {$a->roleName}';
+$string['no_changes'] = 'No changes';
+$string['default'] = 'Default';
+
+$string['select_activities'] = 'Select activities';
+$string['activity_name'] = 'Activity name';
+$string['default_ere'] = 'Default ERE';
+$string['override_ere'] = 'Override ERE';
+$string['visible_in_role'] = 'Visible in Role';
+
+$string['disabled_activity_for_role'] = 'This activity is disabled for selected role';
+$string['select_cells'] = 'Select cells';
+$string['select_activities'] = 'Select activities';
+
+$string['learning_journey'] = 'Learning Journey';
+$string['skill_area'] = 'Skill Area';
+$string['expected_level'] = 'Expected level';
+$string['role_specific_definition'] = 'Role-specific definition';
+$string['select_cells'] ='Select Cells';
+$string['select_role'] = 'Select Role';
+$string['add_role'] = 'Create a new role';
+$string['edit_role'] = 'Edit role';
+    
+$string['region_shortcut'] = 'Shortcut for region: {$a}';
+$string['region_class'] = 'Label class for region: {$a}';
