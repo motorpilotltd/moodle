@@ -31,7 +31,7 @@ $preview = optional_param('preview', 0, PARAM_INT);
             <?php else: $params = ['a' => 'print', 'id' => $this->id, 'ajax' => 1]; endif; ?>
             <a type="button" href="<?php echo new \moodle_url($this->url, $params) ?>" class="btn button-print btn-default "><?php echo $this->get_icon_html('icon_print') . $this->get_string('print_matrix') ?></a>
         <?php endif; ?>
-        
+
         <?php if (\wa_learning_path\lib\has_capability('exportlearningmatrix')): ?>
             <?php if ($this->role): $params = ['a' => 'excel', 'id' => $this->id, 'role' => $this->role->id]; ?>
             <?php else: $params = ['a' => 'excel', 'id' => $this->id]; endif; ?>
@@ -82,7 +82,7 @@ $preview = optional_param('preview', 0, PARAM_INT);
                 }
             }
         ?>
-       
+
             <?php if (!$this->roles || $noRoleVisible): ?>
               <div class="pull-left">
                 <select name="levels" class="levels-multiselect" data-url="<?php echo $this->base_url; ?>" data-placeholder="<?php echo get_string('all_levels', 'local_wa_learning_path') ?>" multiple="1" >
@@ -92,7 +92,7 @@ $preview = optional_param('preview', 0, PARAM_INT);
                     <?php endforeach; ?>
                 </select>
               </div>
-            <? else: ?>
+            <?php else: ?>
             <div class="custom-select pull-left">
                 <select name="roles" class="levels" data-url="<?php echo $this->base_url; ?>" data-placeholder="<?php echo get_string('all_roles', 'local_wa_learning_path') ?>"  >
                     <option value="0"><?php echo get_string('all_roles', 'local_wa_learning_path') ?></option>
@@ -102,7 +102,7 @@ $preview = optional_param('preview', 0, PARAM_INT);
                     <?php endforeach; ?>
                 </select>
             </div>
-            <? endif; ?>
+            <?php endif; ?>
 
         <div class="custom-select pull-left">
             <select name="region" class="region" data-url="<?php echo $this->base_url; ?>" data-placeholder="<?php echo get_string('all_regions', $this->pluginname) ?>">
@@ -163,7 +163,7 @@ $preview = optional_param('preview', 0, PARAM_INT);
                                         if(isset($this->matrix->activities->{$key})) {
                                             $status = \wa_learning_path\model\learningpath::get_cell_info($this->activities->{$key}, $this->regions, $this->learning_path->subscribed);
                                             $object = $this->matrix->activities->{$key};
-                                            
+
                                             if(empty($object)) {
                                                 echo $no_objective_defined;
                                             }else if($status->completed) {
@@ -217,7 +217,7 @@ echo \html_writer::end_div();
 
 <script type='text/javascript'>
     $(document).ready(function(){
-        
+
         var region = $('.region :selected').text();
         $('.region :selected').text('<?php echo get_string('region_text_part1', 'local_wa_learning_path'); ?>' + region + '<?php echo get_string('region_text_part2', 'local_wa_learning_path'); ?>');
         $('.learning_path_matrix .inner_scroll_top_content').css('width', parseInt($('.learning_path_matrix .lp_matrix').innerWidth()) + 'px');
@@ -238,10 +238,10 @@ echo \html_writer::end_div();
                     $('.outer').parent().removeClass('lp_matrix_scroll_enable');
                 }
             }
-            
+
             var width = parseInt($('.learning_path_matrix').innerWidth()) - 200;
             $('.learning_path_matrix .lp_matrix_scroll_enable .inner, .learning_path_matrix .inner_scroll_top').css('width', width + 'px');
-            
+
         }).resize();
 
         $( '.lp_matrix .lp_col_header' ).tooltip({
@@ -276,7 +276,7 @@ echo \html_writer::end_div();
             var url = $(this).data('url') + '&levels=' + levels + '&regions=' + regions + '&role=' + roles;
             window.location = url;
         });
-        
+
         // $('select[name="levels"]').change(function() {
         //     var levels = '';
         //     var regions = '';
@@ -297,12 +297,12 @@ echo \html_writer::end_div();
         //     var url = $(this).data('url') + '&levels=' + levels + '&regions=' + regions + '&role=' + roles;
         //     window.location = url;
         // });
-        
+
         $('select[name="region"]').change(function() {
             var levels = '';
             var regions = '';
             var roles = '';
-            
+
             if($('select[name="levels"]').val()) {
                 levels = $('select[name="levels"]').val();
             }
@@ -310,7 +310,7 @@ echo \html_writer::end_div();
             if($('select[name="roles"]').val()) {
                 roles = $('select[name="roles"]').val();
             }
-            
+
             if($('.learning_path_matrix .region').val()) {
                 regions = $('.learning_path_matrix .region').val();
             }
