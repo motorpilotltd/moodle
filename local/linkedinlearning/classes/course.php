@@ -22,6 +22,9 @@
 
 namespace local_linkedinlearning;
 
+use coursemetadatafield_arup\arupmetadata;
+use local_coursemanager\coursemanager;
+
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/completion/data_object.php');
@@ -34,6 +37,7 @@ require_once("$CFG->dirroot/mod/scorm/locallib.php");
 require_once("$CFG->dirroot/mod/tapsenrol/lib.php");
 require_once("$CFG->dirroot/mod/tapscompletion/lib.php");
 require_once("$CFG->dirroot/completion/criteria/completion_criteria_activity.php");
+require_once("$CFG->dirroot/local/coursemetadata/field/arup/field.class.php");
 require_once $CFG->dirroot . '/completion/completion_aggregation.php';
 require_once $CFG->dirroot . '/completion/criteria/completion_criteria.php';
 require_once $CFG->dirroot . '/completion/completion_completion.php';
@@ -174,14 +178,12 @@ class course extends \data_object {
     }
 
     private function getmoodlecourse() {
-        global $DB;
-
-        $sql = "select c.* from {course} c
-                inner JOIN {arupadvert} aa on aa.course = c.id
-                inner JOIN {arupadvertdatatype_taps} ladt on aa.id = ladt.arupadvertid
-                inner join {local_taps_course} ltc on ladt.tapscourseid = ltc.courseid
-                where ltc.coursecode = :urn";
-        return $DB->get_record_sql($sql, ['urn' => $this->urn]);
+        $metadata = arupmetadata::fetch(['thirdpartyreference' => $this->urn]);
+        if ($metadata) {
+            return $metadata->get_course();
+        } else {
+            return false;
+        }
     }
 
     public function setregionstate($regionid, $state) {
@@ -215,7 +217,7 @@ class course extends \data_object {
         $data = new \stdClass();
         $data->region = $course->regions_field_region;
         $data->id = $DB->get_field('tapsenrol', 'id', ['course' => $course->id]);
-        tapsenrol_region_mapping_override($data);
+        \tapsenrol_region_mapping($data);
     }
 
     /**
@@ -240,7 +242,7 @@ class course extends \data_object {
 
         $course = new \stdClass();
         $course->fullname = $this->title;
-        $course->shortname = $this->create_moodle_shortname();
+        $course->shortname = $this->create_moodle_shortname(true);
         $course->summary = $this->shortdescription;
         $course->summaryformat = FORMAT_HTML;
         $course->groupmode = VISIBLEGROUPS;
@@ -258,43 +260,32 @@ class course extends \data_object {
         $course = \create_course($course, null);
         $CFG->enrol_plugins_enabled = $enrolpluginsenabled;
 
-        $sqlmax = "SELECT max(courseid) as maxid from {local_taps_course}";
-        $max = $DB->get_record_sql($sqlmax);
-        $tapscourse = new \stdClass();
-        $tapscourse->courseid = $max->maxid + 1;
-        $tapscourse->coursecode = $this->urn;
-        $tapscourse->coursename = $this->title;
-        $tapscourse->coursedescription = $this->description;
-        $tapscourse->onelinedescription = $this->shortdescription;
-        $tapscourse->timemodified = $this->lastupdatedat;
-        $tapscourse->keywords = implode(', ', $keywords);
-        $tapscourse->duration = round($this->timetocomplete / MINSECS);
-        $tapscourse->durationunits = 'Minute(s)';
-        $tapscourse->durationunitscode = 'MINS';
-        $DB->insert_record('local_taps_course', $tapscourse);
+        $advert = [
+                'course'              => $course->id,
+                'name'                => $this->title,
+                'description'         => $this->description,
+                'descriptionformat'   => FORMAT_HTML,
+                'timemodified'        => $this->lastupdatedat,
+                'keywords'            => implode(', ', $keywords),
+                'keywordsformat'      => FORMAT_HTML,
+                'display'             => true,
+                'methodology'         => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_LINKEDINLEARNING,
+                'duration'            => round($this->timetocomplete / MINSECS),//check
+                'durationunits'       => 'minutes',//check
+                'thirdpartyreference' => $this->urn,
+        ];
+        $arupmetadata = new \coursemetadatafield_arup\arupmetadata();
+        \coursemetadatafield_arup\arupmetadata::set_properties($arupmetadata, $advert);
+        $arupmetadata->save();
 
-        $sqlmax = "SELECT max(classid) as maxid from {local_taps_class}";
-        $max = $DB->get_record_sql($sqlmax);
-        $tapsclass = new \stdClass();
-        $tapsclass->classid = $max->maxid + 1;
-        $tapsclass->courseid = $tapscourse->courseid;
-        $tapsclass->coursename = $this->title;
-        $tapsclass->classname = $this->title;
-        $tapsclass->classtype = 'Self Paced';
-        $tapsclass->classstatus = 'Normal';
-        $tapsclass->classduration = round($this->timetocomplete / MINSECS);
-        $tapsclass->classdurationunits = 'Minute(s)';
-        $tapsclass->classdurationunitscode = 'MIN';
-        $tapsclass->startdate = $this->publishedat;
-        $tapsclass->enrolmentstartdate = $this->publishedat;
-        $tapsclass->enrolmentenddate = 0;
-        $tapsclass->classstartdate = $this->publishedat;
-        $tapsclass->classstarttime = $this->publishedat;
-        $tapsclass->classendtime = 0;
-        $tapsclass->maximumattendees = -1;
-        $tapsclass->classsuppliername = 'LinkedIn Learning';
-        $tapsclass->timemodified = $this->lastupdatedat;
-        $DB->insert_record('local_taps_class', $tapsclass);
+        $fs = get_file_storage();
+        $context = \context_course::instance($course->id);
+        $filerecord = array('contextid' => $context->id, 'component' => 'coursemetadatafield_arup', 'filearea' => 'originalblockimage',
+                            'itemid'    => 0, 'filepath' => '/');
+        $newimage = $fs->create_file_from_url($filerecord, $this->primaryimageurl, array('calctimeout' => true), true);
+        \coursemetadata_field_arup::arupadvert_process_blockimage($context->id, $newimage);
+
+        \local_admin\courseformmoddifier::post_creation($course);
 
         $section = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 1]);
         course_update_section($section->course, $section, array('name' => 'LinkedIn Learning'));
@@ -304,108 +295,6 @@ class course extends \data_object {
 
         $section = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 3]);
         course_update_section($section->course, $section, array('visible' => false));
-
-        // Now setup required enrolment plugins.
-        // Manual...
-        $enrolmanual = enrol_get_plugin('manual');
-        if ($enrolmanual) {
-            $enrolmanualfields = array(
-                    'status'      => ENROL_INSTANCE_ENABLED,
-                    'enrolperiod' => 0,
-                    'roleid'      => get_config('local_taps', 'taps_enrolment_role')
-            );
-            $enrolmanual->add_instance($course, $enrolmanualfields);
-        }
-
-        // Self...
-        $enrolself = enrol_get_plugin('self');
-        if ($enrolself) {
-            $enrolselffields = array(
-                    'customint1'  => 0,
-                    'customint2'  => 0,
-                    'customint3'  => 0,
-                    'customint4'  => 0,
-                    'enrolperiod' => 0,
-                    'status'      => ENROL_INSTANCE_ENABLED,
-                    'roleid'      => get_config('local_taps', 'taps_enrolment_role')
-            );
-            $enrolself->add_instance($course, $enrolselffields);
-        }
-
-        // Guest...
-        $enrolguest = enrol_get_plugin('guest');
-        if ($enrolguest) {
-            $enrolguestfields = array(
-                    'status' => ENROL_INSTANCE_ENABLED
-            );
-            $enrolguest->add_instance($course, $enrolguestfields);
-        }
-
-        $coursemetadatadata = new \stdClass();
-        $coursemetadatadata->id = $course->id;
-        $coursemetadatadata->{'coursemetadata_field_' . self::getmethodologyfield()->shortname} = 'LinkedIn Learning';
-        \coursemetadata_save_data($coursemetadatadata);
-
-        $arupadvertinstalled = $DB->get_record('modules', array('name' => 'arupadvert'));
-
-        // Add advert activity.
-        $arupadvertcm = new \stdClass();
-        $arupadvertcm->course = $course->id;
-        $arupadvertcm->module = $arupadvertinstalled->id;
-        $arupadvertcm->instance = 0;
-        $arupadvertcm->visible = 1;
-        $arupadvertcm->groupmode = VISIBLEGROUPS;
-        $arupadvertcm->groupingid = 0;
-        $arupadvertcm->completion = COMPLETION_TRACKING_NONE;
-        $arupadvertcm->showdescription = 0;
-        $arupadvertcm->coursemodule = add_course_module($arupadvertcm);
-        $arupadvertcm->section = 0;
-
-        $modulename = $arupadvertinstalled->name;
-
-        $classifications = classification::fetch_by_course($this->id);
-        $keywords = [];
-        foreach ($classifications as $classification) {
-            $keywords[] = $classification->name;
-        }
-
-        $arupadvert = new \stdClass();
-        // Main advert fields.
-        $arupadvert->altword = '';
-        $arupadvert->showheadings = 1;
-        $arupadvert->course = $course->id;
-        $arupadvert->name = 'Advert';
-        $arupadvert->advertblockimage = null;
-        $arupadvert->datatype = 'taps';
-        $arupadvert->arupadvertid = $arupadvertcm->coursemodule;
-        $arupadvert->coursemodule = $arupadvertcm->coursemodule;
-        $arupadvert->tapscourseid = $tapscourse->courseid;
-        $arupadvert->overrideregion = 1;
-        $arupadvert->timecreated = $this->publishedat;
-        $arupadvert->timemodified = $this->lastupdatedat;
-        $arupadvertcm->instance = arupadvert_add_instance($arupadvert, null);
-
-        $fs = get_file_storage();
-        $context = \context_module::instance($arupadvertcm->coursemodule);
-        $filerecord = array('contextid' => $context->id, 'component' => 'mod_arupadvert', 'filearea' => 'originalblockimage',
-                            'itemid'    => 0, 'filepath' => '/');
-        $newimage = $fs->create_file_from_url($filerecord, $this->primaryimageurl, array('calctimeout' => true), true);
-        arupadvert_process_blockimage($context->id, $newimage);
-
-        // This happens in arupadvert_add_instance but no harm leaving it here...
-        $DB->set_field('course_modules', 'instance', $arupadvertcm->instance, array('id' => $arupadvertcm->coursemodule));
-
-        course_add_cm_to_section($arupadvertcm->course, $arupadvertcm->coursemodule, $arupadvertcm->section);
-
-        set_coursemodule_visible($arupadvertcm->coursemodule, $arupadvertcm->visible);
-
-        $eventdata = clone $arupadvertcm;
-        $eventdata->name = $arupadvert->name;
-        $eventdata->modname = $modulename;
-        $eventdata->id = $eventdata->coursemodule;
-        $modcontext = \context_module::instance($eventdata->coursemodule);
-        $event = \core\event\course_module_created::create_from_cm($eventdata, $modcontext);
-        $event->trigger();
 
         // Add AICC/Scorm activity.
         $scormcm = new \stdClass();
@@ -424,7 +313,7 @@ class course extends \data_object {
 
         $scorm = new \stdClass();
         $scorm->course = $course->id;
-        $scorm->cmidnumber = '';
+        $scorm->cmidnumber = $this->urn;
         $scorm->coursemodule = $scormcm->coursemodule;
         $scorm->scormtype = SCORM_TYPE_AICCURL;
         $scorm->packageurl = $this->aicclaunchurl;
@@ -468,57 +357,6 @@ class course extends \data_object {
         $eventdata = clone $scormcm;
         $eventdata->name = $scorm->name;
         $eventdata->modname = 'scorm';
-        $eventdata->id = $eventdata->coursemodule;
-        $modcontext = \context_module::instance($eventdata->coursemodule);
-        $event = \core\event\course_module_created::create_from_cm($eventdata, $modcontext);
-        $event->trigger();
-
-        // Add taps enrol activity.
-        $tapsenrolcm = new \stdClass();
-        $tapsenrolcm->course = $course->id;
-        $tapsenrolcm->module = $DB->get_field('modules', 'id', ['name' => 'tapsenrol'], 'MUST_EXIST');
-        $tapsenrolcm->instance = 0;
-        $tapsenrolcm->visible = 1;
-        $tapsenrolcm->groupmode = VISIBLEGROUPS;
-        $tapsenrolcm->groupingid = 0;
-        $tapsenrolcm->completion = COMPLETION_TRACKING_AUTOMATIC;
-        $tapsenrolcm->showdescription = 0;
-
-        // Availability.
-        $cohorts = array_filter(explode(',', get_config('local_linkedinlearning', 'cohorts')));
-        $children = [];
-        foreach ($cohorts as $cohort) {
-            $structure = new \stdClass();
-            $structure->id = (int) $cohort;
-            $condition = new \availability_cohort\condition($structure);
-            $children[] = $condition->save();
-        }
-        if (!empty($children)) {
-            $tapsenrolcm->availability = json_encode(\core_availability\tree::get_root_json($children, \core_availability\tree::OP_OR, true));
-        }
-
-        $tapsenrolcm->coursemodule = add_course_module($tapsenrolcm);
-        $tapsenrolcm->section = 0;
-
-        $tapsenrol = new \stdClass();
-        $tapsenrol->course = $course->id;
-        $tapsenrol->name = 'Linked course Enrolment';
-        $tapsenrol->tapscourse = $tapscourse->courseid;
-        $tapsenrol->completionenrolment = 1;
-        $tapsenrol->internalworkflowid = $DB->get_field('tapsenrol_iw', 'id', ['name' => 'Off (Ex-Oracle)'], MUST_EXIST);
-
-        $tapsenrolcm->instance = tapsenrol_add_instance($tapsenrol, null);
-
-        // This happens in arupadvert_add_instance but no harm leaving it here...
-        $DB->set_field('course_modules', 'instance', $tapsenrolcm->instance, array('id' => $tapsenrolcm->coursemodule));
-
-        course_add_cm_to_section($tapsenrolcm->course, $tapsenrolcm->coursemodule, $tapsenrolcm->section);
-
-        set_coursemodule_visible($tapsenrolcm->coursemodule, $tapsenrolcm->visible);
-
-        $eventdata = clone $tapsenrolcm;
-        $eventdata->name = $tapsenrol->name;
-        $eventdata->modname = 'tapsenrol';
         $eventdata->id = $eventdata->coursemodule;
         $modcontext = \context_module::instance($eventdata->coursemodule);
         $event = \core\event\course_module_created::create_from_cm($eventdata, $modcontext);
@@ -581,44 +419,6 @@ class course extends \data_object {
         $event = \core\event\course_module_created::create_from_cm($eventdata, $modcontext);
         $event->trigger();
 
-        // Add taps completion activity.
-        $tapscompletioncm = new \stdClass();
-        $tapscompletioncm->course = $course->id;
-        $tapscompletioncm->module = $DB->get_field('modules', 'id', ['name' => 'tapscompletion']);
-        $tapscompletioncm->instance = 0;
-        $tapscompletioncm->visible = 0;
-        $tapscompletioncm->groupmode = VISIBLEGROUPS;
-        $tapscompletioncm->groupingid = 0;
-        $tapscompletioncm->completion = COMPLETION_TRACKING_AUTOMATIC;
-        $tapscompletioncm->showdescription = 0;
-        $tapscompletioncm->coursemodule = add_course_module($tapscompletioncm);
-        $tapscompletioncm->section = 3;
-
-        $tapscompletion = new \stdClass();
-        $tapscompletion->course = $course->id;
-        $tapscompletion->name = 'Linked course completionment';
-        $tapscompletion->tapscourse = $tapscourse->courseid;
-        $tapscompletion->autocompletion = 1;
-        $tapscompletion->completiontimetype = 0;
-        $tapscompletion->completionattended = 1;
-
-        $tapscompletioncm->instance = tapscompletion_add_instance($tapscompletion, null);
-
-        // This happens in arupadvert_add_instance but no harm leaving it here...
-        $DB->set_field('course_modules', 'instance', $tapscompletioncm->instance, array('id' => $tapscompletioncm->coursemodule));
-
-        course_add_cm_to_section($tapscompletioncm->course, $tapscompletioncm->coursemodule, $tapscompletioncm->section);
-
-        set_coursemodule_visible($tapscompletioncm->coursemodule, $tapscompletioncm->visible);
-
-        $eventdata = clone $tapscompletioncm;
-        $eventdata->name = $tapscompletion->name;
-        $eventdata->modname = 'tapscompletion';
-        $eventdata->id = $eventdata->coursemodule;
-        $modcontext = \context_module::instance($eventdata->coursemodule);
-        $event = \core\event\course_module_created::create_from_cm($eventdata, $modcontext);
-        $event->trigger();
-
         $data = new \stdClass();
         $data->id = $course->id;
         $data->criteria_activity = [$scormcm->coursemodule => 1];
@@ -631,26 +431,6 @@ class course extends \data_object {
         $aggregation = new \completion_aggregation($aggdata);
         $aggregation->setMethod(COMPLETION_AGGREGATION_ALL);
         $aggregation->save();
-
-        // Availability.
-        $structure = new \stdClass();
-        $structure->cm = $tapsenrolcm->coursemodule;
-        $structure->e = COMPLETION_COMPLETE;
-        $completioncondition = new \availability_completion\condition($structure);
-        $children = array($completioncondition->save());
-        $rootjson = json_encode(\core_availability\tree::get_root_json($children, \core_availability\tree::OP_AND, false));
-
-        $sectionselect = 'course = :courseid AND section != :sectionnumber';
-        $sectionparams = array('courseid' => $course->id, 'sectionnumber' => 0);
-        $sections = $DB->get_records_select('course_sections', $sectionselect, $sectionparams, 'section ASC');
-
-        if ($sections) {
-            foreach ($sections as $section) {
-                // Enforce section availability (same as for tapscompletion activity above).
-                $section->availability = $rootjson;
-                $DB->update_record('course_sections', $section);
-            }
-        }
 
         rebuild_course_cache($course->id);
 
@@ -669,7 +449,7 @@ class course extends \data_object {
      * @throws \moodle_exception
      */
     public function update_moodle_course() {
-        global $DB, $CFG;
+        global $DB;
 
         $course = $this->getmoodlecourse();
 
@@ -688,30 +468,28 @@ class course extends \data_object {
         $course->shortname = $this->create_moodle_shortname();
         $course->summary = $this->shortdescription;
 
+        $arupmetadata = \coursemetadatafield_arup\arupmetadata::fetch(['course'=> $course->id]);
+        $advert = [
+                'name'                => $this->title,
+                'description'         => $this->description,
+                'timemodified'        => $this->lastupdatedat,
+                'keywords'            => implode(', ', $keywords),
+                'duration'            => round($this->timetocomplete / MINSECS),
+                'thirdpartyreference' => $this->urn,
+        ];
+        \coursemetadatafield_arup\arupmetadata::set_properties($arupmetadata, $advert);
+        $arupmetadata->save();
 
-        $tapscourse = $DB->get_records_select('local_taps_course', $DB->sql_compare_text('coursecode') . " = :urn", ['urn' => $this->urn]);
-        $tapscourse = reset($tapscourse);
-        $tapscourse->coursename = $this->title;
-        $tapscourse->coursedescription = $this->description;
-        $tapscourse->onelinedescription = $this->shortdescription;
-        $tapscourse->timemodified = $this->lastupdatedat;
-        $tapscourse->keywords = implode(', ', $keywords);
-        $tapscourse->duration = round($this->timetocomplete / MINSECS);
-        $DB->update_record('local_taps_course', $tapscourse);
-
-        $tapsclass = $DB->get_record('local_taps_class', ['courseid' => $tapscourse->courseid]);
-        $tapsclass->coursename = $this->title;
-        $tapsclass->classname = $this->title;
-        $tapsclass->classduration = round($this->timetocomplete / MINSECS);
-        $tapsclass->startdate = $this->publishedat;
-        $tapsclass->enrolmentstartdate = $this->publishedat;
-        $tapsclass->classstartdate = $this->publishedat;
-        $tapsclass->classstarttime = $this->publishedat;
-        $tapsclass->timemodified = $this->lastupdatedat;
-        $DB->update_record('local_taps_class', $tapsclass);
+        $fs = get_file_storage();
+        $context = \context_course::instance($course->id);
+        $fs->delete_area_files($context->id, 'coursemetadatafield_arup', 'blockimage');
+        $fs->delete_area_files($context->id, 'coursemetadatafield_arup', 'originalblockimage');
+        $filerecord = array('contextid' => $context->id, 'component' => 'coursemetadatafield_arup', 'filearea' => 'originalblockimage',
+                            'itemid'    => 0, 'filepath' => '/');
+        $newimage = $fs->create_file_from_url($filerecord, $this->primaryimageurl, array('calctimeout' => true), true);
+        \coursemetadata_field_arup::arupadvert_process_blockimage($context->id, $newimage);
 
         $modinfo = get_fast_modinfo($course);
-
         $scorms = $modinfo->get_instances_of('scorm');
         if ($scorms) {
             $scormcm = reset($scorms);
@@ -722,19 +500,7 @@ class course extends \data_object {
             $scorm->name = $this->title;
             $scorm->intro = $this->description;
             $DB->update_record('scorm', $scorm);
-
         }
-
-        $arupadverts = $modinfo->get_instances_of('arupadvert');
-        $arupadvertcm = reset($arupadverts);
-        $fs = get_file_storage();
-        $context = \context_module::instance($arupadvertcm->id);
-        $fs->delete_area_files($context->id, 'mod_arupadvert', 'blockimage');
-        $fs->delete_area_files($context->id, 'mod_arupadvert', 'originalblockimage');
-        $filerecord = array('contextid' => $context->id, 'component' => 'mod_arupadvert', 'filearea' => 'originalblockimage',
-                            'itemid'    => 0, 'filepath' => '/');
-        $newimage = $fs->create_file_from_url($filerecord, $this->primaryimageurl, array('calctimeout' => true), true);
-        arupadvert_process_blockimage($context->id, $newimage);
 
         update_course($course);
     }
@@ -757,8 +523,18 @@ class course extends \data_object {
      *
      * @return string
      */
-    private function create_moodle_shortname() {
+    private function create_moodle_shortname($checkforcollision = false) {
+        global $DB;
+
         $lilid = str_ireplace('urn:li:lyndaCourse:', '', $this->urn);
-        return substr("{$lilid} > {$this->title}", 0, 255);
+        $shortname = substr("{$lilid} > {$this->title}", 0, 255);
+
+        $suffix = 2;
+        $rootshortname = $shortname;
+        while ($checkforcollision && $DB->record_exists('course', ['shortname' => $shortname])) {
+            $shortname = $rootshortname . " ($suffix)";
+            $suffix += 1;
+        }
+        return $shortname;
     }
 }

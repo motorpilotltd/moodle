@@ -100,6 +100,12 @@ class sqlsrv extends base {
      */
     public function sql_group_concat_unique($expr, $separator) {
         global $DB;
+
+        $serverinfo = $DB->get_server_info();
+        if ($serverinfo['description'] == 'mssqlubuntu') {
+            debugging('DB does not support CLR functions');
+            return " max($expr) ";
+        }
         $separator = $DB->get_manager()->generator->addslashes($separator);
         return " dbo.GROUP_CONCAT_D(DISTINCT $expr, '{$separator}') ";
     }

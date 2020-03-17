@@ -32,6 +32,7 @@ $string['name'] = 'Name';
 $string['description'] = 'What will this {$a} cover?';
 $string['duration'] = 'Duration';
 $string['showheadings'] = 'Show headings';
+$string['thirdpartyreference'] = 'Third party reference';
 $string['altword'] = 'Alternative word for \'{$a}\' in headings';
 $string['display'] = 'Display advert';
 $string['objectives'] = 'What can I expect to gain from this {$a}?';
@@ -64,6 +65,7 @@ $string['methodology_classroom'] = "Classroom";
 $string['methodology_elearning'] = "e-Learning";
 $string['methodology_learningburst'] = "Learning Burst";
 $string['methodology_programmes'] = "Programme";
+$string['methodology_linkedinlearning'] = "LinkedIn Learning";
 $string['methodology_other'] = "Other";
 
 $string['visibletrainerrole'] = 'Visible trainer role';

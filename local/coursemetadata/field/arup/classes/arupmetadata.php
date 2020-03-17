@@ -33,18 +33,23 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
             'id', 'course'
     ];
 
-    public $optional_fields = ['name'              => '', 'altword' => '', 'showheadings' => true, 'description' => '',
+    public $optional_fields = ['name'              => '',
+                               'altword' => '',
+                               'showheadings' => true,
+                               'description' => '',
                                'descriptionformat' => FORMAT_HTML, 'objectives' => '', 'objectivesformat' => FORMAT_HTML,
                                'audience'          => '', 'audienceformat' => FORMAT_HTML, 'keywords' => '',
                                'keywordsformat'    => FORMAT_HTML,
                                'accredited'        => false, 'accreditationdate' => null, 'timecreated' => 0, 'timemodified' => 0,
                                'duration'          => null, 'durationunits' => null,
                                'display'           => true,
-                               'methodology'       => self::METHODOLOGY_CLASSROOM
+                               'methodology'       => self::METHODOLOGY_CLASSROOM,
+                                'thirdpartyreference' => ''
     ];
 
     const METHODOLOGY_CLASSROOM = 10; //Enrolments only accept Classroom Classes/
     const METHODOLOGY_ELEARNING = 20; // - Enrolments only accept Elearning Classes
+    const METHODOLOGY_LINKEDINLEARNING = 25; // - Enrolments only accept Elearning Classes
     const METHODOLOGY_LEARNINGBURST = 40; // same as Elearning
     const METHODOLOGY_PROGRAMMES = 50; //Enrolments only accept Classroom Classes
     const METHODOLOGY_OTHER = 60; //No enrolment plugin required on setup. But user can add and choose class or elearn or a blended option of both.
@@ -69,6 +74,7 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
     public $duration;
     public $durationunits;
     public $methodology;
+    public $thirdpartyreference;
 
     private function get_role_id() {
         $cache = \cache::make('coursemetadatafield_arup', 'roleid');
@@ -205,6 +211,7 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
                 self::METHODOLOGY_ELEARNING     => get_string('methodology_elearning', 'coursemetadatafield_arup'),
                 self::METHODOLOGY_LEARNINGBURST => get_string('methodology_learningburst', 'coursemetadatafield_arup'),
                 self::METHODOLOGY_PROGRAMMES    => get_string('methodology_programmes', 'coursemetadatafield_arup'),
+                self::METHODOLOGY_LINKEDINLEARNING    => get_string('methodology_linkedinlearning', 'coursemetadatafield_arup'),
                 self::METHODOLOGY_OTHER         => get_string('methodology_other', 'coursemetadatafield_arup')
         ];
     }
@@ -219,6 +226,9 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
                 break;
             case self::METHODOLOGY_ELEARNING:
                 $identifier = 'methodology_elearning';
+                break;
+            case self::METHODOLOGY_LINKEDINLEARNING:
+                $identifier = 'methodology_linkedinlearning';
                 break;
             case self::METHODOLOGY_LEARNINGBURST:
                 $identifier = 'methodology_learningburst';
@@ -245,6 +255,7 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
                 $identifier = 'methodology_programmes';
                 break;
             case self::METHODOLOGY_ELEARNING:
+            case self::METHODOLOGY_LINKEDINLEARNING:
                 $identifier = 'methodology_elearning';
                 break;
             case self::METHODOLOGY_LEARNINGBURST:
@@ -268,6 +279,7 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
                 return \mod_tapsenrol\enrolclass::TYPE_CLASSROOM;
                 break;
             case self::METHODOLOGY_ELEARNING:
+            case self::METHODOLOGY_LINKEDINLEARNING:
             case self::METHODOLOGY_LEARNINGBURST:
                 return \mod_tapsenrol\enrolclass::TYPE_ELEARNING;
                 break;

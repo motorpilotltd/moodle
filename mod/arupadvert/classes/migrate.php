@@ -252,6 +252,7 @@ class migrate {
                     $arupmetadata->timecreated = $tapscourse->timemodified;
                     $arupmetadata->duration = $tapscourse->duration;
                     $arupmetadata->durationunits = $tapscourse->durationunitscode;
+                    $arupmetadata->thirdpartyreference = $tapscourse->coursecode;
                 }
 
                 // Link local_taps_class to the moodle course.

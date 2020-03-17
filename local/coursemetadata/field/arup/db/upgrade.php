@@ -78,5 +78,22 @@ INNER JOIN {coursemetadata_info_data} data
         upgrade_plugin_savepoint(true, 2015111611, 'coursemetadatafield', 'arup');
     }
 
+    if ($oldversion < 2015111615) {
+        require_once("$CFG->dirroot/local/coursemetadata/lib.php");
+
+        // Define table coursemetadatafield_arup_user_update_log to be created.
+        $table = new xmldb_table('coursemetadata_arup');
+
+        $field = new xmldb_field('thirdpartyreference', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+
+        // Conditionally launch create table for coursemetadatafield_arup_user_update_log
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2015111615, 'coursemetadatafield', 'arup');
+    }
+
     return true;
 }

@@ -121,8 +121,14 @@ class managecourses_table extends \table_sql {
                 $sql = " GROUP_CONCAT($field, '$delimiter', $distinct) ";
                 break;
             case 'mssql':
-                $distinct = $unique ? 'DISTINCT' : '';
-                $sql = " dbo.GROUP_CONCAT_D($distinct $field, '$delimiter') ";
+                $serverinfo = $DB->get_server_info();
+                if ($serverinfo['description'] == 'mssqlubuntu') {
+                    debugging('DB does not support CLR functions');
+                    $sql = " max($field) ";
+                } else {
+                    $distinct = $unique ? 'DISTINCT' : '';
+                    $sql = " dbo.GROUP_CONCAT_D($distinct $field, '$delimiter') ";
+                }
                 break;
         }
 

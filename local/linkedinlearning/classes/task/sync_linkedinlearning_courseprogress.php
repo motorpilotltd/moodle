@@ -44,7 +44,7 @@ class sync_linkedinlearning_courseprogress extends \core\task\scheduled_task {
         global $DB;
 
         $now = time();
-        $since = get_config('local_linkedinlearning', 'courseprgogresssyncto');
+        $since = get_config('local_linkedinlearning', 'courseprogresssyncto');
         if (!$since) {
             $since = 0;
         }
@@ -62,6 +62,6 @@ class sync_linkedinlearning_courseprogress extends \core\task\scheduled_task {
         set userid = coalesce((select id from {user} where {user}.email = {linkedinlearning_progress}.email), 0)
         where userid = 0");
 
-        set_config('courseprgogresssyncto', $syncedto, 'local_linkedinlearning');
+        set_config('courseprogresssyncto', $syncedto, 'local_linkedinlearning');
     }
 }

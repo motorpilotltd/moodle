@@ -86,10 +86,8 @@ class managecourses_table extends \table_sql {
         $sql = "FROM {linkedinlearning_course} lc
                 $tagfilterjoins
                 LEFT JOIN {linkedinlearning_crs_class} lct ON lct.linkedinlearningcourseid = lc.id
-                LEFT JOIN {local_taps_course} ltc on ltc.coursecode = lc.urn
-                LEFT JOIN {arupadvertdatatype_taps} ladt on ladt.tapscourseid = ltc.courseid
-                LEFT JOIN {arupadvert} aa on aa.id = ladt.arupadvertid
-                LEFT JOIN {course} c on c.id = aa.course
+                LEFT JOIN {coursemetadata_arup} cma on cma.thirdpartyreference = lc.urn
+                LEFT JOIN {course} c on c.id = cma.course
                 LEFT JOIN {local_regions_reg_cou} lrrc on lrrc.courseid = c.id
                 $where";
 
@@ -221,9 +219,14 @@ class managecourses_table extends \table_sql {
                 $sql = " GROUP_CONCAT($field, '$delimiter', $distinct) ";
                 break;
             case 'mssql':
-                $distinct = $unique ? 'DISTINCT' : '';
-                $sql = " dbo.GROUP_CONCAT_D($distinct $field, '$delimiter') ";
-                break;
+                $serverinfo = $DB->get_server_info();
+                if ($serverinfo['description'] == 'mssqlubuntu') {
+                    debugging('DB does not support CLR functions');
+                    $sql = " max($field) ";
+                } else {
+                    $distinct = $unique ? 'DISTINCT' : '';
+                    $sql = " dbo.GROUP_CONCAT_D($distinct $field, '$delimiter') ";
+                }
         }
 
         return $sql;

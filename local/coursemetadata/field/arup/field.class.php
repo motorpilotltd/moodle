@@ -115,6 +115,13 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
                     ['maxlength' => 254]);
             $mform->setType('arupmeta_altword', PARAM_TEXT);
 
+            $thirdpartyreference = $mform->addElement('text', 'arupmeta_thirdpartyreference', get_string('thirdpartyreference', 'coursemetadatafield_arup', $this->arupmetadata->thirdpartyreference),
+                    ['maxlength' => 254]);
+            $mform->setType('arupmeta_thirdpartyreference', PARAM_TEXT);
+            if (!is_siteadmin()) {
+                $mform->freeze($thirdpartyreference);
+            }
+
             $mform->addElement('date_selector', 'arupmeta_timecreated', get_string('timecreated', 'coursemetadatafield_arup'));
 
             $mform->addElement('date_selector', 'arupmeta_timemodified', get_string('timemodified', 'coursemetadatafield_arup'));
@@ -167,7 +174,7 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
      * @param stored_file $newimage
      * @return void
      */
-    private function arupadvert_process_blockimage($contextid, $newimage) {
+    public static function arupadvert_process_blockimage($contextid, $newimage) {
         global $CFG;
         require_once($CFG->libdir . '/gdlib.php');
 
@@ -179,7 +186,7 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
 
         if (!is_file($tempimage)) {
             // Can't process, just save.
-            $this->arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
+            self::arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
             return;
         }
 
@@ -187,7 +194,7 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
 
         if (empty($imageinfo)) {
             // Can't process, just save.
-            $this->arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
+            self::arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
             return;
         }
 
@@ -215,7 +222,7 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
                 if (function_exists('imagecreatefromgif')) {
                     $im = imagecreatefromgif($tempimage);
                 } else {
-                    $this->arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
+                    self::arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
                     return;
                 }
                 break;
@@ -223,7 +230,7 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
                 if (function_exists('imagecreatefromjpeg')) {
                     $im = imagecreatefromjpeg($tempimage);
                 } else {
-                    $this->arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
+                    self::arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
                     return;
                 }
                 break;
@@ -231,13 +238,13 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
                 if (function_exists('imagecreatefrompng')) {
                     $im = imagecreatefrompng($tempimage);
                 } else {
-                    $this->arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
+                    self::arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
                     return;
                 }
                 break;
             default:
                 // Won't process, just save.
-                $this->arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
+                self::arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
                 return;
         }
 
@@ -248,7 +255,7 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
             $quality = 60;
         } else {
             // Can't process, just save.
-            $this->arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
+            self::arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
             return;
         }
 
@@ -260,7 +267,7 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
         ob_start();
         if (!$imagefnc($im1, null, $quality, $filters)) {
             ob_end_clean();
-            $this->arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
+            self::arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid);
             return;
         }
         $data = ob_get_clean();
@@ -297,7 +304,7 @@ class coursemetadata_field_arup extends \local_coursemetadata\field_base {
      * @param int $contextid
      * @return void
      */
-    private function arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid) {
+    private static function arupadvert_use_uploaded_blockimage($fs, $newimage, $tempimage, $contextid) {
         $filerecord = array('contextid' => $contextid, 'component' => 'coursemetadatafield_arup', 'filearea' => 'blockimage',
                             'itemid'    => 0, 'filepath' => '/');
         $fs->create_file_from_storedfile($filerecord, $newimage);
