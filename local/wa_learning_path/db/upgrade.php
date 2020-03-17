@@ -71,9 +71,8 @@ function xmldb_local_wa_learning_path_upgrade($oldversion) {
         // Assign savepoint reached.
         upgrade_plugin_savepoint(true, 2016061404, 'local', 'wa_learning_path');
     }
-    
+
     if ($oldversion < 2016061507) {
-//        die('aa');
         $dbman = $DB->get_manager();
 
         $table = new xmldb_table('wa_learning_path_act_region');
@@ -96,7 +95,7 @@ function xmldb_local_wa_learning_path_upgrade($oldversion) {
         }
         //=============
         // And delete the old columns.
-        
+
         $table2 = new xmldb_table('wa_learning_path_activity');
 		if ($dbman->table_exists($table2)) {
 			$index = new xmldb_index('wa_lpa_index_region', XMLDB_INDEX_NOTUNIQUE, array('region'));
@@ -117,52 +116,7 @@ function xmldb_local_wa_learning_path_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016061507, 'local', 'wa_learning_path');
     }
 
-    if ($oldversion < 2016061507) {
-//        die('aa');
-        $dbman = $DB->get_manager();
-
-        $table = new xmldb_table('wa_learning_path_act_region');
-
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('activityid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('regionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-
-        // Conditionally launch create table for wa_learning_path_act_region.
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-
-            $index = new xmldb_index('wa_lpar_inde_activityid', XMLDB_INDEX_NOTUNIQUE, array('activityid'));
-            $dbman->add_index($table, $index);
-
-            $index = new xmldb_index('wa_lpar_inde_regionid', XMLDB_INDEX_NOTUNIQUE, array('regionid'));
-            $dbman->add_index($table, $index);
-        }
-        //=============
-        // And delete the old columns.
-
-        $table2 = new xmldb_table('wa_learning_path_activity');
-        if ($dbman->table_exists($table2)) {
-            $index = new xmldb_index('wa_lpa_index_region', XMLDB_INDEX_NOTUNIQUE, array('region'));
-
-            // Conditionally launch drop index mailed.
-            if ($dbman->index_exists($table2, $index)) {
-                $dbman->drop_index($table2, $index);
-            }
-
-            // Drop column.
-            $field = new xmldb_field('region', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'nosubmissions');
-
-            if ($dbman->field_exists($table2, $field)) {
-                $dbman->drop_field($table2, $field);
-            }
-        }
-        // Assign savepoint reached.
-        upgrade_plugin_savepoint(true, 2016061507, 'local', 'wa_learning_path');
-    }
-
-    if ($oldversion < 2020022602) {
+    if ($oldversion < 2020031602) {
         $dbman = $DB->get_manager();
 
         // Define table wa_learning_path_role to be created.
@@ -213,10 +167,10 @@ function xmldb_local_wa_learning_path_upgrade($oldversion) {
         }
 
         // Wa_agency savepoint reached.
-        upgrade_plugin_savepoint(true, 2020022602, 'local', 'wa_learning_path');
+        upgrade_plugin_savepoint(true, 2020031602, 'local', 'wa_learning_path');
     }
 
-    if ($oldversion < 2020022603) {
+    if ($oldversion < 2020031603) {
         $dbman = $DB->get_manager();
 
         // Define field activityid to be added to wa_learning_path_role_act.
@@ -229,7 +183,7 @@ function xmldb_local_wa_learning_path_upgrade($oldversion) {
         }
 
         // Wa_agency savepoint reached.
-        upgrade_plugin_savepoint(true, 2020022603, 'local', 'wa_learning_path');
+        upgrade_plugin_savepoint(true, 2020031603, 'local', 'wa_learning_path');
     }
 
     return true;
