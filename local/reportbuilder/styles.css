@@ -455,6 +455,7 @@
   margin-left: 0;
 }
 
-.newreport .fcontainer .fitem .felement > input[type="text"] {
-  margin-top: 0 !important;
+.newreport .sticky-top {
+  position: sticky;
+  top: 100px;
 }
