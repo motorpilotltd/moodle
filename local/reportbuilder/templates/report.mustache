@@ -19,99 +19,102 @@
 }}
 
 <div class="reportbuilder_report newreport">
-    {{#hasdisabledfilters}}
-        {{{ notification }}}
-    {{/hasdisabledfilters}}
+    <div class="inner">
 
-    <div>
-        <h2>{{{ heading }}}</h2>
-    </div>
+        <nav id="report-controls" class="navbar d-flex navbar-default m-b-0" data-region="report-controls" aria-label="reportfilters">
+            {{#toolbarsearch}}
+            <form class="navbar-form" action="{{{formurl}}}" method="post" accept-charset="utf-8">
+                <div class="input-group">
+                    <input type="text" name="simplesearch" class="form-control" placeholder="{{#str}}search{{/str}}"
+                    {{#simplesearch}}value="{{{ simplesearch }}}"{{/simplesearch}}
+                    aria-label="{{#str}}search{{/str}}">
+                    <span class="input-group-addon" data-action="submit-search">
+                        <i class="fa fa-search"></i>
+                    </span>
+                    <span class="input-group-addon hidden" data-action="clear-search">
+                        <span class="sr-only">{{#str}}clear{{/str}}</span>
+                        <i class="fa fa-close text-danger"></i>
+                    </span>
+                </div>
+            </form>
+            {{/toolbarsearch}}
+            <div class="navbar-form flex-auto">
+                <div class="input-group">
+                    <a
+                        id="advancedsearchbutton"
+                        class="btn btn-link closed"
+                        data-toggle="collapse" href="#advancedsearch" aria-expanded="false" aria-controls="advancedsearch"
+                    >
+                        <i class="fa fa-caret-right open"></i>
+                        <i class="fa fa-caret-down closed"></i> Advanced search
+                    </a>
+                    {{{ editbutton }}}
+                    <button
+                        class="btn btn-default showhidecolumns"
+                        data-action="showcolumns"
+                    >
+                        <i class="fa fa-columns"></i> Table columns
+                    </button>
+                    <button
+                        class="btn btn-default control-filters"
+                        data-action="showfilters"
+                    >
+                        <i class="fa fa-filter"></i> Filters
+                    </button>
 
-    <nav id="report-controls" class="navbar navbar-default sticky-top m-b-0" data-region="report-controls" aria-label="reportfilters" style="display: flex;">
-
-        <form class="navbar-form" action="{{{formurl}}}" method="post" accept-charset="utf-8" style="display: flex;">
-            <div class="input-group">
-                <input type="text" name="simplesearch" class="form-control" placeholder="{{#str}}search{{/str}}"
-                {{#simplesearch}}value="{{{ simplesearch }}}"{{/simplesearch}}
-                aria-label="{{#str}}search{{/str}}">
-                <span class="input-group-addon" data-action="submit-search">
-                    <i class="fa fa-search"></i>
-                </span>
-                <span class="input-group-addon hidden" data-action="clear-search">
-                    <span class="sr-only">{{#str}}clear{{/str}}</span>
-                    <i class="fa fa-close text-danger"></i>
-                </span>
+                </div>
             </div>
-        </form>
-        <div class="navbar-form" style="flex: 1 1 auto; display: flex">
-            <div class="input-group" style="flex: 1 1 auto; display: flex">
-                <a
-                    id="advancedsearchbutton"
-                    class="btn btn-link closed"
-                    data-toggle="collapse" href="#advancedsearch" aria-expanded="false" aria-controls="advancedsearch"
-                    style="margin-right: auto;"
-                >
-                    <i class="fa fa-caret-right open"></i>
-                    <i class="fa fa-caret-down closed"></i> Advanced search
-                </a>
-                <button
-                    class="btn btn-default showhidecolumns"
-                    data-action="showcolumns"
-                >
-                    <i class="fa fa-columns"></i> Table columns
-                </button>
-                <button
-                    class="btn btn-default control-filters"
-                    data-action="showfilters"
-                >
-                    <i class="fa fa-filter"></i> Filters
-                </button>
+        </nav>
 
-            </div>
-        </div>
-    </nav>
-    <div class="reportcontainer">
         <div id="advancedsearch" data-region="advancedsearch" class="collapse">
-            <div class="container-fluid">
-                <div class="bg-advancedsearch m-b-1 row">
-                    <div class="col-md-7 p-a-1">
-                        {{{ search }}}
-                    </div>
-                    <div class="col-md-5 p-a-1">
-                        {{{ savedsearch }}}
-                    </div>
+            <div class="container-advancedsearch row">
+                <div class="col-md-7 p-a-1">
+                    {{{ search }}}
+                </div>
+                <div class="col-md-5 p-a-1">
+                    {{{ savedsearch }}}
                 </div>
             </div>
         </div>
-        <div data-region="report-table">
-            <div class="m-y-1">
-                <div class="label label-info">{{{ numrecords }}}</div>
-            </div>
-            {{{ table }}}
-        </div>
+
         <div id="reportfilters" class="report-filters bg-success p-a-1 inactive" data-region="filters">
             {{{ sidebar }}}
         </div>
-    </div>
 
-    <div>
-        {{{ export }}}
-        <a
-            id="showquerybutton"
-            class="btn btn-link closed"
-            data-toggle="collapse" href="#showquery" aria-expanded="false" aria-controls="showquery"
-            style="margin-right: auto;"
-        >
-            <i class="fa fa-caret-right open"></i>
-            <i class="fa fa-caret-down closed"></i> Show Query
-        </a>
-        <div id="showquery" data-region="advancedsearch" class="collapse">
-            <div class="p-a-1 m-b-1">
-            {{{ debug }}}
+        {{#hasdisabledfilters}}
+            {{{ notification }}}
+        {{/hasdisabledfilters}}
+
+        <div class="reportcontainer">
+            <div>
+                <h2>{{{ heading }}}</h2>
+            </div>
+            <div data-region="report-table">
+                <div class="m-y-1">
+                    <div class="label label-info">{{{ numrecords }}}</div>
+                </div>
+                {{{ table }}}
+            </div>
+        </div>
+
+        <div>
+            {{{ export }}}
+            <a
+                id="showquerybutton"
+                class="btn btn-link closed"
+                data-toggle="collapse" href="#showquery" aria-expanded="false" aria-controls="showquery"
+                style="margin-right: auto;"
+            >
+                <i class="fa fa-caret-right open"></i>
+                <i class="fa fa-caret-down closed"></i> Show Query
+            </a>
+            <div id="showquery" data-region="advancedsearch" class="collapse">
+                <div class="p-a-1 m-b-1">
+                {{{ debug }}}
+                </div>
             </div>
         </div>
     </div>
-
 </div>
 
 {{#js}}

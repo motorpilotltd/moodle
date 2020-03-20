@@ -305,7 +305,21 @@
     }
 }
 .newreport {
-
+    position: fixed;
+    height: 100vh;
+    min-width: 100vh;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1030;
+    background-color: #FFF;
+    .inner {
+        height: 100%;
+        position: absolute;
+        width: 100%;
+        padding: 0 30px;
+    }
     .totara-toolbar-top .toolbar-left-table {
         display: none;
     }
@@ -341,6 +355,16 @@
         float: none;
         width: 100%;
     }
+    #advancedsearch {
+        position: absolute;
+        left: 30px;
+        right: 30px;
+        max-height: calc(100% - 61px);
+        overflow-y: auto;
+    }
+    #advancedsearchbutton {
+        margin-right: auto;
+    }
     #advancedsearchbutton,
     #showquerybutton {
         &.closed {
@@ -361,21 +385,16 @@
         }
     }
 
-    .reportcontainer {
-        position: relative;
-        overflow: hidden;
-        min-height: 400px;
-        #reportfilters {
-            height: 100%;
-            position: absolute;
-            right: -300px;
-            top: 0;
-            width: 300px;
-            transition: right 0.5s ease, left 0.5s ease;
-            overflow-y: scroll;
-            &.active {
-                right: 0;
-            }
+    #reportfilters {
+        height: calc(100% - 61px);
+        position: absolute;
+        right: -330px;
+        top: 61px;
+        width: 300px;
+        transition: right 0.5s ease, left 0.5s ease;
+        overflow-y: scroll;
+        &.active {
+            right: 0;
         }
     }
     .totara-limited-width-150 {
@@ -384,8 +403,11 @@
     .nobox > .row {
         margin: 0;
     }
-    .bg-advancedsearch {
+    .container-advancedsearch {
         background-color: #F5F5F5;
+        margin-left: 0;
+        margin-right: 0;
+        margin-bottom: 1rem;
     }
     #id_submitgroupstandard_addfilter {
         margin-left: 0;
@@ -393,6 +415,28 @@
     .sticky-top {
         position: sticky;
         top: 100px;
+    }
+    .reportcontainer {
+        overflow: scroll;
+        height: calc(100% - 61px);
+    }
+    .navbar {
+        display: flex;
+        .singlebutton div {
+            margin: 0;
+            input[type="submit"] {
+                margin: 0;
+            }
+        }
+    }
+    .flex-auto {
+        flex: 1 1 auto;
+    }
+    .navbar-form {
+        display: flex;
+        .input-group {
+            flex: 1 1 auto; display: flex;
+        }
     }
 }
 // stylelint-enable

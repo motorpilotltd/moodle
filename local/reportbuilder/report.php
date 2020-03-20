@@ -76,7 +76,6 @@ $fullname = format_string($report->fullname, true, ['context' => $context]);
 $pagetitle = get_string('report', 'local_reportbuilder').': '.$fullname;
 
 $PAGE->set_title($pagetitle);
-$PAGE->set_button($report->edit_button());
 $PAGE->navbar->add($fullname);
 $PAGE->set_heading(format_string($SITE->fullname));
 
@@ -97,6 +96,8 @@ if ($report->has_disabled_filters()) {
 // This must be done after the header and before any other use of the report.
 list($tablehtml, $debughtml) = $output->report_html($report, $debug);
 
+$template->editbutton = $report->edit_button();
+$template->toolbarsearch = $report->toolbarsearch;
 $template->table = $tablehtml;
 $template->debug =  $debughtml;
 $template->directlink = $report->display_redirect_link();

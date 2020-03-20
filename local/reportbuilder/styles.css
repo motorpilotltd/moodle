@@ -359,6 +359,25 @@
   padding-right: 5px;
 }
 
+.newreport {
+  position: fixed;
+  height: 100vh;
+  min-width: 100vh;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1030;
+  background-color: #FFF;
+}
+
+.newreport .inner {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  padding: 0 30px;
+}
+
 .newreport .totara-toolbar-top .toolbar-left-table {
   display: none;
 }
@@ -399,6 +418,18 @@
   width: 100%;
 }
 
+.newreport #advancedsearch {
+  position: absolute;
+  left: 30px;
+  right: 30px;
+  max-height: calc(100% - 61px);
+  overflow-y: auto;
+}
+
+.newreport #advancedsearchbutton {
+  margin-right: auto;
+}
+
 .newreport #advancedsearchbutton.closed i.open,
 .newreport #showquerybutton.closed i.open {
   display: inline-block;
@@ -419,23 +450,17 @@
   display: inline-block;
 }
 
-.newreport .reportcontainer {
-  position: relative;
-  overflow: hidden;
-  min-height: 400px;
-}
-
-.newreport .reportcontainer #reportfilters {
-  height: 100%;
+.newreport #reportfilters {
+  height: calc(100% - 61px);
   position: absolute;
-  right: -300px;
-  top: 0;
+  right: -330px;
+  top: 61px;
   width: 300px;
   transition: right 0.5s ease, left 0.5s ease;
   overflow-y: scroll;
 }
 
-.newreport .reportcontainer #reportfilters.active {
+.newreport #reportfilters.active {
   right: 0;
 }
 
@@ -447,8 +472,11 @@
   margin: 0;
 }
 
-.newreport .bg-advancedsearch {
+.newreport .container-advancedsearch {
   background-color: #F5F5F5;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 1rem;
 }
 
 .newreport #id_submitgroupstandard_addfilter {
@@ -458,4 +486,34 @@
 .newreport .sticky-top {
   position: sticky;
   top: 100px;
+}
+
+.newreport .reportcontainer {
+  overflow: scroll;
+  height: calc(100% - 61px);
+}
+
+.newreport .navbar {
+  display: flex;
+}
+
+.newreport .navbar .singlebutton div {
+  margin: 0;
+}
+
+.newreport .navbar .singlebutton div input[type="submit"] {
+  margin: 0;
+}
+
+.newreport .flex-auto {
+  flex: 1 1 auto;
+}
+
+.newreport .navbar-form {
+  display: flex;
+}
+
+.newreport .navbar-form .input-group {
+  flex: 1 1 auto;
+  display: flex;
 }
