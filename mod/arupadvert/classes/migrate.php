@@ -205,7 +205,8 @@ class migrate {
                 }
 
                 if (empty($course)) {
-                    $course = $DB->get_record('course', ['fullname' => $tapscourse->coursename]);
+                    $courses = $DB->get_records('course', ['fullname' => $tapscourse->coursename], 'timecreated DESC');
+                    $course = reset($courses);
                 }
 
                 if (empty($course)) {
