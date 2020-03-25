@@ -54,7 +54,7 @@ define(['core/config', 'jquery', 'local_delegatelist/URI'], function(config, $, 
                     uri.removeSearch('classid');
                     uri.addSearch('classid', printbutton.data('classid'));
                     printbutton.attr('href', uri.href());
-                    $('.overlay').addClass('hidden');
+                    $('#page-local-delegatelist-index .overlay').addClass('hidden');
                 });
             };
 
@@ -95,7 +95,7 @@ define(['core/config', 'jquery', 'local_delegatelist/URI'], function(config, $, 
                     filters: {bookingstatus: $('#formchangefilter select').val()},
                     classid: $('#formchangeclass select').val()
                 };
-                $('.overlay').removeClass('hidden');
+                $('#page-local-delegatelist-index .overlay').removeClass('hidden');
                 reloaddelegatelist(params, url);
                 return false;
             });
