@@ -155,7 +155,11 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         $cellData = [];
         if ($activitiesData) {
-            $cellData['description'] = reset($activitiesData)->overridedescription;
+            if ($cellDescription = $DB->get_field('wa_learning_path_role_act', 'overridedescription', ['roleid' => $role, 'activityid' => substr($key, 1), 'itemid' => 0, 'type' => 0])) {
+                $cellData['description'] = $cellDescription;
+            } else {
+                $cellData['description'] = reset($activitiesData)->overridedescription;
+            }
             foreach ($activitiesData as $data) {
                 $cellData['activities'][$data->type . '_' . $data->itemid] = $data;
             }
@@ -194,9 +198,11 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                 if ($this->cellData) {
                     foreach ($this->activities->{$key}->positions as $positionName => $position) {
                         foreach ($position as $activity) {
-                            $overridePosition = $this->cellData['activities'][$activity->type . '_' . $activity->id]->overrideere;
-                            if ($overridePosition && $overridePosition != $positionName) {
-                                $this->change_activity_position($activity, $overridePosition, $this->activities->{$key}->positions);
+                            if (isset($this->cellData['activities'][$activity->type . '_' . $activity->id])) {
+                                $overridePosition = $this->cellData['activities'][$activity->type . '_' . $activity->id]->overrideere;
+                                if ($overridePosition && $overridePosition != $positionName) {
+                                    $this->change_activity_position($activity, $overridePosition, $this->activities->{$key}->positions);
+                                }
                             }
                         }
                     }
@@ -256,21 +262,18 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                         'id' => (int) $this->id,
                         'regions' => empty($this->userregion->id) ? '' : $this->userregion->id,
                         'key' => $this->key));
-            
-                $pagetitle .= $this->get_string($this->position);
-                
-                list($columnId, $this->rowId) = explode('_', str_replace('#', '', $this->key));
 
-                foreach($this->matrix->cols as $col) {
-                    if($col->id === $columnId) {
-                        if (isset($col->description)) {
-                            $this->headerTooltip = $col->description;
-                        }
+            }
+            list($columnId, $this->rowId) = explode('_', str_replace('#', '', $this->key));
+
+            foreach($this->matrix->cols as $col) {
+                if($col->id === $columnId) {
+                    if (isset($col->description)) {
+                        $this->headerTooltip = $col->description;
                     }
                 }
-
-                $this->locate_previous_and_next_cells($columnId);
             }
+            $this->locate_previous_and_next_cells($columnId);
         }
     
         $this->view('matrix_activities');
@@ -286,31 +289,43 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                 }
             }
         }
-        
-        
-        if($this->checkColumn($currentColumnPosition-1)) {
-            $this->previousColumn = $currentColumnPosition-1;
-        }
     
-        if($this->checkColumn($currentColumnPosition+1)) {
-            $this->nextColumn = $currentColumnPosition + 1;
-        }
+        $this->previousColumn = $this->findPreviousColumn($currentColumnPosition);
+        $this->nextColumn = $this->findNextColumn($currentColumnPosition);
     }
     
-    private function checkColumn($position) {
-        if(!empty($this->matrix->cols[$position])) {
-            $previousColumnId = $this->matrix->cols[$position]->id;
-            $key =  '#'.$previousColumnId . '_' . $this->rowId;
+    private function findPreviousColumn($index) {
+        while($index > 0) {
+            $index--;
             
-            if(empty($this->activities->{$key})) {
-               return false;
+            if(empty($this->matrix->cols[$index])) {
+                continue;
             }
             
-            return !is_null($this->activities->{$key});
-        } else {
-            return false;
+            if(!$this->matrix->cols[$index]->show) {
+                continue;
+            }
+            
+            return $index;
         }
     }
+    
+    private function findNextColumn($index) {
+        while($index < count($this->matrix->cols)) {
+            $index++;
+            
+            if(empty($this->matrix->cols[$index])) {
+                continue;
+            }
+            
+            if(!$this->matrix->cols[$index]->show) {
+                continue;
+            }
+            
+            return $index;
+        }
+    }
+    
     /**
      * View learing path list
      */
@@ -461,7 +476,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         }
         // Selected region. default value -1 user will see content for all regions.
         $regions = optional_param('regions', null, PARAM_RAW_TRIMMED);
-        if($regions === '0') {
+        if($regions === '-1') {
             $regions = null;
         }
         // Selected cell of matrix (cell-ID).
@@ -483,7 +498,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         // Get user region.
         $this->userregion = \wa_learning_path\lib\get_user_region();
         // Get selected regions.
-        $this->selectedregions = (!is_null($regions) && $regions !== '' && $regions !== '0') ? explode(',', $regions) : null;
+        $this->selectedregions = (!is_null($regions) && $regions !== '' && $regions !== '-1') ? explode(',', $regions) : null;
         if (is_null($regions) && !empty($this->userregion)) {
             // Set user region ID
             $this->regions[] = (int) $this->userregion->id;
@@ -841,24 +856,36 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         $cellDesc = [];
         if ($role) {
-            $enabledActivities = [];
-            if ($role) {
-                foreach ($this->matrix->activities as $id => $activity) {
-                    if (in_array($role, $activity->enabledForRoles)) {
-                        $id = substr($id, 1); // Strip the '#'
-                        $enabledActivities[] = $id;
-                        $cellDesc[$id] = $activity->content;
+            $cellData = $DB->get_records('wa_learning_path_role_act', ['roleid' => $role]);
+
+            $this->activities = \wa_learning_path\model\learningpath::fill_activities(@$this->matrix->activities,
+                false, false, false, false, (bool)$this->learning_path->subscribed);
+
+            foreach ($this->activities as $id => $activity) {
+                if (in_array($role, $activity->enabledForRoles)) {
+                    $id = substr($id, 1); // Strip the '#'
+                    $cellDesc[$id]['description'] = $activity->content;
+                    $cellDesc[$id]['activities'] = [];
+                    foreach ($activity->positions as $positionName => $activities) {
+                        foreach ($activities as &$act) {
+                            $act->position = $positionName;
+                            $cellDesc[$id]['activities'][] = $act;
+                        }
                     }
                 }
             }
 
-            $cellData = $DB->get_records('wa_learning_path_role_act', ['roleid' => $role]);
-
             foreach ($cellData as $index => $cell) {
                 if ($cell->overridedescription) {
-                    $cellDesc[$cell->activityid] = $cell->overridedescription;
-                } else {
-                    $cellDesc[$cell->activityid] = $this->matrix->activities->{'#' . $cell->activityid}->content;
+                    $cellDesc[$cell->activityid]['description'] = $cell->overridedescription;
+                }
+
+                if ($cell->overrideere) {
+                    foreach ($cellDesc[$cell->activityid]['activities'] as &$act) {
+                        if ($act->id == $cell->itemid && $act->type == $cell->type) {
+                            $act->position = $cell->overrideere;
+                        }
+                    }
                 }
             }
         }
@@ -868,6 +895,10 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         echo "
         <style>
+        
+        table.print-learning-journey {
+            width: 297mm;
+        }
         
         h2.print-learning-journey {
             color: #0a1e46;

@@ -14,9 +14,12 @@
         <th>
             <?php echo $this->get_string('role_specific_definition'); ?>
         </th>
+        <th>
+            <?php echo $this->get_string('essential_courses_and_activities'); ?>
+        </th>
         </thead>
         <tbody>
-        <?php foreach ($this->cellDesc as $hash => $desc):
+        <?php foreach ($this->cellDesc as $hash => $cell):
                 list($columnId, $rowId) = explode('_', $hash);
                 $columnName = '';
                 $rowName = '';
@@ -33,6 +36,8 @@
                     }
                 }
 
+//                $this->change_activity_position($activity, $overridePosition, $this->activities->{$key}->positions);
+
                 ?>
                 <tr>
                     <td>
@@ -42,7 +47,27 @@
                         <?php echo $rowName ?>
                     </td>
                     <td>
-                        <?php echo format_text($desc); ?>
+                        <?php echo format_text($cell['description']); ?>
+                    </td>
+                    <td>
+                        <?php
+                        foreach ($cell['activities'] as $activity):
+                            if ($activity->position == 'essential'):
+                                if ($activity->type == 'module'):
+                                    $activityName = $activity->fullname;
+                                elseif ($activity->type == 'activity'):
+                                    $activityName = $activity->title;
+                                endif;
+
+                                $completionFilename = $activity->completed ? "/local/wa_learning_path/pix/a_completed.png" : "/local/wa_learning_path/pix/a_incomplete.png";
+                                $completionIcon = new \moodle_url($completionFilename);
+                                ?>
+
+                                <img src="<?php echo $completionIcon ?>" alt="" class="" />
+                                <span><?php echo $activityName; ?></span><br>
+
+                            <?php endif; ?>
+                        <?php endforeach; ?>
                     </td>
                 </tr>
             <?php endforeach; ?>

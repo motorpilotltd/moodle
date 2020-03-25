@@ -44,14 +44,11 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str', 'local_wa_learning_pa
                     $('.navigate-cells').on('click', function() {
                         loadModal($(this).attr("data-url"));
 
-
                         // Now return a false (negating the link action) to prevent Bootstrap's JS 3.1.1
                         // from throwing a 'preventDefault' error due to us overriding the anchor usage.
                         return false;
                     });
                 });
-
-
             };
 
             var tickCompletion = function(img) {
@@ -163,7 +160,7 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str', 'local_wa_learning_pa
                     $('.popover').remove();
                 });
 
-                $('.cell_icon_container').on('mouseover', function() {
+                $('.cell_icon_container').on('mouseenter', function() {
                     var id = $(this).parent().attr('id');
                     var col_and_row = id.replace('#','').split('_');
                     var col = col_and_row[0];
@@ -200,6 +197,21 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str', 'local_wa_learning_pa
 
                     $(this).parent().removeClass('cell-highlight');
                     $(this).parent().addClass('marked-cell');
+                });
+
+                $('.cell_icon_container').on('mouseleave', function() {
+                    $('.lp_cell').each(function() {
+                        $(this).removeClass('cell-highlight');
+                        $(this).removeClass('marked-cell');
+                    });
+
+                    $('.lp_row_header').each(function() {
+                        $(this).removeClass('cell-highlight');
+                    });
+
+                    $('.lp_col_header').each(function() {
+                        $(this).removeClass('cell-highlight');
+                    });
                 });
             });
         },

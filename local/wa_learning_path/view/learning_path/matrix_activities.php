@@ -22,18 +22,22 @@ global $CFG;
                 <a id='print_section' type="button" href="<?php echo new \moodle_url($this->url, array('a' => 'print_section', 'id' => $this->id, 'ajax' => 1, 'key' => str_replace('#', '', $this->key))) ?>" class="btn button-print btn-default pull-right"><?php echo $this->get_icon_html('icon_print') . $this->get_string('print_section') ?></a>
             <?php endif; ?>
 
-            <span class="matrix-activities-title"><?php echo $this->r_label ?>, <?php echo $this->c_label ?>
-                <?php if (isset($this->headerTooltip) && $this->headerTooltip): ?>
-                    <a class="btn-link help" role="button" data-container="body" data-toggle="popover" data-placement="right" data-content="<div class=&quot;no-overflow&quot;><p><?php echo $this->headerTooltip; ?></p>
-                    </div> " data-html="true" tabindex="0" data-trigger="focus">
-                        <img class="icon " alt="<?php echo $this->get_string('description'); ?>" title="<?php echo $this->headerTooltip; ?>" src="<?php echo $OUTPUT->image_url('help', 'moodle')->out(false); ?>">
-                    </a>
+            <?php if (isset($this->activities->{$this->key})): ?>
+                <span class="matrix-activities-title"><?php echo $this->r_label ?>, <?php echo $this->c_label ?>
+                    <?php if (isset($this->headerTooltip) && $this->headerTooltip): ?>
+                        <a class="btn-link help" role="button" data-container="body" data-toggle="popover" data-placement="right" data-content="<div class=&quot;no-overflow&quot;><p><?php echo $this->headerTooltip; ?></p>
+                        </div> " data-html="true" tabindex="0" data-trigger="focus">
+                            <img class="icon " alt="<?php echo $this->get_string('description'); ?>" title="<?php echo $this->headerTooltip; ?>" src="<?php echo $OUTPUT->image_url('help', 'moodle')->out(false); ?>">
+                        </a>
+                    <?php endif; ?>
+                </span>
+                <?php if ($this->cellData && $this->cellData['description']): ?>
+                    <p><?php echo format_text($this->cellData['description']) ?></p>
+                <?php else: ?>
+                    <p><?php echo format_text($this->cell->content) ?></p>
                 <?php endif; ?>
-            </span>
-            <?php if ($this->cellData && $this->cellData['description']): ?>
-                <p><?php echo format_text($this->cellData['description']) ?></p>
             <?php else: ?>
-                <p><?php echo format_text($this->cell->content) ?></p>
+                <p class="alert alert-warning"><?php echo $this->get_string('no_objectives_defined'); ?></p>
             <?php endif; ?>
 
         </div>
@@ -52,6 +56,7 @@ global $CFG;
             ?>
     </div>
     <br />
+    <?php if($this->activities && !empty($this->count[$this->position])): ?>
     <form class="filtration">
         <div class="filter_checkboxes filter_position clearfix">
             <input type="checkbox" id="position_essential" value="essential" name="position[]" checked>
@@ -87,6 +92,8 @@ global $CFG;
         <?php endif; ?>
         <div class="clearfix"></div>
     </form>
+    <?php endif; ?>
+
 
     <?php if(!empty($this->position)): $first = true; ?>
         <div class="tab_content <?php if($this->count[$this->position] > 10): ?>add_scroll<?php endif; ?>">
@@ -144,7 +151,7 @@ global $CFG;
                         <tr class="<?php if($first) echo "first"; $first = false; ?>"
                             data-position="<?php echo $activity->position; ?>" data-percent="<?php echo $activity->percent; ?>" data-methodology="<?php echo $activity->methodology; ?>" >
                             <td class="cell c0">
-                                <span class="bg-primary activity-position"><?php echo $this->get_string($activity->position); ?></span>
+                                <span class="activity-position <?php echo 'position-' . $activity->position; ?>"><?php echo $this->get_string($activity->position); ?></span>
                             </td>
                             <td class="cell c1">
                                 <h4 class="activity_title"><?php echo $title ?></h4>
@@ -205,6 +212,8 @@ global $CFG;
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+            <?php else: ?>
+                <p class="alert alert-warning"><?php echo $this->get_string('no_activities_defined'); ?></p>
             <?php endif; ?>
             </div>
         </div>

@@ -159,7 +159,7 @@ if ($hassiteconfig) {
             'local_wa_learning_path/icon_ai_objectives',
             get_string('icon_ai_objectives', 'local_wa_learning_path'),
             get_string('icon_ai_objectives_desc', 'local_wa_learning_path'),
-            'fa fa-2x fa-plus-circle'
+            'fa fa-2x fa-plus-square'
         )
     );
     
@@ -168,7 +168,7 @@ if ($hassiteconfig) {
             'local_wa_learning_path/icon_ai_modules_and_objectives',
             get_string('icon_ai_modules_and_objectives', 'local_wa_learning_path'),
             get_string('icon_ai_modules_and_objectives_desc', 'local_wa_learning_path'),
-            'fa fa-2x fa-plus-square'
+            'fa fa-2x fa-plus-circle'
         )
     );
     

@@ -1,284 +1,281 @@
 /* jshint ignore:start */
-define(['jquery', 'theme_bootstrap/bootstrap'], function($, bootstrap) {
+define(['jquery', 'theme_bootstrap/bootstrap', 'local_wa_learning_path/edit-matrix-modal', 'local_wa_learning_path/helper', 'local_wa_learning_path/edit-matrix-actions', 'core/str'], function($, bootstrap, editMatrixModal, helper, actions, str) {
 
     "use strict"; // jshint ;_;
     return {
-        init: function() {
-            var moveColumn = function(columnId, position) {
-                var index = getColumnPosition(columnId);
-                var amountOfColumns = $('.wa_matrix .col_header').length;
-                var swapUntil = parseInt(position)+1;
-                var column;
+        init: function(columns, rows, maxId, role, roleEnabledActivities, waPlus, waActivities,
+                       iconModulesAndObjectives, iconObjectives, iconNoObjectives, iconEdit, lpathid,
+                       time, status, canEditMatrix, itemId,limitText, requiredText, selfledText, saveText, cancelText, removeText, closeText,
+                       newRowText, newColumnText, returnhash, url
+        ) {
+            $(document).ready(function($) {
+                /********************************************
+                 *** Initialise actions-related variables ***
+                 *******************************************/
 
-                // moving column from left to right
-                if(index <swapUntil) {
-                    for(column=2; column < amountOfColumns+1; column++) {
-                        if(column >= index && column < swapUntil) {
-                            $('.wa_matrix > div').each(function (j) {
-                                $(this).find('> div:nth-child('+parseInt(column)+')').swapWith($(this).find('> div:nth-child('+(parseInt(column)+1)+')'));
-                            });
-                        }
-                    }
-                }
+                actions.initVariables(maxId, status, limitText, requiredText, selfledText, saveText, cancelText, removeText, closeText, waActivities);
 
-                // movign column from right to left
-                if(index > swapUntil) {
-                    for(column=parseInt(amountOfColumns)+1; column > 1; column--) {
-                        if(column <= index && column > swapUntil) {
-                            $('.wa_matrix > div').each(function (j) {
-                                $(this).find('> div:nth-child('+parseInt(column)+')').swapWith($(this).find('> div:nth-child('+(parseInt(column)-1)+')'));
-                            });
-                        }
-                    }
-                }
-
-            }
-
-            var moveRow = function(rowId, position) {
-                var index = getRowPosition(rowId);
-                var amountOfRows = $('.wa_matrix .wa_row').length;
-                var swapUntil = parseInt(position)+1;
-                var row;
-                // moving row from top to bottom
-                if(index <swapUntil) {
-                    for(row=2; row < amountOfRows+1; row++) {
-                        if(row >= index && row < swapUntil) {
-                            $('.wa_matrix').each(function (j) {
-                                $(this).find('> div:nth-child('+parseInt(row)+')').swapWith($(this).find('> div:nth-child('+(parseInt(row)+1)+')'));
-                            });
-                        }
-                    }
-                }
-
-                // movign column from bottom to top
-                if(index > swapUntil) {
-                    for(row=parseInt(amountOfRows)+1; row > 1; row--) {
-                        if(row <= index && row > swapUntil) {
-                            $('.wa_matrix').each(function (j) {
-                                $(this).find('> div:nth-child('+parseInt(row)+')').swapWith($(this).find('> div:nth-child('+(parseInt(row)-1)+')'));
-                            });
-                        }
-                    }
-                }
-
-            }
-
-
-            var calculate_width_and_height = function () {
-                var height = 0;
-                var row_amount = $('.wa_row').length;
-                $('.wa_row .row_header').each(function() {
-                    height = height + $(this).height();
+                /***********************************
+                 *** INITIALISE ROWS AND COLUMNS ***
+                 **********************************/
+                columns.forEach(function(column) {
+                    actions.addColumn(column);
                 });
 
+                rows.forEach(function(row) {
+                    actions.addRow(row, role, roleEnabledActivities, waPlus, lpathid, url);
+                });
 
-                $('.wa_row .row_header').each(function() {
-                    // $(this).height( height / amount );
-                    $(this).height( height / row_amount);
-                    $(this).width(120);
+                actions.waCheckIcons(role, iconModulesAndObjectives, iconObjectives, iconNoObjectives, iconEdit);
+
+                $('#dialog_create_activity input[name="title"]').change( actions.titleValidation() );
+                $('#dialog_create_activity input[name="title"]').blur( actions.titleValidation() );
+
+                $('#activitiyform .fstatic').html($('#wa_activity_form').html());
+
+                /******************************************
+                 *** Activate adding row/column buttons ***
+                 *****************************************/
+                if(canEditMatrix) {
+                    // Adding new row
+                    $("#editing_matrix .add_row").click(function() {
+                        var newId = actions.addRow({ show: 1, name: newRowText}, role, roleEnabledActivities, waPlus, lpathid, url);
+                        $('div[data-row="'+newId+'"] a[data-toggle="modal"]').on('click', function() {
+                            return editMatrixModal.loadModalRow(newId);
+                        });
+                    });
+
+                    // Adding new column
+                    $("#editing_matrix .add_column").click(function() {
+                        var newId = actions.addColumn({ show: 1, name: newColumnText, region: ["0"], isnew: 1}, waPlus);
+                        $('#' + newId +' a[data-toggle="modal"]').on('click', function() {
+                            return editMatrixModal.loadModalColumn(newId);
+                        });
+                    });
+                }
+
+                /*****************************
+                 *** Activate form buttons ***
+                 ****************************/
+
+                $('#id_submitbutton, #id_submitbutton2, #id_submitbutton3').click(function() {
+                    actions.waSave();
                 })
 
-                var width = $('#main').width() - 55;
-                var col_amount = $('.col_header').length -1;
+                $('#id_acancel').attr('onclick', '');
+                $('#id_acancel').click(function() {
+                    location.hash = '#cancel';
+                    $('#matrixform input[name="returnhash"]').val('');
+                    return false;
+                })
 
-                $('.col_header').each(function() {
-                    $(this).width( width / col_amount );
+                $('#id_asubmitbutton').click(function() {
+                    $('#matrixform input[name="returnhash"]').val(location.hash);
+                    actions.saveActivity();
+                    return false;
+                })
+
+                $('#activitiyform .wa_tabs a:nth-child(1)').click(function() {
+                    $('#activitiyform .wa_tabs a').removeClass('current');
+                    $(this).addClass('current');
+
+                    $('#activitiyform .activity.tab').hide();
+                    $('#activitiyform .modules.tab').show();
+                    return false;
+                })
+
+                $('#activitiyform .wa_tabs a:nth-child(2)').click(function() {
+                    $('#activitiyform .wa_tabs a').removeClass('current');
+                    $(this).addClass('current');
+
+                    $('#activitiyform .modules.tab').hide();
+                    $('#activitiyform .activity.tab').show();
+                    return false;
+                })
+
+                $.expr[":"].contains = $.expr.createPseudo(function(arg) {
+                    return function( elem ) {
+                        return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+                    };
                 });
 
-                $('.cell').each(function() {
-                    $(this).attr('style', 'width: '+ (width / col_amount) + 'px !important;height: '+ (height / row_amount) + 'px !important;');
-                });
-
-                $('.add_row').width( $('.wa_matrix').width() - 20 );
-            }
-
-            var getColumnPosition = function(columnId) {
-                var col_header = $('#'+columnId);
-                var i = $('.wa_matrix .cols .col_header').index(col_header);
-
-                return parseInt(i) + 2;
-            };
-
-            var getRowPosition = function(columnId) {
-                var col_header = $('#'+columnId);
-                var i = $('.wa_matrix .wa_row').index(col_header);
-
-                return parseInt(i) + 2;
-            };
-
-            var updateVisibility = function(objectId, visible, type) {
-                if(type == 'column') {
-                    if(visible == true) {
-                        $('#' + objectId).attr('show', 'yes');
-                    } else {
-                        $('#' + objectId).attr('show', 'no');
+                $('#activitiyform .selectpicker').keypress(function(event) {
+                    if (event.keyCode == '13') {
+                        return false;
                     }
-                }
+                });
 
-                if(type=='row') {
-                    if(visible == true) {
-                        $('#' + objectId + ' .row_header').attr('show', 'yes');
-                        if($('#' + objectId).hasClass('greyed')) {
-                            $('#' + objectId).removeClass('greyed');
+                $('#activitiyform .selectpicker').keyup(function() {
+                    var t = $(this).val();
+                    var res = $(this).parent().parent().find('.results');
+                    if (t.length) {
+                        res.find('a').hide();
+                        res.find('a:contains("'+t+'")').show();
+                        if (res.find('a:contains("'+t+'")').length) {
+                            res.find('span').hide();
+                        } else {
+                            res.find('span').show();
                         }
+
+                        res.slideDown();
                     } else {
-                        $('#' + objectId + ' .row_header').attr('show', 'no');
-                        if(!$('#' + objectId).hasClass('greyed')) {
-                            $('#' + objectId).addClass('greyed');
-                        }
+                        res.hide();
                     }
-                }
-
-                wa_set_greyed_cells();
-            };
-
-            var wa_set_greyed_cells = function() {
-                $('.wa_matrix .cell').removeClass('greyed');
-
-                $('.wa_matrix .col_header[show="no"]').each(function () {
-                    var i = $('.wa_matrix .cols .col_header').index(this);
-                    var index = parseInt(i) + 2;
-                    $('.wa_matrix > div > div:nth-child(' + index + ')').addClass('greyed');
                 });
-            };
 
-            $.fn.swapWith = function(to) {
-                return this.each(function() {
-                    var copy_to = $(to).clone(true);
-                    var copy_from = $(this).clone(true);
-                    $(to).replaceWith(copy_from);
-                    $(this).replaceWith(copy_to);
-                });
-            };
+                $('#activitiyform .modules .results a').click(function() {
+                    var module = {
+                        courseid: $(this).attr('courseid'),
+                        html: $(this).html(),
+                        methodology: $(this).attr('methodology')
+                    };
 
-            $(document).ready(function($) {
-                $('.col_header a[data-toggle="modal"]').on('click', function() {
-                    var columnId = $(this).parent().parent().parent().attr('id');
-                    var name = $('#'+columnId+' .name .tooltip').text();
-                    var description = $('#' + columnId).attr('description');
-                    var regions = $('#' + columnId + ' .select').val();
-
-                    $('#myModalColumn #delete').attr('data-id', columnId);
-                    $('#myModalColumn #save').attr('data-id', columnId);
-                    $('#myModalColumn #name').val(name);
-                    $('#myModalColumn #description').val(description);
-                    $('#myModalColumn #position').val(getColumnPosition(columnId)-1);
-                    $('#myModalColumn #regions').val(regions);
-
-                    if($('#' + columnId).attr('show') == 'yes') {
-                        $('#myModalColumn #visible').prop('checked', true);
-                    } else {
-                        $('#myModalColumn #visible').prop('checked', false);
-                    }
-
-
-                    $('#myModalColumn').modal('show');
-
-                    // Now return a false (negating the link action) to prevent Bootstrap's JS 3.1.1
-                    // from throwing a 'preventDefault' error due to us overriding the anchor usage.
+                    actions.setModule(JSON.stringify(module));
+                    $('#activitiyform .modules .results a').removeClass('selected');
+                    $(this).addClass('selected');
+                    $('#activitiyform .modules button').show();
                     return false;
                 });
 
-                $('#myModalColumn #delete').on('click', function() {
-                    var columnId = $(this).attr('data-id');
-                    var col_header = $('#'+columnId);
-                    var i = $('.wa_matrix .cols .col_header').index(col_header);
-                    var index = parseInt(i) + 2;
-                    $('.wa_matrix > div > div:nth-child(' + index + ')').remove();
-                    $('#myModalColumn').modal('hide');
-
-                    calculate_width_and_height();
+                $('#activitiyform .activity .results a').click(function() {
+                    var activity = {
+                        activityid: $(this).attr('activityid'),
+                        html: $(this).html()
+                    };
+                    actions.setToAddActivity(JSON.stringify(activity));
+                    $('#activitiyform .activity .results a').removeClass('selected');
+                    $(this).addClass('selected');
+                    $('#activitiyform .activity button').show();
+                    return false;
                 });
 
+                $('#activitiyform .modules button.to_add').click(function() {
+                    var module = actions.getModule();
+
+                    if (module) {
+                        if (actions.addModule(module.courseid, $('.modules.tab').find('select').val(), module.html, module.methodology, 1)) {
+                            $('span.add_info').show();
+                            setTimeout(function() { $('span.add_info').hide(); }, 3000);
+                        }
+                    } else {
+                        actions.chooseElementToAdd();
+                    }
+
+                    return false;
+                });
+
+                $('#activitiyform .activity button.to_add').click(function() {
+                    var activity = actions.getToAddActivity();
+
+                    if (activity) {
+                        if (actions.addActivity(activity.activityid, $('.activity.tab').find('select').val(), activity.html, $('input[name="percent"]:checked').val(), 1)) {
+                            $('span.add_info').show();
+                            setTimeout(function() { $('span.add_info').hide(); }, 3000);
+                        }
+                    } else {
+                        actions.chooseElementToAdd();
+                    }
+
+                    return false;
+                });
+
+                $('#dialog_create_activity_id .wa_blue_button').click(function(e) {
+                    e.preventDefault();
+                    actions.saveNewActivity(lpathid, time);
+                    return false;
+                });
+
+                $('input[name="activitydraftid"]').val(itemId);
+
+                window.onhashchange = function() {
+                    actions.editActivity();
+                }
+
+                if(returnhash) {
+
+                } else {
+                    location.hash = '#';
+                }
+
+                /**********************
+                 *** COLUMN EDITION ***
+                 *********************/
+
+                // Load column modal
+                $('.col_header a[data-toggle="modal"]').on('click', function() {
+                    var columnId = $(this).parent().parent().parent().attr('id');
+                    return editMatrixModal.loadModalColumn(columnId);
+                });
+
+                // Delete column
+                $('#myModalColumn #delete').on('click', function() {
+                    var columnId = $(this).attr('data-id');
+                    editMatrixModal.initialiseRemoveColumn(columnId);
+                });
+
+                // Cancel column modal
                 $('#myModalColumn #cancel').on('click', function() {
                     $('#myModalColumn').modal('hide');
                 });
 
+                // Save column modal
                 $('#myModalColumn #save').on('click', function() {
-                    var description = $('#myModalColumn #description').val();
-                    var name = $('#myModalColumn #name').val();
-                    var shortenName = name.replace(/^(.{18}[.]*).*/, "$1");
-                    if(shortenName.length < name.length) {
-                        shortenName = shortenName+'...';
-                    }
-
-                    var position = $('#myModalColumn #position').val();
                     var columnId = $(this).attr('data-id');
-                    var visible = $('#myModalColumn #visible').is(':checked');
-                    var regions = $('#myModalColumn #regions').val();
-
-                    $('#' + columnId + ' .m3 span').each(function() {
-                        if(!$(this).hasClass('hide')) {
-                            $(this).addClass('hide');
-                        }
-                    });
-
-                    regions.forEach(function(region) {
-                        $('#' + columnId + ' .m3 span[id="'+region+'"]').removeClass('hide');
-                    });
-
-                    $('#'+columnId).attr('description', description);
-                    $('#'+columnId+' .name .tooltip').text(name);
-                    $('#'+columnId+' .name .text').text(shortenName);
-                    $('#' + columnId + ' .select').val(regions);
-
-                    moveColumn(columnId, position);
-                    updateVisibility(columnId, visible, 'column');
-                    $('#myModalColumn').modal('hide');
+                    editMatrixModal.saveColumn(columnId);
                 });
 
-                $('.row_header a[data-toggle="modal"]').on('click', function() {
-                    var rowId = $(this).parent().parent().parent().attr('id');
-                    var name = $('#'+rowId+' .name .tooltip').text();
-                    $('#myModalRow #delete').attr('data-id', rowId);
-                    $('#myModalRow #save').attr('data-id', rowId);
-                    $('#myModalRow #name').val(name);
-
-                    $('#myModalRow #position').val(getRowPosition(rowId)-1);
-
-                    if($('#' + rowId + ' .row_header').attr('show') == 'yes') {
-                        $('#myModalRow #visible').prop('checked', true);
-                    } else {
-                        $('#myModalRow #visible').prop('checked', false);
-                    }
-
-
-                    $('#myModalRow').modal('show');
-
-                    // Now return a false (negating the link action) to prevent Bootstrap's JS 3.1.1
-                    // from throwing a 'preventDefault' error due to us overriding the anchor usage.
+                $('.activity .add_activity').on('click', function() {
+                    actions.createActivity();
                     return false;
                 });
 
-                $('#myModalRow #delete').on('click', function() {
-                    var rowId = $(this).attr('data-id');
-                    $('#' + rowId).remove();
+                /*******************
+                 *** ROW EDITION ***
+                 ******************/
 
-                    $('#myModalRow').modal('hide');
+                // Load row modal
+                $('.row_header a[data-toggle="modal"]').on('click', function() {
+                    var rowId = $(this).parent().parent().parent().attr('id');
+                    return editMatrixModal.loadModalRow(rowId);
                 });
 
+                // Delete row
+                $('#myModalRow #delete').on('click', function() {
+                    var rowId = $(this).attr('data-id');
+                    editMatrixModal.initialiseRemoveRow(rowId);
+                });
+
+                // Cancel row modal
                 $('#myModalRow #cancel').on('click', function() {
                     $('#myModalRow').modal('hide');
                 });
 
+                // Save row modal
                 $('#myModalRow #save').on('click', function() {
-                    var name = $('#myModalRow #name').val();
-                    var shortenName = name.replace(/^(.{20}[.]*).*/, "$1");
-                    if(shortenName.length < name.length) {
-                        shortenName = shortenName+'...';
-                    }
-
-                    var position = $('#myModalRow #position').val();
                     var rowId = $(this).attr('data-id');
-                    var visible = $('#myModalRow #visible').is(':checked');
-                    $('#'+rowId+' .name .tooltip').text(name);
-                    $('#'+rowId+' .name .text').text(shortenName);
-
-                    moveRow(rowId, position);
-                    updateVisibility(rowId, visible, 'row');
-                    $('#myModalRow').modal('hide');
+                    editMatrixModal.saveRow(rowId);
                 });
 
+                /**********************************
+                 *** ROLE SELECT INITIALISATION ***
+                 **********************************/
+                $('select[name="roles"]').change(function() {
+                    var role = '';
+                    var url = $(this).data('url');
+
+                    if($('#editing_matrix .roles').val()) {
+                        role = $('#editing_matrix .roles').val();
+                    }
+
+                    if (role > 0)
+                        url += '&role=' + role;
+
+                    window.location = url;
+                });
+
+                /********************************
+                 *** CELL SELECTION HIGHLIGHT ***
+                 ********************************/
                 $('.cell').on('mouseenter', function() {
                     var column = $(this).data('column');
                     var row = $(this).parent().attr('id');

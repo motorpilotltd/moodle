@@ -797,6 +797,10 @@ class learningpath {
 
     public static function check_regions_match($selectedregions, $availableregions) {
 
+        if (in_array(-1, $selectedregions)) {
+            return true;
+        }
+
         if (empty($selectedregions)) {
             // If empty all regions should be visible.
             return true;

@@ -31,7 +31,7 @@ $preview = optional_param('preview', 0, PARAM_INT);
             <?php else: $params = ['a' => 'print', 'id' => $this->id, 'ajax' => 1]; endif; ?>
             <a type="button" href="<?php echo new \moodle_url($this->url, $params) ?>" class="btn button-print btn-default "><?php echo $this->get_icon_html('icon_print') . $this->get_string('print_matrix') ?></a>
         <?php endif; ?>
-
+        
         <?php if (\wa_learning_path\lib\has_capability('exportlearningmatrix')): ?>
             <?php if ($this->role): $params = ['a' => 'excel', 'id' => $this->id, 'role' => $this->role->id]; ?>
             <?php else: $params = ['a' => 'excel', 'id' => $this->id]; endif; ?>
@@ -82,7 +82,7 @@ $preview = optional_param('preview', 0, PARAM_INT);
                 }
             }
         ?>
-
+       
             <?php if (!$this->roles || $noRoleVisible): ?>
               <div class="pull-left">
                 <select name="levels" class="levels-multiselect" data-url="<?php echo $this->base_url; ?>" data-placeholder="<?php echo get_string('all_levels', 'local_wa_learning_path') ?>" multiple="1" >
@@ -106,6 +106,7 @@ $preview = optional_param('preview', 0, PARAM_INT);
 
         <div class="custom-select pull-left">
             <select name="region" class="region" data-url="<?php echo $this->base_url; ?>" data-placeholder="<?php echo get_string('all_regions', $this->pluginname) ?>">
+                <option value="-1"><?php echo get_string('all_regions', 'local_wa_learning_path') ?></option>
                 <?php foreach($allregions as $id => $region): ?>
                     <option value="<?php echo $id ?>" <?php if( is_array($this->selectedregions) && in_array($id, $this->selectedregions )) echo 'selected="selected"'; ?>><?php echo $region ?></option>
                 <?php endforeach; ?>
@@ -151,7 +152,7 @@ $preview = optional_param('preview', 0, PARAM_INT);
                                 <th class="lp_row_header" data-row="<?php echo $row->id; ?>" title="<?php echo $this->matrix->rows[$k]->name ?>" >
                                     <?php if (!$this->matrix->rows[$k]->show) continue; ?>
                                     <div class="cell_container">
-                                        <?php echo $this->matrix->rows[$k]->name ?>
+                                        <span class="row_name" data-name="<?php echo $this->matrix->rows[$k]->name ?>"><?php echo $this->matrix->rows[$k]->name ?></span>
                                     </div>
                                 </th>
                                 <?php foreach ($this->matrix->cols as $k => $col): $key = "#{$col->id}_{$row->id}"; ?>
@@ -163,7 +164,7 @@ $preview = optional_param('preview', 0, PARAM_INT);
                                         if(isset($this->matrix->activities->{$key})) {
                                             $status = \wa_learning_path\model\learningpath::get_cell_info($this->activities->{$key}, $this->regions, $this->learning_path->subscribed);
                                             $object = $this->matrix->activities->{$key};
-
+                                            
                                             if(empty($object)) {
                                                 echo $no_objective_defined;
                                             }else if($status->completed) {
@@ -217,9 +218,8 @@ echo \html_writer::end_div();
 
 <script type='text/javascript'>
     $(document).ready(function(){
-
         var region = $('.region :selected').text();
-        $('.region :selected').text('<?php echo get_string('region_text_part1', 'local_wa_learning_path'); ?>' + region + '<?php echo get_string('region_text_part2', 'local_wa_learning_path'); ?>');
+        $('.region :selected').text('<?php echo get_string('region_text_part1', 'local_wa_learning_path'); ?>' + region + '<?php if (!in_array(-1, $this->regions)): echo get_string('region_text_part2', 'local_wa_learning_path'); endif; ?>');
         $('.learning_path_matrix .inner_scroll_top_content').css('width', parseInt($('.learning_path_matrix .lp_matrix').innerWidth()) + 'px');
 
         $(".learning_path_matrix .inner_scroll_top").scroll(function(){
@@ -231,17 +231,74 @@ echo \html_writer::end_div();
         });
 
         $(window).resize(function(){
-            if($(this).width() < 1000) {
-                $('.outer').parent().addClass('lp_matrix_scroll_enable');
+            var width = parseInt($('.learning_path_matrix').innerWidth());
+            var row_name = $('.cell_container .row_name');
+            var innerMatrixWidth = parseInt($('.learning_path_matrix .inner').innerWidth());
+            var cells = $('.learning_path_matrix .lp_col_header');
+            var sumCellsWidth = 0;
+
+            cells.each(function () {
+                sumCellsWidth += parseInt($(this).innerWidth());
+            });
+
+            if ($(this).width() <= 600) {
+                var rowWidth = 200;
+
+                if (sumCellsWidth <= innerMatrixWidth) {
+                    rowWidth = width - sumCellsWidth;
+                }
+
+                if (!$('.outer').parent().hasClass('lp_matrix_scroll_enable')) {
+                    $('.outer').parent().addClass('lp_matrix_scroll_enable');
+                }
+                $('.learning_path_matrix .inner').css('width', width - 200 + 'px');
+                $('.learning_path_matrix .inner_scroll_top').css('width', width - 200 + 'px');
+                $('.learning_path_matrix .lp_row_header').css('width', rowWidth + 'px');
+                $('.learning_path_matrix .lp_matrix_scroll_enable .inner ').css('margin-left', '200px');
+                $('.learning_path_matrix .inner_scroll_top').css('margin-left', '200px');
+
+
+                row_name.each(function () {
+                    $(this).text($(this).data('name').replace(/^(.{18}[.]*).*/, "$1 ..."));
+                });
+            } else if ($(this).width() > 600 && $(this).width() < 1000) {
+                var rowWidth = 250;
+                if(width > 829 && width < 970) {
+                    rowWidth = width - 580;
+                }
+
+                if (sumCellsWidth <= innerMatrixWidth) {
+                    rowWidth = width - sumCellsWidth;
+                }
+
+                if(!$('.outer').parent().hasClass('lp_matrix_scroll_enable')) {
+                    $('.outer').parent().addClass('lp_matrix_scroll_enable');
+                }
+
+                $('.learning_path_matrix .inner').css('width', width - 250+ 'px');
+                $('.learning_path_matrix .inner_scroll_top').css('width', (width - 250) + 'px');
+                $('.learning_path_matrix .lp_row_header').css('width', rowWidth + 'px');
+                $('.learning_path_matrix .lp_matrix_scroll_enable .inner ').css('margin-left', '250px');
+                $('.learning_path_matrix .inner_scroll_top').css('margin-left', '250px');
+
+                row_name.each(function () {
+                    $(this).text($(this).data('name').replace(/^(.{24}[.]*).*/, "$1 ..."));
+                });
             } else {
+                $('.learning_path_matrix .inner').css('width', '100%');
+                $('.learning_path_matrix .inner').css('margin-left', '');
+                $('.learning_path_matrix .inner_scroll_top').css('width', (width - 200) + 'px');
+                $('.learning_path_matrix .inner_scroll_top').css('margin-left', '200px');
+                $('.learning_path_matrix .lp_row_header').css('width', '');
+
                 if($('.outer').parent().hasClass('lp_matrix_scroll_enable')) {
                     $('.outer').parent().removeClass('lp_matrix_scroll_enable');
                 }
+
+                row_name.each(function () {
+                    $(this).text($(this).data('name').replace(/^(.{60}[.]*).*/, "$1 ..."));
+                });
             }
-
-            var width = parseInt($('.learning_path_matrix').innerWidth()) - 200;
-            $('.learning_path_matrix .lp_matrix_scroll_enable .inner, .learning_path_matrix .inner_scroll_top').css('width', width + 'px');
-
         }).resize();
 
         $( '.lp_matrix .lp_col_header' ).tooltip({
@@ -276,7 +333,7 @@ echo \html_writer::end_div();
             var url = $(this).data('url') + '&levels=' + levels + '&regions=' + regions + '&role=' + roles;
             window.location = url;
         });
-
+        
         // $('select[name="levels"]').change(function() {
         //     var levels = '';
         //     var regions = '';
@@ -297,12 +354,12 @@ echo \html_writer::end_div();
         //     var url = $(this).data('url') + '&levels=' + levels + '&regions=' + regions + '&role=' + roles;
         //     window.location = url;
         // });
-
+        
         $('select[name="region"]').change(function() {
             var levels = '';
             var regions = '';
             var roles = '';
-
+            
             if($('select[name="levels"]').val()) {
                 levels = $('select[name="levels"]').val();
             }
@@ -310,7 +367,7 @@ echo \html_writer::end_div();
             if($('select[name="roles"]').val()) {
                 roles = $('select[name="roles"]').val();
             }
-
+            
             if($('.learning_path_matrix .region').val()) {
                 regions = $('.learning_path_matrix .region').val();
             }

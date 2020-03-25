@@ -395,6 +395,7 @@ $string['learning_journey'] = 'Learning Journey';
 $string['skill_area'] = 'Skill Area';
 $string['expected_level'] = 'Expected level';
 $string['role_specific_definition'] = 'Role-specific definition';
+$string['essential_courses_and_activities'] = 'Essential Courses and Activities';
 $string['select_cells'] ='Select Cells';
 $string['select_role'] = 'Select Role';
 $string['add_role'] = 'Create a new role';
@@ -402,3 +403,6 @@ $string['edit_role'] = 'Edit role';
     
 $string['region_shortcut'] = 'Shortcut for region: {$a}';
 $string['region_class'] = 'Label class for region: {$a}';
+
+$string['no_objectives_defined'] = 'No objectives defined';
+$string['no_activities_defined'] = 'No activities defined';

@@ -71,8 +71,9 @@ function xmldb_local_wa_learning_path_upgrade($oldversion) {
         // Assign savepoint reached.
         upgrade_plugin_savepoint(true, 2016061404, 'local', 'wa_learning_path');
     }
-
+    
     if ($oldversion < 2016061507) {
+//        die('aa');
         $dbman = $DB->get_manager();
 
         $table = new xmldb_table('wa_learning_path_act_region');
@@ -95,7 +96,7 @@ function xmldb_local_wa_learning_path_upgrade($oldversion) {
         }
         //=============
         // And delete the old columns.
-
+        
         $table2 = new xmldb_table('wa_learning_path_activity');
 		if ($dbman->table_exists($table2)) {
 			$index = new xmldb_index('wa_lpa_index_region', XMLDB_INDEX_NOTUNIQUE, array('region'));
