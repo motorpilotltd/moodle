@@ -104,7 +104,7 @@ body#page-local-delegatelist-index form.dataformatselector div.mdl-align {
     position: relative;
 }
 
-.overlay {
+body#page-local-delegatelist-index .overlay {
     background-color: gray;
     color: #666;
     position: absolute;
@@ -117,7 +117,7 @@ body#page-local-delegatelist-index form.dataformatselector div.mdl-align {
     opacity: .80;
 }
 
-.spinner {
+body#page-local-delegatelist-index .spinner {
     margin: 10% auto;
     height: 64px;
     width: 64px;
