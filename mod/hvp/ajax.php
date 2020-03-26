@@ -226,10 +226,11 @@ switch($action) {
         $major = optional_param('majorVersion', 0, PARAM_INT);
         $minor = optional_param('minorVersion', 0, PARAM_INT);
         $editor = \mod_hvp\framework::instance('editor');
+        $language = optional_param('default-language', null, PARAM_RAW);
 
         if (!empty($name)) {
             $editor->ajax->action(H5PEditorEndpoints::SINGLE_LIBRARY, $name,
-                $major, $minor, \mod_hvp\framework::get_language());
+                $major, $minor, \mod_hvp\framework::get_language(), '', '', $language);
 
             new \mod_hvp\event(
                     'library', null,
@@ -311,7 +312,58 @@ switch($action) {
         \mod_hvp\xapi_result::handle_ajax();
         break;
 
+    case 'translations':
+        if (!\mod_hvp\framework::has_editor_access('nopermissiontogettranslations')) {
+            break;
+        }
+        $language = required_param('language', PARAM_RAW);
+        $editor = \mod_hvp\framework::instance('editor');
+        $editor->ajax->action(H5PEditorEndpoints::TRANSLATIONS, $language);
+        break;
 
+    /*
+     * Handle filtering of parameters through AJAX.
+     */
+    case 'filter':
+        $token = required_param('token', PARAM_RAW);
+        $libraryparameters = required_param('libraryParameters', PARAM_RAW);
+
+        if (!\mod_hvp\framework::has_editor_access('nopermissiontouploadfiles')) {
+            break;
+        }
+
+        $editor = \mod_hvp\framework::instance('editor');
+        $editor->ajax->action(H5PEditorEndpoints::FILTER, $token, $libraryparameters);
+        break;
+/* BEGIN CORE MOD */
+    /*
+        * Trigger completion when h5p content viewed
+        *
+        * Parameters:
+        *  int cm id
+        */
+    case 'contentviewed';
+        // log h5p activity as viewed
+        $id = required_param('id', PARAM_INT);
+        $cm = get_coursemodule_from_id('hvp', $id);
+
+        $PAGE->set_context($cm->context);
+
+        if (!$cm) {
+            print_error('invalidcoursemodule');
+        }
+        $course = $DB->get_record('course', array('id' => $cm->course));
+        if (!$course) {
+            print_error('coursemisconf');
+        }
+
+        $view = new \mod_hvp\view_assets($cm, $course, null, true, true);
+
+        $view->logviewed();
+
+        echo json_encode("success");
+        break;
+/* END CORE MOD */
     /*
      * Throw error if AJAX isnt handeled
      */

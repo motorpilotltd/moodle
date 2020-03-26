@@ -37,7 +37,7 @@ function hvp_get_core_settings($context) {
     global $USER, $CFG;
 
     $systemcontext = \context_system::instance();
-    $basepath = $CFG->httpswwwroot . '/';
+    $basepath = \mod_hvp\view_assets::getsiteroot() . '/';
 
     // Check permissions and generate ajax paths.
     $ajaxpaths = array();
@@ -61,7 +61,7 @@ function hvp_get_core_settings($context) {
     $settings = array(
         'baseUrl' => $basepath,
         'url' => "{$basepath}pluginfile.php/{$context->instanceid}/mod_hvp",
-        'libraryUrl' => "{$basepath}pluginfile.php/{$systemcontext->id}/mod_hvp/libraries",
+        'urlLibraries' => "{$basepath}pluginfile.php/{$systemcontext->id}/mod_hvp/libraries", // NOTE: Separate context from content URL !
         'postUserStatistics' => true,
         'ajax' => $ajaxpaths,
         'saveFreq' => $savefreq,
@@ -73,6 +73,12 @@ function hvp_get_core_settings($context) {
         ),
         'hubIsEnabled' => get_config('mod_hvp', 'hub_is_enabled') ? true : false,
         'reportingIsEnabled' => true,
+        'crossorigin' => isset($CFG->mod_hvp_crossorigin) ? $CFG->mod_hvp_crossorigin : null,
+        'crossoriginRegex' => isset($CFG->mod_hvp_crossoriginRegex) ? $CFG->mod_hvp_crossoriginRegex : null,
+        'crossoriginCacheBuster' => isset($CFG->mod_hvp_crossoriginCacheBuster) ? $CFG->mod_hvp_crossoriginCacheBuster : null,
+        'libraryConfig' => $core->h5pF->getLibraryConfig(),
+        'pluginCacheBuster' => hvp_get_cache_buster(),
+        'libraryUrl' => $basepath . 'mod/hvp/library/js'
     );
 
     return $settings;
@@ -87,7 +93,7 @@ function hvp_get_core_settings($context) {
 /* BEGIN CORE MOD */
 function hvp_get_core_assets($context, $nojs = false, $nocss = false) {
 /* END CORE MOD */
-    global $CFG, $PAGE;
+    global $PAGE;
 
     // Get core settings.
     $settings = \hvp_get_core_settings($context);
@@ -102,7 +108,7 @@ function hvp_get_core_assets($context, $nojs = false, $nocss = false) {
     $cachebuster = \hvp_get_cache_buster();
 
     // Use relative URL to support both http and https.
-    $liburl = $CFG->httpswwwroot . '/mod/hvp/library/';
+    $liburl = \mod_hvp\view_assets::getsiteroot() . '/mod/hvp/library/';
     $relpath = '/' . preg_replace('/^[^:]+:\/\/[^\/]+\//', '', $liburl);
 /* BEGIN CORE MOD */
     if (!$nocss) {
@@ -127,8 +133,12 @@ function hvp_get_core_assets($context, $nojs = false, $nocss = false) {
  * Add required assets for displaying the editor.
  *
  * @param int $id Content being edited. null for creating new content
+ * @param string $mformid Id of Moodle form
+ *
+ * @throws coding_exception
+ * @throws moodle_exception
  */
-function hvp_add_editor_assets($id = null) {
+function hvp_add_editor_assets($id = null, $mformid = null) {
     global $PAGE, $CFG, $COURSE;
 
     // First we need to determine the context for permission handling.
@@ -150,7 +160,7 @@ function hvp_add_editor_assets($id = null) {
     );
 
     // Use relative URL to support both http and https.
-    $url = $CFG->httpswwwroot . '/mod/hvp/';
+    $url = \mod_hvp\view_assets::getsiteroot() . '/mod/hvp/';
     $url = '/' . preg_replace('/^[^:]+:\/\/[^\/]+\//', '', $url);
 
     // Make sure files are reloaded for each plugin update.
@@ -183,7 +193,8 @@ function hvp_add_editor_assets($id = null) {
     $PAGE->requires->js(new moodle_url('/mod/hvp/' . $languagescript . $cachebuster), true);
 
     // Add JavaScript settings.
-    $filespathbase = "{$CFG->httpswwwroot}/pluginfile.php/{$context->id}/mod_hvp/";
+    $root = \mod_hvp\view_assets::getsiteroot();
+    $filespathbase = "{$root}/pluginfile.php/{$context->id}/mod_hvp/";
     $contentvalidator = \mod_hvp\framework::instance('contentvalidator');
     $editorajaxtoken = \H5PCore::createToken('editorajax');
     $settings['editor'] = array(
@@ -196,9 +207,12 @@ function hvp_add_editor_assets($id = null) {
       'ajaxPath' => "{$url}ajax.php?contextId={$context->id}&token={$editorajaxtoken}&action=",
       'libraryUrl' => $url . 'editor/',
       'copyrightSemantics' => $contentvalidator->getCopyrightSemantics(),
+      'metadataSemantics' => $contentvalidator->getMetadataSemantics(),
       'assets' => $assets,
       // @codingStandardsIgnoreLine
-      'apiVersion' => H5PCore::$coreApi
+      'apiVersion' => H5PCore::$coreApi,
+      'language' => $language,
+      'formId' => $mformid,
     );
 
     if ($id !== null) {
@@ -209,7 +223,7 @@ function hvp_add_editor_assets($id = null) {
         $context = \context_module::instance($cm->id);
 
         // Override content URL.
-        $contenturl = "{$CFG->httpswwwroot}/pluginfile.php/{$context->id}/mod_hvp/content/{$id}";
+        $contenturl = "{$root}/pluginfile.php/{$context->id}/mod_hvp/content/{$id}";
         $settings['contents']['cid-' . $id]['contentUrl'] = $contenturl;
     }
 
@@ -307,6 +321,7 @@ function hvp_content_upgrade_progress($libraryid) {
     $out = new stdClass();
     $out->params = array();
     $out->token = \H5PCore::createToken('contentupgrade');
+    $out->metadata = array();
 
     // Prepare our interface.
     $interface = \mod_hvp\framework::instance('interface');
@@ -317,36 +332,59 @@ function hvp_content_upgrade_progress($libraryid) {
         // Update params.
         $params = json_decode($params);
         foreach ($params as $id => $param) {
-            $DB->update_record('hvp', (object) array(
+            $upgraded = json_decode($param);
+            $metadata = isset($upgraded->metadata) ? $upgraded->metadata : array();
+
+            $fields = array_merge(\H5PMetadata::toDBArray($metadata, false, false), array(
                 'id' => $id,
                 'main_library_id' => $tolibrary->id,
-                'json_content' => $param,
+                'json_content' => json_encode($upgraded->params),
                 'filtered' => ''
             ));
 
+            $DB->update_record('hvp', $fields);
+
             // Log content upgrade successful.
             new \mod_hvp\event(
-                    'content', 'upgrade',
-                    $id, $DB->get_field_sql("SELECT name FROM {hvp} WHERE id = ?", array($id)),
-                    $tolibrary->machine_name, $tolibrary->major_version . '.' . $tolibrary->minor_version
+                'content', 'upgrade',
+                $id, $DB->get_field_sql("SELECT name FROM {hvp} WHERE id = ?", array($id)),
+                $tolibrary->machine_name, $tolibrary->major_version . '.' . $tolibrary->minor_version
             );
         }
     }
 
+    // Determine if any content has been skipped during the process.
+    $skipped = filter_input(INPUT_POST, 'skipped');
+    if ($skipped !== null) {
+        $out->skipped = json_decode($skipped);
+        // Clean up input, only numbers.
+        foreach ($out->skipped as $i => $id) {
+            $out->skipped[$i] = intval($id);
+        }
+        $skipped = implode(',', $out->skipped);
+    } else {
+        $out->skipped = array();
+    }
+
     // Get number of contents for this library.
-    $out->left = $interface->getNumContent($libraryid);
+    $out->left = $interface->getNumContent($libraryid, $skipped);
 
     if ($out->left) {
+        $skipquery = empty($skipped) ? '' : " AND id NOT IN ($skipped)";
+
         // Find the 40 first contents using this library version and add to params.
         $results = $DB->get_records_sql(
-            "SELECT id, json_content as params
+            "SELECT id, json_content as params, name as title, authors, source, year_from, year_to,
+                    license, license_version, changes, license_extras, author_comments, default_language
                FROM {hvp}
               WHERE main_library_id = ?
+                    {$skipquery}
            ORDER BY name ASC", array($libraryid), 0 , 40
         );
 
         foreach ($results as $content) {
-            $out->params[$content->id] = $content->params;
+            $out->params[$content->id] = '{"params":' . $content->params .
+                                         ',"metadata":' . \H5PMetadata::toJSON($content) . '}';
         }
     }
 
@@ -364,8 +402,6 @@ function hvp_content_upgrade_progress($libraryid) {
  *                to upgrade script
  */
 function hvp_get_library_upgrade_info($name, $major, $minor) {
-    global $CFG;
-
     $library = (object) array(
         'name' => $name,
         'version' => (object) array(
@@ -377,15 +413,11 @@ function hvp_get_library_upgrade_info($name, $major, $minor) {
     $core = \mod_hvp\framework::instance();
 
     $library->semantics = $core->loadLibrarySemantics($library->name, $library->version->major, $library->version->minor);
-    if ($library->semantics === null) {
-        http_response_code(404);
-        return;
-    }
 
     $context = \context_system::instance();
     $libraryfoldername = "{$library->name}-{$library->version->major}.{$library->version->minor}";
     if (\mod_hvp\file_storage::fileExists($context->id, 'libraries', '/' . $libraryfoldername . '/', 'upgrades.js')) {
-        $basepath = $CFG->httpswwwroot . '/';
+        $basepath = \mod_hvp\view_assets::getsiteroot() . '/';
         $library->upgradesScript = "{$basepath}pluginfile.php/{$context->id}/mod_hvp/libraries/{$libraryfoldername}/upgrades.js";
     }
 

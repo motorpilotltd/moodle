@@ -31,15 +31,15 @@ if (!$cm = get_coursemodule_from_id('arupevidence', $id)) {
     print_error('invalidcoursemodule');
 }
 
+$cm = cm_info::create($cm);
 
 if(!$course = $DB->get_record('course', array('id' => $cm->course))){
     print_error('coursemisconf');
 }
 
-
 $context = context_module::instance($cm->id);
 $ahb = $DB->get_record('arupevidence',  array('id' => $cm->instance));
-$courseurl = new moodle_url('/course/view.php', array('id' => $course->id));
+$courseurl = course_get_format($course)->get_view_url($cm->sectionnum);
 $outputcache = '';
 
 require_login($course, false, $cm);

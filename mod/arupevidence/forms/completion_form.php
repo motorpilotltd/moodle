@@ -26,10 +26,7 @@ class mod_arupevidence_completion_form extends moodleform
     /*** @var array $_arupevidenceuser */
     protected $_arupevidenceuser;
 
-
-
-    public function definition()
-    {
+    public function definition() {
         global $COURSE, $PAGE, $USER;
         $mform = $this->_form;
 
@@ -72,6 +69,7 @@ class mod_arupevidence_completion_form extends moodleform
         $mform->addElement('date_selector', 'completiondate',  get_string('completiondate', 'mod_arupevidence'), array('timezone' => 0));
         $defaultdate = isset($this->_arupevidenceuser->completiondate) ? $this->_arupevidenceuser->completiondate : time();
         $mform->setDefault('completiondate', $defaultdate);
+
         if (isset($this->_arupevidence->requireexpirydate) && $this->_arupevidence->requireexpirydate) {
             if ($this->_arupevidence->mustendmonth) {
                 $choices = array(
@@ -88,7 +86,7 @@ class mod_arupevidence_completion_form extends moodleform
                     '11' => "November",
                     '12' => "December");
 
-                $choicesyears = array_combine(range(1950,2030), range(1950,2030));
+                $choicesyears = array_combine(range(2030, 1950, -1), range(2030, 1950, -1));
 
                 // Months selection
                 $defaultvalue = (isset($this->_arupevidenceuser->expirydate) && $this->_arupevidenceuser->expirydate) ? date('m', $this->_arupevidenceuser->expirydate) : '';
@@ -136,31 +134,45 @@ class mod_arupevidence_completion_form extends moodleform
             $mform->setDefault('enrolmentid', $defaultenrolment);
         }
 
-        $fileoptions = array(
-            'subdirs' => 0,
-            'maxfiles' => 1,
-            'maxbytes' => $COURSE->maxbytes
-        );
-        $mform->addElement('filemanager', 'completioncertificate',
-            get_string('uploadcertificate', 'mod_arupevidence'),
-            null, $fileoptions);
+        if ($this->_arupevidence->requireupload) {
+            $fileoptions = array(
+                'subdirs' => 0,
+                'maxfiles' => 1,
+                'maxbytes' => $COURSE->maxbytes
+            );
+            $mform->addElement('filemanager', 'completioncertificate',
+                get_string('uploadcertificate', 'mod_arupevidence'),
+                null, $fileoptions);
 
-        $aeuserid = isset($this->_arupevidenceuser->userid) ? $this->_arupevidenceuser->userid : null ;
+            $aeuserid = isset($this->_arupevidenceuser->userid) ? $this->_arupevidenceuser->userid : null ;
 
-        $entryid = $aeuserid;
-        $farea = null;
-        if (isset($this->_arupevidenceuser->itemid) && isset($this->_arupevidenceuser->completion)
-            && $this->_arupevidenceuser->completion) {
+            $entryid = $aeuserid;
+            $farea = null;
+            if (isset($this->_arupevidenceuser->itemid) && isset($this->_arupevidenceuser->completion)
+                && $this->_arupevidenceuser->completion) {
 
-            $entryid = $this->_arupevidenceuser->itemid;
-            $farea =  $this->_arupevidence->cpdlms;
+                $entryid = $this->_arupevidenceuser->itemid;
+                $farea =  $this->_arupevidence->cpdlms;
 
+            }
+            $draftitemid = file_get_submitted_draft_itemid("completioncertificate");
+            $filearea = arupevidence_fileareaname($farea);
+            file_prepare_draft_area($draftitemid, $this->_customdata['contextid'], 'mod_arupevidence', $filearea, $entryid,
+                $fileoptions);
+            $mform->setDefault("completioncertificate", $draftitemid);
         }
-        $draftitemid = file_get_submitted_draft_itemid("completioncertificate");
-        $filearea = arupevidence_fileareaname($farea);
-        file_prepare_draft_area($draftitemid, $this->_customdata['contextid'], 'mod_arupevidence', $filearea, $entryid,
-            $fileoptions);
-        $mform->setDefault("completioncertificate", $draftitemid);
+
+        // Declarations
+        if (!empty($this->_customdata['declarations'])) {
+            $agreeddeclarations = !empty($this->_arupevidenceuser->declarations)? json_decode($this->_arupevidenceuser->declarations): [];
+
+            foreach ($this->_customdata['declarations'] as $declaration) {
+                $mform->addElement('checkbox', 'declaration-'.$declaration->id, '', $declaration->declaration);
+                if (in_array($declaration->id, $agreeddeclarations)) {
+                    $mform->setDefault('declaration-'.$declaration->id, 1);
+                }
+            }
+        }
 
         if(!empty($this->_arupevidenceuser)) {
             $mform->addElement('hidden', 'timemodified', $this->_arupevidenceuser->timemodified);
@@ -173,21 +185,21 @@ class mod_arupevidence_completion_form extends moodleform
             $mform->setType('completion', PARAM_INT);
         }
 
-
-        // user was editing existing an arupevidenceuser
+        // User was editing an existing entry.
         if(isset($this->_customdata['action']) && !empty($this->_customdata['action'])) {
             $mform->addElement('hidden', 'action', $this->_customdata['action']);
             $mform->setType('action', PARAM_ALPHA);
             $mform->addElement('hidden', 'ahbuserid', $this->_arupevidenceuser->id);
             $mform->setType('ahbuserid', PARAM_INT);
+        }
 
+        if (!empty($this->_arupevidence->exemption)) {
+            $this->add_exemption_fields($mform);
         }
 
         if (isset($this->_arupevidence->cpdlms) && $this->_arupevidence->cpdlms == ARUPEVIDENCE_CPD) {
             $this->add_taps_fields($mform);
         }
-
-
 
         if (!empty($this->_arupevidence->expectedvalidityperiod) && !empty($this->_arupevidence->expectedvalidityperiodunit)) {
             // Validity period confirmation modal.
@@ -211,7 +223,25 @@ class mod_arupevidence_completion_form extends moodleform
         $this->add_action_buttons(true, get_string('upload'));
     }
 
-    public function add_taps_fields(MoodleQuickForm $mform) {
+    private function add_exemption_fields(MoodleQuickForm $mform) {
+        $mform->addElement('header', 'exemptionsection', get_string('exemptionheader', 'mod_arupevidence'));
+
+        $mform->addElement('advcheckbox', 'exempt', $this->_arupevidence->exemptionquestion);
+        $mform->setDefault('exempt', !empty($this->_arupevidenceuser->exempt) ? $this->_arupevidenceuser->exempt : 0);
+
+        if ($this->_arupevidence->exemptioninfo) {
+            $mform->addElement('textarea', 'exemptreason', $this->_arupevidence->exemptioninfoquestion);
+            $mform->disabledIf('exemptreason', 'exempt', 'notchecked');
+            $mform->setDefault('exemptreason', !empty($this->_arupevidenceuser->exemptreason) ? $this->_arupevidenceuser->exemptreason : '');
+        }
+
+        // Disable completion date if required.
+        if (!empty($this->_arupevidence->exemptioncompletion)) {
+            $mform->disabledIf('completiondate', 'exempt', 'checked');
+        }
+    }
+
+    private function add_taps_fields(MoodleQuickForm $mform) {
         $taps = new \local_taps\taps();
 
         $defaults = !empty($this->_arupevidenceuser)? $this->_arupevidenceuser : $this->_arupevidence ;
@@ -240,7 +270,6 @@ class mod_arupevidence_completion_form extends moodleform
         $mform->addElement('date_selector', 'classstartdate', get_string('cpd:classstartdate', 'block_arup_mylearning'), array('optional' => true, 'timezone' => 0));
         $mform->setAdvanced('classstartdate');
         $mform->setDefault('classstartdate', !empty($defaults->classstartdate) ? $defaults->classstartdate : '');
-
 
         $mform->addElement('text', 'classcost', get_string('cpd:classcost', 'block_arup_mylearning'));
         $mform->setType('classcost', PARAM_TEXT);
@@ -300,6 +329,25 @@ class mod_arupevidence_completion_form extends moodleform
             if (!$diffmonth) {
                 $element = !empty($data['expirydate']) ? 'expirydate' : 'expirymonth';
                 $errors[$element] = get_string('error:expirydate', 'mod_arupevidence');
+            }
+        }
+
+        if (!empty($this->_customdata['declarations'])) {
+            foreach ($this->_customdata['declarations'] as $declaration) {
+                if (!isset($data['declaration-'.$declaration->id])) {
+                    $errors['declaration-'.$declaration->id] = get_string('error:declaration:required', 'mod_arupevidence');
+                }
+            }
+        }
+
+        if ($this->_arupevidence->exemptioninfo && !empty($data['exempt']) && empty($data['exemptreason'])) {
+            $errors['exemptreason'] = get_string('required');
+        }
+
+        if ($this->_arupevidence->requireupload && empty($data['exempt'])) {
+            $draftfiles = file_get_drafarea_files($data['completioncertificate']);
+            if (empty($draftfiles->list)) {
+                $errors['completioncertificate'] = get_string('required');
             }
         }
 

@@ -22,18 +22,26 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.0
  */
-define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstrap/bootstrap'],
-    function($, cfg, str, notification) {
+define(['jquery', 'theme_bootstrap/bootstrap'],
+    function($) {
 
     return /** @alias module:mod_arupevidence/view */ {
-        init: function (validityperiod, validityperiodunit) {
-            if (validityperiod != '0' && validityperiod.length != 0) {
-                $('input[type="submit"][name="submitbutton"]').click(function(e){
+        init: function(validity, validityperiod, validityperiodunit, skipvalidityexemption) {
+            var checkvalidity = validity && validityperiod != '0' && validityperiod.length != 0;
+            var checkvalidityexemption = checkvalidity && skipvalidityexemption == '0';
+            if (checkvalidity || checkvalidityexemption) {
+                $('input[type="submit"][name="submitbutton"]').click(function(e) {
+                    var self = $(this);
+
+                    if (!checkvalidityexemption && $('#id_exempt').is(':checked')) {
+                        self.closest('form').submit();
+                        return;
+                    }
+
                     // Preparing validity, value is counted as months
                     var vpnum = parseInt(validityperiod);
                     var vpunit = (validityperiodunit == 'y') ? 12 : 1;
                     var validity = vpnum * vpunit;
-                    var self = $(this);
 
                     var uservalidity = 0;
 
@@ -61,8 +69,8 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         uservalidity = uservalidityperiod * uservalidityperiodunit;
 
                         var validityexpirydate = validitydateinfo(completion_date, uservalidity, 'm', false);
-                        validityexpirydate = validityexpirydate.getTime()/1000|0;
-                        $('input[name="validityexpirydate"]').val(validityexpirydate)
+                        validityexpirydate = validityexpirydate.getTime() / 1000 | 0; // eslint-disable-line
+                        $('input[name="validityexpirydate"]').val(validityexpirydate);
 
                         if (uservalidity < validity) {
                             isvalid = false;
@@ -98,7 +106,7 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                         e.preventDefault(); // stop form submission
                         $('#validity-confirm-modal').modal('show');
 
-                        $('#validity-confirm-modal').on('click', '#validity-confirm-btn', function(){
+                        $('#validity-confirm-modal').on('click', '#validity-confirm-btn', function() {
                             $(this).modal('hide');
                             self.closest('form').submit();
                         });
@@ -108,7 +116,6 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                 });
             }
         },
-
     };
 
     /**
@@ -183,14 +190,5 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
 
     function isLeapYear(year) {
         return (((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0));
-    }
-
-    function  computedatemonthdiff (date1, date2) {
-        var diff =(date1.getTime() - date2.getTime()) / 1000;
-        diff /= (60 * 60 * 24 * 7 * 4);
-        if (diff <= 0) {
-            return 0;
-        }
-        return Math.abs(Math.round(diff));
     }
 });

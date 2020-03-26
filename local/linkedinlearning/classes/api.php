@@ -56,7 +56,7 @@ class api {
             return false;
         }
 
-        return $results->elements;
+        return $results;
     }
 
     public function getcourseprogress($start, $since) {
@@ -65,7 +65,7 @@ class api {
         $url = "https://api.linkedin.com/v2/learningActivityReports?";
         $params = [
                 'q'                             => 'criteria',
-                'count'                         => '10',
+                'count'                         => '500',
                 'timeOffset.unit'               => 'WEEK',
                 'timeOffset.duration'           => '2',
                 'aggregationCriteria.primary'   => 'INDIVIDUAL',
@@ -87,7 +87,7 @@ class api {
             return false;
         }
 
-        return $results->elements;
+        return $results;
     }
 
     private $config;
@@ -256,7 +256,11 @@ class api {
                     $record->seconds_viewed = $datapoint->engagementValue;
                     $record->first_viewed = $datapoint->firstEngagedAt / 1000;
                     $record->last_viewed = $datapoint->lastEngagedAt / 1000;
-                } else if ($datapoint->engagementType == 'PROGRESS_PERCENTAGE') {
+                } else if (
+                        $datapoint->engagementType == 'PROGRESS_PERCENTAGE'
+                        &&
+                        (empty($record->progress_percentage) || $record->progress_percentage < $datapoint->engagementValue)
+                ) {
                     $record->progress_percentage = $datapoint->engagementValue;
                 }
             }

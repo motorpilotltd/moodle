@@ -281,6 +281,9 @@ function hvp_cm_info_view(cm_info $cm) {
         return;
     }
 
+    // Do we need an overlay for view completion tracking?
+    $hasoverlay = hvp_cm_info_view_hasoverlay($hvp, $cm);
+
     // Log events, pulled from $view->logviewed() (Avoids completion view as header has been printed).
     $view->logh5pviewedevent();
     $view->triggermoduleviewedevent();
@@ -309,12 +312,44 @@ function hvp_cm_info_view(cm_info $cm) {
     \mod_hvp\framework::printMessages('error', \mod_hvp\framework::messages('error'));
 
     // Capture view output.
-    $view->outputview();
+    $view->outputview($hasoverlay);
 
     $output .= ob_get_contents();
     ob_end_clean();
 
     $cm->set_content($output);
+}
+/**
+ * Does the injected content require an overlay?
+ *
+ * @param stdClass $hvp
+ * @param cm_info $cm
+ * @return bool
+ */
+function hvp_cm_info_view_hasoverlay($hvp, $cm) {
+    global $COURSE;
+
+    // Not required if not displaying content on course page.
+    if (!$hvp->displaycontent) {
+        return false;
+
+    }
+
+    $completion = new \completion_info($COURSE);
+
+    // Not required if view condition is not turned on.
+    if ($cm->completionview == COMPLETION_VIEW_NOT_REQUIRED || !$completion->is_enabled($cm)) {
+        return false;
+    }
+
+    $usercompletion = $completion->get_data($cm, false, 0);
+
+    // Not required if already viewed.
+    if ($usercompletion->viewed == COMPLETION_VIEWED) {
+        return false;
+    }
+
+    return true;
 }
 /* END CORE MOD */
 /**
@@ -325,9 +360,6 @@ function hvp_cm_info_view(cm_info $cm) {
  * @return int Content ID
  */
 function hvp_save_content($hvp) {
-    // Determine disabled content features.
-    $hvp->disable = hvp_get_disabled_content_features($hvp);
-
     // Determine if we're uploading or creating.
     if ($hvp->h5paction === 'upload') {
         // Save uploaded package.
@@ -348,7 +380,6 @@ function hvp_save_content($hvp) {
         }
 
         // Make params and library available for core to save.
-        $hvp->params = $hvp->h5pparams;
         $hvp->library = H5PCore::libraryFromString($hvp->h5plibrary);
         $hvp->library['libraryId'] = $core->h5pF->getLibraryId($hvp->library['machineName'],
                                                                $hvp->library['majorVersion'],
@@ -368,24 +399,6 @@ function hvp_save_content($hvp) {
     }
 
     return $hvp->id;
-}
-
-/**
- * Help determine which content features have been disabled through the
- * activity form submitted.
- *
- * @param stdClass $hvp
- * @return int Disabled flags
- */
-function hvp_get_disabled_content_features($hvp) {
-    $disablesettings = [
-        \H5PCore::DISPLAY_OPTION_FRAME     => isset($hvp->frame) ? $hvp->frame : 0,
-        \H5PCore::DISPLAY_OPTION_DOWNLOAD  => isset($hvp->export) ? $hvp->export : 0,
-        \H5PCore::DISPLAY_OPTION_EMBED     => isset($hvp->embed) ? $hvp->embed : 0,
-        \H5PCore::DISPLAY_OPTION_COPYRIGHT => isset($hvp->copyright) ? $hvp->copyright : 0,
-    ];
-    $core            = \mod_hvp\framework::instance();
-    return $core->getStorableDisplayOptions($disablesettings, 0);
 }
 
 /**
@@ -543,6 +556,10 @@ function hvp_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload
     if (!$file) {
         return false; // No such file.
     }
+
+    // Totara: use allowxss option to prevent application/x-javascript mimetype
+    // from being converted to application/x-forcedownload.
+    $options['allowxss'] = '1';
 
     send_stored_file($file, 86400, 0, $forcedownload, $options);
 

@@ -24,11 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version      = 2015111620;
-$plugin->requires     = 2015111600; // Moodle 3.0.
+$plugin->version      = 2017051506;
+$plugin->requires     = 2017051509; // Moodle 3.3.
 $plugin->component    = 'mod_arupevidence';
 $plugin->maturity     = MATURITY_STABLE;
-$plugin->release      = "3.0.20 (Build: {$plugin->version})";
+$plugin->release      = "3.3.6 (Build: {$plugin->version})";
 
 $plugin->dependencies = array(
     'block_arup_mylearning' => 2015111601

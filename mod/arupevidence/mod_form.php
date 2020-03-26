@@ -18,7 +18,7 @@
  * The main arupevidence configuration form
  *
  * @package    mod_arupevidence
- * @copyright  2017 Xantico Ltd 
+ * @copyright  2017 Xantico Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,8 +33,19 @@ class mod_arupevidence_mod_form extends moodleform_mod {
 
     protected $cm = null;
 
+    private $declarations;
+    private $declarations_menu;
+    private $has_agreed_declaration = false;
     public function __construct($current, $section, $cm, $course) {
+        global $DB;
         $this->cm = $cm;
+        if (!empty($this->cm->instance)) {
+            $this->declarations = $DB->get_records('arupevidence_declarations', array('arupevidenceid' => $this->cm->instance), 'id, declaration, has_agreed');
+
+            foreach ($this->declarations as $dec) {
+                $this->declarations_menu[$dec->id] = $dec->declaration;
+            }
+        }
         parent::__construct($current, $section, $cm, $course);
     }
 
@@ -43,7 +54,7 @@ class mod_arupevidence_mod_form extends moodleform_mod {
      */
     public function definition() {
 
-        global $CFG, $PAGE, $COURSE, $DB;
+        global $CFG, $PAGE, $COURSE;
 
         $mform = $this->_form;
 
@@ -64,7 +75,7 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
-            $mform->setType('name', PARAM_CLEAN);
+            $mform->setType('name', PARAM_CLEANHTML);
         }
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
@@ -82,12 +93,21 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         $mform->addElement('advcheckbox', 'requirevalidityperiod', get_string('requirevalidityperiod', 'mod_arupevidence'));
         $mform->disabledIf('requirevalidityperiod', 'requireexpirydate', 'checked');
 
+        $mform->addElement('advcheckbox', 'requireupload', get_string('requireupload', 'mod_arupevidence'));
+        $mform->setDefault('requireupload', 1);
+
+        $mform->addElement('advcheckbox', 'deleteevidence', get_string('deleteevidence', 'mod_arupevidence'));
+
+        $mform->addElement('advcheckbox', 'expectedvalidity', get_string('expectedvalidity', 'mod_arupevidence'));
+
         $choices = array(get_string('none'), 1,2,3,4,5,6,7,8,9,10,11,12);
         $mform->addElement('select', 'expectedvalidityperiod', get_string('expectedvalidityperiod', 'mod_arupevidence'), $choices);
         $mform->setDefault('expectedvalidityperiod', '');
+        $mform->disabledIf('expectedvalidityperiod', 'expectedvalidity', 'unchecked');
 
         $mform->addElement('select', 'expectedvalidityperiodunit', '', array('m' => 'Month(s)', 'y' => 'Year(s)', '' => get_string('none')));
         $mform->setDefault('expectedvalidityperiodunit', '');
+        $mform->disabledIf('expectedvalidityperiodunit', 'expectedvalidity', 'unchecked');
 
         $mform->addElement('advcheckbox', 'approvalrequired', get_string('approvalrequired', 'mod_arupevidence'));
 
@@ -125,11 +145,11 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         $mform->addRule('cpdlms', null, 'required', null, 'client');
         $mform->setDefault('cpdlms', '');
 
-        $mform->addElement('checkbox', 'setcoursecompletion', get_string('setcoursecompletion', 'mod_arupevidence'));
+        $mform->addElement('advcheckbox', 'setcoursecompletion', get_string('setcoursecompletion', 'mod_arupevidence'));
         $mform->addHelpButton('setcoursecompletion', 'setcoursecompletion', 'mod_arupevidence');
         $mform->setDefault('setcoursecompletion', 1);
 
-        $mform->addElement('checkbox', 'setcertificationcompletion', get_string('setcertificationcompletion', 'mod_arupevidence'));
+        $mform->addElement('advcheckbox', 'setcertificationcompletion', get_string('setcertificationcompletion', 'mod_arupevidence'));
         $mform->addHelpButton('setcertificationcompletion', 'setcertificationcompletion', 'mod_arupevidence');
         $mform->setDefault('setcertificationcompletion', 1);
 
@@ -139,6 +159,74 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         // FAKE field for completion settings.
         $mform->addElement('static', 'completionfake', '', '');
 
+        // Declarations section
+        $mform->addElement('header', 'declarations', get_string('declarationsheader', 'mod_arupevidence'));
+
+        // Has agreed declaration hidden field flag
+        $mform->addElement('hidden', 'hasagreeddeclaration', 0);
+        $mform->setType('hasagreeddeclaration', PARAM_INT);
+
+        if (!empty($this->declarations_menu)) {
+            $counter = 0;
+            foreach($this->declarations_menu as $key => $val) {
+                $_name =  "declarationid[{$counter}]";
+                $mform->addElement('hidden', $_name, $key);
+                $mform->setType($_name, PARAM_INT);
+
+                // flag for any declarations has user(s) agreed
+                if (isset( $this->declarations[$key]) && !empty($this->declarations[$key]) && $this->declarations[$key]->has_agreed) {
+                    $this->has_agreed_declaration = true;
+                }
+                $counter++;
+            }
+        }
+        if ($this->has_agreed_declaration) {
+            $mform->addElement('static', 'description', '', get_string('declaration:note:agreed', 'mod_arupevidence'));
+        }
+
+        $repeatcount = (count($this->declarations_menu) > 0)? count($this->declarations_menu): 1;
+        $disable_dec = $this->has_agreed_declaration? 'disabled': '';
+        $declarationelement = $mform->createElement('textarea', 'declaration', get_string('declaration', 'mod_arupevidence'), $disable_dec);
+        $this->repeat_elements(
+            array($declarationelement),
+            $repeatcount,
+            array(
+                'declaration' => array(
+                    'type' => PARAM_TEXT
+                )
+            ),
+            'declarationrepeats',
+            'declarationadds',
+            1,
+            get_string('declaration:add', 'mod_arupevidence'),
+            true
+        );
+        $mform->disabledIf('declarationadds', 'hasagreeddeclaration', 'eq', 1);
+
+        // Exemption section.
+        $mform->addElement('header', 'exemptionsection', get_string('exemptionheader', 'mod_arupevidence'));
+
+        $mform->addElement('advcheckbox', 'exemption', get_string('exemption', 'mod_arupevidence'));
+
+        $mform->addElement('textarea', 'exemptionquestion', get_string('exemptionquestion', 'mod_arupevidence'));
+        $mform->setType('exemptionquestion', PARAM_TEXT);
+        $mform->disabledIf('exemptionquestion', 'exemption', 'unchecked');
+
+        $mform->addElement('advcheckbox', 'exemptioninfo', get_string('exemptioninfo', 'mod_arupevidence'));
+        $mform->disabledIf('exemptioninfo', 'exemption', 'unchecked');
+
+        $mform->addElement('textarea', 'exemptioninfoquestion', get_string('exemptioninfoquestion', 'mod_arupevidence'));
+        $mform->setType('exemptioninfoquestion', PARAM_TEXT);
+        $mform->disabledIf('exemptioninfoquestion', 'exemption', 'unchecked');
+        $mform->disabledIf('exemptioninfoquestion', 'exemptioninfo', 'unchecked');
+
+        $mform->addElement('advcheckbox', 'exemptioncompletion', get_string('exemptioncompletion', 'mod_arupevidence'));
+        $mform->disabledIf('exemptioncompletion', 'exemption', 'unchecked');
+
+        $mform->addElement('advcheckbox', 'exemptionvalidity', get_string('exemptionvalidity', 'mod_arupevidence'));
+        $mform->disabledIf('exemptionvalidity', 'exemption', 'unchecked');
+        $mform->disabledIf('exemptionvalidity', 'expectedvalidity', 'unchecked');
+
         $this->add_taps_fields($mform);
 
         $this->standard_coursemodule_elements();
@@ -146,7 +234,7 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
-    public function add_taps_fields(MoodleQuickForm $mform) {
+    private function add_taps_fields(MoodleQuickForm $mform) {
         $taps = new \local_taps\taps();
 
         $mform->addElement('header', 'tapstemplate', get_string('cpdformheader', 'mod_arupevidence'));
@@ -165,7 +253,6 @@ class mod_arupevidence_mod_form extends moodleform_mod {
 
         $mform->addElement('select', 'durationunitscode', get_string('cpd:durationunitscode', 'block_arup_mylearning'), $taps->get_durationunitscode());
         $mform->disabledIf('durationunitscode', 'cpdlms', 'neq', ARUPEVIDENCE_CPD);
-
 
         $mform->addElement('editor', 'learningdesc', get_string('cpd:learningdesc', 'block_arup_mylearning'));
         $mform->disabledIf('learningdesc', 'cpdlms', 'neq', ARUPEVIDENCE_CPD);
@@ -195,8 +282,12 @@ class mod_arupevidence_mod_form extends moodleform_mod {
                 }
                 unset($defaultvalues->{'approvalusers'});
             }
-        }
+            if (!empty($this->declarations)) {
+                $defaultvalues->{'declaration'} = array_values($this->declarations_menu);
+                $defaultvalues->{'hasagreeddeclaration'} = $this->has_agreed_declaration ? 1: 0;
+            }
 
+        }
 
         parent::set_data($defaultvalues);
     }
@@ -205,9 +296,6 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         $data = parent::get_data();
         if (!$data) {
             return false;
-        }
-        if(empty($data->approvalrequired) || empty($_POST['approvalrequired'])) {
-            $data->approvalrequired = 0;
         }
 
         if(empty($data->requireexpirydate) || empty($_POST['requireexpirydate'])) {
@@ -229,7 +317,9 @@ class mod_arupevidence_mod_form extends moodleform_mod {
 
     public function validation($data, $files) {
         global $DB, $CFG, $COURSE;
+
         $errors = parent::validation($data, $files);
+
         if (isset($data['cpdlms']) && $data['cpdlms'] == ARUPEVIDENCE_CPD) {
             if (empty($data['classname'])) {
                 $errors['classname'] = get_string('error:cpdrequired', 'mod_arupevidence');
@@ -268,6 +358,16 @@ class mod_arupevidence_mod_form extends moodleform_mod {
                 $errors['cpdlms'] = get_string('error:mustlinkedcourse', 'mod_arupevidence');
             }
         }
+
+        if (!empty($data['exemption'])) {
+            if(empty($data['exemptionquestion'])) {
+                $errors['exemptionquestion'] = get_string('required');
+            }
+            if (!empty($data['exemptioninfo']) && empty($data['exemptioninfoquestion'])) {
+                $errors['exemptioninfoquestion'] = get_string('required');
+            }
+        }
+
         return $errors;
     }
 
