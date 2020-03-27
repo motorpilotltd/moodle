@@ -215,7 +215,7 @@ select.custom-select.roles {
     text-align: left;
     margin: auto;
     padding: 10px 0;
-    display: block;
+    display: inline-block;
     transform-origin: top right;
     direction: ltr;
     -ms-writing-mode: bt-lr;
@@ -370,6 +370,19 @@ select.custom-select.roles {
 .matrix-activities-title {
     font-size: 22px;
     font-family: times new roman,times,serif;
+}
+
+.matrix-activities-role {
+    font-size: 18px;
+    font-family: times new roman,times,serif;
+    padding: .2em .6em .3em;
+    border-radius: .25em;
+}
+
+.matrix-activities-role.enabled-role {
+    border-radius: .25em;
+    padding: .2em .6em .3em;
+    background-color: #fffaa5;
 }
 
 .wa_matrix .cell {
@@ -708,7 +721,7 @@ select.custom-select.roles {
 .learning_path_matrix .lp_matrix .lp_cell{
 	text-align: center;
     min-height: 54px;
-    min-width:38px;
+    min-width:59px;
     /*border-right: 1px solid #bbb;*/
 }
 
@@ -1347,7 +1360,7 @@ select.custom-select.roles {
 }
 
 .edit_role .row_header {
-    min-height: 46px;
+    height: 46px;
 }
 
 .edit_activities .cell .fitem {

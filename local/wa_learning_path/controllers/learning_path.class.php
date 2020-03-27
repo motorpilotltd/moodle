@@ -121,6 +121,22 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         // Selected region. default value -1 user will see content for all regions.
         $regions = optional_param('regions', null, PARAM_RAW_TRIMMED);
     
+        // Selected role.
+        $roleId = optional_param('role', null, PARAM_INT);
+        if($roleId === '0') {
+            $roleId = null;
+        }
+        // Selected rows of matrix.
+        $levels = optional_param('levels', null, PARAM_RAW_TRIMMED);
+        if($levels === '0') {
+            $levels = null;
+        }
+        // Selected region. default value -1 user will see content for all regions.
+        $regions = optional_param('regions', null, PARAM_RAW_TRIMMED);
+        if($regions === '-1') {
+            $regions = null;
+        }
+        
         // Selected cell of matrix (cell-ID).
         $key = optional_param('key', 0, PARAM_RAW_TRIMMED);
     
@@ -133,7 +149,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         // Get user region.
         $this->userregion = \wa_learning_path\lib\get_user_region();
         // Get selected regions.
-        $this->selectedregions = (!is_null($regions) && $regions != '') ? explode(',', $regions) : null;
+        $this->selectedregions = (!is_null($regions) && $regions !== '' && $regions !== '-1') ? explode(',', $regions) : null;
         if (is_null($regions) && !empty($this->userregion)) {
             // Set user region ID
             $this->regions[] = (int) $this->userregion->id;
@@ -150,7 +166,13 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         $this->regionnames = array_intersect_key($allregionnames, array_fill_keys($this->regions, true));
 
         if ($key) {
-            $activitiesData = $DB->get_records('wa_learning_path_role_act', ['roleid' => $role, 'activityid' => substr($key, 1)]);
+            $matrix = json_decode($this->learning_path->matrix);
+
+            if (isset($matrix->activities->{$key}) && in_array($role, $matrix->activities->{$key}->enabledForRoles)) {
+                $activitiesData = $DB->get_records('wa_learning_path_role_act', ['roleid' => $role, 'activityid' => substr($key, 1)]);
+            } else {
+                $activitiesData = null;
+            }
         }
 
         $cellData = [];
@@ -164,15 +186,24 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                 $cellData['activities'][$data->type . '_' . $data->itemid] = $data;
             }
         }
+
+        if ($role && in_array($role, $matrix->activities->{$key}->enabledForRoles)) {
+            $this->roleName = $DB->get_field('wa_learning_path_role', 'name', ['id' => $role]);
+        }
     
         $this->levels = !empty($levels) ? explode(',', $levels) : array();
-    
-        $this->cell_url = new \moodle_url($this->url, array('a' => 'matrix_activities', 'id' => (int) $this->id, 'levels' => (string) $levels, 'regions' => (string) $regions));
+
+        if ($role) {
+            $this->cell_url = new \moodle_url($this->url, array('a' => 'matrix_activities', 'id' => (int) $this->id, 'levels' => (string) $levels, 'regions' => (string) $regions, 'role' => (string) $role));
+        } else {
+            $this->cell_url = new \moodle_url($this->url, array('a' => 'matrix_activities', 'id' => (int) $this->id, 'levels' => (string) $levels, 'regions' => (string) $regions));
+        }
     
         if($this->preview) {
             $this->cell_url->param('preview', (int) $this->preview);
         }
-    
+
+        $this->role = $role;
         $this->cell = null;
 
         $this->cellData = $cellData;
@@ -273,28 +304,28 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                     }
                 }
             }
-            $this->locate_previous_and_next_cells($columnId);
+            $this->locate_previous_and_next_cells($columnId, $this->regions);
         }
     
         $this->view('matrix_activities');
     }
     
-    private function locate_previous_and_next_cells($currentColumn)
+    private function locate_previous_and_next_cells($currentColumn, $selectedRegions)
     {
         $currentColumnPosition = 0;
         foreach($this->matrix->cols as $position => $cols) {
-            if($cols->show) {
+            if($cols->show && \wa_learning_path\model\learningpath::check_regions_match($selectedRegions, $cols->region)) {
                 if($cols->id === $currentColumn) {
                     $currentColumnPosition = $position;
                 }
             }
         }
     
-        $this->previousColumn = $this->findPreviousColumn($currentColumnPosition);
-        $this->nextColumn = $this->findNextColumn($currentColumnPosition);
+        $this->previousColumn = $this->findPreviousColumn($currentColumnPosition, $selectedRegions);
+        $this->nextColumn = $this->findNextColumn($currentColumnPosition, $selectedRegions);
     }
     
-    private function findPreviousColumn($index) {
+    private function findPreviousColumn($index, $selectedRegions) {
         while($index > 0) {
             $index--;
             
@@ -305,12 +336,16 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             if(!$this->matrix->cols[$index]->show) {
                 continue;
             }
+
+            if(!\wa_learning_path\model\learningpath::check_regions_match($selectedRegions, $this->matrix->cols[$index]->region)) {
+                continue;
+            }
             
             return $index;
         }
     }
     
-    private function findNextColumn($index) {
+    private function findNextColumn($index, $selectedRegions) {
         while($index < count($this->matrix->cols)) {
             $index++;
             
@@ -319,6 +354,10 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             }
             
             if(!$this->matrix->cols[$index]->show) {
+                continue;
+            }
+
+            if(!\wa_learning_path\model\learningpath::check_regions_match($selectedRegions, $this->matrix->cols[$index]->region)) {
                 continue;
             }
             
@@ -862,7 +901,6 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                 false, false, false, false, (bool)$this->learning_path->subscribed);
 
             foreach ($this->activities as $id => $activity) {
-                if (in_array($role, $activity->enabledForRoles)) {
                     $id = substr($id, 1); // Strip the '#'
                     $cellDesc[$id]['description'] = $activity->content;
                     $cellDesc[$id]['activities'] = [];
@@ -872,18 +910,19 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                             $cellDesc[$id]['activities'][] = $act;
                         }
                     }
-                }
             }
 
             foreach ($cellData as $index => $cell) {
-                if ($cell->overridedescription) {
-                    $cellDesc[$cell->activityid]['description'] = $cell->overridedescription;
-                }
+                if (in_array($role, $this->matrix->activities->{'#'.$cell->activityid}->enabledForRoles)) {
+                    if ($cell->overridedescription) {
+                        $cellDesc[$cell->activityid]['description'] = $cell->overridedescription;
+                    }
 
-                if ($cell->overrideere) {
-                    foreach ($cellDesc[$cell->activityid]['activities'] as &$act) {
-                        if ($act->id == $cell->itemid && $act->type == $cell->type) {
-                            $act->position = $cell->overrideere;
+                    if ($cell->overrideere) {
+                        foreach ($cellDesc[$cell->activityid]['activities'] as &$act) {
+                            if ($act->id == $cell->itemid && $act->type == $cell->type) {
+                                $act->position = $cell->overrideere;
+                            }
                         }
                     }
                 }
@@ -914,6 +953,16 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             border-top:0;
             border-left:0;
             border-right:0;
+        }
+        
+        .print-learning-journey th:first-child,
+        .print-learning-journey th:nth-child(2), 
+        .print-learning-journey th:last-child {
+            min-width: 150px;
+        }
+        
+        .print-learning-journey td:nth-child(3) {
+            word-break: break-word;
         }
         
         .print-learning-journey tr {

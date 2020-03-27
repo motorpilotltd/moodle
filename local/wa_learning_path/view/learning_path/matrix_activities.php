@@ -31,6 +31,10 @@ global $CFG;
                         </a>
                     <?php endif; ?>
                 </span>
+                <?php if (isset($this->role)): ?>
+                <br/>
+                <span class="matrix-activities-role <?php if (isset($this->roleName)): echo 'enabled-role'; endif; ?>"><?php if (isset($this->roleName)): echo $this->roleName; endif; ?></span><br/>
+                <?php endif; ?>
                 <?php if ($this->cellData && $this->cellData['description']): ?>
                     <p><?php echo format_text($this->cellData['description']) ?></p>
                 <?php else: ?>
@@ -56,7 +60,7 @@ global $CFG;
             ?>
     </div>
     <br />
-    <?php if($this->activities && !empty($this->count[$this->position])): ?>
+    <?php if($this->activities && isset($this->count) && !empty($this->count[$this->position])): ?>
     <form class="filtration">
         <div class="filter_checkboxes filter_position clearfix">
             <input type="checkbox" id="position_essential" value="essential" name="position[]" checked>
@@ -96,9 +100,9 @@ global $CFG;
 
 
     <?php if(!empty($this->position)): $first = true; ?>
-        <div class="tab_content <?php if($this->count[$this->position] > 10): ?>add_scroll<?php endif; ?>">
+        <div class="tab_content <?php if(isset($this->count) && $this->count[$this->position] > 10): ?>add_scroll<?php endif; ?>">
             <div class="no-overflow">
-            <?php if($this->activities && !empty($this->count[$this->position])): ?>
+            <?php if($this->activities && isset($this->count) && !empty($this->count[$this->position])): ?>
                 <table class="list_of_activities">
                     <tbody>
                         <?php foreach($this->cell->positions->{$this->position} as $iterator => $activity): ?>

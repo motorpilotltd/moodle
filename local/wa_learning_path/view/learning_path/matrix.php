@@ -231,74 +231,93 @@ echo \html_writer::end_div();
         });
 
         $(window).resize(function(){
-            var width = parseInt($('.learning_path_matrix').innerWidth());
-            var row_name = $('.cell_container .row_name');
-            var innerMatrixWidth = parseInt($('.learning_path_matrix .inner').innerWidth());
-            var cells = $('.learning_path_matrix .lp_col_header');
-            var sumCellsWidth = 0;
+                var width = parseInt($(window).width() - 30);
+                var row_name = $('.cell_container .row_name');
+                var cells = $('.learning_path_matrix .lp_col_header');
+                var sumCellsWidth = 0;
 
-            cells.each(function () {
-                sumCellsWidth += parseInt($(this).innerWidth());
-            });
-
-            if ($(this).width() <= 600) {
-                var rowWidth = 200;
-
-                if (sumCellsWidth <= innerMatrixWidth) {
-                    rowWidth = width - sumCellsWidth;
-                }
-
-                if (!$('.outer').parent().hasClass('lp_matrix_scroll_enable')) {
-                    $('.outer').parent().addClass('lp_matrix_scroll_enable');
-                }
-                $('.learning_path_matrix .inner').css('width', width - 200 + 'px');
-                $('.learning_path_matrix .inner_scroll_top').css('width', width - 200 + 'px');
-                $('.learning_path_matrix .lp_row_header').css('width', rowWidth + 'px');
-                $('.learning_path_matrix .lp_matrix_scroll_enable .inner ').css('margin-left', '200px');
-                $('.learning_path_matrix .inner_scroll_top').css('margin-left', '200px');
-
-
-                row_name.each(function () {
-                    $(this).text($(this).data('name').replace(/^(.{18}[.]*).*/, "$1 ..."));
+                cells.each(function () {
+                    sumCellsWidth += 59;
                 });
-            } else if ($(this).width() > 600 && $(this).width() < 1000) {
-                var rowWidth = 250;
-                if(width > 829 && width < 970) {
-                    rowWidth = width - 580;
+                
+                if ($(this).width() <= 600) {
+                    var rowWidth = 200;
+
+                    if(sumCellsWidth >= width - rowWidth) {
+                        if (!$('.outer').parent().hasClass('lp_matrix_scroll_enable')) {
+                            $('.outer').parent().addClass('lp_matrix_scroll_enable');
+                        }
+                        
+                        $('.learning_path_matrix .inner').css('width', width - rowWidth + 'px');
+                        $('.learning_path_matrix .inner_scroll_top').css('width', width - rowWidth + 'px');
+                        $('.learning_path_matrix .lp_matrix_scroll_enable .inner ').css('margin-left', '200px');
+                        $('.learning_path_matrix .inner_scroll_top').css('margin-left', '200px');
+                    } else {
+                        if($('.outer').parent().hasClass('lp_matrix_scroll_enable')) {
+                            $('.outer').parent().removeClass('lp_matrix_scroll_enable');
+                        }
+                        $('.learning_path_matrix .inner').css('width', '');
+                        $('.learning_path_matrix .inner').css('margin-left', '');
+                        $('.learning_path_matrix .inner_scroll_top').css('width', (width - 200) + 'px');
+                        $('.learning_path_matrix .inner_scroll_top').css('margin-left', '200px');
+                    }
+
+
+                    $('.learning_path_matrix .lp_row_header  .cell_container').css('width', rowWidth + 'px');
+                    $('.learning_path_matrix .lp_row_header').css('width', rowWidth + 'px');
+
+
+                    row_name.each(function () {
+                        $(this).text($(this).attr('data-name').replace(/^(.{18}[.]*).*/, "$1 ..."));
+                    });
+                } else if ($(this).width() > 600 && $(this).width() < 1000) {
+                    var rowWidth = 250;
+                    
+                    if(sumCellsWidth > width - rowWidth) {
+                        if (!$('.outer').parent().hasClass('lp_matrix_scroll_enable')) {
+                            $('.outer').parent().addClass('lp_matrix_scroll_enable');
+                        }
+                        $('.learning_path_matrix .inner').css('width', width - rowWidth+ 'px');
+                        $('.learning_path_matrix .inner_scroll_top').css('width', (width - rowWidth) + 'px');
+                        $('.learning_path_matrix .lp_matrix_scroll_enable .inner ').css('margin-left', '250px');
+                        $('.learning_path_matrix .inner_scroll_top').css('margin-left', '250px');
+                    } else {
+                        if($('.outer').parent().hasClass('lp_matrix_scroll_enable')) {
+                            $('.outer').parent().removeClass('lp_matrix_scroll_enable');
+                        }
+                        $('.learning_path_matrix .inner').css('width', '');
+                        $('.learning_path_matrix .inner').css('margin-left', '');
+                        $('.learning_path_matrix .inner_scroll_top').css('width', (width - 200) + 'px');
+                        $('.learning_path_matrix .inner_scroll_top').css('margin-left', '200px');
+                    }
+
+
+                    $('.learning_path_matrix .lp_row_header  .cell_container').css('width', rowWidth + 'px');
+                    $('.learning_path_matrix .lp_row_header').css('width', rowWidth + 'px');
+
+                    row_name.each(function () {
+                        $(this).text($(this).attr('data-name').replace(/^(.{24}[.]*).*/, "$1 ..."));
+                    });
+                } else {
+                    if($('.outer').parent().hasClass('lp_matrix_scroll_enable')) {
+                        $('.outer').parent().removeClass('lp_matrix_scroll_enable');
+                    }
+                    
+                    $('.learning_path_matrix .lp_row_header .cell_container').css('width', '');
+                    $('.learning_path_matrix .lp_row_header').css('width', '');
+                    $('.learning_path_matrix .inner').css('width', '100%');
+                    $('.learning_path_matrix .inner').css('margin-left', '');
+                    $('.learning_path_matrix .inner_scroll_top').css('width', (width - 200) + 'px');
+                    $('.learning_path_matrix .inner_scroll_top').css('margin-left', '200px');
+
+
+                    row_name.each(function () {
+                        $(this).text($(this).attr('data-name').replace(/^(.{60}[.]*).*/, "$1 ..."));
+                    });
                 }
-
-                if (sumCellsWidth <= innerMatrixWidth) {
-                    rowWidth = width - sumCellsWidth;
-                }
-
-                if(!$('.outer').parent().hasClass('lp_matrix_scroll_enable')) {
-                    $('.outer').parent().addClass('lp_matrix_scroll_enable');
-                }
-
-                $('.learning_path_matrix .inner').css('width', width - 250+ 'px');
-                $('.learning_path_matrix .inner_scroll_top').css('width', (width - 250) + 'px');
-                $('.learning_path_matrix .lp_row_header').css('width', rowWidth + 'px');
-                $('.learning_path_matrix .lp_matrix_scroll_enable .inner ').css('margin-left', '250px');
-                $('.learning_path_matrix .inner_scroll_top').css('margin-left', '250px');
-
-                row_name.each(function () {
-                    $(this).text($(this).data('name').replace(/^(.{24}[.]*).*/, "$1 ..."));
-                });
-            } else {
-                $('.learning_path_matrix .inner').css('width', '100%');
-                $('.learning_path_matrix .inner').css('margin-left', '');
-                $('.learning_path_matrix .inner_scroll_top').css('width', (width - 200) + 'px');
-                $('.learning_path_matrix .inner_scroll_top').css('margin-left', '200px');
-                $('.learning_path_matrix .lp_row_header').css('width', '');
-
-                if($('.outer').parent().hasClass('lp_matrix_scroll_enable')) {
-                    $('.outer').parent().removeClass('lp_matrix_scroll_enable');
-                }
-
-                row_name.each(function () {
-                    $(this).text($(this).data('name').replace(/^(.{60}[.]*).*/, "$1 ..."));
-                });
-            }
+                
+                $('.learning_path_matrix .inner_scroll_top_content').css('width', parseInt($('.learning_path_matrix .lp_matrix').innerWidth()) + 'px');
+                
         }).resize();
 
         $( '.lp_matrix .lp_col_header' ).tooltip({

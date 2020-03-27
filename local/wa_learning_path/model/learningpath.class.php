@@ -798,6 +798,7 @@ class learningpath {
     public static function check_regions_match($selectedregions, $availableregions) {
 
         if (in_array(-1, $selectedregions)) {
+            // If All regions option is selected all content should be visible.
             return true;
         }
 

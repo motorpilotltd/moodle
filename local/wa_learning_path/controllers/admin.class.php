@@ -244,6 +244,9 @@ class admin extends \wa_learning_path\lib\base_controller {
             foreach ($matrix->activities as $activityId => &$activity) {
                 if (!isset($activity->enabledForRoles)) {
                     $activity->enabledForRoles = [];
+                } else {
+                    // To fix a JSON array that became previously an object by unsetting first element
+                    $activity->enabledForRoles = array_values((array) $activity->enabledForRoles);
                 }
 
                 if (in_array($activityId, $enabledActivities)) {
@@ -252,7 +255,7 @@ class admin extends \wa_learning_path\lib\base_controller {
                     }
                 } else {
                     foreach (array_keys($activity->enabledForRoles, $roleId) as $index) {
-                        unset($activity->enabledForRoles[$index]);
+                        array_splice($activity->enabledForRoles, $index, 1);
                     }
                 }
             }
