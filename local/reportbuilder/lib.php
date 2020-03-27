@@ -4299,7 +4299,14 @@ class reportbuilder {
         $context = context_system::instance();
         $capability = $this->embedded ? 'local/reportbuilder:manageembeddedreports' : 'local/reportbuilder:managereports';
         if (has_capability($capability, $context)) {
-            return $OUTPUT->single_button(new moodle_url('/local/reportbuilder/general.php', array('id' => $this->_id)), get_string('editthisreport', 'local_reportbuilder'), 'get');
+            return html_writer::link(
+                new moodle_url('/local/reportbuilder/general.php', array('id' => $this->_id)),
+                '<i class="fa fa-pencil"></i><span class="sr-only">' . get_string('editthisreport', 'local_reportbuilder') . '</span>',
+                array('class' => 'btn btn-default ml-auto',
+                    'data-toggle' => 'tooltip',
+                    'data-placement' => 'bottom',
+                    'title' => get_string('editthisreport', 'local_reportbuilder'))
+            );
         } else {
             return '';
         }

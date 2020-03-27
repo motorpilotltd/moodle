@@ -36,5 +36,23 @@ $functions = array(
         'capabilities' => '',
         'ajax'         => true,
     ),
+    'local_reportbuilder_report_columns_config' => array(
+        'classname'    => 'local_reportbuilder\external',
+        'methodname'   => 'report_columns_config',
+        'classpath'    => '',
+        'description'  => 'Get report columns config.',
+        'type'         => 'read',
+        'capabilities' => '',
+        'ajax'         => true,
+    ),
+    'local_reportbuilder_report_filters_config' => array(
+        'classname'    => 'local_reportbuilder\external',
+        'methodname'   => 'report_filters_config',
+        'classpath'    => '',
+        'description'  => 'Get report filters config.',
+        'type'         => 'read',
+        'capabilities' => '',
+        'ajax'         => true,
+    ),
 );
 

@@ -359,7 +359,12 @@
   padding-right: 5px;
 }
 
-.newreport {
+.newreport .closefullscreen,
+.newreport .fullscreen {
+  display: none;
+}
+
+.newreport.fullscreen {
   position: fixed;
   height: 100vh;
   min-width: 100vh;
@@ -371,11 +376,97 @@
   background-color: #FFF;
 }
 
-.newreport .inner {
+.newreport.fullscreen .closefullscreen {
+  display: inline-block;
+}
+
+.newreport.fullscreen .inner {
   height: 100%;
   position: absolute;
   width: 100%;
-  padding: 0 30px;
+  max-width: 100vw;
+  padding: 0 5px;
+}
+
+@media (min-width: 768px) {
+  .newreport.fullscreen .inner {
+    padding: 0 30px;
+  }
+}
+
+.newreport.fullscreen #advancedsearch {
+  position: absolute;
+  left: 30px;
+  right: 30px;
+  max-height: calc(100% - 120px);
+  overflow-y: auto;
+}
+
+@media (min-width: 600px) {
+  .newreport.fullscreen #advancedsearch {
+    max-height: calc(100% - 61px);
+  }
+}
+
+.newreport.fullscreen .reportcontainer {
+  overflow: scroll;
+  height: calc(100% - 120px);
+}
+
+@media (min-width: 600px) {
+  .newreport.fullscreen .reportcontainer {
+    height: calc(100% - 61px);
+  }
+}
+
+.newreport.fullscreen #reportfilters {
+  height: calc(100% - 120px);
+  top: 120px;
+  position: absolute;
+  right: -330px;
+  width: 300px;
+  transition: right 0.5s ease, left 0.5s ease;
+  overflow-y: scroll;
+}
+
+@media (min-width: 600px) {
+  .newreport.fullscreen #reportfilters {
+    height: calc(100% - 61px);
+    top: 61px;
+  }
+}
+
+.newreport.fullscreen #reportfilters.active {
+  right: 0;
+}
+
+.newreport.static .fullscreen {
+  display: inline-block;
+}
+
+.newreport.static #report-controls {
+  position: sticky;
+  top: 59px;
+  z-index: 1;
+}
+
+.newreport.static .reportcontainer {
+  position: relative;
+  overflow: hidden;
+  min-height: 400px;
+}
+
+.newreport.static .reportcontainer #reportfilters {
+  position: absolute;
+  right: -300px;
+  top: 0;
+  width: 300px;
+  transition: right 0.5s ease, left 0.5s ease;
+  overflow-y: scroll;
+}
+
+.newreport.static .reportcontainer #reportfilters.active {
+  right: 0;
 }
 
 .newreport .totara-toolbar-top .toolbar-left-table {
@@ -418,14 +509,6 @@
   width: 100%;
 }
 
-.newreport #advancedsearch {
-  position: absolute;
-  left: 30px;
-  right: 30px;
-  max-height: calc(100% - 61px);
-  overflow-y: auto;
-}
-
 .newreport #advancedsearchbutton {
   margin-right: auto;
 }
@@ -450,20 +533,6 @@
   display: inline-block;
 }
 
-.newreport #reportfilters {
-  height: calc(100% - 61px);
-  position: absolute;
-  right: -330px;
-  top: 61px;
-  width: 300px;
-  transition: right 0.5s ease, left 0.5s ease;
-  overflow-y: scroll;
-}
-
-.newreport #reportfilters.active {
-  right: 0;
-}
-
 .newreport .totara-limited-width-150 {
   max-width: 150px;
 }
@@ -483,18 +552,9 @@
   margin-left: 0;
 }
 
-.newreport .sticky-top {
-  position: sticky;
-  top: 100px;
-}
-
-.newreport .reportcontainer {
-  overflow: scroll;
-  height: calc(100% - 61px);
-}
-
 .newreport .navbar {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .newreport .navbar .singlebutton div {
@@ -511,9 +571,21 @@
 
 .newreport .navbar-form {
   display: flex;
+  flex-wrap: wrap;
+  border: 0;
+  padding: 0 10px;
+  margin: 14.5px 0;
 }
 
 .newreport .navbar-form .input-group {
   flex: 1 1 auto;
   display: flex;
+}
+
+.newreport .navbar-form .input-group .input-group-addon {
+  width: auto;
+}
+
+.newreport .navbar-form .ml-auto {
+  margin-left: auto;
 }

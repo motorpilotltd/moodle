@@ -1,5 +1,5 @@
-define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
-    function ($, templates, ModalFactory, ModalEvents) {
+define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events', 'core/ajax'],
+    function ($, templates, ModalFactory, ModalEvents, Ajax) {
         var reportbuilderfilters = {
             // optional php params and defaults defined here, args passed to init method
             // below will override these values
@@ -25,12 +25,15 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
              */
             init: function (args) {
                 // if defined, parse args into this module's config object
-                if (args) {
-                    var jargs = $.parseJSON(args);
-                    for (var a in jargs) {
-                        this.config[a] = jargs[a];
-                    }
-                }
+                args =  {id: args.rb_reportid};
+                var request = {
+                    methodname: 'local_reportbuilder_report_filters_config',
+                    args: args
+                };
+
+                var filtersconfig = Ajax.call([request])[0];
+
+                filtersconfig.fail(Notification.exception);
 
                 var that = this;
                 var iconscache = [];
@@ -39,13 +42,22 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                 iconscache.push(templates.renderPix('t/up', 'core', M.util.get_string('moveup', 'local_reportbuilder')));
                 iconscache.push(templates.renderPix('t/down', 'core', M.util.get_string('movedown', 'local_reportbuilder')));
                 iconscache.push(templates.renderPix('spacer', ''));
+                iconscache.push(filtersconfig);
 
-                $.when.apply($, iconscache).then(function (loadingicon, deleteicon, upicon, downicon, spacer) {
+                $.when.apply($, iconscache).then(function (loadingicon, deleteicon, upicon, downicon, spacer, filtersconfig) {
                     that.loadingimg = loadingicon;
                     that.deleteicon = deleteicon;
                     that.upicon = upicon;
                     that.downicon = downicon;
                     that.spacer = spacer;
+
+                    if (filtersconfig) {
+                        var jargs = JSON.parse(filtersconfig.config);
+                        for (var a in jargs) {
+                            that.config[a] = jargs[a];
+                        }
+                    }
+
                     // Do setup.
                     that.rb_init_filter_rows();
                     that.rb_init_search_column_rows();

@@ -1,5 +1,5 @@
-define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
-    function ($, templates, ModalFactory, ModalEvents) {
+define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events', 'core/ajax', 'core/notification'],
+    function ($, templates, ModalFactory, ModalEvents, Ajax, Notification) {
         var reportbuildercolumns = {
             // optional php params and defaults defined here, args passed to init method
             // below will override these values
@@ -25,9 +25,15 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
              */
             init: function (config) {
 
-                // store config info
-                this.config = config;
-                this.config.user_sesskey = M.cfg.sesskey;
+                var args =  {id: config.rb_reportid};
+                var request = {
+                    methodname: 'local_reportbuilder_report_columns_config',
+                    args: args
+                };
+
+                var reportconfig = Ajax.call([request])[0];
+
+                reportconfig.fail(Notification.exception);
 
                 // check jQuery dependency is available
                 if (typeof $ === 'undefined') {
@@ -46,8 +52,9 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                 iconscache.push(templates.renderPix('t/up', 'core', M.util.get_string('moveup', 'local_reportbuilder')));
                 iconscache.push(templates.renderPix('t/down', 'core', M.util.get_string('movedown', 'local_reportbuilder')));
                 iconscache.push(templates.renderPix('spacer', ''));
+                iconscache.push(reportconfig);
 
-                $.when.apply($, iconscache).then(function (loadingicon, hideicon, showicon, deleteicon, upicon, downicon, spacer) {
+                $.when.apply($, iconscache).then(function (loadingicon, hideicon, showicon, deleteicon, upicon, downicon, spacer, reportconfig) {
                     that.loadingimg = loadingicon;
                     that.hideicon = hideicon;
                     that.showicon = showicon;
@@ -55,6 +62,9 @@ define(['jquery', 'core/templates', 'core/modal_factory', 'core/modal_events'],
                     that.upicon = upicon;
                     that.downicon = downicon;
                     that.spacer = spacer;
+                    var fullconfig = JSON.parse(reportconfig.config);
+                    that.config = fullconfig;
+                    that.config.user_sesskey = M.cfg.sesskey;
                     // Do setup.
                     that.rb_init_col_rows();
                 });

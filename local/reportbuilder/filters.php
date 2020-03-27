@@ -105,11 +105,15 @@ $initialdisplay = ($report->initialdisplay == RB_INITIAL_DISPLAY_HIDE || ($globa
 $sizeoffilters  = sizeof($report->filters) + sizeof($report->searchcolumns);
 $PAGE->requires->strings_for_js(array('saving', 'confirmfilterdelete', 'confirmsearchcolumndelete', 'delete', 'moveup',
     'movedown', 'add', 'initialdisplay_error', 'confirmfilterdelete_rid_enabled', 'confirmfilterdelete_grid_enabled'), 'local_reportbuilder');
+
+$config = new stdClass();
+$config->rb_reportid = $id;
+
 $args = array('args' => '{"user_sesskey":"'.$USER->sesskey.'", "rb_reportid":'.$id.',
     "rb_filters":'.$sizeoffilters.', "rb_initial_display":'.$initialdisplay.', "rb_global_initial_display":'.$globalinitialdisplay.',
     "rb_filter_headings":'.json_encode($filterheadings).', "rb_search_column_headings":'.json_encode($searchcolumnheadings).'}');
 
-$PAGE->requires->js_call_amd('local_reportbuilder/reportbuilderfilters', 'init', $args);
+$PAGE->requires->js_call_amd('local_reportbuilder/reportbuilderfilters', 'init', array($config));
 
 // Delete fields or columns.
 if ($d and $confirm) {
