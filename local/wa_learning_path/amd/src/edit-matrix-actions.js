@@ -1,6 +1,6 @@
 /* jshint ignore:start */
 define(['jquery', 'theme_bootstrap/bootstrap', 'local_wa_learning_path/helper', 'core/str', 'jqueryui'], function($, bootstrap, helper, str, ui) {
-    var wa_status = 0, wa_isloading, wa_to_add, wa_to_add_activity, waActivities;
+    var wa_status = 0, wa_isloading, wa_to_add, wa_to_add_activity;
     var limitText, requiredText, selfledText, saveText, cancelText, removeText, closeText;
     var wa_max_id;
     var wa_rows = [];
@@ -8,11 +8,11 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'local_wa_learning_path/helper', 
 
     var blockNewActivity = false;
     var wa_edit_el = false;
-    var wa_activities = { };
 
     "use strict"; // jshint ;_;
     return {
         initVariables: function(maxId, status, limitText, requiredText, selfledText, saveText, cancelText, removeText, closeText, waActivities) {
+
             this.wa_max_id = maxId;
             this.wa_status = status;
             this.wa_isloading = false;
@@ -23,7 +23,13 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'local_wa_learning_path/helper', 
             this.cancelText = cancelText;
             this.removeText = removeText;
             this.closeText = closeText;
-            this.waActivities = waActivities;
+
+            var checkUp = Object.keys(waActivities);
+            if(checkUp.length == 0) {
+                this.waActivities = {};
+            } else {
+                this.waActivities = waActivities;
+            }
         },
 
         deleteConfirmed: function(element) {
@@ -199,23 +205,24 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'local_wa_learning_path/helper', 
         },
 
         waCheckIcons: function(role, iconModulesAndObjectives, iconObjectives, iconNoObjectives, iconEdit) {
-            $.each(this.waActivities, function(k, object) {
-                if(!location.hash || location.hash == k) {
+            for(var property in this.waActivities) {
+                var object = this.waActivities[property];
+                if(!location.hash || location.hash == property) {
                     if (role == 0) {
                         if (object.positions.essential.length || object.positions.recommended.length || object.positions.elective.length) {
-                            $('a[href="'+k+'"] i').attr('class', iconModulesAndObjectives);
+                            $('a[href="'+property+'"] i').attr('class', iconModulesAndObjectives);
                         } else {
                             if (object.content) {
-                                $('a[href="'+k+'"] i').attr('class', iconObjectives);
+                                $('a[href="'+property+'"] i').attr('class', iconObjectives);
                             } else {
-                                $('a[href="'+k+'"] i').attr('class', iconNoObjectives);
+                                $('a[href="'+property+'"] i').attr('class', iconNoObjectives);
                             }
                         }
                     } else {
-                        $('a[href="'+k+'"] i').attr('class', iconEdit);
+                        $('a[href="'+property+'"] i').attr('class', iconEdit);
                     }
                 }
-            });
+            }
         },
 
 
@@ -458,6 +465,7 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'local_wa_learning_path/helper', 
             })
 
             var data = { cols: cols, rows: rows, activities: this.waActivities, max_id: this.wa_max_id, itemid: $('input[name="description_editor[itemid]"]').val(), };
+
             $('#matrixform input[name="matrix"]').val(JSON.stringify(data));
         },
 

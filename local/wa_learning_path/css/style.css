@@ -347,7 +347,7 @@ select.custom-select.roles {
 
 #editing_matrix #main {
     width: calc(98% - 20px);
-    min-height: 300px;
+    min-height: 220px;
     margin-top: 20px;
 }
 
@@ -373,8 +373,7 @@ select.custom-select.roles {
 }
 
 .matrix-activities-role {
-    font-size: 18px;
-    font-family: times new roman,times,serif;
+    font-size: 14px;
     padding: .2em .6em .3em;
     border-radius: .25em;
 }

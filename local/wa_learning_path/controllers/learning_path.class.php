@@ -187,7 +187,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             }
         }
 
-        if ($role && in_array($role, $matrix->activities->{$key}->enabledForRoles)) {
+        if ($role && isset($matrix->activities->{$key}) && in_array($role, $matrix->activities->{$key}->enabledForRoles)) {
             $this->roleName = $DB->get_field('wa_learning_path_role', 'name', ['id' => $role]);
         }
     
@@ -515,7 +515,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         }
         // Selected region. default value -1 user will see content for all regions.
         $regions = optional_param('regions', null, PARAM_RAW_TRIMMED);
-        if($regions === '-1') {
+        if($regions === '') {
             $regions = null;
         }
         // Selected cell of matrix (cell-ID).
@@ -536,13 +536,15 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         $this->regions = array();
         // Get user region.
         $this->userregion = \wa_learning_path\lib\get_user_region();
+        
         // Get selected regions.
-        $this->selectedregions = (!is_null($regions) && $regions !== '' && $regions !== '-1') ? explode(',', $regions) : null;
-        if (is_null($regions) && !empty($this->userregion)) {
+        $this->selectedregions = (!is_null($regions) && $regions !== '') ? explode(',', $regions) : null;
+        if (is_null($regions) && $regions !== '-1' && !empty($this->userregion)) {
             // Set user region ID
             $this->regions[] = (int) $this->userregion->id;
             $regions = (int) $this->userregion->id;
-        } else if (!is_null($regions)) {
+            $this->selectedregions = [$this->userregion->id];
+        } else if (!is_null($regions)  && $regions !== '-1') {
             // If region ID is provider by GET - is set up.
             $this->regions = is_null($this->selectedregions) ? array() : $this->selectedregions;
         } else {
@@ -895,6 +897,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         $cellDesc = [];
         if ($role) {
+            $this->roleName = $DB->get_field('wa_learning_path_role', 'name',  ['id' => $role , 'learningpathid' => $this->id]);
             $cellData = $DB->get_records('wa_learning_path_role_act', ['roleid' => $role]);
 
             $this->activities = \wa_learning_path\model\learningpath::fill_activities(@$this->matrix->activities,
@@ -956,13 +959,17 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         }
         
         .print-learning-journey th:first-child,
-        .print-learning-journey th:nth-child(2), 
-        .print-learning-journey th:last-child {
+        .print-learning-journey th:nth-child(2) {
             min-width: 150px;
+        }
+        
+        .print-learning-journey th:last-child {
+            min-width: 230px;
         }
         
         .print-learning-journey td:nth-child(3) {
             word-break: break-word;
+            width: 100%;
         }
         
         .print-learning-journey tr {

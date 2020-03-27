@@ -641,12 +641,23 @@ class admin extends \wa_learning_path\lib\base_controller {
 
         $lp = \wa_learning_path\model\learningpath::get($id);
         if ($lp->matrix) {
+            $jsonFix = false;
             $enabledForRoles = [];
             $matrix = json_decode($lp->matrix);
-            foreach ($matrix->activities as $hash => $activity) {
+            foreach ($matrix->activities as $hash => &$activity) {
                 if (isset($activity->enabledForRoles)) {
+                    if (!is_array($activity->enabledForRoles)) {
+                        // Fixing corrupted JSON array (previously, array elements were removed using unset without reindexing)
+                        $activity->enabledForRoles = array_values((array) $activity->enabledForRoles);
+                        $jsonFix = true;
+                    }
                     $enabledForRoles[$hash] = $activity->enabledForRoles;
                 }
+            }
+            if ($jsonFix) {
+                // Save matrix with fixed array
+                $matrix = json_encode($matrix);
+                \wa_learning_path\model\learningpath::set_matrix($id, $matrix);
             }
         }
 
