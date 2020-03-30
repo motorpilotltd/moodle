@@ -275,9 +275,11 @@ class activity {
      * @param Int Activity ID
      * @param Boolen|Int Completion info.
      * @param Int|null User ID
+     * @param Int|null Date Completed
+     * @param String Notes
      * @return Int 0 -> set as incomplete, 1-> set as completed, 2-> already completed
      */
-    public static function set_completion($id, $completion, $userid = null) {
+    public static function set_completion($id, $completion, $userid = null, $datecompleted = null, $activitynotes = null) {
         global $DB, $USER;
         if (empty($id)) {
             return false;
@@ -305,20 +307,20 @@ class activity {
                     // Get staff id.
                     $staffid = $DB->get_field('user', 'idnumber', array('id' => $userid));
                     // Format learning description.
-                    $taps = new \local_taps_interface();
-                    $taps->add_cpd_record(
-                            $staffid,
-                            $activity->title,
-                            $activity->provider,
-                            strtoupper(date('d-M-Y')),
-                            $activity->duration,
-                            $activity->unit,
-                            array(
-                                'p_subject_catetory' => $activity->subject,
-                                'p_learning_method' => $activity->learningmethod,
-                                'p_learning_desc' => $activity->learningdescription,
-                            )
-                            );
+                    $taps = new \local_taps\taps();
+                    $cpdid = $taps->add_cpd_record(
+                        $staffid,
+                        $activity->title,
+                        $activity->provider,
+                        $datecompleted,
+                        $activity->duration,
+                        $activity->unit,
+                        array(
+                            'p_subject_catetory' => $activity->subject,
+                            'p_learning_method' => $activity->learningmethod,
+                            'p_learning_desc' => $activitynotes,
+                        )
+                    );
                 }
 
                 $status = 1;

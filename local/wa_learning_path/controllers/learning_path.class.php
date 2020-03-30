@@ -133,7 +133,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         }
         // Selected region. default value -1 user will see content for all regions.
         $regions = optional_param('regions', null, PARAM_RAW_TRIMMED);
-        if($regions === '-1') {
+        if($regions === '') {
             $regions = null;
         }
         
@@ -149,12 +149,13 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         // Get user region.
         $this->userregion = \wa_learning_path\lib\get_user_region();
         // Get selected regions.
-        $this->selectedregions = (!is_null($regions) && $regions !== '' && $regions !== '-1') ? explode(',', $regions) : null;
-        if (is_null($regions) && !empty($this->userregion)) {
+        $this->selectedregions = (!is_null($regions) && $regions !== '') ? explode(',', $regions) : null;
+        if (is_null($regions) && $regions !== '-1' && !empty($this->userregion)) {
             // Set user region ID
             $this->regions[] = (int) $this->userregion->id;
             $regions = (int) $this->userregion->id;
-        } else if (!is_null($regions)) {
+            $this->selectedregions = $this->userregion->id;
+        } else if (!is_null($regions) && $regions !== '-1') {
             // If region ID is provider by GET - is set up.
             $this->regions = is_null($this->selectedregions) ? array() : $this->selectedregions;
         } else {

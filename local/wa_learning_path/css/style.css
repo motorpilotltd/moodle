@@ -1430,3 +1430,39 @@ select.custom-select.roles {
     margin-left:10px;
     margin-bottom: 10px;
 }
+
+#myModal .modal-gray-out {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+    background-color: #333;
+}
+#completionModal .modal-header {
+   padding-left:20px;
+}
+#completionModal .modal-body {
+    padding-bottom: 20px;
+    padding-left: 20px;
+    overflow-y: hidden; /* Just to disable the visible vertical scrollbar */
+}
+
+#completionModal .modal-body .form-group {
+    margin-bottom: 10px;
+}
+
+#completionModal .modal-body label {
+    margin-top: 0;
+}
+
+#completionModal .modal-body button {
+    margin-right: 15px;
+    margin-left:0;
+}
+
+#completionModal .modal-body div,
+#completionModal .modal-body label {
+    padding-left: 0;
+}

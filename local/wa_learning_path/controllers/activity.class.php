@@ -285,24 +285,27 @@ class activity extends \wa_learning_path\lib\base_controller {
         $this->id = optional_param('activityid', null, PARAM_INT);
         $learningpathid = optional_param('learningpathid', 0, PARAM_INT);
         $completion = optional_param('completion', null, PARAM_BOOL);
+        $dateCompleted = optional_param('datecompleted', null, PARAM_INT);
+        $activityNotes = optional_param('activitynotes', null, PARAM_TEXT);
 
         \wa_learning_path\lib\load_model('activity');
 
-        $s = \wa_learning_path\model\activity::set_completion($this->id, (int) $completion);
-        
+        $s = \wa_learning_path\model\activity::set_completion($this->id, (int) $completion, null, $dateCompleted, $activityNotes);
+        $activity = \wa_learning_path\model\activity::check_and_get($this->id);
+
         if ($s == 0) {
             $completionfilename = "/local/wa_learning_path/pix/a_incomplete.png";
             $completionicon = new \moodle_url($completionfilename);
     
             $url =  new \moodle_url($this->url, array('c' => 'activity', 'a' => 'set_completion'));
-            $html = '<img src="'.$completionicon.'" data-url="'.$url->out(false).'" data-lpathid="'.$learningpathid.'" data-id="'.$this->id.'" alt=""" class="activity_completion no" />';
+            $html = '<img src="'.$completionicon.'" data-url="'.$url->out(false).'" data-lpathid="'.$learningpathid.'" data-id="'.$this->id.'" data-cpd="'. $activity->enablecdp .'" alt=""" class="activity_completion no" />';
             $html .= '<div class="mark_as_complete">'.$this->get_string('mark_as_complete') . '</div>';
         } else {
             $completionfilename = "/local/wa_learning_path/pix/a_completed.png";
             $completionicon = new \moodle_url($completionfilename);
     
             $url =  new \moodle_url($this->url, array('c' => 'activity', 'a' => 'set_completion'));
-            $html = '<img src="'.$completionicon.'" data-url="'.$url->out(false).'" data-lpathid="'.$learningpathid.'" data-id="'.$this->id.'" alt=""" class="activity_completion yes" />';
+            $html = '<img src="'.$completionicon.'" data-url="'.$url->out(false).'" data-lpathid="'.$learningpathid.'" data-id="'.$this->id.'" data-cpd="'. $activity->enablecdp .'" alt=""" class="activity_completion yes" />';
         }
     
         ob_start();
@@ -311,5 +314,7 @@ class activity extends \wa_learning_path\lib\base_controller {
     
         return ob_get_contents();
     }
+
+
 
 }

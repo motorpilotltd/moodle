@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery', 'theme_bootstrap/bootstrap', 'core/str', 'local_wa_learning_path/select2'], function($, bootstrap) {
+define(['jquery', 'theme_bootstrap/bootstrap', 'core/str', 'local_wa_learning_path/select2'], function($, bootstrap, str) {
 
     "use strict"; // jshint ;_;
     return {
@@ -13,7 +13,11 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str', 'local_wa_learning_pa
                     $('#myModal').modal('show');
 
                     $('#myModal .matrix_activities .activity_completion').click(function(){
-                        tickCompletion($(this));
+                        if ($(this).data('cpd') === 1 && $(this).hasClass('no')) {
+                            $('#completionModal').modal('show', $(this));
+                        } else {
+                            tickCompletion($(this));
+                        }
                     });
 
                     $('#myModal #print_section').click(function(){
@@ -57,29 +61,51 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str', 'local_wa_learning_pa
                 var activityid = img.attr('data-id');
                 var learning_path_id = img.attr('data-lpathid');
                 var completion_url = img.attr('data-url');
+                var activity_notes = $('#completionModal #notes').val();
+                var date_completed = Date.parse($('#completionModal #date').val()) / 1000;
 
-                // If completing and data-cpd is 1 need to confirm.
-                if (status && img.data('cpd')) {
-                    var result = window.confirm(str.get_string('confirm:cpdupload', 'local_wa_learning_path'));
-                    if (!result) {
-                        return false;
-                    }
-                }
                 $.ajax({
                     method: "POST",
                     url: completion_url,
-                    data: { activityid: activityid, learningpathid: learning_path_id,completion: status }
+                    data: { activityid: activityid, learningpathid: learning_path_id, completion: status,
+                        datecompleted: date_completed, activitynotes: activity_notes }
                 })
                     .done(function( returnData ) {
                         var cell = img.parent();
                         $(cell).html( returnData );
 
                         $(cell).find('.activity_completion').on('click', function(){
-                            tickCompletion($(this));
+                            if ($(this).data('cpd') === 1 && $(this).hasClass('no')) {
+                                $('#completionModal').modal('show', $(this));
+                            } else {
+                                tickCompletion($(this));
+                            }
                         });
                     });
 
                 return false;
+            };
+
+            var saveCompletionNotes = function(button) {
+
+                var confirm = $('#completionModal #confirmation').is(':checked');
+                var date_completed = Date.parse($('#completionModal #date').val()) / 1000;
+
+                if (!date_completed || !confirm) {
+
+                    if (!date_completed) {
+                        $('#completionModal .label-date').css('color', 'red');
+                    }
+
+                    if (!confirm) {
+                        $('#completionModal .label-confirmation').css('color', 'red');
+                    }
+                    return false;
+                }
+
+                tickCompletion($('.cpd_currently_completing'));
+
+                return true;
             };
 
             var updateFiltered = function() {
@@ -114,6 +140,21 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str', 'local_wa_learning_pa
                 });
             };
 
+            var clearCompletionModal = function () {
+                var header = $("#myModal .matrix-activities-title");
+                var rlabel = header.data("rlabel");
+                var clabel = header.data("clabel");
+                $("#completionModal").find("#completionModalLabel2").text(clabel);
+                $("#completionModal").find("#completionModalLabel3").text(rlabel);
+
+                $('#completionModal #confirmation').prop("checked", false);
+                $('#completionModal #notes').val("");
+                $('#completionModal #date').val(new Date().toISOString().substr(0, 10));
+
+                $('#completionModal .label-confirmation').css('color', '#3c3c3b');
+                $('#completionModal .label-date').css('color', '#3c3c3b');
+            }
+
             var updateLevels = function(urlFromSelect) {
                 var levels = '';
                 var regions = '';
@@ -136,6 +177,17 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str', 'local_wa_learning_pa
             };
 
             $(document).ready(function($) {
+                $('#completionModal #cancel2').on('click', function () {
+                    $('#completionModal').modal('hide');
+                });
+
+                $('#completionModal #save2').on('click', function () {
+
+                    if (saveCompletionNotes($(this))) {
+                        $('#completionModal').modal('hide');
+                    }
+                });
+
                 $('select[name="levels"]').select2({
                     placeholder: "Select level",
                 });
@@ -154,6 +206,19 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str', 'local_wa_learning_pa
                     // Now return a false (negating the link action) to prevent Bootstrap's JS 3.1.1
                     // from throwing a 'preventDefault' error due to us overriding the anchor usage.
                     return false;
+                });
+
+                $('#completionModal').on('show.bs.modal', function (event) {
+                    var myModal = $('#myModal .modal-content');
+                    var img = $(event.relatedTarget);
+                    img.addClass('cpd_currently_completing');
+                    myModal.append($('<div></div>').addClass('modal-gray-out'));
+                    clearCompletionModal();
+                });
+
+                $('#completionModal').on('hide.bs.modal', function (event) {
+                    $('.activity_completion').removeClass('cpd_currently_completing');
+                    $('.modal-gray-out').remove();
                 });
 
                 $("#myModal").on('hide.bs.modal', function(){

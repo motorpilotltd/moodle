@@ -406,3 +406,7 @@ $string['region_class'] = 'Label class for region: {$a}';
 
 $string['no_objectives_defined'] = 'No objectives defined';
 $string['no_activities_defined'] = 'No activities defined';
+$string['guide_title'] = '5 minute guide - Recommended';
+$string['guide_notes'] = 'Notes associated with this activity (optional)';
+$string['guide_date'] = 'Date completed *';
+$string['guide_confirm'] = 'I confirm that I have completed this activity - add this to my learning record *';

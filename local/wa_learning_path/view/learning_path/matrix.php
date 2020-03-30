@@ -212,6 +212,48 @@ $preview = optional_param('preview', 0, PARAM_INT);
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" id="completionModal" tabindex="-1" role="dialog" aria-labelledby="completionModalLabel">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" type="button" class="btn btn-default pull-right" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></a>
+                <h1 class="modal-title" id="completionModalLabel"><?php echo $this->get_string('guide_title'); ?></h1>
+                <h5 id="completionModalLabel2"></h5>
+                <h5 id="completionModalLabel3"></h5>
+            </div>
+            <div class="modal-body">
+                <div class="form-inline">
+                    <div class="form-group col-xs-12">
+                        <label for="notes" class="col-xs-12 control-label label-notes"><?php echo $this->get_string('guide_notes'); ?></label>
+                        <textarea name="notes" class="col-xs-12" id="notes" placeholder=""></textarea>
+                    </div>
+                </div>
+                <div class="form-inline">
+                    <div class="form-group col-xs-12">
+                        <label for="date" class="col-xs-12 control-label label-date"><?php echo $this->get_string('guide_date'); ?></label>
+                        <input type="date" name="date" id="date" value="<?php echo date('Y-m-d'); ?>">
+                    </div>
+                </div>
+                <div class="form-inline">
+                    <div class="form-group col-xs-12">
+                        <div class="checkbox">
+                            <label for="confirmation" class="col-sm-12 control-label label-confirmation">
+                                <input type="checkbox" id="confirmation"> <?php echo $this->get_string('guide_confirm'); ?>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button type="submit" id="save2" data-id="" class="btn btn-primary pull-left"><?php echo get_string('save', 'local_wa_learning_path'); ?></button>
+                    <button type="submit" id="cancel2" class="btn btn-default pull-left"><?php echo get_string('cancel', 'local_wa_learning_path'); ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php
 echo \html_writer::end_div();
 ?>

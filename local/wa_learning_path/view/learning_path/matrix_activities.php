@@ -23,7 +23,7 @@ global $CFG;
             <?php endif; ?>
 
             <?php if (isset($this->activities->{$this->key})): ?>
-                <span class="matrix-activities-title"><?php echo $this->r_label ?>, <?php echo $this->c_label ?>
+                <span class="matrix-activities-title" data-rlabel="<?php echo $this->r_label ?>" data-clabel="<?php echo $this->c_label ?>"><?php echo $this->r_label ?>, <?php echo $this->c_label ?>
                     <?php if (isset($this->headerTooltip) && $this->headerTooltip): ?>
                         <a class="btn-link help" role="button" data-container="body" data-toggle="popover" data-placement="right" data-content="<div class=&quot;no-overflow&quot;><p><?php echo $this->headerTooltip; ?></p>
                         </div> " data-html="true" tabindex="0" data-trigger="focus">
