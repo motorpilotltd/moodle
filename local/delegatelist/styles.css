@@ -118,7 +118,7 @@ body#page-local-delegatelist-index .overlay {
 }
 
 body#page-local-delegatelist-index .spinner {
-    margin: 10% auto;
+    margin: 20% auto;
     height: 64px;
     width: 64px;
     animation: rotate 0.8s infinite linear;
