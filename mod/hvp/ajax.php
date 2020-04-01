@@ -347,15 +347,15 @@ switch($action) {
         $id = required_param('id', PARAM_INT);
         $cm = get_coursemodule_from_id('hvp', $id);
 
-        $PAGE->set_context($cm->context);
-
         if (!$cm) {
-            print_error('invalidcoursemodule');
+            break;
         }
         $course = $DB->get_record('course', array('id' => $cm->course));
         if (!$course) {
-            print_error('coursemisconf');
+            break;
         }
+
+        $PAGE->set_context(context_module::instance($cm->id));
 
         $view = new \mod_hvp\view_assets($cm, $course, null, true, true);
 
