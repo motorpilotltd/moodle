@@ -234,6 +234,7 @@ select.custom-select.roles {
     transform: rotate(180deg);
     transform-origin:center;
     overflow-wrap: normal;
+    margin-top: 50px;
 }
 
 .modal-text-right {
@@ -243,8 +244,10 @@ select.custom-select.roles {
     direction: rtl;
     -ms-writing-mode: bt-lr;
     writing-mode: vertical-rl;
+    margin-top: 50px;
 }
 .column-left{
+    align-content: flex-start;
     position: absolute;
     top:0;
     left:0;
@@ -257,6 +260,7 @@ select.custom-select.roles {
 }
 
 .column-right{
+    align-content: flex-start;
     position: absolute;
     top:0;
     right:0;

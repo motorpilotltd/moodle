@@ -58,11 +58,16 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str', 'local_wa_learning_pa
             var tickCompletion = function(img) {
 
                 var status = img.hasClass('no') ? 1 : 0;
+                var cpd_enabled = img.attr('data-cpd');
                 var activityid = img.attr('data-id');
                 var learning_path_id = img.attr('data-lpathid');
                 var completion_url = img.attr('data-url');
                 var activity_notes = $('#completionModal #notes').val();
                 var date_completed = Date.parse($('#completionModal #date').val()) / 1000;
+
+                if (cpd_enabled == 1 && !status) {
+                    return false;
+                }
 
                 $.ajax({
                     method: "POST",
@@ -213,12 +218,17 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'core/str', 'local_wa_learning_pa
                     var img = $(event.relatedTarget);
                     img.addClass('cpd_currently_completing');
                     myModal.append($('<div></div>').addClass('modal-gray-out'));
+                    $('.popover').remove();
                     clearCompletionModal();
                 });
 
                 $('#completionModal').on('hide.bs.modal', function (event) {
                     $('.activity_completion').removeClass('cpd_currently_completing');
                     $('.modal-gray-out').remove();
+                });
+
+                $("#myModal").on('show.bs.modal', function(){
+                    $('.popover').remove();
                 });
 
                 $("#myModal").on('hide.bs.modal', function(){

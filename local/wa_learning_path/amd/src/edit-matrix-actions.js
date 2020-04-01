@@ -344,7 +344,7 @@ define(['jquery', 'theme_bootstrap/bootstrap', 'local_wa_learning_path/helper', 
             $('.wa_activity_mform select[name="type"]').val('video');
             $('.wa_activity_mform #id_description_editoreditable').html('');
             $('.wa_activity_mform input[name="provider"]').val( this.selfledText );
-            $('.wa_activity_mform input[name="enablecdp"]').prop( "checked", false );
+            $('.wa_activity_mform input[name="enablecdp"]').prop( "checked", true );
             $('.wa_activity_mform select[name="learningmethod"]').val('SELF-LED');
             $('.wa_activity_mform input[name="duration"]').val('');
             $('.wa_activity_mform select[name="unit"]').val('MIN');

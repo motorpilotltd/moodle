@@ -203,10 +203,11 @@ global $CFG;
                                         <?php endif; ?>
                                     <?php else: ?>
                                         <?php $url =  new \moodle_url($this->url, array('c' => 'activity', 'a' => 'set_completion'));  ?>
+                                        <?php global $DB; $cpd = (int) $DB->get_field('wa_learning_path_activity', 'enablecdp', array('id' => $activity->id)); ?>
                                         <?php if($activity->completed): ?>
-                                            <img src="<?php echo $completionicon ?>" data-url="<?php echo $url->out(false);?>" data-lpathid="<?php echo $this->learning_path->id; ?>" data-id="<?php echo (int) $activity->id ?>" alt="" class="activity_completion yes" />
+                                            <img src="<?php echo $completionicon ?>" data-url="<?php echo $url->out(false);?>" data-lpathid="<?php echo $this->learning_path->id; ?>" data-id="<?php echo (int) $activity->id ?>" data-cpd="<?php echo $cpd ?>" alt="" class="activity_completion yes" />
                                         <?php else: ?>
-                                            <img src="<?php echo $completionicon ?>" data-url="<?php echo $url->out(false);?>"  data-lpathid="<?php echo $this->learning_path->id; ?>" data-id="<?php echo (int) $activity->id ?>" data-cpd="<?php global $DB; echo (int) $DB->get_field('wa_learning_path_activity', 'enablecdp', array('id' => $activity->id)); ?>" alt="" class="activity_completion no" />
+                                            <img src="<?php echo $completionicon ?>" data-url="<?php echo $url->out(false);?>"  data-lpathid="<?php echo $this->learning_path->id; ?>" data-id="<?php echo (int) $activity->id ?>" data-cpd="<?php echo $cpd ?>" alt="" class="activity_completion no" />
                                             <div class="mark_as_complete"><?php echo $this->get_string('mark_as_complete') ?></div>
                                         <?php endif; ?>
                                     <?php endif; ?>

@@ -898,7 +898,9 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         $cellDesc = [];
         if ($role) {
-            $this->roleName = $DB->get_field('wa_learning_path_role', 'name',  ['id' => $role , 'learningpathid' => $this->id]);
+            $roleInfo = $DB->get_record('wa_learning_path_role', ['id' => $role , 'learningpathid' => $this->id]);
+            $this->roleName = $roleInfo->name;
+            $this->roleDescription = $roleInfo->description;
             $cellData = $DB->get_records('wa_learning_path_role_act', ['roleid' => $role]);
 
             $this->activities = \wa_learning_path\model\learningpath::fill_activities(@$this->matrix->activities,
@@ -941,6 +943,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         
         table.print-learning-journey {
             width: 297mm;
+            margin-top: 50px;
         }
         
         h2.print-learning-journey {
@@ -982,6 +985,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         
         .print-learning-journey td {
             border:0;
+            vertical-align: top;
         }
         
         table th, table td{

@@ -1,6 +1,7 @@
 <h2 class="<?php if ($this->role) { echo "print-learning-journey"; } ?>"><?php echo $this->learning_path->title ?></h2>
 <?php if ($this->role): ?>
 <h2><?php echo $this->roleName ?></h2>
+<p><?php echo format_text($this->roleDescription); ?></p>
 <?php endif; ?>
 <table class="<?php if ($this->role) { echo "print-learning-journey"; } ?>">
     <?php if ($this->role): ?>

@@ -303,7 +303,7 @@ class activity extends \wa_learning_path\lib\base_controller {
         } else {
             $completionfilename = "/local/wa_learning_path/pix/a_completed.png";
             $completionicon = new \moodle_url($completionfilename);
-    
+
             $url =  new \moodle_url($this->url, array('c' => 'activity', 'a' => 'set_completion'));
             $html = '<img src="'.$completionicon.'" data-url="'.$url->out(false).'" data-lpathid="'.$learningpathid.'" data-id="'.$this->id.'" data-cpd="'. $activity->enablecdp .'" alt=""" class="activity_completion yes" />';
         }
