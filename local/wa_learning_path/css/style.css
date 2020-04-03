@@ -248,6 +248,7 @@ select.custom-select.roles {
 }
 .column-left{
     align-content: flex-start;
+    align-items: flex-start;
     position: absolute;
     top:0;
     left:0;
@@ -261,6 +262,7 @@ select.custom-select.roles {
 
 .column-right{
     align-content: flex-start;
+    align-items: flex-start;
     position: absolute;
     top:0;
     right:0;

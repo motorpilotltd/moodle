@@ -169,7 +169,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         if ($key) {
             $matrix = json_decode($this->learning_path->matrix);
 
-            if (isset($matrix->activities->{$key}) && in_array($role, $matrix->activities->{$key}->enabledForRoles)) {
+            if (isset($matrix->activities->{$key}->enabledForRoles) && in_array($role, $matrix->activities->{$key}->enabledForRoles)) {
                 $activitiesData = $DB->get_records('wa_learning_path_role_act', ['roleid' => $role, 'activityid' => substr($key, 1)]);
             } else {
                 $activitiesData = null;
