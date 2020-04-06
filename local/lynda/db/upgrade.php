@@ -90,7 +90,9 @@ function xmldb_local_lynda_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080520, 'local', 'lynda');
     }
 
-    if ($oldversion < 2017051502) {
+    // Requires specific version of local_taps to be able to upgrade.
+    // Fudge for dependency check not working/being too ruthless.
+    if ($oldversion < 2017051502 && get_config('local_taps', 'version') >= 2017051500) {
         // Update existing records to lock them.
         $locksql = "UPDATE {local_taps_enrolment}
                    SET locked = 1, origin = 'Lynda.com'

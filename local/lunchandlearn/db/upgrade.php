@@ -68,7 +68,9 @@ function xmldb_local_lunchandlearn_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080500, 'local', 'lunchandlearn');
     }
 
-    if ($oldversion < 2017051501) {
+    // Requires specific version of local_taps to be able to upgrade.
+    // Fudge for dependency check not working/being too ruthless.
+    if ($oldversion < 2017051501 && get_config('local_taps', 'version') >= 2017051500) {
         // Update existing records to lock them.
         $locksql = "UPDATE {local_taps_enrolment}
                    SET locked = 1
