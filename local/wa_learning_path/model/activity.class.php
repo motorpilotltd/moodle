@@ -2,7 +2,7 @@
 
 /**
  * Model
- * 
+ *
  * @package     wa_learning_path
  * @author      Łukasz Juchnik <lukasz.juchnik@webanywhere.co.uk>
  * @author      Bartosz Hornik <bartosz.hornik@webanywhere.co.uk>
@@ -13,7 +13,7 @@ namespace wa_learning_path\model;
 
 /**
  * Activity model
- * 
+ *
  * @package     local_wa_cad_integration
  * @author      Łukasz Juchnik <lukasz.juchnik@webanywhere.co.uk>
  * @author      Bartosz Hornik <bartosz.hornik@webanywhere.co.uk>
@@ -26,7 +26,7 @@ class activity {
     const TYPE_TEXT = 'text';
 
     /**
-     * Get list of Activitys 
+     * Get list of Activitys
      * @global type $CFG
      * @global resource $DB
      * @param type $sort
@@ -52,16 +52,16 @@ class activity {
         if ($sort) {
             $sort = " ORDER BY $sort $dir";
         }
-        
+
         $completionsql = '';
         $join = '';
-        
+
         if($completioninfo) {
             $params['userid'] = (int) $USER->id;
             $completionsql = ' , ac.timecreated as completedtime ';
             $join = 'LEFT JOIN {wa_learning_path_a_com} ac ON a.id = ac.activityid AND ac.userid = :userid';
         }
-        
+
         // Query DB.
         if (!$count) {
             // SQL query.
@@ -71,17 +71,17 @@ class activity {
                     . "LEFT JOIN {wa_learning_path} lp ON lp.id = a.idlearningpath "
                     . "LEFT JOIN {wa_learning_path_act_region} ar ON ar.activityid = a.id "
                         . " {$join} ";
-                    
+
 
             $rs = $DB->get_records_sql($sql . $where . $sort, $params, $page, $recordsperpage);
-            
+
             $ids = array();
             foreach($rs as &$r) {
                 $ids[] = $r->id;
                 $r->regionsname = array();
                 $r->regionids = array();
             }
-            
+
             if ($ids) {
                 list($usql, $params) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED, 'activityid');
                 $sql = ""
@@ -109,7 +109,7 @@ class activity {
 
             return $DB->count_records_sql($sql . $where, $params);
         }
-        
+
         return $rs;
     }
 
@@ -146,7 +146,7 @@ class activity {
                     . "WHERE activityid = :activityid";
 
             $regions = $DB->get_records_sql($sql, array('activityid' => (int) $id));
-            
+
             if (!empty($regions)) {
                 foreach ($regions as $region) {
                     $record->region[] = $region->regionid;
@@ -169,7 +169,7 @@ class activity {
         require_once($CFG->dirroot . '/local/wa_learning_path/classes/event/activity_deleted.php');
 
         $status = $DB->delete_records('wa_learning_path_activity', array('id' => (int) $id));
-        
+
         if($status) {
             $event = \local_wa_learning_path\event\activity_deleted::create(array(
                 'objectid' => $id,
@@ -177,7 +177,7 @@ class activity {
             ));
             $event->trigger();
         }
-        
+
         return $status;
     }
 
@@ -192,7 +192,7 @@ class activity {
 
         require_once($CFG->dirroot.'/local/wa_learning_path/classes/event/activity_created.php');
         require_once($CFG->dirroot.'/local/wa_learning_path/classes/event/activity_updated.php');
-        
+
         if (empty($data->id)) {
             // New Activity
             $data->timecreated = time();
@@ -200,7 +200,7 @@ class activity {
             $regions = $data->region;
             unset($data->region);
             $id = $DB->insert_record('wa_learning_path_activity', $data, true);
-            
+
             $event = \local_wa_learning_path\event\activity_created::create(array(
                 'objectid' => $id,
                 'context' => \context_system::instance(),
@@ -218,7 +218,7 @@ class activity {
             unset($data->region);
             $DB->update_record('wa_learning_path_activity', $data);
             $id = $data->id;
-            
+
             $event = \local_wa_learning_path\event\activity_updated::create(array(
                 'objectid' => $id,
                 'context' => \context_system::instance(),
@@ -229,9 +229,9 @@ class activity {
                 ),
             ));
             $event->trigger();
-            
+
         }
-        
+
         if($id) {
             $DB->delete_records('wa_learning_path_act_region', array('activityid' => $id));
 
@@ -242,10 +242,10 @@ class activity {
                 $DB->insert_record('wa_learning_path_act_region', $r, true);
             }
         }
-        
+
         return $id;
     }
-    
+
     /**
      * Check if usere have access and get activity data
      * @global resource $DB
@@ -262,9 +262,9 @@ class activity {
         if (empty($userid)) {
             $userid = $USER->id;
         }
-        
+
         $record = $DB->get_record('wa_learning_path_activity', array('id' => (int) $id));
-        
+
         return $record;
     }
 
@@ -284,15 +284,15 @@ class activity {
         if (empty($id)) {
             return false;
         }
-        
+
         if (is_null($userid)) {
             $userid = $USER->id;
         }
 
         if(!empty($completion)) {
-            
+
             $current = $DB->get_record('wa_learning_path_a_com', array('activityid' => (int) $id, 'userid' => (int) $userid));
-            
+
             if(empty($current)) {
                 $data = new \stdClass();
                 $data->activityid = (int) $id;
@@ -319,6 +319,9 @@ class activity {
                             'p_subject_catetory' => $activity->subject,
                             'p_learning_method' => $activity->learningmethod,
                             'p_learning_desc' => $activitynotes,
+                            'p_origin' => 'wa_learning_path_activity',
+                            'p_originid' => $activity->id,
+                            'locked' => 1,
                         )
                     );
                 }
