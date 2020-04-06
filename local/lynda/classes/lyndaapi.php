@@ -303,7 +303,7 @@ class lyndaapi {
                         $raw->CourseDuration,
                         'MIN',
                         ['p_learning_method' => 'ECO', 'p_subject_catetory' => 'PD', 'p_learning_desc' => $description,
-                         'p_providerid'      => $raw->CourseID, 'locked' => true]
+                        'p_origin' => 'Lynda.com', 'p_originid' => $raw->CourseID, 'locked' => true]
                 );
                 mtrace('Created CPD record for ' . $raw->Username);
             }
@@ -335,7 +335,7 @@ class lyndaapi {
             if (!isset($coursehashes[$course->remotecourseid])) {
                 $course->insert();
                 $sql =
-                        "UPDATE {local_taps_enrolment} SET learningdesc = :coursedescription WHERE provider = 'Lynda.com' AND providerid = :remotecourseid";
+                        "UPDATE {local_taps_enrolment} SET learningdesc = :coursedescription WHERE origin = 'Lynda.com' AND originid = :remotecourseid";
                 $DB->execute($sql, ['coursedescription' => $course->description, 'remotecourseid' => $course->remotecourseid]);
             } else if (!empty($course->deletedbylynda) || $course->lyndadatahash != $coursehashes[$course->remotecourseid]) {
                 $course->deletedbylynda = false;
