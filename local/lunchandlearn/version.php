@@ -32,4 +32,5 @@ $plugin->release   = "3.3.1 (Build: {$plugin->version})";
 
 $plugin->dependencies = array(
     'local_invites' => 2015111600,
+    'local_taps' => 2017051500,
 );
