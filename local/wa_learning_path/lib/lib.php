@@ -173,6 +173,8 @@ function is_activity_editor($userid = false) {
 function get_modules($ids = array(), $matrixview = false, $group_courses = true) {
 	global $DB, $USER;
 
+    \wa_learning_path\lib\load_model('learningpath');
+
 	$field702010 = \wa_learning_path\lib\get_custom_field(WA_LEARNING_PATH_CUSTOM_FIELD_702010);
 	$fieldmethodology = \wa_learning_path\lib\get_custom_field(WA_LEARNING_PATH_CUSTOM_FIELD_METHODOLOGY);
 

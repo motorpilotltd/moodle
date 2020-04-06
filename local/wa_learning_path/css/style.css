@@ -204,7 +204,7 @@ select.custom-select.roles {
 .matrix-text-left img.icon {
     transform-origin: top right;
     direction: ltr;
-    -ms-writing-mode: bt-lr;
+    -ms-writing-mode: bt-rl;
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     transform-origin:center;
@@ -218,7 +218,7 @@ select.custom-select.roles {
     display: inline-block;
     transform-origin: top right;
     direction: ltr;
-    -ms-writing-mode: bt-lr;
+    -ms-writing-mode: bt-rl;
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     transform-origin:center;
@@ -229,7 +229,7 @@ select.custom-select.roles {
     display: block;
     transform-origin: top right;
     direction: ltr;
-    -ms-writing-mode: bt-lr;
+    -ms-writing-mode: bt-rl;
     writing-mode: vertical-rl;
     transform: rotate(180deg);
     transform-origin:center;
@@ -241,8 +241,8 @@ select.custom-select.roles {
     text-align: center;
     display: block;
     transform-origin: top left;
-    direction: rtl;
-    -ms-writing-mode: bt-lr;
+    /*direction: rtl;*/
+    -ms-writing-mode: bt-rl;
     writing-mode: vertical-rl;
     margin-top: 50px;
 }
@@ -274,6 +274,9 @@ select.custom-select.roles {
     margin:0;
 }
 
+.fa-chevron-right {
+    -ms-transform: rotate(-90deg);
+}
 
 #matrixform {
     margin-top: 40px;

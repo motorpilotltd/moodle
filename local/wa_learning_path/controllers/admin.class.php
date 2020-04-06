@@ -494,7 +494,6 @@ class admin extends \wa_learning_path\lib\base_controller {
         $id = optional_param('id', null, PARAM_INT);
         $matrixNew = optional_param('matrix', null, PARAM_RAW);
         
-        
         \wa_learning_path\lib\load_form('matrix');
         \wa_learning_path\lib\load_form('activity');
         
