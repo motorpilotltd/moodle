@@ -142,9 +142,7 @@ function xmldb_aruphonestybox_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111614, 'mod', 'aruphonestybox');
     }
 
-    // Requires specific version of local_taps to be able to upgrade.
-    // Fudge for dependency check not working/being too ruthless.
-    if ($oldversion < 2017051501 && get_config('local_taps', 'version') >= 2017051500) {
+    if ($oldversion < 2017051502) {
         // Set bulk enrolment update SQL.
         $updatesql = "UPDATE {local_taps_enrolment}
                    SET classname = :classname, origin = :origin, originid = :originid, locked = :locked
@@ -177,7 +175,7 @@ function xmldb_aruphonestybox_upgrade($oldversion) {
         }
 
         // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2017051501, 'mod', 'aruphonestybox');
+        upgrade_plugin_savepoint(true, 2017051502, 'mod', 'aruphonestybox');
     }
 
     return true;

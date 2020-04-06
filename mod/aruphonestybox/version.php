@@ -24,11 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version      = 2017051501;
+$plugin->version      = 2017051502;
 $plugin->requires     = 2017051500; // Moodle 3.3.
 $plugin->component    = 'mod_aruphonestybox';
 $plugin->maturity     = MATURITY_STABLE;
-$plugin->release      = "3.3.1 (Build: {$plugin->version})";
+$plugin->release      = "3.3.2 (Build: {$plugin->version})";
 
 $plugin->dependencies = array(
     'block_arup_mylearning' => 2015111601,
