@@ -173,7 +173,8 @@ function is_activity_editor($userid = false) {
 function get_modules($ids = array(), $matrixview = false, $group_courses = true) {
 	global $DB, $USER;
 
-	//$fieldlevel = \wa_learning_path\lib\get_custom_field(WA_LEARNING_PATH_CUSTOM_FIELD_LEVEL);
+    \wa_learning_path\lib\load_model('learningpath');
+
 	$field702010 = \wa_learning_path\lib\get_custom_field(WA_LEARNING_PATH_CUSTOM_FIELD_702010);
 	$fieldmethodology = \wa_learning_path\lib\get_custom_field(WA_LEARNING_PATH_CUSTOM_FIELD_METHODOLOGY);
 
@@ -197,14 +198,12 @@ function get_modules($ids = array(), $matrixview = false, $group_courses = true)
 
 	$sql = "select CASE WHEN rc.regionid IS NULL THEN " . $DB->sql_concat(('c.id'), "'-'", "'no_region'") . "
                     ELSE {$unique} END as unique_id, c.id, c.fullname, c.summary, c.summaryformat, r.id as regionid, r.name as region {$completionsql} "
-		//. (!empty($fieldlevel) ? ", d1.data as level ": " ")
 		. (!empty($field702010) ? ", d2.data as p702010 " : " ")
 		. (!empty($fieldmethodology) ? ", d3.data as methodology " : " ")
 		. " from {course} c " .
 		" left join {local_regions_reg_cou} rc on rc.courseid = c.id " .
 		$join .
 		" left join {local_regions_reg} r on rc.regionid = r.id " .
-		//($fieldlevel ? " left join {coursemetadata_info_data} d1 on d1.course = c.id and d1.fieldid = ".$fieldlevel : ' ') .
 		($field702010 ? " left join {coursemetadata_info_data} d2 on d2.course = c.id and d2.fieldid = " . $field702010 : ' ') .
 		($fieldmethodology ? " left join {coursemetadata_info_data} d3 on d3.course = c.id and d3.fieldid = " . $fieldmethodology : ' ') .
 		" where visible = 1 and category > 0 " . $usql . " order by fullname ";

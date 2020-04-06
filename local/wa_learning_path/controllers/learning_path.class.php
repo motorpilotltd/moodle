@@ -29,12 +29,20 @@ class learning_path extends \wa_learning_path\lib\base_controller {
     public $id;
     public $learning_path;
     public $preview = 0;
-
+    private $mode = 'normal';
+    public $rowId = null; // current row
+    public $nextColumn = null; // next column in the matrix assuming we are within the cell
+    public $previousColumn = null; // previous column in the matrix assuming we are within the cekk
+    
     function __construct() {
         global $USER, $PAGE;
 
         parent::__construct();
         $PAGE->set_pagelayout('standard');
+        $mode = optional_param('mode', 'normal', PARAM_TEXT);
+        if($mode === 'ajax') {
+        
+        }
     }
 
     public function no_access($capability = null) {
@@ -71,6 +79,293 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         }
     }
 
+    public function is_visible($activity, $type)
+    {
+        $visible = true;
+        foreach ($this->cellData['activities'] as $act) {
+            if ($act->itemid == $activity && $act->type = $type) {
+                $visible = $act->visible;
+            }
+        }
+
+        return $visible;
+    }
+
+    public function change_activity_position($activity, $newPosition, &$activities)
+    {
+        $activitiesToRemove = [];
+        foreach ($activities->{$activity->position} as $index => $act) {
+            if ($act->position != $newPosition && $act->id == $activity->id && $act->type == $activity->type) {
+                $activitiesToRemove[$act->type] = $act->id;
+                $movedActivity = $act;
+                unset($activities->{$activity->position}[$index]);
+                $movedActivity->oldposition = $movedActivity->position;
+                $movedActivity->position = $newPosition;
+                $activities->{$newPosition}[] = $movedActivity;
+            }
+        }
+    }
+    
+    public function matrix_activities_action($params = []) {
+        global $CFG, $PAGE, $DB;
+        
+        $this->check_and_get_learning_path($params);
+        \wa_learning_path\lib\load_model('activity');
+
+        // Selected role.
+        $role = optional_param('role', null, PARAM_INT);
+
+        // Selected rows of matrix.
+        $levels = optional_param('levels', null, PARAM_RAW_TRIMMED);
+    
+        // Selected region. default value -1 user will see content for all regions.
+        $regions = optional_param('regions', null, PARAM_RAW_TRIMMED);
+    
+        // Selected role.
+        $roleId = optional_param('role', null, PARAM_INT);
+        if($roleId === '0') {
+            $roleId = null;
+        }
+        // Selected rows of matrix.
+        $levels = optional_param('levels', null, PARAM_RAW_TRIMMED);
+        if($levels === '0') {
+            $levels = null;
+        }
+        // Selected region. default value -1 user will see content for all regions.
+        $regions = optional_param('regions', null, PARAM_RAW_TRIMMED);
+        if($regions === '') {
+            $regions = null;
+        }
+        
+        // Selected cell of matrix (cell-ID).
+        $key = optional_param('key', 0, PARAM_RAW_TRIMMED);
+    
+        // Moodle Page setup.
+        $this->base_url = new \moodle_url($this->url, array('c' => $this->c, 'a' => $this->a, 'id' => (int) $this->id));
+        $pagetitle = $this->get_string('header_learning_path_list') . ': ' . $this->learning_path->title . ' ' . $this->get_string('matrix');
+
+        // Get region to display
+        $this->regions = array();
+        // Get user region.
+        $this->userregion = \wa_learning_path\lib\get_user_region();
+        // Get selected regions.
+        $this->selectedregions = (!is_null($regions) && $regions !== '') ? explode(',', $regions) : null;
+        if (is_null($regions) && $regions !== '-1' && !empty($this->userregion)) {
+            // Set user region ID
+            $this->regions[] = (int) $this->userregion->id;
+            $regions = (int) $this->userregion->id;
+            $this->selectedregions = $this->userregion->id;
+        } else if (!is_null($regions) && $regions !== '-1') {
+            // If region ID is provider by GET - is set up.
+            $this->regions = is_null($this->selectedregions) ? array() : $this->selectedregions;
+        } else {
+            // Empty.
+            $this->regions = array();
+        }
+    
+        $allregionnames = \wa_learning_path\lib\get_regions();
+        $this->regionnames = array_intersect_key($allregionnames, array_fill_keys($this->regions, true));
+
+        if ($key) {
+            $matrix = json_decode($this->learning_path->matrix);
+
+            if (isset($matrix->activities->{$key}->enabledForRoles) && in_array($role, $matrix->activities->{$key}->enabledForRoles)) {
+                $activitiesData = $DB->get_records('wa_learning_path_role_act', ['roleid' => $role, 'activityid' => substr($key, 1)]);
+            } else {
+                $activitiesData = null;
+            }
+        }
+
+        $cellData = [];
+        if ($activitiesData) {
+            if ($cellDescription = $DB->get_field('wa_learning_path_role_act', 'overridedescription', ['roleid' => $role, 'activityid' => substr($key, 1), 'itemid' => 0, 'type' => 0])) {
+                $cellData['description'] = $cellDescription;
+            } else {
+                $cellData['description'] = reset($activitiesData)->overridedescription;
+            }
+            foreach ($activitiesData as $data) {
+                $cellData['activities'][$data->type . '_' . $data->itemid] = $data;
+            }
+        }
+
+        if ($role && isset($matrix->activities->{$key}) && in_array($role, $matrix->activities->{$key}->enabledForRoles)) {
+            $this->roleName = $DB->get_field('wa_learning_path_role', 'name', ['id' => $role]);
+        }
+    
+        $this->levels = !empty($levels) ? explode(',', $levels) : array();
+
+        if ($role) {
+            $this->cell_url = new \moodle_url($this->url, array('a' => 'matrix_activities', 'id' => (int) $this->id, 'levels' => (string) $levels, 'regions' => (string) $regions, 'role' => (string) $role));
+        } else {
+            $this->cell_url = new \moodle_url($this->url, array('a' => 'matrix_activities', 'id' => (int) $this->id, 'levels' => (string) $levels, 'regions' => (string) $regions));
+        }
+    
+        if($this->preview) {
+            $this->cell_url->param('preview', (int) $this->preview);
+        }
+
+        $this->role = $role;
+        $this->cell = null;
+
+        $this->cellData = $cellData;
+
+        $this->key = $key;
+        if (isset($this->learning_path->matrix)) {
+            $this->position = 'all'; // Always 'all'...
+            $this->matrix = json_decode($this->learning_path->matrix);
+        
+            if ($this->matrix) {
+                $this->matrix->visible_cols = \wa_learning_path\model\learningpath::count_visible_rows($this->matrix, $this->regions);
+                if (empty($this->matrix->visible_cols)) {
+                    $this->regionhascontent = [];
+                    foreach ($allregionnames as $regionid => $regionname) {
+                        if (\wa_learning_path\model\learningpath::count_visible_rows($this->matrix, [$regionid])) {
+                            $this->regionhascontent[$regionid] = $regionname;
+                        }
+                    }
+                }
+                $this->activities = \wa_learning_path\model\learningpath::fill_activities(@$this->matrix->activities,
+                    false, false, false, false, (bool)$this->learning_path->subscribed);
+
+                if ($this->cellData) {
+                    foreach ($this->activities->{$key}->positions as $positionName => $position) {
+                        foreach ($position as $activity) {
+                            if (isset($this->cellData['activities'][$activity->type . '_' . $activity->id])) {
+                                $overridePosition = $this->cellData['activities'][$activity->type . '_' . $activity->id]->overrideere;
+                                if ($overridePosition && $overridePosition != $positionName) {
+                                    $this->change_activity_position($activity, $overridePosition, $this->activities->{$key}->positions);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        
+            if (!empty($key) && isset($this->activities->{$key})) {
+                // Get labels.
+                list($this->r_label, $this->c_label) = \wa_learning_path\model\learningpath::get_cell_labels($key,
+                    $this->matrix);
+
+                // Set a breadcrumb info.
+                $this->base_url_cell = new \moodle_url(
+                    $this->url,
+                    array(
+                        'c' => $this->c,
+                        'a' => $this->a,
+                        'id' => (int) $this->id,
+                        'regions' => empty($this->userregion->id) ? '' : $this->userregion->id,
+                        'key' => $this->key));
+            
+                $pagetitle .= ' / ' . $this->r_label .', '. $this->c_label;
+    
+                \wa_learning_path\lib\load_form('addactivity');
+                $this->form = new \wa_learning_path\form\addactivity_form();
+                $this->methodologylist = array_merge($this->form->get_activity_type(false), \wa_learning_path\lib\get_methodologies());
+            
+                // Load system context.
+                $this->systemcontext = \context_system::instance();
+                
+                // Load cell data.
+                $this->cell = $this->activities->{$key};
+                $this->cell->content = \file_rewrite_pluginfile_urls($this->cell->content, 'pluginfile.php',
+                    $this->systemcontext->id, 'local_wa_learning_path', 'content', $this->learning_path->id);
+            
+                // Sort positions.
+                foreach (['essential', 'recommended', 'elective'] as $position) {
+                    usort($this->cell->positions->{$position},
+                        array("wa_learning_path\controller\learning_path", "sort_activity"));
+                }
+            
+                // Merge (sorted) individual positions.
+                $this->cell->positions->all = array_merge(
+                    $this->cell->positions->essential, $this->cell->positions->recommended,
+                    $this->cell->positions->elective);
+            
+                // Count items for all conditions: region.
+                $this->count = \wa_learning_path\model\learningpath::count_activities_by_positions($this->cell->positions, $this->regions);
+            
+            
+                // Set a breadcrumb info.
+                $this->base_position_cell = new \moodle_url(
+                    $this->url,
+                    array(
+                        'c' => $this->c,
+                        'a' => $this->a,
+                        'id' => (int) $this->id,
+                        'regions' => empty($this->userregion->id) ? '' : $this->userregion->id,
+                        'key' => $this->key));
+
+            }
+            list($columnId, $this->rowId) = explode('_', str_replace('#', '', $this->key));
+
+            foreach($this->matrix->cols as $col) {
+                if($col->id === $columnId) {
+                    if (isset($col->description)) {
+                        $this->headerTooltip = $col->description;
+                    }
+                }
+            }
+            $this->locate_previous_and_next_cells($columnId, $this->regions);
+        }
+    
+        $this->view('matrix_activities');
+    }
+    
+    private function locate_previous_and_next_cells($currentColumn, $selectedRegions)
+    {
+        $currentColumnPosition = 0;
+        foreach($this->matrix->cols as $position => $cols) {
+            if($cols->show && \wa_learning_path\model\learningpath::check_regions_match($selectedRegions, $cols->region)) {
+                if($cols->id === $currentColumn) {
+                    $currentColumnPosition = $position;
+                }
+            }
+        }
+    
+        $this->previousColumn = $this->findPreviousColumn($currentColumnPosition, $selectedRegions);
+        $this->nextColumn = $this->findNextColumn($currentColumnPosition, $selectedRegions);
+    }
+    
+    private function findPreviousColumn($index, $selectedRegions) {
+        while($index > 0) {
+            $index--;
+            
+            if(empty($this->matrix->cols[$index])) {
+                continue;
+            }
+            
+            if(!$this->matrix->cols[$index]->show) {
+                continue;
+            }
+
+            if(!\wa_learning_path\model\learningpath::check_regions_match($selectedRegions, $this->matrix->cols[$index]->region)) {
+                continue;
+            }
+            
+            return $index;
+        }
+    }
+    
+    private function findNextColumn($index, $selectedRegions) {
+        while($index < count($this->matrix->cols)) {
+            $index++;
+            
+            if(empty($this->matrix->cols[$index])) {
+                continue;
+            }
+            
+            if(!$this->matrix->cols[$index]->show) {
+                continue;
+            }
+
+            if(!\wa_learning_path\model\learningpath::check_regions_match($selectedRegions, $this->matrix->cols[$index]->region)) {
+                continue;
+            }
+            
+            return $index;
+        }
+    }
+    
     /**
      * View learing path list
      */
@@ -128,18 +423,24 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
     public function view_action($params = array()) {
         global $CFG, $PAGE;
+        $PAGE->set_pagelayout('base');
         $this->check_and_get_learning_path($params);
-
+        $this->generateSubscribeButton();
+        $PAGE->set_button($this->generateNavbarButton(
+            'addlearningpath',
+            'admin',
+            'edit',
+            $this->id,
+            $this->get_string('edit_learning_path')
+        ));
+        
         $this->base_url = new \moodle_url($this->url, array('c' => $this->c, 'a' => $this->a, 'id' => (int) $this->id));
         $PAGE->set_url($this->base_url);
         $PAGE->navbar->add($this->get_string('header_learning_path_list'),
                 new moodle_url($this->url, array('c' => 'learning_path')));
         $PAGE->navbar->add($this->learning_path->title, $this->base_url);
-        $PAGE->navbar->add($this->get_string('summary'));
 
         $PAGE->set_title($this->get_string('header_landing_page') . ': ' . $this->learning_path->title . ' ' . $this->get_string('summary'));
-        $this->subscribeurl = new \moodle_url($this->url,
-                array('a' => ($this->learning_path->subscribed) ? 'unsubscribe' : 'subscribe', 'id' => $this->id));
         $this->matrixurl = new \moodle_url($this->url, array('a' => 'matrix', 'id' => $this->id));
 
         $systemcontext = \context_system::instance();
@@ -156,46 +457,97 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         $this->view('view');
     }
-
+    
+    private function generateNavbarButton($capability, $controller, $action, $id, $label) : string
+    {
+        $button_html = '<div class="btn-group pull-right" role="group">';
+        if (\wa_learning_path\lib\has_capability($capability)){
+            $button_url = new \moodle_url($this->url, array('c' => $controller, 'a' => $action, 'id' => $id));
+            $button_html .= '<a type="button" href="'.$button_url.'" class="btn wa-btn edit-btn">'.$label.'</a>';
+        }
+        $button_html .='</div>';
+        
+        return $button_html;
+    }
+    private function generateSubscribeButton() : void
+    {
+        $subscribeUrl = new \moodle_url(
+            $this->url,
+            array(
+                'a' => ($this->learning_path->subscribed) ? 'unsubscribe' : 'subscribe',
+                'id' => $this->id
+            )
+        );
+        
+        $label = $this->get_icon_html('icon_unsubscribe') . get_string('unsubscribe', 'local_wa_learning_path').'</span>';
+        $class = 'btn btn-default button-subscribe';
+        if($this->learning_path->subscribed) {
+            $label =  $this->get_icon_html('icon_subscribe')  . get_string('subscribe', 'local_wa_learning_path').'</span>';
+        }
+        
+        $this->subscribeButton = '<a type="button" href="' . $subscribeUrl . '" class="btn  ' . $class .'">' .$label . '</a>';
+    }
     public function matrix_action($params = array()) {
-        global $CFG, $PAGE;
-
+        global $CFG, $PAGE, $DB;
+        $PAGE->set_pagelayout('base');
+        $PAGE->requires->css(new moodle_url('/local/wa_learning_path/css/select2.min.css'));
+        $PAGE->requires->js_call_amd('local_wa_learning_path/learning_path', 'init');
+        
         $this->check_and_get_learning_path($params);
-
+        $PAGE->set_button($this->generateNavbarButton(
+            'amendlearningcontent',
+            'admin',
+            'edit_matrix',
+            $this->id,
+            $this->get_string('edit_learning_matrix')
+        ));
+        $this->generateSubscribeButton();
         \wa_learning_path\lib\load_model('activity');
 
+        // Selected role.
+        $roleId = optional_param('role', null, PARAM_INT);
+        if($roleId === '0') {
+            $roleId = null;
+        }
         // Selected rows of matrix.
         $levels = optional_param('levels', null, PARAM_RAW_TRIMMED);
-
+        if($levels === '0') {
+            $levels = null;
+        }
         // Selected region. default value -1 user will see content for all regions.
         $regions = optional_param('regions', null, PARAM_RAW_TRIMMED);
-
+        if($regions === '') {
+            $regions = null;
+        }
         // Selected cell of matrix (cell-ID).
         $key = optional_param('key', 0, PARAM_RAW_TRIMMED);
 
         // Moodle Page setup.
         $this->base_url = new \moodle_url($this->url, array('c' => $this->c, 'a' => $this->a, 'id' => (int) $this->id));
+        $view_url = new \moodle_url($this->url, array('c' => $this->c, 'a' => 'view', 'id' => (int) $this->id));
         $pagetitle = $this->get_string('header_learning_path_list') . ': ' . $this->learning_path->title . ' ' . $this->get_string('matrix');
         $PAGE->set_url(new \moodle_url($this->url, array('c' => $this->c, 'a' => $this->a, 'id' => (int) $this->id)));
         $PAGE->navbar->add($this->get_string('header_learning_path_list'),
                 new moodle_url($this->url, array('c' => 'learning_path')));
-        $PAGE->navbar->add($this->learning_path->title, $this->base_url);
+        $PAGE->navbar->add($this->learning_path->title, $view_url);
         $PAGE->navbar->add($this->get_string('matrix'));
 
+        $this->pluginname = 'local_wa_learning_path';
         // Get region to display
         $this->regions = array();
         // Get user region.
         $this->userregion = \wa_learning_path\lib\get_user_region();
+        
         // Get selected regions.
-        $this->selectedregions = (!is_null($regions) && $regions != '') ? explode(',', $regions) : null;
-        if (is_null($regions) && !empty($this->userregion)) {
+        $this->selectedregions = (!is_null($regions) && $regions !== '') ? explode(',', $regions) : null;
+        if (is_null($regions) && $regions !== '-1' && !empty($this->userregion)) {
             // Set user region ID
             $this->regions[] = (int) $this->userregion->id;
             $regions = (int) $this->userregion->id;
-        } else if (!is_null($regions)) {
+            $this->selectedregions = [$this->userregion->id];
+        } else if (!is_null($regions)  && $regions !== '-1') {
             // If region ID is provider by GET - is set up.
             $this->regions = is_null($this->selectedregions) ? array() : $this->selectedregions;
-//            $this->regions = $this->selectedregions;
         } else {
             // Empty.
             $this->regions = array();
@@ -203,10 +555,27 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         $allregionnames = \wa_learning_path\lib\get_regions();
         $this->regionnames = array_intersect_key($allregionnames, array_fill_keys($this->regions, true));
+        $allroles = $DB->get_records('wa_learning_path_role', ['learningpathid' => $this->id], 'name','id, name, visible');
 
-        $this->levels = !empty($levels) ? explode(',', $levels) : array();
+        $enabledActivities = [];
+        if ($roleId) {
+            $role = $DB->get_record('wa_learning_path_role', ['learningpathid' => $this->id, 'id' => $roleId]);
+            $matrix = json_decode($this->learning_path->matrix);
 
-        $this->cell_url = new \moodle_url($this->url, array('a' => 'matrix', 'id' => (int) $this->id, 'levels' => (string) $levels, 'regions' => (string) $regions));
+            foreach ($matrix->activities as $id => $activity) {
+                if (in_array($role->id, $activity->enabledForRoles)) {
+                    $enabledActivities[] = $id;
+                }
+            }
+        }
+
+        $this->enabledActivities = $enabledActivities;
+        $this->role = $role ?? null;
+        $this->roles = $allroles;
+
+        $this->levels = (!empty($levels)) ? explode(',', $levels) : array();
+
+        $this->cell_url = new \moodle_url($this->url, array('a' => 'matrix_activities', 'id' => (int) $this->id, 'levels' => (string) $levels, 'regions' => (string) $regions));
 
         if($this->preview) {
             $this->cell_url->param('preview', (int) $this->preview);
@@ -287,6 +656,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
                 // Count items for all conditions: region.
                 $this->count = \wa_learning_path\model\learningpath::count_activities_by_positions($this->cell->positions, $this->regions);
+
 
                 // Set a breadcrumb info.
                 $this->base_position_cell = new \moodle_url(
@@ -508,13 +878,15 @@ class learning_path extends \wa_learning_path\lib\base_controller {
      * Export learning path to excel file.
      */
     public function print_action() {
+        global $CFG, $DB;
         if (!\wa_learning_path\lib\has_capability('printlearningmatrix')) {
             return $this->no_access('printlearningmatrix');
         }
 
+        $role = optional_param('role', null, PARAM_INT);
+
         $this->check_and_get_learning_path();
 
-        global $CFG;
         require_once($CFG->dirroot . '/lib/excellib.class.php');
 
         \wa_learning_path\lib\load_model('learningpath');
@@ -522,9 +894,100 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         // Get the matrix
         $this->matrix = json_decode($this->learning_path->matrix);
+
+
+        $cellDesc = [];
+        if ($role) {
+            $roleInfo = $DB->get_record('wa_learning_path_role', ['id' => $role , 'learningpathid' => $this->id]);
+            $this->roleName = $roleInfo->name;
+            $this->roleDescription = $roleInfo->description;
+            $cellData = $DB->get_records('wa_learning_path_role_act', ['roleid' => $role]);
+
+            $this->activities = \wa_learning_path\model\learningpath::fill_activities(@$this->matrix->activities,
+                false, false, false, false, (bool)$this->learning_path->subscribed);
+
+            foreach ($this->activities as $id => $activity) {
+                    $id = substr($id, 1); // Strip the '#'
+                    $cellDesc[$id]['description'] = $activity->content;
+                    $cellDesc[$id]['activities'] = [];
+                    foreach ($activity->positions as $positionName => $activities) {
+                        foreach ($activities as &$act) {
+                            $act->position = $positionName;
+                            $cellDesc[$id]['activities'][] = $act;
+                        }
+                    }
+            }
+
+            foreach ($cellData as $index => $cell) {
+                if (in_array($role, $this->matrix->activities->{'#'.$cell->activityid}->enabledForRoles)) {
+                    if ($cell->overridedescription) {
+                        $cellDesc[$cell->activityid]['description'] = $cell->overridedescription;
+                    }
+
+                    if ($cell->overrideere) {
+                        foreach ($cellDesc[$cell->activityid]['activities'] as &$act) {
+                            if ($act->id == $cell->itemid && $act->type == $cell->type) {
+                                $act->position = $cell->overrideere;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $this->role = $role;
+        $this->cellDesc = $cellDesc;
+
         echo "
         <style>
-
+        
+        table.print-learning-journey {
+            width: 297mm;
+            margin-top: 50px;
+        }
+        
+        h2.print-learning-journey {
+            color: #0a1e46;
+        }
+        
+        .print-learning-journey tr td:nth-child(2) {
+            background-color: #d9e2f3;
+        }
+        
+        .print-learning-journey th {
+            color: #0a1e46;
+            border-bottom: 2px solid #0a1e46;
+            border-top:0;
+            border-left:0;
+            border-right:0;
+        }
+        
+        .print-learning-journey th:first-child,
+        .print-learning-journey th:nth-child(2) {
+            min-width: 150px;
+        }
+        
+        .print-learning-journey th:last-child {
+            min-width: 230px;
+        }
+        
+        .print-learning-journey td:nth-child(3) {
+            word-break: break-word;
+            width: 100%;
+        }
+        
+        .print-learning-journey tr {
+            border-bottom: 2px dashed #0a1e46;
+            border-top:0;
+            border-left:0;
+            border-right:0;
+        }
+        
+        .print-learning-journey td {
+            border:0;
+            vertical-align: top;
+        }
+        
         table th, table td{
             border: 1px solid #dadada;
             border-collapse: collapse;

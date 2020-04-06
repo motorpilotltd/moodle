@@ -14,13 +14,3 @@ foreach ($this->list as $item) {
 echo html_writer::div('', 'clearfix');
 
 ?>
-<script type='text/javascript'>
-    $(document).ready(function(){
-        $( '.tile .region' ).tooltip({
-            position: {
-//                my: "center right",
-//                at: "right-10 top+60"
-            }
-        });
-    })
-</script>
