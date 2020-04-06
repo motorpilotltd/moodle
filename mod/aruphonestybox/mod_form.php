@@ -75,7 +75,9 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
 
         $mform->addElement('static', 'classname', get_string('cpd:classname', 'block_arup_mylearning'), $COURSE->fullname);
 
-        $mform->addElement('static', 'provider', get_string('cpd:provider', 'block_arup_mylearning'), 'Learning Burst');
+        $mform->addElement('text', 'provider', get_string('cpd:provider', 'block_arup_mylearning'));
+        $mform->setType('provider', PARAM_TEXT);
+        $mform->addRule('provider', null, 'required', null, 'client');
 
         $mform->addElement('text', 'duration', get_string('cpd:duration', 'block_arup_mylearning'));
         $mform->setType('duration', PARAM_TEXT);
@@ -85,6 +87,10 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
 
         $mform->addElement('editor', 'learningdesc', get_string('cpd:learningdesc', 'block_arup_mylearning'));
         $mform->setType('learningdesc', PARAM_CLEANHTML);
+
+        $mform->addElement('select', 'classtype', get_string('cpd:classtype', 'block_arup_mylearning'), $taps->get_classtypes('cpd'));
+        $mform->setDefault('classtype', 'LE');
+        $mform->setAdvanced('classtype');
 
         $mform->addElement('text', 'location', get_string('cpd:location', 'block_arup_mylearning'));
         $mform->setType('location', PARAM_TEXT);
