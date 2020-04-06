@@ -225,7 +225,7 @@ function xmldb_local_taps_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111616, 'local', 'taps');
     }
 
-    if ($oldversion < 2017051500) {
+    if ($oldversion < 2017051501) {
 
         // Define field archived to be added to local_taps_enrolment.
         $table = new xmldb_table('local_taps_enrolment');
@@ -236,13 +236,13 @@ function xmldb_local_taps_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        $field2 = new xmldb_field('providerid');
-        if (!$dbman->field_exists($table, $field2)) {
-            $dbman->rename_field($table, $field, 'originid');
+        $field2 = new xmldb_field('providerid', XMLDB_TYPE_CHAR, '255');
+        if ($dbman->field_exists($table, $field2)) {
+            $dbman->rename_field($table, $field2, 'originid');
         }
 
         // Taps savepoint reached.
-        upgrade_plugin_savepoint(true, 2017051500, 'local', 'taps');
+        upgrade_plugin_savepoint(true, 2017051501, 'local', 'taps');
     }
 
     return true;
