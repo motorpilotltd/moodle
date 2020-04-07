@@ -247,7 +247,7 @@ class coursemanager {
             if ($this->editing) {
                 // Don't show the form just yet
                 if (($this->page == 'class' || $this->page == 'class_scheduled') && ($this->cmclass->id == 0 || $this->cmclass->id == -1) ) {
-                   return $content;
+                    return $content;
                 }
                 $content .= $this->form->render();
             } else {

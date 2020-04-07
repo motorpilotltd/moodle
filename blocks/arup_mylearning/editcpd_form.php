@@ -41,13 +41,10 @@ class block_arup_mylearning_editcpd_form extends moodleform {
         $mform->addElement('date_selector', 'classcompletiondate', get_string('cpd:classcompletiondate', 'block_arup_mylearning'), array('timezone' => 0));
         $mform->addRule('classcompletiondate', null, 'required', null, 'client');
 
-        $mform->addElement('text', 'duration', get_string('cpd:duration', 'block_arup_mylearning'));
+        $mform->addElement('text', 'duration', get_string('duration', 'local_taps').get_string('durationcode', 'local_taps'), 'size="5"');
         $mform->setType('duration', PARAM_TEXT);
+        $mform->addHelpButton('duration', 'duration', 'local_taps');
         $mform->addRule('duration', null, 'required', null, 'client');
-        $mform->addRule('duration', null, 'numeric', null, 'client');
-
-        $mform->addElement('select', 'durationunitscode', get_string('cpd:durationunitscode', 'block_arup_mylearning'), $taps->get_durationunitscode());
-        $mform->addRule('durationunitscode', null, 'required', null, 'client');
 
         $mform->addElement('text', 'location', get_string('cpd:location', 'block_arup_mylearning'));
         $mform->setType('location', PARAM_TEXT);
@@ -87,4 +84,21 @@ class block_arup_mylearning_editcpd_form extends moodleform {
 
         $this->add_action_buttons('true', get_string($this->_customdata['action'].'cpd:save', 'block_arup_mylearning'));
     }
+
+    public function validation($data, $files) {
+        $errors = [];
+        if (!empty($data['duration'])) {
+            $time = explode(':', $data['duration']);
+            if (count($time) > 2) {
+                $errors['duration'] = get_string('validation:durationformatincorrect', 'local_taps').get_string('durationcode', 'local_taps');
+            } elseif (isset($time[1]) && ($time[1] < 0 || $time[1] > 59 || !is_numeric($time[1]))) {
+                $errors['duration'] = get_string('validation:durationinvalidminutes', 'local_taps').get_string('durationcode', 'local_taps');
+            } elseif ((isset($time[0]) && (!is_numeric($time[0]) || $time[0] < 0))) {
+                $errors['duration'] = get_string('validation:durationinvalidhours', 'local_taps').get_string('durationcode', 'local_taps');
+            }
+        }
+
+        return $errors;
+    }
+
 }

@@ -73,7 +73,12 @@ try {
             echo html_writer::start_tag('div', array('class' => 'modal-upper'));
             $modalupper = array();
             if ($enrolment->duration) {
-                $data = (float)$enrolment->duration.' '.$enrolment->durationunits;
+                if (isset($enrolment->durationunitscode) && $enrolment->durationunitscode == 'H') {
+                    $data = $enrolment->duration ? $taps->duration_hours_display($enrolment->duration, $enrolment->durationunits) : '';
+                } else {
+                    $data = (float)$enrolment->duration.' '.$enrolment->durationunits;
+                }
+                
                 $modalupper[] = html_writer::tag('strong', get_string('modal:duration', 'block_arup_mylearning').': ') .
                     $data;
             }

@@ -42,6 +42,19 @@
         <KEY NAME="courseid" TYPE="unique" FIELDS="courseid"/>
       </KEYS>
     </TABLE>
+    <TABLE NAME="local_taps_course_duration" COMMENT="Cache for TAPS courses duration">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="ltcourseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="duration" TYPE="float" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="durationunits" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="durationunitscode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="ltcourseid" TYPE="unique" FIELDS="ltcourseid"/>
+      </KEYS>
+    </TABLE>
     <TABLE NAME="local_taps_course_category" COMMENT="Cache for TAPS course categories">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -104,6 +117,19 @@
         <KEY NAME="classid" TYPE="unique" FIELDS="classid"/>
       </KEYS>
     </TABLE>
+    <TABLE NAME="local_taps_class_duration" COMMENT="Cache for TAPS classes duration">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="ltclassid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="classduration" TYPE="float" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classdurationunits" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="classdurationunitscode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="ltclassid" TYPE="unique" FIELDS="ltclassid"/>
+      </KEYS>
+    </TABLE>
     <TABLE NAME="local_taps_enrolment" COMMENT="Cache for TAPS enrolments">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -160,6 +186,19 @@
       <INDEXES>
         <INDEX NAME="staffid" UNIQUE="false" FIELDS="staffid"/>
       </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_taps_enrol_duration" COMMENT="Cache for TAPS enrolments duratation">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="lteid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="duration" TYPE="float" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="durationunits" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="durationunitscode" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="lteid" TYPE="unique" FIELDS="lteid"/>
+      </KEYS>
     </TABLE>
   </TABLES>
 </XMLDB>

@@ -1039,4 +1039,59 @@ EOS;
 
         return $seatsremaining;
     }
+
+    /**
+     * Display duration for Hour(s) or input format for HH:MM
+     * @param float $duration
+     * @param string $durationunits
+     * @param bool $isinput
+     * @return string
+     */
+    public function duration_hours_display($duration, $durationunits = '', $isinput = false) {
+        $isfloat = is_numeric($duration) && floor($duration) != $duration;
+        $result = '';
+
+        if ($isfloat) {
+            $duration_str = '';
+            $hr_str = '';
+            $min_str = '';
+            $hr = floor($duration);
+            $min = $duration - $hr;
+            $min = floor($min * HOURMINS);
+
+            if ($hr != 0) {
+                $hr_str = $hr . ' hr(s)';
+                $duration_str = $hr_str . ', ';
+            }
+
+            if ($min != 0) {
+                $duration_str .= $min . ' min(s)';
+            }
+
+            return !$isinput ? $duration_str : $hr . ':' . $min;
+        }
+
+        return !$isinput ? $duration . '&nbsp;' . $durationunits : $duration;
+    }
+
+    /**
+     * Coverting  input hh:mm to hours
+     * 
+     * @param $duration
+     * @return float|int
+     */
+    public function combine_duration_hours($duration) {
+        if (!empty($duration)) {
+            $time = explode(':', $duration);
+            $mins = 0;
+            $hrs = $time[0];
+            if (isset($time[1])) {
+                $mins = $time[1] / HOURMINS;
+                $mins = number_format($mins, 4);
+            }
+            return $hrs + $mins;
+        }
+        
+        return $duration;
+    } 
 }

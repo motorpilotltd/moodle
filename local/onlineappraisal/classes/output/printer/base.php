@@ -113,7 +113,7 @@ abstract class base implements renderable, templatable {
         list($usql, $params) = $DB->get_in_or_equal($taps->get_statuses('attended'), SQL_PARAMS_NAMED, 'status');
         $sql = <<<EOS
 SELECT
-    lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.classcompletiondate, lte.duration, lte.durationunits,
+    lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.classcompletiondate, lte.duration, lte.durationunits, lte.durationunitscode,
         lte.expirydate, lte.cpdid, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
         lte.learningdesccont1, lte.learningdesccont2, lte.healthandsafetycategory, lte.usedtimezone,
     ltcc.categoryhierarchy,
@@ -173,7 +173,11 @@ EOS;
             } else {
                 $learninghistory->category = format_string($record->classcategory);
             }
-            $learninghistory->duration = $record->duration ? (float) $record->duration . '&nbsp;' . $record->durationunits : '';
+            if (!empty($record->durationunitscode) && $record->durationunitscode = 'H') {
+                $learninghistory->duration = $record->duration ? $taps->duration_hours_display($record->duration, $record->durationunits) : '';
+            }else {
+                $learninghistory->duration = $record->duration ? (float) $record->duration . '&nbsp;' . $record->durationunits : '';
+            }
             if ($record->classcompletiondate) {
                 $date = new DateTime(null, $timezone);
                 $date->setTimestamp($record->classcompletiondate);

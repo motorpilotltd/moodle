@@ -192,14 +192,14 @@ class mod_arupevidence_upload_form extends moodleform
         $mform->disabledIf('provider', 'cpdlms', 'neq', ARUPEVIDENCE_CPD);
         $mform->setDefault('provider', !empty($defaults->provider) ? $defaults->provider : '');
 
-        $mform->addElement('text', 'duration', get_string('cpd:duration', 'block_arup_mylearning'));
+        $mform->addElement('text', 'duration', get_string('duration', 'local_taps').get_string('durationcode', 'local_taps'), 'size="5"');
         $mform->setType('duration', PARAM_TEXT);
+        $mform->addHelpButton('duration', 'duration', 'local_taps');
         $mform->disabledIf('duration', 'cpdlms', 'neq', ARUPEVIDENCE_CPD);
+        if (!empty($defaults->durationunitscode) && $defaults->durationunitscode == 'H') {
+            $defaults->duration = $taps->duration_hours_display($defaults->duration, '', true);
+        }
         $mform->setDefault('duration', !empty($defaults->duration) ? $defaults->duration : '');
-
-        $mform->addElement('select', 'durationunitscode', get_string('cpd:durationunitscode', 'block_arup_mylearning'), $taps->get_durationunitscode());
-        $mform->disabledIf('durationunitscode', 'cpdlms', 'neq', ARUPEVIDENCE_CPD);
-        $mform->setDefault('durationunitscode', !empty($defaults->durationunitscode) ? $defaults->durationunitscode : '');
 
         $mform->addElement('text', 'location', get_string('cpd:location', 'block_arup_mylearning'));
         $mform->setType('location', PARAM_TEXT);
@@ -253,6 +253,17 @@ class mod_arupevidence_upload_form extends moodleform
 
         if (!empty($data['expiryyear']) && empty($data['expirymonth'])) {
             $errors['expirymonth'] = get_string('error:emptymonth', 'mod_arupevidence');
+        }
+        
+        if (!empty($data['duration'])) {
+            $time = explode(':', $data['duration']);
+            if (count($time) > 2) {
+                $errors['duration'] = get_string('validation:durationformatincorrect', 'local_taps').get_string('durationcode', 'local_taps');
+            } elseif (isset($time[1]) && ($time[1] < 0 || $time[1] > 59 || !is_numeric($time[1]))) {
+                $errors['duration'] = get_string('validation:durationinvalidminutes', 'local_taps').get_string('durationcode', 'local_taps');
+            } elseif ((isset($time[0]) && (!is_numeric($time[0]) || $time[0] < 0))) {
+                $errors['duration'] = get_string('validation:durationinvalidhours', 'local_taps').get_string('durationcode', 'local_taps');
+            }
         }
 
         if ((!empty($data['completiondate']) && !empty($data['expirymonth']) && !empty($data['expiryyear']))
