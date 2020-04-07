@@ -120,7 +120,7 @@ function hvp_cm_info_dynamic(cm_info $cm) {
         return;
     }
 
-    if ($COURSE->id == $cm->course && !$PAGE->requires->is_head_done()
+    if ($COURSE->id == $cm->course && $PAGE->state === moodle_page::STATE_PRINTING_HEADER
         && $PAGE->url->get_path() == '/course/view.php') {
         // Let's check our current instance.
         $hvp = $DB->get_record('hvp', ['id' => $cm->instance]);
@@ -169,7 +169,9 @@ function hvp_cm_info_dynamic(cm_info $cm) {
             $safeparameters = json_encode($decodedparams);
 
             $export = '';
-            if ($displayoptions[\H5PCore::DISPLAY_OPTION_DOWNLOAD] && (!isset($CFG->mod_hvp_export) || $CFG->mod_hvp_export === true)) {
+/* BEGIN CORE MOD */
+            if ($displayoptions[\H5PCore::DISPLAY_OPTION_DOWNLOAD] && get_config('mod_hvp', 'export') !== '0') {
+/* END CORE MOD */
                 // Find course context.
                 $context = \context_course::instance($hvp->course);
                 $hvppath = "{$CFG->httpswwwroot}/pluginfile.php/{$context->id}/mod_hvp";
@@ -482,6 +484,9 @@ function hvp_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload
             }
 
             $itemid = 0;
+/* BEGIN CORE MOD */
+            $options['cacheability'] = 'public';
+/* END CORE MOD */
             break;
 
         case 'content':

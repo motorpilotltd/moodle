@@ -129,7 +129,7 @@ if ($mform->is_cancelled()) {
         $enrolmentdetails->enrolmentcoursename = $enrolment->coursename;
         $enrolmentdetails->enrolmentclassname = $enrolment->classname;
         $enrolmentdetails->enrolmentbookingstatus = $enrolment->bookingstatus;
-        $a->enrolmentdetails = get_string('uploadforuser:success:enrolmentdetails', 'mod_arupevidence');
+        $a->enrolmentdetails = get_string('uploadforuser:success:enrolmentdetails', 'mod_arupevidence', $enrolmentdetails);
     }
 
     // Set itemid as the userid of the user being submitted for.

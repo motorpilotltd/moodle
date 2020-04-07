@@ -46,7 +46,7 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
-            $mform->setType('name', PARAM_CLEAN);
+            $mform->setType('name', PARAM_CLEANHTML);
         }
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
@@ -67,13 +67,13 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
     }
 
     public function add_taps_fields(MoodleQuickForm $mform) {
+        global $COURSE;
+
         $taps = new \local_taps\taps();
 
         $mform->addElement('header', 'tapstemplate', get_string('cpdformheader', 'mod_aruphonestybox'));
 
-        $mform->addElement('text', 'classname', get_string('cpd:classname', 'block_arup_mylearning'));
-        $mform->setType('classname', PARAM_TEXT);
-        $mform->addRule('classname', null, 'required', null, 'client');
+        $mform->addElement('static', 'classname', get_string('cpd:classname', 'block_arup_mylearning'), $COURSE->fullname);
 
         $mform->addElement('text', 'provider', get_string('cpd:provider', 'block_arup_mylearning'));
         $mform->setType('provider', PARAM_TEXT);
@@ -87,12 +87,13 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
         $mform->addElement('editor', 'learningdesc', get_string('cpd:learningdesc', 'block_arup_mylearning'));
         $mform->setType('learningdesc', PARAM_CLEANHTML);
 
+        $mform->addElement('select', 'classtype', get_string('cpd:classtype', 'block_arup_mylearning'), $taps->get_classtypes('cpd'));
+        $mform->setDefault('classtype', 'LE');
+        $mform->setAdvanced('classtype');
+
         $mform->addElement('text', 'location', get_string('cpd:location', 'block_arup_mylearning'));
         $mform->setType('location', PARAM_TEXT);
         $mform->setAdvanced('location');
-
-        $mform->addElement('select', 'classtype', get_string('cpd:classtype', 'block_arup_mylearning'), $taps->get_classtypes('cpd'));
-        $mform->setAdvanced('classtype');
 
         $mform->addElement('select', 'classcategory', get_string('cpd:classcategory', 'block_arup_mylearning'), $taps->get_classcategory());
         $mform->setAdvanced('classcategory');

@@ -1263,12 +1263,16 @@ EOS;
 
         $taps = new \local_taps\taps();
 
+        if (!isset($enrolment->trainingcenter) || !isset($enrolment->onlineurl)) {
+
+
         if (!isset($enrolment->trainingcenter)) {
             // Merge in data from class record (if needed/available).
             $class = $this->taps->get_class_by_id($enrolment->classid);
             $enrolment->price = $class ? $class->price : null;
             $enrolment->currencycode = $class ? $class->currencycode : null;
             $enrolment->trainingcenter = $class ? $class->trainingcenter : null;
+            $enrolment->onlineurl = $class ? $class->onlineurl : null;
         }
 
         try {
@@ -1285,6 +1289,7 @@ EOS;
             'classname' => $enrolment->classname,
             'classlocation' => $enrolment->location ? $enrolment->location : get_string('tbc', 'tapsenrol'),
             'classtrainingcenter' => $enrolment->trainingcenter,
+            'classonlineurl' => $enrolment->onlineurl,
         );
 
         if ($enrolment->classstarttime == 0) {
@@ -1506,8 +1511,9 @@ EOS;
 
         require_once($CFG->dirroot . '/local/invites/requester.php');
 
+        $onlineurl = empty($enrolment->onlineurl) ? '' : " | {$enrolment->onlineurl}";
         $room = empty($enrolment->trainingcenter) ? '' : " | {$enrolment->trainingcenter}";
-        $location = $enrolment->location ? $enrolment->location.$room : get_string('tbc', 'tapsenrol');
+        $location = $enrolment->location ? $enrolment->location.$room.$onlineurl : get_string('tbc', 'tapsenrol');
         $courseurl = new moodle_url('/course/view.php', array('id' => $this->course->id));
 
         if (empty($emailhtml)) {

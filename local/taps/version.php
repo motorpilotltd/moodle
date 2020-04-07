@@ -24,10 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111617;
-$plugin->requires  = 2015111600; // Moodle 3.0.x.
+$plugin->version   = 2017051504;
+$plugin->requires  = 2017051500; // Moodle 3.3.x.
 $plugin->component = 'local_taps';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.0.16 (Build: {$plugin->version})";
+$plugin->release   = "3.3.4 (Build: {$plugin->version})";
 
 $plugin->dependencies = array();

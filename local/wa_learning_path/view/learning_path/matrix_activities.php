@@ -1,16 +1,70 @@
+<?php
+global $CFG;
+?>
 <a name="activities_tab"></a>
-<div class="matrix_activities padd_5">
-    <?php if (\wa_learning_path\lib\has_capability('printlearningmatrix')): ?>
-        <a id='print_section' type="button" href="<?php echo new \moodle_url($this->url, array('a' => 'print_section', 'id' => $this->id, 'ajax' => 1, 'key' => str_replace('#', '', $this->key))) ?>" class="btn btn-default fl-r"><?php echo $this->get_string('print_section') ?></a>
-    <?php endif; ?>
+<div class="matrix_activities padd_5" >
+    <div class="matrix-activities-description">
+        <?php
+            if(!empty($this->matrix->cols[$this->previousColumn]->name)  && !is_null($this->previousColumn)) {
+                $this->cell_url->param('key', '#' . $this->matrix->cols[$this->previousColumn]->id . '_' . $this->rowId);
+                echo "<button class=\"navigate-cells column-left\" data-url=\"".$this->cell_url->out(true)."\">";
+    
+                $wrappedText = wordwrap(htmlentities(html_entity_decode(($this->matrix->cols[$this->previousColumn]->name))), 25, '<br>');
+                $wraps = explode('<br>', $wrappedText);
+                $text = implode('<br>', array_splice($wraps,0,2));
+                
+                echo "<span class=\"modal-text-left\">".$this->get_icon_html('icon_modal_navigation_icon')."<br>".$text."</span>";
+                echo "</button>";
+            }
+        ?>
+        <div class="matrix-activities-description-text">
+            <?php if (\wa_learning_path\lib\has_capability('printlearningmatrix')): ?>
+                <a id='print_section' type="button" href="<?php echo new \moodle_url($this->url, array('a' => 'print_section', 'id' => $this->id, 'ajax' => 1, 'key' => str_replace('#', '', $this->key))) ?>" class="btn button-print btn-default pull-right"><?php echo $this->get_icon_html('icon_print') . $this->get_string('print_section') ?></a>
+            <?php endif; ?>
 
-    <h2><?php echo $this->r_label ?>, <?php echo $this->c_label ?></h2>
-    <p><?php echo $this->cell->content ?></p>
+            <?php if (isset($this->activities->{$this->key})): ?>
+                <span class="matrix-activities-title" data-rlabel="<?php echo $this->r_label ?>" data-clabel="<?php echo $this->c_label ?>"><?php echo $this->r_label ?>, <?php echo $this->c_label ?>
+                    <?php if (isset($this->headerTooltip) && $this->headerTooltip): ?>
+                        <a class="btn-link help" role="button" data-container="body" data-toggle="popover" data-placement="right" data-content="<div class=&quot;no-overflow&quot;><p><?php echo $this->headerTooltip; ?></p>
+                        </div> " data-html="true" tabindex="0" data-trigger="focus">
+                            <img class="icon " alt="<?php echo $this->get_string('description'); ?>" title="<?php echo $this->headerTooltip; ?>" src="<?php echo $OUTPUT->image_url('help', 'moodle')->out(false); ?>">
+                        </a>
+                    <?php endif; ?>
+                </span>
+                <?php if (isset($this->role)): ?>
+                <br/>
+                <span class="matrix-activities-role <?php if (isset($this->roleName)): echo 'enabled-role'; endif; ?>"><?php if (isset($this->roleName)): echo $this->roleName; endif; ?></span><br/>
+                <?php endif; ?>
+                <?php if ($this->cellData && $this->cellData['description']): ?>
+                    <p><?php echo format_text($this->cellData['description']) ?></p>
+                <?php else: ?>
+                    <p><?php echo format_text($this->cell->content) ?></p>
+                <?php endif; ?>
+            <?php else: ?>
+                <p class="alert alert-warning"><?php echo $this->get_string('no_objectives_defined'); ?></p>
+            <?php endif; ?>
+
+        </div>
+            <?php
+                if(!empty($this->matrix->cols[$this->nextColumn]->name) && !is_null($this->nextColumn)){
+                    $this->cell_url->param('key',  '#' . $this->matrix->cols[$this->nextColumn]->id . '_' . $this->rowId);
+                    echo "<button class=\"navigate-cells column-right\" data-url=\"".$this->cell_url->out(true)."\">";
+    
+                    $wrappedText = wordwrap(htmlentities(html_entity_decode(($this->matrix->cols[$this->nextColumn]->name))), 25, '<br>');
+                    $wraps = explode('<br>', $wrappedText);
+                    $text = implode('<br>', array_splice($wraps,0,2));
+                    
+                    echo "<span class=\"modal-text-right\">".$this->get_icon_html('icon_modal_navigation_icon')."<br>".$text."</span>";
+                    echo "</button>";
+                }
+            ?>
+    </div>
     <br />
+    <?php if($this->activities && isset($this->count) && !empty($this->count[$this->position])): ?>
     <form class="filtration">
         <div class="filter_checkboxes filter_position clearfix">
             <input type="checkbox" id="position_essential" value="essential" name="position[]" checked>
-            <label for="position_"><?php echo $this->get_string('essential') ?></label>
+            <label for="position_essential"><?php echo $this->get_string('essential') ?></label>
 
             <input type="checkbox" id="position_recommended" value="recommended" name="position[]" checked>
             <label for="position_recommended"><?php echo $this->get_string('recommended') ?></label>
@@ -42,10 +96,13 @@
         <?php endif; ?>
         <div class="clearfix"></div>
     </form>
+    <?php endif; ?>
+
+
     <?php if(!empty($this->position)): $first = true; ?>
-        <div class="tab_content <?php if($this->count[$this->position] > 10): ?>add_scroll<?php endif; ?>">
+        <div class="tab_content <?php if(isset($this->count) && $this->count[$this->position] > 10): ?>add_scroll<?php endif; ?>">
             <div class="no-overflow">
-            <?php if($this->activities && !empty($this->count[$this->position])): ?>
+            <?php if($this->activities && isset($this->count) && !empty($this->count[$this->position])): ?>
                 <table class="list_of_activities">
                     <tbody>
                         <?php foreach($this->cell->positions->{$this->position} as $iterator => $activity): ?>
@@ -58,9 +115,16 @@
                                 continue;
                             }
 
+                            if ($this->cellData) {
+                                if (!$this->is_visible($activity->id, $activity->type)) {
+                                    continue;
+                                }
+                            }
+
                             $id = $iterator . '_' . $activity->type . "_" . $activity->id;
                             $icon = '';
                             if ($activity->type == 'module') {
+
                                 $title = $activity->fullname;
                                 $coursecontext = context_course::instance($activity->id);
                                 $options = array();
@@ -91,7 +155,7 @@
                         <tr class="<?php if($first) echo "first"; $first = false; ?>"
                             data-position="<?php echo $activity->position; ?>" data-percent="<?php echo $activity->percent; ?>" data-methodology="<?php echo $activity->methodology; ?>" >
                             <td class="cell c0">
-                                <span class="bg-primary activity-position"><?php echo $this->get_string($activity->position); ?></span>
+                                <span class="activity-position <?php echo 'position-' . $activity->position; ?>"><?php echo $this->get_string($activity->position); ?></span>
                             </td>
                             <td class="cell c1">
                                 <h4 class="activity_title"><?php echo $title ?></h4>
@@ -138,10 +202,12 @@
                                             <img src="<?php echo $completionicon ?>" alt="" class="" />
                                         <?php endif; ?>
                                     <?php else: ?>
+                                        <?php $url =  new \moodle_url($this->url, array('c' => 'activity', 'a' => 'set_completion'));  ?>
+                                        <?php global $DB; $cpd = (int) $DB->get_field('wa_learning_path_activity', 'enablecdp', array('id' => $activity->id)); ?>
                                         <?php if($activity->completed): ?>
-                                            <img src="<?php echo $completionicon ?>" data-id="<?php echo (int) $activity->id ?>" alt="" class="activity_completion yes" />
+                                            <img src="<?php echo $completionicon ?>" data-url="<?php echo $url->out(false);?>" data-lpathid="<?php echo $this->learning_path->id; ?>" data-id="<?php echo (int) $activity->id ?>" data-cpd="<?php echo $cpd ?>" alt="" class="activity_completion yes" />
                                         <?php else: ?>
-                                            <img src="<?php echo $completionicon ?>" data-id="<?php echo (int) $activity->id ?>" data-cpd="<?php global $DB; echo (int) $DB->get_field('wa_learning_path_activity', 'enablecdp', array('id' => $activity->id)); ?>" alt="" class="activity_completion no" />
+                                            <img src="<?php echo $completionicon ?>" data-url="<?php echo $url->out(false);?>"  data-lpathid="<?php echo $this->learning_path->id; ?>" data-id="<?php echo (int) $activity->id ?>" data-cpd="<?php echo $cpd ?>" alt="" class="activity_completion no" />
                                             <div class="mark_as_complete"><?php echo $this->get_string('mark_as_complete') ?></div>
                                         <?php endif; ?>
                                     <?php endif; ?>
@@ -151,91 +217,10 @@
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+            <?php else: ?>
+                <p class="alert alert-warning"><?php echo $this->get_string('no_activities_defined'); ?></p>
             <?php endif; ?>
             </div>
         </div>
     <?php endif; ?>
 </div>
-
-<script type='text/javascript'>
-    $(document).ready(function(){
-        $('.matrix_activities .activity_completion').click(function(e){
-            var status = $(this).hasClass('no') ? 1 : 0;
-            var activityid = $(this).attr('data-id');
-
-            // If completing and data-cpd is 1 need to confirm.
-            if (status && $(this).data('cpd')) {
-                var result = window.confirm('<?php print_string('confirm:cpdupload', 'local_wa_learning_path') ?>');
-                if (!result) {
-                    e.preventDefault();
-                    return false;
-                }
-            }
-
-            $.ajax({
-                method: "POST",
-                url: "<?php $url =  new \moodle_url($this->url, array('c' => 'activity', 'a' => 'set_completion')); echo $url->out(false); ?>",
-                data: { activityid: activityid, learningpathid: <?php echo (int) $this->id ?> ,completion: status }
-              })
-            .done(function( msg ) {
-                window.location.reload();
-            });
-            return false;
-        });
-
-        $('#print_section').click(function(){
-            var levels = '';
-            var regions = '';
-
-            if($('.wa_learning_path_nav_content .levels').val()) {
-                levels = $('.wa_learning_path_nav_content .levels').val().join();
-            }
-
-            if($('.wa_learning_path_nav_content .region').val()) {
-                regions = $('.wa_learning_path_nav_content .region').val().join();
-            }
-
-            var url = $(this).prop('href') + '&levels=' + levels + '&regions=' + regions;
-            $(this).prop('href', url);
-        });
-
-        $('form.filtration :checkbox, form.filtration select').on('change', function() {
-            updateFiltered();
-        });
-
-        // Initial filtering.
-        updateFiltered();
-    });
-
-    var updateFiltered = function() {
-        var positions = $('form.filtration .filter_position :checkbox:checked').map(function(){
-            return $(this).val();
-        }).get();
-        var percents = $('form.filtration .filter_percent :checkbox:checked').map(function(){
-            return parseInt($(this).val());
-        }).get();
-        var methodology = $('form.filtration .filter_methodology select').val();
-
-        $('table.list_of_activities tr').each(function(){
-            if (methodology !== '' && $(this).data('methodology') !== methodology) {
-                $(this).hide();
-                // Continue to next row.
-                return;
-            }
-            if ($.inArray($(this).data('position'), positions) === -1) {
-                $(this).hide();
-                // Continue to next row.
-                return;
-            }
-            if (percents.length < 3 && $.inArray(parseInt($(this).data('percent')), percents) === -1) {
-                $(this).hide();
-                // Continue to next row.
-                return;
-            }
-            // All match so show element.
-            $(this).show();
-        });
-
-        $('table.list_of_activities tr').removeClass('first').filter(':visible:first').addClass('first');
-    }
-</script>

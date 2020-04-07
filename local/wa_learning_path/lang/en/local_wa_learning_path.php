@@ -85,9 +85,9 @@ $string['publish_not_visible'] = 'Publish not visible';
 $string['keywords_tags'] = 'Keywords tags';
 $string['learning_path_matrix'] = 'Learning path matrix';
 $string['view_learning_path'] = 'View Learning Path';
-$string['subscribe'] = 'Subscribe';
+$string['subscribe'] = 'Subscribed';
 $string['subscribe_info'] = 'Subscribing to a pathway will track your progress within the path and enable you to show your progression through the learning.';
-$string['unsubscribe'] = 'Unsubscribe';
+$string['unsubscribe'] = 'Not Subscribed';
 $string['unsubscribe_info'] = 'Unsubscribing will stop your progress within the path being tracked.';
 $string['header_landing_page'] = 'Landing Page';
 $string['learning_path_matrix'] = 'Learning path matrix';
@@ -159,7 +159,8 @@ $string['ILT'] = 'Papers';
 $string['IM'] = 'Institute Meetings';
 $string['INF'] = 'Informal';
 $string['L'] = 'Language';
-$string['LUNCH_AND_LEARN'] = 'Lunch and Learn';
+$string['LB'] = 'Learning Burst';
+$string['LE'] = 'Learning Event';
 $string['OJT'] = 'Work Based Learning';
 $string['OT'] = 'Other Training';
 $string['P'] = 'Presentations';
@@ -240,7 +241,7 @@ $string['preview'] = 'Preview';
 $string['save_and_close'] = 'Save and close';
 $string['save_and_display'] = 'Save and display';
 $string['learningpath_id'] = 'ID';
-$string['edit_learning_path'] = 'Edit the learning path';
+$string['edit_learning_path'] = 'Edit Learning Path';
 $string['create_learning_path'] = 'Create';
 $string['select_category'] = 'Select a category';
 $string['title'] = 'Title';
@@ -293,7 +294,11 @@ $string['learning_matrix_saved_success'] = 'Path matrix has been saved';
 $string['print_matrix'] = 'Print matrix';
 $string['choose_element'] = 'Please choose an element to add';
 $string['element_has_been_added'] = 'Element has been added';
-$string['export_matrix'] = 'Export matrix to excel';
+$string['export_matrix'] = 'Export to Excel';
+$string['all_levels'] = "Select filter";
+$string['all_roles'] = "Select role";
+$string['region_text_part1'] = 'Showing content for ';
+$string['region_text_part2'] = ' region';
 
 // Admin activity form.
 $string['description'] = 'Description';
@@ -316,3 +321,93 @@ $string['confirm:cpdupload'] = 'Please confirm you wish to mark this activity as
 $string['settings'] = 'WA Learning Path Settings';
 $string['activate_cpd_upload'] = 'Activate CPD Uploads';
 $string['activate_cpd_upload_desc'] = 'Unless checked CPD records will not actually be saved.';
+
+$string['rowModalLabel'] = 'Edit row';
+$string['rowPosition'] = 'Row No.';
+$string['columnModalLabel'] = 'Edit column';
+$string['columnPosition'] = 'Column No.';
+$string['visible'] = 'Visible';
+$string['deleteColumn'] = 'Delete Column';
+$string['deleteRow'] = 'Delete Row';
+
+$string['icon_subscribe'] = 'Subscribe icon';
+$string['icon_subscribe_desc'] = '';
+
+$string['icon_unsubscribe'] = 'Unsubscribe icon';
+$string['icon_unsubscribe_desc'] = '';
+
+$string['icon_edit'] = 'Edit icon';
+$string['icon_edit_desc'] = '';
+
+$string['icon_print'] = 'Print icon';
+$string['icon_print_desc'] = '';
+
+$string['icon_export'] = 'Export icon';
+$string['icon_export_desc'] = '';
+
+$string['icon_ui_objectives'] = '[UI] Objectives defined icon';
+$string['icon_ui_objectives_desc'] = '';
+
+$string['icon_ui_complete'] = '[UI] Completed icon';
+$string['icon_ui_complete_desc'] = '';
+
+$string['icon_ui_modules_and_objectives'] = '[UI] Modules and objectives defined icon';
+$string['icon_ui_modules_and_objectives_desc'] = '';
+
+$string['icon_ui_in_progress'] = '[UI] In progress icon';
+$string['icon_ui_in_progress_desc'] = '';
+
+$string['icon_ai_no_objectives'] = '[AI] No objectives defined icon';
+$string['icon_ai_no_objectives_desc'] = '';
+
+$string['icon_ai_objectives'] = '[AI] Objectives defined icon';
+$string['icon_ai_objectives_desc'] = '';
+
+$string['icon_ai_modules_and_objectives'] = '[AI] Modules and objectives defined icon';
+$string['icon_ai_modules_and_objectives_desc'] = '';
+
+$string['icon_modal_navigation_icon'] = '[AI] Navigation chevron button in modal window';
+$string['icon_modal_navigation_icon_desc'] = '';
+
+$string['create_role_based_lp'] = 'Create role based LP';
+$string['role_title'] = 'Role Title';
+$string['role_visible'] = 'Role Visible';
+$string['role_desc'] = 'Role Description';
+$string['select_cells'] = 'Select cells';
+$string['save_and_return_to_lp'] = 'Save & Return to LP';
+$string['save_and_return'] = 'Save & Return';
+$string['save_and_edit_role_activities'] = 'Save & Edit Role Activities';
+$string['override_description'] = 'Override Description';
+$string['cell_editing_header'] = '{$a->cellTitle} - {$a->cellLevel} for {$a->roleName}';
+$string['no_changes'] = 'No changes';
+$string['default'] = 'Default';
+
+$string['select_activities'] = 'Select activities';
+$string['activity_name'] = 'Activity name';
+$string['default_ere'] = 'Default ERE';
+$string['override_ere'] = 'Override ERE';
+$string['visible_in_role'] = 'Visible in Role';
+
+$string['disabled_activity_for_role'] = 'This activity is disabled for selected role';
+$string['select_cells'] = 'Select cells';
+$string['select_activities'] = 'Select activities';
+
+$string['learning_journey'] = 'Learning Journey';
+$string['skill_area'] = 'Skill Area';
+$string['expected_level'] = 'Expected level';
+$string['role_specific_definition'] = 'Role-specific definition';
+$string['essential_courses_and_activities'] = 'Essential Courses and Activities';
+$string['select_cells'] ='Select Cells';
+$string['select_role'] = 'Select Role';
+$string['add_role'] = 'Create a new role';
+$string['edit_role'] = 'Edit role';
+    
+$string['region_shortcut'] = 'Shortcut for region: {$a}';
+$string['region_class'] = 'Label class for region: {$a}';
+
+$string['no_objectives_defined'] = 'No objectives defined';
+$string['no_activities_defined'] = 'No activities defined';
+$string['guide_title'] = '5 minute guide - Recommended';
+$string['guide_notes'] = 'Notes associated with this activity (optional)';
+$string['guide_date'] = 'Date completed *';
+$string['guide_confirm'] = 'I confirm that I have completed this activity - add this to my learning record *';

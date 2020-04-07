@@ -363,11 +363,14 @@ EOS;
         $cpdparams = array(
                 'p_organization_name' => null,
                 'p_location' => $session->scheduler->get_office(),
-                'p_learning_method' => isset($extra->p_learning_method) ? $extra->p_learning_method : 'LUNCH_AND_LEARN',
+                'p_learning_method' => isset($extra->p_learning_method) ? $extra->p_learning_method : 'LE',
                 'p_subject_catetory' => 'PD',
                 'p_course_start_date' => $session->scheduler->get_date(),
                 'p_learning_desc' => $desc,
-                'p_health_and_safety_category' => null
+                'p_health_and_safety_category' => null,
+                'p_origin' => 'local_lunchandlearn',
+                'p_originid' => $session->id,
+                'locked' => true,
         );
 
         $result = $taps->add_cpd_record(

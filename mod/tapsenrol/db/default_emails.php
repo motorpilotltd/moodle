@@ -50,6 +50,7 @@ $awaiting_approval = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -77,6 +78,7 @@ $approval_request = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -106,6 +108,7 @@ $approval_request_reminder = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -135,6 +138,7 @@ $approved = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -164,6 +168,7 @@ $approvedinvite = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -192,6 +197,7 @@ $approved_waitlist_planned = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -220,6 +226,7 @@ $approved_waitlist_apply = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -248,6 +255,7 @@ $rejected = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -274,6 +282,7 @@ $class_full = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -302,6 +311,7 @@ $cancellation = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -327,6 +337,7 @@ $cancellation_invite = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -351,6 +362,7 @@ $cancellation_admin = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -375,6 +387,7 @@ $cancellation_admin_invite = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -398,6 +411,7 @@ $cancelled = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -421,6 +435,7 @@ $cancelled_classstart = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -454,6 +469,7 @@ $moved = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -503,6 +519,7 @@ $moved_new_invite = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -532,6 +549,7 @@ $deleted = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -556,6 +574,7 @@ $deleted_cancel_invite = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -579,6 +598,7 @@ $reminder_first = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -602,6 +622,7 @@ $reminder_second = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -625,6 +646,7 @@ $region_mismatch = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]</p>
     {{approver}}<p>Their approver is [[approver:firstname]] [[approver:lastname]] ([[approver:email]])</p>{{/approver}}
 EOS;

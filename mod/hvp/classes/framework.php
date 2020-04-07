@@ -62,8 +62,9 @@ class framework implements \H5PFrameworkInterface {
             $url = "{$root}/pluginfile.php/{$context->id}/mod_hvp";
 
             $language = self::get_language();
-
-            $export = !(isset($CFG->mod_hvp_export) && $CFG->mod_hvp_export === '0');
+/* BEGIN CORE MOD */
+            $export = get_config('mod_hvp', 'export') !== '0';
+/* END CORE MOD */
 
             $core = new \H5PCore($interface, $fs, $url, $language, $export);
             $core->aggregateAssets = !(isset($CFG->mod_hvp_aggregate_assets) && $CFG->mod_hvp_aggregate_assets === '0');
