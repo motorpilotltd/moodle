@@ -125,9 +125,27 @@ switch ($action) {
         // Allows to Rename file, move it to another directory, change it's license and author information in one request
         $filename    = required_param('filename', PARAM_FILE);
         $filepath    = required_param('filepath', PARAM_PATH);
+
+/* BEGIN CORE MOD */
+        $accepted_types  = optional_param_array('accepted_types', '*', PARAM_RAW);
+/* END CORE MOD */
+
         $updatedata = array();
         $updatedata['filename'] = optional_param('newfilename', $filename, PARAM_FILE);
         $updatedata['filepath'] = $newfilepath = optional_param('newfilepath', $filepath, PARAM_PATH);
+
+/* BEGIN CORE MOD */
+        // Validate mimetype of the renamed file.
+        $mimetypes = array();
+        if ((is_array($accepted_types) and !in_array('*', $accepted_types)) or $accepted_types != '*') {
+            foreach ($accepted_types as $type) {
+                $mimetypes[] = mimeinfo('type', $type);
+            }
+            if (!empty($mimetypes) && !in_array(mimeinfo('type', $updatedata['filename']), $mimetypes)) {
+                throw new moodle_exception('invalidfiletype', 'repository', '', get_mimetype_description(array('filename' => $updatedata['filename'])));
+            }
+        }
+/* END CORE MOD */
         if (($v = optional_param('newlicense', false, PARAM_TEXT)) !== false) {
             $updatedata['license'] = $v;
         }

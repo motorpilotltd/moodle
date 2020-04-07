@@ -27,6 +27,18 @@ global $PAGE, $DB, $CFG, $OUTPUT;
 
 $id = required_param('id', PARAM_INT);
 
+// Allow login through an authentication token.
+$userid = optional_param('user_id', null, PARAM_ALPHANUMEXT);
+$secret  = optional_param('secret', null, PARAM_RAW);
+$disabledownload = false;
+$disablefullscreen = false;
+if (\mod_hvp\mobile_auth::has_valid_token($userid, $secret)) {
+    $user = get_complete_user_data('id', $userid);
+    complete_user_login($user);
+    $disabledownload = true;
+    $disablefullscreen = true;
+}
+
 // Verify course context.
 $cm = get_coursemodule_from_id('hvp', $id);
 if (!$cm) {
@@ -41,7 +53,8 @@ try {
     require_course_login($course, true, $cm, true, true);
 } catch (Exception $e) {
     $PAGE->set_pagelayout('embedded');
-    $embedfailedsvg = new \moodle_url("{$CFG->httpswwwroot}/mod/hvp/library/images/h5p.svg");
+    $root = \mod_hvp\view_assets::getsiteroot();
+    $embedfailedsvg = new \moodle_url("{$root}/mod/hvp/library/images/h5p.svg");
     echo '<body style="margin:0">' .
          '<div style="background: #fafafa ' .
          'url(' . $embedfailedsvg->out() . ') no-repeat center;' .
@@ -59,7 +72,7 @@ $context = context_module::instance($cm->id);
 require_capability('mod/hvp:view', $context);
 
 // Set up view assets.
-$view    = new \mod_hvp\view_assets($cm, $course);
+$view    = new \mod_hvp\view_assets($cm, $course, ['disabledownload' => $disabledownload, 'disablefullscreen' => $disablefullscreen]);
 $content = $view->getcontent();
 $view->validatecontent();
 
@@ -71,8 +84,9 @@ $PAGE->set_heading($course->fullname);
 // Embed specific page setup.
 $PAGE->add_body_class('h5p-embed');
 $PAGE->set_pagelayout('embedded');
-$PAGE->requires->css(new \moodle_url("{$CFG->httpswwwroot}/mod/hvp/embed.css"));
-$PAGE->requires->js(new \moodle_url("{$CFG->httpswwwroot}/mod/hvp/embed.js"));
+$root = \mod_hvp\view_assets::getsiteroot();
+$PAGE->requires->css(new \moodle_url("{$root}/mod/hvp/embed.css"));
+$PAGE->requires->js(new \moodle_url("{$root}/mod/hvp/embed.js"));
 
 // Add H5P assets to page.
 $view->addassetstopage();

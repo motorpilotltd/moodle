@@ -60,12 +60,12 @@ if ($course->format == 'weeks') {
 foreach ($newmodules as $newmodule) {
     if (!$newmodule->visible) {
         $link = html_writer::link(
-            new moodle_url('/mod/newmodule.php', array('id' => $newmodule->coursemodule)),
+            new moodle_url('/mod/arupevidence/view.php', array('id' => $newmodule->coursemodule)),
             format_string($newmodule->name, true),
             array('class' => 'dimmed'));
     } else {
         $link = html_writer::link(
-            new moodle_url('/mod/newmodule.php', array('id' => $newmodule->coursemodule)),
+            new moodle_url('/mod/arupevidence/view.php', array('id' => $newmodule->coursemodule)),
             format_string($newmodule->name, true));
     }
 
