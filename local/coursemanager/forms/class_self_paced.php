@@ -38,13 +38,14 @@ class cmform_class_self_paced extends cmform_class {
 
         $mform->removeElement('location');
         $mform->removeElement('trainingcenter');
+        $mform->removeElement('onlineurl');
 
         $mform->removeElement('page');
 
         $mform->removeElement('classendtime');
         $endgroup = $this->optional_time_selector('classendtime');
         $mform->insertElementBefore($endgroup, 'enrolmentstartdate');
-        
+
         $this->add_element("page", "hidden", PARAM_TEXT, null, "class_self_paced");
 
         $classstatus = array(
@@ -67,7 +68,7 @@ class cmform_class_self_paced extends cmform_class {
         $mform->getElement('classtype')->setValue('Self Paced');
         parent::definition_after_data();
     }
-    
+
     public function validation($data, $files){
         $errors = parent::validation($data, $files);
         if ($data['classdurationunitscode'] == "0") {

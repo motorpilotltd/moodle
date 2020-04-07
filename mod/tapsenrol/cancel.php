@@ -116,12 +116,13 @@ echo $OUTPUT->header();
 
 echo $OUTPUT->heading($heading, '2');
 
-if (!isset($enrolment->trainingcenter)) {
+if (!isset($enrolment->trainingcenter) || !isset($enrolment->onlineurl)) {
     // Needed for renderer.
     $class = $tapsenrol->taps->get_class_by_id($enrolment->classid);
     $enrolment->price = $class ? $class->price : null;
     $enrolment->currencycode = $class ? $class->currencycode : null;
     $enrolment->trainingcenter = $class ? $class->trainingcenter : null;
+    $enrolment->onlineurl = $class ? $class->onlineurl : null;
 }
 echo $output->cancel_enrolment($tapsenrol, $enrolment);
 
