@@ -120,7 +120,7 @@ function hvp_cm_info_dynamic(cm_info $cm) {
         return;
     }
 
-    if ($COURSE->id == $cm->course && !$PAGE->requires->is_head_done()
+    if ($COURSE->id == $cm->course && $PAGE->state === moodle_page::STATE_PRINTING_HEADER
         && $PAGE->url->get_path() == '/course/view.php') {
         // Let's check our current instance.
         $hvp = $DB->get_record('hvp', ['id' => $cm->instance]);
