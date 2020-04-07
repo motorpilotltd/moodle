@@ -18,7 +18,7 @@
  * Library of interface functions and constants for module arupevidence.
  *
  * @package    mod_arupevidence
- * @copyright  2017 Xantico Ltd 
+ * @copyright  2017 Xantico Ltd
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -67,8 +67,12 @@ function arupevidence_add_instance(stdClass $arupevidence, mod_arupevidence_mod_
 
     $arupevidence->learningdesc = $arupevidence->learningdesc['text'];
     $arupevidence->timecreated = time();
+    $insertid = $DB->insert_record('arupevidence', $arupevidence);
+    $arupevidence->id = $insertid;
 
-    return $DB->insert_record('arupevidence', $arupevidence);
+    arupevidence_add_declarations($arupevidence);
+
+    return $insertid;
 }
 
 /**
@@ -83,6 +87,7 @@ function arupevidence_update_instance(stdClass $arupevidence, mod_arupevidence_m
     $arupevidence->learningdesc = $arupevidence->learningdesc['text'];
     $arupevidence->timemodified = time();
     $arupevidence->id = $arupevidence->instance;
+    arupevidence_add_declarations($arupevidence);
 
     return $DB->update_record('arupevidence', $arupevidence);
 }
@@ -103,6 +108,48 @@ function arupevidence_delete_instance($id) {
     $DB->delete_records('arupevidence', array('id' => $arupevidence->id));
 
     return true;
+}
+
+/**
+ * Add declarations
+ *
+ * @param $arupevidence arupevidence object
+ * @throws dml_exception
+ */
+function arupevidence_add_declarations($arupevidence) {
+    global $DB;
+    // Clear existing declarations.
+    if (!empty($arupevidence->declaration)) {
+        // Add declarations from form data
+        $declarationrecord = new stdClass();
+        $declarationrecord->arupevidenceid = $arupevidence->id;
+        $declarationrecord->timecreated = time();
+
+        foreach ($arupevidence->declaration as $key => $declaration) {
+            $declarationrecord->declaration = $declaration;
+            $declarationids = isset($arupevidence->declarationid)? $arupevidence->declarationid: [];
+            if (!array_key_exists($key, $declarationids)) {
+                // Add new declaration
+                if (!empty($declaration)) {
+                    $DB->insert_record('arupevidence_declarations', $declarationrecord);
+                }
+            } else {
+                if (!isset($arupevidence->declarationid)) {
+                    continue;
+                }
+                $declarationid = $arupevidence->declarationid[$key];
+                if (empty($declaration)) {
+                    // Delete empty existing declaration
+                    $DB->delete_records('arupevidence_declarations', array('id' => $declarationid));
+                } else {
+                    // Update declaration
+                    $declarationrecord->id = $declarationid;
+                    $DB->update_record('arupevidence_declarations', $declarationrecord);
+                }
+
+            }
+        }
+    }
 }
 
 /**
@@ -136,7 +183,7 @@ function arupevidence_cm_info_dynamic(cm_info $cm) {
 }
 
 function arupevidence_cm_info_view(cm_info $cm) {
-    global $DB, $USER, $OUTPUT;
+    global $DB, $USER, $OUTPUT, $SESSION, $PAGE;
     $contextcourse = context_course::instance($cm->course);
     $ahb = $DB->get_record('arupevidence',  array('id' => $cm->instance));
 
@@ -170,6 +217,17 @@ function arupevidence_cm_info_view(cm_info $cm) {
         $messagebox->boxmsg = get_string('pending:submittedforvalidation', 'mod_arupevidence');
         $messagebox->boxstatus = ($ahbuser->rejected) ? get_string('status:evidencerejected','mod_arupevidence') : get_string('status:evidencesubmitteed','mod_arupevidence');
         $messagebox->boxbtn = get_string('button:amendsubmission', 'mod_arupevidence');
+        $messagebox->boxbtntype = 'btn-default';
+        $messagebox->boxlink = $boxlink->out();
+        $evidenceboxes[] = $messagebox;
+    } else if ($iscomplete) {
+        $boxlink = new moodle_url('/mod/arupevidence/view.php', array('id' => $cm->id));
+        $messagebox = new stdClass();
+        $messagebox->boxclasses = 'alert-success';
+        $messagebox->boxicon = 'fa fa-check-square-o';
+        $messagebox->boxmsg = get_string('completionevidence', 'mod_arupevidence');
+        $messagebox->boxstatus = get_string('status:uploadcomplete','mod_arupevidence');
+        $messagebox->boxbtn = get_string('button:view', 'mod_arupevidence');
         $messagebox->boxbtntype = 'btn-default';
         $messagebox->boxlink = $boxlink->out();
         $evidenceboxes[] = $messagebox;
@@ -212,24 +270,31 @@ function arupevidence_cm_info_view(cm_info $cm) {
             $messagebox->boxlink = $boxlink->out().'#approved';
             $evidenceboxes[] = $messagebox;
         }
-    } else if ($iscomplete) {
-        $boxlink = new moodle_url('/mod/arupevidence/view.php', array('id' => $cm->id));
+    }
+
+    // Display upload on behalf of user.
+    if (has_capability('mod/arupevidence:addevidence', $contextcourse)) {
+        $boxlink = new moodle_url('/mod/arupevidence/upload.php', array('id' => $cm->id));
         $messagebox = new stdClass();
-        $messagebox->boxclasses = 'alert-success';
-        $messagebox->boxicon = 'fa fa-check-square-o';
-        $messagebox->boxmsg = get_string('completionevidence', 'mod_arupevidence');
-        $messagebox->boxstatus = get_string('status:uploadcomplete','mod_arupevidence');
-        $messagebox->boxbtn = get_string('button:view', 'mod_arupevidence');
+        $messagebox->boxclasses = 'alert-info';
+        $messagebox->boxicon = 'fa fa-upload ';
+        $messagebox->boxmsg = get_string('uploadotherevidence', 'mod_arupevidence');
+        $messagebox->boxstatus = '';
+        $messagebox->boxbtn = get_string('button:uploadotherevidence', 'mod_arupevidence');
         $messagebox->boxbtntype = 'btn-default';
         $messagebox->boxlink = $boxlink->out();
         $evidenceboxes[] = $messagebox;
     }
 
+    // Any session messages?
+    if (!empty($SESSION->arupevidence->alert)) {
+        $msg .= $PAGE->get_renderer('mod_arupevidence')->alert($SESSION->arupevidence->alert->message, $SESSION->arupevidence->alert->type);
+        unset($SESSION->arupevidence->alert);
+    }
+
     $msg .= html_writer::div(get_string('msgerror', 'mod_arupevidence'), "alert alert-danger hide", array('role' => "alert"));
 
-
-
-    // Construct arup evidence message box
+    // Construct arup evidence message box.
     if(!empty($evidenceboxes)) {
         foreach ($evidenceboxes as $evidencebox) {
             $msg .= $OUTPUT->render_from_template('mod_arupevidence/evidence_messagebox', $evidencebox);

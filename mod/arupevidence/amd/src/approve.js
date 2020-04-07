@@ -26,12 +26,10 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
     function($, cfg, str, notification) {
 
         return /** @alias module:mod_arupevidence/approve */ {
-            init: function () {
+            init: function() {
                 var ae_userid = '',
                     cm_id = '',
                     actiontype = '',
-                    reject_modal = $('#reject-evidence-modal'),
-                    approve_modal = $('#approve-evidence-modal'),
                     modal = $('.modal');
                 $('.action-evidence').on('click', function(e) {
                     e.preventDefault();
@@ -39,20 +37,23 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     cm_id = $(this).data('cmid');
                     actiontype = $(this).data('actiontype');
 
-                    $('#'+ actiontype +'-evidence-modal').modal('show');
+                    $('#' + actiontype + '-evidence-modal').modal('show');
                 });
 
 
-                modal.on('shown.bs.modal', function () {
+                modal.on('shown.bs.modal', function() {
                     // Add event listener to modal submit buttton
                     var _thismodal = $(this);
-                    _thismodal.on('click', '#'+ actiontype +'-evidence-btn', function () {
+                    _thismodal.on('click', '#' + actiontype + '-evidence-btn', function() {
                         var _thisbtn = $(this);
                         _thisbtn.prop('disabled', true);
                         str.get_string('label:processing', 'mod_arupevidence').done(function(s) {
-                            _thisbtn.html('<i class="fa fa-lg fa-fw fa-spinner fa-spin"></i><span class="sr-only">' + s + '</span>');
+                            _thisbtn.html(
+                                '<i class="fa fa-lg fa-fw fa-spinner fa-spin"></i><span class="sr-only">' + s + '</span>'
+                            );
                         }).fail(notification.exception);
-                        var rejectmessage = _thismodal.find('#reject-message').length != 0 ? _thismodal.find('#reject-message').val() : '' ;
+                        var rejectmessage =
+                            _thismodal.find('#reject-message').length != 0 ? _thismodal.find('#reject-message').val() : '';
                         $.ajax({
                             async: false,
                             type: 'POST',
@@ -63,10 +64,10 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                                 id: cm_id,
                                 reject_message: rejectmessage
                             },
-                            success: function(res) {
+                            success: function() {
                                 location.reload();
                             },
-                            error: function(e){
+                            error: function() {
                                 location.reload();
                             }
                         });
@@ -74,6 +75,6 @@ define(['jquery', 'core/config', 'core/str', 'core/notification', 'theme_bootstr
                     });
                 });
             }
-        }
+        };
     }
 );
