@@ -1059,7 +1059,7 @@ EOS;
             $min_str = '';
             $hr = floor($duration);
             $min = $duration - $hr;
-            $min = floor($min * HOURMINS);
+            $min = round($min * HOURMINS);
 
             if ($hr != 0) {
                 $hr_str = $hr . ' hr(s)';
@@ -1078,7 +1078,7 @@ EOS;
 
     /**
      * Coverting  input hh:mm to hours
-     * 
+     *
      * @param $duration
      * @return float|int
      */
@@ -1093,7 +1093,7 @@ EOS;
             }
             return $hrs + $mins;
         }
-        
+
         return $duration;
-    } 
+    }
 }
