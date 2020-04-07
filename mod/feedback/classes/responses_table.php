@@ -118,7 +118,9 @@ class mod_feedback_responses_table extends table_sql {
 
         $extrafields = get_extra_user_fields($this->get_context());
         $ufields = user_picture::fields('u', $extrafields, $this->useridfield);
-        $fields = 'c.id, c.timemodified as completed_timemodified, c.courseid, '.$ufields;
+/* BEGIN CORE MOD */
+        $fields = 'c.id, c.timemodified as completed_timemodified, c.courseid, u.address, '.$ufields;
+/* END CORE MOD */
         $from = '{feedback_completed} c '
                 . 'JOIN {user} u ON u.id = c.userid AND u.deleted = :notdeleted';
         $where = 'c.anonymous_response = :anon
@@ -135,6 +137,8 @@ class mod_feedback_responses_table extends table_sql {
 /* BEGIN CORE MOD */
             $tablecolumns[] = 'group';
             $tableheaders[] = get_string('groups');
+            $tablecolumns[] = 'address';
+            $tableheaders[] = get_string('address');
 /* END CORE MOD */
             // Add all identity fields as separate columns.
             foreach ($extrafields as $field) {
