@@ -68,25 +68,5 @@ function xmldb_local_lunchandlearn_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080500, 'local', 'lunchandlearn');
     }
 
-    if ($oldversion < 2017051500) {
-        // Update existing records to lock them.
-        $locksql = "UPDATE {local_taps_enrolment}
-                   SET locked = 1
-                 WHERE classtype = 'Lunch and Learn'
-                       AND classcategory = 'Professional Development'
-                       AND classstarttime != 0
-                       AND classendtime != 0";
-        $DB->execute($locksql);
-
-        // Update existing records to change classtype.
-        $updatesql = "UPDATE {local_taps_enrolment}
-                   SET classtype = 'Learning Event'
-                 WHERE classtype = 'Lunch and Learn'";
-        $DB->execute($updatesql);
-
-        // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2017051500, 'local', 'lunchandlearn');
-    }
-
     return true;
 }
