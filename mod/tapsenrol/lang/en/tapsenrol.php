@@ -250,7 +250,7 @@ $string['iw:emails:replacements:general'] =
     '<p>Generally allowed text replacements:<br />'
     . '[[applicant:firstname]]<br />[[applicant:lastname]]<br />[[applicant:email]]<br />'
     . '[[coursename]]<br />[[courseurl]]<br />'
-    . '[[classname]]<br />[[classlocation]]<br />[[classtrainingcenter]]<br />[[classdate]]<br />[[classduration]]<br />[[classcost]]</p>'
+    . '[[classname]]<br />[[classlocation]]<br />[[classtrainingcenter]]<br />[[classonlineurl]]<br />[[classdate]]<br />[[classduration]]<br />[[classcost]]</p>'
     . '<p>NB. In any email you can enter sections of content between {{approver}} and {{/approver}} to hide the contained information when approval is not required.';
 
 $string['iw:emails:replacements:approval_request'] =
@@ -311,7 +311,7 @@ $string['iw:emails:replacements:moved_new_invite'] =
     '<p>Email specific text replacements:<br />'
     . '[[approver:firstname]]<br />[[approver:lastname]]<br />[[approver:email]]<br />'
     . '[[coursename:old]]<br />[[courseurl:old]]<br />'
-    . '[[classname:old]]<br />[[classlocation:old]]<br />[[classtrainingcenter:old]]<br />[[classdate:old]]]<br />[[classduration:old]]<br />[[classcost:old]]'
+    . '[[classname:old]]<br />[[classlocation:old]]<br />[[classtrainingcenter:old]]<br />[[classonlineurl:old]]<br />[[classdate:old]]]<br />[[classduration:old]]<br />[[classcost:old]]'
     . '[[admin:firstname]]<br />[[admin:lastname]]<br />[[admin:email]]</p>';
 
 $string['iw:emails:subject'] = 'Subject';
@@ -556,6 +556,7 @@ $string['tbc'] = 'TBC';
 $string['time'] = 'Time';
 $string['to'] = 'to';
 $string['trainingcenter'] = 'Room';
+$string['onlineurl'] = 'Online URL';
 
 $string['unlimited'] = 'Unlimited';
 
