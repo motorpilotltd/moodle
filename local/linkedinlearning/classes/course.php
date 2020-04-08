@@ -718,7 +718,7 @@ class course extends \data_object {
 
             $scorm = $DB->get_record('scorm', ['id' => $scormcm->instance]);
 
-            $scorm->packageurl = $this->aicclaunchurl;
+            $scorm->reference = $this->aicclaunchurl;
             $scorm->name = $this->title;
             $scorm->intro = $this->description;
             $DB->update_record('scorm', $scorm);
