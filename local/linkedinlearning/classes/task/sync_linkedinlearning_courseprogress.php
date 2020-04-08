@@ -57,11 +57,6 @@ class sync_linkedinlearning_courseprogress extends \core\task\scheduled_task {
             $syncedto = $now;
         }
 
-        $DB->execute("
-        update {linkedinlearning_progress}
-        set userid = coalesce((select id from {user} where {user}.email = {linkedinlearning_progress}.email), 0)
-        where userid = 0");
-
         if ($success) {
             set_config('courseprgogresssyncto', $syncedto, 'local_linkedinlearning');
         }

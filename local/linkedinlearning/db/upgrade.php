@@ -111,5 +111,42 @@ function xmldb_local_linkedinlearning_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080536, 'local', 'linkedinlearning');
     }
 
+    if ($oldversion < 2016080537) {
+
+        $table = new xmldb_table('linkedinlearning_progress');
+
+        $field = new xmldb_field('uniqueuserid', XMLDB_TYPE_CHAR, '255', null, null, null, '');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('userurn', XMLDB_TYPE_CHAR, '255', null, null, null, '');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Handle legacy data where uniqueuserid was a moodle user id.
+        $DB->execute("
+        update {linkedinlearning_progress}
+        set userid = coalesce((
+            select id from {user} where CONVERT(varchar(10), {user}.id) = {linkedinlearning_progress}.email
+        ), 0)
+        where userid = 0");
+
+        $DB->execute("
+        update {linkedinlearning_progress}
+        set uniqueuserid = coalesce((select idnumber from {user} where {user}.id = {linkedinlearning_progress}.userid), '')
+        where uniqueuserid = ''");
+
+        $DB->execute("
+        update {linkedinlearning_progress}
+        set email = coalesce((select email from {user} where {user}.id = {linkedinlearning_progress}.userid), '')
+        where email = ''");
+
+        upgrade_plugin_savepoint(true, 2016080537, 'local', 'linkedinlearning');
+    }
+
     return true;
 }

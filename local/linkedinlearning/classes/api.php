@@ -293,15 +293,47 @@ class api {
         $transaction = $DB->start_delegated_transaction();
         try {
             foreach ($courseprogressiterator as $raw) {
-                $parmams = [
-                        'urn'   => $raw->contentDetails->contentUrn,
-                        'email' => $raw->learnerDetails->uniqueUserId
-                ];
-                $record = $DB->get_record('linkedinlearning_progress', $parmams);
+                $params = ['urn'   => $raw->contentDetails->contentUrn];
 
-                if (!isset($record->id)) {
-                    $record = (object) $parmams;
+                $idparamsql = [];
+                $idparams = [
+                        'userurn' => !empty($raw->learnerDetails->entity->profileUrn) ? $raw->learnerDetails->entity->profileUrn:null,
+                        'uniqueuserid' => !empty($raw->learnerDetails->uniqueUserId) ? $raw->learnerDetails->uniqueUserId:null,
+                        'email' => !empty($raw->learnerDetails->email) ? $raw->learnerDetails->email:null,
+                ];
+                foreach ($idparams as $fieldname => $value) {
+                    if ($value == null) {
+                        continue;
+                    }
+                    $params[$fieldname] = $value;
+                    $idparamsql[] = "$fieldname = :$fieldname";
+                }
+
+                if (count($idparamsql) == 0) {
+                    throw new LilApiGenericException('Non user identifiable record received from API');
+                }
+
+                $idparamsql = implode(' OR ', $idparamsql);
+
+                $sql = "SELECT * FROM {linkedinlearning_progress} WHERE urn = :urn AND ($idparamsql)";
+
+                $records = $DB->get_records_sql($sql, $params);
+
+                if (empty($records)) {
+                    $record = (object) $params;
                     $record->seconds_viewed = 0;
+                    $record->userid = 0;
+                } else if (count($records) === 1) {
+                    $record = reset($records);
+                } else if (count($records) > 1) {
+                    $record = $this->deduperecords($records);
+                }
+
+                foreach ($idparams as $fieldname => $value) {
+                    if ($value == null) {
+                        continue;
+                    }
+                    $record->$fieldname = $value;
                 }
 
                 foreach ($raw->activities as $datapoint) {
@@ -328,7 +360,6 @@ class api {
                 }
 
                 if (!isset($record->id)) {
-                    $record->userid = 0;
                     $DB->insert_record('linkedinlearning_progress', $record);
                 } else {
                     $DB->update_record('linkedinlearning_progress', $record);
@@ -338,7 +369,53 @@ class api {
         } catch (LilApiRateLimitException | LilApiBackingOffException $ex) {
             return false;
         }
+
+        $this->populatemoodleuserid();
+
         $transaction->allow_commit();
         return true;
+    }
+
+    /**
+     * @param array $records
+     * @param \moodle_database $DB
+     * @return array
+     * @throws \dml_exception
+     */
+    public function deduperecords(array $records) {
+        global $DB;
+
+        $record = array_pop($records);
+
+        foreach ($records as $mergerecord) {
+            if (empty($record->first_viewed) || $record->first_viewed > $mergerecord->first_viewed) {
+                $record->first_viewed = $mergerecord->first_viewed;
+            }
+            if (empty($record->last_viewed) || $record->last_viewed < $mergerecord->last_viewed) {
+                $record->last_viewed = $mergerecord->last_viewed;
+            }
+            if (empty($record->progress_percentage) || $record->progress_percentage < $mergerecord->progress_percentage) {
+                $record->progress_percentage = $mergerecord->progress_percentage;
+            }
+
+            $record->seconds_viewed += $mergerecord->seconds_viewed;
+
+            $DB->delete_records('linkedinlearning_progress', ['id' => $mergerecord->id]);
+        }
+        return $record;
+    }
+
+    public function populatemoodleuserid() {
+        global $DB;
+
+        $DB->execute("
+        update {linkedinlearning_progress}
+        set userid = coalesce((select id from {user} where {user}.idnumber = {linkedinlearning_progress}.uniqueuserid), 0)
+        where userid = 0");
+
+        $DB->execute("
+        update {linkedinlearning_progress}
+        set userid = coalesce((select id from {user} where {user}.email = {linkedinlearning_progress}.email), 0)
+        where userid = 0");
     }
 }
