@@ -636,6 +636,7 @@ select.custom-select.roles {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
+    -o-appearance: none;
     min-width: 450px;
     max-height: 50px;
     margin-bottom: 10px;
@@ -649,6 +650,7 @@ select.custom-select.roles {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
+    -o-appearance: none;
     min-width: 300px;
 
 }
@@ -662,7 +664,13 @@ select.custom-select.roles {
     color: #222222;
 }
 
+.custom-select:hover {
+    cursor: default; /* workaround for IE */
+}
 
+.custom-select select::-ms-expand {
+    display: none; /* workaround for IE */
+}
 
 .learning_path .learning_path_content .right img.learning_path_image{
     max-width: 100%;

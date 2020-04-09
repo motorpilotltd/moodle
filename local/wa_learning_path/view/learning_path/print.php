@@ -26,18 +26,26 @@
                 $rowName = '';
                 foreach ($this->matrix->cols as $col) {
                     if ($col->id == $columnId) {
+
+                        if (!$col->show || !wa_learning_path\model\learningpath::check_regions_match($this->regions, $col->region)) {
+                            continue 2;
+                        }
+
                         $columnName = $col->name;
                         break;
                     }
                 }
                 foreach ($this->matrix->rows as $row) {
                     if ($row->id == $rowId) {
+
+                        if (!$row->show) {
+                            continue 2;
+                        }
+
                         $rowName = $row->name;
                         break;
                     }
                 }
-
-//                $this->change_activity_position($activity, $overridePosition, $this->activities->{$key}->positions);
 
                 ?>
                 <tr>
@@ -53,6 +61,15 @@
                     <td>
                         <?php
                         foreach ($cell['activities'] as $activity):
+
+                            if (!wa_learning_path\model\learningpath::check_regions_match($this->regions, $activity->region)) {
+                                continue;
+                            }
+
+                            if (isset($activity->visible) && !$activity->visible) {
+                                continue;
+                            }
+
                             if ($activity->position == 'essential'):
                                 if ($activity->type == 'module'):
                                     $activityName = $activity->fullname;

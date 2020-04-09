@@ -861,6 +861,10 @@ class admin extends \wa_learning_path\lib\base_controller {
         if (!isset($this->activities)) {
             $this->activities = array();
         }
+
+        if (!isset($this->max_id)) {
+            $this->max_id = 0;
+        }
         
         $jsArguments = array(
             'columns' => $this->columns,

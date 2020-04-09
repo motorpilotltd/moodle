@@ -19,7 +19,15 @@ global $CFG;
         ?>
         <div class="matrix-activities-description-text">
             <?php if (\wa_learning_path\lib\has_capability('printlearningmatrix')): ?>
-                <a id='print_section' type="button" href="<?php echo new \moodle_url($this->url, array('a' => 'print_section', 'id' => $this->id, 'ajax' => 1, 'key' => str_replace('#', '', $this->key))) ?>" class="btn button-print btn-default pull-right"><?php echo $this->get_icon_html('icon_print') . $this->get_string('print_section') ?></a>
+                <?php $params = array('a' => 'print_section', 'id' => $this->id, 'ajax' => 1, 'key' => str_replace('#', '', $this->key)); ?>
+                <?php if (isset($this->role)): ?>
+                    <?php $params['role'] = $this->role; ?>
+                <?php endif; ?>
+
+                <?php if ($this->regions): ?>
+                    <?php $params['regions'] = implode(',', $this->regions); ?>
+                <?php endif; ?>
+                <a id='print_section' type="button" href="<?php echo new \moodle_url($this->url, $params) ?>" class="btn button-print btn-default pull-right"><?php echo $this->get_icon_html('icon_print') . $this->get_string('print_section') ?></a>
             <?php endif; ?>
 
             <?php if (isset($this->activities->{$this->key})): ?>

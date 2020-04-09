@@ -883,6 +883,12 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             return $this->no_access('printlearningmatrix');
         }
 
+        // Selected region. default value -1 user will see content for all regions.
+        $regions = optional_param('regions', null, PARAM_RAW_TRIMMED);
+        if($regions === '') {
+            $regions = null;
+        }
+
         $role = optional_param('role', null, PARAM_INT);
 
         $this->check_and_get_learning_path();
@@ -895,6 +901,25 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         // Get the matrix
         $this->matrix = json_decode($this->learning_path->matrix);
 
+        // Get region to display
+        $this->regions = array();
+        // Get user region.
+        $this->userregion = \wa_learning_path\lib\get_user_region();
+
+        // Get selected regions.
+        $this->selectedregions = (!is_null($regions) && $regions !== '') ? explode(',', $regions) : null;
+        if (is_null($regions) && $regions !== '-1' && !empty($this->userregion)) {
+            // Set user region ID
+            $this->regions[] = (int) $this->userregion->id;
+            $regions = (int) $this->userregion->id;
+            $this->selectedregions = [$this->userregion->id];
+        } else if (!is_null($regions)  && $regions !== '-1') {
+            // If region ID is provider by GET - is set up.
+            $this->regions = is_null($this->selectedregions) ? array() : $this->selectedregions;
+        } else {
+            // Empty.
+            $this->regions = array();
+        }
 
         $cellDesc = [];
         if ($role) {
@@ -907,6 +932,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                 false, false, false, false, (bool)$this->learning_path->subscribed);
 
             foreach ($this->activities as $id => $activity) {
+                if (in_array($role, $activity->enabledForRoles)) {
                     $id = substr($id, 1); // Strip the '#'
                     $cellDesc[$id]['description'] = $activity->content;
                     $cellDesc[$id]['activities'] = [];
@@ -916,6 +942,7 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                             $cellDesc[$id]['activities'][] = $act;
                         }
                     }
+                }
             }
 
             foreach ($cellData as $index => $cell) {
@@ -924,9 +951,13 @@ class learning_path extends \wa_learning_path\lib\base_controller {
                         $cellDesc[$cell->activityid]['description'] = $cell->overridedescription;
                     }
 
-                    if ($cell->overrideere) {
-                        foreach ($cellDesc[$cell->activityid]['activities'] as &$act) {
-                            if ($act->id == $cell->itemid && $act->type == $cell->type) {
+                    foreach ($cellDesc[$cell->activityid]['activities'] as &$act) {
+                        if ($act->id == $cell->itemid && $act->type == $cell->type) {
+
+                            if (isset($cell->visible)) {
+                                $act->visible = $cell->visible;
+                            }
+                            if ($cell->overrideere) {
                                 $act->position = $cell->overrideere;
                             }
                         }
@@ -1012,7 +1043,8 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             return $this->no_access('printlearningmatrix');
         }
 
-        global $CFG; require_once($CFG->dirroot . '/lib/formslib.php');
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/lib/formslib.php');
         $this->check_and_get_learning_path($params);
 
         \wa_learning_path\lib\load_model('activity');
@@ -1022,6 +1054,12 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         // Selected region. default value -1 user will see content for all regions.
         $regions = optional_param('regions', null, PARAM_RAW_TRIMMED);
+        if($regions === '') {
+            $regions = null;
+        }
+
+        // Selected region. default value -1 user will see content for all regions.
+        $roleId = optional_param('role', null, PARAM_INT);
 
         // Selected cell of matrix (cell-ID).
         $this->key = $key = '#'.optional_param('key', 0, PARAM_RAW_TRIMMED);
@@ -1033,12 +1071,15 @@ class learning_path extends \wa_learning_path\lib\base_controller {
         $this->regions = array();
         // Get user region.
         $this->userregion = \wa_learning_path\lib\get_user_region();
+
         // Get selected regions.
-        $this->selectedregions = (!is_null($regions) && $regions != '') ? explode(',', $regions) : null;
-        if (is_null($regions) && !empty($this->userregion)) {
+        $this->selectedregions = (!is_null($regions) && $regions !== '') ? explode(',', $regions) : null;
+        if (is_null($regions) && $regions !== '-1' && !empty($this->userregion)) {
             // Set user region ID
             $this->regions[] = (int) $this->userregion->id;
-        } else if (!is_null($regions)) {
+            $regions = (int) $this->userregion->id;
+            $this->selectedregions = [$this->userregion->id];
+        } else if (!is_null($regions)  && $regions !== '-1') {
             // If region ID is provider by GET - is set up.
             $this->regions = is_null($this->selectedregions) ? array() : $this->selectedregions;
         } else {
@@ -1059,6 +1100,35 @@ class learning_path extends \wa_learning_path\lib\base_controller {
             // Get the matrix
             $this->matrix = json_decode($this->learning_path->matrix);
 
+            $enabledActivities = [];
+            if ($roleId) {
+                $role = $DB->get_record('wa_learning_path_role', ['learningpathid' => $this->id, 'id' => $roleId]);
+
+                foreach ($this->matrix->activities as $id => $activity) {
+                    if (in_array($role->id, $activity->enabledForRoles)) {
+                        $enabledActivities[] = $id;
+                    }
+                }
+            }
+
+            if (isset($this->matrix->activities->{$key}->enabledForRoles) && in_array($roleId, $this->matrix->activities->{$key}->enabledForRoles)) {
+                $activitiesData = $DB->get_records('wa_learning_path_role_act', ['roleid' => $roleId, 'activityid' => substr($key, 1)]);
+            } else {
+                $activitiesData = null;
+            }
+
+            $cellData = [];
+            if ($activitiesData) {
+                if ($cellDescription = $DB->get_field('wa_learning_path_role_act', 'overridedescription', ['roleid' => $roleId, 'activityid' => substr($key, 1), 'itemid' => 0, 'type' => 0])) {
+                    $cellData['description'] = $cellDescription;
+                } else {
+                    $cellData['description'] = reset($activitiesData)->overridedescription;
+                }
+                foreach ($activitiesData as $data) {
+                    $cellData['activities'][$data->type . '_' . $data->itemid] = $data;
+                }
+            }
+
             if ($this->matrix) {
                 $this->activities = \wa_learning_path\model\learningpath::fill_activities(@$this->matrix->activities,
                     false, false, false, false, (bool)$this->learning_path->subscribed);
@@ -1069,6 +1139,14 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
             $this->cell->content = \file_rewrite_pluginfile_urls($this->cell->content, 'pluginfile.php',
                 $this->systemcontext->id, 'local_wa_learning_path', 'content', $this->learning_path->id);
+
+            $this->enabledActivities = $enabledActivities;
+
+            $this->cellData = $cellData;
+
+            if ($roleId) {
+                $this->role = $role;
+            }
 
             $this->position = 'all';
 
@@ -1120,6 +1198,32 @@ class learning_path extends \wa_learning_path\lib\base_controller {
 
         .highlight {
             border: 3px solid black;
+        }
+        
+        .cell-selected {
+            background-color: #fffaa5!important;
+        }
+       
+        .fa-lpath-cell {
+            line-height: 44px;
+        }
+        
+        .fa {
+            vertical-align:middle;
+        }
+        
+        .fa-info-circle {
+            color: #bcbec0;
+        }
+        .fa-check-square-o {
+            color: #38C19A;
+        }
+        .fa-tasks {
+            color: #0f95ff;
+        }
+        
+        .fa-spinner {
+            color: #874245;
         }
 
         </style>

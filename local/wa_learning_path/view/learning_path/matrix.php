@@ -28,13 +28,17 @@ $preview = optional_param('preview', 0, PARAM_INT);
     <div class="btn-group pull-right" role="group" >
         <?php if (\wa_learning_path\lib\has_capability('printlearningmatrix')): ?>
             <?php if ($this->role): $params = ['a' => 'print', 'id' => $this->id, 'ajax' => 1, 'role' => $this->role->id]; ?>
-            <?php else: $params = ['a' => 'print', 'id' => $this->id, 'ajax' => 1]; endif; ?>
+            <?php else: $params = ['a' => 'print', 'id' => $this->id, 'ajax' => 1]; ?>
+            <?php endif; ?>
+            <?php if ($this->regions) $params['regions'] = implode(',', $this->regions); ?>
             <a type="button" href="<?php echo new \moodle_url($this->url, $params) ?>" class="btn button-print btn-default "><?php echo $this->get_icon_html('icon_print') . $this->get_string('print_matrix') ?></a>
         <?php endif; ?>
         
         <?php if (\wa_learning_path\lib\has_capability('exportlearningmatrix')): ?>
             <?php if ($this->role): $params = ['a' => 'excel', 'id' => $this->id, 'role' => $this->role->id]; ?>
-            <?php else: $params = ['a' => 'excel', 'id' => $this->id]; endif; ?>
+            <?php else: $params = ['a' => 'excel', 'id' => $this->id]; ?>
+            <?php endif; ?>
+            <?php if ($this->regions) $params['regions'] = implode(',', $this->regions); ?>
             <a type="button" href="<?php echo new \moodle_url($this->url, $params) ?>" class="btn button-export btn-default"><?php echo $this->get_icon_html('icon_print') . $this->get_string('export_matrix') ?></a>
         <?php endif; ?>
     </div>
