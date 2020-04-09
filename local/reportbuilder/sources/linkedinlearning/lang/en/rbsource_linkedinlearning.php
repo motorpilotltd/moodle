@@ -20,6 +20,7 @@ $string['first_viewed'] = 'First viewed';
 $string['last_viewed'] = 'Last viewed';
 $string['availableinregion'] = '{$a}';
 $string['visibleinregion'] = 'Region visibility';
+$string['visibleinregionsreadonly'] = 'Region visibility (read only)';
 $string['linkedtitle'] = 'Linked course title';
 $string['shortdescription'] = 'Short Description';
 $string['linkedtitlewithexpander'] = 'Linked course title (with expander)';
