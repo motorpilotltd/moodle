@@ -127,34 +127,6 @@ function xmldb_local_linkedinlearning_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Update NULLs.
-        $DB->execute("
-        update {linkedinlearning_progress}
-        set uniqueuserid = ''
-        where uniqueuserid IS NULL");
-        $DB->execute("
-        update {linkedinlearning_progress}
-        set userurn = ''
-        where userurn IS NULL");
-
-        // Handle legacy data where uniqueuserid was a moodle user id.
-        $DB->execute("
-        update {linkedinlearning_progress}
-        set userid = coalesce((
-            select id from {user} where CONVERT(varchar(10), {user}.id) = {linkedinlearning_progress}.email
-        ), 0)
-        where userid = 0");
-
-        $DB->execute("
-        update {linkedinlearning_progress}
-        set uniqueuserid = coalesce((select idnumber from {user} where {user}.id = {linkedinlearning_progress}.userid), '')
-        where uniqueuserid = ''");
-
-        $DB->execute("
-        update {linkedinlearning_progress}
-        set email = coalesce((select email from {user} where {user}.id = {linkedinlearning_progress}.userid), '')
-        where email = ''");
-
         upgrade_plugin_savepoint(true, 2016080539, 'local', 'linkedinlearning');
     }
 
