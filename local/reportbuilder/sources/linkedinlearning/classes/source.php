@@ -582,7 +582,7 @@ class source extends rb_base_source {
         return $defaultfilters;
     }
 
-    public function rb_display_regionvisibility($courseid, $row) {
+    public function rb_display_regionvisibility($courseid, $row, $export) {
         if ($row->regionid != 0 && !$row->linkedinlearningmanager) {
             $checked = $row->presentglobal || $row->presentinregion;
             $disabled = $checked && !$row->presentinregion;
@@ -598,8 +598,12 @@ class source extends rb_base_source {
             $attributes = [];
         }
 
-        return \html_writer::span(\html_writer::checkbox('visibleinregion', '', $checked, '',
-                $attributes));
+        if ($export) {
+            return $checked ? get_string('yes') : get_string('no');
+        } else {
+            return \html_writer::span(\html_writer::checkbox('visibleinregion', '', $checked, '',
+                    $attributes));
+        }
     }
 
     public function rb_display_linkedincourselink($title, $row) {
