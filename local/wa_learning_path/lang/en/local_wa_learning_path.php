@@ -49,7 +49,14 @@ $string['wa_learning_path:addactivity'] = "Ability to add new activity";
 $string['wa_learning_path:deleteactivity'] = "Ability to remove activity";
 
 // Events
-$string['event_learning_path_viewed'] = 'Learning path view';
+$string['event_activity_created'] = 'Learning path activity created';
+$string['event_activity_deleted'] = 'Learning path activity deleted';
+$string['event_activity_updated'] = 'Learning path activity updated';
+$string['event_activity_viewed'] = 'Learning path activity viewed';
+$string['event_learning_path_created'] = 'Learning path created';
+$string['event_learning_path_deleted'] = 'Learning path deleted';
+$string['event_learning_path_updated'] = 'Learning path updated';
+$string['event_learning_path_viewed'] = 'Learning path viewed';
 
 // Settings.
 $string['settings'] = "Settings";
@@ -400,7 +407,7 @@ $string['select_cells'] ='Select Cells';
 $string['select_role'] = 'Select Role';
 $string['add_role'] = 'Create a new role';
 $string['edit_role'] = 'Edit role';
-    
+
 $string['region_shortcut'] = 'Shortcut for region: {$a}';
 $string['region_class'] = 'Label class for region: {$a}';
 
