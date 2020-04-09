@@ -111,23 +111,23 @@ function xmldb_local_linkedinlearning_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080536, 'local', 'linkedinlearning');
     }
 
-    if ($oldversion < 2016080538) {
+    if ($oldversion < 2016080539) {
 
         $table = new xmldb_table('linkedinlearning_progress');
 
-        $field = new xmldb_field('uniqueuserid', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, '');
+        $field = new xmldb_field('uniqueuserid', XMLDB_TYPE_CHAR, '255', null, null, null, '');
 
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        $field = new xmldb_field('userurn', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, '');
+        $field = new xmldb_field('userurn', XMLDB_TYPE_CHAR, '255', null, null, null, '');
 
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
-        // In case fields already exist with NULLs.
+        // Update NULLs.
         $DB->execute("
         update {linkedinlearning_progress}
         set uniqueuserid = ''
@@ -155,7 +155,7 @@ function xmldb_local_linkedinlearning_upgrade($oldversion) {
         set email = coalesce((select email from {user} where {user}.id = {linkedinlearning_progress}.userid), '')
         where email = ''");
 
-        upgrade_plugin_savepoint(true, 2016080538, 'local', 'linkedinlearning');
+        upgrade_plugin_savepoint(true, 2016080539, 'local', 'linkedinlearning');
     }
 
     return true;
