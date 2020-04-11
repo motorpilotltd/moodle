@@ -59,6 +59,10 @@ if ($hassiteconfig || has_capability('local/linkedinlearning:manage', $context))
     $title = get_string('setting:courseprgogresssyncto', 'local_linkedinlearning');
     $settings->add(new admin_setting_configtext($name, $title, '', 0));
 
+    $name = 'local_linkedinlearning/backoffuntil';
+    $title = get_string('setting:backoffuntil', 'local_linkedinlearning');
+    $settings->add(new admin_setting_configtext($name, $title, '', 0));
+
     $ADMIN->add('local_linkedinlearning', new admin_externalpage('local_linkedinlearning/managecourses', get_string('managecourses', 'local_linkedinlearning'),
             new moodle_url('/local/linkedinlearning/manage.php'), 'local/linkedinlearning:manage'));
 

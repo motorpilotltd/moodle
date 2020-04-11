@@ -171,7 +171,11 @@ class source extends rb_base_source {
         return $this->userregionid;
     }
 
-    public function rb_cols_generator_regionvisibility($columnoption, $hidden) {
+    public function rb_cols_generator_regionvisibilityreadonly($columnoption, $hidden) {
+        return $this->rb_cols_generator_regionvisibility($columnoption, $hidden, true);
+    }
+
+    public function rb_cols_generator_regionvisibility($columnoption, $hidden, $readonly = false) {
         global $DB;
         $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true], 'name', 'id, name');
 
@@ -200,7 +204,8 @@ class source extends rb_base_source {
                             'joins'       => "regions0",
                             'extrafields' => ['regionid'        => 0,
                                               'presentinregion' => " CASE WHEN regions0.courseid IS NULL AND arupadvert.id IS NOT NULL THEN 1 ELSE 0 END ",
-                                            'linkedinlearningmanager' => "'$has_capability'"
+                                            'linkedinlearningmanager' => "'$has_capability'",
+                                            'readonly' => "'$readonly'"
                             ]
                     )
             );
@@ -218,7 +223,8 @@ class source extends rb_base_source {
                             'extrafields' => ['regionid'        => $id,
                                               'presentinregion' => " CASE WHEN regions{$id}.id IS NULL THEN 0 ELSE 1 END ",
                                               'presentglobal' => " CASE WHEN regions0.courseid IS NULL AND arupadvert.id IS NOT NULL THEN 1 ELSE 0 END ",
-                                              'linkedinlearningmanager' => "'$has_capability'"
+                                              'linkedinlearningmanager' => "'$has_capability'",
+                                              'readonly' => "'$readonly'"
                             ]
                     )
             );
@@ -290,6 +296,14 @@ class source extends rb_base_source {
                         get_string('visibleinregion', 'rbsource_linkedinlearning'),
                         'base.id',
                         array('columngenerator' => 'regionvisibility',
+                              'defaultheading' => get_string('visibleinregion', 'rbsource_linkedinlearning'))
+                ),
+                new rb_column_option(
+                        'linkedincourse',
+                        'visibleinregionsreadonly',
+                        get_string('visibleinregionsreadonly', 'rbsource_linkedinlearning'),
+                        'base.id',
+                        array('columngenerator' => 'regionvisibilityreadonly',
                               'defaultheading' => get_string('visibleinregion', 'rbsource_linkedinlearning'))
                 ),
                 new rb_column_option(
@@ -568,7 +582,7 @@ class source extends rb_base_source {
         return $defaultfilters;
     }
 
-    public function rb_display_regionvisibility($courseid, $row) {
+    public function rb_display_regionvisibility($courseid, $row, $export) {
         if ($row->regionid != 0 && !$row->linkedinlearningmanager) {
             $checked = $row->presentglobal || $row->presentinregion;
             $disabled = $checked && !$row->presentinregion;
@@ -577,14 +591,19 @@ class source extends rb_base_source {
             $disabled = false;
         }
 
-        $attributes = ['data-regionid' => $row->regionid, 'data-courseid' => $courseid, 'class' => 'regioncheck'];
 
-        if ($disabled) {
-            $attributes['disabled'] = 'disabled';
+        if ($disabled || !empty($row->readonly)) {
+            $attributes = ['data-regionid' => $row->regionid, 'data-courseid' => $courseid, 'class' => 'regioncheck', 'disabled' => 'disabled'];
+        } else {
+            $attributes = [];
         }
 
-        return \html_writer::span(\html_writer::checkbox('visibleinregion', '', $checked, '',
-                $attributes));
+        if ($export) {
+            return $checked ? get_string('yes') : get_string('no');
+        } else {
+            return \html_writer::span(\html_writer::checkbox('visibleinregion', '', $checked, '',
+                    $attributes));
+        }
     }
 
     public function rb_display_linkedincourselink($title, $row) {

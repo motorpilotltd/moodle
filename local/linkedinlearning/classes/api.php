@@ -22,6 +22,10 @@
 
 namespace local_linkedinlearning;
 
+use local_linkedinlearning\exceptions\LilApiBackingOffException;
+use local_linkedinlearning\exceptions\LilApiGenericException;
+use local_linkedinlearning\exceptions\LilApiRateLimitException;
+
 class api {
 
     /**
@@ -135,7 +139,7 @@ class api {
     }
 
     private function callapi($url) {
-        global $CFG;
+        global $CFG, $DB;
 
         require_once($CFG->libdir . '/filelib.php');
 
@@ -143,6 +147,17 @@ class api {
 
         if (!$token) {
             return false;
+        }
+
+        $backoffuntil = get_config('local_linkedinlearning', 'backoffuntil');
+        $now = time();
+        if (!empty($backoffuntil) && $backoffuntil > $now) {
+            if ($DB->is_transaction_started()) {
+                $DB->force_transaction_rollback();
+            }
+
+            mtrace("Backing off from API until " . userdate($backoffuntil));
+            throw new LilApiBackingOffException();
         }
 
         $curl = new \curl();
@@ -156,8 +171,34 @@ class api {
         $result = $curl->get($url, '', $options);
 
         mtrace('Called Lynda API: ' . $url);
+        if ($curl->info['http_code'] == 429) { // Rate limit.
+            mtrace("Hit rate limit: $url");
+
+            if ($DB->is_transaction_started()) {
+                $DB->force_transaction_rollback();
+            }
+
+            $ex = new LilApiRateLimitException($url);
+
+            $midnightutc = date_create( date('Y-m-d'), timezone_open( 'UTC' ) )->add(new \DateInterval('P1D'))->getTimestamp();
+            set_config('backoffuntil', $midnightutc, 'local_linkedinlearning'); // Rate limit resets at midnight
+
+            $event = \local_linkedinlearning\event\api_ratelimit::create(array(
+                    'other' => array(
+                            'url' => $url
+                    )
+            ));
+            $event->trigger();
+
+            throw $ex;
+        }
+
         if ($curl->info['http_code'] != 200) {
             mtrace("Error calling web service: \n" . print_r($curl->get_raw_response(), true));
+
+            if ($DB->is_transaction_started()) {
+                $DB->force_transaction_rollback();
+            }
 
             $result = json_decode($result);
 
@@ -165,7 +206,15 @@ class api {
                 mtrace("Error calling web service: \n" . print_r($result, true));
             }
 
-            return false;
+            $ex = new LilApiGenericException($url);
+            $event = \local_linkedinlearning\event\api_error::create(array(
+                    'other' => array(
+                            'exception' => $ex->getMessage()
+                    )
+            ));
+            $event->trigger();
+
+            throw $ex;
         }
 
         return json_decode($result);
@@ -239,38 +288,134 @@ class api {
 
     public function synccourseprogress($since) {
         global $DB;
+        $courseprogressiterator = new courseprogressiterator($this, $since);
 
-        foreach (new courseprogressiterator($this, $since) as $raw) {
-            $parmams = [
-                    'urn'   => $raw->contentDetails->contentUrn,
-                    'email' => $raw->learnerDetails->uniqueUserId
-            ];
-            $record = $DB->get_record('linkedinlearning_progress', $parmams);
+        $transaction = $DB->start_delegated_transaction();
+        try {
+            foreach ($courseprogressiterator as $raw) {
+                $params = ['urn'   => $raw->contentDetails->contentUrn];
 
-            if (!isset($record->id)) {
-                $record = (object) $parmams;
-            }
+                $idparamsql = [];
+                $idparams = [
+                        'userurn' => !empty($raw->learnerDetails->entity->profileUrn) ? $raw->learnerDetails->entity->profileUrn:null,
+                        'uniqueuserid' => !empty($raw->learnerDetails->uniqueUserId) ? $raw->learnerDetails->uniqueUserId:null,
+                        'email' => !empty($raw->learnerDetails->email) ? $raw->learnerDetails->email:null,
+                ];
+                foreach ($idparams as $fieldname => $value) {
+                    if ($value == null) {
+                        continue;
+                    }
+                    $params[$fieldname] = $value;
+                    $idparamsql[] = "$fieldname = :$fieldname";
+                }
 
-            foreach ($raw->activities as $datapoint) {
-                if ($datapoint->engagementType == 'SECONDS_VIEWED') {
-                    $record->seconds_viewed = $datapoint->engagementValue;
-                    $record->first_viewed = $datapoint->firstEngagedAt / 1000;
-                    $record->last_viewed = $datapoint->lastEngagedAt / 1000;
-                } else if (
-                        $datapoint->engagementType == 'PROGRESS_PERCENTAGE'
-                        &&
-                        (empty($record->progress_percentage) || $record->progress_percentage < $datapoint->engagementValue)
-                ) {
-                    $record->progress_percentage = $datapoint->engagementValue;
+                if (count($idparamsql) == 0) {
+                    throw new LilApiGenericException('Non user identifiable record received from API');
+                }
+
+                $idparamsql = implode(' OR ', $idparamsql);
+
+                $sql = "SELECT * FROM {linkedinlearning_progress} WHERE urn = :urn AND ($idparamsql)";
+
+                $records = $DB->get_records_sql($sql, $params);
+
+                if (empty($records)) {
+                    $record = (object) $params;
+                    $record->seconds_viewed = 0;
+                    $record->userid = 0;
+                } else if (count($records) === 1) {
+                    $record = reset($records);
+                } else if (count($records) > 1) {
+                    $record = $this->deduperecords($records);
+                }
+
+                foreach ($idparams as $fieldname => $value) {
+                    if ($value == null) {
+                        continue;
+                    }
+                    $record->$fieldname = $value;
+                }
+
+                foreach ($raw->activities as $datapoint) {
+                    if ($datapoint->engagementType == 'SECONDS_VIEWED') {
+                        $record->seconds_viewed += $datapoint->engagementValue;
+
+                        $first_viewed = $datapoint->firstEngagedAt / 1000;
+
+                        if (empty($record->first_viewed) || $record->first_viewed > $first_viewed) {
+                            $record->first_viewed = $first_viewed;
+                        }
+
+                        $last_viewed = $datapoint->lastEngagedAt / 1000;
+                        if (empty($record->last_viewed) || $record->last_viewed < $last_viewed) {
+                            $record->last_viewed = $last_viewed;
+                        }
+                    } else if (
+                            $datapoint->engagementType == 'PROGRESS_PERCENTAGE'
+                            &&
+                            (empty($record->progress_percentage) || $record->progress_percentage < $datapoint->engagementValue)
+                    ) {
+                        $record->progress_percentage = $datapoint->engagementValue;
+                    }
+                }
+
+                if (!isset($record->id)) {
+                    $DB->insert_record('linkedinlearning_progress', $record);
+                } else {
+                    $DB->update_record('linkedinlearning_progress', $record);
                 }
             }
 
-            if (!isset($record->id)) {
-                $record->userid = 0;
-                $DB->insert_record('linkedinlearning_progress', $record);
-            } else {
-                $DB->update_record('linkedinlearning_progress', $record);
-            }
+        } catch (LilApiRateLimitException | LilApiBackingOffException $ex) {
+            return false;
         }
+
+        $this->populatemoodleuserid();
+
+        $transaction->allow_commit();
+        return true;
+    }
+
+    /**
+     * @param array $records
+     * @param \moodle_database $DB
+     * @return array
+     * @throws \dml_exception
+     */
+    public function deduperecords(array $records) {
+        global $DB;
+
+        $record = array_pop($records);
+
+        foreach ($records as $mergerecord) {
+            if (empty($record->first_viewed) || $record->first_viewed > $mergerecord->first_viewed) {
+                $record->first_viewed = $mergerecord->first_viewed;
+            }
+            if (empty($record->last_viewed) || $record->last_viewed < $mergerecord->last_viewed) {
+                $record->last_viewed = $mergerecord->last_viewed;
+            }
+            if (empty($record->progress_percentage) || $record->progress_percentage < $mergerecord->progress_percentage) {
+                $record->progress_percentage = $mergerecord->progress_percentage;
+            }
+
+            $record->seconds_viewed += $mergerecord->seconds_viewed;
+
+            $DB->delete_records('linkedinlearning_progress', ['id' => $mergerecord->id]);
+        }
+        return $record;
+    }
+
+    public function populatemoodleuserid() {
+        global $DB;
+
+        $DB->execute("
+        update {linkedinlearning_progress}
+        set userid = coalesce((select id from {user} where {user}.idnumber = {linkedinlearning_progress}.uniqueuserid), 0)
+        where userid = 0");
+
+        $DB->execute("
+        update {linkedinlearning_progress}
+        set userid = coalesce((select id from {user} where {user}.email = {linkedinlearning_progress}.email), 0)
+        where userid = 0");
     }
 }
