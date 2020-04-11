@@ -4,9 +4,18 @@
     $objectives_defined = \html_writer::img(new \moodle_url('/local/wa_learning_path/pix/objectives_defined.svg'), 'objectives_defined', array('style' => 'width: 30px; height: 30px;'));
     $modules_and_activities_defined = \html_writer::img(new \moodle_url('/local/wa_learning_path/pix/modules_and_activities_defined.svg'), 'modules_and_activities_defined', array('style' => 'width: 30px; height: 30px;'));
     $in_progress = \html_writer::img(new \moodle_url('/local/wa_learning_path/pix/in_progress.svg'), 'in_progress', array('style' => 'width: 30px; height: 30px;'));
-    $cell_url = new \moodle_url($this->url, array())
+    $cell_url = new \moodle_url($this->url, array());
+
+//    $objectives_defined = $this->get_icon_html('icon_ui_objectives', 'fa-lpath-cell');
+//    $modules_and_activities_defined = $this->get_icon_html('icon_ui_modules_and_objectives', 'fa-lpath-cell');
+//    $in_progress = $this->get_icon_html('icon_ui_in_progress', 'fa-lpath-cell');
+//    $completed = $this->get_icon_html('icon_ui_complete', 'fa-lpath-cell');
+//    $cell_url = new \moodle_url($this->url, array());
 ?>
 <h2><?php echo $this->learning_path->title ?></h2>
+<?php if (isset($this->role)): ?>
+    <h2><?php echo $this->role->name; ?></h2>
+<?php endif; ?>
 <table id="matrix" style="">
     <thead>
         <th>
@@ -30,13 +39,18 @@
                     $id = '#' . $this->matrix->cols[$c]->id . '_' . $this->matrix->rows[$r]->id;
                 ?>
                 <?php if (!wa_learning_path\model\learningpath::check_regions_match($this->regions, $this->matrix->cols[$c]->region)) continue; ?>
-                <td <?php if ($id == $this->key) echo "class='highlight'" ?>>
+                <td class="<?php
+                    if ($id == $this->key) echo 'highlight ';
+                    if (in_array($id, $this->enabledActivities)) echo 'cell-selected';
+                ?>">
                     <?php
                     if(isset($this->matrix->activities->{$id})) {
                         $status = \wa_learning_path\model\learningpath::get_cell_info($this->activities->{$id}, $this->regions, $this->learning_path->subscribed);
                         $object = $this->matrix->activities->{$id};
                         if(empty($object)) {
                             echo $no_objective_defined;
+//                        } else if($status->completed) {
+//                            echo $completed;
                         } else if($status->in_progress) {
                             echo $in_progress;
                         } else if($status->modules_count > 0 || $status->activities_count > 0) {
@@ -44,7 +58,6 @@
                         } else if($status->objectives_defined) {
                             echo $objectives_defined;
                         } else{
-                            echo $no_objective_defined;
                         }
 
                         if ($id == $this->key) {
@@ -64,9 +77,11 @@
 
 <?php if (isset($selected)): ?>
     <h2><?php echo $title; ?></h2>
-    <?php
-        echo $this->cell->content;
-    ?>
+    <?php if ($this->cellData && $this->cellData['description']): ?>
+        <p><?php echo format_text($this->cellData['description']) ?></p>
+    <?php else: ?>
+        <p><?php echo format_text($this->cell->content) ?></p>
+    <?php endif; ?>
 <?php endif; ?>
 
 <div class="matrix_activities padd_5">
@@ -84,6 +99,12 @@
 
                             if (!wa_learning_path\model\learningpath::check_regions_match($this->regions, $activity->region)) {
                                 continue;
+                            }
+
+                            if ($this->cellData) {
+                                if (!$this->is_visible($activity->id, $activity->type)) {
+                                    continue;
+                                }
                             }
 
                             $id = $activity->type . "_" . $activity->id;
