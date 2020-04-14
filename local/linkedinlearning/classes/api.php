@@ -410,7 +410,7 @@ class api {
 
         $DB->execute("
         update {linkedinlearning_progress}
-        set userid = coalesce((select id from {user} where {user}.idnumber = {linkedinlearning_progress}.uniqueuserid), 0)
+        set userid = coalesce((select id from {user} where idnumber is not null and idnumber <> '' and idnumber = uniqueuserid), 0)
         where userid = 0");
 
         $DB->execute("
