@@ -90,16 +90,20 @@ function xmldb_local_lynda_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080520, 'local', 'lynda');
     }
 
-    if ($oldversion < 2017051503) {
-        // Update existing records to lock them.
-        $locksql = "UPDATE {local_taps_enrolment}
-                   SET locked = 1, origin = 'Lynda.com'
-                 WHERE classtype = 'External Course Online'
-                       AND classcategory = 'Professional Development'
-                       AND provider = 'Lynda.com'";
-        $DB->execute($locksql);
+    if ($oldversion < 2017051504) {
+        // Update existing records to lock them and connect them.
+        $updatesql = "UPDATE lte
+                         SET lte.locked = 1,
+                             lte.origin = 'Lynda.com',
+                             lte.originid = llc.id
+                        FROM {local_taps_enrolment} lte
+                        JOIN mdl_local_lynda_course llc ON llc.title = lte.classname
+                       WHERE lte.classtype = 'External Course Online'
+                             AND lte.classcategory = 'Professional Development'
+                             AND lte.provider = 'Lynda.com'";
+        $DB->execute($updatesql);
 
-        upgrade_plugin_savepoint(true, 2017051503, 'local', 'lynda');
+        upgrade_plugin_savepoint(true, 2017051504, 'local', 'lynda');
     }
 
     return true;
