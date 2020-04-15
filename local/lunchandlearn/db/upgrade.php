@@ -89,12 +89,12 @@ function xmldb_local_lunchandlearn_upgrade($oldversion) {
                          SET lte.originid = ll.id,
                              lte.origin = 'local_lunchandlearn',
                              lte.locked = 1
-                        FROM mdl_local_taps_enrolment lte
-                        JOIN mdl_event e
+                        FROM {local_taps_enrolment} lte
+                        JOIN {event} e
                              ON e.name = lte.classname
                                 AND e.timestart = lte.classstarttime
                                 AND e.eventtype = 'lunchandlearn'
-                        JOIN mdl_local_lunchandlearn ll
+                        JOIN {local_lunchandlearn} ll
                              ON ll.eventid = e.id
                                 AND ll.cancelled = 0
                                 AND ll.locked = 1
