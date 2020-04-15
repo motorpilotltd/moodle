@@ -593,9 +593,9 @@ class source extends rb_base_source {
 
 
         if ($disabled || !empty($row->readonly)) {
-            $attributes = ['data-regionid' => $row->regionid, 'data-courseid' => $courseid, 'class' => 'regioncheck', 'disabled' => 'disabled'];
+            $attributes = ['disabled' => 'disabled'];
         } else {
-            $attributes = [];
+            $attributes = ['data-regionid' => $row->regionid, 'data-courseid' => $courseid, 'class' => 'regioncheck'];
         }
 
         if ($export) {
