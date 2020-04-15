@@ -68,7 +68,7 @@ function xmldb_local_lunchandlearn_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080500, 'local', 'lunchandlearn');
     }
 
-    if ($oldversion < 2017051503) {
+    if ($oldversion < 2017051504) {
         // Update existing records to lock them.
         $locksql = "UPDATE {local_taps_enrolment}
                    SET locked = 1
@@ -85,26 +85,24 @@ function xmldb_local_lunchandlearn_upgrade($oldversion) {
         $DB->execute($updatesql);
 
         // Update record with origin/originid where they can be matched to events.
-        $originsql = "UPDATE lte2
-                         SET lte2.originid = (
-                             SELECT ll.id
-                               FROM mdl_local_taps_enrolment lte
-                               JOIN mdl_event e
-                                    ON e.name = lte.classname
-                                    AND e.timestart = lte.classstarttime
-                                    AND e.eventtype = 'lunchandlearn'
-                               JOIN mdl_local_lunchandlearn ll ON ll.eventid = e.id
-                               WHERE lte.id = lte2.id
-                                    AND ll.cancelled = 0
-                                    AND ll.locked = 1
-                                    AND lte.location = ll.office),
-                              origin = 'local_lunchandlearn',
-                              locked = 1
-                        FROM mdl_local_taps_enrolment lte2";
+        $originsql = "UPDATE lte
+                         SET lte.originid = ll.id,
+                             lte.origin = 'local_lunchandlearn',
+                             lte.locked = 1
+                        FROM mdl_local_taps_enrolment lte
+                        JOIN mdl_event e
+                             ON e.name = lte.classname
+                                AND e.timestart = lte.classstarttime
+                                AND e.eventtype = 'lunchandlearn'
+                        JOIN mdl_local_lunchandlearn ll
+                             ON ll.eventid = e.id
+                                AND ll.cancelled = 0
+                                AND ll.locked = 1
+                                AND lte.location = ll.office";
         $DB->execute($originsql);
 
         // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2017051503, 'local', 'lunchandlearn');
+        upgrade_plugin_savepoint(true, 2017051504, 'local', 'lunchandlearn');
     }
 
     return true;
