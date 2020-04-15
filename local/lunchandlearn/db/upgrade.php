@@ -68,7 +68,7 @@ function xmldb_local_lunchandlearn_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080500, 'local', 'lunchandlearn');
     }
 
-    if ($oldversion < 2017051502) {
+    if ($oldversion < 2017051503) {
         // Update existing records to lock them.
         $locksql = "UPDATE {local_taps_enrolment}
                    SET locked = 1
@@ -94,13 +94,17 @@ function xmldb_local_lunchandlearn_upgrade($oldversion) {
                                     AND e.timestart = lte.classstarttime
                                     AND e.eventtype = 'lunchandlearn'
                                JOIN mdl_local_lunchandlearn ll ON ll.eventid = e.id
-                              WHERE lte.id = lte2.id),
-                              origin = 'local_lunchandlearn'
+                               WHERE lte.id = lte2.id
+                                    AND ll.cancelled = 0
+                                    AND ll.locked = 1
+                                    AND lte.location = ll.office),
+                              origin = 'local_lunchandlearn',
+                              locked = 1
                         FROM mdl_local_taps_enrolment lte2";
         $DB->execute($originsql);
 
         // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2017051502, 'local', 'lunchandlearn');
+        upgrade_plugin_savepoint(true, 2017051503, 'local', 'lunchandlearn');
     }
 
     return true;
