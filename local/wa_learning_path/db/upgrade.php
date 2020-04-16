@@ -117,7 +117,77 @@ function xmldb_local_wa_learning_path_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016061507, 'local', 'wa_learning_path');
     }
 
-    if ($oldversion < 2016081204) {
+    if ($oldversion < 2020031602) {
+        $dbman = $DB->get_manager();
+
+        // Define table wa_learning_path_role to be created.
+        $table = new xmldb_table('wa_learning_path_role');
+
+        // Adding fields to table wa_learning_path_role.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '128', null, null, null, null);
+        $table->add_field('visible', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('description', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('learningpathid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        // Adding keys to table wa_learning_path_role.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for wa_learning_path_role.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define field parent to be added to wa_learning_path.
+        $table = new xmldb_table('wa_learning_path');
+        $field = new xmldb_field('parent', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'preview');
+
+        // Conditionally launch add field parent.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define table wa_learning_path_role_act to be created.
+        $table = new xmldb_table('wa_learning_path_role_act');
+
+        // Adding fields to table wa_learning_path_role_act.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('roleid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('itemid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('type', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('visible', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('overridedescription', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('overrideere', XMLDB_TYPE_CHAR, '32', null, null, null, null);
+
+        // Adding keys to table wa_learning_path_role_act.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for wa_learning_path_role_act.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Wa_agency savepoint reached.
+        upgrade_plugin_savepoint(true, 2020031602, 'local', 'wa_learning_path');
+    }
+
+    if ($oldversion < 2020031603) {
+        $dbman = $DB->get_manager();
+
+        // Define field activityid to be added to wa_learning_path_role_act.
+        $table = new xmldb_table('wa_learning_path_role_act');
+        $field = new xmldb_field('activityid', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null, 'roleid');
+
+        // Conditionally launch add field activityid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Wa_agency savepoint reached.
+        upgrade_plugin_savepoint(true, 2020031603, 'local', 'wa_learning_path');
+    }
+
+    if ($oldversion < 2020040602) {
         foreach ($DB->get_records('wa_learning_path') as $path) {
             $matrix = json_decode($path->matrix);
             if (!isset($matrix) || empty($matrix->activities)) {
@@ -166,9 +236,8 @@ function xmldb_local_wa_learning_path_upgrade($oldversion) {
 
 
         // Assign savepoint reached.
-        upgrade_plugin_savepoint(true, 2016081204, 'local', 'wa_learning_path');
+        upgrade_plugin_savepoint(true, 2020040602, 'local', 'wa_learning_path');
     }
-
 
     return true;
 }

@@ -176,6 +176,8 @@ function is_activity_editor($userid = false) {
 function get_modules($ids = array(), $matrixview = false, $group_courses = true) {
 	global $DB, $USER;
 
+    \wa_learning_path\lib\load_model('learningpath');
+
 	$field702010 = \wa_learning_path\lib\get_custom_field(WA_LEARNING_PATH_CUSTOM_FIELD_702010);
 
 	if ($ids) {
@@ -198,7 +200,6 @@ function get_modules($ids = array(), $matrixview = false, $group_courses = true)
 
 	$sql = "select CASE WHEN rc.regionid IS NULL THEN " . $DB->sql_concat(('c.id'), "'-'", "'no_region'") . "
                     ELSE {$unique} END as unique_id, c.id, c.fullname, c.summary, c.summaryformat, r.id as regionid, r.name as region {$completionsql} "
-		//. (!empty($fieldlevel) ? ", d1.data as level ": " ")
 		. (!empty($field702010) ? ", d2.data as p702010 " : " ")
 		. ", cma.methodology as methodologyid "
 		. " from {course} c " .

@@ -275,9 +275,11 @@ class activity {
      * @param Int Activity ID
      * @param Boolen|Int Completion info.
      * @param Int|null User ID
+     * @param Int|null Date Completed
+     * @param String Notes
      * @return Int 0 -> set as incomplete, 1-> set as completed, 2-> already completed
      */
-    public static function set_completion($id, $completion, $userid = null) {
+    public static function set_completion($id, $completion, $userid = null, $datecompleted = null, $activitynotes = null) {
         global $DB, $USER;
         if (empty($id)) {
             return false;
@@ -307,13 +309,13 @@ class activity {
                     $lrsrecord->staffid = $DB->get_field('user', 'idnumber', array('id' => $userid));
                     $lrsrecord->providername = $activity->title;
                     $lrsrecord->provider = $activity->provider;
-                    $lrsrecord->completiontime = strtoupper(date('d-M-Y'));
+                    $lrsrecord->completiontime = $datecompleted;
                     $lrsrecord->duration = $activity->duration;
                     $lrsrecord->durationunits = $data['durationunits'];
                     $lrsrecord->location = $activity->unit;
                     $lrsrecord->classcategory = $activity->subject;
                     $lrsrecord->classtype = $activity->learningmethod;
-                    $lrsrecord->description = $activity->learningdescription;
+                    $lrsrecord->description = $activitynotes;
 
                     $lrsrecord->insert();
                 }

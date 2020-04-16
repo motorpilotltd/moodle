@@ -80,6 +80,7 @@ class addactivity_form extends \moodleform {
 
         // Enable send to CPD
         $mform->addElement('checkbox', 'enablecdp', get_string('enable_send_to_cdp', $pluginname));
+        $mform->setDefault('enablecdp', true);
 
         // Learning method
         $choices = $taps->get_classtypes('cpd');

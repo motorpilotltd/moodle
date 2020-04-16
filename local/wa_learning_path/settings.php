@@ -9,7 +9,6 @@
  * @copyright   2016 Webanywhere (http://www.webanywhere.co.uk)
  */
 defined('MOODLE_INTERNAL') || die;
-
 // Content of this file has been provided by client:
 // http://issues.webanywhere.co.uk/issues/47226
     
@@ -55,4 +54,173 @@ if ($hassiteconfig) {
             0, 1, 0
         )
     );
+    
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_subscribe',
+            get_string('icon_subscribe', 'local_wa_learning_path'),
+            get_string('icon_subscribe_desc', 'local_wa_learning_path'),
+            'fa fa-star'
+        )
+    );
+    
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_unsubscribe',
+            get_string('icon_unsubscribe', 'local_wa_learning_path'),
+            get_string('icon_unsubscribe_desc', 'local_wa_learning_path'),
+            'fa fa-star-o'
+        )
+    );
+    
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_unsubscribe',
+            get_string('icon_unsubscribe', 'local_wa_learning_path'),
+            get_string('icon_unsubscribe_desc', 'local_wa_learning_path'),
+            'fa fa-star-o'
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_edit',
+            get_string('icon_edit', 'local_wa_learning_path'),
+            get_string('icon_edit_desc', 'local_wa_learning_path'),
+            'fa fa-pencil'
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_print',
+            get_string('icon_print', 'local_wa_learning_path'),
+            get_string('icon_print_desc', 'local_wa_learning_path'),
+            'fa fa-print'
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_export',
+            get_string('icon_export', 'local_wa_learning_path'),
+            get_string('icon_export_desc', 'local_wa_learning_path'),
+            'fa-external-link'
+        )
+    );
+    
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_ui_objectives',
+            get_string('icon_ui_objectives', 'local_wa_learning_path'),
+            get_string('icon_ui_objectives_desc', 'local_wa_learning_path'),
+            'fa fa-2x fa-info-circle'
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_ui_complete',
+            get_string('icon_ui_complete', 'local_wa_learning_path'),
+            get_string('icon_ui_complete_desc', 'local_wa_learning_path'),
+            'fa fa-2x fa-check-square-o'
+        )
+    );
+    
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_ui_modules_and_objectives',
+            get_string('icon_ui_modules_and_objectives', 'local_wa_learning_path'),
+            get_string('icon_ui_modules_and_objectives_desc', 'local_wa_learning_path'),
+            'fa fa-2x fa-tasks'
+        )
+    );
+    
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_ui_in_progress',
+            get_string('icon_ui_in_progress', 'local_wa_learning_path'),
+            get_string('icon_ui_in_progress_desc', 'local_wa_learning_path'),
+            'fa fa-2x fa-spinner'
+        )
+    );
+    
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_ai_no_objectives',
+            get_string('icon_ai_no_objectives', 'local_wa_learning_path'),
+            get_string('icon_ai_no_objectives_desc', 'local_wa_learning_path'),
+            'fa fa-2x fa-plus'
+        )
+    );
+    
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_ai_objectives',
+            get_string('icon_ai_objectives', 'local_wa_learning_path'),
+            get_string('icon_ai_objectives_desc', 'local_wa_learning_path'),
+            'fa fa-2x fa-plus-square'
+        )
+    );
+    
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_ai_modules_and_objectives',
+            get_string('icon_ai_modules_and_objectives', 'local_wa_learning_path'),
+            get_string('icon_ai_modules_and_objectives_desc', 'local_wa_learning_path'),
+            'fa fa-2x fa-plus-circle'
+        )
+    );
+    
+    $settings->add(
+        new admin_setting_configtext(
+            'local_wa_learning_path/icon_modal_navigation_icon',
+            get_string('icon_modal_navigation_icon', 'local_wa_learning_path'),
+            get_string('icon_modal_navigation_icon_desc', 'local_wa_learning_path'),
+            'fa fa-chevron-right'
+        )
+    );
+    
+    require_once($CFG->dirroot . '/local/wa_learning_path/lib/lib.php');
+    
+    $allregions = \wa_learning_path\lib\get_regions();
+    
+    $defaultSettings = [
+        'class_global' => 'label-primary',
+        'shortcut_global' => 'Gl',
+        'class_americas' => 'label-danger',
+        'shortcut_americas' => 'Am',
+        'class_australasia' => 'label-warning',
+        'shortcut_australasia' => 'Au',
+        'class_eastasia' => 'label-success',
+        'shortcut_eastasia' => 'Ea',
+        'class_europe' => 'label-info',
+        'shortcut_europe' => 'Eu',
+        'class_ukimea' => 'label-default',
+        'shortcut_ukimea' => 'Uk'
+    ];
+    
+    foreach($allregions as $region) {
+        $string['region_shortcut'] = 'Shortcut for region: {$a}';
+        $string['region_class'] = 'Label class for region: {$a}';
+        
+        $regionName =str_replace(' ', '', strtolower($region));
+        $settings->add(
+            new admin_setting_configtext(
+                'local_wa_learning_path/shortcut_' . $regionName,
+                get_string('region_shortcut', 'local_wa_learning_path', $region),
+                '',
+                $defaultSettings['shortcut_' . $regionName]
+            )
+        );
+    
+        $settings->add(
+            new admin_setting_configtext(
+                'local_wa_learning_path/class_' . $regionName,
+                get_string('region_class', 'local_wa_learning_path', $region),
+                '',
+                $defaultSettings['class_' . $regionName]
+            )
+        );
+    }
 }

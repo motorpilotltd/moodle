@@ -38,6 +38,8 @@
 
 .delegate-list-container {
     margin-top: 10px;
+    padding-top: 20px;
+    z-index: 99;
 }
 
 .delegate-list-container .alert,
@@ -95,4 +97,40 @@ body#page-local-delegatelist-print .resettable {
 
 body#page-local-delegatelist-index form.dataformatselector div.mdl-align {
     text-align: right;
+}
+
+.content-holder {
+    min-height: 250px;
+    position: relative;
+}
+
+body#page-local-delegatelist-index .overlay {
+    background-color: gray;
+    color: #666;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 100;
+    left: 0;
+    float: left;
+    text-align: center;
+    opacity: .80;
+}
+
+body#page-local-delegatelist-index .spinner {
+    margin: 20% auto;
+    height: 64px;
+    width: 64px;
+    animation: rotate 0.8s infinite linear;
+    border: 5px solid #12d0ff;
+    border-right-color: transparent;
+    border-radius: 50%;
+}
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }

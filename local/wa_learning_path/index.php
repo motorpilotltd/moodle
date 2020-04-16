@@ -28,7 +28,6 @@ $PAGE->set_context($context);
 
 // Load lib.
 require_once("lib/lib.php");
-
 if(!\wa_learning_path\lib\is_ajax()) {
     // Include jQuery script and css UI.
     $PAGE->requires->jquery();
