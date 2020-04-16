@@ -201,9 +201,9 @@ class source extends rb_base_source {
                     'base.id',
                     array(
                             'displayfunc' => 'regionvisibility',
-                            'joins'       => "regions0",
+                            'joins'       => ["regions0", "course"],
                             'extrafields' => ['regionid'        => 0,
-                                              'presentinregion' => " CASE WHEN regions0.courseid IS NULL AND arupadvert.id IS NOT NULL THEN 1 ELSE 0 END ",
+                                              'presentinregion' => " CASE WHEN course.visible = 1 AND regions0.courseid IS NULL AND arupadvert.id IS NOT NULL THEN 1 ELSE 0 END ",
                                             'linkedinlearningmanager' => "'$has_capability'",
                                             'readonly' => "'$readonly'"
                             ]
@@ -219,10 +219,10 @@ class source extends rb_base_source {
                     'base.id',
                     array(
                             'displayfunc' => 'regionvisibility',
-                            'joins'       => ["regions{$id}", "regions0", 'arupadvert'],
+                            'joins'       => ["regions{$id}", "regions0", 'arupadvert', 'course'],
                             'extrafields' => ['regionid'        => $id,
-                                              'presentinregion' => " CASE WHEN regions{$id}.id IS NULL THEN 0 ELSE 1 END ",
-                                              'presentglobal' => " CASE WHEN regions0.courseid IS NULL AND arupadvert.id IS NOT NULL THEN 1 ELSE 0 END ",
+                                              'presentinregion' => " CASE WHEN (course.visible = 1 OR regions{$id}.id IS NULL) THEN 0 ELSE 1 END ",
+                                              'presentglobal' => " CASE WHEN course.visible = 1 AND regions0.courseid IS NULL AND arupadvert.id IS NOT NULL THEN 1 ELSE 0 END ",
                                               'linkedinlearningmanager' => "'$has_capability'",
                                               'readonly' => "'$readonly'"
                             ]
