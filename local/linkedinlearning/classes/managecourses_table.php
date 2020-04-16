@@ -152,9 +152,9 @@ class managecourses_table extends \table_sql {
         if (isset($matches[1])) {
             $regionid = $matches[1];
 
-            if (!empty($event->regions)) {
+            if (!empty($event->moodlecoursevisible) && !empty($event->regions)) {
                 $checkedregions = explode(',', $event->regions);
-            } else if (!empty($event->moodlecourseid) && !empty($event->moodlecourseid)) {
+            } else if (!empty($event->moodlecoursevisible) && !empty($event->moodlecourseid) && !empty($event->moodlecourseid)) {
                 $checkedregions = [0];
             } else {
                 $checkedregions = [];
@@ -221,8 +221,13 @@ class managecourses_table extends \table_sql {
                 $sql = " GROUP_CONCAT($field, '$delimiter', $distinct) ";
                 break;
             case 'mssql':
-                $distinct = $unique ? 'DISTINCT' : '';
-                $sql = " dbo.GROUP_CONCAT_D($distinct $field, '$delimiter') ";
+                $serverinfo = $DB->get_server_info();
+                if ($serverinfo['description'] == 'mssqlubuntu') {
+                    $sql = " string_agg(CAST( $field AS NVARCHAR(MAX)), '{$delimiter}') ";
+                } else {
+                    $distinct = $unique ? 'DISTINCT' : '';
+                    $sql = " dbo.GROUP_CONCAT_D($distinct $field, '$delimiter') ";
+                }
                 break;
         }
 
