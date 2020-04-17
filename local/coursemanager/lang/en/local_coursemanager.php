@@ -111,6 +111,7 @@ $string['form:class:enrolmentenddate'] = 'Enrolment end date';
 $string['form:class:enrolmentenddate_help'] = 'Enrolment end date help';
 $string['form:class:trainingcenter'] = 'Room';
 $string['form:class:location'] = 'Office';
+$string['form:class:onlineurl'] = 'Online URL';
 $string['form:class:classstarttime'] = 'Class start time';
 $string['form:class:classstarttimeenabled'] = 'Enable class start time';
 $string['form:class:classendtime'] = 'Class end time';
@@ -263,5 +264,3 @@ $string['cpd:error:classcostcurrency'] = 'Invalid Class Cost Currency';
 $string['cpd:error:classstarttime'] = 'Invalid Class start time';
 $string['cpd:error:expirydate'] = 'Invalid Certificate expiry date';
 $string['cpd:error:classcompletiondate'] = 'Invalid Completion date';
-
-
