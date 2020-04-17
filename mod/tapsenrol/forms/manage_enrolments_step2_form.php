@@ -72,6 +72,12 @@ abstract class mod_tapsenrol_manage_enrolments_step2_form extends moodleform {
             $html .= html_writer::tag('div', $trainingcenter, array('class' => 'trainingcenter fitem'));
         }
 
+        if (!is_null($this->_class->onlineurl)) {
+            $onlineurl = html_writer::tag('div', get_string('onlineurl', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
+            $onlineurl .= html_writer::tag('div', $this->_class->onlineurl, array('class' => 'felement'));
+            $html .= html_writer::tag('div', $onlineurl, array('class' => 'onlineurl fitem'));
+        }
+
         $date = html_writer::tag('div', get_string('date', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
         if (!$this->_class->classstarttime) {
             $this->_class->date = get_string('waitinglist:classroom', 'tapsenrol');
