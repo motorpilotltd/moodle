@@ -198,11 +198,11 @@ function xmldb_local_taps_upgrade($oldversion) {
 
     if ($oldversion < 2015111615) {
 
-        // Define field archived to be added to local_taps_enrolment.
+        // Define field providerid to be added to local_taps_enrolment.
         $table = new xmldb_table('local_taps_enrolment');
         $field = new xmldb_field('providerid', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'classcontext');
 
-        // Conditionally launch add field archived.
+        // Conditionally launch add field providerid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -212,11 +212,11 @@ function xmldb_local_taps_upgrade($oldversion) {
     }
 
     if ($oldversion < 2015111616) {
-        // Define field archived to be added to local_taps_enrolment.
+        // Define field locked to be added to local_taps_enrolment.
         $table = new xmldb_table('local_taps_enrolment');
         $field = new xmldb_field('locked', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 0, 'archived');
 
-        // Conditionally launch add field archived.
+        // Conditionally launch add field locked.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -225,6 +225,19 @@ function xmldb_local_taps_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111616, 'local', 'taps');
     }
 
+    if ($oldversion < 2017051502) {
+        // Define field onlineurl to be added to local_taps_class.
+        $table = new xmldb_table('local_taps_class');
+        $field = new xmldb_field('onlineurl', XMLDB_TYPE_TEXT);
+
+        // Conditionally launch add field onlineurl.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Taps savepoint reached.
+        upgrade_plugin_savepoint(true, 2017051502, 'local', 'taps');
+    }
+
     return true;
 }
-
