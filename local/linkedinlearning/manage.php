@@ -55,6 +55,9 @@ if ($formdata) {
     if (isset($formdata->title)) {
         $urlparams['title'] = $formdata->title;
     }
+    if (isset($formdata->language)) {
+        $urlparams['language'] = $formdata->language;
+    }
     $url = $PAGE->url;
     $url = \local_linkedinlearning\lib::appendurlparamswitharray($url, $urlparams);
 
@@ -75,6 +78,12 @@ foreach ($tagtypes as $key => $name) {
 $title = optional_param('title', null, PARAM_TEXT);
 if (!empty($title)) {
     $data->title = $title;
+    $atleastonefilter = true;
+}
+
+$language = optional_param('language', null, PARAM_TEXT);
+if (!empty($language)) {
+    $data->language = $language;
     $atleastonefilter = true;
 }
 $form->set_data($data);
