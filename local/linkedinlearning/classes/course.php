@@ -767,6 +767,11 @@ class course extends \data_object {
         global $DB;
 
         $options = $DB->get_records_sql_menu("SELECT language as valone, language as valtwo FROM {linkedinlearning_course} GROUP BY language");
+        foreach ($options as $language) {
+            if (get_string_manager()->string_exists('lang_' . $language, 'local_reportbuilder')) {
+                $options[$language] = get_string('lang_' . $language, 'local_reportbuilder');
+            }
+        }
 
         return $options;
     }

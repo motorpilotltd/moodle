@@ -121,6 +121,14 @@ class managecourses_table extends \table_sql {
         }
     }
 
+    public function col_language($event) {
+        if (get_string_manager()->string_exists('lang_' . $event->language, 'local_reportbuilder')) {
+                return get_string('lang_' . $event->language, 'local_reportbuilder');
+        } else {
+            return $event->language;
+        }
+    }
+
     public function col_timetocomplete($event) {
         return format_time($event->timetocomplete);
     }

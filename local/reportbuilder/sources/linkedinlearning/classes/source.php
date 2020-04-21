@@ -378,6 +378,15 @@ class source extends rb_base_source {
                         )
                 ),
                 new rb_column_option(
+                        'linkedincourse',
+                        'language',
+                        get_string('language', 'local_reportbuilder'),
+                        'base.language',
+                        array(
+                                'displayfunc' => 'language'
+                        )
+                ),
+                new rb_column_option(
                         'linkedincourseprogress',
                         'progresspercentagebar',
                         get_string('progresspercentagebar', 'rbsource_linkedinlearning'),
@@ -519,6 +528,18 @@ class source extends rb_base_source {
                 ),
         );
 
+        $filteroptions[] =
+                new rb_filter_option(
+                        'linkedincourse',
+                        'language',
+                        get_string('language', 'local_reportbuilder'),
+                        'select',
+                        array(
+                                'selectchoices' => course::get_languages(),
+                                'simplemode' => true,
+                        )
+                );
+
         // user, course and category filters
         $this->add_user_fields_to_filters($filteroptions);
         $this->add_staff_fields_to_filters($filteroptions);
@@ -641,6 +662,14 @@ class source extends rb_base_source {
             $url = $row->ssourl;
         }
         return $this->create_expand_link($title, 'lil_description', array('expandcourseid' => $row->lilcourseid), $url);
+    }
+
+    public function rb_display_language($language) {
+        if (get_string_manager()->string_exists('lang_' . $language, 'local_reportbuilder')) {
+                return get_string('lang_' . $language, 'local_reportbuilder');
+        } else {
+            return $language;
+        }
     }
 
     /**
