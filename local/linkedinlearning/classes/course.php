@@ -434,7 +434,7 @@ class course extends \data_object {
         $scorm->updatefreq = SCORM_UPDATE_EVERYTIME;
         $scorm->maxgrade = $cfgscorm->maxgrade;
         $scorm->grademethod = $cfgscorm->grademethod;
-        $scorm->popup = true;
+        $scorm->popup = false;
         $scorm->width = $cfgscorm->framewidth;
         $scorm->height = $cfgscorm->frameheight;
         $scorm->winoptgrp = $cfgscorm->winoptgrp_adv;
