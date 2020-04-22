@@ -37,6 +37,24 @@
     {{^ courses }}
         {{# str }} noresults, local_search {{/ str }}
     {{/ courses }}
+        <div class="coursebox lil-signpost clearfix search-result">
+            <div class="image">
+                <img src="{{ lilimgurl }}">
+            </div>
+            <div class="info">
+                <div class="summary">
+                    {{# str }} lil:summary, local_search {{/ str }}
+                </div>
+                <div class="arup_course_metadata">
+                    <a href="{{{ lilsearchurl }}}"
+                       class="btn btn-primary lil-searchlink"
+                       target="_blank">
+                       {{# str }} lil:button, local_search {{/ str }}
+                       <i class="fa fa-external-link"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
         <div class="loading-bar">
             <span class="dot"></span><span class="dot"></span><span class="dot"></span>
             <p class="append">{{# str }} loadmore, local_search {{/ str }}</p>
