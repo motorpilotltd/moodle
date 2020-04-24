@@ -28,6 +28,8 @@ $string['location'] = 'Office';
 $string['noresults'] = 'No matching results were found';
 $string['notaccessed'] = '-';
 
+$string['onlineurl'] = 'Online URL';
+
 $string['pluginname'] = 'Arup delegate list';
 
 $string['select'] = 'Select';
