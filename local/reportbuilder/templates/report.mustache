@@ -70,5 +70,8 @@ function(
         $("#reportfilters").toggleClass('active');
         e.preventDefault();
     });
+    var filtersheight = $('[data-region="filters"]').height();
+    $('.newreport.static .reportcontainer').css('min-height', filtersheight)
+    window.console.log();
 });
 {{/js}}

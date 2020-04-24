@@ -52,9 +52,9 @@ define(['jquery', 'core/config', 'core/templates'], function ($, mdlcfg, templat
                     instantfilter.xhr.abort();
                 }
                 // Add the wait icon if it is not already attached to the clicked item.
-                if ($(event.target).siblings('.fa-circle-o-notch').length === 0) {
+                if ($(event.target).siblings('.loadingicon').length === 0) {
                     templates.renderPix('i/loading', 'core', 'loading').done(function (html) {
-                        $(html).insertAfter($(event.target).parent().children().last());
+                        $(html).insertAfter($(event.target).parent().children().last()).addClass('loadingicon');
                     });
                 }
                 instantfilter.xhr = instantfilter.refresh_results();
@@ -119,7 +119,7 @@ define(['jquery', 'core/config', 'core/templates'], function ($, mdlcfg, templat
                 $('.rb-sidebar').serialize()
             ).done( function (data) {
                 // Clear all waiting icons.
-                var instantfilter = $('.fa-circle-o-notch');
+                var instantfilter = $('.loadingicon');
                 instantfilter.siblings('.sr-only').remove();
                 instantfilter.remove();
                 // Replace contents.

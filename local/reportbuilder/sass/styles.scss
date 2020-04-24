@@ -348,8 +348,20 @@
             @media (min-width: 600px) {
                 height: calc(100% - 61px);
             }
+            th.header {
+                position: -webkit-sticky;
+                position: sticky;
+                top: 0px;
+                background-color: #FFF;
+                box-shadow: 2px 1px 0px #DDD;
+            }
         }
+        .rb-display-table-container.no-overflow {
+            overflow: initial;
+        }
+        @media (max-width: 800px) {}
         #reportfilters {
+            z-index: 2;
             height: calc(100% - 120px);
             top: 120px;
             @media (min-width: 600px) {
@@ -493,6 +505,14 @@
         .ml-auto {
             margin-left: auto;
         }
+    }
+}
+.path-local-reportbuilder {
+    .mform .fitem .felement select[disabled] {
+        color: transparent;
+    }
+    .yui3-overlay {
+        z-index: 1050;
     }
 }
 // stylelint-enable

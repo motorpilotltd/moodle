@@ -419,7 +419,20 @@
   }
 }
 
+.newreport.fullscreen .reportcontainer th.header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  background-color: #FFF;
+  box-shadow: 2px 1px 0px #DDD;
+}
+
+.newreport.fullscreen .rb-display-table-container.no-overflow {
+  overflow: initial;
+}
+
 .newreport.fullscreen #reportfilters {
+  z-index: 2;
   height: calc(100% - 120px);
   top: 120px;
   position: absolute;
@@ -588,4 +601,12 @@
 
 .newreport .navbar-form .ml-auto {
   margin-left: auto;
+}
+
+.path-local-reportbuilder .mform .fitem .felement select[disabled] {
+  color: transparent;
+}
+
+.path-local-reportbuilder .yui3-overlay {
+  z-index: 1050;
 }

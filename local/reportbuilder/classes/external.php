@@ -212,7 +212,7 @@ class external extends external_api {
         );
     }
 
-        /**
+    /**
      * Returns description of method parameters
      *
      * @return external_function_parameters
@@ -311,6 +311,74 @@ class external extends external_api {
      * @since Moodle 3.6
      */
     public static function report_filters_config_returns() {
+        return new \external_single_structure(
+            array(
+                'id' => new external_value(PARAM_INT, 'report id'),
+                'config' => new external_value(PARAM_TEXT, 'config'),
+            )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.6
+     */
+    public static function report_headers_config_parameters() {
+        return new external_function_parameters(
+            [
+                'id' => new external_value(PARAM_INT, 'Reportid', VALUE_DEFAULT, 0)
+            ]
+        );
+    }
+
+    /**
+     * Get report builder columns config.
+     *
+     * @param int $id
+     *
+     * @return array reportbuilder config
+     */
+    public static function report_headers_config($id) {
+        global $CFG, $PAGE, $USER;
+
+        require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
+
+        $params = self::validate_parameters(self::report_headers_config_parameters(), [
+            'id' => $id
+        ]);
+
+        $id = $params['id'];
+
+        self::validate_context(\context_system::instance());
+
+        $report = new \reportbuilder($id, null, false, null, null, true);
+
+        $columns = [];
+        $hiddencolumns = $report->js_get_hidden_columns();
+        foreach ($report->get_columns() as $machinename => $column) {
+            if (empty($column->heading)) {
+                continue;
+            }
+            $machinename = str_replace($column->type . '-', $column->type . '_', $machinename);
+            $columns[] = (object)['name' => $column->heading, 'machinename' => $machinename, 'checked' => !in_array($machinename, $hiddencolumns)];
+        }
+
+        $config = new \stdClass();
+        $config->columns = $columns;
+
+        $result = array('id' => $id, 'config' => json_encode($config));
+        return $result;
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_description
+     * @since Moodle 3.6
+     */
+    public static function report_headers_config_returns() {
         return new \external_single_structure(
             array(
                 'id' => new external_value(PARAM_INT, 'report id'),

@@ -19,8 +19,8 @@
  * Learning plan webservice functions.
  *
  *
- * @package    tool_lp
- * @copyright  2015 Damyon Wiese
+ * @package    local_reportbuilder
+ * @copyright  2020 Bas Brands
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -50,6 +50,15 @@ $functions = array(
         'methodname'   => 'report_filters_config',
         'classpath'    => '',
         'description'  => 'Get report filters config.',
+        'type'         => 'read',
+        'capabilities' => '',
+        'ajax'         => true,
+    ),
+    'local_reportbuilder_report_headers_config' => array(
+        'classname'    => 'local_reportbuilder\external',
+        'methodname'   => 'report_headers_config',
+        'classpath'    => '',
+        'description'  => 'Get report headers config.',
         'type'         => 'read',
         'capabilities' => '',
         'ajax'         => true,

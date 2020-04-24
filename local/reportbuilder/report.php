@@ -133,8 +133,7 @@ if ($graph) {
     }
     $PAGE->requires->js_call_amd('local_reportbuilder/showhidecolumsmodal', 'init',
             ['id' => $report->_id,
-             'shortname' => $report->shortname,
-             'columnscontext' => (object)['columns' => $columns]]);
+             'shortname' => $report->shortname]);
     $template->button = $OUTPUT->single_button('', get_string('showhidecolumns', 'local_reportbuilder'), 'get', ['class' => 'showhidecolumns']);
 }
 
