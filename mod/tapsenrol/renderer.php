@@ -475,12 +475,6 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
             $html .= html_writer::tag('div', $trainingcenter, array('class' => 'fitem'));
         }
 
-        if ($class->onlineurl) {
-            $onlineurl = html_writer::tag('div', get_string('onlineurl', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-            $onlineurl .= html_writer::tag('div', $class->onlineurl, array('class' => 'felement'));
-            $html .= html_writer::tag('div', $onlineurl, array('class' => 'fitem'));
-        }
-
         $cost = html_writer::tag('div', get_string('cost', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
         $costvalue = $class->price ? $class->price.' '.$class->currencycode : '-';
         $cost .= html_writer::tag('div', $costvalue, array('class' => 'felement'));
@@ -549,12 +543,6 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
             $trainingcenter = html_writer::tag('div', get_string('trainingcenter', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
             $trainingcenter .= html_writer::tag('div', $enrolment->trainingcenter, array('class' => 'felement'));
             $html .= html_writer::tag('div', $trainingcenter, array('class' => 'fitem'));
-        }
-
-        if ($enrolment->onlineurl) {
-            $onlineurl = html_writer::tag('div', get_string('onlineurl', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-            $onlineurl .= html_writer::tag('div', $enrolment->onlineurl, array('class' => 'felement'));
-            $html .= html_writer::tag('div', $onlineurl, array('class' => 'fitem'));
         }
 
         $cost = html_writer::tag('div', get_string('cost', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
@@ -975,12 +963,6 @@ EOF;
             $trainingcenter = html_writer::tag('div', get_string('trainingcenter', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
             $trainingcenter .= html_writer::tag('div', $enrolment->trainingcenter, array('class' => 'felement'));
             $html .= html_writer::tag('div', $trainingcenter, array('class' => 'fitem'));
-        }
-
-        if ($enrolment->onlineurl) {
-            $onlineurl = html_writer::tag('div', get_string('onlineurl', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-            $onlineurl .= html_writer::tag('div', $enrolment->onlineurl, array('class' => 'felement'));
-            $html .= html_writer::tag('div', $onlineurl, array('class' => 'fitem'));
         }
 
         $cost = html_writer::tag('div', get_string('cost', 'tapsenrol'). ':', array('class' => 'fitemtitle'));

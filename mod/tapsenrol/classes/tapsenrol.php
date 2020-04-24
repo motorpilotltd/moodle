@@ -1501,9 +1501,8 @@ EOS;
 
         require_once($CFG->dirroot . '/local/invites/requester.php');
 
-        $onlineurl = empty($enrolment->onlineurl) ? '' : " | {$enrolment->onlineurl}";
         $room = empty($enrolment->trainingcenter) ? '' : " | {$enrolment->trainingcenter}";
-        $location = $enrolment->location ? $enrolment->location.$room.$onlineurl : get_string('tbc', 'tapsenrol');
+        $location = $enrolment->location ? $enrolment->location.$room : get_string('tbc', 'tapsenrol');
         $courseurl = new moodle_url('/course/view.php', array('id' => $this->course->id));
 
         if (empty($emailhtml)) {

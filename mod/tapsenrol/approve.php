@@ -131,13 +131,12 @@ if ($loaderror) {
                 ));
                 $event->trigger();
                 $title .= get_string('separator', 'tapsenrol') . $course->fullname;
-                if (!isset($enrolment->trainingcenter) || !isset($enrolment->onlineurl)) {
+                if (!isset($enrolment->trainingcenter)) {
                     // Needed for renderer.
                     $class = $tapsenrolclass->taps->get_class_by_id($enrolment->classid);
                     $enrolment->price = $class ? $class->price : null;
                     $enrolment->currencycode = $class ? $class->currencycode : null;
                     $enrolment->trainingcenter = $class ? $class->trainingcenter : null;
-                    $enrolment->onlineurl = $class ? $class->onlineurl : null;
                 }
                 echo $output->review_approval($title, $info, $iwtrack, $user, $enrolment, $tapsenrolclass->course);
                 $form->display();
