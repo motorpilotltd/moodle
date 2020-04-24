@@ -86,16 +86,12 @@ if (!$handle) {
 cron_setup_user();
 
 while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-    $num = count($data);
-    if ($num > 1) {
-        mtrace('Too many columns');
-        exit(0);
-    }
     $title = $data[0];
 
     $course = \local_linkedinlearning\course::fetch(['title' => $title]);
     if (!$course) {
-        mtrace('Unable to find course: ' . $course);
+        mtrace('Unable to find course: ' . $title);
+        continue;
     }
 
     $course = \local_linkedinlearning\course::fetch(['title' => $title]);
