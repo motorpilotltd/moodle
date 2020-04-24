@@ -135,7 +135,7 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
 
     public function set_data($defaultvalues) {
         global $DB;
-        
+
         $taps = new \local_taps\taps();
 
         if (!empty($defaultvalues->durationunitscode) && $defaultvalues->durationunitscode == 'H') {
@@ -147,7 +147,7 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
 
     public function validation($data, $files) {
         $errors = [];
-        
+
         if (empty($data['duration'])) {
             $errors['duration'] = get_string('error:cpdrequired', 'mod_arupevidence');
         } else {
@@ -156,7 +156,7 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
                 $errors['duration'] = get_string('validation:durationformatincorrect', 'local_taps').get_string('durationcode', 'local_taps');
             } elseif (isset($time[1]) && ($time[1] < 0 || $time[1] > 59 || !is_numeric($time[1]))) {
                 $errors['duration'] = get_string('validation:durationinvalidminutes', 'local_taps').get_string('durationcode', 'local_taps');
-            } elseif ((isset($time[0]) && (!is_numeric($time[0]) || $time[0] < 0))) {
+            } elseif ((isset($time[0]) && ((int)$time[0] != $time[0] || $time[0] < 0))) {
                 $errors['duration'] = get_string('validation:durationinvalidhours', 'local_taps').get_string('durationcode', 'local_taps');
             }
         }

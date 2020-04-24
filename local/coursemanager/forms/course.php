@@ -82,7 +82,7 @@ class cmform_course extends moodleform {
 
         if ($tab == 3) {
             $this->add_element("coursecode", "hidden", PARAM_TEXT);
-            // Will need to check options for this. See variables taps plugin, keep them central in taps. Linked to accreditationgivendate and futurereviewdate. 
+            // Will need to check options for this. See variables taps plugin, keep them central in taps. Linked to accreditationgivendate and futurereviewdate.
             $this->add_element("globallearningstandards", "advcheckbox");
             // Needs to be able to be null/zero (not accredited). add tickbox. Only available when globallearningstandards is selected.
             // Force UTC for incoming timestamps - converted in get_data() based on chosen timezone.
@@ -112,7 +112,7 @@ class cmform_course extends moodleform {
 
     /**
      * Shorthand version of adding a field to the form
-     * 
+     *
      * @param string $fieldname. Unique name for field.
      * @param string $fieldtype. Type of field must be an existing mform field type.
      * @param constant $settype. Constant types like PARAM_TEXT etc.
@@ -184,7 +184,7 @@ class cmform_course extends moodleform {
                 $errors['duration'] = get_string('validation:durationformatincorrect', 'local_taps').get_string('durationcode', 'local_taps');
             } elseif (isset($time[1]) && ($time[1] < 0 || $time[1] > 59 || !is_numeric($time[1]))) {
                 $errors['duration'] = get_string('validation:durationinvalidminutes', 'local_taps').get_string('durationcode', 'local_taps');
-            } elseif ((isset($time[0]) && (!is_numeric($time[0]) || $time[0] < 0))) {
+            } elseif ((isset($time[0]) && ((int)$time[0] != $time[0] || $time[0] < 0))) {
                 $errors['duration'] = get_string('validation:durationinvalidhours', 'local_taps').get_string('durationcode', 'local_taps');
             }
         }

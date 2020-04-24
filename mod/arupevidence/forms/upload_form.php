@@ -254,14 +254,14 @@ class mod_arupevidence_upload_form extends moodleform
         if (!empty($data['expiryyear']) && empty($data['expirymonth'])) {
             $errors['expirymonth'] = get_string('error:emptymonth', 'mod_arupevidence');
         }
-        
+
         if (!empty($data['duration'])) {
             $time = explode(':', $data['duration']);
             if (count($time) > 2) {
                 $errors['duration'] = get_string('validation:durationformatincorrect', 'local_taps').get_string('durationcode', 'local_taps');
             } elseif (isset($time[1]) && ($time[1] < 0 || $time[1] > 59 || !is_numeric($time[1]))) {
                 $errors['duration'] = get_string('validation:durationinvalidminutes', 'local_taps').get_string('durationcode', 'local_taps');
-            } elseif ((isset($time[0]) && (!is_numeric($time[0]) || $time[0] < 0))) {
+            } elseif ((isset($time[0]) && ((int)$time[0] != $time[0] || $time[0] < 0))) {
                 $errors['duration'] = get_string('validation:durationinvalidhours', 'local_taps').get_string('durationcode', 'local_taps');
             }
         }

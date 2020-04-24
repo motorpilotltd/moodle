@@ -114,4 +114,4 @@ For example:
 $string['durationhours'] = 'Duration';
 $string['validation:durationformatincorrect'] = 'Incorrect duration format';
 $string['validation:durationinvalidminutes'] = 'Enter 0 to 59 only for minutes';
-$string['validation:durationinvalidhours'] = 'Enter valid hours';
+$string['validation:durationinvalidhours'] = 'Enter valid number of (whole) hours';
