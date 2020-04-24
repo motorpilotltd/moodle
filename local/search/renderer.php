@@ -27,6 +27,7 @@ class local_search_renderer extends plugin_renderer_base
         $resultdata['lilimgurl'] = $OUTPUT->image_url('lil-logo', 'local_search');
         $lilsearchurl = new moodle_url('https://www.linkedin.com/learning/search', ['keywords' => $search]);
         $resultdata['lilsearchurl'] = $lilsearchurl->out(false);
+        $resultdata['lilonclick'] = "_gaq.push(['masterTracker._trackEvent', 'navigation', 'quick_link', '{$resultdata['lilsearchurl']} | Launch LinkedIn Learning']);";
         return $this->render_from_template('local_search/courses', $resultdata);
     }
 }
