@@ -37,6 +37,7 @@
     {{^ courses }}
         {{# str }} noresults, local_search {{/ str }}
     {{/ courses }}
+    {{# lilshow }}
         <div class="coursebox lil-signpost clearfix search-result">
             <div class="image">
                 <img src="{{ lilimgurl }}">
@@ -56,6 +57,7 @@
                 </div>
             </div>
         </div>
+    {{/ lilshow }}
         <div class="loading-bar">
             <span class="dot"></span><span class="dot"></span><span class="dot"></span>
             <p class="append">{{# str }} loadmore, local_search {{/ str }}</p>

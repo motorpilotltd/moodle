@@ -54,4 +54,5 @@ echo $renderer->courses(array_merge(
         'regions' => $options,
         'appliedcount'  => count($filters->get_applied_values()),
     ]),
-    $search);
+    $search,
+    $page);
