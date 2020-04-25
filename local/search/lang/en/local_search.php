@@ -48,3 +48,6 @@ $string['tryallregions'] = 'Try searching across all regions';
 $string['ukmea:show'] = 'Show <strong>UKIMEA</strong> modules';
 
 $string['search:view'] = 'Allow user to view search';
+
+$string['lil:button'] = 'Launch LinkedIn Learning';
+$string['lil:summary'] = 'Can\'t find what you are looking for?<br>Why not expand your search into the full LinkedIn Learning Catalogue?';
