@@ -45,6 +45,7 @@ class managecourses_filterform extends \moodleform {
             }
             $mform->addElement('select', $key, $value['name'], $options, ['multiple' => true]);
         }
+        $mform->addElement('select', 'language', get_string('language', 'local_linkedinlearning'), \local_linkedinlearning\course::get_languages());
         $mform->addElement('text', 'title', get_string('title', 'local_linkedinlearning'));
         $mform->setType('title', PARAM_TEXT);
 

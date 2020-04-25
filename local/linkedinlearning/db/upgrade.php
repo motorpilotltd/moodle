@@ -130,5 +130,26 @@ function xmldb_local_linkedinlearning_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080539, 'local', 'linkedinlearning');
     }
 
+    if ($oldversion < 2016080540) {
+
+        $table = new xmldb_table('linkedinlearning_course');
+
+        $field = new xmldb_field('language', XMLDB_TYPE_CHAR, '2', null, XMLDB_NOTNULL, null, 'en');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $table = new xmldb_table('linkedinlearning_class');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        set_config('lastsuccessfulrun', 0, 'local_linkedinlearning');
+
+        upgrade_plugin_savepoint(true, 2016080540, 'local', 'linkedinlearning');
+    }
+
     return true;
 }

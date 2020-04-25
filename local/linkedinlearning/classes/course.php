@@ -42,7 +42,7 @@ require_once $CFG->dirroot . '/completion/completion_criteria_completion.php';
 class course extends \data_object {
     public $table = 'linkedinlearning_course';
     public $required_fields = ['id', 'urn', 'title', 'primaryimageurl', 'aicclaunchurl', 'ssolaunchurl', 'publishedat', 'lastupdatedat',
-            'description', 'shortdescription', 'timetocomplete', 'available'];
+            'description', 'shortdescription', 'timetocomplete', 'available', 'language'];
 
     public $urn;
     public $title;
@@ -55,6 +55,7 @@ class course extends \data_object {
     public $shortdescription;
     public $timetocomplete;
     public $available;
+    public $language;
 
     /*
      * @return self
@@ -760,5 +761,18 @@ class course extends \data_object {
     private function create_moodle_shortname() {
         $lilid = str_ireplace('urn:li:lyndaCourse:', '', $this->urn);
         return substr("{$lilid} > {$this->title}", 0, 255);
+    }
+
+    public static function get_languages() {
+        global $DB;
+
+        $options = $DB->get_records_sql_menu("SELECT language as valone, language as valtwo FROM {linkedinlearning_course} GROUP BY language");
+        foreach ($options as $language) {
+            if (get_string_manager()->string_exists('lang_' . $language, 'local_reportbuilder')) {
+                $options[$language] = get_string('lang_' . $language, 'local_reportbuilder');
+            }
+        }
+
+        return $options;
     }
 }

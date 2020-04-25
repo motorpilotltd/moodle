@@ -44,6 +44,20 @@ class api {
                 'fields'                                => 'urn,title,details:(availability,classifications,publishedAt,lastUpdatedAt,images:(primary),descriptionIncludingHtml,shortDescriptionIncludingHtml,timeToComplete,urls:(aiccLaunch,ssoLaunch))',
         ];
 
+        $languages = [
+                'de',
+                'en',
+                'es',
+                'fr',
+                'ja',
+                'pt',
+                'zh',
+        ];
+
+        for ($i = 0; $i < count($languages); $i++) {
+            $params["assetFilteringCriteria.locales[$i].language"] = $languages[$i];
+        }
+
         if ($since !== 0) {
             $params['assetFilteringCriteria.lastModifiedAfter'] = $since * 1000;
         }
@@ -234,6 +248,7 @@ class api {
             }
 
             $course->urn = $raw->urn;
+            $course->language = $raw->title->locale->language;
             $course->title = $raw->title->value;
             $course->primaryimageurl = $raw->details->images->primary;
 
@@ -272,6 +287,7 @@ class api {
                     $classification = $classifications[$rawclassification->associatedClassification->urn];
                 } else {
                     $classification = new classification();
+                    $classification->language = $rawclassification->associatedClassification->name->locale->language;
                     $classification->urn = $rawclassification->associatedClassification->urn;
                     $classification->name = $rawclassification->associatedClassification->name->value;
                     $classification->type = $rawclassification->associatedClassification->type;
