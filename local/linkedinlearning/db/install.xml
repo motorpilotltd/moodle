@@ -24,6 +24,9 @@
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
+            <INDEXES>
+                <INDEX NAME="linkedinlearning_course_urn" UNIQUE="true" FIELDS="urn"/>
+            </INDEXES>
         </TABLE>
         <TABLE NAME="linkedinlearning_progress" COMMENT="Course to region mapping">
             <FIELDS>
@@ -41,6 +44,9 @@
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
+            <INDEXES>
+                <INDEX NAME="linkedinlearning_progress_userid_urn" UNIQUE="true" FIELDS="userid,urn"/>
+            </INDEXES>
         </TABLE>
         <TABLE NAME="linkedinlearning_class" COMMENT="Course to region mapping">
             <FIELDS>

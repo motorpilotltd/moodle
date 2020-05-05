@@ -241,25 +241,26 @@ class api {
 
         foreach (new courseiterator($this, $since) as $raw) {
             $course = course::fetchbyurn($raw->urn);
-            if (empty($course) && $raw->details->availability !== 'AVAILABLE') {
-                continue;
-            } else if (empty($course)) {
+            if (empty($course)) {
                 $course = new course();
             }
 
             $course->urn = $raw->urn;
             $course->language = $raw->title->locale->language;
             $course->title = $raw->title->value;
-            $course->primaryimageurl = $raw->details->images->primary;
+            $course->primaryimageurl = isset($raw->details->images->primary) ? $raw->details->images->primary : '';
 
             if ($raw->details->availability == 'AVAILABLE') {
                 $course->aicclaunchurl = $raw->details->urls->aiccLaunch;
                 $course->ssolaunchurl = $raw->details->urls->ssoLaunch;
+            } else {
+                $course->aicclaunchurl = '';
+                $course->ssolaunchurl = '';
             }
             $course->publishedat = $raw->details->publishedAt / 1000;
             $course->lastupdatedat = $raw->details->lastUpdatedAt / 1000;
-            $course->description = $raw->details->descriptionIncludingHtml->value;
-            $course->shortdescription = $raw->details->shortDescriptionIncludingHtml->value;
+            $course->description = isset($raw->details->descriptionIncludingHtml->value) ? $raw->details->descriptionIncludingHtml->value : '';
+            $course->shortdescription = isset($raw->details->shortDescriptionIncludingHtml->value) ? $raw->details->shortDescriptionIncludingHtml->value : '';
             $course->available = $raw->details->availability == 'AVAILABLE';
 
             switch ($raw->details->timeToComplete->unit) {
