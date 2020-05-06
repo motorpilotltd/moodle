@@ -214,7 +214,8 @@ class course extends \data_object {
         local_regions_save_data_course($course);
 
         $data = new \stdClass();
-        $data->region = $course->regions_field_region;
+        // Force to 'Global', region is now only for catalogue.
+        $data->region = [0];
         $data->id = $DB->get_field('tapsenrol', 'id', ['course' => $course->id]);
         tapsenrol_region_mapping_override($data);
     }
