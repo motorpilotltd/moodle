@@ -135,7 +135,6 @@ $approved = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
-    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -448,7 +447,6 @@ $moved = <<<EOS
     <b>Class:</b> [[classname:old]]<br />
     <b>Location:</b> [[classlocation:old]]<br />
     <b>Room:</b> [[classtrainingcenter:old]]<br />
-    <b>Online URL:</b> [[classonlineurl:old]]<br />
     <b>Date:</b> [[classdate:old]]<br />
     <b>Duration:</b> [[classduration:old]]<br />
     <b>Cost:</b> [[classcost:old]]</p>
@@ -457,7 +455,6 @@ $moved = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
-    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -584,7 +581,6 @@ $reminder_first = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
-    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -608,7 +604,6 @@ $reminder_second = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
-    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>

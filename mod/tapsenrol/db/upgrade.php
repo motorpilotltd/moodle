@@ -153,7 +153,7 @@ function xmldb_tapsenrol_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015111611, 'tapsenrol');
     }
 
-    if ($oldversion < 2017051501) {
+    if ($oldversion < 2017051502) {
         // Update default emails
         require_once($CFG->dirroot.'/mod/tapsenrol/db/default_emails.php');
         foreach ($defaultemails as $defaultemail) {
@@ -166,7 +166,7 @@ function xmldb_tapsenrol_upgrade($oldversion) {
             }
         }
 
-        upgrade_mod_savepoint(true, 2017051501, 'tapsenrol');
+        upgrade_mod_savepoint(true, 2017051502, 'tapsenrol');
     }
 
     return true;
