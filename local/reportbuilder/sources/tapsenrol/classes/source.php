@@ -167,6 +167,20 @@ class source extends rb_base_source {
         );
         $columnoptions[] = new rb_column_option(
                 'class',
+                'durationhours',
+                get_string('durationhours', 'local_reportbuilder'),
+                'base.duration',
+                array(
+                        'displayfunc'  => 'durationhours',
+                        'dbdatatype'   => 'char',
+                        'outputformat' => 'text',
+                        'extrafields' => [
+                                'durationunitscode' => 'base.durationunitscode',
+                        ]
+                )
+        );
+        $columnoptions[] = new rb_column_option(
+                'class',
                 'classcost',
                 get_string('classcost', 'local_reportbuilder'),
                 $DB->sql_concat('base.classcost', "' '", 'base.classcostcurrency'),
@@ -598,5 +612,12 @@ class source extends rb_base_source {
             );
         }
         return $oput;
+    }
+
+    public function rb_display_durationhours($data, $row) {
+        if ($row->durationunitscode != 'H') {
+            return '';
+        }
+        return $data;
     }
 }
