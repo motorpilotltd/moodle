@@ -25,16 +25,12 @@ namespace mod_coursera;
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
-class instructor extends courserahashedcourseobject {
-    public $table = 'courserainstructor';
-    public $required_fields = ['id', 'courseracourseid', 'name', 'hash'];
-    public $optional_fields = ['photourl' => '', 'title' => '', 'department' => ''];
+class programlink extends courserahashedcourseobject {
+    public $table = 'courseraprogramlink';
+    public $required_fields = ['id', 'courseracourseid', 'contenturl', 'programid', 'hash'];
 
-    public $courseracourseid;
-    public $photourl;
-    public $name;
-    public $title;
-    public $department;
+    public $contenturl;
+    public $programid;
     public $hash;
 
     /**
@@ -42,7 +38,7 @@ class instructor extends courserahashedcourseobject {
      * @return self
      */
     public static function fetch($params) {
-        return self::fetch_helper('courserainstructor', __CLASS__, $params);
+        return self::fetch_helper('courseraprogramlink', __CLASS__, $params);
     }
 
     /**
@@ -50,7 +46,7 @@ class instructor extends courserahashedcourseobject {
      * @return self[]
      */
     public static function fetch_all($params) {
-        $ret = self::fetch_all_helper('courserainstructor', __CLASS__, $params);
+        $ret = self::fetch_all_helper('courseraprogramlink', __CLASS__, $params);
         if (!$ret) {
             return [];
         }

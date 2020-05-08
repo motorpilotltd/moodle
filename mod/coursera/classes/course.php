@@ -25,12 +25,12 @@ namespace mod_coursera;
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
+require_once("$CFG->dirroot/completion/data_object.php");
 class course extends \data_object {
     public $table = 'courseracourse';
-    public $required_fields = ['id', 'partnername', 'title', 'contentid', 'description', 'languagecode', 'estimatedlearningtime',
+    public $required_fields = ['id', 'title', 'contentid', 'description', 'languagecode', 'estimatedlearningtime',
             'promophoto'];
 
-    public $partnername;
     public $title;
     public $contentid;
     public $description;
@@ -56,5 +56,33 @@ class course extends \data_object {
             return [];
         }
         return $ret;
+    }
+
+    public static function getcoursesselectoptions() {
+        global $DB;
+        return $DB->get_records_menu('courseracourse', [], 'title');
+    }
+
+    public static function savecourse($element) {
+        $courseracourse = course::fetch(['contentid' => $element->contentId]);
+
+        if (empty($courseracourse)) {
+            $courseracourse = new course();
+        }
+        $courseracourse->title = $element->name;
+        $courseracourse->contentid = $element->contentId;
+        $courseracourse->description = $element->description;
+        $courseracourse->languagecode = $element->languageCode;
+        $courseracourse->estimatedlearningtime = isset($element->extraMetadata->definition->estimatedLearningTime) ?
+                $element->extraMetadata->definition->estimatedLearningTime : 0;
+        $courseracourse->promophoto =
+                isset($element->extraMetadata->definition->promoPhoto) ? $element->extraMetadata->definition->promoPhoto : '';
+
+        if (!isset($courseracourse->id)) {
+            $courseracourse->insert();
+        } else {
+            $courseracourse->update();
+        }
+        return $courseracourse;
     }
 }
