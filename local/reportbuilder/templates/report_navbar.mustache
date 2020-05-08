@@ -47,10 +47,32 @@
     <div class="navbar-form flex-auto">
         <div class="input-group">
             {{{ editbutton }}}
+            <div class="dropdown"
+                title="{{#str}}exportas, local_reportbuilder{{/str}}"
+                data-toggle="tooltip"
+                data-placement="left"
+                >
+                <button class="btn btn-default dropdown-toggle" 
+                    id="exportas"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                >
+                    <i class="fa fa-download"></i>
+                    <span class="sr-only">{{#str}}exportas, local_reportbuilder{{/str}}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="exportas">
+                    <li><a href="{{{formurl}}}&format=excel">{{#str}}exportxls, local_reportbuilder{{/str}}</a></li>
+                    <li><a href="{{{formurl}}}&format=csv">{{#str}}exportcsv, local_reportbuilder{{/str}}</a></li>
+                    <li><a href="{{{formurl}}}&format=ods">{{#str}}exportods, local_reportbuilder{{/str}}</a></li>
+                    <li><a href="{{{formurl}}}&format=pdflandscape">{{#str}}exportpdf_landscape, local_reportbuilder{{/str}}</a></li>
+                    <li><a href="{{{formurl}}}&format=pdfportrait">{{#str}}exportpdf_portrait, local_reportbuilder{{/str}}</a></li>
+                </ul>
+            </div>
             <button
                 class="btn btn-default showhidecolumns"
                 data-toggle="tooltip"
-                data-placement="bottom"
+                data-placement="left"
                 title="{{#str}}tablecolumns, local_reportbuilder{{/str}}"
                 data-action="showcolumns"
             >
@@ -60,7 +82,7 @@
             <button
                 class="btn btn-default control-filters"
                 data-toggle="tooltip"
-                data-placement="bottom"
+                data-placement="left"
                 title="{{#str}}filters, local_reportbuilder{{/str}}"
                 data-action="showfilters"
             >
@@ -69,20 +91,22 @@
             </button>
 
             <a
-                href="{{{urlstatic}}}"
+                href="#"
                 class="btn btn-default closefullscreen m-l-1"
                 data-toggle="tooltip"
-                data-placement="bottom"
+                data-action="closefullscreen"
+                data-placement="left"
                 title="{{#str}}closefullscreen, local_reportbuilder{{/str}}"
             >
                 <i class="fa fa-times"></i>
                 <span class="sr-only">{{#str}}closefullscreen, local_reportbuilder{{/str}}</span>
             </a>
             <a
-                href="{{{urlfullscreen}}}"
+                href="#"
                 class="btn btn-default fullscreen m-l-1"
                 data-toggle="tooltip"
-                data-placement="bottom"
+                data-action="fullscreen"
+                data-placement="left"
                 title="{{#str}}showfullscreen, local_reportbuilder{{/str}}"
             >
                 <i class="fa fa-expand"></i>
@@ -91,3 +115,20 @@
         </div>
     </div>
 </nav>
+
+{{#js}}
+require(
+[
+    'jquery',
+],
+function(
+    $
+) {
+    $('[data-action="fullscreen"]').on('click', function () {
+        $('.reportbuilder_report').addClass('fullscreen');
+    });
+    $('[data-action="closefullscreen"]').on('click', function () {
+        $('.reportbuilder_report').removeClass('fullscreen');
+    });
+});
+{{/js}}

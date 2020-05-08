@@ -29,12 +29,12 @@
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
 
-$format    = optional_param('format', '', PARAM_ALPHANUM);
+$format = optional_param('format', '', PARAM_ALPHANUM);
 $id = required_param('id', PARAM_INT);
 $sid = optional_param('sid', '0', PARAM_INT);
 $debug = optional_param('debug', 1, PARAM_INT);
 $simplesearch = optional_param('simplesearch', 0, PARAM_TEXT);
-$displaymode = optional_param('displaymode', 'static', PARAM_ALPHANUM);
+$fullscreen = optional_param('fullscreen', 0, PARAM_ALPHANUM);
 
 require_login();
 
@@ -87,8 +87,6 @@ echo $output->header();
 
 $template = new stdClass();
 $template->formurl = new moodle_url('/local/reportbuilder/report.php', ['id' => $id]);
-$template->urlstatic = new moodle_url('/local/reportbuilder/report.php', ['id' => $id, 'displaymode' => 'static']);
-$template->urlfullscreen = new moodle_url('/local/reportbuilder/report.php', ['id' => $id, 'displaymode' => 'fullscreen']);
 $template->hasdisabledfilters = $report->has_disabled_filters();
 $template->simplesearch = $simplesearch;
 
@@ -139,10 +137,8 @@ if ($graph) {
 
 // Export button.
 $template->export = $output->export_select($report, $sid, false);
+$template->fullscreen = $fullscreen;
 
-if ($displaymode == 'static') {
-    echo $OUTPUT->render_from_template('local_reportbuilder/report', $template);
-} else if ($displaymode == 'fullscreen') {
-    echo $OUTPUT->render_from_template('local_reportbuilder/report_fullscreen', $template);
-}
+echo $OUTPUT->render_from_template('local_reportbuilder/report', $template);
+
 echo $output->footer();

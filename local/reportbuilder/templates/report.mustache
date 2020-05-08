@@ -1,3 +1,4 @@
+
 {{!
     This file is part of Moodle - http://moodle.org/
      Moodle is free software: you can redistribute it and/or modify
@@ -17,27 +18,27 @@
     Displays a custom report
 }}
 
-<div class="reportbuilder_report newreport static">
-    {{#hasdisabledfilters}}
-        {{{ notification }}}
-    {{/hasdisabledfilters}}
+<div class="reportbuilder_report newreport {{#fullscreen}}fullscreen{{/fullscreen}}">
+    <div class="inner">
 
-    <div>
-        <h2>{{{ heading }}}</h2>
-    </div>
-
-    {{>local_reportbuilder/report_navbar}}
-
-    <div class="reportcontainer">
+        {{>local_reportbuilder/report_navbar}}
 
         {{>local_reportbuilder/report_advancedsearch}}
 
-        {{>local_reportbuilder/report_table}}
-
         {{>local_reportbuilder/report_filters}}
-    </div>
 
-    {{>local_reportbuilder/report_extra}}
+        {{#hasdisabledfilters}}
+            {{{ notification }}}
+        {{/hasdisabledfilters}}
+
+        <div class="reportcontainer">
+            <div>
+                <h2>{{{ heading }}}</h2>
+            </div>
+            {{>local_reportbuilder/report_table}}
+            {{>local_reportbuilder/report_extra}}
+        </div>
+    </div>
 </div>
 
 {{#js}}
@@ -70,8 +71,5 @@ function(
         $("#reportfilters").toggleClass('active');
         e.preventDefault();
     });
-    var filtersheight = $('[data-region="filters"]').height();
-    $('.newreport.static .reportcontainer').css('min-height', filtersheight)
-    window.console.log();
 });
 {{/js}}

@@ -359,67 +359,77 @@
   padding-right: 5px;
 }
 
-.newreport .closefullscreen,
-.newreport .fullscreen {
+#page-local-reportbuilder-report #page-footer {
+  margin: 0;
   display: none;
 }
 
-.newreport.fullscreen {
-  position: fixed;
-  height: 100vh;
-  min-width: 100vh;
+.newreport {
+  height: calc(100vh - 110px);
   left: 0;
   top: 0;
   right: 0;
   bottom: 0;
   z-index: 1030;
   background-color: #FFF;
+  position: relative;
+  overflow: hidden;
 }
 
-.newreport.fullscreen .closefullscreen {
+.newreport .btn.fullscreen {
   display: inline-block;
 }
 
-.newreport.fullscreen .inner {
+.newreport .btn.closefullscreen {
+  display: none;
+}
+
+.newreport.fullscreen {
   height: 100%;
-  position: absolute;
+  position: fixed;
+}
+
+.newreport.fullscreen .btn.fullscreen {
+  display: none;
+}
+
+.newreport.fullscreen .btn.closefullscreen {
+  display: inline-block;
+}
+
+.newreport .inner {
+  height: 100%;
   width: 100%;
-  max-width: 100vw;
   padding: 0 5px;
 }
 
-@media (min-width: 768px) {
-  .newreport.fullscreen .inner {
-    padding: 0 30px;
-  }
-}
-
-.newreport.fullscreen #advancedsearch {
+.newreport #advancedsearch {
   position: absolute;
-  left: 30px;
-  right: 30px;
+  left: 5px;
+  right: 5px;
   max-height: calc(100% - 120px);
+  z-index: 1;
   overflow-y: auto;
 }
 
 @media (min-width: 600px) {
-  .newreport.fullscreen #advancedsearch {
+  .newreport #advancedsearch {
     max-height: calc(100% - 61px);
   }
 }
 
-.newreport.fullscreen .reportcontainer {
+.newreport .reportcontainer {
   overflow: scroll;
   height: calc(100% - 120px);
 }
 
 @media (min-width: 600px) {
-  .newreport.fullscreen .reportcontainer {
+  .newreport .reportcontainer {
     height: calc(100% - 61px);
   }
 }
 
-.newreport.fullscreen .reportcontainer th.header {
+.newreport .reportcontainer th.header {
   position: -webkit-sticky;
   position: sticky;
   top: 0px;
@@ -427,11 +437,11 @@
   box-shadow: 2px 1px 0px #DDD;
 }
 
-.newreport.fullscreen .rb-display-table-container.no-overflow {
+.newreport .rb-display-table-container.no-overflow {
   overflow: initial;
 }
 
-.newreport.fullscreen #reportfilters {
+.newreport #reportfilters {
   z-index: 2;
   height: calc(100% - 120px);
   top: 120px;
@@ -443,42 +453,13 @@
 }
 
 @media (min-width: 600px) {
-  .newreport.fullscreen #reportfilters {
+  .newreport #reportfilters {
     height: calc(100% - 61px);
     top: 61px;
   }
 }
 
-.newreport.fullscreen #reportfilters.active {
-  right: 0;
-}
-
-.newreport.static .fullscreen {
-  display: inline-block;
-}
-
-.newreport.static #report-controls {
-  position: sticky;
-  top: 59px;
-  z-index: 1;
-}
-
-.newreport.static .reportcontainer {
-  position: relative;
-  overflow: hidden;
-  min-height: 400px;
-}
-
-.newreport.static .reportcontainer #reportfilters {
-  position: absolute;
-  right: -300px;
-  top: 0;
-  width: 300px;
-  transition: right 0.5s ease, left 0.5s ease;
-  overflow-y: scroll;
-}
-
-.newreport.static .reportcontainer #reportfilters.active {
+.newreport #reportfilters.active {
   right: 0;
 }
 

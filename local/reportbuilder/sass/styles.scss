@@ -304,104 +304,87 @@
         padding-right: 5px;
     }
 }
+
+#page-local-reportbuilder-report #page-footer {
+    margin: 0;
+    display: none;
+}
 .newreport {
-    .closefullscreen,
-    .fullscreen {
+    height: calc(100vh - 110px);
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1030;
+    background-color: #FFF;
+    position: relative;
+    overflow: hidden;
+
+    .btn.fullscreen {
+        display: inline-block;
+    }
+    .btn.closefullscreen {
         display: none;
     }
     &.fullscreen {
+        height: 100%;
         position: fixed;
-        height: 100vh;
-        min-width: 100vh;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 1030;
-        background-color: #FFF;
-        .closefullscreen {
+        .btn.fullscreen {
+            display: none;
+        }
+        .btn.closefullscreen {
             display: inline-block;
-        }
-        .inner {
-            height: 100%;
-            position: absolute;
-            width: 100%;
-            max-width: 100vw;
-            padding: 0 5px;
-            @media (min-width: 768px) {
-                padding: 0 30px;
-            }
-        }
-        #advancedsearch {
-            position: absolute;
-            left: 30px;
-            right: 30px;
-            max-height: calc(100% - 120px);
-            @media (min-width: 600px) {
-                max-height: calc(100% - 61px);
-            }
-            overflow-y: auto;
-        }
-        .reportcontainer {
-            overflow: scroll;
-            height: calc(100% - 120px);
-            @media (min-width: 600px) {
-                height: calc(100% - 61px);
-            }
-            th.header {
-                position: -webkit-sticky;
-                position: sticky;
-                top: 0px;
-                background-color: #FFF;
-                box-shadow: 2px 1px 0px #DDD;
-            }
-        }
-        .rb-display-table-container.no-overflow {
-            overflow: initial;
-        }
-        @media (max-width: 800px) {}
-        #reportfilters {
-            z-index: 2;
-            height: calc(100% - 120px);
-            top: 120px;
-            @media (min-width: 600px) {
-                height: calc(100% - 61px);
-                top: 61px;
-            }
-            position: absolute;
-            right: -330px;
-            width: 300px;
-            transition: right 0.5s ease, left 0.5s ease;
-            overflow-y: scroll;
-            &.active {
-                right: 0;
-            }
         }
     }
-    &.static {
-        .fullscreen {
-            display: inline-block;
+    .inner {
+        height: 100%;
+        width: 100%;
+        padding: 0 5px;
+    }
+    #advancedsearch {
+        position: absolute;
+        left: 5px;
+        right: 5px;
+        max-height: calc(100% - 120px);
+        z-index: 1;
+        @media (min-width: 600px) {
+            max-height: calc(100% - 61px);
         }
-        #report-controls {
+        overflow-y: auto;
+    }
+    .reportcontainer {
+        overflow: scroll;
+        height: calc(100% - 120px);
+        @media (min-width: 600px) {
+            height: calc(100% - 61px);
+        }
+        th.header {
+            position: -webkit-sticky;
             position: sticky;
-            top: 59px;
-            z-index: 1;
+            top: 0px;
+            background-color: #FFF;
+            box-shadow: 2px 1px 0px #DDD;
         }
-        .reportcontainer {
-            position: relative;
-            overflow: hidden;
-            min-height: 400px;
-            #reportfilters {
-                position: absolute;
-                right: -300px;
-                top: 0;
-                width: 300px;
-                transition: right 0.5s ease, left 0.5s ease;
-                overflow-y: scroll;
-                &.active {
-                    right: 0;
-                }
-            }
+    }
+    .rb-display-table-container.no-overflow {
+        overflow: initial;
+    }
+    @media (max-width: 800px) {}
+    #reportfilters {
+        z-index: 2;
+        height: calc(100% - 120px);
+        top: 120px;
+        @media (min-width: 600px) {
+            height: calc(100% - 61px);
+            top: 61px;
+        }
+        position: absolute;
+        right: -330px;
+        width: 300px;
+        transition: right 0.5s ease, left 0.5s ease;
+        overflow-y: scroll;
+        &.active {
+            right: 0;
         }
     }
     .totara-toolbar-top .toolbar-left-table {
