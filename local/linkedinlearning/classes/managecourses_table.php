@@ -109,8 +109,8 @@ class managecourses_table extends \table_sql {
         $regionsconcat = $this->sql_group_concat('lrrc.regionid', ',', true);
         //434462
         $columns =
-                "lc.id, lc.urn as courseid, c.id as moodlecourseid, c.visible as moodlecoursevisible, lc.title, lc.shortdescription, lc.timetocomplete, lc.language, $remotetagidconcat as classifications, $regionsconcat as regions";
-        $groupby = "GROUP BY lc.id, lc.urn, lc.title, lc.shortdescription, lc.timetocomplete, c.id, c.visible, lc.language";
+                "lc.id, lc.urn as courseid, lc.available as available, c.id as moodlecourseid, c.visible as moodlecoursevisible, lc.title, lc.shortdescription, lc.timetocomplete, lc.language, $remotetagidconcat as classifications, $regionsconcat as regions";
+        $groupby = "GROUP BY lc.id, lc.urn, lc.available, lc.title, lc.shortdescription, lc.timetocomplete, c.id, c.visible, lc.language";
 
         $this->rawdata = $DB->get_records_sql("SELECT $columns $sql $groupby $orderby", $params, $this->get_page_start(),
                 $this->get_page_size());
@@ -183,8 +183,13 @@ class managecourses_table extends \table_sql {
                 }
             } else {
                 $chkname = "chk_region_$regionid";
+                $attributes = ['data-regionid' => $regionid, 'data-courseid' => $event->id, 'class' => 'regioncheck'];
+                if (!$event->available) {
+                    $attributes['disabled'] = 'disabled';
+                    $attributes['title'] = get_string('unavailable', 'local_linkedinlearning');
+                }
                 return \html_writer::span(\html_writer::checkbox($chkname, $chkname, $checked, '',
-                        ['data-regionid' => $regionid, 'data-courseid' => $event->id, 'class' => 'regioncheck']));
+                        $attributes));
             }
         }
     }

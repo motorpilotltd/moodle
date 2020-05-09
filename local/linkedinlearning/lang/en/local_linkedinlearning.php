@@ -32,3 +32,4 @@ $string['apiratelimit'] = 'Linkedin Learning API rate limit exceeded';
 $string['apierror'] = 'Unkown Linkedin Learning API error';
 $string['visibleglobal'] = 'Course has been enabled globally';
 $string['language'] = 'Language';
+$string['unavailable'] = 'Course unavailable';

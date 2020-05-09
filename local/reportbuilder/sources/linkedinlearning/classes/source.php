@@ -205,10 +205,11 @@ class source extends rb_base_source {
                             'displayfunc' => 'regionvisibility',
                             'joins'       => ["regions0", "course"],
                             'extrafields' => ['regionid'        => 0,
-                                              'presentinregion' => $globalpresentsql,
-                                              'presentglobal' => $globalpresentsql,
-                                            'linkedinlearningmanager' => "'$has_capability'",
-                                            'readonly' => "'$readonly'"
+                                              'presentinregion'         => $globalpresentsql,
+                                              'presentglobal'           => $globalpresentsql,
+                                              'linkedinlearningmanager' => "'$has_capability'",
+                                              'readonly'                => "'$readonly'",
+                                              'available'               => 'base.available'
                             ]
                     )
             );
@@ -227,7 +228,8 @@ class source extends rb_base_source {
                                               'presentinregion' => " CASE WHEN (course.visible = 0 OR regions{$id}.id IS NULL) THEN 0 ELSE 1 END ",
                                               'presentglobal' => $globalpresentsql,
                                               'linkedinlearningmanager' => "'$has_capability'",
-                                              'readonly' => "'$readonly'"
+                                              'readonly' => "'$readonly'",
+                                              'available'               => 'base.available'
                             ]
                     )
             );
@@ -615,6 +617,8 @@ class source extends rb_base_source {
 
         if (!empty($row->readonly)) {
             $disabled = true;
+        } else if (empty($row->available)) {
+            $disabled = true;
         } else if ($row->linkedinlearningmanager) {
             $disabled = false;
         } else if ($row->presentglobal) {
@@ -633,6 +637,9 @@ class source extends rb_base_source {
 
         if ($showenabledglobalnote) {
             $attributes['title'] = get_string('visibleglobal', 'local_linkedinlearning');
+        }
+        if (empty($row->available)) {
+            $attributes['title'] = get_string('unavailable', 'local_linkedinlearning');
         }
 
         if ($export) {
