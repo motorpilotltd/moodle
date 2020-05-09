@@ -344,6 +344,10 @@ EOS;
         return !empty($this->_activeclass->trainingcenter)? $this->_activeclass->trainingcenter : '';
     }
 
+    public function get_class_onlineurl() {
+        return !empty($this->_activeclass->onlineurl)? $this->_activeclass->onlineurl : '';
+    }
+
     /**
      * Returns a list for select
      */

@@ -78,6 +78,7 @@ class cmform_class extends moodleform {
         $this->add_element("location", "text", PARAM_TEXT);
         $this->add_element("trainingcenter", "text", PARAM_TEXT);
         $this->add_element("maximumattendees", "text", PARAM_INT);
+        $this->add_element("onlineurl", "text", PARAM_URL);
 
         $this->add_element("currencycode", "select", null, $taps->get_classcostcurrency());
         // Float? Decimal(20,2) in DB.

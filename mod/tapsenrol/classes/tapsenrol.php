@@ -1260,12 +1260,13 @@ EOS;
     }
 
     protected function _class_data($enrolment, $old = false) {
-        if (!isset($enrolment->trainingcenter)) {
+        if (!isset($enrolment->trainingcenter) || !isset($enrolment->onlineurl)) {
             // Merge in data from class record (if needed/available).
             $class = $this->taps->get_class_by_id($enrolment->classid);
             $enrolment->price = $class ? $class->price : null;
             $enrolment->currencycode = $class ? $class->currencycode : null;
             $enrolment->trainingcenter = $class ? $class->trainingcenter : null;
+            $enrolment->onlineurl = $class ? $class->onlineurl : null;
         }
 
         try {
@@ -1282,6 +1283,7 @@ EOS;
             'classname' => $enrolment->classname,
             'classlocation' => $enrolment->location ? $enrolment->location : get_string('tbc', 'tapsenrol'),
             'classtrainingcenter' => $enrolment->trainingcenter,
+            'classonlineurl' => $enrolment->onlineurl,
         );
 
         if ($enrolment->classstarttime == 0) {

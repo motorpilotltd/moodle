@@ -153,5 +153,21 @@ function xmldb_tapsenrol_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015111611, 'tapsenrol');
     }
 
+    if ($oldversion < 2017051502) {
+        // Update default emails
+        require_once($CFG->dirroot.'/mod/tapsenrol/db/default_emails.php');
+        foreach ($defaultemails as $defaultemail) {
+            $existingemail = $DB->get_record('tapsenrol_iw_email', array('email' => $defaultemail->email));
+            if (!$existingemail) {
+                $DB->insert_record('tapsenrol_iw_email', $defaultemail);
+            } else {
+                $ids[] = $defaultemail->id = $existingemail->id;
+                $DB->update_record('tapsenrol_iw_email', $defaultemail);
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2017051502, 'tapsenrol');
+    }
+
     return true;
 }
