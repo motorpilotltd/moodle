@@ -171,7 +171,11 @@ class source extends rb_base_source {
         return $this->userregionid;
     }
 
-    public function rb_cols_generator_regionvisibility($columnoption, $hidden) {
+    public function rb_cols_generator_regionvisibilityreadonly($columnoption, $hidden) {
+        return $this->rb_cols_generator_regionvisibility($columnoption, $hidden, true);
+    }
+
+    public function rb_cols_generator_regionvisibility($columnoption, $hidden, $readonly = false) {
         global $DB;
         $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true], 'name', 'id, name');
 
@@ -189,6 +193,8 @@ class source extends rb_base_source {
 
         $results = array();
 
+        $globalpresentsql = " CASE WHEN course.visible = 1 AND regions0.courseid IS NULL AND arupadvert.id IS NOT NULL THEN 1 ELSE 0 END ";
+
         if ($has_capability) {
             $results[] = new rb_column(
                     'linkedincourse',
@@ -197,10 +203,13 @@ class source extends rb_base_source {
                     'base.id',
                     array(
                             'displayfunc' => 'regionvisibility',
-                            'joins'       => "regions0",
+                            'joins'       => ["regions0", "course"],
                             'extrafields' => ['regionid'        => 0,
-                                              'presentinregion' => " CASE WHEN regions0.courseid IS NULL AND arupadvert.id IS NOT NULL THEN 1 ELSE 0 END ",
-                                            'linkedinlearningmanager' => "'$has_capability'"
+                                              'presentinregion'         => $globalpresentsql,
+                                              'presentglobal'           => $globalpresentsql,
+                                              'linkedinlearningmanager' => "'$has_capability'",
+                                              'readonly'                => "'$readonly'",
+                                              'available'               => 'base.available'
                             ]
                     )
             );
@@ -214,11 +223,13 @@ class source extends rb_base_source {
                     'base.id',
                     array(
                             'displayfunc' => 'regionvisibility',
-                            'joins'       => ["regions{$id}", "regions0", 'arupadvert'],
+                            'joins'       => ["regions{$id}", "regions0", 'arupadvert', 'course'],
                             'extrafields' => ['regionid'        => $id,
-                                              'presentinregion' => " CASE WHEN regions{$id}.id IS NULL THEN 0 ELSE 1 END ",
-                                              'presentglobal' => " CASE WHEN regions0.courseid IS NULL AND arupadvert.id IS NOT NULL THEN 1 ELSE 0 END ",
-                                              'linkedinlearningmanager' => "'$has_capability'"
+                                              'presentinregion' => " CASE WHEN (course.visible = 0 OR regions{$id}.id IS NULL) THEN 0 ELSE 1 END ",
+                                              'presentglobal' => $globalpresentsql,
+                                              'linkedinlearningmanager' => "'$has_capability'",
+                                              'readonly' => "'$readonly'",
+                                              'available'               => 'base.available'
                             ]
                     )
             );
@@ -294,6 +305,14 @@ class source extends rb_base_source {
                 ),
                 new rb_column_option(
                         'linkedincourse',
+                        'visibleinregionsreadonly',
+                        get_string('visibleinregionsreadonly', 'rbsource_linkedinlearning'),
+                        'base.id',
+                        array('columngenerator' => 'regionvisibilityreadonly',
+                              'defaultheading' => get_string('visibleinregion', 'rbsource_linkedinlearning'))
+                ),
+                new rb_column_option(
+                        'linkedincourse',
                         'urn',
                         get_string('urn', 'rbsource_linkedinlearning'),
                         'base.urn',
@@ -358,6 +377,15 @@ class source extends rb_base_source {
                                 'dbdatatype' => 'char',
                                 'outputformat' => 'text',
                             'joins' => 'class'
+                        )
+                ),
+                new rb_column_option(
+                        'linkedincourse',
+                        'language',
+                        get_string('language', 'local_reportbuilder'),
+                        'base.language',
+                        array(
+                                'displayfunc' => 'language'
                         )
                 ),
                 new rb_column_option(
@@ -502,6 +530,18 @@ class source extends rb_base_source {
                 ),
         );
 
+        $filteroptions[] =
+                new rb_filter_option(
+                        'linkedincourse',
+                        'language',
+                        get_string('language', 'local_reportbuilder'),
+                        'select',
+                        array(
+                                'selectchoices' => course::get_languages(),
+                                'simplemode' => true,
+                        )
+                );
+
         // user, course and category filters
         $this->add_user_fields_to_filters($filteroptions);
         $this->add_staff_fields_to_filters($filteroptions);
@@ -568,23 +608,46 @@ class source extends rb_base_source {
         return $defaultfilters;
     }
 
-    public function rb_display_regionvisibility($courseid, $row) {
-        if ($row->regionid != 0 && !$row->linkedinlearningmanager) {
-            $checked = $row->presentglobal || $row->presentinregion;
-            $disabled = $checked && !$row->presentinregion;
-        } else {
+    public function rb_display_regionvisibility($courseid, $row, $export) {
+        if ($row->linkedinlearningmanager) {
             $checked = $row->presentinregion;
+        } else {
+            $checked = $row->presentglobal || $row->presentinregion;
+        }
+
+        if (!empty($row->readonly)) {
+            $disabled = true;
+        } else if (empty($row->available)) {
+            $disabled = true;
+        } else if ($row->linkedinlearningmanager) {
+            $disabled = false;
+        } else if ($row->presentglobal) {
+            $disabled = true;
+        } else {
             $disabled = false;
         }
 
-        $attributes = ['data-regionid' => $row->regionid, 'data-courseid' => $courseid, 'class' => 'regioncheck'];
+        $showenabledglobalnote = $row->presentglobal && !$row->linkedinlearningmanager;
 
         if ($disabled) {
-            $attributes['disabled'] = 'disabled';
+            $attributes = ['disabled' => 'disabled'];
+        } else {
+            $attributes = ['data-regionid' => $row->regionid, 'data-courseid' => $courseid, 'class' => 'regioncheck'];
         }
 
-        return \html_writer::span(\html_writer::checkbox('visibleinregion', '', $checked, '',
-                $attributes));
+        if ($showenabledglobalnote) {
+            $attributes['title'] = get_string('visibleglobal', 'local_linkedinlearning');
+        }
+        if (empty($row->available)) {
+            $attributes['title'] = get_string('unavailable', 'local_linkedinlearning');
+        }
+
+        if ($export) {
+            return $checked ? get_string('yes') : get_string('no');
+        } else {
+            return \html_writer::span(\html_writer::checkbox('visibleinregion', '', $checked, '',
+                    $attributes));
+        }
     }
 
     public function rb_display_linkedincourselink($title, $row) {
@@ -606,6 +669,14 @@ class source extends rb_base_source {
             $url = $row->ssourl;
         }
         return $this->create_expand_link($title, 'lil_description', array('expandcourseid' => $row->lilcourseid), $url);
+    }
+
+    public function rb_display_language($language) {
+        if (get_string_manager()->string_exists('lang_' . $language, 'local_reportbuilder')) {
+                return get_string('lang_' . $language, 'local_reportbuilder');
+        } else {
+            return $language;
+        }
     }
 
     /**

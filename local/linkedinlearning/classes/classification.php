@@ -28,12 +28,13 @@ require_once($CFG->dirroot . '/completion/data_object.php');
 
 class classification extends \data_object {
     public $table = 'linkedinlearning_class';
-    public $required_fields = ['id', 'urn', 'name', 'type'];
+    public $required_fields = ['id', 'urn', 'name', 'type', 'language'];
     public $optional_fields = [];
 
     public $urn;
     public $name;
     public $type;
+    public $language;
 
     /**
      * @param array $params

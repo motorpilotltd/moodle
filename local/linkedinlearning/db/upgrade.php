@@ -111,5 +111,69 @@ function xmldb_local_linkedinlearning_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080536, 'local', 'linkedinlearning');
     }
 
+    if ($oldversion < 2016080539) {
+
+        $table = new xmldb_table('linkedinlearning_progress');
+
+        $field = new xmldb_field('uniqueuserid', XMLDB_TYPE_CHAR, '255', null, null, null, '');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('userurn', XMLDB_TYPE_CHAR, '255', null, null, null, '');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2016080539, 'local', 'linkedinlearning');
+    }
+
+    if ($oldversion < 2016080540) {
+
+        $table = new xmldb_table('linkedinlearning_course');
+
+        $field = new xmldb_field('language', XMLDB_TYPE_CHAR, '2', null, XMLDB_NOTNULL, null, 'en');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $table = new xmldb_table('linkedinlearning_class');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        set_config('lastsuccessfulrun', 0, 'local_linkedinlearning');
+
+        upgrade_plugin_savepoint(true, 2016080540, 'local', 'linkedinlearning');
+    }
+
+    if ($oldversion < 2016080541) {
+        set_config('lastsuccessfulrun', 0, 'local_linkedinlearning');
+
+        upgrade_plugin_savepoint(true, 2016080541, 'local', 'linkedinlearning');
+    }
+
+    if ($oldversion < 2016080542) {
+        $table = new xmldb_table('linkedinlearning_course');
+
+        $index1 = new xmldb_index('linkedinlearning_course_urn', XMLDB_INDEX_UNIQUE, array('urn'));
+        if ($dbman->index_exists($table, $index1)) {
+            $dbman->add_index($table, $index1);
+        }
+
+        $table = new xmldb_table('linkedinlearning_progress');
+
+        $index1 = new xmldb_index('linkedinlearning_progress_userid_urn', XMLDB_INDEX_UNIQUE, array('userid', 'urn'));
+        if ($dbman->index_exists($table, $index1)) {
+            $dbman->add_index($table, $index1);
+        }
+
+        upgrade_plugin_savepoint(true, 2016080542, 'local', 'linkedinlearning');
+    }
+
     return true;
 }
