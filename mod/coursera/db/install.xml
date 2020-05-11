@@ -27,7 +27,7 @@
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
                 <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
-                <FIELD NAME="contentid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
+                <FIELD NAME="contentid" TYPE="char" LENGTH="35" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
                 <FIELD NAME="description" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
                 <FIELD NAME="languagecode" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
                 <FIELD NAME="estimatedlearningtime" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
@@ -90,7 +90,7 @@
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
                 <FIELD NAME="courseracourseid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"/>
-                <FIELD NAME="contentid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
+                <FIELD NAME="contentid" TYPE="char" LENGTH="35" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"/>
                 <FIELD NAME="externalid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
                 <FIELD NAME="iscompleted" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
