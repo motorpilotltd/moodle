@@ -42,41 +42,43 @@
                 </div>
             {{/iscompleted}}
         </div>
-        <div class="col-md-4 rightcol">
-            <h2>{{# str }} offeredby, mod_coursera {{/ str }}</h2>
+        {{#haspartners}}
+            <div class="col-md-4 rightcol">
+                <h2>{{# str }} offeredby, mod_coursera {{/ str }}</h2>
 
-            {{#partners}}
-                <div class="row">
-                    <div class="col-md-12">
-                        <img class="partnerlogo" src="{{{logourl}}}" alt="{{{name}}}" title="{{{name}}}"/>
+                {{#partners}}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <img class="partnerlogo" src="{{{logourl}}}" alt="{{{name}}}" title="{{{name}}}"/>
+                        </div>
                     </div>
-                </div>
-            {{/partners}}
-        </div>
+                {{/partners}}
+            </div>
+        {{/haspartners}}
     </div>
 
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-{{#hasinstructors}}8{{/hasinstructors}}{{^hasinstructors}}12{{/hasinstructors}}">
             <h2>{{# str }} aboutthiscourse, mod_coursera {{/ str }}</h2>
             {{{description}}}
         </div>
-        <div class="col-md-4">
-            {{#hasinstructors}}
+        {{#hasinstructors}}
+            <div class="col-md-4">
                 <h2>{{# str }} instructors, mod_coursera {{/ str }}</h2>
-            {{/hasinstructors}}
 
-            {{#instructors}}
-                <div class="row instructor">
-                    <div class="col-md-3 leftcol">
-                        <img class="instructorphoto" src="{{{photourl}}}"/>
+                {{#instructors}}
+                    <div class="row instructor">
+                        <div class="col-md-3 leftcol">
+                            <img class="instructorphoto" src="{{{photourl}}}"/>
+                        </div>
+                        <div class="col-md-9 rightcol">
+                            <div class="instructorname">{{{name}}}</div>
+                            <div class="instructortitle">{{{title}}}</div>
+                            <div class="instructordepartment">{{{department}}}</div>
+                        </div>
                     </div>
-                    <div class="col-md-9 rightcol">
-                        <div class="instructorname">{{{name}}}</div>
-                        <div class="instructortitle">{{{title}}}</div>
-                        <div class="instructordepartment">{{{department}}}</div>
-                    </div>
-                </div>
-            {{/instructors}}
-        </div>
+                {{/instructors}}
+            </div>
+        {{/hasinstructors}}
     </div>
 </div>

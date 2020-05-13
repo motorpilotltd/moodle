@@ -171,6 +171,6 @@ function coursera_cm_info_dynamic(cm_info $cm) {
         }
     }
 
-    $cm->set_content($output->rendercourseragetcoursemoduleinfo($course, $cm));
+    $cm->set_content($output->rendercourseragetcoursemoduleinfo($data));
     $cm->set_no_view_link(true);
 }

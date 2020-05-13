@@ -121,6 +121,10 @@ class course extends \data_object implements \templatable {
             $retval['partners'][] = $partner->export_for_template($output);
         }
 
+        if (!empty($retval['partners'])) {
+            $retval['haspartners'] = true;
+        }
+
         foreach ($this->required_fields as $fieldname) {
             $retval[$fieldname] = $this->$fieldname;
         }
