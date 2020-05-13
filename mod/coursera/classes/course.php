@@ -110,6 +110,10 @@ class course extends \data_object implements \templatable {
             $retval['instructors'][] = $instructor->export_for_template($output);
         }
 
+        if (!empty($retval['instructors'])) {
+            $retval['hasinstructors'] = true;
+        }
+
         $partners = partner::fetch_all(['courseracourseid' => $this->id]);
 
         $retval['partners'] = [];

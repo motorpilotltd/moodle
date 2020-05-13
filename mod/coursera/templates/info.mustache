@@ -61,7 +61,9 @@
             {{{description}}}
         </div>
         <div class="col-md-4">
-            <h2>{{# str }} instructors, mod_coursera {{/ str }}</h2>
+            {{#hasinstructors}}
+                <h2>{{# str }} instructors, mod_coursera {{/ str }}</h2>
+            {{/hasinstructors}}
 
             {{#instructors}}
                 <div class="row instructor">
