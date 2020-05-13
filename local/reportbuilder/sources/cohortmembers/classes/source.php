@@ -213,35 +213,8 @@ class source extends rb_base_source {
         if (empty($cohortname)) {
             return '';
         }
-        return \html_writer::link(new \moodle_url('/cohort/view.php',
+        return \html_writer::link(new \moodle_url('/cohort/assign.php',
                 array('id' => $row->cohort_id)), format_string($cohortname));
-    }
-
-    /**
-     * RB helper function to show the "action" links for a cohort -- edit/clone/delete
-     * @param int $cohortid
-     * @param object $row
-     * @return string|string
-     */
-    public function rb_display_cohort_actions($cohortid, $row ) {
-        global $OUTPUT;
-
-        static $canedit = null;
-        if ($canedit === null) {
-            $canedit = has_capability('moodle/cohort:manage', context_system::instance());
-        }
-
-        if ($canedit) {
-            $editurl = new \moodle_url('/cohort/edit.php', array('id' => $cohortid));
-            $str = \html_writer::link($editurl, $OUTPUT->pix_icon('t/edit', get_string('edit')));
-            $cloneurl = new \moodle_url('/cohort/view.php', array('id' => $cohortid, 'clone' => 1, 'cancelurl' => qualified_me()));
-            $str .= \html_writer::link($cloneurl, $OUTPUT->pix_icon('t/copy', get_string('copy', 'cohort')));
-            $delurl = new \moodle_url('/cohort/view.php', array('id'=>$cohortid, 'delete' => 1, 'cancelurl' => qualified_me()));
-            $str .= \html_writer::link($delurl, $OUTPUT->pix_icon('t/delete', get_string('delete')));
-
-            return $str;
-        }
-        return '';
     }
 }
 
