@@ -301,6 +301,21 @@ class source extends rb_base_source {
         return \html_writer::link($url, $categoryname);
     }
 
+    private $cachedcohortassignpermissions = [];
+    private function cachedcohortassignpermissioncheck($cohortid) {
+        global $DB;
+
+        if (!isset($this->cachedcohortassignpermissions[$cohortid])) {
+
+            $cohort = $DB->get_record('cohort', array('id'=>$cohortid), '*', MUST_EXIST);
+            $context = \context::instance_by_id($cohort->contextid, MUST_EXIST);
+
+            $this->cachedcohortassignpermissions[$cohortid] = has_capability('moodle/cohort:assign', $context);
+        }
+
+        return $this->cachedcohortassignpermissions[$cohortid];
+    }
+
     /**
      * RB helper function to show the name of the cohort with a link to the cohort's details page
      * @param int $cohortid
@@ -310,7 +325,13 @@ class source extends rb_base_source {
         if (empty($cohortname)) {
             return '';
         }
-        return \html_writer::link(new \moodle_url('/cohort/assign.php', array('id' => $row->cohort_id)), format_string($cohortname));
+
+        if ($this->cachedcohortassignpermissioncheck($row->cohort_id)) {
+            return \html_writer::link(new \moodle_url('/cohort/assign.php', array('id' => $row->cohort_id)),
+                    format_string($cohortname));
+        } else {
+            return format_string($cohortname);
+        }
     }
 }
 
