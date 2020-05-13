@@ -1,0 +1,40 @@
+<?php
+
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+
+class mod_coursera_renderer extends plugin_renderer_base {
+    public function rendercourseragetcoursemoduleinfo(\mod_coursera\course $course, $cm) {
+        global $USER;
+
+        $data = $course->export_for_template($this);
+        $data['cmid'] = $cm->id;
+
+        $progress = \mod_coursera\progress::fetch(['userid' => $USER->id, 'courseracourseid' => $course->id]);
+
+        if ($progress) {
+            if ($progress->overallprogress > 0) {
+                $data['overallprogress'] = $progress->overallprogress;
+            }
+
+            if (!empty($progress->iscompleted)) {
+                $data['iscompleted'] = true;
+            }
+        }
+
+        return $this->render_from_template('mod_coursera/info', $data);
+    }
+}

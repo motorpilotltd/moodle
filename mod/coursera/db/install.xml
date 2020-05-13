@@ -31,6 +31,7 @@
                 <FIELD NAME="description" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
                 <FIELD NAME="languagecode" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
                 <FIELD NAME="estimatedlearningtime" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
+                <FIELD NAME="promophoto" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

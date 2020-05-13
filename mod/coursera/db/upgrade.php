@@ -34,45 +34,16 @@ function xmldb_coursera_upgrade($oldversion) {
 
     $dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
 
-    if ($oldversion < 2018101102) {
-        $table = new xmldb_table('coursera');
-        $fields = ['grade', 'courseraurl', 'completionrequirement'];
+    if ($oldversion < 2018101106) {
+        $table = new xmldb_table('courseracourse');
+        $field = new xmldb_field('promophoto', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, '');
 
-        foreach ($fields as $fieldname) {
-            $field = new xmldb_field($fieldname);
-
-            if ($dbman->field_exists($table, $field)) {
-                $dbman->drop_field($table, $field);
-            }
+        // Conditionally launch add field services.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2018101102, 'coursera');
-    }
-
-    if ($oldversion < 2018101104) {
-
-        $table = new xmldb_table('courserarawdata');
-
-        // Adding fields to table tagcloud.
-        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('importdate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '1');
-        $table->add_field('activityid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '1');
-        $table->add_field('attemptid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '1');
-        $table->add_field('enddate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '1');
-        $table->add_field('ouid', XMLDB_TYPE_CHAR, '255', null, null, null, null);
-        $table->add_field('progressstatus', XMLDB_TYPE_CHAR, '255', null, null, null, null);
-        $table->add_field('startdate', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '1');
-        $table->add_field('successindicator', XMLDB_TYPE_CHAR, '255', null, null, null, null);
-
-        // Adding keys to table tagcloud.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-
-        // Conditionally launch create table for tagcloud.
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
-        upgrade_mod_savepoint(true, 2018101104, 'coursera');
+        upgrade_mod_savepoint(true, 2018101106, 'coursera');
     }
 
     return true;

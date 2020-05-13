@@ -44,3 +44,12 @@ $string['refreshtoken'] = 'Refresh Token';
 
 $string['pluginadministration'] = 'Coursera administration';
 $string['courseraidentifier'] = 'Coursera course';
+
+$string['aboutthiscourse'] = "About this course";
+$string['instructors'] = "Instructors";
+$string['offeredby'] = "Offered by";
+$string['launchincoursera'] = 'Launch Course in Coursera';
+$string['estimatedlearningtime'] = 'Estimated learning time: {$a} hours';
+$string['completed'] = 'Completed';
+$string['inprogress'] = 'In progress';
+$string['notstarted'] = 'Not yet started';

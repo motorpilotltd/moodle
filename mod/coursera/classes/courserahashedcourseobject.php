@@ -57,4 +57,13 @@ abstract class courserahashedcourseobject extends \data_object {
             $newpartner->insert();
         }
     }
+
+    public function export_for_template(\renderer_base $output) {
+        $retval = [];
+
+        foreach (array_merge($this->required_fields, array_keys($this->optional_fields)) as $fieldname) {
+            $retval[$fieldname] = $this->$fieldname;
+        }
+        return $retval;
+    }
 }

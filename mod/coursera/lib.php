@@ -148,3 +148,13 @@ function coursera_get_refresh_token() {
     $coursera = new \mod_coursera\coursera();
     $coursera->getrefreshtoken();
 }
+
+function coursera_cm_info_dynamic(cm_info $cm) {
+    global $DB, $PAGE;
+    $cminstance  = $DB->get_record('coursera', array('id' => $cm->instance), '*', MUST_EXIST);
+    $course = \mod_coursera\course::fetch(['id' => $cminstance->contentid]);
+
+    $output = $PAGE->get_renderer('mod_coursera');
+
+    $cm->set_content($output->rendercourseragetcoursemoduleinfo($course, $cm));
+}

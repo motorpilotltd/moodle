@@ -1,0 +1,16 @@
+.instructor .leftcol img {
+    max-width: 100%;
+}
+.courseracourse .rightcol {
+    text-align: right;
+}
+.float-left {
+    float: left;
+}
+.row.coursestatus {
+    padding-bottom: 25px;
+}
+.courseracourseinfo {
+    margin: 5px;
+    padding: 15px;
+}

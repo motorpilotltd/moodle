@@ -22,11 +22,14 @@
 
 namespace mod_coursera;
 
+use renderer_base;
+use stdClass;
+
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once("$CFG->dirroot/completion/data_object.php");
-class course extends \data_object {
+class course extends \data_object implements \templatable {
     public $table = 'courseracourse';
     public $required_fields = ['id', 'title', 'contentid', 'description', 'languagecode', 'estimatedlearningtime',
             'promophoto'];
@@ -84,5 +87,42 @@ class course extends \data_object {
             $courseracourse->update();
         }
         return $courseracourse;
+    }
+
+    /**
+     * Function to export the renderer data in a format that is suitable for a
+     * mustache template. This means:
+     * 1. No complex types - only stdClass, array, int, string, float, bool
+     * 2. Any additional info that is required for the template is pre-calculated (e.g. capability checks).
+     *
+     * @param renderer_base $output Used to do a final render of any components that need to be rendered for export.
+     * @return stdClass|array
+     */
+    public function export_for_template(\renderer_base $output) {
+        global $DB;
+
+        $retval = [];
+
+        $instructors = instructor::fetch_all(['courseracourseid' => $this->id]);
+
+        $retval['instructors'] = [];
+        foreach ($instructors as $instructor) {
+            $retval['instructors'][] = $instructor->export_for_template($output);
+        }
+
+        $partners = partner::fetch_all(['courseracourseid' => $this->id]);
+
+        $retval['partners'] = [];
+        foreach ($partners as $partner) {
+            $retval['partners'][] = $partner->export_for_template($output);
+        }
+
+        foreach ($this->required_fields as $fieldname) {
+            $retval[$fieldname] = $this->$fieldname;
+        }
+
+        $retval['estimatedlearningtime'] = round($retval['estimatedlearningtime'] / HOURSECS);
+
+        return $retval;
     }
 }
