@@ -1,4 +1,8 @@
 Catch user deleted event
 Unenrol on complete
 Only allow learners to follow link
-UI
+
+
+
+
+Launch button only shown if course is incomplete

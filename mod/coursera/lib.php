@@ -150,11 +150,27 @@ function coursera_get_refresh_token() {
 }
 
 function coursera_cm_info_dynamic(cm_info $cm) {
-    global $DB, $PAGE;
+    global $DB, $PAGE, $USER;
+
     $cminstance  = $DB->get_record('coursera', array('id' => $cm->instance), '*', MUST_EXIST);
     $course = \mod_coursera\course::fetch(['id' => $cminstance->contentid]);
-
     $output = $PAGE->get_renderer('mod_coursera');
 
+    $data = $course->export_for_template($output);
+    $data['cmid'] = $cm->id;
+
+    $progress = \mod_coursera\progress::fetch(['userid' => $USER->id, 'courseracourseid' => $course->id]);
+
+    if ($progress) {
+        if ($progress->overallprogress > 0) {
+            $data['overallprogress'] = $progress->overallprogress;
+        }
+
+        if (!empty($progress->iscompleted)) {
+            $data['iscompleted'] = true;
+        }
+    }
+
     $cm->set_content($output->rendercourseragetcoursemoduleinfo($course, $cm));
+    $cm->set_no_view_link(true);
 }

@@ -17,24 +17,7 @@
 
 
 class mod_coursera_renderer extends plugin_renderer_base {
-    public function rendercourseragetcoursemoduleinfo(\mod_coursera\course $course, $cm) {
-        global $USER;
-
-        $data = $course->export_for_template($this);
-        $data['cmid'] = $cm->id;
-
-        $progress = \mod_coursera\progress::fetch(['userid' => $USER->id, 'courseracourseid' => $course->id]);
-
-        if ($progress) {
-            if ($progress->overallprogress > 0) {
-                $data['overallprogress'] = $progress->overallprogress;
-            }
-
-            if (!empty($progress->iscompleted)) {
-                $data['iscompleted'] = true;
-            }
-        }
-
+    public function rendercourseragetcoursemoduleinfo($data) {
         return $this->render_from_template('mod_coursera/info', $data);
     }
 }

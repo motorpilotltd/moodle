@@ -31,14 +31,16 @@
                     </div>
                 {{/iscompleted}}
             </div>
-            <div class="row">
-                <div class="col-md-5">
-                    <a class="btn btn-primary" href="{{config.wwwroot}}/mod/coursera/view.php?id={{cmid}}">{{# str }} launchincoursera, mod_coursera {{/ str }}</a>
+            {{^iscompleted}}
+                <div class="row">
+                    <div class="col-md-5">
+                        <a class="btn btn-primary" href="{{config.wwwroot}}/mod/coursera/view.php?id={{cmid}}">{{# str }} launchincoursera, mod_coursera {{/ str }}</a>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="duration">{{# str }} estimatedlearningtime, mod_coursera, {{estimatedlearningtime}} {{/ str }} </span>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <span class="duration">{{# str }} estimatedlearningtime, mod_coursera, {{estimatedlearningtime}} {{/ str }} </span>
-                </div>
-            </div>
+            {{/iscompleted}}
         </div>
         <div class="col-md-4 rightcol">
             <h2>{{# str }} offeredby, mod_coursera {{/ str }}</h2>
