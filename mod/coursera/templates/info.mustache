@@ -49,7 +49,12 @@
                 {{#partners}}
                     <div class="row">
                         <div class="col-md-12">
-                            <img class="partnerlogo" src="{{{logourl}}}" alt="{{{name}}}" title="{{{name}}}"/>
+                            {{#logourl}}
+                                <img class="partnerlogo" src="{{{logourl}}}" alt="{{{name}}}" title="{{{name}}}"/>
+                            {{/logourl}}
+                            {{^logourl}}
+                                <h4>{{{name}}}</h4>
+                            {{/logourl}}
                         </div>
                     </div>
                 {{/partners}}
