@@ -259,17 +259,17 @@ function xmldb_local_taps_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017051503, 'local', 'taps');
     }
 
-    if ($oldversion < 2017051504) {
+    if ($oldversion < 2017051505) {
         // Define table local_taps_course_duration to be dropped.
         $table = new xmldb_table('local_taps_course_duration');
-        
+
         // Adding fields to table local_taps_course_duration.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
         $table->add_field('ltcourseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('duration', XMLDB_TYPE_FLOAT, '20, 2', null, null, null, 0);
         $table->add_field('durationunits', XMLDB_TYPE_TEXT, 10);
         $table->add_field('durationunitscode', XMLDB_TYPE_TEXT, 10);
-        
+
         // Adding keys to table local_taps_course_duration.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
         $table->add_key('ltcourseid', XMLDB_KEY_UNIQUE, array('ltcourseid'));
@@ -281,14 +281,14 @@ function xmldb_local_taps_upgrade($oldversion) {
 
         // Define table local_taps_class_duration to be dropped.
         $table = new xmldb_table('local_taps_class_duration');
-        
+
         // Adding fields to table local_taps_class_duration.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
         $table->add_field('ltclassid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('classduration', XMLDB_TYPE_FLOAT, '20, 2', null, null, null, 0);
         $table->add_field('classdurationunits', XMLDB_TYPE_TEXT, 10);
         $table->add_field('classdurationunitscode', XMLDB_TYPE_TEXT, 10);
-        
+
         // Adding keys to table local_taps_class_duration.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
         $table->add_key('ltclassid', XMLDB_KEY_UNIQUE, array('ltclassid'));
@@ -300,14 +300,14 @@ function xmldb_local_taps_upgrade($oldversion) {
 
         // Define table local_taps_enrol_duration to be dropped.
         $table = new xmldb_table('local_taps_enrol_duration');
-        
+
         // Adding fields to table local_taps_enrolment_duration.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
         $table->add_field('lteid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_field('duration', XMLDB_TYPE_FLOAT, '20, 2', null, null, null, 0);
         $table->add_field('durationunits', XMLDB_TYPE_TEXT, 10);
         $table->add_field('durationunitscode', XMLDB_TYPE_TEXT, 10);
-        
+
         // Adding keys to table local_taps_enrol_duration.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
         $table->add_key('lteid', XMLDB_KEY_UNIQUE, array('lteid'));
@@ -329,17 +329,17 @@ function xmldb_local_taps_upgrade($oldversion) {
         }
 
         $taps_class_duration =  $DB->count_records('local_taps_class_duration');
-        
+
         // Copy local_taps_class to local_taps_class_duration
         if ($taps_class_duration < 1) {
-            
+
             $sql = "INSERT INTO {local_taps_class_duration} (ltclassid, classduration, classdurationunits, classdurationunitscode)
             SELECT id, classduration, classdurationunits,  classdurationunitscode
             FROM {local_taps_class}";
 
             $DB->execute($sql, []);
         }
-        
+
         $taps_enrol_duration =  $DB->count_records('local_taps_enrol_duration');
 
         // Copy local_taps_enrolment to local_taps_enrol_duration
@@ -363,6 +363,7 @@ function xmldb_local_taps_upgrade($oldversion) {
             'weekscode' => 'W',
             'daycode' => 'Day',
             'hrscode' => 'Hours',
+            'now' => time()
         ];
 
         /*
@@ -370,26 +371,29 @@ function xmldb_local_taps_upgrade($oldversion) {
          * ---------------------------------------------------------------------------------------------------------------------
          */
         // Update Minute(s) to Hour(s) and duration conversion for table local_taps_course
-        $sql = "UPDATE {local_taps_course} 
+        $sql = "UPDATE {local_taps_course}
             SET duration = FORMAT((duration / :hour), :formatdecimal),
                 durationunits = :hoursunit,
-                durationunitscode = :hourscode
+                durationunitscode = :hourscode,
+                timemodified = :now
             WHERE durationunitscode = :minscode";
         $DB->execute($sql, $params);
 
         // Update Day(s) to Hour(s), and duration conversion for table local_taps_course
-        $sql = "UPDATE {local_taps_course} 
+        $sql = "UPDATE {local_taps_course}
             SET duration = FORMAT((duration * :daystohour), :formatdecimal),
                 durationunits = :hoursunit,
-                durationunitscode = :hourscode
+                durationunitscode = :hourscode,
+                timemodified = :now
             WHERE durationunitscode = :dayscode";
         $DB->execute($sql, $params);
 
         // Update Weeks(s) to Hour(s), and duration conversion for table local_taps_course
-        $sql = "UPDATE {local_taps_course} 
+        $sql = "UPDATE {local_taps_course}
             SET duration = FORMAT((duration * :weekstohour), :formatdecimal),
                 durationunits = :hoursunit,
-                durationunitscode = :hourscode
+                durationunitscode = :hourscode,
+                timemodified = :now
             WHERE durationunitscode = :weekscode";
         $DB->execute($sql, $params);
         /*
@@ -397,26 +401,29 @@ function xmldb_local_taps_upgrade($oldversion) {
          * ---------------------------------------------------------------------------------------------------------------------
          */
         // Update Minute(s) to Hour(s) and duration conversion for table local_taps_class
-        $sql = "UPDATE {local_taps_class} 
+        $sql = "UPDATE {local_taps_class}
             SET classduration = FORMAT((classduration / :hour), :formatdecimal),
                 classdurationunits = :hoursunit,
-                classdurationunitscode = :hourscode
+                classdurationunitscode = :hourscode,
+                timemodified = :now
             WHERE classdurationunitscode = :minscode";
         $DB->execute($sql, $params);
 
         // Update Day(s) to Hour(s), and duration conversion for table local_taps_class
-        $sql = "UPDATE {local_taps_class} 
+        $sql = "UPDATE {local_taps_class}
             SET classduration = FORMAT((classduration * :daystohour), :formatdecimal),
                 classdurationunits = :hoursunit,
-                classdurationunitscode = :hourscode
+                classdurationunitscode = :hourscode,
+                timemodified = :now
             WHERE classdurationunitscode = :dayscode";
         $DB->execute($sql, $params);
 
         // Update Weeks(s) to Hour(s), and duration conversion for table local_taps_class
-        $sql = "UPDATE {local_taps_class} 
+        $sql = "UPDATE {local_taps_class}
             SET classduration = FORMAT((classduration * :weekstohour), :formatdecimal),
                 classdurationunits = :hoursunit,
-                classdurationunitscode = :hourscode
+                classdurationunitscode = :hourscode,
+                timemodified = :now
             WHERE classdurationunitscode = :weekscode";
         $DB->execute($sql, $params);
         /*
@@ -424,26 +431,29 @@ function xmldb_local_taps_upgrade($oldversion) {
          * ---------------------------------------------------------------------------------------------------------------------
          */
         // Update Minute(s) to Hour(s) and duration conversion for table local_taps_enrolment
-        $sql = "UPDATE {local_taps_enrolment} 
+        $sql = "UPDATE {local_taps_enrolment}
             SET duration = FORMAT((duration / :hour), :formatdecimal),
                 durationunits = :hoursunit,
-                durationunitscode = :hourscode
+                durationunitscode = :hourscode,
+                timemodified = :now
             WHERE durationunitscode = :minscode";
         $DB->execute($sql, $params);
 
         // Update Day(s) to Hour(s), and duration conversion for table local_taps_enrolment
-        $sql = "UPDATE {local_taps_enrolment} 
+        $sql = "UPDATE {local_taps_enrolment}
             SET duration = FORMAT((duration * :daystohour), :formatdecimal),
                 durationunits = :hoursunit,
-                durationunitscode = :hourscode
+                durationunitscode = :hourscode,
+                timemodified = :now
             WHERE durationunitscode = :dayscode";
         $DB->execute($sql, $params);
 
         // Update Weeks(s) to Hour(s), and duration conversion for table local_taps_enrolment
-        $sql = "UPDATE {local_taps_enrolment} 
+        $sql = "UPDATE {local_taps_enrolment}
             SET duration = FORMAT((duration * :weekstohour), :formatdecimal),
                 durationunits = :hoursunit,
-                durationunitscode = :hourscode
+                durationunitscode = :hourscode,
+                timemodified = :now
             WHERE durationunitscode = :weekscode";
         $DB->execute($sql, $params);
          /*
@@ -451,21 +461,23 @@ function xmldb_local_taps_upgrade($oldversion) {
          * ---------------------------------------------------------------------------------------------------------------------
          */
         // Update Day(s) to Hour(s), and duration conversion for table local_taps_enrolment
-        $sql = "UPDATE {local_taps_enrolment} 
+        $sql = "UPDATE {local_taps_enrolment}
             SET duration = FORMAT((duration * :daystohour), :formatdecimal),
                 durationunits = :hoursunit,
-                durationunitscode = :hourscode
+                durationunitscode = :hourscode,
+                timemodified = :now
             WHERE durationunitscode = :daycode";
         $DB->execute($sql, $params);
         // Update durationunits and durationunitscode for table local_taps_enrolment
-        $sql = "UPDATE {local_taps_enrolment} 
+        $sql = "UPDATE {local_taps_enrolment}
             SET durationunits = :hoursunit,
-                durationunitscode = :hourscode
+                durationunitscode = :hourscode,
+                timemodified = :now
             WHERE durationunitscode = :hrscode";
         $DB->execute($sql, $params);
 
         // Taps savepoint reached.
-        upgrade_plugin_savepoint(true, 2017051504, 'local', 'taps');
+        upgrade_plugin_savepoint(true, 2017051505, 'local', 'taps');
     }
 
     return true;
