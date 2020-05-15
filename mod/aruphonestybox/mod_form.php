@@ -87,9 +87,14 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
         $mform->addElement('editor', 'learningdesc', get_string('cpd:learningdesc', 'block_arup_mylearning'));
         $mform->setType('learningdesc', PARAM_CLEANHTML);
 
-        $mform->addElement('select', 'classtype', get_string('cpd:classtype', 'block_arup_mylearning'), $taps->get_classtypes('cpd'));
-        $mform->setDefault('classtype', 'LE');
-        $mform->setAdvanced('classtype');
+        $classtype = $mform->createElement('select', 'classtype', '', $taps->get_classtypes('cpd'));
+
+        $enableclasstype = $mform->createElement('checkbox', 'enableclasstype', '');
+
+        $mform->addElement('group', 'classtypegroup', get_string('cpd:classtype', 'block_arup_mylearning'), [$classtype, $enableclasstype], '&nbsp;'.get_string('edit'), false);
+        $mform->setDefault('classtype', 'LB');
+        $mform->disabledIf('classtype', 'enableclasstype', 'notchecked');
+        $mform->setAdvanced('classtypegroup');
 
         $mform->addElement('text', 'location', get_string('cpd:location', 'block_arup_mylearning'));
         $mform->setType('location', PARAM_TEXT);
@@ -140,6 +145,10 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
 
         if (!empty($defaultvalues->durationunitscode) && $defaultvalues->durationunitscode == 'H') {
             $defaultvalues->duration = $taps->duration_hours_display($defaultvalues->duration, '', true);
+        }
+
+        if (empty($defaultvalues->classtype)) {
+            $defaultvalues->classtype = 'LB';
         }
 
         parent::set_data($defaultvalues);
