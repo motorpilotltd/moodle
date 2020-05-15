@@ -598,7 +598,7 @@ class course extends \data_object {
 
         $tapscompletion = new \stdClass();
         $tapscompletion->course = $course->id;
-        $tapscompletion->name = 'Linked course completionment';
+        $tapscompletion->name = 'Linked course completion';
         $tapscompletion->tapscourse = $tapscourse->courseid;
         $tapscompletion->autocompletion = 1;
         $tapscompletion->completiontimetype = 0;
