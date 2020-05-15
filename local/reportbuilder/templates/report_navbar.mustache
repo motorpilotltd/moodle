@@ -19,7 +19,7 @@
 <nav id="report-controls" class="navbar d-flex navbar-default m-b-0" data-region="report-controls" aria-label="reportfilters">
     {{#toolbarsearch}}
     <form class="navbar-form" action="{{{formurl}}}" method="post" accept-charset="utf-8">
-        <div class="input-group">
+        <div class="input-group m-r-1">
             <input type="text" name="simplesearch" class="form-control" placeholder="{{#str}}search{{/str}}"
             {{#simplesearch}}value="{{{ simplesearch }}}"{{/simplesearch}}
             aria-label="{{#str}}search{{/str}}">
@@ -32,20 +32,27 @@
             </span>
         </div>
         <div class="input-group">
+
+        </div>
+    </form>
+    {{/toolbarsearch}}
+    <div class="navbar-form flex-auto">
+        <div class="input-group">
+            {{#search}}
             <a
                 id="advancedsearchbutton"
-                class="btn btn-link closed"
+                class="btn btn-default closed"
                 data-toggle="collapse" href="#advancedsearch" aria-expanded="false" aria-controls="advancedsearch"
             >
                 <i class="fa fa-caret-right open"></i>
                 <i class="fa fa-caret-down closed"></i>
                 {{#str}}advancedsearch, local_reportbuilder{{/str}}
             </a>
-        </div>
-    </form>
-    {{/toolbarsearch}}
-    <div class="navbar-form flex-auto">
-        <div class="input-group">
+            {{/search}}
+            <div class="ml-auto"></div>
+            {{#search}}
+                {{{ savedsearch }}}
+            {{/search}}
             {{{ editbutton }}}
             <div class="dropdown"
                 title="{{#str}}exportas, local_reportbuilder{{/str}}"
@@ -79,6 +86,7 @@
                 <i class="fa fa-columns"></i>
                 <span class="sr-only">{{#str}}tablecolumns, local_reportbuilder{{/str}}</span>
             </button>
+            {{#sidebar}}
             <button
                 class="btn btn-default control-filters"
                 data-toggle="tooltip"
@@ -89,6 +97,7 @@
                 <i class="fa fa-filter"></i>
                 <span class="sr-only">{{#str}}filters, local_reportbuilder{{/str}}</span>
             </button>
+            {{/sidebar}}
 
             <a
                 href="#"

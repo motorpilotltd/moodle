@@ -309,16 +309,21 @@
     margin: 0;
     display: none;
 }
+
 .newreport {
     height: calc(100vh - 110px);
     left: 0;
     top: 0;
     right: 0;
     bottom: 0;
-    z-index: 1030;
     background-color: #FFF;
     position: relative;
     overflow: hidden;
+
+    .d-flex-center {
+        display: flex;
+        align-items: center;
+    }
 
     .btn.fullscreen {
         display: inline-block;
@@ -329,6 +334,7 @@
     &.fullscreen {
         height: 100%;
         position: fixed;
+        z-index: 1030;
         .btn.fullscreen {
             display: none;
         }
@@ -347,10 +353,19 @@
         right: 5px;
         max-height: calc(100% - 120px);
         z-index: 1;
+        border: 1px solid #ccc;
+        border-top: 0;
         @media (min-width: 600px) {
             max-height: calc(100% - 61px);
         }
         overflow-y: auto;
+
+        select {
+            margin-right: 5px;
+        }
+        label {
+            margin-bottom: 0;
+        }
     }
     .reportcontainer {
         overflow: scroll;
@@ -364,13 +379,25 @@
             top: 0px;
             background-color: #FFF;
             box-shadow: 2px 1px 0px #DDD;
+            a {
+                white-space: nowrap;
+                margin-right: 10px;
+                display: block;
+            }
+            img {
+                position: absolute;
+                top: 10px;
+                right: 0;
+                margin-right: 0;
+            }
         }
     }
     .rb-display-table-container.no-overflow {
         overflow: initial;
     }
-    @media (max-width: 800px) {}
+
     #reportfilters {
+        border-left: 1px solid #ccc;
         z-index: 2;
         height: calc(100% - 120px);
         top: 120px;
@@ -379,33 +406,51 @@
             top: 61px;
         }
         position: absolute;
-        right: -330px;
-        width: 300px;
+        right: -630px;
+        width: 600px;
         transition: right 0.5s ease, left 0.5s ease;
         overflow-y: scroll;
         &.active {
             right: 0;
         }
+        select {
+            margin-right: 5px;
+        }
+        label {
+            margin-bottom: 0;
+        }
+        .fitem_actionbuttons {
+            margin-bottom: 0;
+        }
     }
+
+    @media (max-width: 800px) {
+        #reportfilters {
+            right: -330px;
+            width: 300px;
+        }
+    }
+
     .totara-toolbar-top .toolbar-left-table {
         display: none;
     }
-    #rb-search-controls > .singlebutton {
-        div {
-            margin: 0;
-            input {
-                margin-left: 0;
-            }
-        }
-        margin-bottom: 30px;
-    }
+
     #rb-search-menu {
+        margin: -1px 5px 0 0;
         .singleselect label {
             width: 100%;
         }
+        .caret {
+            display:none;
+        }
+        a.active,
+        .btn.active {
+            background-color: lighten(#007FFF, 35%);
+            box-shadow: none;
+        }
     }
     .managesavedsearches input {
-        margin-left: 0;
+        margin: 0;
     }
     fieldset.collapsible {
         legend {
@@ -455,7 +500,6 @@
         background-color: #F5F5F5;
         margin-left: 0;
         margin-right: 0;
-        margin-bottom: 1rem;
     }
     #id_submitgroupstandard_addfilter {
         margin-left: 0;
@@ -483,6 +527,9 @@
             flex: 1 1 auto; display: flex;
             .input-group-addon {
                 width: auto;
+                display: flex;
+                align-items: center;
+                border-radius: 0px 2px 2px 0;
             }
         }
         .ml-auto {

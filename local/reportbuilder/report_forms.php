@@ -1247,7 +1247,7 @@ class report_builder_standard_search_form extends moodleform {
 
             $submitgroup = array();
             $submitgroup[] =& $mform->createElement('submit', 'addfilter',
-                    get_string('search', 'local_reportbuilder'));
+                    get_string('search', 'local_reportbuilder'), ['class' => 'form-submit']);
             $submitgroup[] =& $mform->createElement('submit', 'clearstandardfilters',
                     get_string('clearform', 'local_reportbuilder'));
             $mform->addGroup($submitgroup, 'submitgroupstandard', '&nbsp;', ' &nbsp; ');
@@ -1286,12 +1286,10 @@ class report_builder_sidebar_search_form extends moodleform {
                 $ft->setupForm($mform);
             }
 
-            $submitgroup = array();
-            $submitgroup[] =& $mform->createElement('submit', 'addfilter',
-                    get_string('search', 'local_reportbuilder'));
-            $submitgroup[] =& $mform->createElement('submit', 'clearsidebarfilters',
-                    get_string('clearform', 'local_reportbuilder'));
-            $mform->addGroup($submitgroup, 'submitgroupsidebar', '&nbsp;', ' &nbsp; ');
+            $clear = html_writer::link(new moodle_url($report->get_current_url(), ['clearfilters' => 1]),
+                get_string('clearform', 'local_reportbuilder'), ['class' => 'btn btn-default']);
+
+            $mform->addElement('html', $clear);
         }
 
         $mform->addElement('hidden', 'id', $id);

@@ -370,10 +370,14 @@
   top: 0;
   right: 0;
   bottom: 0;
-  z-index: 1030;
   background-color: #FFF;
   position: relative;
   overflow: hidden;
+}
+
+.newreport .d-flex-center {
+  display: flex;
+  align-items: center;
 }
 
 .newreport .btn.fullscreen {
@@ -387,6 +391,7 @@
 .newreport.fullscreen {
   height: 100%;
   position: fixed;
+  z-index: 1030;
 }
 
 .newreport.fullscreen .btn.fullscreen {
@@ -409,6 +414,8 @@
   right: 5px;
   max-height: calc(100% - 120px);
   z-index: 1;
+  border: 1px solid #ccc;
+  border-top: 0;
   overflow-y: auto;
 }
 
@@ -416,6 +423,14 @@
   .newreport #advancedsearch {
     max-height: calc(100% - 61px);
   }
+}
+
+.newreport #advancedsearch select {
+  margin-right: 5px;
+}
+
+.newreport #advancedsearch label {
+  margin-bottom: 0;
 }
 
 .newreport .reportcontainer {
@@ -437,17 +452,31 @@
   box-shadow: 2px 1px 0px #DDD;
 }
 
+.newreport .reportcontainer th.header a {
+  white-space: nowrap;
+  margin-right: 10px;
+  display: block;
+}
+
+.newreport .reportcontainer th.header img {
+  position: absolute;
+  top: 10px;
+  right: 0;
+  margin-right: 0;
+}
+
 .newreport .rb-display-table-container.no-overflow {
   overflow: initial;
 }
 
 .newreport #reportfilters {
+  border-left: 1px solid #ccc;
   z-index: 2;
   height: calc(100% - 120px);
   top: 120px;
   position: absolute;
-  right: -330px;
-  width: 300px;
+  right: -630px;
+  width: 600px;
   transition: right 0.5s ease, left 0.5s ease;
   overflow-y: scroll;
 }
@@ -463,28 +492,49 @@
   right: 0;
 }
 
+.newreport #reportfilters select {
+  margin-right: 5px;
+}
+
+.newreport #reportfilters label {
+  margin-bottom: 0;
+}
+
+.newreport #reportfilters #id_clearsidebarfilters {
+  margin-left: 0;
+}
+
+@media (max-width: 800px) {
+  .newreport #reportfilters {
+    right: -330px;
+    width: 300px;
+  }
+}
+
 .newreport .totara-toolbar-top .toolbar-left-table {
   display: none;
 }
 
-.newreport #rb-search-controls > .singlebutton {
-  margin-bottom: 30px;
-}
-
-.newreport #rb-search-controls > .singlebutton div {
-  margin: 0;
-}
-
-.newreport #rb-search-controls > .singlebutton div input {
-  margin-left: 0;
+.newreport #rb-search-menu {
+  margin: -1px 5px 0 0;
 }
 
 .newreport #rb-search-menu .singleselect label {
   width: 100%;
 }
 
+.newreport #rb-search-menu .caret {
+  display: none;
+}
+
+.newreport #rb-search-menu a.active,
+.newreport #rb-search-menu .btn.active {
+  background-color: #b3d9ff;
+  box-shadow: none;
+}
+
 .newreport .managesavedsearches input {
-  margin-left: 0;
+  margin: 0;
 }
 
 .newreport fieldset.collapsible legend {
@@ -539,7 +589,6 @@
   background-color: #F5F5F5;
   margin-left: 0;
   margin-right: 0;
-  margin-bottom: 1rem;
 }
 
 .newreport #id_submitgroupstandard_addfilter {
@@ -578,6 +627,9 @@
 
 .newreport .navbar-form .input-group .input-group-addon {
   width: auto;
+  display: flex;
+  align-items: center;
+  border-radius: 0px 2px 2px 0;
 }
 
 .newreport .navbar-form .ml-auto {

@@ -403,8 +403,8 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
      * @param reportbuilder $report
      * @return string HTML to display the button
      */
-    public function save_button($report) {
-        global $SESSION;
+    public function save_button($report, $link = false) {
+        global $SESSION, $OUTPUT;
 
         $buttonsarray = optional_param_array('submitgroup', null, PARAM_TEXT);
         $search = (isset($SESSION->reportbuilder[$report->get_uniqueid()]) &&
@@ -415,8 +415,13 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
         if ($search || $hasrequiredurlparams) {
             $params = $report->get_current_url_params();
             $params['id'] = $report->_id;
-            return $this->output->single_button(new moodle_url('/local/reportbuilder/save.php', $params),
+            if ($link) {
+                return html_writer::link(new moodle_url('/local/reportbuilder/save.php', $params),
+                    get_string('savesearch', 'local_reportbuilder'));
+            } else {
+                return $OUTPUT->single_button(new moodle_url('/local/reportbuilder/save.php', $params),
                     get_string('savesearch', 'local_reportbuilder'), 'get');
+            }
         } else {
             return '';
         }

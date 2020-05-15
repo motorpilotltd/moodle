@@ -23,7 +23,9 @@
 
         {{>local_reportbuilder/report_navbar}}
 
-        {{>local_reportbuilder/report_advancedsearch}}
+        {{#search}}
+            {{>local_reportbuilder/report_advancedsearch}}
+        {{/search}}
 
         {{>local_reportbuilder/report_filters}}
 
@@ -33,7 +35,10 @@
 
         <div class="reportcontainer">
             <div>
-                <h2>{{{ heading }}}</h2>
+                <div class="d-flex-center m-y-1">
+                    <h2 class="m-0">{{{ heading }}}</h2>
+                    <div class="m-l-1 label label-default d-flex-center">{{{ numrecords }}}</div>
+                </div>
             </div>
             {{>local_reportbuilder/report_table}}
             {{>local_reportbuilder/report_extra}}
