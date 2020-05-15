@@ -142,10 +142,10 @@ function xmldb_aruphonestybox_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111614, 'mod', 'aruphonestybox');
     }
 
-    if ($oldversion < 2017051502) {
+    if ($oldversion < 2017051503) {
         // Set bulk enrolment update SQL.
         $updatesql = "UPDATE {local_taps_enrolment}
-                   SET classname = :classname, origin = :origin, originid = :originid, locked = :locked
+                   SET classname = :classname, origin = :origin, originid = :originid, locked = :locked, timemodified = :now
                  WHERE id IN (
                            SELECT lte.id
                              FROM {local_taps_enrolment} lte
@@ -167,6 +167,7 @@ function xmldb_aruphonestybox_upgrade($oldversion) {
                 'origin' => $instance->origin,
                 'originid' => $instance->id,
                 'locked' => 1,
+                'now' => time(),
             ];
             // Update enrolments first (before we update activity instance details).
             $DB->execute($updatesql, $params);
@@ -175,7 +176,7 @@ function xmldb_aruphonestybox_upgrade($oldversion) {
         }
 
         // Savepoint reached.
-        upgrade_plugin_savepoint(true, 2017051502, 'mod', 'aruphonestybox');
+        upgrade_plugin_savepoint(true, 2017051503, 'mod', 'aruphonestybox');
     }
 
     return true;

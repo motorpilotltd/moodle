@@ -24,11 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017051504;
+$plugin->version   = 2017051505;
 $plugin->requires  = 2017051500; // Moodle 3.3.
 $plugin->component = 'local_lunchandlearn';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.3.4 (Build: {$plugin->version})";
+$plugin->release   = "3.3.5 (Build: {$plugin->version})";
 
 $plugin->dependencies = array(
     'local_invites' => 2015111600,
