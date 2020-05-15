@@ -41,6 +41,7 @@ $string['overview'] = 'My modules';
 $string['myteaching'] = 'My teaching';
 $string['myhistory'] = 'My history';
 $string['bookmarked'] = 'My wishlist';
+$string['mywalearningpath'] = 'My WA Learning Path';
 
 // Content.
 $string['actions'] = 'Actions';
@@ -112,6 +113,8 @@ $string['halogen:passfail'] = 'Pass/Fail';
 $string['halogen:score'] = 'Score';
 $string['halogen:title'] = 'Learning Activity';
 $string['halogen:viewhistory'] = 'View your Halogen learning history';
+
+$string['mywalearningpath:nopath'] = 'You have not subscribe to any WA Learning Path yet.';
 
 $string['learningdescription'] = 'Learning description';
 $string['location'] = 'Location';

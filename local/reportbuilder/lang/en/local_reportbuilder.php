@@ -1652,7 +1652,7 @@ $string['xpercentcomplete'] = '{$a}% complete';
 $string['xpositions'] = '{$a}\'s Positions';
 $string['xresultsfory'] = '<strong>{$a->count}</strong> results found for "{$a->query}"';
 $string['yesdelete'] = 'Yes, delete';
-
+$string['userwalearningpath'] = 'User WA Learning Path';
 
 // Deprecated in 9.0.
 
