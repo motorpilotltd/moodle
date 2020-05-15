@@ -90,21 +90,6 @@ class source extends rb_base_source {
         return $filteroptions;
     }
 
-    protected function define_contentoptions() {
-        $contentoptions = array(
-                new rb_content_option(
-                        'prog_availability',
-                        get_string('availablecontent', 'rbsource_certification'),
-                        array(
-                                'available' => 'base.available',
-                                'availfrom' => 'base.availablefrom',
-                                'availuntil' => 'base.availableuntil',
-                        )
-                ),
-        );
-        return $contentoptions;
-    }
-
     protected function define_defaultcolumns() {
         $defaultcolumns = array(
                 array(

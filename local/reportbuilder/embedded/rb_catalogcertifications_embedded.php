@@ -57,14 +57,6 @@ class rb_catalogcertifications_embedded extends rb_base_embedded {
             )
         );
 
-        $this->contentmode = REPORT_BUILDER_CONTENT_MODE_ALL;
-
-        $this->contentsettings = array(
-            'prog_availability' => array(
-                'enable' => 1
-            )
-        );
-
         parent::__construct();
     }
 
