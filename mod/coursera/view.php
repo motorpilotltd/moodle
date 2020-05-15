@@ -39,7 +39,26 @@ if ($id) {
     print_error('You must specify a course_module ID or an instance ID');
 }
 
+$PAGE->set_url('/mod/coursera/view.php', array('id' => $cm->id));
+
 require_login($course, true, $cm);
+
+$gradebookroles = explode(",", $CFG->gradebookroles);
+
+$userroles = get_user_roles($PAGE->context);
+$userroleids = [];
+foreach ($userroles as $role) {
+    $userroleids[] = $role->roleid;
+}
+
+if (empty(array_intersect($gradebookroles, $userroleids))) {
+    redirect(new moodle_url('/course/view.php', ['id' => $course->id]), get_string('notgradable', 'mod_coursera'), 5);
+}
+
+$progress = \mod_coursera\progress::fetch(['userid' => $USER->id, 'courseracourseid' => $cminstance->id]);
+if (!empty($progress->iscompleted)) {
+    redirect(new moodle_url('/course/view.php', ['id' => $course->id]), get_string('noaccesscompleted', 'mod_coursera'), 5);
+}
 
 $event = \mod_coursera\event\course_module_viewed::create(array(
     'objectid' => $PAGE->cm->instance,
@@ -49,7 +68,6 @@ $event->add_record_snapshot('course', $PAGE->course);
 $event->add_record_snapshot($PAGE->cm->modname, $cminstance);
 $event->trigger();
 
-$PAGE->set_url('/mod/coursera/view.php', array('id' => $cm->id));
 
 $coursera = new \mod_coursera\coursera();
 $coursera->enrolonprogram($USER->id);
