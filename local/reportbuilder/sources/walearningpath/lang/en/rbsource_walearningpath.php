@@ -1,10 +1,10 @@
 <?php
 
-$string['sourcetitle'] = 'WA Learning Path';
-$string['type_learningpath'] = 'WA Learning Path';
+$string['sourcetitle'] = 'Learning paths';
+$string['type_learningpath'] = 'Learning paths';
 $string['title'] = 'Title';
 $string['summary'] = 'Summary';
-$string['subscriber_userid'] = 'Subscriber User ID';
-$string['type_learningpathsubscribe'] = 'WA Learning Path Subscribe';
+$string['subscriber_userid'] = 'Subscriber user ID';
+$string['type_learningpathsubscribe'] = 'Learning path subscription';
 $string['status'] = 'Status';
 $string['subscription'] = 'Subscription';
