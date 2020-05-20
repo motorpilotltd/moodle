@@ -60,6 +60,9 @@ function cron_run() {
     // Start output log
     $timenow  = time();
     mtrace("Server Time: ".date('r', $timenow)."\n\n");
+/* BEGIN CORE MOD */
+    error_log("Server Time: ".date('r', $timenow)."\n\n");
+/* END CORE MOD */
 
     // Run all scheduled tasks.
     while (!\core\task\manager::static_caches_cleared_since($timenow) &&
@@ -76,11 +79,20 @@ function cron_run() {
     }
 
     mtrace("Cron script completed correctly");
+/* BEGIN CORE MOD */
+    error_log("Cron script completed correctly");
+/* END CORE MOD */
 
     gc_collect_cycles();
     mtrace('Cron completed at ' . date('H:i:s') . '. Memory used ' . display_size(memory_get_usage()) . '.');
+/* BEGIN CORE MOD */
+    error_log('Cron completed at ' . date('H:i:s') . '. Memory used ' . display_size(memory_get_usage()) . '.');
+/* END CORE MOD */
     $difftime = microtime_diff($starttime, microtime());
     mtrace("Execution took ".$difftime." seconds");
+/* BEGIN CORE MOD */
+    error_log("Execution took ".$difftime." seconds");
+/* END CORE MOD */
 }
 
 /**
@@ -95,6 +107,9 @@ function cron_run_inner_scheduled_task(\core\task\task_base $task) {
 
     $fullname = $task->get_name() . ' (' . get_class($task) . ')';
     mtrace('Execute scheduled task: ' . $fullname);
+/* BEGIN CORE MOD */
+    error_log('Execute scheduled task: ' . $fullname);
+/* END CORE MOD */
     cron_trace_time_and_memory();
     $predbqueries = null;
     $predbqueries = $DB->perf_get_queries();
@@ -111,6 +126,9 @@ function cron_run_inner_scheduled_task(\core\task\task_base $task) {
             mtrace("... used " . (microtime(1) - $pretime) . " seconds");
         }
         mtrace('Scheduled task complete: ' . $fullname);
+/* BEGIN CORE MOD */
+        error_log('Scheduled task complete: ' . $fullname);
+/* END CORE MOD */
         \core\task\manager::scheduled_task_complete($task);
     } catch (Exception $e) {
         if ($DB && $DB->is_transaction_started()) {
@@ -122,6 +140,9 @@ function cron_run_inner_scheduled_task(\core\task\task_base $task) {
             mtrace("... used " . (microtime(1) - $pretime) . " seconds");
         }
         mtrace('Scheduled task failed: ' . $fullname . ',' . $e->getMessage());
+/* BEGIN CORE MOD */
+        error_log('Scheduled task failed: ' . $fullname . ',' . $e->getMessage());
+/* END CORE MOD */
         if ($CFG->debugdeveloper) {
             if (!empty($e->debuginfo)) {
                 mtrace("Debug info:");
@@ -145,6 +166,9 @@ function cron_run_inner_scheduled_task(\core\task\task_base $task) {
 function cron_run_inner_adhoc_task(\core\task\task_base $task) {
     global $DB, $CFG;
     mtrace("Execute adhoc task: " . get_class($task));
+/* BEGIN CORE MOD */
+    error_log("Execute adhoc task: " . get_class($task));
+/* END CORE MOD */
     cron_trace_time_and_memory();
     $predbqueries = null;
     $predbqueries = $DB->perf_get_queries();
@@ -162,6 +186,9 @@ function cron_run_inner_adhoc_task(\core\task\task_base $task) {
             mtrace("... used " . (microtime(1) - $pretime) . " seconds");
         }
         mtrace("Adhoc task complete: " . get_class($task));
+/* BEGIN CORE MOD */
+        error_log("Adhoc task complete: " . get_class($task));
+/* END CORE MOD */
         \core\task\manager::adhoc_task_complete($task);
     } catch (Exception $e) {
         if ($DB && $DB->is_transaction_started()) {
@@ -173,6 +200,9 @@ function cron_run_inner_adhoc_task(\core\task\task_base $task) {
             mtrace("... used " . (microtime(1) - $pretime) . " seconds");
         }
         mtrace("Adhoc task failed: " . get_class($task) . "," . $e->getMessage());
+/* BEGIN CORE MOD */
+        error_log("Adhoc task failed: " . get_class($task) . "," . $e->getMessage());
+/* END CORE MOD */
         if ($CFG->debugdeveloper) {
                 if (!empty($e->debuginfo)) {
                 mtrace("Debug info:");
