@@ -21,12 +21,32 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_coursera\task;
+
+use mod_coursera\coursera;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'mod_coursera';
-$plugin->version = 2018101110;
-$plugin->release = 'v0.0';
-$plugin->requires = 2014051200;
-$plugin->maturity = MATURITY_ALPHA;
-$plugin->cron = 0;
-$plugin->dependencies = array();
+class sync_programmembers extends \core\task\scheduled_task {
+
+    public function __construct() {
+        $this->config = get_config('mod_coursera');
+    }
+
+    /**
+     * Get a descriptive name for this task (shown to admins).
+     *
+     * @return string
+     */
+    public function get_name() {
+        return get_string('tasksyncprogrammembers', 'mod_coursera');
+    }
+
+    /**
+     * Run the tidy synccourses task.
+     */
+    public function execute() {
+        $coursera = new coursera();
+        $coursera->syncprogrammembers();
+    }
+}

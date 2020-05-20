@@ -55,3 +55,5 @@ $string['inprogress'] = 'In progress';
 $string['notstarted'] = 'Not yet started';
 $string['notgradable'] = 'You must be enrolled on this course a learner in order to view this activity.';
 $string['noaccesscompleted'] = 'You have already completed this Coursera course.';
+$string['disableunusedmemberships'] = 'Disable unused memberships';
+$string['tasksyncprogrammembers'] = 'Sync program memberships';

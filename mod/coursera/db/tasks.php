@@ -39,5 +39,14 @@ $tasks = array(
                 'day'       => '*',
                 'dayofweek' => '*',
                 'month'     => '*'
+        ),
+        array(
+                'classname' => 'mod_coursera\task\sync_programmembers',
+                'blocking'  => 0,
+                'minute'    => '0',
+                'hour'      => '0',
+                'day'       => '*',
+                'dayofweek' => '*',
+                'month'     => '*'
         )
 );

@@ -140,7 +140,8 @@ class coursera {
                     }
 
                     $courseracourse = course::savecourse($element);
-                    courserahashedcourseobject::savecourserahashedcourseobject($courseracourse, $element->instructors, 'instructor');
+                    courserahashedcourseobject::savecourserahashedcourseobject($courseracourse, $element->instructors,
+                            'instructor');
                     courserahashedcourseobject::savecourserahashedcourseobject($courseracourse, $element->partners, 'partner');
                     courserahashedcourseobject::savecourserahashedcourseobject($courseracourse, $element->programs, 'programlink');
                 }
@@ -169,6 +170,36 @@ class coursera {
         progress::coursecompletions();
     }
 
+    public function syncprogrammembers() {
+        global $DB;
+
+        $DB->execute('UPDATE {courseraprogrammember} set dateleft = :now where dateleft = 0', ['now' => time()]); // Mark them all as dateleft, they'll be zeroed out in the next step/
+
+        $ret = $this->getprogrammembership(0);
+        foreach ($ret->elements as $element) {
+            programmember::saveprogrammember($element);
+        }
+        while (isset($ret->paging->next)) {
+            $ret = $this->getprogrammembership($ret->paging->next);
+            foreach ($ret->elements as $element) {
+                programmember::saveprogrammember($element);
+            }
+        }
+        programmember::updateuserprogrammemberlinkages();
+        self::disableunusedmemberships();
+    }
+
+    public function disableunusedmemberships() {
+        $activelearners = programmember::getmoodleactivelearners();
+        $members = programmember::getallprogrammembershipidnumbers();
+
+        $toremove = array_diff($members, $activelearners);
+
+        foreach ($toremove as $useridnumber) {
+            $this->unenrolfromprogram($useridnumber);
+        }
+    }
+
     private function getcourses($start = 0) {
         $url = "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/contents"; //GET
         if (!empty($start)) {
@@ -178,8 +209,9 @@ class coursera {
     }
 
     public function enrolonprogram($userid) {
-        //post
-        $url = "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/programs/{$this->config->programid}/invitations";
+        if (programmember::iscurrentlymember($userid)) {
+            return true;
+        }
 
         $user = \core_user::get_user($userid);
 
@@ -189,9 +221,21 @@ class coursera {
                 'email'      => $user->email,
                 'sendEmail'  => false
         ];
+
+        $url = "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/programs/{$this->config->programid}/invitations";
         $ret = $this->callapi($url, $body, 'post');
 
-        return $ret;
+        if (isset($ret->errorCode) && $ret->errorCode !== 'INVITATION_ALREADY_EXISTS' && $ret->errorCode !== 'MEMBERSHIP_ALREADY_EXISTS') {
+            return $ret->errorCode;
+        }
+        $programmember = new programmember([
+                'programid'  => $this->config->programid,
+                'externalid' => $user->idnumber,
+                'datejoined' => 0, // This gets set when we pull the data back from coursera on the next sync run.
+                'userid'     => $user->id,
+                'dateleft'   => 0
+        ]);
+        $programmember->insert();
     }
 
     private function getprogress($start = 0) {
@@ -209,13 +253,19 @@ class coursera {
         return $link->contenturl . '&attemptSSOLogin=true';
     }
 
-    private function unenrolfromprogram($userid) {
-        $user = \core_user::get_user($userid);
+    private function unenrolfromprogram($useridnumber) {
         //DELETE verb
-        $url =
-                "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/programs/{$this->config->programid}/memberships/{$this->config->programid}~{$user->idnumber}";
+        $url = "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/programs/{$this->config->programid}/memberships/{$this->config->programid}~{$useridnumber}";
 
-        $this->callapi($url, null, 'delete');
+        //$this->callapi($url, null, 'delete');
+    }
+
+    private function getprogrammembership($start = 0) {
+        $url = "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/programs/{$this->config->programid}/memberships";
+        if (!empty($start)) {
+            $url .= '?start=' . $start;
+        }
+        return $this->callapi($url, '', 'get');
     }
 
     private function callapi($url, $body, $verb) {

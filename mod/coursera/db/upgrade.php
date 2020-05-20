@@ -46,5 +46,31 @@ function xmldb_coursera_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2018101106, 'coursera');
     }
 
+    if ($oldversion < 2018101109) {
+        $table = new xmldb_table('courseraprogrammember');
+
+        // Adding fields to table local_admin_user_update_log
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('programid', XMLDB_TYPE_CHAR, '35');
+        $table->add_field('externalid', XMLDB_TYPE_CHAR, '35');
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10');
+        $table->add_field('joined', XMLDB_TYPE_INTEGER, '10');
+        $table->add_field('left', XMLDB_TYPE_INTEGER, '10', null, false);
+
+        // Adding keys to table local_admin_user_update_log.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table local_admin_user_update_log.
+        $table->add_index('courseraprogrammemberexternalid', XMLDB_INDEX_UNIQUE, array('programid,externalid,joined'));
+        $table->add_index('courseraprogrammemberuserid', XMLDB_INDEX_NOTUNIQUE, array('programid,userid,joined'));
+
+        // Conditionally launch create table for local_admin_user_update_log
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_mod_savepoint(true, 2018101109, 'coursera');
+    }
+
     return true;
 }
