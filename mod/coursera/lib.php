@@ -150,7 +150,7 @@ function coursera_get_refresh_token() {
 }
 
 function coursera_cm_info_dynamic(cm_info $cm) {
-    global $DB, $PAGE, $USER;
+    global $DB, $PAGE, $USER, $OUTPUT;
 
     $cminstance  = $DB->get_record('coursera', array('id' => $cm->instance), '*', MUST_EXIST);
     $course = \mod_coursera\course::fetch(['id' => $cminstance->contentid]);
@@ -170,6 +170,8 @@ function coursera_cm_info_dynamic(cm_info $cm) {
             $data['iscompleted'] = true;
         }
     }
+
+    $data['courseraurl'] = $OUTPUT->image_url('courseralogo', 'mod_coursera');
 
     $cm->set_content($output->rendercourseragetcoursemoduleinfo($data));
     $cm->set_no_view_link(true);
