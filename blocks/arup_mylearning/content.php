@@ -237,7 +237,7 @@ class block_arup_mylearning_content {
         $content = '';
 
         $pageparams = [
-            'userid' => $USER->id
+            'walearningpath_userid' => $USER->id
         ];
         
         $shortname = 'user_walearningpath_reports';

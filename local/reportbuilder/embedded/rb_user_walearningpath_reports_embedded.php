@@ -44,9 +44,9 @@ class rb_user_walearningpath_reports_embedded extends rb_base_embedded {
         ];
 
         // only show learning path of the current user
-        if (!empty($data['userid'])) {
+        if (!empty($data['walearningpath_userid'])) {
             $this->embeddedparams = [
-                'userid' => $data['userid']
+                'walearningpath_userid' => $data['walearningpath_userid']
             ];
         }
     }

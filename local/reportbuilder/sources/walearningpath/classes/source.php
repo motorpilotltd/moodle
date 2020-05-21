@@ -192,11 +192,11 @@ class source extends rb_base_source {
     protected function define_paramoptions() {
         $paramoptions = [
                 new rb_param_option(
-                    'userid',
+                    'walearningpath_userid',
                     'walearningpathsubscribe.userid'
                 ),
                 new rb_param_option(
-                    'id',
+                    'walearningpath_id',
                     'base.id'
                 ), 
         ];

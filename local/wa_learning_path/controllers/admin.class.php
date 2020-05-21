@@ -1017,7 +1017,7 @@ class admin extends \wa_learning_path\lib\base_controller {
         $this->id = required_param('id', PARAM_INT);
 
         $pageparams = [
-            'id' =>  $this->id
+            'walearningpath_id' =>  $this->id
         ];
         
         $shortname = 'subs_walearningpath_reports';
