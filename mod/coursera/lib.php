@@ -170,6 +170,7 @@ function coursera_cm_info_dynamic(cm_info $cm) {
             $data['iscompleted'] = true;
         }
     }
+    $data['allowaccess'] = \mod_coursera\courseramoduleaccess::hascourseramoduleaccess($USER->id, $cminstance->id);
 
     $data['courseraurl'] = $OUTPUT->image_url('courseralogo', 'mod_coursera');
 

@@ -60,6 +60,9 @@ class mod_coursera_mod_form extends moodleform_mod {
         $mform->addElement('select', 'contentid', get_string('courseraidentifier', 'coursera'), $options);
         $mform->addRule('contentid', null, 'required', null, 'client');
 
+        $options = array('optional' => false, 'defaultunit' => 86400);
+        $mform->addElement('duration', 'moduleaccessperiod', get_string('moduleaccessperiod', 'coursera'), $options);
+
         // Add standard grading elements.
         $this->standard_grading_coursemodule_elements();
 
@@ -75,6 +78,6 @@ class mod_coursera_mod_form extends moodleform_mod {
     }
 
     public function add_completion_rules() {
-        return array('completionsubmit');
+        return [];
     }
 }

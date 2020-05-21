@@ -72,5 +72,37 @@ function xmldb_coursera_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2018101109, 'coursera');
     }
 
+    if ($oldversion < 2018101111) {
+        $table = new xmldb_table('coursera');
+        $field = new xmldb_field('moduleaccessperiod', XMLDB_TYPE_INTEGER, '10');
+
+        // Conditionally launch add field services.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $table = new xmldb_table('courseramoduleaccess');
+
+        // Adding fields to table local_admin_user_update_log
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('courseraid', XMLDB_TYPE_INTEGER, '10');
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10');
+        $table->add_field('timestart', XMLDB_TYPE_INTEGER, '10');
+        $table->add_field('timeend', XMLDB_TYPE_INTEGER, '10');
+
+        // Adding keys to table local_admin_user_update_log.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table local_admin_user_update_log.
+        $table->add_index('courseraprogrammemberexternalid', XMLDB_INDEX_UNIQUE, array('courseraid,userid'));
+
+        // Conditionally launch create table for local_admin_user_update_log
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_mod_savepoint(true, 2018101111, 'coursera');
+    }
+
     return true;
 }

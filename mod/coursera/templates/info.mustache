@@ -36,7 +36,7 @@
                     </div>
                 {{/iscompleted}}
             </div>
-            {{^iscompleted}}
+            {{#allowaccess}}
                 <div class="row">
                     <div class="col-md-5">
                         <a class="btn btn-primary" href="{{config.wwwroot}}/mod/coursera/view.php?id={{cmid}}">{{# str }} launchincoursera, mod_coursera {{/ str }}</a>
@@ -45,7 +45,7 @@
                         <span class="duration">{{# str }} estimatedlearningtime, mod_coursera, {{estimatedlearningtime}} {{/ str }} </span>
                     </div>
                 </div>
-            {{/iscompleted}}
+            {{/allowaccess}}
         </div>
         {{#haspartners}}
             <div class="col-md-4 rightcol">

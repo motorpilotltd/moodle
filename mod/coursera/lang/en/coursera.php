@@ -57,3 +57,5 @@ $string['notgradable'] = 'You must be enrolled on this course a learner in order
 $string['noaccesscompleted'] = 'You have already completed this Coursera course.';
 $string['disableunusedmemberships'] = 'Disable unused memberships';
 $string['tasksyncprogrammembers'] = 'Sync program memberships';
+$string['moduleaccessperiod'] = 'Duration of access to coursera learning';
+$string['noaccesscontactadmin'] = 'Duration of access to coursera learning';
