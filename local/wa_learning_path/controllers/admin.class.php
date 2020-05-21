@@ -1011,7 +1011,25 @@ class admin extends \wa_learning_path\lib\base_controller {
      * Subscribe edit
      */
     public function edit_subscriptions_action() {
+        global $CFG, $PAGE;
+        require_once($CFG->dirroot.'/local/reportbuilder/lib.php');
+
         $this->id = required_param('id', PARAM_INT);
+
+        $pageparams = [
+            'id' =>  $this->id
+        ];
+        
+        $shortname = 'subs_walearningpath_reports';
+
+        $this->reporthtml = ''; 
+        $this->debughtml = ''; 
+        
+        if ($report = reportbuilder_get_embedded_report($shortname, $pageparams, false, 0)) {
+            // Get report content html
+            $renderer = $PAGE->get_renderer('local_reportbuilder');
+            list($this->reporthtml, $this->debughtml) = $renderer->report_html($report);
+        }
 
         $this->view('edit_subscriptions');
     }

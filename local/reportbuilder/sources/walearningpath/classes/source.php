@@ -31,6 +31,8 @@ use rb_filter_option;
 use rb_content_option;
 use rb_param_option;
 use rb_column;
+use moodle_url;
+use html_writer;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -64,9 +66,21 @@ class source extends rb_base_source {
             get_string('title', 'rbsource_walearningpath'),
             'base.title',
             array(
-                    'displayfunc'  => 'plaintext',
-                    'dbdatatype'   => 'char',
-                    'outputformat' => 'text')
+                'displayfunc'  => 'plaintext',
+                'dbdatatype'   => 'char',
+                'outputformat' => 'text'
+            )
+        );
+
+        $columnoptions[] = new rb_column_option(
+            'learningpath',
+            'titlelinkedlearningpath',
+            get_string('titlelinkedlearningpath', 'rbsource_walearningpath'),
+            'base.title',
+            array(
+                'displayfunc'  => 'titlelinkedlearningpath',
+                'extrafields' => ['id' => 'base.id']
+            )
         );
 
         $columnoptions[] = new rb_column_option(
@@ -75,9 +89,10 @@ class source extends rb_base_source {
             get_string('summary', 'rbsource_walearningpath'),
             'base.summary',
             array(
-                    'displayfunc'  => 'plaintext',
-                    'dbdatatype'   => 'char',
-                    'outputformat' => 'text')
+                'displayfunc'  => 'plaintext',
+                'dbdatatype'   => 'char',
+                'outputformat' => 'text'
+            )
         );
 
         $columnoptions[] = new rb_column_option(
@@ -177,11 +192,28 @@ class source extends rb_base_source {
     protected function define_paramoptions() {
         $paramoptions = [
                 new rb_param_option(
-                        'userid',
-                        'walearningpathsubscribe.userid'
+                    'userid',
+                    'walearningpathsubscribe.userid'
                 ),
+                new rb_param_option(
+                    'id',
+                    'base.id'
+                ), 
         ];
 
         return $paramoptions;
+    }
+
+    public function rb_display_titlelinkedlearningpath($title, $row) {
+        // /local/wa_learning_path/index.php?c=learning_path&a=matrix&id=[learning path id]
+        $url = new moodle_url(
+            '/local/wa_learning_path/index.php', 
+            array(
+                'c'  => 'learning_path',
+                'a'  => 'matrix',
+                'id' => $row->id
+            )
+        );
+        return html_writer::link($url, $title);
     }
 }

@@ -8,3 +8,5 @@ $string['subscriber_userid'] = 'Subscriber user ID';
 $string['type_learningpathsubscribe'] = 'Learning path subscription';
 $string['status'] = 'Status';
 $string['subscription'] = 'Subscription';
+$string['walearningpath_subscriptions'] = 'WA Learning Path Subscriptions';
+$string['titlelinkedlearningpath'] = 'Title (linked to learning path)';
