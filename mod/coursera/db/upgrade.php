@@ -104,5 +104,10 @@ function xmldb_coursera_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2018101111, 'coursera');
     }
 
+    if ($oldversion < 2018101112) {
+        $DB->delete_records('courseraprogrammember', []);
+        upgrade_mod_savepoint(true, 2018101112, 'coursera');
+    }
+
     return true;
 }
