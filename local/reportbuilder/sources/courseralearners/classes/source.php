@@ -22,8 +22,8 @@
  * @package mod_assign
  */
 
-namespace rbsource_linkedinlearning;
-use local_linkedinlearning\course;
+namespace rbsource_courseralearners;
+use local_courseralearners\course;
 use rb_base_source;
 use rb_content_option;
 use rb_join;
@@ -42,7 +42,20 @@ class source extends rb_base_source {
     public function __construct() {
         global $PAGE;
 
-        $this->base = '{linkedinlearning_course}';
+        $this->base = '(select u.idnumber as id, u.idnumber as externalid
+                        from {courseramoduleaccess} cma
+                                 inner join {user} u on u.id = cma.userid
+                         union
+                        select u.idnumber as id, u.idnumber as externalid
+                        from {coursera} i
+                                 inner join {enrol} me on i.course = me.courseid
+                                 inner join {course} c on c.id = me.courseid and c.visible = 1
+                                 inner join {user_enrolments} ue on ue.enrolid = me.id
+                                 inner join {user} u on u.id = ue.userid
+                         union
+                         select externalid as id, externalid from {courseraprogress}
+                         union
+                         select externalid as id, externalid from {courseraprogrammember})';
         $this->joinlist = $this->define_joinlist();
         $this->columnoptions = $this->define_columnoptions();
         $this->filteroptions = $this->define_filteroptions();
@@ -50,9 +63,9 @@ class source extends rb_base_source {
         $this->defaultcolumns = $this->define_defaultcolumns();
         $this->defaultfilters = $this->define_defaultfilters();
         $this->contentoptions = $this->define_contentoptions();
-        $this->sourcetitle = get_string('sourcetitle', 'rbsource_linkedinlearning');
+        $this->sourcetitle = get_string('sourcetitle', 'rbsource_courseralearners');
 
-        $PAGE->requires->js_call_amd('local_linkedinlearning/manage', 'initialise');
+        $PAGE->requires->js_call_amd('local_courseralearners/manage', 'initialise');
 
         parent::__construct();
     }
@@ -62,180 +75,91 @@ class source extends rb_base_source {
      * @return array
      */
     protected function define_joinlist() {
-        global $DB;
-
-        $concatname = \local_reportbuilder\dblib\base::getbdlib()->sql_group_concat('class.name', ', ', 'class.name ASC');
+        $now = time();
 
         $joinlist = array(
             // Join assignment.
                 new rb_join(
-                        'progress',
-                        'INNER',
-                        '{linkedinlearning_progress}',
-                        'progress.urn = base.urn',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
-                ),
-                new rb_join(
-                        'classification',
-                        'INNER',
-                        "(SELECT linkedinlearningcourseid, $concatname as classificationnames
-                                FROM {linkedinlearning_crs_class} crsclass
-                                INNER JOIN {linkedinlearning_class} class ON crsclass.classificationid = class.id
-                                GROUP BY linkedinlearningcourseid)",
-                        'classification.linkedinlearningcourseid = base.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
-                ),
-                new rb_join(
-                        'crsclass',
-                        'INNER',
-                        "{linkedinlearning_crs_class}",
-                        'crsclass.linkedinlearningcourseid = base.id',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
-                ),
-                new rb_join(
-                        'class',
-                        'INNER',
-                        "{linkedinlearning_class}",
-                        'class.id = crsclass.classificationid',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE,
-                        'crsclass'
-                ),
-                new rb_join(
-                        'local_taps_course',
+                        'courseraprogrammember',
                         'LEFT',
-                        '{local_taps_course}',
-                        'local_taps_course.coursecode = base.urn',
+                        '{courseraprogrammember}',
+                        'courseraprogrammember.externalid = base.externalid',
                         REPORT_BUILDER_RELATION_MANY_TO_ONE
                 ),
                 new rb_join(
-                        'arupadvertdatatype_taps',
+                        'courseraprogrammemberdurationused',
                         'LEFT',
-                        '{arupadvertdatatype_taps}',
-                        'arupadvertdatatype_taps.tapscourseid = local_taps_course.courseid',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE,
-                        'local_taps_course'
+                        "(
+                                select 
+                                    externalid, 
+                                    sum(CASE WHEN dateleft = 0 THEN $now - datejoined ELSE dateleft - datejoined END) as totaltime, 
+                                    min(datejoined) as datejoined,
+                                    max(dateleft) as dateleft 
+                                    FROM {courseraprogrammember} 
+                                    group by externalid)",
+                        'courseraprogrammemberdurationused.externalid = base.externalid',
+                        REPORT_BUILDER_RELATION_MANY_TO_ONE
                 ),
                 new rb_join(
-                        'arupadvert',
+                        "courseracourserelationships",
                         'LEFT',
-                        '{arupadvert}',
-                        'arupadvert.id = arupadvertdatatype_taps.arupadvertid',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE,
-                        'arupadvertdatatype_taps'
+                        '(
+                        select u.idnumber as externalid, cc.contentid
+                        from {courseramoduleaccess} cma
+                                INNER JOIN {coursera} ce ON ce.course = cma.courseraid
+                                INNER JOIN {courseracourse} cc ON ce.contentid = cc.id
+                                 inner join {user} u on u.id = cma.userid
+                         union
+                        select u.idnumber as externalid, cc.contentid
+                        from {coursera} i
+                                 inner join {enrol} me on i.course = me.courseid
+                                 inner join {course} c on c.id = me.courseid and c.visible = 1
+                                 inner join {user_enrolments} ue on ue.enrolid = me.id
+                                 inner join {user} u on u.id = ue.userid
+                                INNER JOIN {courseracourse} cc ON i.contentid = cc.id
+                         union
+                         select externalid, contentid from {courseraprogress}
+                        )',
+                        "courseracourserelationships.externalid = base.externalid",
+                        REPORT_BUILDER_RELATION_MANY_TO_ONE
                 ),
-        );
-
-        $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true], 'name', 'id, name');
-
-        foreach (array_keys($regions) as $regionid) {
-            $joinlist[] = new rb_join(
-                    "regions{$regionid}",
-                    'LEFT',
-                    '{local_regions_reg_cou}',
-                    "regions{$regionid}.courseid = arupadvert.course AND regions{$regionid}.regionid = {$regionid}",
-                    REPORT_BUILDER_RELATION_MANY_TO_ONE,
-                    'arupadvert'
-            );
-        }
-
-        $joinlist[] = new rb_join(
-                "regions0",
-                'LEFT',
-                '(SELECT courseid, MAX(regionid) maxregionid FROM {local_regions_reg_cou} GROUP BY courseid)',
-                "regions0.courseid = arupadvert.course",
-                REPORT_BUILDER_RELATION_MANY_TO_ONE,
-                'arupadvert'
+                new rb_join(
+                        "courseracourse",
+                        'LEFT',
+                        '{courseracourse}',
+                        "courseracourse.contentid = courseracourserelationships.contentid",
+                        REPORT_BUILDER_RELATION_MANY_TO_ONE,
+                        'courseracourserelationships'
+                ),
+                new rb_join(
+                        'courseraprogress',
+                        'LEFT',
+                        '{courseraprogress}',
+                        'courseraprogress.externalid = base.externalid and courseraprogress.contentid = courseracourserelationships.contentid',
+                        REPORT_BUILDER_RELATION_MANY_TO_ONE,
+                        'courseracourserelationships'
+                ),
+                new rb_join(
+                        'courseenrolments',
+                        'LEFT',
+                        "(SELECT ue.userid as userid, e.courseid as course, ce.contentid, min(ue.timestart) as timestart, min(ue.timecreated) as timecreated, max(ue.timemodified) as timemodified, ce.moduleaccessperiod, cma.timeend as extensionend
+                    FROM {user_enrolments} ue
+                    INNER JOIN {enrol} e ON e.id = ue.enrolid
+                    INNER JOIN {coursera} ce ON ce.course = e.courseid
+                    LEFT JOIN {courseramoduleaccess} cma on cma.userid = ue.userid and cma.courseraid = ce.id
+                    GROUP BY ue.userid, e.courseid, ce.contentid, ce.moduleaccessperiod, cma.timeend)",
+                        'auser.id = courseenrolments.userid AND courseenrolments.contentid = courseracourse.id',
+                        REPORT_BUILDER_RELATION_MANY_TO_ONE,
+                        ['courseracourserelationships', 'courseracourse']
+                ),
         );
 
         // join users, courses and categories
-        $this->add_user_table_to_joinlist($joinlist, 'progress', 'userid');
-        $this->add_course_table_to_joinlist($joinlist, 'arupadvert', 'course');
+        $this->add_user_table_to_joinlist_on_idnumber($joinlist, 'base', 'externalid');
+        $this->add_course_table_to_joinlist($joinlist, 'courseenrolments', 'course');
         $this->add_course_category_table_to_joinlist($joinlist, 'course', 'category');
 
         return $joinlist;
-    }
-
-    private $userregionid;
-    private function getuserregion() {
-        global $DB, $USER;
-
-        if (!isset($this->userregionid)) {
-            $userregion = $DB->get_record('local_regions_use', array('userid' => $USER->id));
-            if ($userregion) {
-                return $this->userregionid = $userregion->regionid;
-            } else {
-                $this->userregionid = false;
-            }
-        }
-
-        return $this->userregionid;
-    }
-
-    public function rb_cols_generator_regionvisibilityreadonly($columnoption, $hidden) {
-        return $this->rb_cols_generator_regionvisibility($columnoption, $hidden, true);
-    }
-
-    public function rb_cols_generator_regionvisibility($columnoption, $hidden, $readonly = false) {
-        global $DB;
-        $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true], 'name', 'id, name');
-
-        $has_capability = has_capability('local/linkedinlearning:manage', \context_system::instance());
-
-        if (!$has_capability) {
-            $userregion = $this->getuserregion();
-
-            if (isset($regions[$userregion])) {
-                $regions = [$userregion => $regions[$userregion]];
-            } else {
-                $regions = [];
-            }
-        }
-
-        $results = array();
-
-        $globalpresentsql = " CASE WHEN course.visible = 1 AND regions0.courseid IS NULL AND arupadvert.id IS NOT NULL THEN 1 ELSE 0 END ";
-
-        if ($has_capability) {
-            $results[] = new rb_column(
-                    'linkedincourse',
-                    "regionvisibility0",
-                    get_string('global', 'local_regions'),
-                    'base.id',
-                    array(
-                            'displayfunc' => 'regionvisibility',
-                            'joins'       => ["regions0", "course"],
-                            'extrafields' => ['regionid'        => 0,
-                                              'presentinregion'         => $globalpresentsql,
-                                              'presentglobal'           => $globalpresentsql,
-                                              'linkedinlearningmanager' => "'$has_capability'",
-                                              'readonly'                => "'$readonly'",
-                                              'available'               => 'base.available'
-                            ]
-                    )
-            );
-        }
-
-        foreach ($regions as $id => $name) {
-            $results[] = new rb_column(
-                    'linkedincourse',
-                    "regionvisibility{$id}",
-                    get_string('availableinregion', 'rbsource_linkedinlearning', $name),
-                    'base.id',
-                    array(
-                            'displayfunc' => 'regionvisibility',
-                            'joins'       => ["regions{$id}", "regions0", 'arupadvert', 'course'],
-                            'extrafields' => ['regionid'        => $id,
-                                              'presentinregion' => " CASE WHEN (course.visible = 0 OR regions{$id}.id IS NULL) THEN 0 ELSE 1 END ",
-                                              'presentglobal' => $globalpresentsql,
-                                              'linkedinlearningmanager' => "'$has_capability'",
-                                              'readonly' => "'$readonly'",
-                                              'available'               => 'base.available'
-                            ]
-                    )
-            );
-        }
-
-        return $results;
     }
 
     /**
@@ -244,205 +168,127 @@ class source extends rb_base_source {
      */
     protected function define_columnoptions() {
         global $CFG;
-        include_once($CFG->dirroot.'/mod/assign/locallib.php');
 
         $columnoptions = array(
             // Assignment name.
                 new rb_column_option(
-                        'linkedincourse',
+                        'coursera',
                         'title',
-                        get_string('title', 'rbsource_linkedinlearning'),
-                        'base.title',
+                        get_string('title', 'rbsource_courseralearners'),
+                        'courseracourse.title',
                         array(
+                                'joins' => 'courseracourse',
                                 'dbdatatype' => 'char',
                                 'outputformat' => 'text'
                         )
                 ),
                 new rb_column_option(
-                        'linkedincourse',
-                        'linkedtitle',
-                        get_string('linkedtitle', 'rbsource_linkedinlearning'),
-                        'base.title',
+                        'coursera',
+                        'externalid',
+                        get_string('externalid', 'rbsource_courseralearners'),
+                        'courseraprogrammember.externalid',
                         array(
-                                'displayfunc' => 'linkedincourselink',
-                                'dbdatatype'   => 'char',
-                                'outputformat' => 'text',
-                                'extrafields'  => ['ssourl' => 'base.ssolaunchurl', 'moodlecourseid' => 'arupadvert.course', 'lilcourseid' => 'base.id'],
-                                'joins'        => 'arupadvert'
-                        )
-                ),
-                new rb_column_option(
-                        'linkedincourse',
-                        'linkedtitlewithexpander',
-                        get_string('linkedtitlewithexpander', 'rbsource_linkedinlearning'),
-                        'base.title',
-                        array(
-                                'displayfunc' => 'linkedincourselinkwithexpander',
-                                'dbdatatype'   => 'char',
-                                'outputformat' => 'text',
-                                'extrafields'  => ['ssourl' => 'base.ssolaunchurl', 'moodlecourseid' => 'arupadvert.course', 'lilcourseid' => 'base.id'],
-                                'joins'        => 'arupadvert',
-                                'defaultheading' => get_string('linkedtitle', 'rbsource_linkedinlearning')
-                        )
-                ),
-                new rb_column_option(
-                        'linkedincourse',
-                        'shortdescription',
-                        get_string('shortdescription', 'rbsource_linkedinlearning'),
-                        'base.shortdescription',
-                        array(
+                                'joins' => 'courseraprogrammember',
                                 'dbdatatype' => 'char',
                                 'outputformat' => 'text'
                         )
                 ),
                 new rb_column_option(
-                        'linkedincourse',
-                        'visibleinregion',
-                        get_string('visibleinregion', 'rbsource_linkedinlearning'),
-                        'base.id',
-                        array('columngenerator' => 'regionvisibility',
-                              'defaultheading' => get_string('visibleinregion', 'rbsource_linkedinlearning'))
-                ),
-                new rb_column_option(
-                        'linkedincourse',
-                        'visibleinregionsreadonly',
-                        get_string('visibleinregionsreadonly', 'rbsource_linkedinlearning'),
-                        'base.id',
-                        array('columngenerator' => 'regionvisibilityreadonly',
-                              'defaultheading' => get_string('visibleinregion', 'rbsource_linkedinlearning'))
-                ),
-                new rb_column_option(
-                        'linkedincourse',
-                        'urn',
-                        get_string('urn', 'rbsource_linkedinlearning'),
-                        'base.urn',
+                        'coursera',
+                        'estimatedlearningtime',
+                        get_string('estimatedlearningtime', 'rbsource_courseralearners'),
+                        'courseracourse.estimatedlearningtime / 60',
                         array(
-                                'dbdatatype' => 'char',
-                                'outputformat' => 'text'
-                        )
-                ),
-                new rb_column_option(
-                        'linkedincourse',
-                        'publishedat',
-                        get_string('publishedat', 'rbsource_linkedinlearning'),
-                        'base.publishedat',
-                        array(
-                                'displayfunc' => 'nice_datetime'
-                        )
-                ),
-                new rb_column_option(
-                        'linkedincourse',
-                        'lastupdatedat',
-                        get_string('lastupdatedat', 'rbsource_linkedinlearning'),
-                        'base.lastupdatedat',
-                        array(
-                                'displayfunc' => 'nice_datetime'
-                        )
-                ),
-                new rb_column_option(
-                        'linkedincourse',
-                        'timetocomplete',
-                        get_string('timetocomplete', 'rbsource_linkedinlearning'),
-                        'base.timetocomplete / 60',
-                        array(
+                                'joins' => 'courseracourse',
                                 'displayfunc' => 'duration_hours_minutes'
                         )
                 ),
                 new rb_column_option(
-                        'linkedincourse',
-                        'available',
-                        get_string('available', 'rbsource_linkedinlearning'),
-                        "available",
-                        [
-                                'displayfunc' => 'yes_no',
-                        ]
-                ),
-                new rb_column_option(
-                        'linkedincourse',
-                        'classificationnames',
-                        get_string('classificationnames', 'rbsource_linkedinlearning'),
-                        'classification.classificationnames',
+                        'coursera',
+                        'totaltime',
+                        get_string('totaltime', 'rbsource_courseralearners'),
+                        'courseraprogrammemberdurationused.totaltime / 60',
                         array(
-                                'dbdatatype' => 'char',
-                                'outputformat' => 'text',
-                            'joins' => 'classification'
+                                'joins' => 'courseraprogrammemberdurationused',
+                                'displayfunc' => 'duration_hours_minutes'
                         )
                 ),
                 new rb_column_option(
-                        'linkedincourse',
-                        'classificationname',
-                        get_string('classificationname', 'rbsource_linkedinlearning'),
-                        'class.name',
+                        'coursera',
+                        'datejoined',
+                        get_string('datejoined', 'rbsource_courseralearners'),
+                        'courseraprogrammemberdurationused.datejoined',
                         array(
-                                'dbdatatype' => 'char',
-                                'outputformat' => 'text',
-                            'joins' => 'class'
+                                'joins' => 'courseraprogrammemberdurationused',
+                                'displayfunc' => 'nice_datetime'
                         )
                 ),
                 new rb_column_option(
-                        'linkedincourse',
-                        'language',
-                        get_string('language', 'local_reportbuilder'),
-                        'base.language',
+                        'coursera',
+                        'dateleft',
+                        get_string('dateleft', 'rbsource_courseralearners'),
+                        'courseraprogrammemberdurationused.dateleft',
                         array(
-                                'displayfunc' => 'language'
+                                'joins' => 'courseraprogrammemberdurationused',
+                                'displayfunc' => 'nice_datetime'
                         )
                 ),
                 new rb_column_option(
-                        'linkedincourseprogress',
-                        'progresspercentagebar',
-                        get_string('progresspercentagebar', 'rbsource_linkedinlearning'),
-                        'progress.progress_percentage',
+                        'coursera',
+                        'iscompleted',
+                        get_string('iscompleted', 'rbsource_courseralearners'),
+                        'courseraprogress.iscompleted',
                         array(
+                                'joins' => 'courseraprogress',
+                                'displayfunc' => 'yes_or_no'
+                        )
+                ),
+                new rb_column_option(
+                        'coursera',
+                        'overallprogress',
+                        get_string('overallprogress', 'rbsource_courseralearners'),
+                        'courseraprogress.overallprogress',
+                        array(
+                                'joins' => 'courseraprogress',
                                 'displayfunc' => 'progressbarsimple',
-                                'joins'       => ['progress'],
-                                'dbdatatype'  => 'integer',
                         )
                 ),
                 new rb_column_option(
-                        'linkedincourseprogress',
-                        'progresspercentage',
-                        get_string('progresspercentage', 'rbsource_linkedinlearning'),
-                        'progress.progress_percentage',
+                        'coursera',
+                        'timestart',
+                        get_string('timestart', 'rbsource_courseralearners'),
+                        'courseenrolments.timestart',
                         array(
-                                'displayfunc' => 'percent',
-                                'joins'       => ['progress'],
-                                'dbdatatype'  => 'integer',
-                                'extrafields' => ['green' => 'progress.progress_percentage'],
-
+                                'joins' => 'courseenrolments',
+                                'displayfunc' => 'nice_datetime'
                         )
                 ),
                 new rb_column_option(
-                        'linkedincourseprogress',
-                        'timeincourse',
-                        get_string('timeincourse', 'rbsource_linkedinlearning'),
-                        'progress.seconds_viewed',
+                        'coursera',
+                        'durationofeligibility',
+                        get_string('durationofeligibility', 'rbsource_courseralearners'),
+                        'courseenrolments.timestart',
                         array(
-                                'displayfunc' => 'duration',
-                                'dbdatatype' => 'integer',
-                                'joins'       => 'progress',
+                                'extrafields'  => array(
+                                        'moduleaccessperiod'  => 'courseenrolments.moduleaccessperiod',
+                                        'extensionend'  => 'courseenrolments.extensionend',
+                                ),
+                                'joins' => 'courseenrolments',
+                                'displayfunc' => 'durationofeligibility',
                         )
                 ),
                 new rb_column_option(
-                        'linkedincourseprogress',
-                        'first_viewed',
-                        get_string('first_viewed', 'rbsource_linkedinlearning'),
-                        'progress.first_viewed',
+                        'coursera',
+                        'timeend',
+                        get_string('timeend', 'rbsource_courseralearners'),
+                        'courseenrolments.timestart',
                         array(
-                                'displayfunc' => 'nice_datetime',
-                                'dbdatatype' => 'integer',
-                                'joins'       => 'progress',
-                        )
-                ),
-                new rb_column_option(
-                        'linkedincourseprogress',
-                        'last_viewed',
-                        get_string('last_viewed', 'rbsource_linkedinlearning'),
-                        'progress.last_viewed',
-                        array(
-                                'displayfunc' => 'nice_datetime',
-                                'dbdatatype' => 'integer',
-                                'joins'       => 'progress',
+                                'extrafields'  => array(
+                                        'moduleaccessperiod'  => 'courseenrolments.moduleaccessperiod',
+                                        'extensionend'  => 'courseenrolments.extensionend',
+                                ),
+                                'joins' => 'courseenrolments',
+                                'displayfunc' => 'endofeligibility',
                         )
                 ),
         );
@@ -456,91 +302,40 @@ class source extends rb_base_source {
         return $columnoptions;
     }
 
+    public function rb_display_durationofeligibility($timestart, $row) {
+        if (!empty($row->extensionend)) {
+            return $this->rb_display_duration($row->extensionend - $timestart, $row);
+        } else if (!empty($row->moduleaccessperiod)) {
+            return $this->rb_display_duration($row->moduleaccessperiod, $row);
+        } else {
+            return '';
+        }
+    }
+
+    public function rb_display_endofeligibility($timestart, $row) {
+        if (!empty($row->extensionend)) {
+            return userdate($row->extensionend);
+        } else if (!empty($row->moduleaccessperiod)) {
+            return userdate($timestart + $row->moduleaccessperiod);
+        } else {
+            return '';
+        }
+    }
+
     /**
      * define filter options
      * @return array
      */
     protected function define_filteroptions() {
-        global $DB;
-
         $filteroptions = array(
             // Assignment columns.
                 new rb_filter_option(
-                        'linkedincourse',
+                        'coursera',
                         'title',
-                        get_string('title', 'rbsource_linkedinlearning'),
+                        get_string('title', 'rbsource_courseralearners'),
                         'text'
-                ),
-                new rb_filter_option(
-                        'linkedincourse',
-                        'urn',
-                        get_string('urn', 'rbsource_linkedinlearning'),
-                        'text'
-                ),
-                new rb_filter_option(
-                        'linkedincourse',
-                        'publishedat',
-                        get_string('publishedat', 'rbsource_linkedinlearning'),
-                        'date'
-                ),
-                new rb_filter_option(
-                        'linkedincourse',
-                        'lastupdatedat',
-                        get_string('lastupdatedat', 'rbsource_linkedinlearning'),
-                        'date'
-                ),
-                new rb_filter_option(
-                        'linkedincourse',
-                        'timetocomplete',
-                        get_string('timetocomplete', 'rbsource_linkedinlearning'),
-                        'number'
-                ),
-                new rb_filter_option(
-                        'linkedincourse',
-                        'available',
-                        get_string('available', 'rbsource_linkedinlearning'),
-                        'select',
-                        array(
-                                'selectchoices' => array(0 => get_string('no'), 1 => get_string('yes')),
-                                'simplemode' => true,
-                        )
-                ),
-                new rb_filter_option(
-                        'linkedincourse',
-                        'classificationname',
-                        get_string('classificationname', 'rbsource_linkedinlearning'),
-                        'select',
-                        array(
-                                'selectchoices' => $DB->get_records_menu('linkedinlearning_class', [], 'name', 'id,name'),
-                        ),
-                        'class.id',
-                        'class'
-                ),
-                new rb_filter_option(
-                        'linkedincourseprogress',
-                        'first_viewed',
-                        get_string('first_viewed', 'rbsource_linkedinlearning'),
-                        'date'
-                ),
-                new rb_filter_option(
-                        'linkedincourseprogress',
-                        'last_viewed',
-                        get_string('last_viewed', 'rbsource_linkedinlearning'),
-                        'date'
-                ),
+                )
         );
-
-        $filteroptions[] =
-                new rb_filter_option(
-                        'linkedincourse',
-                        'language',
-                        get_string('language', 'local_reportbuilder'),
-                        'select',
-                        array(
-                                'selectchoices' => course::get_languages(),
-                                'simplemode' => true,
-                        )
-                );
 
         // user, course and category filters
         $this->add_user_fields_to_filters($filteroptions);
@@ -606,90 +401,5 @@ class source extends rb_base_source {
         $defaultfilters = [];
 
         return $defaultfilters;
-    }
-
-    public function rb_display_regionvisibility($courseid, $row, $export) {
-        if ($row->linkedinlearningmanager) {
-            $checked = $row->presentinregion;
-        } else {
-            $checked = $row->presentglobal || $row->presentinregion;
-        }
-
-        if (!empty($row->readonly)) {
-            $disabled = true;
-        } else if (empty($row->available)) {
-            $disabled = true;
-        } else if ($row->linkedinlearningmanager) {
-            $disabled = false;
-        } else if ($row->presentglobal) {
-            $disabled = true;
-        } else {
-            $disabled = false;
-        }
-
-        $showenabledglobalnote = $row->presentglobal && !$row->linkedinlearningmanager;
-
-        if ($disabled) {
-            $attributes = ['disabled' => 'disabled'];
-        } else {
-            $attributes = ['data-regionid' => $row->regionid, 'data-courseid' => $courseid, 'class' => 'regioncheck'];
-        }
-
-        if ($showenabledglobalnote) {
-            $attributes['title'] = get_string('visibleglobal', 'local_linkedinlearning');
-        }
-        if (empty($row->available)) {
-            $attributes['title'] = get_string('unavailable', 'local_linkedinlearning');
-        }
-
-        if ($export) {
-            return $checked ? get_string('yes') : get_string('no');
-        } else {
-            return \html_writer::span(\html_writer::checkbox('visibleinregion', '', $checked, '',
-                    $attributes));
-        }
-    }
-
-    public function rb_display_linkedincourselink($title, $row) {
-        global $CFG;
-
-        if (!empty($row->moodlecourseid)) {
-            return \html_writer::link(new \moodle_url("$CFG->wwwroot/course/view.php", ['id' => $row->moodlecourseid]), $title);
-        } else {
-            return \html_writer::link($row->ssourl, $title);
-        }
-    }
-
-    public function rb_display_linkedincourselinkwithexpander($title, $row) {
-        global $CFG;
-
-        if (!empty($row->moodlecourseid)) {
-            $url = new \moodle_url("$CFG->wwwroot/course/view.php", ['id' => $row->moodlecourseid]);
-        } else {
-            $url = $row->ssourl;
-        }
-        return $this->create_expand_link($title, 'lil_description', array('expandcourseid' => $row->lilcourseid), $url);
-    }
-
-    public function rb_display_language($language) {
-        if (get_string_manager()->string_exists('lang_' . $language, 'local_reportbuilder')) {
-                return get_string('lang_' . $language, 'local_reportbuilder');
-        } else {
-            return $language;
-        }
-    }
-
-    /**
-     * Expanding content to display when clicking a course.
-     * Will be placed inside a table cell which is the width of the table.
-     * Call required_param to get any param data that is needed.
-     * Make sure to check that the data requested is permitted for the viewer.
-     *
-     * @return string
-     */
-    public function rb_expand_lil_description() {
-        $courseid = required_param('expandcourseid', PARAM_INT);
-        $course = course::fetch(['id' => $courseid]);
-        return \html_writer::div($course->description);
     }
 }

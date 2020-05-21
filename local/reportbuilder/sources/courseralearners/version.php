@@ -25,4 +25,4 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->version  = 2017091906;       // The current module version (Date: YYYYMMDDXX).
 $plugin->requires = 2016120504;       // Requires this Moodle version.
-$plugin->component = 'rbsource_linkedinlearning';  // To check on upgrade, that module sits in correct place
+$plugin->component = 'rbsource_courseralearners';  // To check on upgrade, that module sits in correct place
