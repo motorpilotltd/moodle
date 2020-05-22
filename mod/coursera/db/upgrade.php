@@ -109,8 +109,8 @@ function xmldb_coursera_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2018101112, 'coursera');
     }
 
-    if ($oldversion < 2018101113) {
-        $table = new xmldb_table('coursera');
+    if ($oldversion < 2018101115) {
+        $table = new xmldb_table('courseramoduleaccess');
 
         $field = new xmldb_field('dateleft', XMLDB_TYPE_INTEGER, '10', null, false);
         if (!$dbman->field_exists($table, $field)) {
@@ -132,10 +132,10 @@ function xmldb_coursera_upgrade($oldversion) {
             $dbman->drop_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2018101113, 'coursera');
+        upgrade_mod_savepoint(true, 2018101115, 'coursera');
     }
 
-    if ($oldversion < 2018101114) {
+    if ($oldversion < 2018101116) {
         $table = new xmldb_table('coursera');
 
         $field = new xmldb_field('detailsdefaultstate', XMLDB_TYPE_INTEGER, '1', null, false, null, 0);
@@ -143,7 +143,7 @@ function xmldb_coursera_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2018101114, 'coursera');
+        upgrade_mod_savepoint(true, 2018101116, 'coursera');
     }
 
     return true;
