@@ -62,7 +62,7 @@ class coursera {
 
             $response = json_decode($result);
 
-            if (!isset($response->access_token) || !isset($this->config->refreshtoken)) {
+            if (!isset($response->access_token) || !isset($response->refreshtoken)) {
                 throw new \Exception("Error fetching refresh token: \n" . $result);
             }
 
@@ -207,6 +207,7 @@ class coursera {
     }
 
     private function getcourses($start = 0) {
+        // SHOULD FILTER ON PROGRAM
         $url = "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/contents"; //GET
         if (!empty($start)) {
             $url .= '?start=' . $start;
@@ -263,7 +264,7 @@ class coursera {
         //DELETE verb
         $url = "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/programs/{$this->config->programid}/memberships/{$this->config->programid}~{$useridnumber}";
 
-        //$this->callapi($url, null, 'delete');
+        $this->callapi($url, null, 'delete');
     }
 
     private function getprogrammembership($start = 0) {
