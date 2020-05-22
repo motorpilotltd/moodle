@@ -27,16 +27,21 @@ require_once("$CFG->dirroot/mod/coursera/lib.php");
 
 if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext('mod_coursera/client_id', new lang_string('client_id', 'mod_coursera'), '',
-            '3IuawMYbFhAM-oPatI8ZIQ', PARAM_RAW));
+            '', PARAM_RAW));
     $settings->add(new admin_setting_configtext('mod_coursera/client_secret', new lang_string('client_secret', 'mod_coursera'), '',
-            'YGStGNHE7GAnJ3fe6OfMGQ', PARAM_RAW));
+            '', PARAM_RAW));
     $settings->add(new admin_setting_configtext('mod_coursera/orgid', new lang_string('orgid', 'mod_coursera'), '',
-            'c73-awB6QzOc4pE30NrEEw', PARAM_RAW));
+            '', PARAM_RAW));
     $settings->add(new admin_setting_configtext('mod_coursera/programid', new lang_string('programid', 'mod_coursera'), '',
-            'zTYHT4MAEeqMdg4feLFcKw', PARAM_RAW));
+            '', PARAM_RAW));
 
-    $onetimecode = new admin_setting_configtext('mod_coursera/onetimecode', new lang_string('onetimecode', 'mod_coursera'), '',
-            '2JVqjJT2xD51LcT_lkFwo8SQpqeYvrUF9yBRUAIV2sg', PARAM_RAW);
+    $onetimecode = new admin_setting_configtext(
+            'mod_coursera/onetimecode',
+            new lang_string('onetimecode', 'mod_coursera'),
+            new lang_string('onetimecodedesc', 'mod_coursera'),
+            '',
+            PARAM_RAW
+    );
     $onetimecode->set_updatedcallback('coursera_get_refresh_token');
     $settings->add($onetimecode);
 

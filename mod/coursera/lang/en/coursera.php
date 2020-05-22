@@ -64,3 +64,4 @@ $string['timeremaining'] = 'You have {$a} days remaining on your access period.'
 $string['coursedetails'] = 'Course details';
 $string['showdetailsbydefault'] = 'Expand details by default';
 $string['accessexpired'] = 'Access expired';
+$string['onetimecodedesc'] = 'This setting should be blank, only enter a one time code on intial setup or when refresh token has expired (after all scheduled tasks were disabled for more than 2 weeks.';
