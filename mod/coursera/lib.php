@@ -172,7 +172,6 @@ function coursera_cm_info_dynamic(cm_info $cm) {
     }
 
     $endofaccess = \mod_coursera\courseramoduleaccess::endofcourseramoduleaccess($USER->id, $cminstance->id);
-    $endofaccess = 0;
     $data['allowaccess'] = time() < $endofaccess;
     $data['courseraurl'] = $OUTPUT->image_url('courseralogo', 'mod_coursera');
     $data['showdetailsbydefault'] = $cminstance->detailsdefaultstate;
