@@ -63,6 +63,8 @@ class mod_coursera_mod_form extends moodleform_mod {
         $options = array('optional' => false, 'defaultunit' => 86400);
         $mform->addElement('duration', 'moduleaccessperiod', get_string('moduleaccessperiod', 'coursera'), $options);
 
+        $mform->addElement('advcheckbox', 'detailsdefaultstate', get_string('showdetailsbydefault', 'coursera'));
+
         // Add standard grading elements.
         $this->standard_grading_coursemodule_elements();
 

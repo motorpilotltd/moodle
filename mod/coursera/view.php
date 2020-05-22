@@ -43,7 +43,7 @@ $PAGE->set_url('/mod/coursera/view.php', array('id' => $cm->id));
 
 require_login($course, true, $cm);
 
-if (!\mod_coursera\courseramoduleaccess::hascourseramoduleaccess($USER->id, $cminstance->id)) {
+if (time() > \mod_coursera\courseramoduleaccess::endofcourseramoduleaccess($USER->id, $cminstance->id)) {
     redirect(new moodle_url('/course/view.php', ['id' => $course->id]), get_string('noaccesscontactadmin', 'mod_coursera'), 5);
 }
 

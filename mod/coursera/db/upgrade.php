@@ -54,8 +54,8 @@ function xmldb_coursera_upgrade($oldversion) {
         $table->add_field('programid', XMLDB_TYPE_CHAR, '35');
         $table->add_field('externalid', XMLDB_TYPE_CHAR, '35');
         $table->add_field('userid', XMLDB_TYPE_INTEGER, '10');
-        $table->add_field('joined', XMLDB_TYPE_INTEGER, '10');
-        $table->add_field('left', XMLDB_TYPE_INTEGER, '10', null, false);
+        $table->add_field('datejoined', XMLDB_TYPE_INTEGER, '10');
+        $table->add_field('dateleft', XMLDB_TYPE_INTEGER, '10', null, false);
 
         // Adding keys to table local_admin_user_update_log.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -107,6 +107,43 @@ function xmldb_coursera_upgrade($oldversion) {
     if ($oldversion < 2018101112) {
         $DB->delete_records('courseraprogrammember', []);
         upgrade_mod_savepoint(true, 2018101112, 'coursera');
+    }
+
+    if ($oldversion < 2018101113) {
+        $table = new xmldb_table('coursera');
+
+        $field = new xmldb_field('dateleft', XMLDB_TYPE_INTEGER, '10', null, false);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('datejoined', XMLDB_TYPE_INTEGER, '10');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('left', XMLDB_TYPE_INTEGER, '10', null, false);
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        $field = new xmldb_field('joined', XMLDB_TYPE_INTEGER, '10');
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->drop_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2018101113, 'coursera');
+    }
+
+    if ($oldversion < 2018101114) {
+        $table = new xmldb_table('coursera');
+
+        $field = new xmldb_field('detailsdefaultstate', XMLDB_TYPE_INTEGER, '1', null, false, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2018101114, 'coursera');
     }
 
     return true;

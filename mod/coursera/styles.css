@@ -14,7 +14,19 @@
     margin: 5px;
     padding: 15px;
 }
-.courseracourse.logobar img{
+.courseralogo {
     height: 15px;
     margin: 4px;
+}
+li.activity.coursera.modtype_coursera div.activityinstance {
+    width: 100%
+}
+
+li.activity.coursera.modtype_coursera div.mod-indent-outer {
+    width: 100%
+}
+
+li.activity.coursera.modtype_coursera div.activityinstance span.instancename,
+li.activity.coursera.modtype_coursera div.activityinstance img.activityicon {
+    display: none;
 }

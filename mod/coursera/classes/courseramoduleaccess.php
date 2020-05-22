@@ -56,14 +56,12 @@ class courseramoduleaccess extends \data_object {
         return $ret;
     }
 
-    public static function hascourseramoduleaccess($userid, $courseraid) {
+    public static function endofcourseramoduleaccess($userid, $courseraid) {
         global $DB, $CFG;
 
-        $now = time();
-
         $cma = self::fetch(['userid' => $userid, 'courseraid' => $courseraid]);
-        if (!empty($cma) && $cma->timeend > $now) {
-            return true;
+        if (!empty($cma)) {
+            return $cma->timeend;
         }
 
         $coursera = $DB->get_record('coursera', ['id' => $courseraid]);
@@ -85,8 +83,8 @@ class courseramoduleaccess extends \data_object {
                 ['userid' => $userid, 'courseid' => $coursera->course]
         );
 
-        if ($maxenrolmentstart + $coursera->moduleaccessperiod > $now) {
-            return true;
+        if ($maxenrolmentstart) {
+            return $maxenrolmentstart + $coursera->moduleaccessperiod;
         }
 
         return false;

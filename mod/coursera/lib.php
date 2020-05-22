@@ -170,10 +170,37 @@ function coursera_cm_info_dynamic(cm_info $cm) {
             $data['iscompleted'] = true;
         }
     }
-    $data['allowaccess'] = \mod_coursera\courseramoduleaccess::hascourseramoduleaccess($USER->id, $cminstance->id);
 
+    $endofaccess = \mod_coursera\courseramoduleaccess::endofcourseramoduleaccess($USER->id, $cminstance->id);
+    $endofaccess = 0;
+    $data['allowaccess'] = time() < $endofaccess;
     $data['courseraurl'] = $OUTPUT->image_url('courseralogo', 'mod_coursera');
+    $data['showdetailsbydefault'] = $cminstance->detailsdefaultstate;
 
     $cm->set_content($output->rendercourseragetcoursemoduleinfo($data));
-    $cm->set_no_view_link(true);
+
+    $url = new moodle_url('/mod/coursera/view.php', ['id' => $cm->id]);
+    $url = $url->out();
+    $cm->set_on_click(htmlentities("event.preventDefault(); window.open('$url', '_blank');"));
+
+    if (!$data['allowaccess']) {
+        $remaining = get_string('noaccesscontactadmin', 'mod_coursera');
+    } else {
+        $remaining = html_writer::span(get_string('timeremaining', 'mod_coursera',
+                round(($endofaccess - time()) / DAYSECS, 0, PHP_ROUND_HALF_DOWN)));
+    }
+
+    $courseralogo = html_writer::img($OUTPUT->image_url('courseralogo', 'mod_coursera'), '', ['class' => 'pull-right courseralogo']);
+
+    if (!empty($USER->editing)) {
+        $cm->set_after_edit_icons($courseralogo);
+        $courseralogo = '';
+    }
+
+    $cm->set_after_link(
+            $remaining
+            . $courseralogo
+    );
+
+    $PAGE->requires->js_call_amd('mod_coursera/toggle', 'init');
 }

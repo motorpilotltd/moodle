@@ -58,4 +58,9 @@ $string['noaccesscompleted'] = 'You have already completed this Coursera course.
 $string['disableunusedmemberships'] = 'Disable unused memberships';
 $string['tasksyncprogrammembers'] = 'Sync program memberships';
 $string['moduleaccessperiod'] = 'Duration of access to coursera learning';
-$string['noaccesscontactadmin'] = 'Duration of access to coursera learning';
+$string['noaccesscontactadmin'] = 'Your access to coursera has expired, please contact an administrator';
+
+$string['timeremaining'] = 'You have {$a} days remaining on your access period.';
+$string['coursedetails'] = 'Course details';
+$string['showdetailsbydefault'] = 'Expand details by default';
+$string['accessexpired'] = 'Access expired';
