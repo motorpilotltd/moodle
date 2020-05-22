@@ -56,16 +56,22 @@ class coursera {
                 'HTTPHEADER'     => ['Content-Type: application/x-www-form-urlencoded; charset=UTF-8']
         );
 
+        $result = '';
         try {
             $result = $curl->post($url, http_build_query($params), $options);
 
             $response = json_decode($result);
+
+            if (!isset($response->access_token) || !isset($this->config->refreshtoken)) {
+                throw new \Exception("Error fetching refresh token: \n" . $result);
+            }
+
             $this->config->accesstoken = $response->access_token;
             $this->config->refreshtoken = $response->refresh_token;
             $this->config->accesstokenexpiry = $now + 1800;
             $this->config->refreshtokenexpiry = $now + 14 * DAYSECS;
         } catch (\Exception $ex) {
-            print_error('Error fetching refresh token');
+            print_error("Error fetching refresh token: \n" . $result);
         }
 
         set_config('accesstoken', $this->config->accesstoken, 'mod_coursera');

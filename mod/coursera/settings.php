@@ -46,3 +46,6 @@ if ($ADMIN->fulltree) {
     $settings->add($onetimecode);
 
 }
+
+
+//https://accounts.coursera.org/oauth2/v1/auth?scope=view_profile+access_business_api&redirect_uri=http://localhost:9876/callback&access_type=offline&grant_type=authorization_code&response_type=code&client_id=3IuawMYbFhAM-oPatI8ZIQ
