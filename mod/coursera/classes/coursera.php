@@ -62,7 +62,7 @@ class coursera {
 
             $response = json_decode($result);
 
-            if (!isset($response->access_token) || !isset($response->refreshtoken)) {
+            if (!isset($response->access_token) || !isset($response->refresh_token)) {
                 throw new \Exception("Error fetching refresh token: \n" . $result);
             }
 
