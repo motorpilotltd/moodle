@@ -134,8 +134,8 @@
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
             <INDEXES>
-                <INDEX NAME="courseraprogrammemberexternalid" UNIQUE="true" FIELDS="programid,externalid,joined"/>
-                <INDEX NAME="courseraprogrammemberuserid" UNIQUE="false" FIELDS="programid,userid,joined"/>
+                <INDEX NAME="courseraprogrammemberexternalid" UNIQUE="true" FIELDS="programid,externalid,datejoined"/>
+                <INDEX NAME="courseraprogrammemberuserid" UNIQUE="false" FIELDS="programid,userid,datejoined"/>
             </INDEXES>
         </TABLE>
     </TABLES>
