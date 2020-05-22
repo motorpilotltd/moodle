@@ -118,6 +118,18 @@ class source extends rb_base_source {
                 'outputformat' => 'text',
             )
         );
+
+        $columnoptions[] = new rb_column_option(
+            'learningpathsubscribe',
+            'timecreated_subscribe',
+            get_string('subscriptiondate', 'rbsource_walearningpath'),
+            "walearningpathsubscribe.timecreated",
+            array(
+                'displayfunc' => 'nice_date',
+                'dbdatatype' => 'timestamp',
+            )
+        );
+
         return $columnoptions;
     }
 
