@@ -1026,6 +1026,9 @@ class admin extends \wa_learning_path\lib\base_controller {
         $this->debughtml = ''; 
         
         if ($report = reportbuilder_get_embedded_report($shortname, $pageparams, false, 0)) {
+            $reportembedobj = $report->embedobj;
+            $reportbaseurl = new moodle_url($reportembedobj->url);
+            $report->set_baseurl($reportbaseurl);
             // Get report content html
             $renderer = $PAGE->get_renderer('local_reportbuilder');
             list($this->reporthtml, $this->debughtml) = $renderer->report_html($report);

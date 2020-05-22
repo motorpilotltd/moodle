@@ -26,7 +26,7 @@ class rb_user_walearningpath_reports_embedded extends rb_base_embedded {
     public $defaultsortcolumn, $defaultsortorder;
 
     public function __construct($data) {
-        $this->url = '/my/index.php';
+        $this->url = '/my/index.php?tab=mywalearningpath';
         $this->source = 'walearningpath';
         $this->shortname = 'user_walearningpath_reports';
         $this->fullname = get_string('sourcetitle', 'rbsource_walearningpath');

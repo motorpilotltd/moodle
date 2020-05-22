@@ -243,6 +243,9 @@ class block_arup_mylearning_content {
         $shortname = 'user_walearningpath_reports';
         
         if ($report = reportbuilder_get_embedded_report($shortname, $pageparams, false, 0)) {
+            $reportembedobj = $report->embedobj;
+            $reportbaseurl = new moodle_url($reportembedobj->url);
+            $report->set_baseurl($reportbaseurl);
             // Get report content html
             $renderer = $PAGE->get_renderer('local_reportbuilder');
             list($reporthtml, $debughtml) = $renderer->report_html($report);

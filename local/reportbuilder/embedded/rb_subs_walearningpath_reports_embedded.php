@@ -48,6 +48,8 @@ class rb_subs_walearningpath_reports_embedded extends rb_base_embedded {
             $this->embeddedparams = [
                 'walearningpath_id' => $data['walearningpath_id']
             ];
+
+            $this->url = '/local/wa_learning_path/?c=admin&a=edit_subscriptions&id=' . $data['walearningpath_id'];
         }
     }
 
