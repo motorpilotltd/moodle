@@ -54,4 +54,12 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+    'local/admin:resetcourse' => array(
+        'captype' => 'write',
+        'riskbitmask' => RISK_DATALOSS,
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW
+        )
+    ),
 );
