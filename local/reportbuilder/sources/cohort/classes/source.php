@@ -162,18 +162,6 @@ class source extends rb_base_source {
                 )
         );
         $columnoptions[] = new rb_column_option(
-                'cohort',
-                'actions',
-                get_string('actions', 'rbsource_cohort'),
-                'base.id',
-                array(
-                        'displayfunc' => 'cohort_actions',
-                        'extrafields' => array('contextid' => 'base.contextid', 'component' => 'base.component'),
-                        'nosort' => true,
-                        'noexport' => true
-                )
-        );
-        $columnoptions[] = new rb_column_option(
                 'course_category',
                 'name',
                 get_string('coursecategory', 'local_reportbuilder'),
@@ -313,6 +301,21 @@ class source extends rb_base_source {
         return \html_writer::link($url, $categoryname);
     }
 
+    private $cachedcohortassignpermissions = [];
+    private function cachedcohortassignpermissioncheck($cohortid) {
+        global $DB;
+
+        if (!isset($this->cachedcohortassignpermissions[$cohortid])) {
+
+            $cohort = $DB->get_record('cohort', array('id'=>$cohortid), '*', MUST_EXIST);
+            $context = \context::instance_by_id($cohort->contextid, MUST_EXIST);
+
+            $this->cachedcohortassignpermissions[$cohortid] = has_capability('moodle/cohort:assign', $context);
+        }
+
+        return $this->cachedcohortassignpermissions[$cohortid];
+    }
+
     /**
      * RB helper function to show the name of the cohort with a link to the cohort's details page
      * @param int $cohortid
@@ -322,39 +325,13 @@ class source extends rb_base_source {
         if (empty($cohortname)) {
             return '';
         }
-        return \html_writer::link(new \moodle_url('/cohort/view.php', array('id' => $row->cohort_id)), format_string($cohortname));
-    }
 
-    /**
-     * RB helper function to show the "action" links for a cohort -- edit/clone/delete
-     * @param int $cohortid
-     * @param stdClass $row
-     * @return string
-     */
-    public function rb_display_cohort_actions($cohortid, $row) {
-        global $OUTPUT;
-
-        $contextid = $row->contextid;
-        if ($contextid) {
-            $context = context::instance_by_id($contextid);
+        if ($this->cachedcohortassignpermissioncheck($row->cohort_id)) {
+            return \html_writer::link(new \moodle_url('/cohort/assign.php', array('id' => $row->cohort_id)),
+                    format_string($cohortname));
         } else {
-            $context = context_system::instance();
+            return format_string($cohortname);
         }
-
-        if (!has_capability('moodle/cohort:manage', $context)) {
-            return '';
-        }
-
-        $str = '';
-        if (empty($row->component)) {
-            $editurl = new \moodle_url('/cohort/edit.php', array('id' => $cohortid));
-            $str .= \html_writer::link($editurl, $OUTPUT->pix_icon('t/edit', get_string('edit')));
-        }
-        $cloneurl = new \moodle_url('/cohort/view.php', array('id' => $cohortid, 'clone' => 1, 'cancelurl' => qualified_me()));
-        $str .= \html_writer::link($cloneurl, $OUTPUT->pix_icon('t/copy', get_string('copy', 'cohort')));
-        $delurl = new \moodle_url('/cohort/view.php', array('id' => $cohortid, 'delete' => 1, 'cancelurl' => qualified_me()));
-        $str .= \html_writer::link($delurl, $OUTPUT->pix_icon('t/delete', get_string('delete')));
-        return $str;
     }
 }
 
