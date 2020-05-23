@@ -214,7 +214,8 @@ class course extends \data_object {
         local_regions_save_data_course($course);
 
         $data = new \stdClass();
-        $data->region = $course->regions_field_region;
+        // Force to 'Global', region is now only for catalogue.
+        $data->region = [0];
         $data->id = $DB->get_field('tapsenrol', 'id', ['course' => $course->id]);
         tapsenrol_region_mapping_override($data);
     }
@@ -597,7 +598,7 @@ class course extends \data_object {
 
         $tapscompletion = new \stdClass();
         $tapscompletion->course = $course->id;
-        $tapscompletion->name = 'Linked course completionment';
+        $tapscompletion->name = 'Linked course completion';
         $tapscompletion->tapscourse = $tapscourse->courseid;
         $tapscompletion->autocompletion = 1;
         $tapscompletion->completiontimetype = 0;
