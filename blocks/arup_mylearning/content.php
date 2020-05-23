@@ -225,6 +225,41 @@ class block_arup_mylearning_content {
         return $content;
     }
 
+    protected function _has_content_mywalearningpath() {
+        return true;
+    }
+
+    protected function _get_mywalearningpath_html() {
+        global $USER, $PAGE, $CFG;
+        
+        require_once($CFG->dirroot.'/local/reportbuilder/lib.php');
+
+        $content = '';
+
+        $pageparams = [
+            'walearningpath_userid' => $USER->id
+        ];
+        
+        $shortname = 'user_walearningpath_reports';
+        
+        if ($report = reportbuilder_get_embedded_report($shortname, $pageparams, false, 0)) {
+            $reportembedobj = $report->embedobj;
+            $reportbaseurl = new moodle_url($reportembedobj->url);
+            $report->set_baseurl($reportbaseurl);
+            // Get report content html
+            $renderer = $PAGE->get_renderer('local_reportbuilder');
+            list($reporthtml, $debughtml) = $renderer->report_html($report);
+            $content .= $debughtml;
+            $content .= $reporthtml;
+            
+        } else {
+            $content .= html_writer::tag('p', get_string('mywalearningpath:nopath', 'block_arup_mylearning'));
+        }
+
+        return $content;
+    }
+
+
     protected function _has_content_myteaching() {
         global $USER;
         return self::user_has_role_assignments($USER->id, array('editingteacher', 'teacher'));
