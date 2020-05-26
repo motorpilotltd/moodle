@@ -195,6 +195,7 @@ $string['coursestatusnotenrolled'] = 'You are not currently enrolled in this cou
 $string['coursesummary'] = 'Course Summary';
 $string['coursetypeicon'] = 'Type';
 $string['coursetype'] = 'Course Type';
+$string['courseurl'] = 'Course URL';
 $string['coursevisible'] = 'Course Visible';
 $string['coursevisibledisabled'] = 'Course Visible (not applicable)';
 $string['createasavedsearch'] = 'Create a saved search';
