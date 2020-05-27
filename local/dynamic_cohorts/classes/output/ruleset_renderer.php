@@ -4,6 +4,7 @@ namespace local_dynamic_cohorts\output;
 defined('MOODLE_INTERNAL') || die();
 
 use local_dynamic_cohorts\dynamic_cohorts;
+use local_dynamic_cohorts\aadgroups;
 
 /**
  * @author Tomasz Biegun <tomasz.biegun@webanywhere.co.uk>
@@ -12,7 +13,7 @@ class ruleset_renderer extends \plugin_renderer_base
 {
     /**
      * Displays ruleset (with rules if this is edit action)
-     * 
+     *
      * @param $rulesetid
      * @param $rulesetcount
      * @param int $operator
@@ -102,7 +103,7 @@ class ruleset_renderer extends \plugin_renderer_base
 
     /**
      * Display inputs and dropdown for creating/editing rule
-     * 
+     *
      * @param $rulesetid
      * @param string $action
      * @param int $ruleid
@@ -152,7 +153,7 @@ class ruleset_renderer extends \plugin_renderer_base
 
     /**
      * Generate HTML for value field basing on field type (text / checkbox / datetime)
-     * 
+     *
      * @param $rulesetid
      * @param $field field name
      * @param $value default value
@@ -180,7 +181,7 @@ class ruleset_renderer extends \plugin_renderer_base
 
     /**
      * Create dropdown for selecting date
-     * 
+     *
      * @param $rulesetid
      * @param $currenttime
      * @param bool $withtime
@@ -210,7 +211,7 @@ class ruleset_renderer extends \plugin_renderer_base
 
     /**
      * Display rule converted to string i.e. "Firstname contains 'John' "
-     * 
+     *
      * @param $rulesetid
      * @param $ruleid
      * @param $field

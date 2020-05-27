@@ -24,13 +24,14 @@ class dynamic_cohorts
     const CRITERIA_TYPE_IS_MEMBER = 11;
     const CRITERIA_TYPE_IS_NOT_MEMBER = 12;
 
-    const OPERATOR_AND = 1;    
+    const OPERATOR_AND = 1;
     const OPERATOR_OR = 0;
 
     const FIELD_TYPE_USER = 1;
     const FIELD_TYPE_CUSTOM = 2;
     const FIELD_TYPE_HUB = 3;
     const FIELD_TYPE_COHORT = 4;
+    const FIELD_TYPE_AADGROUP = 5;
 
     /**
      * Get cohort types
@@ -61,7 +62,7 @@ class dynamic_cohorts
             }
             if($rule->fieldtype == self::FIELD_TYPE_CUSTOM){
                 $rule->datatype = $customfields[$rule->field]->datatype;
-            }   
+            }
             $rulesets[$rule->rulesetid]->rules[] = $rule;
         }
         return $rulesets;
@@ -103,8 +104,8 @@ class dynamic_cohorts
         }
 
         $query = "
-            SELECT    
-              wcr.id, 
+            SELECT
+              wcr.id,
               wcr.roleid,
               wcr.contextid
             FROM {wa_cohort_roles} wcr
@@ -171,6 +172,9 @@ class dynamic_cohorts
                             $rule->rulesetid = $ruleset->id;
 
                             switch ($field){
+                                case 'aadgroup':
+                                    $rule->fieldtype = self::FIELD_TYPE_AADGROUP;
+                                    break;
                                 case 'cohort':
                                     $rule->fieldtype = self::FIELD_TYPE_COHORT;
                                     break;
@@ -193,7 +197,7 @@ class dynamic_cohorts
                                 $date = new \DateTime($data->rulesetrules['value'][$rulesetid][$rulecounter]);
                                 $rule->value = $date->getTimestamp();
                             }else{
-                                $rule->value = $data->rulesetrules['value'][$rulesetid][$rulecounter];    
+                                $rule->value = $data->rulesetrules['value'][$rulesetid][$rulecounter];
                             }
                             $rule->timecreated = time();
                             $rule->timemodified = time();
@@ -289,7 +293,7 @@ class dynamic_cohorts
         list($usql, $params) = $DB->get_in_or_equal($cohortsids);
 
         $query = "
-            SELECT 
+            SELECT
               c.cohortid,
               c.memberadd,
               c.memberremove
@@ -335,9 +339,9 @@ class dynamic_cohorts
 
         $params = [];
         $query = "
-			SELECT 
+			SELECT
 				DISTINCT u.*
-			FROM {cohort_members} cm 
+			FROM {cohort_members} cm
 			JOIN {user} u ON u.id = cm.userid
 			WHERE cm.cohortid = :cohortid
 		";
@@ -411,12 +415,17 @@ class dynamic_cohorts
      */
     public static function get_rule_fields()
     {
-        return self::get_user_fields() + self::get_user_custom_fields() + self::get_user_hub_fields() + ['cohort' => get_string('cohort', 'local_dynamic_cohorts')];
+        return
+            self::get_user_fields() +
+            self::get_user_custom_fields() +
+            self::get_user_hub_fields() +
+            ['cohort' => get_string('cohort', 'local_dynamic_cohorts')] +
+            ['aadgroup' => get_string('aadgroup', 'local_dynamic_cohorts')];
     }
 
     /**
      * Return array of criteria types basing of field type
-     * 
+     *
      * @param string $fieldtype (empty || checkbox || datetime || all)
      * @return array
      */
@@ -449,7 +458,7 @@ class dynamic_cohorts
             ];
         }
 
-        if($fieldtype == 'all' || $fieldtype == 'cohort'){
+        if($fieldtype == 'all' || $fieldtype == 'cohort' || $fieldtype == 'aadgroup'){
             $criteriatypes += [
                 self::CRITERIA_TYPE_IS_MEMBER => get_string('ismember', 'local_dynamic_cohorts'),
                 self::CRITERIA_TYPE_IS_NOT_MEMBER => get_string('isnotmember', 'local_dynamic_cohorts')
@@ -467,7 +476,9 @@ class dynamic_cohorts
      */
     public static function get_field_type($field){
         global $DB;
-        if($field == 'cohort'){
+        if($field == 'aadgroup'){
+            return 'aadgroup';
+        }elseif($field == 'cohort'){
             return 'cohort';
         }elseif(empty($field) || preg_match('/^(user|hub)_/is', $field)){
             return 'text';
@@ -498,6 +509,8 @@ class dynamic_cohorts
     public static function get_criteria_types_by_field_type($field)
     {
         switch (self::get_field_type($field)) {
+            case 'aadgroup':
+                return \local_dynamic_cohorts\dynamic_cohorts::get_criteria_types('aadgroup');
             case 'cohort':
                 return \local_dynamic_cohorts\dynamic_cohorts::get_criteria_types('cohort');
             case 'checkbox':
@@ -595,7 +608,7 @@ class dynamic_cohorts
     public static function print_csv($records, $delimiter = 'comma', $enclosure = '"') {
         global $CFG;
         require_once($CFG->libdir . '/csvlib.class.php');
-        
+
         $csvdata = new \csv_export_writer($delimiter, $enclosure);
         foreach ($records as $row) {
             $csvdata->add_data($row);
@@ -640,7 +653,7 @@ class dynamic_cohorts
     public static function get_context_name($contextid){
         global $DB;
         $query = "
-            SELECT 
+            SELECT
               CASE ctx.contextlevel WHEN :contextsystem THEN :systemcontextname ELSE cc.name END as contextname
             FROM {context} ctx
             LEFT JOIN {course_categories} cc ON cc.id=ctx.instanceid
@@ -670,7 +683,7 @@ class dynamic_cohorts
         list($sql, $params) = $DB->get_in_or_equal(array_keys($categories), SQL_PARAMS_NAMED, 'param', true, true);
 
         $query = "
-            SELECT 
+            SELECT
               c.instanceid,
               c.id
             FROM {context} c
