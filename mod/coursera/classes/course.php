@@ -63,7 +63,14 @@ class course extends \data_object implements \templatable {
 
     public static function getcoursesselectoptions() {
         global $DB;
-        return $DB->get_records_menu('courseracourse', [], 'title');
+
+        $progid = get_config('mod_coursera', 'programid');
+
+        return $DB->get_records_sql_menu('select cc.id, cc.title 
+                                                from {courseracourse} cc 
+                                                inner join {courseraprogramlink} cpl on cc.id = cpl.courseracourseid 
+                                                where cpl.programid = :programid
+                                                order by title', ['programid' => $progid]);
     }
 
     public static function savecourse($element) {

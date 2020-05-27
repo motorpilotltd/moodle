@@ -62,15 +62,24 @@ class source extends rb_base_source {
      * @return array
      */
     protected function define_joinlist() {
-        global $DB;
+        $progid = get_config('mod_coursera', 'programid');
 
-        $joinlist = [new rb_join(
-                "courserainstance",
-                'LEFT',
-                '{coursera}',
-                "courserainstance.contentid = base.id",
-                REPORT_BUILDER_RELATION_MANY_TO_ONE
-        )];
+        $joinlist = [
+                new rb_join(
+                        "courserainstance",
+                        'LEFT',
+                        '{coursera}',
+                        "courserainstance.contentid = base.id",
+                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                ),
+                new rb_join(
+                        "courseraprogramlink",
+                        'LEFT',
+                        '{courseraprogramlink}',
+                        "courseraprogramlink.courseracourseid = base.id AND courseraprogramlink.programid = '$progid'",
+                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                ),
+        ];
 
         // join users, courses and categories
         $this->add_course_table_to_joinlist($joinlist, 'courserainstance', 'course');
@@ -146,6 +155,13 @@ class source extends rb_base_source {
                 get_string('courseregion', 'local_reportbuilder'),
                 ['courseid' => "arupadvert.course"],
                 'arupadvert'
+        );
+
+        $contentoptions[] = new rb_content_option(
+                'courseracourse',
+                get_string('courseracourse', 'local_reportbuilder'),
+                'courseraprogramlink.id',
+                'courseraprogramlink'
         );
 
         return $contentoptions;

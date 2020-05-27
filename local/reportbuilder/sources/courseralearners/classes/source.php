@@ -77,6 +77,8 @@ class source extends rb_base_source {
     protected function define_joinlist() {
         $now = time();
 
+        $progid = get_config('mod_coursera', 'programid');
+
         $joinlist = array(
             // Join assignment.
                 new rb_join(
@@ -103,12 +105,13 @@ class source extends rb_base_source {
                 new rb_join(
                         "courseracourserelationships",
                         'LEFT',
-                        '(
+                        "(
                         select u.idnumber as externalid, cc.contentid
                         from {courseramoduleaccess} cma
                                 INNER JOIN {coursera} ce ON ce.course = cma.courseraid
                                 INNER JOIN {courseracourse} cc ON ce.contentid = cc.id
-                                 inner join {user} u on u.id = cma.userid
+                                INNER JOIN {courseraprogramlink} cpl on cc.id = cpl.courseracourseid  AND cpl.programid = '$progid'
+                                INNER JOIN {user} u on u.id = cma.userid
                          union
                         select u.idnumber as externalid, cc.contentid
                         from {coursera} i
@@ -117,9 +120,12 @@ class source extends rb_base_source {
                                  inner join {user_enrolments} ue on ue.enrolid = me.id
                                  inner join {user} u on u.id = ue.userid
                                 INNER JOIN {courseracourse} cc ON i.contentid = cc.id
+                                INNER JOIN {courseraprogramlink} cpl on cc.id = cpl.courseracourseid  AND cpl.programid = '$progid'
                          union
-                         select externalid, contentid from {courseraprogress}
-                        )',
+                         select externalid, cc.contentid from {courseraprogress} cp
+                                LEFT JOIN {courseraprogramlink} cpl on cp.courseracourseid = cpl.courseracourseid  AND cpl.programid = '$progid'
+                                LEFT JOIN {courseracourse} cc ON cpl.courseracourseid = cc.id
+                        )",
                         "courseracourserelationships.externalid = base.externalid",
                         REPORT_BUILDER_RELATION_MANY_TO_ONE
                 ),
