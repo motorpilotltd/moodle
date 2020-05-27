@@ -43,6 +43,13 @@ class rb_subs_walearningpath_reports_embedded extends rb_base_embedded {
             ],
         ];
 
+        $this->filters = array(
+            array(
+                'type' => 'user',
+                'value' => 'username',
+            ),
+        );
+
         // only show learning path of the current user
         if (!empty($data['walearningpath_id'])) {
             $this->embeddedparams = [

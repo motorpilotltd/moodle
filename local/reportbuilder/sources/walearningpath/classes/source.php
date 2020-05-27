@@ -59,6 +59,7 @@ class source extends rb_base_source {
 
         // Include some standard columns, override parent so they say certification.
         $this->add_user_fields_to_columns($columnoptions);
+        $this->add_staff_details_to_columns($columnoptions);
 
         $columnoptions[] = new rb_column_option(
             'learningpath',
@@ -94,6 +95,16 @@ class source extends rb_base_source {
                 'outputformat' => 'text'
             )
         );
+
+        $columnoptions[] = new rb_column_option(
+            'learningpath',
+            'learningpathimage',
+            get_string('learningpathimage', 'rbsource_walearningpath'),
+            'base.id',
+            array(
+                'displayfunc' => 'learningpathimage',
+            )
+    );
 
         $columnoptions[] = new rb_column_option(
             'learningpathsubscribe',
@@ -166,19 +177,31 @@ class source extends rb_base_source {
             'text'
         );
 
+        $filteroptions[] = new rb_filter_option(
+            'user',
+            'username',
+            get_string('username', 'rbsource_walearningpath'),
+            'text'
+        );
+
         return $filteroptions;
     }
 
     protected function define_contentoptions() {
         $contentoptions = [];
 
-        // Add the time created content option.
         $contentoptions[] = new rb_content_option(
             'user',
             get_string('user', 'local_reportbuilder'),
             ['userid' => 'walearningpathsubscribe.userid']
-    );
+        );
 
+        $contentoptions[] = new rb_content_option(
+            'leaver',
+            get_string('leaver', 'local_reportbuilder'),
+            ['leaver' => "auserstaff.LEAVER_FLAG"],
+            'auserstaff'
+        );
         return $contentoptions;
     }
 
@@ -214,6 +237,17 @@ class source extends rb_base_source {
         ];
 
         return $paramoptions;
+    }
+
+    public function rb_display_learningpathimage($id, $row) {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/wa_learning_path/lib/lib.php');
+        \wa_learning_path\lib\load_model('learningpath');
+
+        $image_url = \wa_learning_path\model\learningpath::get_image_url($id, false);
+        $image_url = !empty($image_url) ? $image_url: new \moodle_url('/local/wa_learning_path/pix/default.svg');
+
+        return \html_writer::empty_tag('img', array('src' => $image_url, 'class' => 'learning_path_image', 'width' => '35px', 'height' => '35px'));
     }
 
     public function rb_display_titlelinkedlearningpath($title, $row) {

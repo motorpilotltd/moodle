@@ -33,8 +33,13 @@ class rb_user_walearningpath_reports_embedded extends rb_base_embedded {
         $this->columns = [
             [
                 'type' => 'learningpath',
-                'value' => 'title',
-                'heading' => get_string('title', 'rbsource_walearningpath'),
+                'value' => 'learningpathimage',
+                'heading' => get_string('learningpathimage', 'rbsource_walearningpath'),
+            ],
+            [
+                'type' => 'learningpath',
+                'value' => 'titlelinkedlearningpath',
+                'heading' => get_string('titlelinkedlearningpath', 'rbsource_walearningpath'),
             ],
             [
                 'type' => 'learningpath',

@@ -1014,24 +1014,35 @@ class admin extends \wa_learning_path\lib\base_controller {
         global $CFG, $PAGE;
         require_once($CFG->dirroot.'/local/reportbuilder/lib.php');
 
+        $this->sid = optional_param('sid', '0', PARAM_INT);
         $this->id = required_param('id', PARAM_INT);
+        $format = optional_param('format', '', PARAM_TEXT); // export format
 
         $pageparams = [
-            'walearningpath_id' =>  $this->id
+            'walearningpath_id' =>  $this->id,
+            'format' => $format
         ];
         
         $shortname = 'subs_walearningpath_reports';
 
         $this->reporthtml = ''; 
         $this->debughtml = ''; 
-        
-        if ($report = reportbuilder_get_embedded_report($shortname, $pageparams, false, 0)) {
-            $reportembedobj = $report->embedobj;
+        $this->report = '';
+        $this->renderer = $PAGE->get_renderer('local_reportbuilder');
+
+        if ($this->report = reportbuilder_get_embedded_report($shortname, $pageparams, false, $this->sid)) {
+            $reportembedobj = $this->report->embedobj;
             $reportbaseurl = new moodle_url($reportembedobj->url);
-            $report->set_baseurl($reportbaseurl);
+            $this->report->set_baseurl($reportbaseurl);
             // Get report content html
-            $renderer = $PAGE->get_renderer('local_reportbuilder');
-            list($this->reporthtml, $this->debughtml) = $renderer->report_html($report);
+            
+            list($this->reporthtml, $this->debughtml) = $this->renderer->report_html($this->report);
+        }
+
+        // Exporting embedded report
+        if ($format != '') {
+            $this->report->export_data($format);
+            die;
         }
 
         $this->view('edit_subscriptions');
