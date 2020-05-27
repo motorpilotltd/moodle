@@ -42,7 +42,10 @@ abstract class rb_base_content {
         $this->reportfor = $reportfor;
     }
 
-    public function default_sql_restriction($fields, $reportid) {
+    public function default_sql_restriction($fields = null, $reportid = null) {
+        if ($fields == null) {
+            return false;
+        }
         return array(' (1 = 1) ', array());
     }
 
@@ -564,7 +567,7 @@ class rb_appraisalstatus_content extends rb_base_content {
  */
 class rb_leaver_content extends rb_base_content {
 
-    public function default_sql_restriction($leaverfield, $reportid) {
+    public function default_sql_restriction($leaverfield = null, $reportid = null) {
         $sql = "{$leaverfield} = 'N'";
 
         return array(" $sql ", []);

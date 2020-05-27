@@ -2534,23 +2534,30 @@ class reportbuilder {
      */
     function get_content_joins() {
         $reportid = $this->_id;
-
-        if ($this->contentmode == REPORT_BUILDER_CONTENT_MODE_NONE) {
-            // no limit on content so no joins necessary
-            return array();
-        }
         $contentjoins = array();
         foreach ($this->contentoptions as $option) {
+            $configured = true;
             $name = $option->classname;
             $classname = 'rb_' . $name . '_content';
             if (class_exists($classname)) {
-                // @TODO take settings form instance, not database, otherwise caching will fail after content settings change
-                if (reportbuilder::get_setting($reportid, $name . '_content', 'enable')) {
-                    // this content option is enabled
-                    // get required joins
-                    $contentjoins = array_merge($contentjoins,
-                        $this->get_joins($option, 'content'));
+                if ($this->contentmode == REPORT_BUILDER_CONTENT_MODE_NONE) {
+                    $configured = false;
                 }
+                // @TODO take settings form instance, not database, otherwise caching will fail after content settings change
+                if (empty(reportbuilder::get_setting($reportid, $name . '_content', 'enable'))) {
+                    $configured = false;
+                }
+
+                $class = new $classname($this->reportfor);
+
+                if (!$configured && $class->default_sql_restriction() == false) {
+                    continue;
+                }
+
+                // this content option is enabled
+                // get required joins
+                $contentjoins = array_merge($contentjoins,
+                        $this->get_joins($option, 'content'));
             }
         }
         return $contentjoins;
