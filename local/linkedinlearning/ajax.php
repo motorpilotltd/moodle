@@ -19,9 +19,13 @@ require_once("../../config.php");
 require_login();
 require_sesskey();
 
+$context = context_system::instance();
+
+require_capability('local/linkedinlearning:manage', $context);
+
 $action = required_param('action', PARAM_ALPHA);
 
-$PAGE->set_context(context_system::instance());
+$PAGE->set_context($context);
 $PAGE->set_url('/local/linkedinlearning/ajax.php');
 
 switch ($action) {
