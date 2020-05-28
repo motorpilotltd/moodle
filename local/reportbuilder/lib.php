@@ -5874,17 +5874,10 @@ function reportbuilder_get_report_url($report) {
  * @return object Embedded report object
  */
 function reportbuilder_get_embedded_report_object($embedname, $data=array()) {
-    global $CFG;
+    $reports = reportbuilder_get_all_embedded_reports();
 
-    $sourcepath = $CFG->dirroot . '/local/reportbuilder/embedded/';
-
-    $classfile = $sourcepath . 'rb_' . $embedname . '_embedded.php';
-    if (is_readable($classfile)) {
-        include_once($classfile);
-        $classname = 'rb_' . $embedname . '_embedded';
-        if (class_exists($classname)) {
-            return new $classname($data);
-        }
+    if (isset($reports[$embedname])) {
+        return $reports[$embedname];
     }
 
     // file or class not found
@@ -5927,17 +5920,30 @@ function reportbuilder_get_embedded_report($embedname, $data = array(), $nocache
  * @return array Array of embedded report objects
  */
 function reportbuilder_get_all_embedded_reports() {
-    global $CFG;
+    $cache = cache::make('local_reportbuilder', 'rb_embedded_sources');
+    $embedded = $cache->get('all');
 
-    $embedded = array();
+    if (!is_array($embedded) || 1==1) {
+        $embedded = array();
 
-    $classes = core_component::get_component_classes_in_namespace('local_reportbuilder', 'rb_base_embedded');
+        $sources = \core_component::get_plugin_list('rbsource');
+        $componentstocheck = array_keys($sources);
 
-    foreach ($classes as $class) {
-        $embedded[] = new $class();
+        foreach ($componentstocheck as $componenttocheck) {
+            foreach (core_component::get_component_classes_in_namespace("rbsource_$componenttocheck", "embedded" ) as $class => $classpath) {
+                $embedded[$class] = new $class();
+            }
+        }
+
+        foreach (core_component::get_component_classes_in_namespace("local_reportbuilder", "embedded" ) as $class => $classpath) {
+            $embedded[$class] = new $class();
+        }
+
+        // sort by fullname before returning
+        uasort($embedded, 'reportbuilder_sortbyfullname');
+        $cache->set('all', $embedded);
     }
-    // sort by fullname before returning
-    usort($embedded, 'reportbuilder_sortbyfullname');
+
     return $embedded;
 }
 
