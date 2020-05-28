@@ -20,10 +20,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  * ---------------------------------------------------------------------------------------------------------------------
  */
-
-$plugin->version = 2016093000;
-
+/* BEGIN CORE MOD */
+$plugin->version = 2017051500;
+/* END CORE MOD */
 $plugin->component  = 'block_course_menu';
-$plugin->release    = '3.0';
-$plugin->requires   = 2015111600; // Moodle 3.0 
+/* BEGIN CORE MOD */
+$plugin->release    = "3.3.0 ({$plugin->version})";
+$plugin->requires   = 2017051500; // Moodle 3.3
+/* END CORE MOD */
 $plugin->maturity   = MATURITY_STABLE;
