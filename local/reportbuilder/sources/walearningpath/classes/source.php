@@ -221,6 +221,14 @@ class source extends rb_base_source {
                 ),
         );
 
+        $requiredcolumns[] = new rb_column(
+            'auser',
+            'employeenumber',
+            '',
+            "auserstaff.EMPLOYEE_NUMBER",
+            array('hidden' => true, 'joins' => 'auserstaff')
+        );
+
         return $requiredcolumns;
     }
 
