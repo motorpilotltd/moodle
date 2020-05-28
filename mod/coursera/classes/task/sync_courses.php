@@ -39,7 +39,7 @@ class sync_courses extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('tasksynccompletions', 'mod_coursera');
+        return get_string('tasksynccourses', 'mod_coursera');
     }
 
     /**

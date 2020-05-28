@@ -28,8 +28,9 @@ $string['modulename'] = 'Coursera';
 $string['modulenameplural'] = 'Coursera';
 $string['modulename_help'] = 'Use the coursera module to link to activities hosted within Coursera';
 
-$string['tasksynccompletions'] = 'Process coursera completions';
-$string['tasksyncdata'] = 'Import raw coursera data';
+$string['tasksynccompletions'] = 'Sync coursera user progress';
+$string['tasksynccourses'] = 'Sync coursera courses';
+$string['tasksyncprogrammembers'] = 'Sync coursera program memberships';
 
 $string['coursera:addinstance'] = 'Add instance of coursera module';
 $string['coursera:submit'] = 'Submit coursera Module';
@@ -56,7 +57,6 @@ $string['notstarted'] = 'Not yet started';
 $string['notgradable'] = 'You must be enrolled on this course a learner in order to view this activity.';
 $string['noaccesscompleted'] = 'You have already completed this Coursera course.';
 $string['disableunusedmemberships'] = 'Disable unused memberships';
-$string['tasksyncprogrammembers'] = 'Sync program memberships';
 $string['moduleaccessperiod'] = 'Duration of access to coursera learning';
 $string['noaccesscontactadmin'] = 'Your access to coursera has expired, please contact an administrator';
 
