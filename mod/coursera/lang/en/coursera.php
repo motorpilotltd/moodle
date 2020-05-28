@@ -59,6 +59,12 @@ $string['noaccesscompleted'] = 'You have already completed this Coursera course.
 $string['disableunusedmemberships'] = 'Disable unused memberships';
 $string['moduleaccessperiod'] = 'Duration of access to coursera learning';
 $string['noaccesscontactadmin'] = 'Your access to coursera has expired, please contact an administrator';
+$string['extendtitle'] = 'Extend eligibility for {$a->name} on course {$a->cmname}';
+$string['extendedto'] = 'Currently extended to {$a->timeend} (default {$a->default})';
+$string['defaultedto'] = 'Currently defaulted to {$a}';
+$string['extendto'] = 'Extend to';
+$string['deleteextension'] = 'Delete extension';
+$string['manageextensions'] = 'Manage eligibility extensions';
 
 $string['timeremaining'] = 'You have {$a} days remaining on your access period.';
 $string['coursedetails'] = 'Course details';

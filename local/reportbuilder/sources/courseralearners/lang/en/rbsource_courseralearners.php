@@ -18,3 +18,6 @@ $string['timestart'] = 'Start of eligibility to access coursera program';
 $string['timeend'] = 'End of eligibility to access coursera program';
 $string['externalid'] = 'Coursera User ID';
 $string['durationofeligibility'] = 'Duration of eligibility to access coursera program';
+$string['extend'] = 'Extend';
+$string['extendeligibility'] = 'Extend eligibility';
+$string['manageextensions'] = 'Manage eligibility extensions';

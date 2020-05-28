@@ -155,6 +155,7 @@ function coursera_cm_info_dynamic(cm_info $cm) {
     $cminstance  = $DB->get_record('coursera', array('id' => $cm->instance), '*', MUST_EXIST);
     $course = \mod_coursera\course::fetch(['id' => $cminstance->contentid]);
     $output = $PAGE->get_renderer('mod_coursera');
+    $context = context_module::instance($cm->id);
 
     $data = $course->export_for_template($output);
     $data['cmid'] = $cm->id;
@@ -175,6 +176,8 @@ function coursera_cm_info_dynamic(cm_info $cm) {
     $data['allowaccess'] = time() < $endofaccess;
     $data['courseraurl'] = $OUTPUT->image_url('courseralogo', 'mod_coursera');
     $data['showdetailsbydefault'] = $cminstance->detailsdefaultstate;
+    $data['cminstanceid'] = $cm->instance;
+    $data['showextendeligibility'] = has_capability('mod/coursera:extendeligibility', $context);
 
     $cm->set_content($output->rendercourseragetcoursemoduleinfo($data));
 
@@ -202,4 +205,13 @@ function coursera_cm_info_dynamic(cm_info $cm) {
     );
 
     $PAGE->requires->js_call_amd('mod_coursera/toggle', 'init');
+}
+
+function coursera_extend_settings_navigation($settings, $courseranode) {
+    global $PAGE;
+
+    if (has_capability('mod/coursera:extendeligibility', $PAGE->cm->context)) {
+        $url = new moodle_url('/mod/coursera/manageextensions.php', array('cminstanceid' => $PAGE->cm->instance));
+        $courseranode->add(get_string('manageextensions','rbsource_courseralearners'), $url);
+    }
 }

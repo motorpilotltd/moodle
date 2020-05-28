@@ -43,7 +43,15 @@
                         <span class="duration">{{# str }} estimatedlearningtime, mod_coursera, {{estimatedlearningtime}} {{/ str }} </span>
                     </div>
                 </div>
-
+            {{#showextendeligibility}}
+                <div class="row extendeligibility">
+                    <div class="col-md-5">
+                        <a class="btn btn-primary" href="{{config.wwwroot}}/mod/coursera/manageextensions.php?cminstanceid={{cminstanceid}}">
+                        {{# str }} manageextensions, rbsource_courseralearners {{/ str}}
+                        </a>
+                    </div>
+                </div>
+            {{/showextendeligibility}}
         </div>
         <div class="col-md-4 rightcol">
             {{#haspartners}}

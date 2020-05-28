@@ -30,3 +30,6 @@ li.activity.coursera.modtype_coursera div.activityinstance span.instancename,
 li.activity.coursera.modtype_coursera div.activityinstance img.activityicon {
     display: none;
 }
+div.extendeligibility.row {
+    padding-top: 10px;
+}

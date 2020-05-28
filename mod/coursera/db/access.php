@@ -56,4 +56,12 @@ $capabilities = array(
             'student' => CAP_ALLOW
         )
     ),
+
+    'mod/coursera:extendeligibility' => array(
+        'riskbitmask' => RISK_SPAM,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'legacy' => array(
+        )
+    ),
 );

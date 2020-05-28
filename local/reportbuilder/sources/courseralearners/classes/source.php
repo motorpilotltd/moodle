@@ -23,6 +23,7 @@
  */
 
 namespace rbsource_courseralearners;
+use http\Exception;
 use local_courseralearners\course;
 use rb_base_source;
 use rb_content_option;
@@ -63,11 +64,24 @@ class source extends rb_base_source {
         $this->defaultcolumns = $this->define_defaultcolumns();
         $this->defaultfilters = $this->define_defaultfilters();
         $this->contentoptions = $this->define_contentoptions();
+        $this->paramoptions = $this->define_paramoptions();
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_courseralearners');
 
         $PAGE->requires->js_call_amd('local_courseralearners/manage', 'initialise');
 
         parent::__construct();
+    }
+
+    protected function define_paramoptions() {
+        $paramoptions = array(
+                new \rb_param_option(
+                        'cminstanceid',
+                        'courseenrolments.cminstanceid',
+                        'courseenrolments'
+                ),
+        );
+
+        return $paramoptions;
     }
 
     /**
@@ -148,15 +162,23 @@ class source extends rb_base_source {
                 new rb_join(
                         'courseenrolments',
                         'LEFT',
-                        "(SELECT ue.userid as userid, e.courseid as course, ce.contentid, min(ue.timestart) as timestart, min(ue.timecreated) as timecreated, max(ue.timemodified) as timemodified, ce.moduleaccessperiod, cma.timeend as extensionend
-                    FROM {user_enrolments} ue
-                    INNER JOIN {enrol} e ON e.id = ue.enrolid
-                    INNER JOIN {coursera} ce ON ce.course = e.courseid
-                    LEFT JOIN {courseramoduleaccess} cma on cma.userid = ue.userid and cma.courseraid = ce.id
-                    GROUP BY ue.userid, e.courseid, ce.contentid, ce.moduleaccessperiod, cma.timeend)",
+                        "(SELECT ue.userid            as userid,
+                                       ce.id                as cminstanceid,
+                                       e.courseid           as course,
+                                       ce.contentid,
+                                       min(ue.timestart)    as timestart,
+                                       min(ue.timecreated)  as timecreated,
+                                       max(ue.timemodified) as timemodified,
+                                       ce.moduleaccessperiod,
+                                       cma.timeend          as extensionend
+                                FROM {user_enrolments} ue
+                                         INNER JOIN {enrol} e ON e.id = ue.enrolid
+                                         INNER JOIN {coursera} ce ON ce.course = e.courseid
+                                         LEFT JOIN {courseramoduleaccess} cma on cma.userid = ue.userid and cma.courseraid = ce.id
+                                GROUP BY ue.userid, e.courseid, ce.id, ce.contentid, ce.moduleaccessperiod, cma.timeend)",
                         'auser.id = courseenrolments.userid AND courseenrolments.contentid = courseracourse.id',
                         REPORT_BUILDER_RELATION_MANY_TO_ONE,
-                        ['courseracourserelationships', 'courseracourse']
+                        ['courseracourserelationships', 'courseracourse', 'auser']
                 ),
         );
 
@@ -297,6 +319,20 @@ class source extends rb_base_source {
                                 'displayfunc' => 'endofeligibility',
                         )
                 ),
+                new rb_column_option(
+                        'coursera',
+                        'extendeligibility',
+                        get_string('extendeligibility', 'rbsource_courseralearners'),
+                        'courseenrolments.cminstanceid',
+                        array(
+                                'extrafields' => [
+                                        'userid' => 'auser.id',
+                                ],
+                                'joins'       => ['courseenrolments', 'auser'],
+                                'displayfunc' => 'extendeligibility',
+                                'capability'  => 'mod/coursera:extendeligibility'
+                        )
+                ),
         );
 
         // User, course and category fields.
@@ -306,6 +342,17 @@ class source extends rb_base_source {
         $this->add_course_category_fields_to_columns($columnoptions);
 
         return $columnoptions;
+    }
+
+    public function rb_display_extendeligibility($cminstanceid, $row) {
+        global $OUTPUT;
+
+        if (empty($cminstanceid)) {
+            return '';
+        }
+
+        $url = new \moodle_url('/mod/coursera/extendeligibility.php', ['cminstanceid' => $cminstanceid, 'userid' => $row->userid]);
+        return \html_writer::link($url,  $OUTPUT->pix_icon('i/settings', ''), ['title' => get_string('extend', 'rbsource_courseralearners')]);
     }
 
     public function rb_display_durationofeligibility($timestart, $row) {
