@@ -109,6 +109,27 @@ class source extends rb_base_source {
                 ),
                 new rb_column_option(
                         'coursera',
+                        'description',
+                        get_string('description', 'rbsource_courseracourses'),
+                        'base.description',
+                        array(
+                                'dbdatatype' => 'char',
+                                'outputformat' => 'text'
+                        )
+                ),
+                new rb_column_option(
+                        'coursera',
+                        'language',
+                        get_string('language', 'rbsource_courseracourses'),
+                        'base.languagecode',
+                        array(
+                                'displayfunc' => 'language',
+                                'dbdatatype' => 'char',
+                                'outputformat' => 'text'
+                        )
+                ),
+                new rb_column_option(
+                        'coursera',
                         'estimatedlearningtime',
                         get_string('estimatedlearningtime', 'rbsource_courseracourses'),
                         'base.estimatedlearningtime / 60',
@@ -138,6 +159,16 @@ class source extends rb_base_source {
                         'title',
                         get_string('title', 'rbsource_courseracourses'),
                         'text'
+                ),
+                new rb_filter_option(
+                        'coursera',
+                        'language',
+                        get_string('language', 'local_reportbuilder'),
+                        'select',
+                        array(
+                                'selectchoices' => \mod_coursera\course::get_languages(),
+                                'simplemode' => true,
+                        )
                 )
         );
 
