@@ -96,13 +96,6 @@ class source extends rb_base_source {
         $joinlist = array(
             // Join assignment.
                 new rb_join(
-                        'courseraprogrammember',
-                        'LEFT',
-                        '{courseraprogrammember}',
-                        'courseraprogrammember.externalid = base.externalid',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
-                ),
-                new rb_join(
                         'courseraprogrammemberdurationused',
                         'LEFT',
                         "(
@@ -214,9 +207,8 @@ class source extends rb_base_source {
                         'coursera',
                         'externalid',
                         get_string('externalid', 'rbsource_courseralearners'),
-                        'courseraprogrammember.externalid',
+                        'base.externalid',
                         array(
-                                'joins' => 'courseraprogrammember',
                                 'dbdatatype' => 'char',
                                 'outputformat' => 'text'
                         )
