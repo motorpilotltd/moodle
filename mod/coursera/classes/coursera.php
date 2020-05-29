@@ -207,7 +207,6 @@ class coursera {
     }
 
     private function getcourses($start = 0) {
-        // SHOULD FILTER ON PROGRAM
         $url = "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/contents"; //GET
         if (!empty($start)) {
             $url .= '?start=' . $start;
@@ -219,7 +218,7 @@ class coursera {
         if ($this->config->devmode) {
             return true;
         }
-        
+
         if (programmember::iscurrentlymember($userid)) {
             return true;
         }

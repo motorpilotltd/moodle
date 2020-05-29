@@ -67,6 +67,11 @@ class courseramoduleaccess extends \data_object {
         $coursera = $DB->get_record('coursera', ['id' => $courseraid]);
         $context = \context_course::instance($coursera->course);
 
+        if (!is_enrolled($context, $userid, '', true)) {
+            return false;
+        }
+
+
         $gradebookroles = explode(",", $CFG->gradebookroles);
         $userroles = get_user_roles($context, $userid);
         $userroleids = [];

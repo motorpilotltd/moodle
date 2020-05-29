@@ -120,20 +120,29 @@ where cpm.dateleft = 0";
     }
 
     public static function getmoodleactivelearners() {
-        global $DB;
+        global $DB, $CFG;
+
+        $gradebookroles = explode(",", $CFG->gradebookroles);
+        list($rolesql, $params) = $DB->get_in_or_equal($gradebookroles, SQL_PARAMS_NAMED);
+        $contextlevel = CONTEXT_COURSE;
 
         // also look at moodle and taps enrolment expiry
         $sql = "select u.idnumber, u.idnumber
 from {coursera} i
          inner join {enrol} me on i.course = me.courseid
          inner join {course} c on c.id = me.courseid and c.visible = 1
-         inner join {user_enrolments} ue on ue.enrolid = me.id and ue.timestart > :now and ue.timeend < :now2
+         inner join {context} ctx on ctx.instanceid = c.id and ctx.contextlevel = $contextlevel
+         inner join {user_enrolments} ue on ue.enrolid = me.id and ue.timestart < :now and (ue.timeend = 0 OR ue.timeend > :now2)
          inner join {user} u on u.id = ue.userid and u.suspended = 0 and u.deleted = 0
+         inner join {role_assignments} ra on ra.userid = u.id and ra.contextid = ctx.id and ra.roleid $rolesql
          left join {courseraprogress} mc on mc.userid = u.id and mc.courseracourseid = i.contentid
-where mc.iscompleted is null or mc.iscompleted = 0";
+         left join {courseramoduleaccess} cma on cma.userid = u.id and cma.courseraid = i.id
+where mc.iscompleted is null or mc.iscompleted = 0 and coalesce(cma.timeend, ue.timestart + i.moduleaccessperiod) > :now3
+group by u.idnumber";
 
-        $params = ['now' => time()];
+        $params['now'] = time();
         $params['now2'] = $params['now'];
+        $params['now3'] = $params['now'];
         $res = $DB->get_records_sql_menu($sql, $params);
         return array_keys($res);
     }
