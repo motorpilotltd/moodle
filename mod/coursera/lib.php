@@ -151,6 +151,7 @@ function coursera_get_refresh_token() {
 
 function coursera_cm_info_dynamic(cm_info $cm) {
     global $DB, $PAGE, $USER, $OUTPUT;
+    static $jsincluded = false;
 
     $cminstance  = $DB->get_record('coursera', array('id' => $cm->instance), '*', MUST_EXIST);
     $course = \mod_coursera\course::fetch(['id' => $cminstance->contentid]);
@@ -204,7 +205,10 @@ function coursera_cm_info_dynamic(cm_info $cm) {
             . $courseralogo
     );
 
-    $PAGE->requires->js_call_amd('mod_coursera/toggle', 'init');
+    if (!$jsincluded) {
+        $PAGE->requires->js_call_amd('mod_coursera/toggle', 'init');
+        $jsincluded = true;
+    }
 }
 
 function coursera_extend_settings_navigation($settings, $courseranode) {
