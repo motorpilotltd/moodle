@@ -33,3 +33,7 @@ li.activity.coursera.modtype_coursera div.activityinstance img.activityicon {
 div.extendeligibility.row {
     padding-top: 10px;
 }
+div.courseracourseinfo a.btn-primary.disabled {
+    background-color: white;
+    border-color: red;
+}
