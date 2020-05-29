@@ -1910,6 +1910,7 @@ $string['yesleaver'] = 'Yes';
 $string['nonleaver'] = 'No';
 $string['appraisalstatus'] = 'Appraisal status';
 $string['launchcourse'] = 'Launch course';
+$string['publish_status'] = 'Publish Status';
 
 $string['language'] = 'Language';
 $string['lang_aa'] = 'Afar';

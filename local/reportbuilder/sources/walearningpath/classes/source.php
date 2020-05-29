@@ -104,7 +104,17 @@ class source extends rb_base_source {
             array(
                 'displayfunc' => 'learningpathimage',
             )
-    );
+        );
+        $columnoptions[] = new rb_column_option(
+            'learningpath',
+            'publishstatus',
+            get_string('publishstatus', 'rbsource_walearningpath'),
+            'base.status',
+            array(
+                'displayfunc' => 'learningpathstatus',
+                'outputformat' => 'text',
+            )
+        );
 
         $columnoptions[] = new rb_column_option(
             'learningpathsubscribe',
@@ -202,6 +212,12 @@ class source extends rb_base_source {
             ['leaver' => "auserstaff.LEAVER_FLAG"],
             'auserstaff'
         );
+        //learningpathstatus
+        $contentoptions[] = new rb_content_option(
+            'learningpathstatus',
+            get_string('publish_status', 'local_reportbuilder'),
+            ['publish_status' => "base.status"]
+        );
         return $contentoptions;
     }
 
@@ -259,7 +275,6 @@ class source extends rb_base_source {
     }
 
     public function rb_display_titlelinkedlearningpath($title, $row) {
-        // /local/wa_learning_path/index.php?c=learning_path&a=matrix&id=[learning path id]
         $url = new moodle_url(
             '/local/wa_learning_path/index.php', 
             array(
@@ -269,5 +284,28 @@ class source extends rb_base_source {
             )
         );
         return html_writer::link($url, $title);
+    }
+    
+    public function rb_display_learningpathstatus($status, $row) {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/wa_learning_path/lib/lib.php');
+        \wa_learning_path\lib\load_model('learningpath');
+        $data = '';
+        switch ($status) {
+            case WA_LEARNING_PATH_PUBLISH:
+                $data = get_string('publish', 'local_wa_learning_path');
+                break;
+            case WA_LEARNING_PATH_DRAFT:
+                $data = get_string('draft', 'local_wa_learning_path');
+                break;
+            case WA_LEARNING_PATH_PUBLISH_NOT_VISIBLE:
+                $data = get_string('publish_not_visible', 'local_wa_learning_path');
+                break;
+            default:
+                $data = '';
+                break;
+        }
+
+       return $data;
     }
 }
