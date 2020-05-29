@@ -935,6 +935,15 @@ class reportbuilder {
                 $ignored = [];
                 $classes = core_component::get_component_classes_in_namespace('local_reportbuilder', 'rb_base_embedded');
 
+                $sources = \core_component::get_plugin_list('rbsource');
+                $componentstocheck = array_keys($sources);
+
+                foreach ($componentstocheck as $componenttocheck) {
+                    foreach (core_component::get_component_classes_in_namespace("rbsource_$componenttocheck", "embedded" ) as $class => $classpath) {
+                        $classes[$class] = new $class();
+                    }
+                }
+
                 foreach ($classes as $class) {
                     $emb = new $class();
                     if ($emb->is_ignored()) {
