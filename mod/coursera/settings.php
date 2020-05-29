@@ -26,6 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->dirroot/mod/coursera/lib.php");
 
 if ($ADMIN->fulltree) {
+    $settings->add(new admin_setting_configcheckbox ('mod_coursera/devmode', new lang_string('devmode', 'mod_coursera'), new lang_string('devmode_desc', 'mod_coursera'), true));
+
     $settings->add(new admin_setting_configtext('mod_coursera/client_id', new lang_string('client_id', 'mod_coursera'), '',
             '', PARAM_RAW));
     $settings->add(new admin_setting_configtext('mod_coursera/client_secret', new lang_string('client_secret', 'mod_coursera'), '',

@@ -65,6 +65,8 @@ $string['defaultedto'] = 'Currently defaulted to {$a}';
 $string['extendto'] = 'Extend to';
 $string['deleteextension'] = 'Delete extension';
 $string['manageextensions'] = 'Manage eligibility extensions';
+$string['devmode'] = 'Read only API access';
+$string['devmode_desc'] = 'If enabled, users will not be enrolled/unenrolled on coursera programs.';
 
 $string['timeremaining'] = 'You have {$a} days remaining on your access period.';
 $string['coursedetails'] = 'Course details';

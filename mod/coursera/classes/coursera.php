@@ -216,6 +216,10 @@ class coursera {
     }
 
     public function enrolonprogram($userid) {
+        if ($this->config->devmode) {
+            return true;
+        }
+        
         if (programmember::iscurrentlymember($userid)) {
             return true;
         }
@@ -261,6 +265,10 @@ class coursera {
     }
 
     private function unenrolfromprogram($useridnumber) {
+        if ($this->config->devmode) {
+            return true;
+        }
+
         //DELETE verb
         $url = "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/programs/{$this->config->programid}/memberships/{$this->config->programid}~{$useridnumber}";
 
