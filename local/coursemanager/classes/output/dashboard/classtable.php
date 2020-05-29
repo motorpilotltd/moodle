@@ -39,7 +39,7 @@ class classtable extends coursetable {
     public function export_for_template(renderer_base $output) {
         global $OUTPUT;
         $data = new stdClass();
-        
+
         $form = $this->coursemanager->form;
         $page = $this->coursemanager->get_current_pageobject();
         $fields = array(
@@ -57,6 +57,7 @@ class classtable extends coursetable {
             'location' => 'text',
             'trainingcenter' => 'text',
             'maximumattendees' => 'text',
+            'onlineurl' => 'text',
             'currencycode' => 'text',
             'price' => 'text',
             'jobnumber' => 'text',

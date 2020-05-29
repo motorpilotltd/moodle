@@ -12,20 +12,65 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-define(['jquery'], function($) {
-    return {
+/**
+ * Utility JS adding enhancements for local_admin.
+ *
+ * @package    local_admin
+ * @copyright  2018 Motorpilot Ltd
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since      3.3
+ */
+
+define(['jquery', 'core/config', 'block_certification_report/select2'],
+       function($, cfg) {
+    return /** @alias module:local_admin/enhance */ {
+        // Public variables and functions.
         /**
-         * Add enhancements.
+         * Add form enhancement via select2.
          *
          * @method initialise
          */
         initialise: function() {
+            /**
+             * Add Select2.
+             */
+            $('select.select2').select2({
+                width: '75%'
+            });
+            $('select.select2-user').select2({
+                width: '75%',
+                minimumInputLength: 2,
+                allowClear: true,
+                ajax: {
+                    url: cfg.wwwroot + '/local/admin/ajax.php',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            q: params.term,
+                            page: params.page
+                        };
+                    },
+                    processResults: function(data, params) {
+                        params.page = params.page || 1;
+
+                        return {
+                            results: data.items,
+                            pagination: {
+                                more: (params.page * 25) < data.totalcount
+                            }
+                        };
+                    },
+                    cache: true
+                }
+            });
+
             var updatebut = $('#id_updatearupdefaultcourse');
             var arupdefaultselect = $('#id_arupdefaultcourse');
 
             updatebut.addClass('hidden');
             arupdefaultselect.on('change', function() {
-                updatebut.trigger( "click" );
+                updatebut.trigger("click");
             });
         }
     };

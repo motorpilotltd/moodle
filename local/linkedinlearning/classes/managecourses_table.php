@@ -81,6 +81,11 @@ class managecourses_table extends \table_sql {
             $where .= 'AND ' . $DB->sql_like('lc.title', ':titlewhere', false, false);
         }
 
+        if (isset($this->filterparams->language)) {
+            $params['language'] = $this->filterparams->language;
+            $where .= 'AND language = :language ';
+        }
+
         $tagfilterjoins = implode("\n", $tagfilterjoins);
 
         $sql = "FROM {linkedinlearning_course} lc
@@ -102,8 +107,8 @@ class managecourses_table extends \table_sql {
         $regionsconcat = $this->sql_group_concat('lrrc.regionid', ',', true);
         //434462
         $columns =
-                "lc.id, lc.urn as courseid, c.id as moodlecourseid, c.visible as moodlecoursevisible, lc.title, lc.shortdescription, lc.timetocomplete, $remotetagidconcat as classifications, $regionsconcat as regions";
-        $groupby = "GROUP BY lc.id, lc.urn, lc.title, lc.shortdescription, lc.timetocomplete, c.id, c.visible";
+                "lc.id, lc.urn as courseid, lc.available as available, c.id as moodlecourseid, c.visible as moodlecoursevisible, lc.title, lc.shortdescription, lc.timetocomplete, lc.language, $remotetagidconcat as classifications, $regionsconcat as regions";
+        $groupby = "GROUP BY lc.id, lc.urn, lc.available, lc.title, lc.shortdescription, lc.timetocomplete, c.id, c.visible, lc.language";
 
         $this->rawdata = $DB->get_records_sql("SELECT $columns $sql $groupby $orderby", $params, $this->get_page_start(),
                 $this->get_page_size());
@@ -111,6 +116,14 @@ class managecourses_table extends \table_sql {
         // Set initial bars.
         if ($useinitialsbar) {
             $this->initialbars($total > $pagesize);
+        }
+    }
+
+    public function col_language($event) {
+        if (get_string_manager()->string_exists('lang_' . $event->language, 'local_reportbuilder')) {
+                return get_string('lang_' . $event->language, 'local_reportbuilder');
+        } else {
+            return $event->language;
         }
     }
 
@@ -150,9 +163,9 @@ class managecourses_table extends \table_sql {
         if (isset($matches[1])) {
             $regionid = $matches[1];
 
-            if (!empty($event->regions)) {
+            if (!empty($event->moodlecoursevisible) && !empty($event->regions)) {
                 $checkedregions = explode(',', $event->regions);
-            } else if (!empty($event->moodlecourseid) && !empty($event->moodlecourseid)) {
+            } else if (!empty($event->moodlecoursevisible) && !empty($event->moodlecourseid) && !empty($event->moodlecourseid)) {
                 $checkedregions = [0];
             } else {
                 $checkedregions = [];
@@ -168,18 +181,24 @@ class managecourses_table extends \table_sql {
                 }
             } else {
                 $chkname = "chk_region_$regionid";
+                $attributes = ['data-regionid' => $regionid, 'data-courseid' => $event->id, 'class' => 'regioncheck'];
+                if (!$event->available) {
+                    $attributes['disabled'] = 'disabled';
+                    $attributes['title'] = get_string('unavailable', 'local_linkedinlearning');
+                }
                 return \html_writer::span(\html_writer::checkbox($chkname, $chkname, $checked, '',
-                        ['data-regionid' => $regionid, 'data-courseid' => $event->id, 'class' => 'regioncheck']));
+                        $attributes));
             }
         }
     }
 
     public function configurecolumns() {
-        $columns = ['courseid', 'title', 'shortdescription', 'timetocomplete'];
+        $columns = ['courseid', 'title', 'shortdescription', 'language', 'timetocomplete'];
         $headers = [
                 get_string('urn', 'local_linkedinlearning'),
                 get_string('title', 'local_linkedinlearning'),
                 get_string('shortdescription', 'local_linkedinlearning'),
+                get_string('language', 'local_linkedinlearning'),
                 get_string('timetocomplete', 'local_linkedinlearning')
         ];
 
@@ -221,8 +240,7 @@ class managecourses_table extends \table_sql {
             case 'mssql':
                 $serverinfo = $DB->get_server_info();
                 if ($serverinfo['description'] == 'mssqlubuntu') {
-                    debugging('DB does not support CLR functions');
-                    $sql = " max($field) ";
+                    $sql = " string_agg(CAST( $field AS NVARCHAR(MAX)), '{$delimiter}') ";
                 } else {
                     $distinct = $unique ? 'DISTINCT' : '';
                     $sql = " dbo.GROUP_CONCAT_D($distinct $field, '$delimiter') ";

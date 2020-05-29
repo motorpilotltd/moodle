@@ -1238,6 +1238,7 @@ EOS;
             'classname' => $class->classname,
             'classlocation' => $class->location ? $class->location : get_string('tbc', 'tapsenrol'),
             'classtrainingcenter' => $class->trainingcenter,
+            'classonlineurl' => $class->onlineurl,
         );
 
         if ($class->classstarttime == 0) {

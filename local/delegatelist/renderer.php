@@ -63,6 +63,7 @@ class local_delegatelist_renderer extends plugin_renderer_base {
                 'data-duration' => $delegatelist->get_class_duration(),
                 'data-location' => $delegatelist->get_class_location(),
                 'data-trainingcenter' => $delegatelist->get_class_trainingcenter(),
+                'data-onlineurl' => $delegatelist->get_class_onlineurl(),
                 'data-classid' => $activeclassid,
             ));
 
@@ -82,6 +83,7 @@ class local_delegatelist_renderer extends plugin_renderer_base {
         $rows .= $this->render_duration_row($delegatelist->get_class_duration());
         $rows .= $this->render_location_row($delegatelist->get_class_location());
         $rows .= $this->render_trainingcenter_row($delegatelist->get_class_trainingcenter());
+        $rows .= $this->render_onlineurl_row($delegatelist->get_class_onlineurl());
         return html_writer::div($rows, 'container-fluid delegate-summary');
     }
 
@@ -150,6 +152,13 @@ class local_delegatelist_renderer extends plugin_renderer_base {
         $extraclass = empty($trainingcenter) ? ' hide' : '';
         $cols  = html_writer::div(get_string('trainingcenter', 'local_delegatelist'), 'col-xs-3 mdl-right');
         $cols .= html_writer::div($trainingcenter, 'col-xs-9 mdl-left', array('id' => 'delegate-list-class-trainingcenter'));
+        return html_writer::div($cols, 'row-fluid'.$extraclass);
+    }
+
+    public function render_onlineurl_row($onlineurl) {
+        $extraclass = empty($onlineurl) ? ' hide' : '';
+        $cols  = html_writer::div(get_string('onlineurl', 'local_delegatelist'), 'col-xs-3 mdl-right');
+        $cols .= html_writer::div($onlineurl, 'col-xs-9 mdl-left', array('id' => 'delegate-list-class-onlineurlcenter'));
         return html_writer::div($cols, 'row-fluid'.$extraclass);
     }
 

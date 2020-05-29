@@ -48,6 +48,13 @@ define(['core/config', 'jquery', 'local_delegatelist/URI'], function(config, $, 
                     } else {
                         $('#delegate-list-class-trainingcenter').removeClass('hide');
                     }
+                    var classonlineurl = $('#delegate-list-class-list').data('onlineurl');
+                    $('#delegate-list-class-onlineurl').html(classonlineurl);
+                    if (classonlineurl === '') {
+                        $('#delegate-list-class-onlineurl').addClass('hide');
+                    } else {
+                        $('#delegate-list-class-onlineurl').removeClass('hide');
+                    }
                     var printbutton = $('.navigationbuttons .print');
                     printbutton.data('classid', $('#delegate-list-class-list').data('classid'));
                     var uri = URI(printbutton.attr('href'));

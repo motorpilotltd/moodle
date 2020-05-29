@@ -30,7 +30,7 @@ $ADMIN->add('root', new admin_category('local_admin', get_string('pluginname', '
 
 $systemcontext = context_system::instance();
 if ($hassiteconfig
-        || has_capability('local/admin:testemails', $systemcontext)) {
+        || has_any_capability(['local/admin:testemails', 'local/admin:enrolmentcheck', 'local/admin:resetcourse'], $systemcontext)) {
 
     $buildcategoryid = $DB->get_field('course_categories', 'id', ['idnumber' => 'build']);
     if ($buildcategoryid) {
@@ -79,6 +79,16 @@ if ($hassiteconfig
                     get_string('enrolmentcheck', 'local_admin'),
                     $CFG->wwwroot . '/local/admin/enrolment_check.php',
                     'local/admin:enrolmentcheck'
+                    )
+            );
+
+    $ADMIN->add(
+            'local_admin',
+            new admin_externalpage(
+                    'local_admin_resetcourse',
+                    get_string('resetcourse', 'local_admin'),
+                    $CFG->wwwroot . '/local/admin/reset_course.php',
+                    'local/admin:resetcourse'
                     )
             );
 

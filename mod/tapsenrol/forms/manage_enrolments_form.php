@@ -52,6 +52,7 @@ class mod_tapsenrol_manage_enrolments_form extends moodleform {
 
         $hide = ' hide';
 
+
         $class = false;
         if (!empty($classid)) {
             $class = \mod_tapsenrol\enrolclass::fetch(['id' => $classid]);
@@ -104,6 +105,11 @@ class mod_tapsenrol_manage_enrolments_form extends moodleform {
         $trainingcenter = html_writer::tag('div', get_string('trainingcenter', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
         $trainingcenter .= html_writer::tag('div', ($class ? $class->trainingcenter : ''), array('class' => 'felement'));
         $html .= html_writer::tag('div', $trainingcenter, array('class' => "trainingcenter fitem{$trainingcenterhide}"));
+
+        $onlineurlhide = ($class && !$class->onlineurl ? ' hide' : '');
+        $onlineurl = html_writer::tag('div', get_string('onlineurl', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
+        $onlineurl .= html_writer::tag('div', ($class ? $class->onlineurl : ''), array('class' => 'felement'));
+        $html .= html_writer::tag('div', $onlineurl, array('class' => "onlineurl fitem{$onlineurlhide}"));
 
         $date = html_writer::tag('div', get_string('date', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
         $date .= html_writer::tag('div', ($class ? $class->date : ''), array('class' => 'felement'));

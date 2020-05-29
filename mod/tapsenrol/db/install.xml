@@ -166,6 +166,7 @@
         <FIELD NAME="enrolmentenddate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="trainingcenter" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="location" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="onlineurl" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classstarttime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="classendtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="minimumattendees" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>

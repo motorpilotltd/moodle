@@ -27,4 +27,13 @@ class local_admin_renderer extends plugin_renderer_base {
         return html_writer::tag('div', $button.$message, array('class' => $class));
     }
 
+    public function session_messages($messagetype, $alerttype) {
+        global $SESSION;
+        $messages = '';
+        if (!empty($SESSION->local_admin->{$messagetype})) {
+            $messages = $this->alert(implode('<br>', $SESSION->local_admin->{$messagetype}), $alerttype);
+            $SESSION->local_admin->{$messagetype} = [];
+        }
+        return $messages;
+    }
 }

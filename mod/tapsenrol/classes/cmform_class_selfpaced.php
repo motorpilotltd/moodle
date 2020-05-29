@@ -34,6 +34,7 @@ class cmform_class_selfpaced extends cmform_class {
 
         $mform->removeElement('location');
         $mform->removeElement('trainingcenter');
+        $mform->removeElement('onlineurl');
 
         $mform->removeElement('classendtime');
         $endgroup = $this->optional_time_selector('classendtime');

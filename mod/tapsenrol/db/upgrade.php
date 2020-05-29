@@ -140,5 +140,31 @@ function xmldb_tapsenrol_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2017051514, 'tapsenrol');
     }
 
+    if ($oldversion < 2018051700) {
+        // Define field onlineurl to be added to local_taps_class.
+        $table = new xmldb_table('local_taps_class');
+        $field = new xmldb_field('onlineurl', XMLDB_TYPE_TEXT);
+
+        // Conditionally launch add field onlineurl.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Update default emails
+        require_once($CFG->dirroot.'/mod/tapsenrol/db/default_emails.php');
+        foreach ($defaultemails as $defaultemail) {
+            $existingemail = $DB->get_record('tapsenrol_iw_email', array('email' => $defaultemail->email));
+            if (!$existingemail) {
+                $DB->insert_record('tapsenrol_iw_email', $defaultemail);
+            } else {
+                $ids[] = $defaultemail->id = $existingemail->id;
+                $DB->update_record('tapsenrol_iw_email', $defaultemail);
+            }
+        }
+
+        // Savepoint reached.
+        upgrade_mod_savepoint(true, 2018051700, 'tapsenrol');
+    }
+
     return true;
 }

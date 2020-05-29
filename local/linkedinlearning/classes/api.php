@@ -44,6 +44,20 @@ class api {
                 'fields'                                => 'urn,title,details:(availability,classifications,publishedAt,lastUpdatedAt,images:(primary),descriptionIncludingHtml,shortDescriptionIncludingHtml,timeToComplete,urls:(aiccLaunch,ssoLaunch))',
         ];
 
+        $languages = [
+                'de',
+                'en',
+                'es',
+                'fr',
+                'ja',
+                'pt',
+                'zh',
+        ];
+
+        for ($i = 0; $i < count($languages); $i++) {
+            $params["assetFilteringCriteria.locales[$i].language"] = $languages[$i];
+        }
+
         if ($since !== 0) {
             $params['assetFilteringCriteria.lastModifiedAfter'] = $since * 1000;
         }
@@ -227,24 +241,26 @@ class api {
 
         foreach (new courseiterator($this, $since) as $raw) {
             $course = course::fetchbyurn($raw->urn);
-            if (empty($course) && $raw->details->availability !== 'AVAILABLE') {
-                continue;
-            } else if (empty($course)) {
+            if (empty($course)) {
                 $course = new course();
             }
 
             $course->urn = $raw->urn;
+            $course->language = $raw->title->locale->language;
             $course->title = $raw->title->value;
-            $course->primaryimageurl = $raw->details->images->primary;
+            $course->primaryimageurl = isset($raw->details->images->primary) ? $raw->details->images->primary : '';
 
             if ($raw->details->availability == 'AVAILABLE') {
                 $course->aicclaunchurl = $raw->details->urls->aiccLaunch;
                 $course->ssolaunchurl = $raw->details->urls->ssoLaunch;
+            } else {
+                $course->aicclaunchurl = '';
+                $course->ssolaunchurl = '';
             }
             $course->publishedat = $raw->details->publishedAt / 1000;
             $course->lastupdatedat = $raw->details->lastUpdatedAt / 1000;
-            $course->description = $raw->details->descriptionIncludingHtml->value;
-            $course->shortdescription = $raw->details->shortDescriptionIncludingHtml->value;
+            $course->description = isset($raw->details->descriptionIncludingHtml->value) ? $raw->details->descriptionIncludingHtml->value : '';
+            $course->shortdescription = isset($raw->details->shortDescriptionIncludingHtml->value) ? $raw->details->shortDescriptionIncludingHtml->value : '';
             $course->available = $raw->details->availability == 'AVAILABLE';
 
             switch ($raw->details->timeToComplete->unit) {
@@ -272,6 +288,7 @@ class api {
                     $classification = $classifications[$rawclassification->associatedClassification->urn];
                 } else {
                     $classification = new classification();
+                    $classification->language = $rawclassification->associatedClassification->name->locale->language;
                     $classification->urn = $rawclassification->associatedClassification->urn;
                     $classification->name = $rawclassification->associatedClassification->name->value;
                     $classification->type = $rawclassification->associatedClassification->type;
@@ -410,7 +427,7 @@ class api {
 
         $DB->execute("
         update {linkedinlearning_progress}
-        set userid = coalesce((select id from {user} where {user}.idnumber = {linkedinlearning_progress}.uniqueuserid), 0)
+        set userid = coalesce((select id from {user} where idnumber is not null and idnumber <> '' and idnumber = uniqueuserid), 0)
         where userid = 0");
 
         $DB->execute("

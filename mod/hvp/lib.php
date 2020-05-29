@@ -121,7 +121,8 @@ function hvp_cm_info_dynamic(cm_info $cm) {
     }
 
     if ($COURSE->id == $cm->course && $PAGE->state === moodle_page::STATE_PRINTING_HEADER
-        && $PAGE->url->get_path() == '/course/view.php') {
+        && $PAGE->url->get_path() == '/course/view.php'
+        && !$PAGE->user_is_editing()) {
         // Let's check our current instance.
         $hvp = $DB->get_record('hvp', ['id' => $cm->instance]);
         if (!$hvp || !$hvp->displaycontent || !has_capability('mod/hvp:view', $cm->context)) {

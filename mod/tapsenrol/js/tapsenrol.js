@@ -76,6 +76,13 @@ $(document).ready(function(){
                         trainingcenter.children('.felement').text(outdata.trainingcenter);
                         trainingcenter.show();
                     }
+                    onlineurl = details.find('.onlineurl').hide().removeClass('hide');
+                    if (outdata.onlineurl === '') {
+                        onlineurl.hide();
+                    } else {
+                        onlineurl.children('.felement').text(outdata.onlineurl);
+                        onlineurl.show();
+                    }
                     details.find('.date .felement').text(outdata.date);
                     details.find('.duration .felement').text(outdata.duration);
                     details.find('.cost .felement').text(outdata.cost);

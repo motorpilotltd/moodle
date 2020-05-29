@@ -164,6 +164,7 @@ $approvedinvite = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>
@@ -503,6 +504,7 @@ $moved_new_invite = <<<EOS
     <b>Class:</b> [[classname]]<br />
     <b>Location:</b> [[classlocation]]<br />
     <b>Room:</b> [[classtrainingcenter]]<br />
+    <b>Online URL:</b> [[classonlineurl]]<br />
     <b>Date:</b> [[classdate]]<br />
     <b>Duration:</b> [[classduration]]<br />
     <b>Cost:</b> [[classcost]]</p>

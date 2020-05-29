@@ -46,7 +46,7 @@ require_once $CFG->dirroot . '/completion/completion_criteria_completion.php';
 class course extends \data_object {
     public $table = 'linkedinlearning_course';
     public $required_fields = ['id', 'urn', 'title', 'primaryimageurl', 'aicclaunchurl', 'ssolaunchurl', 'publishedat', 'lastupdatedat',
-            'description', 'shortdescription', 'timetocomplete', 'available'];
+            'description', 'shortdescription', 'timetocomplete', 'available', 'language'];
 
     public $urn;
     public $title;
@@ -59,6 +59,7 @@ class course extends \data_object {
     public $shortdescription;
     public $timetocomplete;
     public $available;
+    public $language;
 
     /*
      * @return self
@@ -215,7 +216,8 @@ class course extends \data_object {
         local_regions_save_data_course($course);
 
         $data = new \stdClass();
-        $data->region = $course->regions_field_region;
+        // Force to 'Global', region is now only for catalogue.
+        $data->region = [0];
         $data->id = $DB->get_field('tapsenrol', 'id', ['course' => $course->id]);
         \tapsenrol_region_mapping($data);
     }
@@ -323,7 +325,7 @@ class course extends \data_object {
         $scorm->updatefreq = SCORM_UPDATE_EVERYTIME;
         $scorm->maxgrade = $cfgscorm->maxgrade;
         $scorm->grademethod = $cfgscorm->grademethod;
-        $scorm->popup = true;
+        $scorm->popup = false;
         $scorm->width = $cfgscorm->framewidth;
         $scorm->height = $cfgscorm->frameheight;
         $scorm->winoptgrp = $cfgscorm->winoptgrp_adv;
@@ -536,5 +538,18 @@ class course extends \data_object {
             $suffix += 1;
         }
         return $shortname;
+    }
+
+    public static function get_languages() {
+        global $DB;
+
+        $options = $DB->get_records_sql_menu("SELECT language as valone, language as valtwo FROM {linkedinlearning_course} GROUP BY language");
+        foreach ($options as $language) {
+            if (get_string_manager()->string_exists('lang_' . $language, 'local_reportbuilder')) {
+                $options[$language] = get_string('lang_' . $language, 'local_reportbuilder');
+            }
+        }
+
+        return $options;
     }
 }

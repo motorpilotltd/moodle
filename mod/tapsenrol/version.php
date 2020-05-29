@@ -24,11 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version      = 2017051514;
-$plugin->requires     = 2015111600; // Moodle 3.0.
+$plugin->version      = 2018051700;
+$plugin->requires     = 2018051700; // Moodle 3.5.
 $plugin->component    = 'mod_tapsenrol';
 $plugin->maturity     = MATURITY_STABLE;
-$plugin->release      = "3.0.11 (Build: {$plugin->version})";
+$plugin->release      = "3.5.0 (Build: {$plugin->version})";
 
 $plugin->dependencies = array(
     'local_regions' => 2015111601,

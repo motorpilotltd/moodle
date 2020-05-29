@@ -14,15 +14,21 @@ class local_search_renderer extends plugin_renderer_base
         return $this->render_from_template('local_search/searchform', $formdata);
     }
 
-    public function search_results($resultdata)
+    public function search_results($resultdata, $search, $page)
     {
-        $resultdata['preloadedcourses'] = $this->courses($resultdata);
+        $resultdata['preloadedcourses'] = $this->courses($resultdata, $search, $page);
 
         return $this->render_from_template('local_search/searchresults', $resultdata);
     }
 
-    public function courses($resultdata)
+    public function courses($resultdata, $search, $page)
     {
+        global $OUTPUT;
+        $resultdata['lilshow'] = $page === 0; // Only show on page 1 (0 for courses).
+        $resultdata['lilimgurl'] = $OUTPUT->image_url('lil-logo', 'local_search');
+        $lilsearchurl = new moodle_url('https://www.linkedin.com/learning/search', ['keywords' => $search]);
+        $resultdata['lilsearchurl'] = $lilsearchurl->out(false);
+        $resultdata['lilonclick'] = "_gaq.push(['masterTracker._trackEvent', 'navigation', 'quick_link', '{$resultdata['lilsearchurl']} | Launch LinkedIn Learning']);";
         return $this->render_from_template('local_search/courses', $resultdata);
     }
 }
