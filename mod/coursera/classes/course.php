@@ -136,6 +136,8 @@ class course extends \data_object implements \templatable {
             $retval[$fieldname] = $this->$fieldname;
         }
 
+        $retval['description'] = text_to_html($this->description);
+
         $retval['estimatedlearningtime'] = round($retval['estimatedlearningtime'] / HOURSECS);
 
         return $retval;
