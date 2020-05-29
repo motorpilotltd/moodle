@@ -103,19 +103,23 @@ class programmember extends \data_object {
     public static function iscurrentlymember($userid) {
         global $DB;
 
+        $progid = get_config('mod_coursera', 'programid');
+
         $user = \core_user::get_user($userid);
-        return $DB->record_exists('courseraprogrammember', ['dateleft' => 0, 'externalid' => $user->idnumber]);
+        return $DB->record_exists('courseraprogrammember', ['dateleft' => 0, 'externalid' => $user->idnumber, 'programid' => $progid]);
     }
 
     public static function getallprogrammembershipidnumbers() {
         global $DB;
 
+        $progid = get_config('mod_coursera', 'programid');
+
         // also look at moodle and taps enrolment expiry
         $sql = "select externalid
 from {courseraprogrammember} cpm
-where cpm.dateleft = 0";
+where cpm.dateleft = 0 and programid = :programid";
 
-        $res = $DB->get_records_sql_menu($sql);
+        $res = $DB->get_records_sql_menu($sql, ['programid' => $progid]);
         return array_keys($res);
     }
 

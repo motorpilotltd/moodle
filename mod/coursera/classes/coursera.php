@@ -179,6 +179,8 @@ class coursera {
     public function syncprogrammembers() {
         global $DB;
 
+        $transaction = $DB->start_delegated_transaction();
+
         $DB->execute('UPDATE {courseraprogrammember} set dateleft = :now where dateleft = 0', ['now' => time()]); // Mark them all as dateleft, they'll be zeroed out in the next step/
 
         $ret = $this->getprogrammembership(0);
@@ -193,6 +195,8 @@ class coursera {
         }
         programmember::updateuserprogrammemberlinkages();
         self::disableunusedmemberships();
+
+        $transaction->allow_commit();
     }
 
     public function disableunusedmemberships() {
