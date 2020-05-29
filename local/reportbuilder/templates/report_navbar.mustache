@@ -41,7 +41,7 @@
             {{#search}}
             <a
                 id="advancedsearchbutton"
-                class="btn btn-default closed"
+                class="btn btn-default {{#initiallyhidden}}open{{/initiallyhidden}}{{^initiallyhidden}}closed{{/initiallyhidden}}"
                 data-toggle="collapse" href="#advancedsearch" aria-expanded="false" aria-controls="advancedsearch"
             >
                 <i class="fa fa-caret-right open"></i>
