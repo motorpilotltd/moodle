@@ -16,9 +16,12 @@
 
     Displays a custom report
 }}
-<div id="advancedsearch" data-region="advancedsearch" class="collapse">
+<div id="advancedsearch" data-region="advancedsearch" class="collapse {{#initiallyhidden}}in{{/initiallyhidden}}">
     <div class="container-advancedsearch row">
         <div class="col-12 p-a-1">
+            {{#initiallyhidden}}
+                <div class="alert alert-warning">{{#str}}initialdisplay_pending, local_reportbuilder {{/str}}</div>
+            {{/initiallyhidden}}
             {{{ search }}}
         </div>
     </div>

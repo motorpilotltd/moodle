@@ -88,6 +88,7 @@ echo $output->header();
 $template = new stdClass();
 $template->formurl = new moodle_url('/local/reportbuilder/report.php', ['id' => $id]);
 $template->hasdisabledfilters = $report->has_disabled_filters();
+$template->initiallyhidden = $report->is_initially_hidden();
 $template->simplesearch = $simplesearch;
 
 if ($report->has_disabled_filters()) {
