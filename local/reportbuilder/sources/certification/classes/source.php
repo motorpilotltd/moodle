@@ -60,16 +60,39 @@ class source extends rb_base_source {
         $this->add_certification_fields_to_columns($columnoptions, 'base');
         $this->add_course_category_fields_to_columns($columnoptions, 'course_category');
 
+        $columnoptions[] = new \rb_column_option(
+                'certif',
+                'cohortnames',
+                get_string('cohortnames', 'rbsource_certification'),
+                "cohorts.cohortnames",
+                array('joins' => 'cohorts')
+        );
+
         return $columnoptions;
     }
 
     protected function define_joinlist() {
+        global $DB;
+
+        $assignment_type_audience = \local_custom_certification\certification::ASSIGNMENT_TYPE_AUDIENCE;
+        $concat = \local_reportbuilder\dblib\base::getbdlib()->sql_group_concat('c.name', ', ', 'c.name ASC');
+
         $joinlist = array(
                 new rb_join(
                         'ctx',
                         'INNER',
                         '{context}',
                         'ctx.instanceid = base.category AND ctx.contextlevel = ' . CONTEXT_COURSECAT,
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
+                ),
+                new rb_join(
+                        'cohorts',
+                        'LEFT',
+                        "(SELECT c.id as certifid, $concat as cohortnames
+                                FROM {certif_assignments} ca 
+                                INNER JOIN {cohort} c on ca.assignmenttypeid = c.id AND ca.assignmenttype = $assignment_type_audience
+                                GROUP BY c.id)",
+                        'cohorts.certifid = base.id',
                         REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
         );

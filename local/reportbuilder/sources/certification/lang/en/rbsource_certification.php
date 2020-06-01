@@ -25,3 +25,4 @@ $string['sourcetitle'] = 'Certifications';
 $string['type_prog'] = 'Certification';
 $string['type_certif'] = 'Certification';
 $string['availablecontent'] = 'Available content';
+$string['cohortnames'] = 'Cohort names';
