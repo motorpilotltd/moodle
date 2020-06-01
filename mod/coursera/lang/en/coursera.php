@@ -33,7 +33,6 @@ $string['tasksynccourses'] = 'Sync coursera courses';
 $string['tasksyncprogrammembers'] = 'Sync coursera program memberships';
 
 $string['coursera:addinstance'] = 'Add instance of coursera module';
-$string['coursera:submit'] = 'Submit coursera Module';
 $string['coursera:view'] = 'View coursera modules';
 
 $string['client_id'] = 'Client ID';

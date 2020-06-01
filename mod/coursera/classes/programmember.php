@@ -60,7 +60,7 @@ class programmember extends \data_object {
     public static function saveprogrammember($rawprogrammember) {
         global $DB;
 
-        $rawprogrammember->joinedAt = $rawprogrammember->joinedAt / 1000;
+        $rawprogrammember->joinedAt = round($rawprogrammember->joinedAt / 1000);
 
         $params = ['programid'  => $rawprogrammember->programId, 'externalid' => $rawprogrammember->externalId,
                    'datejoined' => $rawprogrammember->joinedAt];

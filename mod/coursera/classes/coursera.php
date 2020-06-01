@@ -85,7 +85,7 @@ class coursera {
         $now = time();
 
         if (empty($this->config->refreshtoken) || $now > $this->config->refreshtokenexpiry) {
-            print_error('No refresh token available');
+            throw new \Exception('No refresh token available');
         }
 
         if ($now < $this->config->accesstokenexpiry) {
@@ -113,6 +113,11 @@ class coursera {
         $result = $curl->post($url, http_build_query($params), $options);
 
         $response = json_decode($result);
+
+        if (empty($response->access_token)) {
+            throw new \Exception('Error fetching access token');
+        }
+
         $this->config->accesstoken = $response->access_token;
         $this->config->accesstokenexpiry = $now + 1800;
         $this->config->refreshtokenexpiry = $now + 14 * DAYSECS;
@@ -181,7 +186,8 @@ class coursera {
 
         $transaction = $DB->start_delegated_transaction();
 
-        $DB->execute('UPDATE {courseraprogrammember} set dateleft = :now where dateleft = 0', ['now' => time()]); // Mark them all as dateleft, they'll be zeroed out in the next step/
+        $DB->execute('UPDATE {courseraprogrammember} set dateleft = :now where dateleft = 0',
+                ['now' => time()]); // Mark them all as dateleft, they'll be zeroed out in the next step/
 
         $ret = $this->getprogrammembership(0);
         foreach ($ret->elements as $element) {
@@ -219,9 +225,6 @@ class coursera {
     }
 
     public function enrolonprogram($userid) {
-        if ($this->config->devmode) {
-            return true;
-        }
 
         if (programmember::iscurrentlymember($userid)) {
             return true;
@@ -236,11 +239,15 @@ class coursera {
                 'sendEmail'  => false
         ];
 
-        $url = "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/programs/{$this->config->programid}/invitations";
-        $ret = $this->callapi($url, $body, 'post');
+        if (!$this->config->devmode) {
+            $url =
+                    "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/programs/{$this->config->programid}/invitations";
+            $ret = $this->callapi($url, $body, 'post');
 
-        if (isset($ret->errorCode) && $ret->errorCode !== 'INVITATION_ALREADY_EXISTS' && $ret->errorCode !== 'MEMBERSHIP_ALREADY_EXISTS') {
-            return $ret->errorCode;
+            if (isset($ret->errorCode) && $ret->errorCode !== 'INVITATION_ALREADY_EXISTS' &&
+                    $ret->errorCode !== 'MEMBERSHIP_ALREADY_EXISTS') {
+                throw new \Exception('Error creating membership: ' . $ret->errorCode);
+            }
         }
         $programmember = new programmember([
                 'programid'  => $this->config->programid,
@@ -273,7 +280,8 @@ class coursera {
         }
 
         //DELETE verb
-        $url = "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/programs/{$this->config->programid}/memberships/{$this->config->programid}~{$useridnumber}";
+        $url =
+                "https://api.coursera.org/api/businesses.v1/{$this->config->orgid}/programs/{$this->config->programid}/memberships/{$this->config->programid}~{$useridnumber}";
 
         $this->callapi($url, null, 'delete');
     }
