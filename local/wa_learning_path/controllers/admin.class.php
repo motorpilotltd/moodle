@@ -63,7 +63,7 @@ class admin extends \wa_learning_path\lib\base_controller {
         \wa_learning_path\lib\load_form('introduction');
 
         $this->form = new \wa_learning_path\form\introduction_form();
-        
+
         $this->form->add_hidden('c', 'admin');
         $this->form->add_hidden('a', 'edit');
 
@@ -185,17 +185,17 @@ class admin extends \wa_learning_path\lib\base_controller {
         \wa_learning_path\lib\load_model('learningpath');
 
         $action = new \moodle_url($this->url);
-    
+
         $addEditRole = $this->get_string('add_role');
         if(!is_null($editRole)) {
             $addEditRole = $this->get_string('edit_role');
         }
-        
+
         $params = [
             'id' => $id,
             'role_id' => $editRole
         ];
-    
+
         $this->form = new \wa_learning_path\form\edit_role_form($action, $params);
         $this->form->add_hidden('c', 'admin');
         $this->form->add_hidden('a', 'edit_role');
@@ -303,8 +303,8 @@ class admin extends \wa_learning_path\lib\base_controller {
                 $matrix = json_decode($learning_path->matrix);
             }
         }
-    
-    
+
+
         $PAGE->navbar->add($addEditRole);
 
         if (!isset($this->columns)) {
@@ -487,24 +487,24 @@ class admin extends \wa_learning_path\lib\base_controller {
 
         $this->view('edit_activity');
     }
-    
+
     public function save_matrix_ajax_action() {
         global $CFG;
         require_once("$CFG->libdir/filelib.php");
         $id = optional_param('id', null, PARAM_INT);
         $matrixNew = optional_param('matrix', null, PARAM_RAW);
-        
+
         \wa_learning_path\lib\load_form('matrix');
         \wa_learning_path\lib\load_form('activity');
-        
+
         \wa_learning_path\lib\load_model('activity');
         $this->modules = \wa_learning_path\lib\get_modules();
         $this->activities_list = \wa_learning_path\model\activity::get_list('title', 'ASC', 0, 99999,  $extrasql = ' (idlearningpath = 0 or idlearningpath = '.(int)$id.')');
-        
+
         $this->activityform = new \wa_learning_path\form\activity_form();
         $editoroptions = $this->activityform->get_editor_params();
         $systemcontext = \context_system::instance();
-        
+
         \wa_learning_path\lib\load_model('learningpath');
         $learning_path = \wa_learning_path\model\learningpath::get($id);
         if ($learning_path->matrix) {
@@ -516,7 +516,7 @@ class admin extends \wa_learning_path\lib\base_controller {
                 }
             }
         }
-        
+
         $matrix_data = json_decode($matrixNew);
         if ($matrix_data) {
             foreach ($matrix_data->activities as $key => &$act) {
@@ -525,19 +525,19 @@ class admin extends \wa_learning_path\lib\base_controller {
                 if (isset($act->content)) {
                     $tmp->content_editor['text'] = $act->content;
                     $tmp->content_editor['format'] = $learning_path->format;
-                    
+
                     $tmp->contentformat = $learning_path->format;
                     $matrix_data->itemid = $tmp->content_editor['itemid'] = $itemid;
-                    
+
                     $tmp = \file_postupdate_standard_editor(
                         $tmp,
                         'content',
                         $editoroptions,
                         $systemcontext,
                         'local_wa_learning_path', 'content', $learning_path->id);
-                    
+
                     $act->content = $tmp->content;
-                    
+
                     $act->enabledForRoles = [];
                     if (isset($enabledForRoles[$key])) {
                         $act->enabledForRoles = $enabledForRoles[$key];
@@ -545,12 +545,12 @@ class admin extends \wa_learning_path\lib\base_controller {
                 }
             }
         }
-        
+
         if (!\wa_learning_path\lib\has_capability('editlearningmatrix')) {
             $prevmatrix = json_decode($learning_path->matrix);
             $matrix_data->rows = $prevmatrix->rows;
             $matrix_data->max_id = $prevmatrix->max_id;
-            
+
             if (\wa_learning_path\lib\has_capability('amendlearningcontent')) {
                 foreach($prevmatrix->cols as &$col) {
                     foreach($matrix_data->cols as &$col2) {
@@ -562,7 +562,7 @@ class admin extends \wa_learning_path\lib\base_controller {
             }
             $matrix_data->cols = $prevmatrix->cols;
         }
-        
+
         if ($id) {
             $ids = array();
             foreach($matrix_data->activities as $k => $md) {
@@ -574,17 +574,17 @@ class admin extends \wa_learning_path\lib\base_controller {
                     }
                 }
             }
-            
+
             if ($ids) {
                 \wa_learning_path\model\learningpath::link_activities_to_learning_path($id, $ids);
             }
         }
-        
+
         $matrix_data->activities = \wa_learning_path\model\learningpath::fill_activities(@$matrix_data->activities, $this->modules, $this->activities_list);
-        
+
         \wa_learning_path\model\learningpath::set_matrix($learning_path->id, json_encode($matrix_data));
     }
-    
+
     /**
      * Create or edit learing path.
      */
@@ -764,7 +764,7 @@ class admin extends \wa_learning_path\lib\base_controller {
                 foreach ($roles as $role) {
                     $this->roles[$role->id] = $role->name;
                 }
-                
+
                 $this->role = 0;
                 if ($roleId) {
                     $this->role = $roleId;
@@ -785,7 +785,7 @@ class admin extends \wa_learning_path\lib\base_controller {
                     $this->columns = $matrix->cols;
                     $this->rows = $matrix->rows;
                     $this->activities = \wa_learning_path\model\learningpath::fill_activities(@$matrix->activities, $this->modules, $this->activities_list);
-    
+
                     foreach ($matrix->activities as $id => $activity) {
                         if (isset($activity->enabledForRoles) && in_array($this->role, $activity->enabledForRoles)) {
                             $enabledActivities[] = $id;
@@ -865,7 +865,7 @@ class admin extends \wa_learning_path\lib\base_controller {
         if (!isset($this->max_id)) {
             $this->max_id = 0;
         }
-        
+
         $jsArguments = array(
             'columns' => $this->columns,
             'rows' => $this->rows,
@@ -894,14 +894,14 @@ class admin extends \wa_learning_path\lib\base_controller {
             'newColumnText' => $this->get_string('new_column'),
             'returnhash' => $this->returnhash,
             'url' => $this->url->raw_out()
-    
+
         );
-        
+
         $PAGE->requires->js_call_amd('local_wa_learning_path/learning_path_edit', 'init', $jsArguments);
-        
+
         $this->view('edit_matrix');
     }
-    
+
     private function getWaPlus()
     {
         if (!$this->role) {
@@ -925,17 +925,17 @@ class admin extends \wa_learning_path\lib\base_controller {
             );
         }
     }
-    
+
     private function getWaActivities()
     {
         $waActivities = [];
         foreach($this->activities as $hash => $activity) {
             $waActivities[$hash] = $activity;
         }
-        
+
         return $waActivities;
     }
-    
+
     /**
      * View learing path list
      */
@@ -1018,24 +1018,17 @@ class admin extends \wa_learning_path\lib\base_controller {
         $this->id = required_param('id', PARAM_INT);
         $format = optional_param('format', '', PARAM_TEXT); // export format
 
-        $pageparams = [
-            'walearningpath_id' =>  $this->id,
-            'format' => $format
-        ];
-        
-        $shortname = 'subs_walearningpath_reports';
-
-        $this->reporthtml = ''; 
-        $this->debughtml = ''; 
+        $this->reporthtml = '';
+        $this->debughtml = '';
         $this->report = '';
         $this->renderer = $PAGE->get_renderer('local_reportbuilder');
 
-        if ($this->report = reportbuilder_get_embedded_report($shortname, $pageparams, false, $this->sid)) {
+        if ($this->report = reportbuilder_get_embedded_report('local_reportbuilder\embedded\subs_walearningpath', [], false, $this->sid)) {
             $reportembedobj = $this->report->embedobj;
             $reportbaseurl = new moodle_url($reportembedobj->url);
             $this->report->set_baseurl($reportbaseurl);
             // Get report content html
-            
+
             list($this->reporthtml, $this->debughtml) = $this->renderer->report_html($this->report);
         }
 

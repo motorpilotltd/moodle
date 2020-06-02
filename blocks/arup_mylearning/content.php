@@ -231,18 +231,12 @@ class block_arup_mylearning_content {
 
     protected function _get_mywalearningpath_html() {
         global $USER, $PAGE, $CFG;
-        
+
         require_once($CFG->dirroot.'/local/reportbuilder/lib.php');
 
         $content = '';
 
-        $pageparams = [
-            'walearningpath_userid' => $USER->id
-        ];
-        
-        $shortname = 'user_walearningpath_reports';
-        
-        if ($report = reportbuilder_get_embedded_report($shortname, $pageparams, false, 0)) {
+        if ($report = reportbuilder_get_embedded_report('local_reportbuilder\embedded\user_walearningpath', [], false, 0)) {
             $reportembedobj = $report->embedobj;
             $reportbaseurl = new moodle_url($reportembedobj->url);
             $report->set_baseurl($reportbaseurl);
@@ -251,7 +245,7 @@ class block_arup_mylearning_content {
             list($reporthtml, $debughtml) = $renderer->report_html($report);
             $content .= $debughtml;
             $content .= $reporthtml;
-            
+
         } else {
             $content .= html_writer::tag('p', get_string('mywalearningpath:nopath', 'block_arup_mylearning'));
         }
