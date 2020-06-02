@@ -2096,3 +2096,10 @@ $string['lang_yo'] = 'Yoruba';
 $string['lang_za'] = 'Zhuang; Chuang';
 $string['lang_zh'] = 'Chinese';
 $string['lang_zu'] = 'Zulu';
+
+$string['courseracourse'] = 'Coursera course';
+
+$string['available'] = 'Available';
+$string['unavailable'] = 'Unavailable';
+$string['availabile_status'] = 'Availability';
+$string['availability'] = 'Availability';

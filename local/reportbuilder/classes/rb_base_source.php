@@ -4548,4 +4548,12 @@ abstract class rb_base_source {
 
         return $html;
     }
+
+    public function rb_display_language($language) {
+        if (get_string_manager()->string_exists('lang_' . $language, 'local_reportbuilder')) {
+            return get_string('lang_' . $language, 'local_reportbuilder');
+        } else {
+            return $language;
+        }
+    }
 }
