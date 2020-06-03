@@ -593,6 +593,22 @@ class source extends rb_base_source {
                         )
                 );
 
+        foreach ($DB->get_records_sql('select distinct type from {linkedinlearning_class}') as $type) {
+            $type = $type->type;
+
+            $filteroptions[] = new rb_filter_option(
+                    'linkedincourse',
+                    'classificationname_' . $type,
+                    $type,
+                    'select',
+                    array(
+                            'selectchoices' => $DB->get_records_menu('linkedinlearning_class', ['type' => $type], 'name', 'id,name'),
+                    ),
+                    'class.id',
+                    'class'
+            );
+        }
+
         // user, course and category filters
         $this->add_user_fields_to_filters($filteroptions);
         $this->add_staff_fields_to_filters($filteroptions);
