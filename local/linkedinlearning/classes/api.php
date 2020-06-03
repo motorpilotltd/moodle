@@ -243,6 +243,8 @@ class api {
             $course = course::fetchbyurn($raw->urn);
             if (empty($course)) {
                 $course = new course();
+                $course->primaryclassificationoverride = 0;
+                $course->primaryclassification = 0;
             }
 
             $course->urn = $raw->urn;
@@ -276,12 +278,7 @@ class api {
             }
             $course->timetocomplete = $raw->details->timeToComplete->duration * $multiplier;
 
-            if (!isset($course->id)) {
-                $course->insert();
-            } else {
-                $course->update();
-            }
-
+            $potentialprimaries = [];
             $courseclassificationids = [];
             foreach ($raw->details->classifications as $rawclassification) {
                 if (key_exists($rawclassification->associatedClassification->urn, $classifications)) {
@@ -296,7 +293,26 @@ class api {
                     $classifications[$classification->urn] = $classification;
                 }
                 $courseclassificationids[$classification->id] = $classification->id;
+
+                if (
+                        count($rawclassification->path) == 1
+                        && $rawclassification->path[0]->type == 'LIBRARY'
+                ) {
+                    $potentialprimaries[$classification->urn] = $classification->id;
+                }
             }
+            ksort($potentialprimaries);
+            if (empty($course->primaryclassificationoverride) && !empty($potentialprimaries)) {
+                $primary = array_pop($potentialprimaries);
+                $course->primaryclassification = $primary;
+            }
+
+            if (!isset($course->id)) {
+                $course->insert();
+            } else {
+                $course->update();
+            }
+
             $course->updateclassifications($courseclassificationids);
 
             $course->update_moodle_course();

@@ -101,6 +101,13 @@ class source extends rb_base_source {
                         'crsclass'
                 ),
                 new rb_join(
+                        'primaryclassification',
+                        'LEFT',
+                        "{linkedinlearning_class}",
+                        'primaryclassification.id = base.primaryclassification',
+                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                ),
+                new rb_join(
                         'local_taps_course',
                         'LEFT',
                         '{local_taps_course}',
@@ -124,6 +131,22 @@ class source extends rb_base_source {
                         'arupadvertdatatype_taps'
                 ),
         );
+
+        foreach ($DB->get_records_sql('select distinct type from {linkedinlearning_class}') as $type) {
+            $type = $type->type;
+
+            $joinlist[] = new rb_join(
+                    'classification_' . $type,
+                    'LEFT',
+                    "(SELECT linkedinlearningcourseid, $concatname as classificationnames
+                                FROM {linkedinlearning_crs_class} crsclass
+                                INNER JOIN {linkedinlearning_class} class ON crsclass.classificationid = class.id
+                                WHERE type = '$type'
+                                GROUP BY linkedinlearningcourseid)",
+                    'classification_' . $type . '.linkedinlearningcourseid = base.id',
+                    REPORT_BUILDER_RELATION_MANY_TO_ONE
+            );
+        }
 
         $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true], 'name', 'id, name');
 
@@ -243,7 +266,7 @@ class source extends rb_base_source {
      * @return array
      */
     protected function define_columnoptions() {
-        global $CFG;
+        global $CFG, $DB;
         include_once($CFG->dirroot.'/mod/assign/locallib.php');
 
         $columnoptions = array(
@@ -445,7 +468,35 @@ class source extends rb_base_source {
                                 'joins'       => 'progress',
                         )
                 ),
+                new rb_column_option(
+                        'linkedincourse',
+                        'primaryclassification',
+                        get_string('primaryclassification', 'rbsource_linkedinlearning'),
+                        "primaryclassification.name",
+                        array(
+                                'dbdatatype' => 'char',
+                                'outputformat' => 'text',
+                                'joins' => "primaryclassification"
+                        )
+                )
         );
+
+        foreach ($DB->get_records_sql('select distinct type from {linkedinlearning_class}') as $type) {
+            $type = $type->type;
+
+            $columnoptions[] =
+                    new rb_column_option(
+                            'linkedincourse',
+                            'classificationnames_' . $type,
+                            $type,
+                            "classification_$type.classificationnames",
+                            array(
+                                    'dbdatatype' => 'char',
+                                    'outputformat' => 'text',
+                                    'joins' => "classification_$type"
+                            )
+                    );
+        }
 
         // User, course and category fields.
         $this->add_user_fields_to_columns($columnoptions);
