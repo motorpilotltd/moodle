@@ -39,9 +39,11 @@ if ($id) {
     print_error('You must specify a course_module ID or an instance ID');
 }
 
-$PAGE->set_url('/mod/coursera/view.php', array('id' => $cm->id));
-
 require_login($course, true, $cm);
+$context = context_module::instance($cm->id);
+require_capability('mod/coursera:view', $context);
+
+$PAGE->set_url('/mod/coursera/view.php', array('id' => $cm->id));
 
 if (time() > \mod_coursera\courseramoduleaccess::endofcourseramoduleaccess($USER->id, $cminstance->id)) {
     redirect(new moodle_url('/course/view.php', ['id' => $course->id]), get_string('noaccesscontactadmin', 'mod_coursera'), 5);
@@ -49,12 +51,11 @@ if (time() > \mod_coursera\courseramoduleaccess::endofcourseramoduleaccess($USER
 
 $event = \mod_coursera\event\course_module_viewed::create(array(
     'objectid' => $PAGE->cm->instance,
-    'context' => $PAGE->context,
+    'context' => $context,
 ));
 $event->add_record_snapshot('course', $PAGE->course);
 $event->add_record_snapshot($PAGE->cm->modname, $cminstance);
 $event->trigger();
-
 
 $coursera = new \mod_coursera\coursera();
 $coursera->enrolonprogram($USER->id);
