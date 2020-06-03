@@ -22,13 +22,17 @@
  * @subpackage reportbuilder
  */
 
-class rb_user_walearningpath_reports_embedded extends rb_base_embedded {
+namespace local_reportbuilder\embedded;
+
+class user_walearningpath extends \rb_base_embedded {
     public $defaultsortcolumn, $defaultsortorder;
 
-    public function __construct($data) {
+    public function __construct() {
+        global $USER;
+
         $this->url = '/my/index.php?tab=mywalearningpath';
         $this->source = 'walearningpath';
-        $this->shortname = 'user_walearningpath_reports';
+        $this->shortname = 'user_walearningpath';
         $this->fullname = get_string('sourcetitle', 'rbsource_walearningpath');
         $this->columns = [
             [
@@ -48,12 +52,10 @@ class rb_user_walearningpath_reports_embedded extends rb_base_embedded {
             ],
         ];
 
-        // only show learning path of the current user
-        if (!empty($data['walearningpath_userid'])) {
-            $this->embeddedparams = [
-                'walearningpath_userid' => $data['walearningpath_userid']
-            ];
-        }
+        // Only show current user learning paths.
+        $this->embeddedparams = [
+            'walearningpath_userid' => $USER->id
+        ];
     }
 
         /**
@@ -67,16 +69,5 @@ class rb_user_walearningpath_reports_embedded extends rb_base_embedded {
      */
     public function is_capable($reportfor, $report) {
         return true;
-    }
-
-    /**
-     * Returns true if require_login should be executed when the report is access through a page other than
-     * report.php or an embedded report's webpage, e.g. through ajax calls.
-     *
-     * @return boolean True if require_login should be executed
-     */
-    public function needs_require_login() {
-        global $CFG;
-        return $CFG->forcelogin;
     }
 }

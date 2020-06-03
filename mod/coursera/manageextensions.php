@@ -21,39 +21,31 @@
  * @package local_reportbuilder
  */
 
-require_once(dirname(dirname(__DIR__)).'/config.php');
+require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
 
-$debug  = optional_param('debug', 0, PARAM_INT);
-$sid = optional_param('sid', '0', PARAM_INT);
-$format = optional_param('format', '', PARAM_TEXT); // export format
+$cminstanceid = required_param('cminstanceid', PARAM_INT);
 
-$context = context_system::instance();
-$PAGE->set_context($context);
+$cm = get_coursemodule_from_instance('coursera', $cminstanceid);
+$context = context_module::instance($cm->id, MUST_EXIST);
+$course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
+require_capability('mod/coursera:extendeligibility', $context);
+require_login($course, false, $cm);
 
-$pageparams = [
-    'format' => $format,
-    'debug' => $debug,
-];
+$PAGE->set_url('/mod/coursera/manageextensions.php');
+$PAGE->set_title(get_string('manageextensions', 'rbsource_courseralearners'));
+$PAGE->set_heading(get_string('manageextensions', 'rbsource_courseralearners'));
 
-$shortname = 'local_reportbuilder\embedded\manage_embedded_reports';
-
-if (!$report = reportbuilder_get_embedded_report($shortname, $pageparams, false, $sid)) {
+if (!$report = reportbuilder_get_embedded_report('rbsource_courseralearners\embedded\manageextensions', ['cminstanceid' => $cminstanceid], false, 0)) {
     print_error('error:couldnotgenerateembeddedreport', 'local_reportbuilder');
 }
 
-$url = new moodle_url('/local/reportbuilder/manageembeddedreports.php', $pageparams);
-admin_externalpage_setup('rbmanageembeddedreports', '', null, $url);
+$url = new moodle_url('/mod/coursera/manageextensions.php');
 
 $PAGE->set_button($PAGE->button . $report->edit_button());
 
 /** @var local_reportbuilder_renderer $renderer */
 $renderer = $PAGE->get_renderer('local_reportbuilder');
-
-if ($format != '') {
-    $report->export_data($format);
-    die;
-}
 
 \local_reportbuilder\event\report_viewed::create_from_report($report)->trigger();
 
@@ -62,14 +54,11 @@ $report->include_js();
 echo $OUTPUT->header();
 
 // This must be done after the header and before any other use of the report.
-list($reporthtml, $debughtml) = $renderer->report_html($report, $debug);
-echo $debughtml;
+list($reporthtml, $debughtml) = $renderer->report_html($report);
 
-echo $OUTPUT->heading(get_string('manageembeddedreports','local_reportbuilder'));
-
+echo $OUTPUT->heading(get_string('manageextensions','rbsource_courseralearners'));
 $heading = $renderer->result_count_info($report);
 
-echo $OUTPUT->heading($heading, 3);
 echo $renderer->print_description($report->description, $report->_id);
 
 $report->display_search();
@@ -77,8 +66,5 @@ $report->display_search();
 // Print saved search buttons if appropriate.
 echo $report->display_saved_search_options();
 echo $reporthtml;
-
-// Export button.
-$renderer->export_select($report, $sid);
 
 echo $OUTPUT->footer();
