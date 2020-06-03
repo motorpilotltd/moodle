@@ -21,19 +21,21 @@
  * @package local_reportbuilder
  */
 
-class rb_manage_user_reports_embedded extends rb_base_embedded {
+namespace local_reportbuilder\embedded;
+
+class manage_embedded_reports extends \rb_base_embedded {
 
     public $url, $source, $fullname, $filters, $columns;
     public $contentmode, $contentsettings, $embeddedparams;
     public $hidden, $accessmode, $accesssettings, $shortname;
     public $defaultsortcolumn, $defaultsortorder;
 
-    public function __construct($data) {
-        $this->url = '/local/reportbuilder/index.php';
+    public function __construct() {
+        $this->url = '/local/reportbuilder/manageembeddedreports.php';
         $this->source = 'reports';
         $this->defaultsortcolumn = 'report_namelinkeditview';
-        $this->shortname = 'manage_user_reports';
-        $this->fullname = get_string('manageuserreports', 'local_reportbuilder');
+        $this->shortname = 'manage_embedded_reports';
+        $this->fullname = get_string('manageembeddedreports', 'local_reportbuilder');
         $this->columns = [
             [
                 'type' => 'report',
@@ -59,9 +61,9 @@ class rb_manage_user_reports_embedded extends rb_base_embedded {
             ],
         ];
 
-        // only show user reports
+        // only show embedded reports
         $this->embeddedparams = [
-            'embedded' => '0',
+            'embedded' => '1',
         ];
 
         parent::__construct();
@@ -85,7 +87,7 @@ class rb_manage_user_reports_embedded extends rb_base_embedded {
      * @return boolean true if the user can access this report
      */
     public function is_capable($reportfor, $report) {
-        $syscontext = context_system::instance();
-        return has_capability('local/reportbuilder:managereports', $syscontext, $reportfor);
+        $syscontext = \context_system::instance();
+        return has_capability('local/reportbuilder:manageembeddedreports', $syscontext, $reportfor);
     }
 }

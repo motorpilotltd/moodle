@@ -38,7 +38,7 @@ $pageparams = [
 
 $shortname = 'manage_user_reports';
 
-if (!$report = reportbuilder_get_embedded_report($shortname, $pageparams, false, $sid)) {
+if (!$report = reportbuilder_get_embedded_report('local_reportbuilder\embedded\manage_user_reports', $pageparams, false, $sid)) {
     print_error('error:couldnotgenerateembeddedreport', 'local_reportbuilder');
 }
 
