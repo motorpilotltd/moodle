@@ -3,12 +3,18 @@
 require_once(dirname(__FILE__) . '/../../config.php');
 
 $shortname = optional_param('shortname', null, PARAM_TEXT);
+$courseid = optional_param('courseid', 0, PARAM_INT);
 
-if (empty($shortname)) {
+$parmas = [];
+if (empty($shortname) && $courseid == 0) {
     redirect(new moodle_url('/'));
-}
+} else if ($courseid != 0) {
+    $params = ['id' => $courseid];
+} else {
+    $params = ['shortname' => $shortname];
+};
 
-$course = $DB->get_record('course', ['shortname' => $shortname]);
+$course = $DB->get_record('course', $params);
 
 if (empty($course)) {
     redirect(new moodle_url('/'));
