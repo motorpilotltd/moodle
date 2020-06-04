@@ -44,6 +44,8 @@ function coursera_supports($feature) {
             return true;
         case FEATURE_BACKUP_MOODLE2:
             return true;
+        case FEATURE_NO_VIEW_LINK:
+            return false;
         default:
             return null;
     }
@@ -150,6 +152,14 @@ function coursera_get_refresh_token() {
 }
 
 function coursera_cm_info_dynamic(cm_info $cm) {
+    global $DB;
+
+    $url = new moodle_url('/mod/coursera/view.php', ['id' => $cm->id]);
+    $url = $url->out();
+    $cm->set_on_click(htmlentities("event.preventDefault(); window.open('$url', '_blank');"));
+}
+
+function coursera_cm_info_view(cm_info $cm) {
     global $DB, $PAGE, $USER, $OUTPUT;
     static $jsincluded = false;
 
@@ -182,11 +192,7 @@ function coursera_cm_info_dynamic(cm_info $cm) {
 
     $cm->set_content($output->rendercourseragetcoursemoduleinfo($data));
 
-    $url = new moodle_url('/mod/coursera/view.php', ['id' => $cm->id]);
-    $url = $url->out();
-    $cm->set_on_click(htmlentities("event.preventDefault(); window.open('$url', '_blank');"));
-
-    if (!$data['allowaccess']) {
+    if (time() < $endofaccess) {
         $remaining = get_string('noaccesscontactadmin', 'mod_coursera');
     } else {
         $remaining = html_writer::span(get_string('timeremaining', 'mod_coursera',

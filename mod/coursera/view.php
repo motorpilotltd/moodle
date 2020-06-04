@@ -21,25 +21,16 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
+require_once(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot.'/mod/coursera/lib.php');
 
-$id = optional_param('id', 0, PARAM_INT); // Course_module ID, or
-$n  = optional_param('n', 0, PARAM_INT);  // ... coursera instance ID - it should be named as the first character of the module.
+$id      = required_param('id', PARAM_INT);
 
-if ($id) {
-    $cm         = get_coursemodule_from_id('coursera', $id, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $cminstance  = $DB->get_record('coursera', array('id' => $cm->instance), '*', MUST_EXIST);
-} else if ($n) {
-    $cminstance  = $DB->get_record('coursera', array('id' => $n), '*', MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $coursera->course), '*', MUST_EXIST);
-    $cm         = get_coursemodule_from_instance('coursera', $coursera->id, $course->id, false, MUST_EXIST);
-} else {
-    print_error('You must specify a course_module ID or an instance ID');
-}
+$cm = get_coursemodule_from_id('coursera', $id, 0, false, MUST_EXIST);
+$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+$cminstance  = $DB->get_record('coursera', array('id' => $cm->instance), '*', MUST_EXIST);
 
-require_login($course, true, $cm);
+require_login($course, false, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/coursera:view', $context);
 
