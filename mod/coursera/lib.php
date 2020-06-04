@@ -192,7 +192,7 @@ function coursera_cm_info_view(cm_info $cm) {
 
     $cm->set_content($output->rendercourseragetcoursemoduleinfo($data));
 
-    if (time() < $endofaccess) {
+    if (!$data['allowaccess']) {
         $remaining = get_string('noaccesscontactadmin', 'mod_coursera');
     } else {
         $remaining = html_writer::span(get_string('timeremaining', 'mod_coursera',
