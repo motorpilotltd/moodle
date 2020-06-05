@@ -560,13 +560,6 @@ class rb_appraisalstatus_content extends rb_base_content {
 }
 
 class rb_lilcourse_content extends rb_base_content {
-
-    public function default_sql_restriction($availabilefield, $reportid) {
-        $sql = "{$availabilefield} = 1";
-
-        return array(" $sql ", []);
-    }
-
     /**
      * Generate the SQL to apply this content restriction.
      *
