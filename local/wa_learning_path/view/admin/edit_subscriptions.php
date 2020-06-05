@@ -5,5 +5,17 @@
         <a href="<?php echo (new moodle_url('/local/wa_learning_path/?c=admin&a=edit_subscriptions&id='.$this->id)); ?>" class="current"><?php echo $this->get_string('tab_subscriptions') ?></a>
     </div>
 
-    <?php echo $this->reporthtml; ?>
+   
+
+    
+    <?php 
+        // Report filter
+        $this->report->display_search();
+        // Print saved search buttons if appropriate.
+        echo $this->report->display_saved_search_options();
+        echo $this->reporthtml; 
+
+        // Export button.
+        $this->renderer->export_select($this->report, $this->sid);
+    ?>
 <?php endif; ?>

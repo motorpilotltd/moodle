@@ -59,6 +59,7 @@ class source extends rb_base_source {
 
         // Include some standard columns, override parent so they say certification.
         $this->add_user_fields_to_columns($columnoptions);
+        $this->add_staff_details_to_columns($columnoptions);
 
         $columnoptions[] = new rb_column_option(
             'learningpath',
@@ -92,6 +93,26 @@ class source extends rb_base_source {
                 'displayfunc'  => 'plaintext',
                 'dbdatatype'   => 'char',
                 'outputformat' => 'text'
+            )
+        );
+
+        $columnoptions[] = new rb_column_option(
+            'learningpath',
+            'learningpathimage',
+            get_string('learningpathimage', 'rbsource_walearningpath'),
+            'base.id',
+            array(
+                'displayfunc' => 'learningpathimage',
+            )
+        );
+        $columnoptions[] = new rb_column_option(
+            'learningpath',
+            'publishstatus',
+            get_string('publishstatus', 'rbsource_walearningpath'),
+            'base.status',
+            array(
+                'displayfunc' => 'learningpathstatus',
+                'outputformat' => 'text',
             )
         );
 
@@ -166,19 +187,37 @@ class source extends rb_base_source {
             'text'
         );
 
+        $filteroptions[] = new rb_filter_option(
+            'user',
+            'username',
+            get_string('username', 'rbsource_walearningpath'),
+            'text'
+        );
+
         return $filteroptions;
     }
 
     protected function define_contentoptions() {
         $contentoptions = [];
 
-        // Add the time created content option.
         $contentoptions[] = new rb_content_option(
             'user',
             get_string('user', 'local_reportbuilder'),
             ['userid' => 'walearningpathsubscribe.userid']
-    );
+        );
 
+        $contentoptions[] = new rb_content_option(
+            'leaver',
+            get_string('leaver', 'local_reportbuilder'),
+            ['leaver' => "auserstaff.LEAVER_FLAG"],
+            'auserstaff'
+        );
+        //learningpathstatus
+        $contentoptions[] = new rb_content_option(
+            'learningpathstatus',
+            get_string('publish_status', 'local_reportbuilder'),
+            ['publish_status' => "base.status"]
+        );
         return $contentoptions;
     }
 
@@ -196,6 +235,14 @@ class source extends rb_base_source {
                         'walearningpathsubscribe.status',
                         array('hidden' => true, 'joins' => 'walearningpathsubscribe')
                 ),
+        );
+
+        $requiredcolumns[] = new rb_column(
+            'auser',
+            'employeenumber',
+            '',
+            "auserstaff.EMPLOYEE_NUMBER",
+            array('hidden' => true, 'joins' => 'auserstaff')
         );
 
         return $requiredcolumns;
@@ -216,8 +263,18 @@ class source extends rb_base_source {
         return $paramoptions;
     }
 
+    public function rb_display_learningpathimage($id, $row) {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/wa_learning_path/lib/lib.php');
+        \wa_learning_path\lib\load_model('learningpath');
+
+        $image_url = \wa_learning_path\model\learningpath::get_image_url($id, false);
+        $image_url = !empty($image_url) ? $image_url: new \moodle_url('/local/wa_learning_path/pix/default.svg');
+
+        return \html_writer::empty_tag('img', array('src' => $image_url, 'class' => 'learning_path_image', 'width' => '35px', 'height' => '35px'));
+    }
+
     public function rb_display_titlelinkedlearningpath($title, $row) {
-        // /local/wa_learning_path/index.php?c=learning_path&a=matrix&id=[learning path id]
         $url = new moodle_url(
             '/local/wa_learning_path/index.php', 
             array(
@@ -227,5 +284,28 @@ class source extends rb_base_source {
             )
         );
         return html_writer::link($url, $title);
+    }
+    
+    public function rb_display_learningpathstatus($status, $row) {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/wa_learning_path/lib/lib.php');
+        \wa_learning_path\lib\load_model('learningpath');
+        $data = '';
+        switch ($status) {
+            case WA_LEARNING_PATH_PUBLISH:
+                $data = get_string('publish', 'local_wa_learning_path');
+                break;
+            case WA_LEARNING_PATH_DRAFT:
+                $data = get_string('draft', 'local_wa_learning_path');
+                break;
+            case WA_LEARNING_PATH_PUBLISH_NOT_VISIBLE:
+                $data = get_string('publish_not_visible', 'local_wa_learning_path');
+                break;
+            default:
+                $data = '';
+                break;
+        }
+
+       return $data;
     }
 }
