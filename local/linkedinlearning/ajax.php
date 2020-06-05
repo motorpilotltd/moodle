@@ -21,8 +21,6 @@ require_sesskey();
 
 $context = context_system::instance();
 
-require_capability('local/linkedinlearning:manage', $context);
-
 $action = required_param('action', PARAM_ALPHA);
 
 $PAGE->set_context($context);
