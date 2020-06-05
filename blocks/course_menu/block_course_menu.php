@@ -136,7 +136,10 @@ class block_course_menu extends block_base
         $this->check_default_config();
         //newly added elements
         //participatlist -> 2012-10-15
-        if (!$this->element_exists('sitepages')) {
+/* BEGIN CORE MOD */
+        // New element, 'kaltura'.
+        if (!$this->element_exists('sitepages') || !$this->element_exists('kaltura')) {
+/* END CORE MOD */
             $this->init_default_config();
         }
 
@@ -1063,7 +1066,10 @@ class block_course_menu extends block_base
             $this->init_default_config(false);
         } else {
             $this->config = @unserialize($CFG->block_course_menu_global_config);
-            if (!$this->element_exists('sitepages')) {
+/* BEGIN CORE MOD */
+            // New element, 'kaltura'.
+            if (!$this->element_exists('sitepages') || !$this->element_exists('kaltura')) {
+/* END CORE MOD */
                 $this->init_default_config(false);
             } else {
                 if ($this->remove_deprecated()) {

@@ -71,7 +71,7 @@ function xmldb_block_course_menu_upgrade($oldversion, $block)
         }
     }
 /* BEGIN CORE MOD */
-    if ($oldversion < 2017051500) {
+    if ($oldversion < 2017051501) {
         foreach ($DB->get_records('block_instances', array('blockname' => 'course_menu')) as $instance) {
             $config = unserialize(base64_decode($instance->configdata));
             if (!isset($config->elements)) {
@@ -80,7 +80,6 @@ function xmldb_block_course_menu_upgrade($oldversion, $block)
             $continue = false;
             foreach ($config->elements as $index => $element) {
                 if (!empty($element['id']) && $element['id'] == 'kaltura')  {
-                    array_splice($config->elements, $index, 1);
                     $continue = true;
                     break;
                 }
