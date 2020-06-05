@@ -69,18 +69,33 @@
         ]
     }
 }}
-<ul class="reportmanager">
+<div id="reportmanagerlist" class="reportmanager myreports">
 {{#report_list}}
-    <li>
-        <a href="{{href}}">
-            {{#pix}}report_icon,local_reportbuilder{{/pix}}
-            {{{name}}}
+    <div class='accordion-group'>
+        <a class="accordion-toggle collapsed"
+            data-toggle="collapse"
+            data-parent="#reportmangerlist"
+            href="#collapse-{{id}}"
+        >
+            {{ name }}
         </a>
-        {{#edit_href}}
-            <a href="{{edit_href}}" title="{{#str}}edit{{/str}}">
-                {{#pix}}t/edit{{/pix}}
-            </a>
-        {{/edit_href}}
-    </li>
+        <div id="collapse-{{id}}" class="accordion-body collapse">
+            <ul class="list-unstyled m-l-1">
+            {{#reports}}
+                <li>
+                    <a href="{{href}}">
+                        {{#pix}}report_icon,local_reportbuilder{{/pix}}
+                        {{{name}}}
+                    </a>
+                    {{#edit_href}}
+                        <a href="{{edit_href}}" title="{{#str}}edit{{/str}}">
+                            {{#pix}}t/edit{{/pix}}
+                        </a>
+                    {{/edit_href}}
+                </li>
+            {{/reports}}
+            </ul>
+        </div>
+    </div>
 {{/report_list}}
-</ul>
+</div>
