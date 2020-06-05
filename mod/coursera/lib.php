@@ -140,6 +140,10 @@ function coursera_get_completion_state($course, $cm, $userid, $type) {
 
     $coursera = $DB->get_record('coursera', ['id' => $cm->instance]);
 
+    if (empty($coursera->courseraactivitycompleted)) {
+        return false;
+    }
+
     return $DB->record_exists_sql(
             "SELECT * FROM {courseraprogress} WHERE courseracourseid = :courseracourseid AND iscompleted = 1 AND userid = :userid",
             ['userid' => $user->id, 'courseracourseid' => $coursera->contentid]

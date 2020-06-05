@@ -17,6 +17,7 @@
                 <FIELD NAME="contentid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
                 <FIELD NAME="moduleaccessperiod" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
                 <FIELD NAME="detailsdefaultstate" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
+                <FIELD NAME="courseraactivitycompleted" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

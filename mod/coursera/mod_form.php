@@ -80,6 +80,8 @@ class mod_coursera_mod_form extends moodleform_mod {
     }
 
     public function add_completion_rules() {
-        return [];
+        return [
+                $this->_form->addElement('advcheckbox', 'courseraactivitycompleted', get_string('courseraactivitycompleted', 'coursera'))
+        ];
     }
 }
