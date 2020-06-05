@@ -236,7 +236,7 @@ class block_arup_mylearning_content {
 
         $content = '';
 
-        if ($report = reportbuilder_get_embedded_report('local_reportbuilder\embedded\user_walearningpath', [], false, 0)) {
+        if ($report = reportbuilder_get_embedded_report('rbsource_walearningpath\embedded\user_walearningpath', [], false, 0)) {
             $reportembedobj = $report->embedobj;
             $reportbaseurl = new moodle_url($reportembedobj->url);
             $report->set_baseurl($reportbaseurl);

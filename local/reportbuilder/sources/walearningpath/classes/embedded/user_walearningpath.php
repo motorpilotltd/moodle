@@ -22,7 +22,7 @@
  * @subpackage reportbuilder
  */
 
-namespace local_reportbuilder\embedded;
+namespace rbsource_walearningpath\embedded;
 
 class user_walearningpath extends \rb_base_embedded {
     public $defaultsortcolumn, $defaultsortorder;

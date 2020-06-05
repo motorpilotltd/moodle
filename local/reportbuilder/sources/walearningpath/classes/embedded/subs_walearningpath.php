@@ -22,7 +22,7 @@
  * @subpackage reportbuilder
  */
 
-namespace local_reportbuilder\embedded;
+namespace rbsource_walearningpath\embedded;
 
 class subs_walearningpath extends \rb_base_embedded {
     public $defaultsortcolumn, $defaultsortorder;
@@ -72,6 +72,8 @@ class subs_walearningpath extends \rb_base_embedded {
      * @return boolean true if the user can access this report
      */
     public function is_capable($reportfor, $report) {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/wa_learning_path/lib/lib.php');
         return \wa_learning_path\lib\is_contenteditor($reportfor);
     }
 }
