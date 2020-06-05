@@ -75,7 +75,7 @@ class source extends rb_base_source {
         global $DB;
 
         $assignment_type_audience = \local_custom_certification\certification::ASSIGNMENT_TYPE_AUDIENCE;
-        $concat = \local_reportbuilder\dblib\base::getbdlib()->sql_group_concat('c.name', ', ', 'c.name ASC');
+        $concat = \local_reportbuilder\dblib\base::getbdlib()->sql_group_concat('ca.name', ', ', 'ca.name ASC');
 
         $joinlist = array(
                 new rb_join(
@@ -88,10 +88,15 @@ class source extends rb_base_source {
                 new rb_join(
                         'cohorts',
                         'LEFT',
-                        "(SELECT c.id as certifid, $concat as cohortnames
-                                FROM {certif_assignments} ca 
-                                INNER JOIN {cohort} c on ca.assignmenttypeid = c.id AND ca.assignmenttype = $assignment_type_audience
-                                GROUP BY c.id)",
+                        "(SELECT certifid, $concat as cohortnames
+                                FROM (
+                                    select ca.certifid, c.name 
+                                    from {certif_assignments} ca 
+                                    INNER JOIN {cohort} c on ca.assignmenttypeid = c.id 
+                                    where assignmenttype = $assignment_type_audience 
+                                    group by ca.certifid, c.name 
+                                ) ca
+                                GROUP BY ca.certifid)",
                         'cohorts.certifid = base.id',
                         REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
