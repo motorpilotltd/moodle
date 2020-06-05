@@ -32,7 +32,7 @@ class user_walearningpath extends \rb_base_embedded {
 
         $this->url = '/my/index.php?tab=mywalearningpath';
         $this->source = 'walearningpath';
-        $this->shortname = 'user_walearningpath';
+        $this->shortname = 'rbsource_walearningpath\embedded\user_walearningpath';
         $this->fullname = get_string('sourcetitle', 'rbsource_walearningpath');
         $this->columns = [
             [

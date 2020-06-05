@@ -30,7 +30,7 @@ class subs_walearningpath extends \rb_base_embedded {
     public function __construct() {
         $this->url = '/local/wa_learning_path/index.php';
         $this->source = 'walearningpath';
-        $this->shortname = 'subs_walearningpath';
+        $this->shortname = 'rbsource_walearningpath\embedded\subs_walearningpath';
         $this->fullname = get_string('walearningpath_subscriptions', 'rbsource_walearningpath');
         $this->columns = [
             [

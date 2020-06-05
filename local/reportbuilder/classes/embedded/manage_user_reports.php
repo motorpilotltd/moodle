@@ -34,7 +34,7 @@ class manage_user_reports extends \rb_base_embedded {
         $this->url = '/local/reportbuilder/index.php';
         $this->source = 'reports';
         $this->defaultsortcolumn = 'report_namelinkeditview';
-        $this->shortname = 'manage_user_reports';
+        $this->shortname = 'local_reportbuilder\embedded\manage_user_reports';
         $this->fullname = get_string('manageuserreports', 'local_reportbuilder');
         $this->columns = [
             [
