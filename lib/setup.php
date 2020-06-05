@@ -156,12 +156,20 @@ if ($CFG->dataroot === false) {
         header($_SERVER['SERVER_PROTOCOL'] . ' 503 Service Unavailable');
     }
     echo('Fatal error: $CFG->dataroot is not configured properly, directory does not exist or is not accessible! Exiting.'."\n");
+/* BEGIN CORE MOD */
+    error_log('Fatal error: $CFG->dataroot is not configured properly, directory does not exist or is not accessible! Exiting.');
+    error_log((new \Exception())->getTraceAsString());
+/* END CORE MOD */
     exit(1);
 } else if (!is_writable($CFG->dataroot)) {
     if (isset($_SERVER['REMOTE_ADDR'])) {
         header($_SERVER['SERVER_PROTOCOL'] . ' 503 Service Unavailable');
     }
     echo('Fatal error: $CFG->dataroot is not writable, admin has to fix directory permissions! Exiting.'."\n");
+/* BEGIN CORE MOD */
+    error_log('Fatal error: $CFG->dataroot is not writable, admin has to fix directory permissions! Exiting.');
+    error_log((new \Exception())->getTraceAsString());
+/* END CORE MOD */
     exit(1);
 }
 
