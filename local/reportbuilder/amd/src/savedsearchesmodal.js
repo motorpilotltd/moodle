@@ -30,7 +30,7 @@ define(['jquery', 'core/modal_factory', 'core/templates', 'core/str', 'core/noti
 
         var managesavedsearchesmodal = {
             init: function (id) {
-                var addblocklink = $("div.managesavedsearches button, div.managesavedsearches input");
+                var addblocklink = $('[data-action="managesavedsearchesmodal"]');
 
                 var titlePromise = Str.get_string('savedsearches', 'local_reportbuilder')
                     .fail(Notification.exception);
@@ -131,6 +131,7 @@ define(['jquery', 'core/modal_factory', 'core/templates', 'core/str', 'core/noti
 
                             modal.getRoot().on(ModalEvents.hidden, function() {
                                 modal.destroy();
+                                location.reload();
                             });
                             modal.show();
                         });

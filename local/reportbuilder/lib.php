@@ -1361,6 +1361,15 @@ class reportbuilder {
                 }
             }
         }
+
+        $simplesearch = optional_param('simplesearch', 0, PARAM_TEXT);
+        $clearsearch = optional_param('clearsearch', 0, PARAM_INT);
+        if ($simplesearch) {
+            $SESSION->reportbuilder[$this->get_uniqueid()]['toolbarsearchtext'] = $simplesearch;
+        } else {
+            unset($SESSION->reportbuilder[$this->get_uniqueid()]['toolbarsearchtext']);
+        }
+
         $mformtoolbar = new report_builder_toolbar_search_form(null);
         $adddatatoolbar = $mformtoolbar->get_data(false);
         if ($adddatatoolbar || $clearfilters) {
@@ -1832,7 +1841,7 @@ class reportbuilder {
      *
      * @return Nothing returned but prints the search box
      */
-    public function display_search() {
+    public function display_search($html = true) {
         global $CFG;
 
         $standard_filters = $this->get_standard_filters();
@@ -1840,10 +1849,16 @@ class reportbuilder {
             return;
         }
 
+        $class = $html ? ['class' => 'rb-search'] : [];
+
         require_once($CFG->dirroot . '/local/reportbuilder/report_forms.php');
         $mformstandard = new report_builder_standard_search_form($this->get_current_url(),
-                array('fields' => $standard_filters), 'post', '', array('class' => 'rb-search'));
-        $mformstandard->display();
+                array('fields' => $standard_filters), 'post', '', $class);
+        if ($html) {
+            return $mformstandard->display();
+        } else {
+            return $mformstandard->render();
+        }
     }
 
     /**
@@ -1851,7 +1866,7 @@ class reportbuilder {
      *
      * @return Nothing returned but prints the search box
      */
-    public function display_sidebar_search() {
+    public function display_sidebar_search($html = true) {
         global $CFG, $PAGE;
 
         $sidebarfilters = $this->get_sidebar_filters();
@@ -4065,14 +4080,18 @@ class reportbuilder {
     /**
      * If a redirect url has been specified in the source then output a redirect link.
      */
-    public function display_redirect_link() {
+    public function display_redirect_link($html = true) {
         if (isset($this->src->redirecturl)) {
             if (isset($this->src->redirectmessage)) {
                 $message = '&laquo; ' . $this->src->redirectmessage;
             } else {
                 $message = '&laquo; ' . get_string('selectitem', 'local_reportbuilder');
             }
-            echo html_writer::link($this->src->redirecturl, $message);
+            if ($html) {
+                echo html_writer::link($this->src->redirecturl, $message);
+            } else {
+                return html_writer::link($this->src->redirecturl, $message);
+            }
         }
     }
 
@@ -4187,20 +4206,47 @@ class reportbuilder {
      * @return string HTML to display a pulldown menu with saved search options
      */
     function view_saved_menu() {
-        global $USER, $OUTPUT;
+        global $USER, $OUTPUT, $PAGE;
+
+        $sid = optional_param('sid', 0, PARAM_INT);
+
         $id = $this->_id;
         $sid = $this->_sid;
 
         $common = new moodle_url($this->get_current_url());
+        $output = $PAGE->get_renderer('local_reportbuilder');
 
         $savedoptions = $this->get_saved_searches($id, $USER->id);
         if (count($savedoptions) > 0) {
-            $select = new single_select($common, 'sid', $savedoptions, $sid);
-            $select->label = get_string('viewsavedsearch', 'local_reportbuilder');
-            $select->formid = 'viewsavedsearch';
-            return $OUTPUT->render($select);
+            $am = new action_menu();
+
+            $addclass = $sid ? 'active' : '';
+            $am->set_menu_trigger(
+                '<button class="btn btn-default '. $addclass .'"><i class="fa fa-floppy-o"></i></button>'
+            );
+
+            foreach ($savedoptions as $key => $name) {
+                $addclass = ($sid === $key) ? 'active' : '';
+                $link = html_writer::link(new moodle_url($this->get_current_url(), ['sid' => $key]), $name, ['class' => $addclass]);
+                $am->add($link);
+            }
+
+            $am->add('<li class="divider" role="presentation">');
+
+            $savedbutton = $output->save_button($this, true);
+            $am->add($savedbutton);
+
+            $managesearches = html_writer::link('#', get_string('managesavedsearches', 'local_reportbuilder'), ['data-action' => 'managesavedsearchesmodal']);
+            $am->add($managesearches);
+
+            if ($sid) {
+                $clear = html_writer::link(new moodle_url($this->get_current_url(), ['clearfilters' => 1]), get_string('clearform', 'local_reportbuilder'));
+                $am->add($clear);
+            }
+
+            return $OUTPUT->render($am);
         } else {
-            return '';
+            return $output->save_button($this);
         }
     }
 
@@ -4233,35 +4279,26 @@ class reportbuilder {
      * @return string HTML to display the table
      */
     public function display_saved_search_options() {
-        global $PAGE, $OUTPUT;
+        global $PAGE;
 
         if (!isloggedin() or isguestuser()) {
             // No saving for guests, sorry.
             return '';
         }
 
-        $output = $PAGE->get_renderer('local_reportbuilder');
-
-        $savedbutton = $output->save_button($this);
         $savedmenu = $this->view_saved_menu();
 
         // no need to print anything
-        if (strlen($savedmenu) == 0 && strlen($savedbutton) == 0) {
+        if (strlen($savedmenu) == 0) {
             return '';
         }
 
         $controls = html_writer::start_tag('div', array('id' => 'rb-search-controls'));
 
-        if (strlen($savedbutton) != 0) {
-            $controls .= $savedbutton;
-        }
         if (strlen($savedmenu) != 0) {
             $PAGE->requires->js_call_amd('local_reportbuilder/savedsearchesmodal', 'init',
                     ['id' => $this->_id]);
-            $managesearchbutton = $OUTPUT->single_button('', get_string('managesavedsearches', 'local_reportbuilder'), 'get', ['class' => 'managesavedsearches']);
-
             $controls .= html_writer::tag('div', $savedmenu, array('id' => 'rb-search-menu'));
-            $controls .=  html_writer::tag('div', $managesearchbutton, array('id' => 'manage-saved-search-button'));;
         }
 
         $controls .= html_writer::end_tag('div');
@@ -4280,7 +4317,14 @@ class reportbuilder {
         $context = context_system::instance();
         $capability = $this->embedded ? 'local/reportbuilder:manageembeddedreports' : 'local/reportbuilder:managereports';
         if (has_capability($capability, $context)) {
-            return $OUTPUT->single_button(new moodle_url('/local/reportbuilder/general.php', array('id' => $this->_id)), get_string('editthisreport', 'local_reportbuilder'), 'get');
+            return html_writer::link(
+                new moodle_url('/local/reportbuilder/general.php', array('id' => $this->_id)),
+                '<i class="fa fa-pencil"></i><span class="sr-only">' . get_string('editthisreport', 'local_reportbuilder') . '</span>',
+                array('class' => 'btn btn-default',
+                    'data-toggle' => 'tooltip',
+                    'data-placement' => 'left',
+                    'title' => get_string('editthisreport', 'local_reportbuilder'))
+            );
         } else {
             return '';
         }

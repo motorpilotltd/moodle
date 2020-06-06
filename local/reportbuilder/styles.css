@@ -1,304 +1,645 @@
+.original {
+  /* IE does not work properly with 100% height, so let'd use http://alistapart.com/article/creating-intrinsic-ratios-for-video */
+}
 
-.rb-search .mform .mform .fitem .felement label {
-    margin-left: 10px;
-    margin-right: 10px;
+.original .rb-search .mform .mform .fitem .felement label {
+  margin-left: 10px;
+  margin-right: 10px;
 }
-.rb-search .mform .mform .fgroup .felement .fdate_time_selector select {
-    width: auto;
+
+.original .rb-search .mform .mform .fgroup .felement .fdate_time_selector select {
+  width: auto;
 }
-.rb-search .mform #fitem_id_toolbarsearchtext label {
-    white-space: nowrap;
+
+.original .rb-search .mform #fitem_id_toolbarsearchtext label {
+  white-space: nowrap;
 }
-.rb-search .mform #fitem_id_toolbarsearchtext,
-.rb-search .mform #fitem_id_toolbarsearchbutton,
-.rb-search .mform #fitem_id_cleartoolbarsearchtext,
-.rb-search .mform #fitem_id_toolbarsearchtext .felement,
-.rb-search .mform #fitem_id_toolbarsearchbutton .felement,
-.rb-search .mform #fitem_id_cleartoolbarsearchtext .felement {
-    margin: 0;
-    padding: 0;
+
+.original .rb-search .mform #fitem_id_toolbarsearchtext,
+.original .rb-search .mform #fitem_id_toolbarsearchbutton,
+.original .rb-search .mform #fitem_id_cleartoolbarsearchtext,
+.original .rb-search .mform #fitem_id_toolbarsearchtext .felement,
+.original .rb-search .mform #fitem_id_toolbarsearchbutton .felement,
+.original .rb-search .mform #fitem_id_cleartoolbarsearchtext .felement {
+  margin: 0;
+  padding: 0;
 }
-.rb-sidebar {
-    margin: 0;
-    vertical-align: top;
-    padding-right: 10px;
-    float: left;
+
+.original .rb-sidebar {
+  margin: 0;
+  vertical-align: top;
+  padding-right: 10px;
+  float: left;
 }
-.rb-sidebar .fcontainer .fitem .fitemtitle,
-.rb-sidebar .fcontainer .fitem .fgroup legend {
-    width: 100%;
-    margin-bottom: 5px;
+
+.original .rb-sidebar .fcontainer .fitem .fitemtitle,
+.original .rb-sidebar .fcontainer .fitem .fgroup legend {
+  width: 100%;
+  margin-bottom: 5px;
 }
-.rb-sidebar input[type='text'] {
-    margin-right: 10px;
+
+.original .rb-sidebar input[type='text'] {
+  margin-right: 10px;
 }
+
 @media (max-width: 992px) {
-    .rb-sidebar {
-        width: 33.33333333%;
-    }
+  .original .rb-sidebar {
+    width: 33.33333333%;
+  }
 }
+
 @media (max-width: 768px) {
-    .rb-sidebar {
-        width: 100%;
-    }
+  .original .rb-sidebar {
+    width: 100%;
+  }
 }
+
 @media (max-width: 992px) {
-    .rb-has-sidebar {
-        width: 66.66666667%;
-    }
+  .original .rb-has-sidebar {
+    width: 66.66666667%;
+  }
 }
+
 @media (max-width: 768px) {
-    .rb-has-sidebar {
-        width: 100%;
-    }
-}
-.totara-table-container {
-    border: none;
-}
-#rb_export_form {
-    clear: both;
-}
-#fgroup_id_exportgroup {
-    text-align: center;
-}
-#fgroup_id_exportgroup fieldset {
-    width: auto;
-    display: inline-block;
-}
-#fgroup_id_exportgroup fieldset .felement {
-    width: auto;
-    float: left;
-    margin: 0;
-}
-#fgroup_id_exportgroup fieldset legend {
-    float: left;
-    width: auto;
-    line-height: 30px;
-    margin-right: 10px;
-}
-#fgroup_id_exportgroup fieldset legend span {
-    width: auto;
-}
-.mform .fgroup .felement .rb-multicheck-control {
-    display: block;
-    margin-bottom: 5px;
-}
-.rb-display-table-container {
-    clear: right;
-}
-.rb-sidebar .felement > span {
-    clear: both;
-    display: block;
-}
-#fitem_id_toolbarsearchtext,
-#fitem_id_toolbarsearchbutton,
-#fitem_id_cleartoolbarsearchtext {
-    display: inline-block;
-    margin-right: 10px;
-}
-form[id^="toolbarsearch"].mform div,
-form[id^="toolbarsearch"].mform fieldset {
-    margin: 0;
-    padding: 0;
-    width: auto;
-    vertical-align: top;
-}
-form[id^="toolbarsearch"].mform .fsubmit {
-    width: auto;
-}
-
-form.rb-sidebar div.fcontainer .fitem:last-child {
-    display: none;
-}
-.reportbuilder-table .user_namewithlinks a {
-    padding-left: 5px;
-    float: left;
-}
-#team_members .user_namewithlinks .name {
-    font-size: 18px;
-    font-weight: bold;
-    padding-top: 8px;
-}
-.reportbuilder-table .user_namewithlinks ul {
-    clear: both;
-    margin: 0;
-    padding-top: 2px;
-}
-.reportbuilder-table .user_namewithlinks ul li {
-    float: left;
-    list-style-type: none;
-}
-.reportbuilder-table .user_namewithlinks li a {
-    border-left: 1px solid #dddddd;
-    font-size: 12px;
-    line-height: 10px;
-    margin: 2px;
-}
-.reportbuilder-table .user_namewithlinks li:first-child a {
-    border-left: none;
-    margin-left: 0;
-}
-.reportbuilder-table .user_actions {
-    white-space: nowrap;
-}
-/* IE does not work properly with 100% height, so let'd use http://alistapart.com/article/creating-intrinsic-ratios-for-video */
-.ie .rb-report-svggraph {
-    position: relative;
-    padding-bottom: 40%;
-    /* This is the ration of original svg size 1000x400 */
-    height: 0;
-    clear: both;
-}
-.ie .rb-report-svggraph:empty {
-    padding-bottom: 0;
-    clear: none;
-}
-.ie .rb-report-svggraph svg {
-    position: absolute;
-    top: 0;
-    left: 0;
+  .original .rb-has-sidebar {
     width: 100%;
-    height: 100%;
-}
-.rb-display-expand {
-    padding: 5px;
-    background-repeat: no-repeat;
-    background-position: 0 5px;
-    cursor: pointer;
-}
-.multicheck-items label > div {
-    display: inline;
-}
-.rb-search-menu {
-    /* stylelint-disable */
-    vertical-align: middle !important;
-    /* stylelint-enable */
-}
-.rb-genbutton {
-    float: right;
-}
-.rb-genicon {
-    cursor: pointer;
-}
-.rb-hidden {
-    display: none;
-}
-.rb-inline {
-    display: inline-block;
-}
-.path-admin-totara-reportbuilder-restrictions .header.lastcol {
-    min-width: 120px;
-}
-div.felement #id_all_sidebar_filters {
-    /* stylelint-disable */
-    display: none !important;
-    /* stylelint-enable */
-}
-.mform table .fitem {
-    margin-right: 0;
-    margin-bottom: 0;
-    margin-left: 0;
-}
-.mform td .fitem .fcheckbox {
-    margin-top: 8px;
+  }
 }
 
-
-div.reportbuilderform div.fitem div.col-md-3{
-    display: none!important;
+.original .totara-table-container {
+  border: none;
 }
 
-fieldset#id_standardfilter div.fitem div.col-md-3{
-    display: none!important;;
+.original #rb_export_form {
+  clear: both;
 }
 
-fieldset#id_sidebarfilter div.fitem div.col-md-3{
-    display: none!important;;
+.original #fgroup_id_exportgroup {
+  text-align: center;
 }
 
-.rb-sidebar .col-md-3 {
-    width: 100%;
+.original #fgroup_id_exportgroup fieldset {
+  width: auto;
+  display: inline-block;
 }
 
-.rb-sidebar .col-md-9 {
-    width: 100%;
+.original #fgroup_id_exportgroup fieldset .felement {
+  width: auto;
+  float: left;
+  margin: 0;
 }
 
-.rb-sidebar .fitem {
-    clear: both;
-    display: block;
+.original #fgroup_id_exportgroup fieldset legend {
+  float: left;
+  width: auto;
+  line-height: 30px;
+  margin-right: 10px;
 }
 
-.progress {
-    height: 20px;
-    margin-bottom: 20px;
-    overflow: hidden;
-    background-color: #f5f5f5;
-    border-radius: 3px;
-    -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-.progress-bar {
-    float: left;
-    width: 0%;
-    height: 100%;
-    font-size: 12px;
-    line-height: 20px;
-    color: #ffffff;
-    text-align: center;
-    background-color: #0f95ff;
-    -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-    -webkit-transition: width 0.6s ease;
-    -o-transition: width 0.6s ease;
-    transition: width 0.6s ease;
-}
-.progress-striped .progress-bar,
-.progress-bar-striped {
-    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-    background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-    background-size: 40px 40px;
-}
-.progress.active .progress-bar,
-.progress-bar.active {
-    -webkit-animation: progress-bar-stripes 2s linear infinite;
-    -o-animation: progress-bar-stripes 2s linear infinite;
-    animation: progress-bar-stripes 2s linear infinite;
-}
-.progress-bar-success {
-    background-color: #38c19a!important;;
-}
-.progress-striped .progress-bar-success {
-    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-    background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-}
-.progress-bar-info {
-    background-color: #ac92ed!important;;
-}
-.progress-striped .progress-bar-info {
-    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-    background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-}
-.progress-bar-warning {
-    background-color: #ffb41d!important;;
-}
-.progress-striped .progress-bar-warning {
-    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-    background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-}
-.progress-bar-danger {
-    background-color: #ed5564!important;
-}
-.progress-striped .progress-bar-danger {
-    background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-    background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+.original #fgroup_id_exportgroup fieldset legend span {
+  width: auto;
 }
 
-div.rb-display-expand i.fa-info-circle {
-    padding-right: 5px;
+.original .mform .fgroup .felement .rb-multicheck-control {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.original .rb-display-table-container {
+  clear: right;
+}
+
+.original .rb-sidebar .felement > span {
+  clear: both;
+  display: block;
+}
+
+.original #fitem_id_toolbarsearchtext,
+.original #fitem_id_toolbarsearchbutton,
+.original #fitem_id_cleartoolbarsearchtext {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.original form[id^="toolbarsearch"].mform div,
+.original form[id^="toolbarsearch"].mform fieldset {
+  margin: 0;
+  padding: 0;
+  width: auto;
+  vertical-align: top;
+}
+
+.original form[id^="toolbarsearch"].mform .fsubmit {
+  width: auto;
+}
+
+.original form.rb-sidebar div.fcontainer .fitem:last-child {
+  display: none;
+}
+
+.original .reportbuilder-table .user_namewithlinks a {
+  padding-left: 5px;
+  float: left;
+}
+
+.original #team_members .user_namewithlinks .name {
+  font-size: 18px;
+  font-weight: bold;
+  padding-top: 8px;
+}
+
+.original .reportbuilder-table .user_namewithlinks ul {
+  clear: both;
+  margin: 0;
+  padding-top: 2px;
+}
+
+.original .reportbuilder-table .user_namewithlinks ul li {
+  float: left;
+  list-style-type: none;
+}
+
+.original .reportbuilder-table .user_namewithlinks li a {
+  border-left: 1px solid #dddddd;
+  font-size: 12px;
+  line-height: 10px;
+  margin: 2px;
+}
+
+.original .reportbuilder-table .user_namewithlinks li:first-child a {
+  border-left: none;
+  margin-left: 0;
+}
+
+.original .reportbuilder-table .user_actions {
+  white-space: nowrap;
+}
+
+.original .ie .rb-report-svggraph {
+  position: relative;
+  padding-bottom: 40%;
+  /* This is the ration of original svg size 1000x400 */
+  height: 0;
+  clear: both;
+}
+
+.original .ie .rb-report-svggraph:empty {
+  padding-bottom: 0;
+  clear: none;
+}
+
+.original .ie .rb-report-svggraph svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.original .rb-display-expand {
+  padding: 5px;
+  background-repeat: no-repeat;
+  background-position: 0 5px;
+  cursor: pointer;
+}
+
+.original .multicheck-items label > div {
+  display: inline;
+}
+
+.original .rb-search-menu {
+  /* stylelint-disable */
+  vertical-align: middle !important;
+  /* stylelint-enable */
+}
+
+.original .rb-genbutton {
+  float: right;
+}
+
+.original .rb-genicon {
+  cursor: pointer;
+}
+
+.original .rb-hidden {
+  display: none;
+}
+
+.original .rb-inline {
+  display: inline-block;
+}
+
+.original .path-admin-totara-reportbuilder-restrictions .header.lastcol {
+  min-width: 120px;
+}
+
+.original div.felement #id_all_sidebar_filters {
+  /* stylelint-disable */
+  display: none !important;
+  /* stylelint-enable */
+}
+
+.original .mform table .fitem {
+  margin-right: 0;
+  margin-bottom: 0;
+  margin-left: 0;
+}
+
+.original .mform td .fitem .fcheckbox {
+  margin-top: 8px;
+}
+
+.original div.reportbuilderform div.fitem div.col-md-3 {
+  display: none !important;
+}
+
+.original fieldset#id_standardfilter div.fitem div.col-md-3 {
+  display: none !important;
+}
+
+.original fieldset#id_sidebarfilter div.fitem div.col-md-3 {
+  display: none !important;
+}
+
+.original .rb-sidebar .col-md-3 {
+  width: 100%;
+}
+
+.original .rb-sidebar .col-md-9 {
+  width: 100%;
+}
+
+.original .rb-sidebar .fitem {
+  clear: both;
+  display: block;
+}
+
+.original .progress {
+  height: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  background-color: #f5f5f5;
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.original .progress-bar {
+  float: left;
+  width: 0%;
+  height: 100%;
+  font-size: 12px;
+  line-height: 20px;
+  color: #ffffff;
+  text-align: center;
+  background-color: #0f95ff;
+  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  -webkit-transition: width 0.6s ease;
+  -o-transition: width 0.6s ease;
+  transition: width 0.6s ease;
+}
+
+.original .progress-striped .progress-bar,
+.original .progress-bar-striped {
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-size: 40px 40px;
+}
+
+.original .progress.active .progress-bar,
+.original .progress-bar.active {
+  -webkit-animation: progress-bar-stripes 2s linear infinite;
+  -o-animation: progress-bar-stripes 2s linear infinite;
+  animation: progress-bar-stripes 2s linear infinite;
+}
+
+.original .progress-bar-success {
+  background-color: #38c19a !important;
+}
+
+.original .progress-striped .progress-bar-success {
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.original .progress-bar-info {
+  background-color: #ac92ed !important;
+}
+
+.original .progress-striped .progress-bar-info {
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.original .progress-bar-warning {
+  background-color: #ffb41d !important;
+}
+
+.original .progress-striped .progress-bar-warning {
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.original .progress-bar-danger {
+  background-color: #ed5564 !important;
+}
+
+.original .progress-striped .progress-bar-danger {
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.original div.rb-display-expand i.fa-info-circle {
+  padding-right: 5px;
+}
+
+#page-local-reportbuilder-report #page-footer {
+  margin: 0;
+  display: none;
+}
+
+.newreport {
+  height: calc(100vh - 110px);
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #FFF;
+  position: relative;
+  overflow: hidden;
+}
+
+.newreport .d-flex-center {
+  display: flex;
+  align-items: center;
+}
+
+.newreport .btn.fullscreen {
+  display: inline-block;
+}
+
+.newreport .btn.closefullscreen {
+  display: none;
+}
+
+.newreport.fullscreen {
+  height: 100%;
+  position: fixed;
+  z-index: 1030;
+}
+
+.newreport.fullscreen .btn.fullscreen {
+  display: none;
+}
+
+.newreport.fullscreen .btn.closefullscreen {
+  display: inline-block;
+}
+
+.newreport .inner {
+  height: 100%;
+  width: 100%;
+  padding: 0 5px;
+}
+
+.newreport #advancedsearch {
+  position: absolute;
+  left: 5px;
+  right: 5px;
+  max-height: calc(100% - 120px);
+  z-index: 1;
+  border: 1px solid #ccc;
+  border-top: 0;
+  overflow-y: auto;
+}
+
+@media (min-width: 600px) {
+  .newreport #advancedsearch {
+    max-height: calc(100% - 61px);
+  }
+}
+
+.newreport #advancedsearch select {
+  margin-right: 5px;
+}
+
+.newreport #advancedsearch label {
+  margin-bottom: 0;
+}
+
+.newreport .reportcontainer {
+  overflow: scroll;
+  height: calc(100% - 120px);
+}
+
+@media (min-width: 600px) {
+  .newreport .reportcontainer {
+    height: calc(100% - 61px);
+  }
+}
+
+.newreport .reportcontainer th.header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  background-color: #FFF;
+  box-shadow: 2px 1px 0px #DDD;
+}
+
+.newreport .reportcontainer th.header a {
+  white-space: nowrap;
+  margin-right: 10px;
+  display: block;
+}
+
+.newreport .reportcontainer th.header img {
+  position: absolute;
+  top: 10px;
+  right: 0;
+  margin-right: 0;
+}
+
+.newreport .rb-display-table-container.no-overflow {
+  overflow: initial;
+}
+
+.newreport #reportfilters {
+  border-left: 1px solid #ccc;
+  z-index: 2;
+  height: calc(100% - 120px);
+  top: 120px;
+  position: absolute;
+  right: -630px;
+  width: 600px;
+  transition: right 0.5s ease, left 0.5s ease;
+  overflow-y: scroll;
+}
+
+@media (min-width: 600px) {
+  .newreport #reportfilters {
+    height: calc(100% - 61px);
+    top: 61px;
+  }
+}
+
+.newreport #reportfilters.active {
+  right: 0;
+}
+
+.newreport #reportfilters select {
+  margin-right: 5px;
+}
+
+.newreport #reportfilters label {
+  margin-bottom: 0;
+}
+
+.newreport #reportfilters #id_clearsidebarfilters {
+  margin-left: 0;
+}
+
+@media (max-width: 800px) {
+  .newreport #reportfilters {
+    right: -330px;
+    width: 300px;
+  }
+}
+
+.newreport .totara-toolbar-top .toolbar-left-table {
+  display: none;
+}
+
+.newreport #rb-search-menu {
+  margin: -1px 5px 0 0;
+}
+
+.newreport #rb-search-menu .singleselect label {
+  width: 100%;
+}
+
+.newreport #rb-search-menu .caret {
+  display: none;
+}
+
+.newreport #rb-search-menu a.active,
+.newreport #rb-search-menu .btn.active {
+  background-color: #b3d9ff;
+  box-shadow: none;
+}
+
+.newreport .managesavedsearches input {
+  margin: 0;
+}
+
+.newreport fieldset.collapsible legend {
+  display: none;
+}
+
+.newreport fieldset.collapsible.collapsed .fcontainer {
+  display: block !important;
+}
+
+.newreport .mform .fitem .fitemtitle,
+.newreport .mform .fitem .felement {
+  margin-left: 0;
+  text-align: left;
+  float: none;
+  width: 100%;
+}
+
+.newreport #advancedsearchbutton {
+  margin-right: auto;
+}
+
+.newreport #advancedsearchbutton.closed i.open,
+.newreport #showquerybutton.closed i.open {
+  display: inline-block;
+}
+
+.newreport #advancedsearchbutton.closed i.closed,
+.newreport #showquerybutton.closed i.closed {
+  display: none;
+}
+
+.newreport #advancedsearchbutton.open i.open,
+.newreport #showquerybutton.open i.open {
+  display: none;
+}
+
+.newreport #advancedsearchbutton.open i.closed,
+.newreport #showquerybutton.open i.closed {
+  display: inline-block;
+}
+
+.newreport .totara-limited-width-150 {
+  max-width: 150px;
+}
+
+.newreport .nobox > .row {
+  margin: 0;
+}
+
+.newreport .container-advancedsearch {
+  background-color: #F5F5F5;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.newreport #id_submitgroupstandard_addfilter {
+  margin-left: 0;
+}
+
+.newreport .navbar {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.newreport .navbar .singlebutton div {
+  margin: 0;
+}
+
+.newreport .navbar .singlebutton div input[type="submit"] {
+  margin: 0;
+}
+
+.newreport .flex-auto {
+  flex: 1 1 auto;
+}
+
+.newreport .navbar-form {
+  display: flex;
+  flex-wrap: wrap;
+  border: 0;
+  padding: 0 10px;
+  margin: 14.5px 0;
+}
+
+.newreport .navbar-form .input-group {
+  flex: 1 1 auto;
+  display: flex;
+}
+
+.newreport .navbar-form .input-group .input-group-addon {
+  width: auto;
+  display: flex;
+  align-items: center;
+  border-radius: 0px 2px 2px 0;
+}
+
+.newreport .navbar-form .ml-auto {
+  margin-left: auto;
+}
+
+.path-local-reportbuilder .mform .fitem .felement select[disabled] {
+  color: transparent;
+}
+
+.path-local-reportbuilder .yui3-overlay {
+  z-index: 1050;
 }
