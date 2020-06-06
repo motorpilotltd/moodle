@@ -29,7 +29,7 @@ class manageextensions extends \rb_base_embedded {
 
         $this->url = '/mod/coursera/manageextensions.php';
         $this->source = 'courseralearners';
-        $this->shortname = 'manageextensions'; // This must be unique, lets try make it really unique.
+        $this->shortname = 'rbsource_courseralearners\embedded\manageextensions'; // This must be unique, lets try make it really unique.
         $this->fullname = get_string('manageextensions', 'rbsource_courseralearners');
         $this->columns = array(
                 array(

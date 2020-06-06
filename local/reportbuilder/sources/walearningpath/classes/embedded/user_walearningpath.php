@@ -22,44 +22,40 @@
  * @subpackage reportbuilder
  */
 
-namespace local_reportbuilder\embedded;
+namespace rbsource_walearningpath\embedded;
 
-class subs_walearningpath extends \rb_base_embedded {
+class user_walearningpath extends \rb_base_embedded {
     public $defaultsortcolumn, $defaultsortorder;
 
     public function __construct() {
-        $this->url = '/local/wa_learning_path/index.php';
+        global $USER;
+
+        $this->url = '/my/index.php?tab=mywalearningpath';
         $this->source = 'walearningpath';
-        $this->shortname = 'subs_walearningpath';
-        $this->fullname = get_string('walearningpath_subscriptions', 'rbsource_walearningpath');
+        $this->shortname = 'rbsource_walearningpath\embedded\user_walearningpath';
+        $this->fullname = get_string('sourcetitle', 'rbsource_walearningpath');
         $this->columns = [
             [
-                'type' => 'user',
-                'value' => 'namelinkicon',
-                'heading' => get_string('usernamelinkicon', 'local_reportbuilder'),
+                'type' => 'learningpath',
+                'value' => 'learningpathimage',
+                'heading' => get_string('learningpathimage', 'rbsource_walearningpath'),
             ],
             [
-                'type' => 'user',
-                'value' => 'username',
-                'heading' => get_string('username', 'local_reportbuilder'),
+                'type' => 'learningpath',
+                'value' => 'titlelinkedlearningpath',
+                'heading' => get_string('titlelinkedlearningpath', 'rbsource_walearningpath'),
+            ],
+            [
+                'type' => 'learningpath',
+                'value' => 'summary',
+                'heading' => get_string('summary', 'rbsource_walearningpath'),
             ],
         ];
 
-        $this->filters = array(
-            array(
-                'type' => 'user',
-                'value' => 'username',
-            ),
-        );
-
-        // Only show subscriptions for current path.
-        $walearningpathid = optional_param('id', '0', PARAM_INT);
-
+        // Only show current user learning paths.
         $this->embeddedparams = [
-            'walearningpath_id' => $walearningpathid
+            'walearningpath_userid' => $USER->id
         ];
-
-        $this->url = '/local/wa_learning_path/?c=admin&a=edit_subscriptions&id=' . $walearningpathid;
     }
 
         /**
@@ -72,6 +68,6 @@ class subs_walearningpath extends \rb_base_embedded {
      * @return boolean true if the user can access this report
      */
     public function is_capable($reportfor, $report) {
-        return \wa_learning_path\lib\is_contenteditor($reportfor);
+        return true;
     }
 }

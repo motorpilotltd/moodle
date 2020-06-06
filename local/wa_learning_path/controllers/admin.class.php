@@ -1023,7 +1023,7 @@ class admin extends \wa_learning_path\lib\base_controller {
         $this->report = '';
         $this->renderer = $PAGE->get_renderer('local_reportbuilder');
 
-        if ($this->report = reportbuilder_get_embedded_report('local_reportbuilder\embedded\subs_walearningpath', [], false, $this->sid)) {
+        if ($this->report = reportbuilder_get_embedded_report('rbsource_walearningpath\embedded\subs_walearningpath', [], false, $this->sid)) {
             $reportembedobj = $this->report->embedobj;
             $reportbaseurl = new moodle_url($reportembedobj->url);
             $this->report->set_baseurl($reportbaseurl);
