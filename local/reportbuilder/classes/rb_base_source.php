@@ -1246,6 +1246,20 @@ abstract class rb_base_source {
         return html_writer::link($url, $course, $attr);
     }
 
+    // convert a course name into a link to that course
+    function rb_display_courseurl($course, $row, $isexport = false) {
+        if (empty($course)) {
+            return '';
+        }
+
+        $url = new moodle_url('/course/view.php', array('id' => $course));
+
+        if ($isexport) {
+            return $url->out();
+        }
+        return html_writer::link($url, $url->out());
+    }
+
     // convert a course name into a link to that course and shows
     // the course icon next to it
     function rb_display_link_course_icon($course, $row, $isexport = false) {
@@ -2687,6 +2701,18 @@ abstract class rb_base_source {
                 'defaultheading' => get_string('coursename', 'local_reportbuilder'),
                 'extrafields' => array('course_id' => "$join.id",
                                        'course_visible' => "$join.visible")
+            )
+        );
+        $columnoptions[] = new rb_column_option(
+            'course',
+            'courseurl',
+            get_string('courseurl', 'local_reportbuilder'),
+            "$join.id",
+            array(
+                'joins' => $join,
+                'displayfunc' => 'courseurl',
+                'dbdatatype' => 'char',
+                'outputformat' => 'text'
             )
         );
         $columnoptions[] = new rb_column_option(

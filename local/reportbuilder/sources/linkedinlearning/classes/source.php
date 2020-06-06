@@ -643,6 +643,12 @@ class source extends rb_base_source {
                 'arupadvert'
         );
 
+        $contentoptions[] = new rb_content_option(
+                'lilcourse',
+                get_string('availability', 'local_reportbuilder'),
+                ['courseid' => "base.available"]
+        );
+
         return $contentoptions;
     }
 
