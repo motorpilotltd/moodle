@@ -146,5 +146,16 @@ function xmldb_coursera_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2018101117, 'coursera');
     }
 
+    if ($oldversion < 2018101122) {
+        $table = new xmldb_table('coursera');
+
+        $field = new xmldb_field('courseraactivitycompleted', XMLDB_TYPE_INTEGER, '1', null, false, null, 0);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2018101122, 'coursera');
+    }
+
     return true;
 }

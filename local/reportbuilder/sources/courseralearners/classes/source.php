@@ -67,8 +67,6 @@ class source extends rb_base_source {
         $this->paramoptions = $this->define_paramoptions();
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_courseralearners');
 
-        $PAGE->requires->js_call_amd('local_courseralearners/manage', 'initialise');
-
         parent::__construct();
     }
 

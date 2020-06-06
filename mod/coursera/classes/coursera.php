@@ -249,14 +249,20 @@ class coursera {
                 throw new \Exception('Error creating membership: ' . $ret->errorCode);
             }
         }
+
         $programmember = new programmember([
                 'programid'  => $this->config->programid,
                 'externalid' => $user->idnumber,
-                'datejoined' => 0, // This gets set when we pull the data back from coursera on the next sync run.
                 'userid'     => $user->id,
-                'dateleft'   => 0
+                'datejoined' => 0
         ]);
-        $programmember->insert();
+        $programmember->dateleft = 0;
+
+        if (empty($programmember->id)) {
+            $programmember->insert();
+        } else {
+            $programmember->update();
+        }
     }
 
     private function getprogress($start = 0) {

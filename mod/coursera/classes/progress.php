@@ -89,7 +89,7 @@ class progress extends \data_object {
                 inner join {user} u on u.id = cpr.userid
                 inner join (select userid, courseid from {user_enrolments} ue inner join {enrol} e on e.id = ue.enrolid group by userid, courseid) enrolments on enrolments.userid = u.id and enrolments.courseid = cm.course
                 left join {course_modules_completion} cmc on cmc.userid = u.id and cm.id = cmc.coursemoduleid
-                where cpr.iscompleted = 1 AND (cmc.completionstate = 0 oR cmc.completionstate is null)";
+                where cpr.iscompleted = 1 AND (cmc.completionstate = 0 OR cmc.completionstate is null) and n.courseraactivitycompleted = 1";
         $toprocess = $DB->get_records_sql($sql);
 
         $instances = $DB->get_records('coursera');

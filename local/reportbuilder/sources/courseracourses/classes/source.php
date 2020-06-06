@@ -52,8 +52,6 @@ class source extends rb_base_source {
         $this->contentoptions = $this->define_contentoptions();
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_courseracourses');
 
-        $PAGE->requires->js_call_amd('local_courseracourses/manage', 'initialise');
-
         parent::__construct();
     }
 

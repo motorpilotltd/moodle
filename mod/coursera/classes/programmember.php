@@ -141,7 +141,7 @@ from {coursera} i
          inner join {role_assignments} ra on ra.userid = u.id and ra.contextid = ctx.id and ra.roleid $rolesql
          left join {courseraprogress} mc on mc.userid = u.id and mc.courseracourseid = i.contentid
          left join {courseramoduleaccess} cma on cma.userid = u.id and cma.courseraid = i.id
-where mc.iscompleted is null or mc.iscompleted = 0 and coalesce(cma.timeend, ue.timestart + i.moduleaccessperiod) > :now3
+where coalesce(cma.timeend, ue.timestart + i.moduleaccessperiod) > :now3
 group by u.idnumber";
 
         $params['now'] = time();
