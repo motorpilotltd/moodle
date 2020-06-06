@@ -2246,10 +2246,10 @@ class reportbuilder {
                         print_error('contentclassnotexist', 'local_reportbuilder', '', $classname);
                     }
                 }
-                // show nothing if no content restrictions enabled
+                // show everything if no content restrictions with defaults are found
                 if (count($out) == 0) {
                     // use 1=0 instead of FALSE for MSSQL support
-                    return array('(1=0)', array());
+                    return array('(1=1)', array());
                 }
 
                 $op = "\n    AND ";

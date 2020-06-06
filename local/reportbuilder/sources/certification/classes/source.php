@@ -60,16 +60,44 @@ class source extends rb_base_source {
         $this->add_certification_fields_to_columns($columnoptions, 'base');
         $this->add_course_category_fields_to_columns($columnoptions, 'course_category');
 
+        $columnoptions[] = new \rb_column_option(
+                'certif',
+                'cohortnames',
+                get_string('cohortnames', 'rbsource_certification'),
+                "cohorts.cohortnames",
+                array('joins' => 'cohorts')
+        );
+
         return $columnoptions;
     }
 
     protected function define_joinlist() {
+        global $DB;
+
+        $assignment_type_audience = \local_custom_certification\certification::ASSIGNMENT_TYPE_AUDIENCE;
+        $concat = \local_reportbuilder\dblib\base::getbdlib()->sql_group_concat('ca.name', ', ', 'ca.name ASC');
+
         $joinlist = array(
                 new rb_join(
                         'ctx',
                         'INNER',
                         '{context}',
                         'ctx.instanceid = base.category AND ctx.contextlevel = ' . CONTEXT_COURSECAT,
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
+                ),
+                new rb_join(
+                        'cohorts',
+                        'LEFT',
+                        "(SELECT certifid, $concat as cohortnames
+                                FROM (
+                                    select ca.certifid, c.name 
+                                    from {certif_assignments} ca 
+                                    INNER JOIN {cohort} c on ca.assignmenttypeid = c.id 
+                                    where assignmenttype = $assignment_type_audience 
+                                    group by ca.certifid, c.name 
+                                ) ca
+                                GROUP BY ca.certifid)",
+                        'cohorts.certifid = base.id',
                         REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
         );
@@ -88,21 +116,6 @@ class source extends rb_base_source {
         $this->add_course_category_fields_to_filters($filteroptions);
 
         return $filteroptions;
-    }
-
-    protected function define_contentoptions() {
-        $contentoptions = array(
-                new rb_content_option(
-                        'prog_availability',
-                        get_string('availablecontent', 'rbsource_certification'),
-                        array(
-                                'available' => 'base.available',
-                                'availfrom' => 'base.availablefrom',
-                                'availuntil' => 'base.availableuntil',
-                        )
-                ),
-        );
-        return $contentoptions;
     }
 
     protected function define_defaultcolumns() {
