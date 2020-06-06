@@ -136,7 +136,10 @@ class block_course_menu extends block_base
         $this->check_default_config();
         //newly added elements
         //participatlist -> 2012-10-15
-        if (!$this->element_exists('sitepages')) {
+/* BEGIN CORE MOD */
+        // New element, 'kaltura'.
+        if (!$this->element_exists('sitepages') || !$this->element_exists('kaltura')) {
+/* END CORE MOD */
             $this->init_default_config();
         }
 
@@ -320,13 +323,19 @@ class block_course_menu extends block_base
                                 }
                             }
                             break;
+/* BEGIN CORE MOD */
+                        case 'kaltura':
+                            $element['url'] = "$CFG->wwwroot/local/kalturamediagallery/index.php?courseid=" . $this->course->id;
+                            $lis .= $renderer->render_leaf($element['name'], $icon, array(), $element['url'], false, '', !$first);
+                            break;
+/* END CORE MOD */
                         default:
                             if (substr($element['id'], 0, 4) == 'link') {
                                 preg_match('/link([0-9]+)/', $element['id'], $matches);
                                 $index = intval($matches[1]);
                                 if ($index && isset($this->config->links[$index])) { //this should always happen
                                     $lis .= $renderer->render_link($this->config->links[$index], $this->course->id, !$first);
-                                } elseif (isset($this->config->links[$linkIndex])) { //weird bug #0000166 
+                                } elseif (isset($this->config->links[$linkIndex])) { //weird bug #0000166
                                     $lis .= $renderer->render_link($this->config->links[$linkIndex], $this->course->id, !$first);
                                     $linkIndex++;
                                 }
@@ -461,7 +470,12 @@ class block_course_menu extends block_base
         $elements [] = $this->create_element(
                 'reports', get_string("reports", "{$this->blockname}"), '', '', 1, 0, 1
         );
-
+/* BEGIN CORE MOD */
+        // kaltura
+        $elements [] = $this->create_element(
+                'kaltura', get_string("kaltura", "{$this->blockname}"), '', '', 1, 1, 0
+        );
+/* END CORE MOD */
         // troubleticket
         if (file_exists($CFG->dirroot . '/blocks/trouble_ticket/block_trouble_ticket.php')) {
             $elements[] = $this->create_element(
@@ -1052,7 +1066,10 @@ class block_course_menu extends block_base
             $this->init_default_config(false);
         } else {
             $this->config = @unserialize($CFG->block_course_menu_global_config);
-            if (!$this->element_exists('sitepages')) {
+/* BEGIN CORE MOD */
+            // New element, 'kaltura'.
+            if (!$this->element_exists('sitepages') || !$this->element_exists('kaltura')) {
+/* END CORE MOD */
                 $this->init_default_config(false);
             } else {
                 if ($this->remove_deprecated()) {
