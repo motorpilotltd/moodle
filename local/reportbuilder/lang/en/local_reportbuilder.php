@@ -1915,6 +1915,7 @@ $string['yesleaver'] = 'Yes';
 $string['nonleaver'] = 'No';
 $string['appraisalstatus'] = 'Appraisal status';
 $string['launchcourse'] = 'Launch course';
+$string['publish_status'] = 'Publish Status';
 
 $string['language'] = 'Language';
 $string['lang_aa'] = 'Afar';
@@ -2101,3 +2102,10 @@ $string['lang_yo'] = 'Yoruba';
 $string['lang_za'] = 'Zhuang; Chuang';
 $string['lang_zh'] = 'Chinese';
 $string['lang_zu'] = 'Zulu';
+
+$string['courseracourse'] = 'Coursera course';
+
+$string['available'] = 'Available';
+$string['unavailable'] = 'Unavailable';
+$string['availabile_status'] = 'Availability';
+$string['availability'] = 'Availability';

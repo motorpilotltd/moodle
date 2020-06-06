@@ -42,7 +42,10 @@ abstract class rb_base_content {
         $this->reportfor = $reportfor;
     }
 
-    public function default_sql_restriction($fields, $reportid) {
+    public function default_sql_restriction($fields = null, $reportid = null) {
+        if ($fields == null) {
+            return false;
+        }
         return array(' (1 = 1) ', array());
     }
 
@@ -559,12 +562,295 @@ class rb_appraisalstatus_content extends rb_base_content {
     }
 }
 
+class rb_courseracourselearners_content extends rb_base_content {
+
+    public function default_sql_restriction($fields = null, $reportid = null) {
+        $availabilefield = $fields['linkid'];
+        $coursefield = $fields['contentid'];
+
+        $sql = "({$availabilefield} IS NOT NULL OR $coursefield IS NULL)";
+
+        return array(" $sql ", []);
+    }
+
+    /**
+     * Generate the SQL to apply this content restriction.
+     *
+     * @param array $field      SQL field to apply the restriction against
+     * @param integer $reportid ID of the report
+     *
+     * @return array containing SQL snippet to be used in a WHERE clause, as well as array of SQL params
+     */
+    public function sql_restriction($fields = null, $reportid = null) {
+        $availabilefield = $fields['linkid'];
+        $coursefield = $fields['contentid'];
+
+        // remove rb_ from start of classname.
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+        $restriction = isset($settings['availabile_status']) ? $settings['availabile_status'] : null;
+
+
+        if (!isset($restriction) || $restriction == 'all') {
+            return array(' (1 = 1) ', array());
+        } else if ($restriction) {
+            $sql = "({$availabilefield} IS NULL OR $coursefield IS NULL)";
+        } else {
+            $sql = "({$availabilefield} IS NOT NULL OR $coursefield IS NULL)";
+        }
+
+        return array(" $sql ", []);
+    }
+
+    /**
+     * Generate a human-readable text string describing the restriction
+     *
+     * @param string $title Name of the field being restricted
+     * @param integer $reportid ID of the report
+     *
+     * @return string Human readable description of the restriction
+     */
+    public function text_restriction($title, $reportid) {
+        global $DB;
+
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+        $who = isset($settings['who']) ? $settings['who'] : 0;
+        $userid = $this->reportfor;
+
+        $user = $DB->get_record('user', array('id' => $userid));
+
+        $strings = array();
+        $strparams = array('field' => $title, 'user' => fullname($user));
+
+        if (($who & self::USER_OWN) == self::USER_OWN) {
+            $strings[] = get_string('contentdesc_userown', 'local_reportbuilder', $strparams);
+        }
+
+        if (($who & self::USER_COHORT_MEMBERS) == self::USER_COHORT_MEMBERS) {
+            $strings[] = get_string('contentdesc_usercohortmembers', 'local_reportbuilder', $strparams);
+        }
+
+        if (empty($strings)) {
+            return $title . ' ' . get_string('isnotfound', 'local_reportbuilder');
+        }
+
+        return implode(get_string('or', 'local_reportbuilder'), $strings);
+    }
+
+
+    /**
+     * Adds form elements required for this content restriction's settings page
+     *
+     * @param object &$mform Moodle form object to modify (passed by reference)
+     * @param integer $reportid ID of the report being adjusted
+     * @param string $title Name of the field the restriction is acting on
+     */
+    public function form_template(&$mform, $reportid, $title) {
+
+        // get current settings
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $enable = reportbuilder::get_setting($reportid, $type, 'enable');
+        $availabile_status = reportbuilder::get_setting($reportid, $type, 'availabile_status');
+
+        $mform->addElement('header', 'availabileheader', get_string('showbyx',
+                'local_reportbuilder', lcfirst($title)));
+        $mform->setExpanded('availabileheader');
+        $mform->addElement('checkbox', 'availabile_enable', '',
+                get_string('showbasedonx', 'local_reportbuilder', lcfirst($title)));
+        $mform->disabledIf('availabile_enable', 'contentenabled', 'eq', 0);
+        $mform->setDefault('availabile_enable', $enable);
+
+        $mform->addElement('select', 'availabile_status', get_string('availabile_status', 'local_reportbuilder'),
+                ['all' => get_string('all'), 1 => get_string('available', 'local_reportbuilder'),
+                 '0'   => get_string('unavailable', 'local_reportbuilder')]);
+        $mform->setType('availabile_status', PARAM_TEXT);
+        $mform->setDefault('availabile_status', $availabile_status);
+
+        $mform->disabledIf('availabile_status', 'contentenabled', 'eq', 0);
+        $mform->disabledIf('availabile_status', 'availabile_enable', 'notchecked');
+    }
+
+
+    /**
+     * Processes the form elements created by {@link form_template()}
+     *
+     * @param integer $reportid ID of the report to process
+     * @param object $fromform Moodle form data received via form submission
+     *
+     * @return boolean True if form was successfully processed
+     */
+    public function form_process($reportid, $fromform) {
+        $status = true;
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+
+        // enable checkbox option
+        $enable = (isset($fromform->availabile_enable) &&
+                $fromform->availabile_enable) ? 1 : 0;
+        $status = $status && reportbuilder::update_setting($reportid, $type,
+                        'enable', $enable);
+
+        if (isset($fromform->availabile_enable)) {
+            if (!isset($fromform->availabile_status)) {
+                $fromform->availabile_status = 'all';
+            }
+            $status = $status && reportbuilder::update_setting($reportid, $type,
+                            'availabile_status', $fromform->availabile_status);
+        }
+
+
+        return $status;
+    }
+}
+
+class rb_courseracourse_content extends rb_base_content {
+
+    public function default_sql_restriction($availabilefield = null, $reportid = null) {
+        $sql = "{$availabilefield} IS NOT NULL";
+
+        return array(" $sql ", []);
+    }
+
+    /**
+     * Generate the SQL to apply this content restriction.
+     *
+     * @param array $field      SQL field to apply the restriction against
+     * @param integer $reportid ID of the report
+     *
+     * @return array containing SQL snippet to be used in a WHERE clause, as well as array of SQL params
+     */
+    public function sql_restriction($availabilefield, $reportid) {
+
+        // remove rb_ from start of classname.
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+        $restriction = isset($settings['availabile_status']) ? $settings['availabile_status'] : null;
+
+
+        if (!isset($restriction) || $restriction == 'all') {
+            return array(' (1 = 1) ', array());
+        } else if ($restriction) {
+            $sql = "{$availabilefield} IS NOT NULL";
+        } else {
+            $sql = "{$availabilefield} IS NULL";
+        }
+
+        return array(" $sql ", []);
+    }
+
+    /**
+     * Generate a human-readable text string describing the restriction
+     *
+     * @param string $title Name of the field being restricted
+     * @param integer $reportid ID of the report
+     *
+     * @return string Human readable description of the restriction
+     */
+    public function text_restriction($title, $reportid) {
+        global $DB;
+
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+        $who = isset($settings['who']) ? $settings['who'] : 0;
+        $userid = $this->reportfor;
+
+        $user = $DB->get_record('user', array('id' => $userid));
+
+        $strings = array();
+        $strparams = array('field' => $title, 'user' => fullname($user));
+
+        if (($who & self::USER_OWN) == self::USER_OWN) {
+            $strings[] = get_string('contentdesc_userown', 'local_reportbuilder', $strparams);
+        }
+
+        if (($who & self::USER_COHORT_MEMBERS) == self::USER_COHORT_MEMBERS) {
+            $strings[] = get_string('contentdesc_usercohortmembers', 'local_reportbuilder', $strparams);
+        }
+
+        if (empty($strings)) {
+            return $title . ' ' . get_string('isnotfound', 'local_reportbuilder');
+        }
+
+        return implode(get_string('or', 'local_reportbuilder'), $strings);
+    }
+
+
+    /**
+     * Adds form elements required for this content restriction's settings page
+     *
+     * @param object &$mform Moodle form object to modify (passed by reference)
+     * @param integer $reportid ID of the report being adjusted
+     * @param string $title Name of the field the restriction is acting on
+     */
+    public function form_template(&$mform, $reportid, $title) {
+
+        // get current settings
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $enable = reportbuilder::get_setting($reportid, $type, 'enable');
+        $availabile_status = reportbuilder::get_setting($reportid, $type, 'availabile_status');
+
+        $mform->addElement('header', 'availabileheader', get_string('showbyx',
+                'local_reportbuilder', lcfirst($title)));
+        $mform->setExpanded('availabileheader');
+        $mform->addElement('checkbox', 'availabile_enable', '',
+                get_string('showbasedonx', 'local_reportbuilder', lcfirst($title)));
+        $mform->disabledIf('availabile_enable', 'contentenabled', 'eq', 0);
+        $mform->setDefault('availabile_enable', $enable);
+
+        $mform->addElement('select', 'availabile_status', get_string('availabile_status', 'local_reportbuilder'),
+                ['all' => get_string('all'), 1 => get_string('available', 'local_reportbuilder'),
+                 '0'   => get_string('unavailable', 'local_reportbuilder')]);
+        $mform->setType('availabile_status', PARAM_TEXT);
+        $mform->setDefault('availabile_status', $availabile_status);
+
+        $mform->disabledIf('availabile_status', 'contentenabled', 'eq', 0);
+        $mform->disabledIf('availabile_status', 'availabile_enable', 'notchecked');
+    }
+
+
+    /**
+     * Processes the form elements created by {@link form_template()}
+     *
+     * @param integer $reportid ID of the report to process
+     * @param object $fromform Moodle form data received via form submission
+     *
+     * @return boolean True if form was successfully processed
+     */
+    public function form_process($reportid, $fromform) {
+        $status = true;
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+
+        // enable checkbox option
+        $enable = (isset($fromform->availabile_enable) &&
+                $fromform->availabile_enable) ? 1 : 0;
+        $status = $status && reportbuilder::update_setting($reportid, $type,
+                        'enable', $enable);
+
+        if (isset($fromform->availabile_enable)) {
+            if (!isset($fromform->availabile_status)) {
+                $fromform->availabile_status = 'all';
+            }
+            $status = $status && reportbuilder::update_setting($reportid, $type,
+                            'availabile_status', $fromform->availabile_status);
+        }
+
+
+        return $status;
+    }
+}
+
 /*
  * Restrict content by a particular user or group of users
  */
 class rb_leaver_content extends rb_base_content {
 
-    public function default_sql_restriction($leaverfield, $reportid) {
+    public function default_sql_restriction($leaverfield = null, $reportid = null) {
         $sql = "{$leaverfield} = 'N'";
 
         return array(" $sql ", []);
@@ -1860,6 +2146,122 @@ class rb_tag_content extends rb_base_content {
             $status = $status && reportbuilder::update_setting($reportid,
                 $type, 'excluded', implode('|', $activeexcludes));
         }
+        return $status;
+    }
+}
+
+/*
+ * Restrict content by a learning path publish status
+ */
+class rb_learningpathstatus_content extends rb_base_content {
+
+    /**
+     * Generate the SQL to apply this content restriction.
+     *
+     * @param array $field      SQL field to apply the restriction against
+     * @param integer $reportid ID of the report
+     *
+     * @return array containing SQL snippet to be used in a WHERE clause, as well as array of SQL params
+     */
+    public function sql_restriction($statusfield, $reportid) {
+
+        // remove rb_ from start of classname.
+        $type = substr(get_class($this), 3);
+        $settings = reportbuilder::get_all_settings($reportid, $type);
+        $restriction = isset($settings['publish_status']) ? $settings['publish_status'] : null;
+
+
+        if (empty($restriction)) {
+            return array(' (1 = 1) ', array());
+        }
+
+        $params = ['publishstatus' => $restriction];
+        $sql = "{$statusfield} = :publishstatus";
+
+        return array(" $sql ", $params);
+    }
+
+    /**
+     * Generate a human-readable text string describing the restriction
+     *
+     * @param string $title Name of the field being restricted
+     * @param integer $reportid ID of the report
+     *
+     * @return string Human readable description of the restriction
+     */
+    public function text_restriction($title, $reportid) {
+        return '';
+    }
+
+
+    /**
+     * Adds form elements required for this content restriction's settings page
+     *
+     * @param object &$mform Moodle form object to modify (passed by reference)
+     * @param integer $reportid ID of the report being adjusted
+     * @param string $title Name of the field the restriction is acting on
+     */
+    public function form_template(&$mform, $reportid, $title) {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/wa_learning_path/lib/lib.php');
+        \wa_learning_path\lib\load_model('learningpath');
+
+        // get current settings
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+        $enable = reportbuilder::get_setting($reportid, $type, 'enable');
+        $publish_status = reportbuilder::get_setting($reportid, $type, 'publish_status');
+
+        $mform->addElement('header', 'statusheader', get_string('showbyx',
+                'local_reportbuilder', lcfirst($title)));
+        $mform->setExpanded('statusheader');
+        $mform->addElement('checkbox', 'lpstatus_enable', '',
+                get_string('showbasedonx', 'local_reportbuilder', lcfirst($title)));
+        $mform->disabledIf('lpstatus_enable', 'contentenabled', 'eq', 0);
+        $mform->setDefault('lpstatus_enable', $enable);
+        
+        $options = [
+            WA_LEARNING_PATH_PUBLISH => get_string('publish', 'local_wa_learning_path'),
+            WA_LEARNING_PATH_DRAFT => get_string('draft', 'local_wa_learning_path'),
+            WA_LEARNING_PATH_PUBLISH_NOT_VISIBLE => get_string('publish_not_visible', 'local_wa_learning_path'),
+        ];
+        $mform->addElement('select', 'publish_status', get_string('publish_status', 'local_reportbuilder'), $options);
+        $mform->setType('publish_status', PARAM_TEXT);
+        $mform->setDefault('publish_status', $publish_status);
+
+        $mform->disabledIf('publish_status', 'contentenabled', 'eq', 0);
+        $mform->disabledIf('publish_status', 'lpstatus_enable', 'notchecked');
+    }
+
+
+    /**
+     * Processes the form elements created by {@link form_template()}
+     *
+     * @param integer $reportid ID of the report to process
+     * @param object $fromform Moodle form data received via form submission
+     *
+     * @return boolean True if form was successfully processed
+     */
+    public function form_process($reportid, $fromform) {
+        $status = true;
+        // remove rb_ from start of classname
+        $type = substr(get_class($this), 3);
+
+        // enable checkbox option
+        $enable = (isset($fromform->lpstatus_enable) &&
+            $fromform->lpstatus_enable) ? 1 : 0;
+        $status = $status && reportbuilder::update_setting($reportid, $type,
+            'enable', $enable);
+
+        if (isset($fromform->lpstatus_enable)) {
+            if (!isset($fromform->publish_status)) {
+                $fromform->publish_status = WA_LEARNING_PATH_PUBLISH;
+            }
+            $status = $status && reportbuilder::update_setting($reportid, $type,
+                            'publish_status', $fromform->publish_status);
+        }
+
+
         return $status;
     }
 }

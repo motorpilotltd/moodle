@@ -738,14 +738,6 @@ class source extends rb_base_source {
         return $this->create_expand_link($title, 'lil_description', array('expandcourseid' => $row->lilcourseid), $url);
     }
 
-    public function rb_display_language($language) {
-        if (get_string_manager()->string_exists('lang_' . $language, 'local_reportbuilder')) {
-                return get_string('lang_' . $language, 'local_reportbuilder');
-        } else {
-            return $language;
-        }
-    }
-
     /**
      * Expanding content to display when clicking a course.
      * Will be placed inside a table cell which is the width of the table.
