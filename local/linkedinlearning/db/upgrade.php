@@ -175,5 +175,26 @@ function xmldb_local_linkedinlearning_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016080542, 'local', 'linkedinlearning');
     }
 
+    if ($oldversion < 2016080544) {
+
+        $table = new xmldb_table('linkedinlearning_course');
+
+        $field = new xmldb_field('primaryclassification', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('primaryclassificationoverride', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        set_config('lastsuccessfulrun', 0, 'local_linkedinlearning');
+
+        upgrade_plugin_savepoint(true, 2016080544, 'local', 'linkedinlearning');
+    }
+
     return true;
 }
