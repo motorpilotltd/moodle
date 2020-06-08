@@ -30,7 +30,7 @@ $regionid = required_param('regionid', PARAM_INT);
 $state = required_param('state', PARAM_BOOL);
 
 $userregion = $DB->get_field('local_regions_use', 'regionid', array('userid' => $USER->id));
-if (!$userregion) {
+if (!$userregion && !is_siteadmin()) {
     print_error('No region assigned to current user');
 }
 $context = context_system::instance();
