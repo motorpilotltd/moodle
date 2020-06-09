@@ -14,3 +14,4 @@ $string['subscriptiondate'] = 'Subscription date';
 $string['learningpathimage'] = 'Image';
 $string['username'] = 'Username';   
 $string['publishstatus'] = 'Publish Status';
+$string['totalsubscribed'] = 'Total Subscribed';
