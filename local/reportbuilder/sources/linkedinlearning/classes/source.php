@@ -237,7 +237,8 @@ class source extends rb_base_source {
 
         $results = array();
 
-        $globalpresentsql = " CASE WHEN course.visible = 1 AND regions0.courseid IS NULL AND arupadvert.id IS NOT NULL THEN 1 ELSE 0 END ";
+        $globalpresentsql = " CASE WHEN regions0.courseid IS NULL AND (course.visible = 1 OR (base.available = 0 and course.visible = 0)) THEN 1 ELSE 0 END ";
+        // If there is no region allocation and the course is visible OR it's not visible and neither is the LIL course.
 
         $displayfunction = 'regionvisibility';
 
@@ -277,7 +278,7 @@ class source extends rb_base_source {
                             'displayfunc' => $displayfunction,
                             'joins'       => ["regions{$id}", "regions0", 'arupadvert', 'course'],
                             'extrafields' => ['regionid'        => $id,
-                                              'presentinregion' => " CASE WHEN (course.visible = 0 OR regions{$id}.id IS NULL) THEN 0 ELSE 1 END ",
+                                              'presentinregion' => " CASE WHEN regions{$id}.id IS NOT NULL THEN 1 ELSE 0 END ",
                                               'presentglobal'   => $globalpresentsql,
                                               'available'       => 'base.available'
                             ]
