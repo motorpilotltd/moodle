@@ -50,6 +50,7 @@ class source extends rb_base_source {
         $this->defaultfilters = $this->define_defaultfilters();
         $this->requiredcolumns = $this->define_requiredcolumns();
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_certification');
+        list($this->sourcewhere, $this->sourceparams) = $this->define_sourcewhere();
 
         parent::__construct();
     }
@@ -177,6 +178,19 @@ class source extends rb_base_source {
         return $requiredcolumns;
     }
 
+        /**
+     * Define some extra SQL for the base to limit the data set.
+     *
+     * @return array The SQL and parmeters that defines the WHERE for the source.
+     */
+    protected function define_sourcewhere() {
+        $params = array ();
+        $sql = 'base.deleted = 0';
+
+        // Ensure SQL is wrapped in brackets, otherwise our where statements will bleed into each other.
+        return array("({$sql})", $params);
+    }
+    
     public function post_config(reportbuilder $report) {
         $reportfor = $report->reportfor; // ID of the user the report is for.
         $report->set_post_config_restrictions($report->post_config_visibility_where($this->instancetype, 'base', $reportfor));
