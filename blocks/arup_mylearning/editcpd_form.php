@@ -31,7 +31,11 @@ class block_arup_mylearning_editcpd_form extends moodleform {
         $mform->setType('classname', PARAM_TEXT);
         $mform->addRule('classname', null, 'required', null, 'client');
 
-        $mform->addElement('select', 'classtype', get_string('cpd:classtype', 'block_arup_mylearning'), $taps->get_classtypes('cpd'));
+        $classtypes = $taps->get_classtypes('cpd');
+        // Unset unwanted values.
+        unset($classtypes['LE']);
+        unset($classtypes['LB']);
+        $mform->addElement('select', 'classtype', get_string('cpd:classtype', 'block_arup_mylearning'), $classtypes);
         $mform->addRule('classtype', null, 'required', null, 'client');
 
         $mform->addElement('text', 'provider', get_string('cpd:provider', 'block_arup_mylearning'));
