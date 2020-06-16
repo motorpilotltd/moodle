@@ -49,3 +49,4 @@ $string['reportforother'] = 'Previous user ({$a})';
 $string['title'] = 'Block title';
 $string['report_graph:addinstance'] = 'Add a new graph block';
 $string['report_graph:myaddinstance'] = 'Add a new graph block to the My page';
+$string['hidereportlink'] = 'Hide link to report source';

@@ -441,7 +441,7 @@ class source extends rb_base_source {
                         get_string('timeincourse', 'rbsource_linkedinlearning'),
                         'progress.seconds_viewed',
                         array(
-                                'displayfunc' => 'duration',
+                                'displayfunc' => 'duration_hours_minutes',
                                 'dbdatatype' => 'integer',
                                 'joins'       => 'progress',
                         )
@@ -514,6 +514,13 @@ class source extends rb_base_source {
     protected function define_filteroptions() {
         global $DB;
 
+        $classificationoptionsraw = $DB->get_records('linkedinlearning_class', [], 'name');
+        $classificationoptions = [];
+        foreach ($classificationoptionsraw as $raw) {
+            $raw->language = $this->rb_display_language($raw->language);
+            $classificationoptions[$raw->id] = get_string('classificationunambiguous', 'rbsource_linkedinlearning', $raw);
+        }
+
         $filteroptions = array(
             // Assignment columns.
                 new rb_filter_option(
@@ -558,11 +565,11 @@ class source extends rb_base_source {
                 ),
                 new rb_filter_option(
                         'linkedincourse',
-                        'classificationname',
+                        'classificationid',
                         get_string('classificationname', 'rbsource_linkedinlearning'),
                         'select',
                         array(
-                                'selectchoices' => $DB->get_records_menu('linkedinlearning_class', [], 'name', 'id,name'),
+                                'selectchoices' => $classificationoptions,
                         ),
                         'class.id',
                         'class'

@@ -65,6 +65,8 @@ class writer extends tabexport_writer {
      * @param resource $handle
      */
     protected function add_all_data($handle) {
+        fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+
         foreach ($this->source->get_headings() as $heading) {
             $row[] = $heading;
         }

@@ -142,25 +142,6 @@
     .reportbuilder-table .user_actions {
         white-space: nowrap;
     }
-    /* IE does not work properly with 100% height, so let'd use http://alistapart.com/article/creating-intrinsic-ratios-for-video */
-    .ie .rb-report-svggraph {
-        position: relative;
-        padding-bottom: 40%;
-        /* This is the ration of original svg size 1000x400 */
-        height: 0;
-        clear: both;
-    }
-    .ie .rb-report-svggraph:empty {
-        padding-bottom: 0;
-        clear: none;
-    }
-    .ie .rb-report-svggraph svg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
     .rb-display-expand {
         padding: 5px;
         background-repeat: no-repeat;
