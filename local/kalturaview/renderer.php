@@ -21,13 +21,21 @@ class local_kalturaview_renderer extends plugin_renderer_base
 
         $url = $PAGE->url;
 
+        // Determine aspect ratio for styling.
+        if (!is_null($video->height) && !is_null($video->width)) {
+            $aspectratio = number_format(100 * ($video->height / $video->width), 2);
+        } else {
+            // Force 16:9.
+            $aspectratio = number_format(100 * (9 / 16), 2);
+        }
+
         $templatedata = [
             'entry_id' => $video->rootEntryId,
             'url' => $video->dataUrl,
             'type' => $video->type,
             'session' => $session,
             'returnurl' => optional_param('return', '', PARAM_URL),
-            'aspect_ratio' => number_format(100 * ($video->height / $video->width), 2),
+            'aspect_ratio' => $aspectratio,
             'scheme' => $url->get_scheme()
         ];
 
