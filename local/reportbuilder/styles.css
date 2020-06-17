@@ -1,367 +1,178 @@
-.original {
-  /* IE does not work properly with 100% height, so let'd use http://alistapart.com/article/creating-intrinsic-ratios-for-video */
-}
-
-.original .rb-search .mform .mform .fitem .felement label {
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
-.original .rb-search .mform .mform .fgroup .felement .fdate_time_selector select {
-  width: auto;
-}
-
-.original .rb-search .mform #fitem_id_toolbarsearchtext label {
-  white-space: nowrap;
-}
-
-.original .rb-search .mform #fitem_id_toolbarsearchtext,
-.original .rb-search .mform #fitem_id_toolbarsearchbutton,
-.original .rb-search .mform #fitem_id_cleartoolbarsearchtext,
-.original .rb-search .mform #fitem_id_toolbarsearchtext .felement,
-.original .rb-search .mform #fitem_id_toolbarsearchbutton .felement,
-.original .rb-search .mform #fitem_id_cleartoolbarsearchtext .felement {
-  margin: 0;
-  padding: 0;
-}
-
-.original .rb-sidebar {
-  margin: 0;
-  vertical-align: top;
-  padding-right: 10px;
-  float: left;
-}
-
-.original .rb-sidebar .fcontainer .fitem .fitemtitle,
-.original .rb-sidebar .fcontainer .fitem .fgroup legend {
-  width: 100%;
-  margin-bottom: 5px;
-}
-
-.original .rb-sidebar input[type='text'] {
-  margin-right: 10px;
-}
-
-@media (max-width: 992px) {
-  .original .rb-sidebar {
-    width: 33.33333333%;
-  }
-}
-
-@media (max-width: 768px) {
-  .original .rb-sidebar {
-    width: 100%;
-  }
-}
-
-@media (max-width: 992px) {
-  .original .rb-has-sidebar {
-    width: 66.66666667%;
-  }
-}
-
-@media (max-width: 768px) {
-  .original .rb-has-sidebar {
-    width: 100%;
-  }
-}
-
-.original .totara-table-container {
-  border: none;
-}
-
-.original #rb_export_form {
+#rb_export_form {
   clear: both;
 }
 
-.original #fgroup_id_exportgroup {
+#fgroup_id_exportgroup {
   text-align: center;
 }
 
-.original #fgroup_id_exportgroup fieldset {
+#fgroup_id_exportgroup fieldset {
   width: auto;
   display: inline-block;
 }
 
-.original #fgroup_id_exportgroup fieldset .felement {
+#fgroup_id_exportgroup fieldset .felement {
   width: auto;
   float: left;
   margin: 0;
 }
 
-.original #fgroup_id_exportgroup fieldset legend {
+#fgroup_id_exportgroup fieldset legend {
   float: left;
   width: auto;
   line-height: 30px;
   margin-right: 10px;
 }
 
-.original #fgroup_id_exportgroup fieldset legend span {
+#fgroup_id_exportgroup fieldset legend span {
   width: auto;
 }
 
-.original .mform .fgroup .felement .rb-multicheck-control {
+.mform .fgroup .felement .rb-multicheck-control {
   display: block;
   margin-bottom: 5px;
 }
 
-.original .rb-display-table-container {
-  clear: right;
-}
-
-.original .rb-sidebar .felement > span {
-  clear: both;
-  display: block;
-}
-
-.original #fitem_id_toolbarsearchtext,
-.original #fitem_id_toolbarsearchbutton,
-.original #fitem_id_cleartoolbarsearchtext {
+#fitem_id_toolbarsearchtext,
+#fitem_id_toolbarsearchbutton,
+#fitem_id_cleartoolbarsearchtext {
   display: inline-block;
   margin-right: 10px;
 }
 
-.original form[id^="toolbarsearch"].mform div,
-.original form[id^="toolbarsearch"].mform fieldset {
+form[id^="toolbarsearch"].mform div,
+form[id^="toolbarsearch"].mform fieldset {
   margin: 0;
   padding: 0;
   width: auto;
   vertical-align: top;
 }
 
-.original form[id^="toolbarsearch"].mform .fsubmit {
+form[id^="toolbarsearch"].mform .fsubmit {
   width: auto;
 }
 
-.original form.rb-sidebar div.fcontainer .fitem:last-child {
-  display: none;
-}
-
-.original .reportbuilder-table .user_namewithlinks a {
+.reportbuilder-table .user_namewithlinks a {
   padding-left: 5px;
   float: left;
 }
 
-.original #team_members .user_namewithlinks .name {
+#team_members .user_namewithlinks .name {
   font-size: 18px;
   font-weight: bold;
   padding-top: 8px;
 }
 
-.original .reportbuilder-table .user_namewithlinks ul {
+.reportbuilder-table .user_namewithlinks ul {
   clear: both;
   margin: 0;
   padding-top: 2px;
 }
 
-.original .reportbuilder-table .user_namewithlinks ul li {
+.reportbuilder-table .user_namewithlinks ul li {
   float: left;
   list-style-type: none;
 }
 
-.original .reportbuilder-table .user_namewithlinks li a {
+.reportbuilder-table .user_namewithlinks li a {
   border-left: 1px solid #dddddd;
   font-size: 12px;
   line-height: 10px;
   margin: 2px;
 }
 
-.original .reportbuilder-table .user_namewithlinks li:first-child a {
+.reportbuilder-table .user_namewithlinks li:first-child a {
   border-left: none;
   margin-left: 0;
 }
 
-.original .reportbuilder-table .user_actions {
+.reportbuilder-table .user_actions {
   white-space: nowrap;
 }
 
-.original .ie .rb-report-svggraph {
-  position: relative;
-  padding-bottom: 40%;
-  /* This is the ration of original svg size 1000x400 */
-  height: 0;
-  clear: both;
-}
-
-.original .ie .rb-report-svggraph:empty {
-  padding-bottom: 0;
-  clear: none;
-}
-
-.original .ie .rb-report-svggraph svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.original .rb-display-expand {
+.rb-display-expand {
   padding: 5px;
   background-repeat: no-repeat;
   background-position: 0 5px;
   cursor: pointer;
 }
 
-.original .multicheck-items label > div {
+.multicheck-items label > div {
   display: inline;
 }
 
-.original .rb-search-menu {
+.rb-search-menu {
   /* stylelint-disable */
   vertical-align: middle !important;
   /* stylelint-enable */
 }
 
-.original .rb-genbutton {
+.rb-genbutton {
   float: right;
 }
 
-.original .rb-genicon {
+.rb-genicon {
   cursor: pointer;
 }
 
-.original .rb-hidden {
+.rb-hidden {
   display: none;
 }
 
-.original .rb-inline {
+.rb-inline {
   display: inline-block;
 }
 
-.original .path-admin-totara-reportbuilder-restrictions .header.lastcol {
+.path-admin-totara-reportbuilder-restrictions .header.lastcol {
   min-width: 120px;
 }
 
-.original div.felement #id_all_sidebar_filters {
+div.felement #id_all_sidebar_filters {
   /* stylelint-disable */
   display: none !important;
   /* stylelint-enable */
 }
 
-.original .mform table .fitem {
+.mform table .fitem {
   margin-right: 0;
   margin-bottom: 0;
   margin-left: 0;
 }
 
-.original .mform td .fitem .fcheckbox {
+.mform td .fitem .fcheckbox {
   margin-top: 8px;
 }
 
-.original div.reportbuilderform div.fitem div.col-md-3 {
+div.reportbuilderform div.fitem div.col-md-3 {
   display: none !important;
 }
 
-.original fieldset#id_standardfilter div.fitem div.col-md-3 {
+fieldset#id_standardfilter div.fitem div.col-md-3 {
   display: none !important;
 }
 
-.original fieldset#id_sidebarfilter div.fitem div.col-md-3 {
+fieldset#id_sidebarfilter div.fitem div.col-md-3 {
   display: none !important;
 }
 
-.original .rb-sidebar .col-md-3 {
-  width: 100%;
-}
-
-.original .rb-sidebar .col-md-9 {
-  width: 100%;
-}
-
-.original .rb-sidebar .fitem {
-  clear: both;
-  display: block;
-}
-
-.original .progress {
-  height: 20px;
-  margin-bottom: 20px;
-  overflow: hidden;
-  background-color: #f5f5f5;
-  border-radius: 3px;
-  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.original .progress-bar {
-  float: left;
-  width: 0%;
-  height: 100%;
-  font-size: 12px;
-  line-height: 20px;
-  color: #ffffff;
-  text-align: center;
-  background-color: #0f95ff;
-  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-  -webkit-transition: width 0.6s ease;
-  -o-transition: width 0.6s ease;
-  transition: width 0.6s ease;
-}
-
-.original .progress-striped .progress-bar,
-.original .progress-bar-striped {
-  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-size: 40px 40px;
-}
-
-.original .progress.active .progress-bar,
-.original .progress-bar.active {
-  -webkit-animation: progress-bar-stripes 2s linear infinite;
-  -o-animation: progress-bar-stripes 2s linear infinite;
-  animation: progress-bar-stripes 2s linear infinite;
-}
-
-.original .progress-bar-success {
-  background-color: #38c19a !important;
-}
-
-.original .progress-striped .progress-bar-success {
-  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-}
-
-.original .progress-bar-info {
-  background-color: #ac92ed !important;
-}
-
-.original .progress-striped .progress-bar-info {
-  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-}
-
-.original .progress-bar-warning {
-  background-color: #ffb41d !important;
-}
-
-.original .progress-striped .progress-bar-warning {
-  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-}
-
-.original .progress-bar-danger {
-  background-color: #ed5564 !important;
-}
-
-.original .progress-striped .progress-bar-danger {
-  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-}
-
-.original div.rb-display-expand i.fa-info-circle {
+div.rb-display-expand i.fa-info-circle {
   padding-right: 5px;
 }
 
 #page-local-reportbuilder-report #page-footer {
   margin: 0;
   display: none;
+}
+
+.myreports .accordion-toggle {
+  background-image: url([[pix:theme|icon_blueminus]]) !important;
+  background-position: 0 4px;
+  background-repeat: no-repeat;
+  padding: 2px 0 2px 15px;
+}
+
+.myreports .accordion-toggle.collapsed {
+  background-image: url([[pix:theme|icon_blueplus]]) !important;
 }
 
 .newreport {
@@ -500,8 +311,8 @@
   margin-bottom: 0;
 }
 
-.newreport #reportfilters #id_clearsidebarfilters {
-  margin-left: 0;
+.newreport #reportfilters .fitem_actionbuttons {
+  margin-bottom: 0;
 }
 
 @media (max-width: 800px) {

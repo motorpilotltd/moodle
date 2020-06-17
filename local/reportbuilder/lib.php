@@ -4318,7 +4318,7 @@ class reportbuilder {
                 '<i class="fa fa-pencil"></i><span class="sr-only">' . get_string('editthisreport', 'local_reportbuilder') . '</span>',
                 array('class' => 'btn btn-default',
                     'data-toggle' => 'tooltip',
-                    'data-placement' => 'left',
+                    'data-placement' => 'bottom',
                     'title' => get_string('editthisreport', 'local_reportbuilder'))
             );
         } else {
