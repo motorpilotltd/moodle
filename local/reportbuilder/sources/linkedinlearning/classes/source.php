@@ -514,13 +514,6 @@ class source extends rb_base_source {
     protected function define_filteroptions() {
         global $DB;
 
-        $classificationoptionsraw = $DB->get_records('linkedinlearning_class', [], 'name');
-        $classificationoptions = [];
-        foreach ($classificationoptionsraw as $raw) {
-            $raw->language = $this->rb_display_language($raw->language);
-            $classificationoptions[$raw->id] = get_string('classificationunambiguous', 'rbsource_linkedinlearning', $raw);
-        }
-
         $filteroptions = array(
             // Assignment columns.
                 new rb_filter_option(
@@ -564,17 +557,6 @@ class source extends rb_base_source {
                         )
                 ),
                 new rb_filter_option(
-                        'linkedincourse',
-                        'classificationid',
-                        get_string('classificationname', 'rbsource_linkedinlearning'),
-                        'select',
-                        array(
-                                'selectchoices' => $classificationoptions,
-                        ),
-                        'class.id',
-                        'class'
-                ),
-                new rb_filter_option(
                         'linkedincourseprogress',
                         'first_viewed',
                         get_string('first_viewed', 'rbsource_linkedinlearning'),
@@ -599,6 +581,22 @@ class source extends rb_base_source {
                                 'simplemode' => true,
                         )
                 );
+
+        $records_menu = $DB->get_records_sql_menu('select lilc.id, lilc.name
+                                                        from {linkedinlearning_class} lilc 
+                                                        inner join {linkedinlearning_course} crs on crs.primaryclassification  = lilc.id
+                                                        group by lilc.id,lilc.name
+                                                        order by lilc.name');
+        $filteroptions[] = new rb_filter_option(
+                'linkedincourse',
+                'primaryclassification',
+                get_string('primaryclassification', 'rbsource_linkedinlearning'),
+                'select',
+                array(
+                        'selectchoices' => $records_menu,
+                ),
+                'base.primaryclassification'
+        );
 
         foreach ($DB->get_records_sql('select distinct type from {linkedinlearning_class}') as $type) {
             $type = $type->type;
