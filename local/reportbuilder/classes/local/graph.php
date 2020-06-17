@@ -141,9 +141,7 @@ class graph {
     }
 
     public function reset_records() {
-        $this->processedcount = 0;
-        $this->series = [];
-        $this->legend = [];
+        $this->init();
     }
 
     public function add_record($record) {
@@ -271,10 +269,10 @@ class graph {
         } else if ($this->graphrecord->type === 'bar') {
             $chart = new \core\chart_bar(); // Create a bar chart instance.
             $chart->set_horizontal(true);
-            $chart->set_stacked($this->graphrecord->stacked);
+            $chart->set_stacked(!empty($this->graphrecord->stacked));
         } else if ($this->graphrecord->type === 'column') {
             $chart = new \core\chart_bar(); // Create a bar chart instance.
-            $chart->set_stacked($this->graphrecord->stacked);
+            $chart->set_stacked(!empty($this->graphrecord->stacked));
         }
 
         foreach($this->series as $index => $series) {
