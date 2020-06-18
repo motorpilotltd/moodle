@@ -25,4 +25,4 @@ $string['linkedtitle'] = 'Linked course title';
 $string['shortdescription'] = 'Short Description';
 $string['linkedtitlewithexpander'] = 'Linked course title (with expander)';
 $string['primaryclassification'] = 'Primary classification';
-$string['classificationunambiguous'] = '{$a->name} ({$a->type} {$a->language})';
+$string['classificationunambiguous'] = '{$a->name} ({$a->language})';
