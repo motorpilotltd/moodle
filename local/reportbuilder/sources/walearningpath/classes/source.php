@@ -117,6 +117,17 @@ class source extends rb_base_source {
         );
 
         $columnoptions[] = new rb_column_option(
+            'learningpath',
+            'totalsubscribed',
+            get_string('totalsubscribed', 'rbsource_walearningpath'),
+            'CASE WHEN walearningpathsubscribe.id IS NULL THEN 0 ELSE 1 END',
+            array(
+                'grouping' => 'count',
+                'dbdatatype' => 'integer',        
+            )
+        );
+
+        $columnoptions[] = new rb_column_option(
             'learningpathsubscribe',
             'userid',
             get_string('subscriber_userid', 'rbsource_walearningpath'),
@@ -226,23 +237,13 @@ class source extends rb_base_source {
      * @return array
      */
     protected function define_requiredcolumns() {
-        $requiredcolumns = array(
-            // Subscriber status
-                new rb_column(
-                        'learningpathsubscribe',
-                        'status',
-                        '',
-                        'walearningpathsubscribe.status',
-                        array('hidden' => true, 'joins' => 'walearningpathsubscribe')
-                ),
-        );
 
-        $requiredcolumns[] = new rb_column(
-            'auser',
-            'employeenumber',
+        $requiredcolumns[] =  new rb_column(
+            'learningpathsubscribe',
+            'status',
             '',
-            "auserstaff.EMPLOYEE_NUMBER",
-            array('hidden' => true, 'joins' => 'auserstaff')
+            'walearningpathsubscribe.status',
+            array('hidden' => true, 'joins' => 'walearningpathsubscribe')
         );
 
         return $requiredcolumns;
