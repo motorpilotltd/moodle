@@ -255,32 +255,35 @@ class source extends rb_base_source {
                     'linkedincourse',
                     "regionvisibility0",
                     get_string('global', 'local_regions'),
-                    'base.id',
+                    $globalpresentsql,
                     array(
                             'displayfunc' => $displayfunction,
                             'joins'       => ["regions0", "course"],
                             'extrafields' => ['regionid'        => 0,
                                               'presentinregion' => $globalpresentsql,
                                               'presentglobal'   => $globalpresentsql,
-                                              'available'       => 'base.available'
+                                              'available'       => 'base.available',
+                                              'courseid' => 'base.id'
                             ]
                     )
             );
         }
 
         foreach ($regions as $id => $name) {
+            $presentinregion = " CASE WHEN (course.visible = 0 OR regions{$id}.id IS NULL) THEN 0 ELSE 1 END ";
             $results[] = new rb_column(
                     'linkedincourse',
                     "regionvisibility{$id}",
                     get_string('availableinregion', 'rbsource_linkedinlearning', $name),
-                    'base.id',
+                    $presentinregion,
                     array(
                             'displayfunc' => $displayfunction,
                             'joins'       => ["regions{$id}", "regions0", 'arupadvert', 'course'],
                             'extrafields' => ['regionid'        => $id,
-                                              'presentinregion' => " CASE WHEN regions{$id}.id IS NOT NULL THEN 1 ELSE 0 END ",
+                                              'presentinregion' => $presentinregion,
                                               'presentglobal'   => $globalpresentsql,
-                                              'available'       => 'base.available'
+                                              'available'       => 'base.available',
+                                              'courseid' => 'base.id'
                             ]
                     )
             );
@@ -733,19 +736,21 @@ class source extends rb_base_source {
         return $defaultfilters;
     }
 
-    public function rb_display_regionvisibilityreadonly($courseid, $row, $export) {
-        return $this->rb_display_regionvisibility($courseid, $row, $export, true, false);
+    public function rb_display_regionvisibilityreadonly($unused, $row, $export) {
+        return $this->rb_display_regionvisibility($unused, $row, $export, true, false);
     }
 
-    public function rb_display_regionvisibilityallregions($courseid, $row, $export) {
-        return $this->rb_display_regionvisibility($courseid, $row, $export, false, true);
+    public function rb_display_regionvisibilityallregions($unused, $row, $export) {
+        return $this->rb_display_regionvisibility($unused, $row, $export, false, true);
     }
 
-    public function rb_display_regionvisibilityreadonlyallregions($courseid, $row, $export) {
-        return $this->rb_display_regionvisibility($courseid, $row, $export, true, true);
+    public function rb_display_regionvisibilityreadonlyallregions($unused, $row, $export) {
+        return $this->rb_display_regionvisibility($unused, $row, $export, true, true);
     }
 
-    public function rb_display_regionvisibility($courseid, $row, $export, $readonly = false, $allregions = false) {
+    public function rb_display_regionvisibility($unused, $row, $export, $readonly = false, $allregions = false) {
+        $courseid = $row->courseid;
+
         $attributes = ['data-regionid' => $row->regionid, 'data-courseid' => $courseid, 'class' => 'regioncheck'];
 
         if ($readonly) {
