@@ -802,7 +802,7 @@ abstract class rb_base_source {
             $fs = get_file_storage();
             $imagesbyfieldid[$row->fieldid] = $fs->get_area_files($context->id, 'local_coursemetadata', "icons_{$row->fieldid}");
         }
-        static $types = ['.png', '.jpg', '.jpeg', '.gif'];
+        static $types = ['.svg', '.png', '.jpg', '.jpeg', '.gif'];
 
         if ($imagesbyfieldid[$row->fieldid]) {
             $filearea = "icons_{$row->fieldid}";
