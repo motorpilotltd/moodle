@@ -3069,8 +3069,10 @@ abstract class rb_base_source {
                 get_string('activeperiod', 'local_custom_certification'),
                 "$join.activeperiodtime",
                 array('joins' => $join,
-                      'dbdatatype' => 'char',
-                      'outputformat' => 'text')
+                    'extrafields' => ['periodtimeunit' => $join . '.activeperiodtimeunit'],
+                    'displayfunc'  => 'timeperiodunit',
+                    'dbdatatype' => 'char',
+                    'outputformat' => 'text')
         );
 
         $columnoptions[] = new rb_column_option(
@@ -3079,8 +3081,10 @@ abstract class rb_base_source {
                 get_string('windowperiod', 'local_custom_certification'),
                 "$join.windowperiod",
                 array('joins' => $join,
-                      'dbdatatype' => 'char',
-                      'outputformat' => 'text')
+                    'extrafields' => ['periodtimeunit' => $join . '.windowperiodunit'],
+                    'displayfunc'  => 'timeperiodunit',
+                    'dbdatatype' => 'char',
+                    'outputformat' => 'text')
         );
         return true;
     }
@@ -4413,6 +4417,37 @@ abstract class rb_base_source {
             return get_string('notstarted', 'local_custom_certification');
         }
     }
+
+    public function rb_display_activeperiodunit($val, $row) {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/custom_certification/classes/certification.php');
+        
+        $data = '';
+        
+        if (!empty($val) && isset($row->activeperiodtimeunit)) {
+            $timeunit = \local_custom_certification\certification::get_time_period_for_interval($row->activeperiodtimeunit);
+
+            $data = $val . ' ' . $timeunit;
+        }
+        
+        return $data;
+    }
+
+    public function rb_display_timeperiodunit($val, $row) {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/custom_certification/classes/certification.php');
+        
+        $data = '';
+        
+        if (!empty($val) && isset($row->periodtimeunit)) {
+            $timeunit = \local_custom_certification\certification::get_time_period_for_interval($row->periodtimeunit);
+
+            $data = $val . ' ' . $timeunit;
+        }
+        
+        return $data;
+    }
+
     /**
      * Returns a list of tags in a collection.
      *
