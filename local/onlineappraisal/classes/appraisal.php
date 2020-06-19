@@ -385,7 +385,8 @@ class appraisal {
         $this->pages[$name] = $page;
 
         // Run hooks last, after page added to pages array.
-        if ($hook && $this->page == $name) {
+        // Add checking checkins hook for leaderplan page.
+        if (($hook && $this->page == $name) || ($hook == 'checkins' && $this->page == 'leaderplan')) {
             $class = "\\local_onlineappraisal\\$hook";
             $classinstance = new $class($this);
             $classinstance->hook();
@@ -693,7 +694,16 @@ class appraisal {
      */
     private function content_form() {
         if ($this->form) {
-            return $this->form->render();
+
+            if ($this->page == 'leaderplan') {
+                $content = '';
+                $content .= $this->form->render();
+                $page = new \local_onlineappraisal\output\dashboard\checkin($this, 'leaderplan');
+                $content .= $this->renderer->render($page);
+                return $content;
+            } else {
+                return $this->form->render();
+            }
         } else {
             $alert = new alert(get_string('error:formnotinit', 'local_onlineappraisal'), 'danger', false);
             return $this->renderer->render($alert);

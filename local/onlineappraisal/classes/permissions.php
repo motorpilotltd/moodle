@@ -244,6 +244,11 @@ class permissions {
         self::add_permissions('checkin', 'add', 'appraiser', array(3,4,5,6,7));
         self::add_permissions('checkin', 'add', 'signoff', array(3,4,5,6,7));
         self::add_permissions('checkin', 'add', 'groupleader', array(3,4,5,6,7));
+        // checkinleaderplan:add
+        self::add_permissions('checkinleaderplan', 'add', 'appraisee', array(3,4,5,6,7));
+        self::add_permissions('checkinleaderplan', 'add', 'appraiser', array(3,4,5,6,7));
+        self::add_permissions('checkinleaderplan', 'add', 'signoff', array(3,4,5,6,7));
+        self::add_permissions('checkinleaderplan', 'add', 'groupleader', array(3,4,5,6,7));
         //successionplan:view
         self::add_permissions('successionplan', 'view', 'all', 'all');
         //successionplan:add

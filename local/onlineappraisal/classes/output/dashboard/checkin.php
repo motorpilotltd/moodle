@@ -41,23 +41,30 @@ class checkin extends base {
      * @var \local_onlineappraisal\checkins $checkins
      */
     private $checkins;
-    
+
     /**
      * Holds session key.
      * @var string $sesskey
      */
     private $sesskey;
 
-    public function __construct(\local_onlineappraisal\appraisal $appraisal) {
+    /**
+     * Holds the checkins type
+     * @var string $type
+     */
+    private $type;
+
+    public function __construct(\local_onlineappraisal\appraisal $appraisal, $type = null) {
         parent::__construct($appraisal);
-        $this->checkins = new \local_onlineappraisal\checkins($this->appraisal->appraisal->id);
+        $this->checkins = new \local_onlineappraisal\checkins($this->appraisal->appraisal->id, $type);
         $this->sesskey = sesskey();
+        $this->type = $type;;
     }
 
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();
         $data->checkins = $this->checkins($output);
-        $data->canadd = $this->appraisal->check_permission('checkin:add');
+        $data->canadd = ($this->type == null) ? $this->appraisal->check_permission('checkin:add') : $this->appraisal->check_permission('checkinleaderplan:add');
         $data->view = $this->appraisal->appraisal->viewingas;
         $data->appraisalid = $this->appraisal->appraisal->id;
         $data->sesskey = $this->sesskey;
@@ -70,7 +77,10 @@ class checkin extends base {
             $data->buttontext = get_string('checkin:update', 'local_onlineappraisal');
         }
         $data->appraiseename = fullname($this->appraisal->appraisal->appraisee);
-        $data->tagline = get_string('tagline', 'local_onlineappraisal', strtoupper($data->appraiseename));
+        $data->tagline = ($this->type == null) ? get_string('tagline', 'local_onlineappraisal', strtoupper($data->appraiseename)) : '';
+        $data->description = ($this->type == null) ? get_string('checkins_intro', 'local_onlineappraisal') : get_string('checkins_intro_ldp', 'local_onlineappraisal');
+        $data->type = $this->type;
+        $data->title = ($this->type == null) ? get_string('appraisee_checkin_title', 'local_onlineappraisal') : get_string('checkin', 'local_onlineappraisal') ;
         return $data;
     }
 
@@ -82,14 +92,15 @@ class checkin extends base {
      */
     private function checkins(renderer_base $output) {
         $checkins = $this->checkins->get_checkins();
-        $params = array('page' => 'checkin',
+        $page = !empty($this->type) ? $this->type : 'checkin';
+        $params = array('page' => $page,
             'appraisalid' => $this->appraisal->appraisal->id,
             'view' => $this->appraisal->appraisal->viewingas
             );
         foreach ($checkins as &$checkin) {
             $params['checkin'] = $checkin->id;
             $params['action'] = 'edit';
-            $checkin->editurl = new moodle_url('/local/onlineappraisal/view.php', $params);
+            $checkin->editurl = new moodle_url('/local/onlineappraisal/view.php', $params) . '#oa-checkin-input';
             $params['action'] = 'delete';
             $checkin->delurl = new moodle_url('/local/onlineappraisal/view.php', $params);
         }
