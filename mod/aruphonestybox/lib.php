@@ -56,8 +56,6 @@ function aruphonestybox_add_instance(stdClass $aruphonestybox, mod_aruphonestybo
     global $COURSE, $DB;
 
     $aruphonestybox->classname = $COURSE->fullname;
-    $aruphonestybox->classtype = 'LB';
-    $aruphonestybox->provider = 'Learning Burst';
     $aruphonestybox->learningdesc = $aruphonestybox->learningdesc['text'];
     $aruphonestybox->timecreated = time();
 
@@ -74,8 +72,6 @@ function aruphonestybox_update_instance(stdClass $aruphonestybox, mod_aruphonest
     global $COURSE, $DB;
 
     $aruphonestybox->classname = $COURSE->fullname;
-    $aruphonestybox->classtype = 'LB';
-    $aruphonestybox->provider = 'Learning Burst';
     $aruphonestybox->learningdesc = $aruphonestybox->learningdesc['text'];
     $aruphonestybox->timemodified = time();
     $aruphonestybox->id = $aruphonestybox->instance;
@@ -205,7 +201,8 @@ function aruphonestybox_sendtotaps($id, $user, &$debug=array()) {
         'p_certificate_expiry_date' => empty($data->expirydate) ? null : $data->expirydate,
         'p_learning_desc' => $data->learningdesc,
         'p_health_and_safety_category' => $data->healthandsafetycategory,
-        'p_providerid' => $data->course,
+        'p_origin' => 'mod_arupevidence',
+        'p_originid' => $data->id,
         'locked' => true,
     );
 

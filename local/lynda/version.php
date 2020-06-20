@@ -21,8 +21,12 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017051501;
-$plugin->requires  = 2017051501; // Moodle 3.3.
+$plugin->version   = 2017051506;
+$plugin->requires  = 2017051500; // Moodle 3.3.
 $plugin->component = 'local_lynda';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.3.0 (Build: {$plugin->version})";
+$plugin->release   = "3.3.6 (Build: {$plugin->version})";
+
+$plugin->dependencies = array(
+    'local_taps' => 2017051500,
+);

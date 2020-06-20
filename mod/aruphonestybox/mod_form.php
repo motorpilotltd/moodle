@@ -75,7 +75,9 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
 
         $mform->addElement('static', 'classname', get_string('cpd:classname', 'block_arup_mylearning'), $COURSE->fullname);
 
-        $mform->addElement('static', 'provider', get_string('cpd:provider', 'block_arup_mylearning'), 'Learning Burst');
+        $mform->addElement('text', 'provider', get_string('cpd:provider', 'block_arup_mylearning'));
+        $mform->setType('provider', PARAM_TEXT);
+        $mform->addRule('provider', null, 'required', null, 'client');
 
         $mform->addElement('text', 'duration', get_string('cpd:duration', 'block_arup_mylearning'));
         $mform->setType('duration', PARAM_TEXT);
@@ -85,6 +87,15 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
 
         $mform->addElement('editor', 'learningdesc', get_string('cpd:learningdesc', 'block_arup_mylearning'));
         $mform->setType('learningdesc', PARAM_CLEANHTML);
+
+        $classtype = $mform->createElement('select', 'classtype', '', $taps->get_classtypes('cpd'));
+
+        $enableclasstype = $mform->createElement('checkbox', 'enableclasstype', '');
+
+        $mform->addElement('group', 'classtypegroup', get_string('cpd:classtype', 'block_arup_mylearning'), [$classtype, $enableclasstype], '&nbsp;'.get_string('edit'), false);
+        $mform->setDefault('classtype', 'LB');
+        $mform->disabledIf('classtype', 'enableclasstype', 'notchecked');
+        $mform->setAdvanced('classtypegroup');
 
         $mform->addElement('text', 'location', get_string('cpd:location', 'block_arup_mylearning'));
         $mform->setType('location', PARAM_TEXT);
@@ -126,5 +137,13 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
         if ($this->current->instance) {
             $default_values['learningdesc'] = ['text' => $default_values['learningdesc'], 'format' => FORMAT_HTML];
         }
+    }
+
+    public function set_data($defaultvalues) {
+        if (empty($defaultvalues->classtype)) {
+            $defaultvalues->classtype = 'LB';
+        }
+
+        parent::set_data($defaultvalues);
     }
 }

@@ -371,7 +371,7 @@ class block_arup_mylearning_content {
     }
 
     protected function _get_myhistory_html() {
-        global $OUTPUT;
+        global $OUTPUT, $PAGE;
 
         $hascapabilities = array('addcpd' => false, 'editcpd' => false, 'deletecpd' => false);
         foreach ($hascapabilities as $capability => &$hascapability) {
@@ -425,10 +425,18 @@ class block_arup_mylearning_content {
                 } else {
                     $alttitle = $th->classtype;
                 }
+
+                $potentialimagename = \core_text::strtolower(str_ireplace(' ', '', $th->classtype));
+                if ($PAGE->theme->resolve_image_location($potentialimagename, 'local_taps', null)) {
+                    $imageurl = $OUTPUT->image_url($potentialimagename, 'local_taps');
+                } else {
+                    $imageurl = $OUTPUT->image_url($th->classtypegroup, 'local_taps');
+                }
+
                 $cell->text = html_writer::empty_tag(
                     'img',
                     array(
-                        'src' => $OUTPUT->image_url($th->classtypegroup, 'local_taps'),
+                        'src' => $imageurl,
                         'alt' => $alttitle,
                         'title' => $alttitle
                     )

@@ -56,6 +56,14 @@ class attendee_form extends moodleform {
         $mform->addElement('static', 'duration', get_string('duration', 'local_lunchandlearn'), $lal->scheduler->get_duration(). ' minutes');
         $mform->addElement('static', 'location', get_string('location', 'local_lunchandlearn'), $lal->scheduler->get_office());
 
+        // Learning Method: Drop down showing default at LE (Learning Event).
+        $classtype = $mform->createElement('select', 'p_learning_method', '', $taps->get_classtypes('cpd'));
+        $enableclasstype = $mform->createElement('checkbox', 'enableclasstype', '');
+
+        $mform->addElement('group', 'classtypegroup', get_string('p_learning_method', 'local_lunchandlearn'), [$classtype, $enableclasstype], '&nbsp;'.get_string('edit'), false);
+        $mform->setDefault('p_learning_method', 'LE');
+        $mform->disabledIf('p_learning_method', 'enableclasstype', 'notchecked');
+
         $mform->addElement('editor', 'p_learning_desc', get_string('p_learning_desc', 'local_lunchandlearn'));
         $mform->setType('p_learning_desc', PARAM_CLEANHTML);
 
