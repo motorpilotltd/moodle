@@ -75,10 +75,20 @@ class source extends rb_base_source {
      * @return array The SQL and parmeters that defines the WHERE for the source.
      */
     protected function define_sourcewhere() {
+        global $DB;
         $sql = '(base.archived = 0 or base.archived is null)';
-
+        
+        // Additional filterting for durationhours column
+        $reportid = optional_param('id', null, PARAM_INT);
+        $filter = array('reportid' => $reportid, 'value' => 'durationhours');
+        $durationhours = $DB->get_record('report_builder_columns', $filter);
+        $dh_aggregate = (!empty($durationhours) && !empty($durationhours->aggregate))? $durationhours->aggregate: ''; 
+        
+        $sql .= ($dh_aggregate == 'sum')? " AND base.durationunitscode = 'H'": '';
+        
         return array("($sql)", []);
     }
+
 
     protected function define_columnoptions() {
         global $DB;
@@ -91,13 +101,14 @@ class source extends rb_base_source {
         $classfields = ['classname', 'classtype', 'location'];
 
         foreach ($classfields as $stafffield) {
+            $displayfunc = ($stafffield == 'classtype')? 'classtype': 'plaintext';
             $columnoptions[] = new rb_column_option(
                     'class',
                     "$stafffield",
                     get_string($stafffield, 'local_reportbuilder'),
                     "base.$stafffield",
                     array(
-                            'displayfunc'  => 'plaintext',
+                            'displayfunc'  => $displayfunc,
                             'dbdatatype'   => 'char',
                             'outputformat' => 'text')
             );
@@ -165,6 +176,7 @@ class source extends rb_base_source {
                         'dbdatatype'   => 'char',
                         'outputformat' => 'text')
         );
+
         $columnoptions[] = new rb_column_option(
                 'class',
                 'classcost',
@@ -293,6 +305,21 @@ class source extends rb_base_source {
                       'displayfunc'  => 'plaintext',
                       'dbdatatype'   => 'char',
                       'outputformat' => 'text')
+        );
+
+        $columnoptions[] = new rb_column_option(
+                'class',
+                'durationhours',
+                get_string('durationhours', 'local_reportbuilder'),
+                'base.duration',
+                array(
+                        'displayfunc'  => 'durationhours',
+                        'dbdatatype'  => 'decimal',
+                        'outputformat' => 'text',
+                        'extrafields' => [
+                                'durationunitscode' => 'base.durationunitscode',
+                        ]
+                )
         );
 
         return $columnoptions;
@@ -598,5 +625,31 @@ class source extends rb_base_source {
             );
         }
         return $oput;
+    }
+
+    public function rb_display_durationhours($data, $row) {
+        global $DB;
+        // Check if duration hours has aggregation
+        $reportid = optional_param('id', null, PARAM_INT);
+        $filter = array('reportid' => $reportid, 'value' => 'durationhours');
+        $durationhours = $DB->get_record('report_builder_columns', $filter);
+        $dh_aggregate = (!empty($durationhours) && !empty($durationhours->aggregate))? $durationhours->aggregate: ''; 
+
+        // Display 2 decimal places only
+        $format_data = strpos($data, '.') === false ? $data: rtrim(number_format($data, 2),'0');
+
+        if ($dh_aggregate == 'sum' || $row->durationunitscode == 'H') {
+            return $format_data;
+        }
+        return '';
+    }
+
+    public function rb_display_classtype($data, $row) {
+        if ($data == 'Self Paced') {
+            return get_string('elearning', 'rbsource_tapsenrol') . '|' . $data;
+        } else if ($data == 'Scheduled') {
+            return get_string('classroom', 'rbsource_tapsenrol'). '|' . $data;
+        } 
+        return $data;
     }
 }

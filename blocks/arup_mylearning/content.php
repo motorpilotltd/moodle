@@ -378,6 +378,8 @@ class block_arup_mylearning_content {
             $hascapability = has_capability('block/arup_mylearning:'.$capability, $this->_block->context);
         }
 
+        $taps = new \local_taps\taps();
+
         $content = '';
 
         $content .= html_writer::tag('p', get_string('myhistory:intro', 'block_arup_mylearning'));
@@ -482,7 +484,12 @@ class block_arup_mylearning_content {
             $cell->text = $data;
             $cells[] = clone($cell);
 
-            $cell->text = $th->duration ? (float) $th->duration.'&nbsp;'.$th->durationunits : '';
+            if (isset($th->durationunitscode) && $th->durationunitscode == 'H') {
+                $data = $th->duration ? $taps->duration_hours_display($th->duration, $th->durationunits) : '';
+            } else {
+                $data = $th->duration ? (float) $th->duration.'&nbsp;'.$th->durationunits : '';
+            }
+            $cell->text = $data;
             $cells[] = clone($cell);
 
             if ($th->expirydate) {
@@ -927,7 +934,7 @@ EOS;
         $sql = <<<EOS
 SELECT
     lte.id, lte.classtype, lte.classname, lte.coursename, lte.classcategory, lte.classcompletiondate, lte.duration, lte.durationunits,
-        lte.expirydate, lte.cpdid, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
+        lte.durationunitscode,lte.expirydate, lte.cpdid, lte.provider, lte.location, lte.classstartdate, lte.certificateno, lte.learningdesc,
         lte.learningdesccont1, lte.learningdesccont2, lte.healthandsafetycategory, lte.usedtimezone, lte.locked,
     ltcc.categoryhierarchy,
     a.course,

@@ -77,6 +77,9 @@ if ($action == 'edit') {
         redirect($redirecturl);
         exit;
     }
+    
+    // Format duration input
+    $cpd->duration = $taps->duration_hours_display($cpd->duration, '', true);
 
     // Mapping for specific form select options that are not returned as keys.
     $cpd->classcategory = array_search($cpd->classcategory, $taps->get_classcategory());
@@ -116,7 +119,8 @@ if ($form->is_cancelled()) {
         }
     }
     $data->staffid = $USER->idnumber; // Set staffid (Only used to add CPD).
-
+    $data->durationunitscode = 'H'; // Set durationunits to Hour(s) as default
+    $data->duration = $taps->combine_duration_hours($data->duration); // converting hh:mm to hours
     switch ($action) {
         case 'add' :
             $result = $taps->add_cpd_record(

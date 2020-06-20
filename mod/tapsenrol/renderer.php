@@ -80,6 +80,8 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
     public function enrolment_history($tapsenrol, $enrolments, $classes, $cmid) {
         global $DB, $SESSION, $OUTPUT, $USER;
 
+        $taps = new \local_taps\taps();
+
         $overallclasstype = 'unknown';
         $classtypes = [];
         foreach (['classes', 'enrolments'] as $var) {
@@ -171,7 +173,11 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                         $cells[] = $cell;
                     }
                 }
-                $cells[] = $enrolment->duration ? (float) $enrolment->duration.' '.$enrolment->durationunits : '-';
+                if (!empty($enrolment->durationunitscode) && $enrolment->durationunitscode == 'H') {
+                    $cells[] = $enrolment->duration ? $taps->duration_hours_display($enrolment->duration, $enrolment->durationunits) : '-';
+                } else {
+                    $cells[] = $enrolment->duration ? (float) $enrolment->duration.' '.$enrolment->durationunits : '-';
+                }
                 $classseatsremaining = isset($seatsremaining[$enrolment->classid]) ? $seatsremaining[$enrolment->classid] : 0;
                 $cells[] = ($classseatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $classseatsremaining) . $delegatebutton;
                 if (!isset($enrolment->price)) {
@@ -301,7 +307,13 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
                         $cells[] = $cell;
                     }
                 }
-                $cells[] = $class->classduration ? (float) $class->classduration.' '.$class->classdurationunits : '-';
+
+                if (!empty($class->classdurationunitscode) && $class->classdurationunitscode == 'H') {
+                    $cells[] = $class->classduration ? $taps->duration_hours_display($class->classduration, $class->classdurationunits) : '-';
+                } else {
+                    $cells[] = $class->classduration ? (float) $class->classduration.' '.$class->classdurationunits : '-';
+                }
+                
                 $classseatsremaining = isset($seatsremaining[$class->classid]) ? $seatsremaining[$class->classid] : 0;
                 $cells[] = ($classseatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $classseatsremaining) . $delegatebutton;
                 $cells[] = $class->price ? $class->price.' '.$class->currencycode : '-';
@@ -431,6 +443,8 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
             $timezone = new DateTimeZone(date_default_timezone_get());
         }
 
+        $taps = new \local_taps\taps();
+
         $startdatetime = new DateTime(null, $timezone);
         $startdatetime->setTimestamp($class->classstarttime);
 
@@ -442,7 +456,11 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         $html .= html_writer::tag('div', $classname, array('class' => 'fitem'));
 
         $duration = html_writer::tag('div', get_string('duration', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $durationvalue = ($class->classduration) ? (float) $class->classduration . ' ' . $class->classdurationunits : get_string('tbc', 'tapsenrol');
+        if (!empty($class->classdurationunitscode) && $class->classdurationunitscode == 'H') {
+            $durationvalue = isset($class->classduration) ? $taps->duration_hours_display($class->classduration, $class->classdurationunits) : get_string('tbc', 'tapsenrol');
+        } else {
+            $durationvalue = isset($class->classduration) ? (float) $class->classduration . ' ' . $class->classdurationunits : get_string('tbc', 'tapsenrol');
+        }
         $duration .= html_writer::tag('div', $durationvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $duration, array('class' => 'fitem'));
 
@@ -500,6 +518,8 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
             $timezone = new DateTimeZone(date_default_timezone_get());
         }
 
+        $taps = new \local_taps\taps();
+
         $startdatetime = new DateTime(null, $timezone);
         $startdatetime->setTimestamp($enrolment->classstarttime);
 
@@ -512,7 +532,11 @@ class mod_tapsenrol_renderer extends plugin_renderer_base {
         $html .= html_writer::tag('div', $classname, array('class' => 'fitem'));
 
         $duration = html_writer::tag('div', get_string('duration', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $durationvalue = ($enrolment->duration) ? (float) $enrolment->duration . ' ' . $enrolment->durationunits : get_string('tbc', 'tapsenrol');
+        if (!empty($enrolment->durationunitscode) && $enrolment->durationunitscode == 'H') {
+            $durationvalue = isset($enrolment->duration) ? $taps->duration_hours_display($enrolment->duration, $enrolment->durationunits) : get_string('tbc', 'tapsenrol');
+        } else {
+            $durationvalue = isset($enrolment->duration) ? (float) $enrolment->duration . ' ' . $enrolment->durationunits : get_string('tbc', 'tapsenrol');
+        }
         $duration .= html_writer::tag('div', $durationvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $duration, array('class' => 'fitem'));
 
@@ -913,6 +937,8 @@ EOF;
             $timezone = new DateTimeZone(date_default_timezone_get());
         }
 
+        $taps = new \local_taps\taps();
+
         $startdatetime = new DateTime(null, $timezone);
         $startdatetime->setTimestamp($enrolment->classstarttime);
 
@@ -938,7 +964,11 @@ EOF;
         $html .= html_writer::tag('div', $classname, array('class' => 'fitem'));
 
         $duration = html_writer::tag('div', get_string('duration', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $durationvalue = ($enrolment->duration) ? (float) $enrolment->duration . ' ' . $enrolment->durationunits : get_string('tbc', 'tapsenrol');
+        if (!empty($enrolment->durationunitscode) && $enrolment->durationunitscode == 'H') {
+            $durationvalue = isset($enrolment->duration) ? $taps->duration_hours_display($enrolment->duration, $enrolment->durationunits) : get_string('tbc', 'tapsenrol');
+        } else {
+            $durationvalue = isset($enrolment->duration) ? (float) $enrolment->duration . ' ' . $enrolment->durationunits : get_string('tbc', 'tapsenrol');
+        }
         $duration .= html_writer::tag('div', $durationvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $duration, array('class' => 'fitem'));
 
@@ -1076,6 +1106,8 @@ EOF;
             $timezone = new DateTimeZone(date_default_timezone_get());
         }
 
+        $taps = new \local_taps\taps();
+
         $startdatetime = new DateTime(null, $timezone);
         $startdatetime->setTimestamp($class->classstarttime);
 
@@ -1086,7 +1118,11 @@ EOF;
         $html .= html_writer::tag('div', $classname, array('class' => 'fitem'));
 
         $duration = html_writer::tag('div', get_string('duration', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $durationvalue = ($class->classduration) ? (float) $class->classduration . ' ' . $class->classdurationunits : get_string('tbc', 'tapsenrol');
+        if (!empty($class->classdurationunitscode) && $class->classdurationunitscode == 'H') {
+            $durationvalue = isset($class->classduration) ? $taps->duration_hours_display($class->classduration, $class->classdurationunits) : get_string('tbc', 'tapsenrol');
+        } else {
+            $durationvalue = isset($class->classduration) ? (float) $class->classduration . ' ' . $class->classdurationunits : get_string('tbc', 'tapsenrol');
+        }
         $duration .= html_writer::tag('div', $durationvalue, array('class' => 'felement'));
         $html .= html_writer::tag('div', $duration, array('class' => 'fitem'));
 

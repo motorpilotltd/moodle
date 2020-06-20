@@ -272,9 +272,9 @@ class course extends \data_object {
         $tapscourse->onelinedescription = $this->shortdescription;
         $tapscourse->timemodified = $this->lastupdatedat;
         $tapscourse->keywords = implode(', ', $keywords);
-        $tapscourse->duration = round($this->timetocomplete / MINSECS);
-        $tapscourse->durationunits = 'Minute(s)';
-        $tapscourse->durationunitscode = 'MINS';
+        $tapscourse->duration = round($this->timetocomplete / HOURSECS, 4);
+        $tapscourse->durationunits = 'Hour(s)';
+        $tapscourse->durationunitscode = 'H';
         $DB->insert_record('local_taps_course', $tapscourse);
 
         $sqlmax = "SELECT max(classid) as maxid from {local_taps_class}";
@@ -286,9 +286,9 @@ class course extends \data_object {
         $tapsclass->classname = $this->title;
         $tapsclass->classtype = 'Self Paced';
         $tapsclass->classstatus = 'Normal';
-        $tapsclass->classduration = round($this->timetocomplete / MINSECS);
-        $tapsclass->classdurationunits = 'Minute(s)';
-        $tapsclass->classdurationunitscode = 'MIN';
+        $tapsclass->classduration = round($this->timetocomplete / HOURSECS, 4);
+        $tapsclass->classdurationunits = 'Hour(s)';
+        $tapsclass->classdurationunitscode = 'H';
         $tapsclass->startdate = $this->publishedat;
         $tapsclass->enrolmentstartdate = $this->publishedat;
         $tapsclass->enrolmentenddate = 0;

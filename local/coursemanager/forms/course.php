@@ -55,16 +55,11 @@ class cmform_course extends moodleform {
             // UTC forced in custom element addition, setting option here would cause issues.
             $this->add_element("enddate", "date_selector_optional");
             $this->add_element("courseregion", "select", null, $this->get_regions());
-            // Needs help
-            $this->add_element("duration", "text", PARAM_FLOAT);
-            // Duration units and durationunitscode can be set via single dropdown.
-            // See variables in \local_taps\taps
-            $taps = new \local_taps\taps();
-            $durationunits = $taps->get_durationunitscode();
-            array_shift($durationunits);
-            array_unshift($durationunits, get_string('form:course:getdurationunits', 'local_coursemanager'));
+            // Duration HH:MM
+            $mform->addElement('text', 'duration', get_string('duration', 'local_taps').get_string('durationcode', 'local_taps'), 'size="5"');
+            $mform->setType('duration', PARAM_TEXT);
+            $mform->addHelpButton('duration', 'duration', 'local_taps');
 
-            $this->add_element("durationunits", "select", null, $durationunits);
             $this->add_element("onelinedescription", "textarea", PARAM_RAW, null, null, true);
 
             // Required fields
@@ -87,7 +82,7 @@ class cmform_course extends moodleform {
 
         if ($tab == 3) {
             $this->add_element("coursecode", "hidden", PARAM_TEXT);
-            // Will need to check options for this. See variables taps plugin, keep them central in taps. Linked to accreditationgivendate and futurereviewdate. 
+            // Will need to check options for this. See variables taps plugin, keep them central in taps. Linked to accreditationgivendate and futurereviewdate.
             $this->add_element("globallearningstandards", "advcheckbox");
             // Needs to be able to be null/zero (not accredited). add tickbox. Only available when globallearningstandards is selected.
             // Force UTC for incoming timestamps - converted in get_data() based on chosen timezone.
@@ -117,7 +112,7 @@ class cmform_course extends moodleform {
 
     /**
      * Shorthand version of adding a field to the form
-     * 
+     *
      * @param string $fieldname. Unique name for field.
      * @param string $fieldtype. Type of field must be an existing mform field type.
      * @param constant $settype. Constant types like PARAM_TEXT etc.
@@ -181,6 +176,17 @@ class cmform_course extends moodleform {
         $dupes = $DB->get_records_sql($sql, array('coursecode' => $data['coursecode'], 'courseid' => $data['courseid']));
         if (count($dupes) > 0) {
             $errors['coursecode'] =  get_string('duplicatecoursecode', 'local_coursemanager');
+        }
+
+        if (!empty($data['duration'])) {
+            $time = explode(':', $data['duration']);
+            if (count($time) > 2) {
+                $errors['duration'] = get_string('validation:durationformatincorrect', 'local_taps').get_string('durationcode', 'local_taps');
+            } elseif (isset($time[1]) && ($time[1] < 0 || $time[1] > 59 || !is_numeric($time[1]))) {
+                $errors['duration'] = get_string('validation:durationinvalidminutes', 'local_taps').get_string('durationcode', 'local_taps');
+            } elseif ((isset($time[0]) && ((int)$time[0] != $time[0] || $time[0] < 0))) {
+                $errors['duration'] = get_string('validation:durationinvalidhours', 'local_taps').get_string('durationcode', 'local_taps');
+            }
         }
 
         return $errors;

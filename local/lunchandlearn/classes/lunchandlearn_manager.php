@@ -373,13 +373,14 @@ EOS;
                 'locked' => true,
         );
 
+        $durationhours = round($session->scheduler->get_duration() / HOURMINS, 4);
         $result = $taps->add_cpd_record(
             $user->idnumber,
             $session->get_name(),
             $session->get_supplier(),
             $session->scheduler->get_date(),
-            $session->scheduler->get_duration(),
-            'MIN',
+            $durationhours,
+            'H',
             $cpdparams
         );
 

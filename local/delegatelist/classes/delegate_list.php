@@ -325,12 +325,18 @@ EOS;
     }
 
     public function get_class_duration() {
+        $taps = new \local_taps\taps();
+
         if (!isset($this->_activeclass) || !isset($this->_activeclass->classduration)) {
             return;
         }
 
         if (!empty($this->_activeclass->classduration)) {
-            return (float) $this->_activeclass->classduration . ' ' . $this->_activeclass->classdurationunits;
+            if ($this->_activeclass->classdurationunitscode == 'H') {
+                return $taps->duration_hours_display($this->_activeclass->classduration, $this->_activeclass->classdurationunits);
+            } else {
+                return (float) $this->_activeclass->classduration . ' ' . $this->_activeclass->classdurationunits;
+            }
         } else {
             return '-';
         }

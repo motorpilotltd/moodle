@@ -33,7 +33,6 @@ class cmform_class_self_paced extends cmform_class {
         $mform->addElement("hidden", "classtype", "Self Paced");
         $mform->setType('classtype', PARAM_TEXT);
 
-        $mform->addRule('classdurationunitscode', get_string('required', 'local_coursemanager'), 'required', null, 'client');
         $mform->addRule('classduration', get_string('required', 'local_coursemanager'), 'required', null, 'client');
 
         $mform->removeElement('location');
@@ -71,9 +70,7 @@ class cmform_class_self_paced extends cmform_class {
 
     public function validation($data, $files){
         $errors = parent::validation($data, $files);
-        if ($data['classdurationunitscode'] == "0") {
-            $errors['classdurationunitscode'] = get_string('required', 'local_coursemanager');
-        }
+        
         return $errors;
     }
 }

@@ -1064,6 +1064,7 @@ $string['location'] = 'Class location';
 $string['classstartdate'] = 'Class start date';
 $string['classenddate'] = 'Class end date';
 $string['classduration'] = 'Class duration';
+$string['durationhours'] = 'Duration hours';
 $string['classcost'] = 'Class cost';
 $string['bookingstatus'] = 'Class booking status';
 $string['learningdesc'] = 'Class learning description';

@@ -1260,6 +1260,9 @@ EOS;
     }
 
     protected function _class_data($enrolment, $old = false) {
+
+        $taps = new \local_taps\taps();
+
         if (!isset($enrolment->trainingcenter) || !isset($enrolment->onlineurl)) {
             // Merge in data from class record (if needed/available).
             $class = $this->taps->get_class_by_id($enrolment->classid);
@@ -1330,7 +1333,11 @@ EOS;
         }
 
         if (!empty($enrolment->duration)) {
-            $classarray['classduration'] = (float) $enrolment->duration . ' ' . $enrolment->durationunits;
+            if (!empty($enrolment->durationunitscode) && $enrolment->durationunitscode == 'H') {
+                $classarray['classduration'] = $taps->duration_hours_display($enrolment->duration, $enrolment->durationunits);
+            } else {
+                $classarray['classduration'] = (float) $enrolment->duration . ' ' . $enrolment->durationunits;
+            }
         } else {
             $classarray['classduration'] = '-';
         }

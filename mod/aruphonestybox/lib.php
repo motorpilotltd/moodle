@@ -55,9 +55,13 @@ function aruphonestybox_supports($feature) {
 function aruphonestybox_add_instance(stdClass $aruphonestybox, mod_aruphonestybox_mod_form $mform = null) {
     global $COURSE, $DB;
 
+    $taps = new \local_taps\taps();
+
     $aruphonestybox->classname = $COURSE->fullname;
     $aruphonestybox->learningdesc = $aruphonestybox->learningdesc['text'];
     $aruphonestybox->timecreated = time();
+    $aruphonestybox->durationunitscode = 'H'; // Set to H/Hour(s) as default
+    $aruphonestybox->duration = $taps->combine_duration_hours($aruphonestybox->duration);
 
     return $DB->insert_record('aruphonestybox', $aruphonestybox);
 }
@@ -71,9 +75,12 @@ function aruphonestybox_add_instance(stdClass $aruphonestybox, mod_aruphonestybo
 function aruphonestybox_update_instance(stdClass $aruphonestybox, mod_aruphonestybox_mod_form $mform = null) {
     global $COURSE, $DB;
 
+    $taps = new \local_taps\taps();
+
     $aruphonestybox->classname = $COURSE->fullname;
     $aruphonestybox->learningdesc = $aruphonestybox->learningdesc['text'];
     $aruphonestybox->timemodified = time();
+    $aruphonestybox->duration = $taps->combine_duration_hours($aruphonestybox->duration);
     $aruphonestybox->id = $aruphonestybox->instance;
 
     return $DB->update_record('aruphonestybox', $aruphonestybox);

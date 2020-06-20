@@ -48,7 +48,11 @@ try {
             // Show UTC as GMT for clarity.
             $a->date = str_replace('UTC', 'GMT', $a->date);
         }
-        $a->duration = ($class->classduration) ? (float) $class->classduration . ' ' . $class->classdurationunits : get_string('tbc', 'tapsenrol');
+        if (!empty($class->classdurationunitscode) && $class->classdurationunitscode == 'H') {
+            $a->duration = ($class->classduration) ? $taps->duration_hours_display($class->classduration, $class->classdurationunits) : get_string('tbc', 'tapsenrol');
+        } else {
+            $a->duration = ($class->classduration) ? (float) $class->classduration . ' ' . $class->classdurationunits : get_string('tbc', 'tapsenrol');
+        }
         $a->cost = $class->price ? $class->price.' '.$class->currencycode : '-';
         $seatsremaining = $taps->get_seats_remaining($classid);
         $a->seatsremaining = ($seatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $seatsremaining);

@@ -97,3 +97,21 @@ $string['tapscourse'] = 'Linked course';
 $string['tapscoursedetails'] = 'Linked course details<br />ID | Code | Name';
 $string['tapsenrol'] = $string['te'] = 'Enrolment';
 $string['tapsenrol:workflow'] = $string['teiw'] = 'Workflow';
+
+$string['duration'] = 'Duration';
+$string['durationcode'] = ' (HH:00/HH:59)';
+$string['durationcodehours'] = ' (HH)';
+$string['duration_help'] = '**Duration** is the total length in hours.
+For example:
+* "2 hours" is entered as **2** or **2:00**
+* "1 hour and 59 minutes" is entered as **1:59**
+* "59 minutes" is entered as **0:59**.
+
+If if occurs over two or more time periods, the duration is the combined total.';
+$string['durationhours_help'] = '**Duration** is the total length in hours.
+For example:
+* "2 hours" is entered as **2**';
+$string['durationhours'] = 'Duration';
+$string['validation:durationformatincorrect'] = 'Incorrect duration format';
+$string['validation:durationinvalidminutes'] = 'Enter 0 to 59 only for minutes';
+$string['validation:durationinvalidhours'] = 'Enter valid number of (whole) hours';

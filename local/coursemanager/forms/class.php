@@ -50,14 +50,11 @@ class cmform_class extends moodleform {
 
         $this->add_element("classname", "text", PARAM_TEXT, null, null, true);
 
-        $this->add_element("classduration", "text", PARAM_FLOAT);
+        $mform->addElement('text', 'classduration', get_string('duration', 'local_taps').get_string('durationcode', 'local_taps'), 'size="5"');
+        $mform->setType('classduration', PARAM_TEXT);
+        $mform->addHelpButton('classduration', 'duration', 'local_taps');
+
         $taps = new \local_taps\taps();
-        $durationunits = $taps->get_durationunitscode();
-        array_shift($durationunits);
-        array_unshift($durationunits, get_string('form:course:getdurationunits', 'local_coursemanager'));
-
-        $this->add_element("classdurationunitscode", "select", null, $durationunits);
-
 
         // Set automatically based on classstarttime (this field existed because some TAPS returned timezones needed to be normalised/converted).
         // Allow users to set this one.
@@ -188,6 +185,18 @@ class cmform_class extends moodleform {
                 $errors['classendtimegroup'] =  get_string('classendtime:past', 'local_coursemanager');
             }
         }
+
+        if (!empty($data['classduration'])) {
+            $time = explode(':', $data['classduration']);
+            if (count($time) > 2) {
+                $errors['classduration'] = get_string('validation:durationformatincorrect', 'local_taps').get_string('durationcode', 'local_taps');
+            } elseif (isset($time[1]) && ($time[1] < 0 || $time[1] > 59 || !is_numeric($time[1]))) {
+                $errors['classduration'] = get_string('validation:durationinvalidminutes', 'local_taps').get_string('durationcode', 'local_taps');
+            } elseif ((isset($time[0]) && ((int)$time[0] != $time[0] || $time[0] < 0))) {
+                $errors['classduration'] = get_string('validation:durationinvalidhours', 'local_taps').get_string('durationcode', 'local_taps');
+            }
+        }
+
         return $errors;
     }
 
