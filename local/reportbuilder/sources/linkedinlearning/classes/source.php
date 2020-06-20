@@ -270,7 +270,7 @@ class source extends rb_base_source {
         }
 
         foreach ($regions as $id => $name) {
-            $presentinregion = " CASE WHEN (course.visible = 0 OR regions{$id}.id IS NULL) THEN 0 ELSE 1 END ";
+            $presentinregion = " CASE WHEN regions{$id}.id IS NOT NULL THEN 1 ELSE 0 END ";
             $results[] = new rb_column(
                     'linkedincourse',
                     "regionvisibility{$id}",
