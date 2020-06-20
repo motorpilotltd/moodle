@@ -64,6 +64,13 @@ if (!$cpd) {
     $SESSION->block_arup_mylearning->alert->type = 'alert-danger';
     redirect($redirecturl);
     exit;
+} else if ($cpd->locked) {
+    // Entry is locked.
+    $SESSION->block_arup_mylearning->alert = new stdClass();
+    $SESSION->block_arup_mylearning->alert->message = get_string('alert:edit:locked', 'block_arup_mylearning');
+    $SESSION->block_arup_mylearning->alert->type = 'alert-danger';
+    redirect($redirecturl);
+    exit;
 } else if ($confirm) {
     $taps = new \local_taps\taps();
 

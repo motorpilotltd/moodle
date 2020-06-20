@@ -64,7 +64,6 @@ function xmldb_local_lunchandlearn_upgrade($oldversion) {
             $dbman->change_field_type($table, $field);
         }
 
-
         // Savepoint reached.
         upgrade_plugin_savepoint(true, 2016080500, 'local', 'lunchandlearn');
     }

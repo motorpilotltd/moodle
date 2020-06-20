@@ -140,7 +140,7 @@ function xmldb_aruphonestybox_upgrade($oldversion) {
 
         // Savepoint reached.
         upgrade_plugin_savepoint(true, 2015111614, 'mod', 'aruphonestybox');
-    }
+    }    }
 
     return true;
 }

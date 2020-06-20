@@ -239,5 +239,25 @@ function xmldb_local_taps_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017051502, 'local', 'taps');
     }
 
+    if ($oldversion < 2017051503) {
+
+        // Define field archived to be added to local_taps_enrolment.
+        $table = new xmldb_table('local_taps_enrolment');
+        $field = new xmldb_field('origin', XMLDB_TYPE_CHAR, '255');
+
+        // Conditionally launch add field archived.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field2 = new xmldb_field('providerid', XMLDB_TYPE_CHAR, '255');
+        if ($dbman->field_exists($table, $field2)) {
+            $dbman->rename_field($table, $field2, 'originid');
+        }
+
+        // Taps savepoint reached.
+        upgrade_plugin_savepoint(true, 2017051503, 'local', 'taps');
+    }
+
     return true;
 }

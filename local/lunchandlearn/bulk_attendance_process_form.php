@@ -46,11 +46,6 @@ class bulk_attendance_process_form extends moodleform {
         $mform->addElement('static', 'duration', get_string('duration', 'local_lunchandlearn'), $lal->scheduler->get_duration(). ' minutes');
         $mform->addElement('static', 'location', get_string('location', 'local_lunchandlearn'), $lal->scheduler->get_office());
 
-        // Learning Method: Drop down showing default at Lunch and Learn.
-
-        $mform->addElement('select', 'p_learning_method', get_string('p_learning_method', 'local_lunchandlearn'), $taps->get_classtypes('cpd'));
-        $mform->setDefault('p_learning_method', 'LUNCH_AND_LEARN');
-
         $mform->addElement('editor', 'p_learning_desc', get_string('p_learning_desc', 'local_lunchandlearn'));
         $mform->setType('p_learning_desc', PARAM_CLEANHTML);
 

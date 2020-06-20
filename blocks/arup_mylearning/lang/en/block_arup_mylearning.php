@@ -51,6 +51,7 @@ $string['alert:cancelled:edit'] = 'Edit CPD process cancelled, CPD has not been 
 $string['alert:cannot:add'] = 'It is currently not possible to add a CPD.';
 $string['alert:cannot:delete'] = 'It is currently not possible to delete a CPD.';
 $string['alert:cannot:edit'] = 'It is currently not possible to edit a CPD.';
+$string['alert:edit:locked'] = 'This CPD entry is locked.';
 $string['alert:edit:nocpd'] = 'Could not retrieve selected CPD to edit.';
 $string['alert:edit:notown'] = 'You can only edit your own CPDs.';
 $string['alert:error:add'] = 'Sorry, there was a problem adding your CPD.<br />Error message: {$a}';

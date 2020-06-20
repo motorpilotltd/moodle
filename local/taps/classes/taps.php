@@ -105,7 +105,8 @@ class taps {
             'IM' => 'Institute Meetings',
             'IC' => 'Internal Courses',
             'L' => 'Language',
-            'LUNCH_AND_LEARN' => 'Lunch and Learn',
+            'LB' => 'Learning Burst',
+            'LE' => 'Learning Event',
             'OT' => 'Other Training',
             'ILT' => 'Papers',
             'P' => 'Presentations',
@@ -646,7 +647,8 @@ EOS;
         $cpd->certificateno = (isset($optional['p_certificate_number']) ? $optional['p_certificate_number'] : null);
         $cpd->expirydate = (isset($optional['p_certificate_expiry_date']) ? $optional['p_certificate_expiry_date'] : 0);
         $cpd->learningdesc = (isset($optional['p_learning_desc']) ? $optional['p_learning_desc'] : null);
-        $cpd->providerid = (isset($optional['p_providerid']) ? $optional['p_providerid'] : null);
+        $cpd->origin = (isset($optional['p_origin']) ? $optional['p_origin'] : null);
+        $cpd->originid = (isset($optional['p_originid']) ? $optional['p_originid'] : null);
         // Use of learningdesccont1 and learningdesccont2 has been deprecated.
         $cpd->learningdesccont1 = null;
         $cpd->learningdesccont2 = null;
@@ -961,7 +963,7 @@ EOS;
             $enrolment->classcompletiontime = (empty($completiontime) ? time() : $completiontime);
             try {
                 $usedtimezone = new DateTimeZone($enrolment->usedtimezone);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $usedtimezone = new DateTimeZone('UTC');
             }
             $enrolment->classcompletiondate = usergetmidnight($enrolment->classcompletiontime, $usedtimezone); // Midnight of same day as completion time.
