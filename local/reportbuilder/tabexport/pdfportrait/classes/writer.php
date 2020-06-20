@@ -76,7 +76,7 @@ class writer extends tabexport_writer {
      */
     protected function create_pdf() {
         global $CFG;
-        require_once $CFG->dirroot . '/local/reportbuilder/lib/pdflib.php';
+        require_once $CFG->dirroot . '/lib/pdflib.php';
 
         // Table.
         $html = '';
@@ -172,12 +172,12 @@ class writer extends tabexport_writer {
         if ($this->portrait) {
             $svgdata = $this->source->get_svg_graph(800, 400);
             if ($svgdata) {
-                $pdf->WriteHTML('<img src="@' . base64_encode($svgdata) . '" width="800" height="400"/>', true, false, false, false, '');
+                $pdf->WriteHTML('<img src="@' . base64_encode($svgdata) . '"/>', true, false, false, false, '');
             }
         } else {
             $svgdata = $this->source->get_svg_graph(1200, 400);
             if ($svgdata) {
-                $pdf->WriteHTML('<img src="@' . base64_encode($svgdata) . '" width="1200" height="400"/>', true, false, false, false, '');
+                $pdf->WriteHTML('<img src="@' . base64_encode($svgdata) . '"/>', true, false, false, false, '');
             }
         }
 

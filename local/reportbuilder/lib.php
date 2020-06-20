@@ -4060,29 +4060,9 @@ class reportbuilder {
         $this->are_any_filters_in_use();
 
         if ($graph and $graphdata = $graph->fetch_svg()) {
-            if (core_useragent::check_browser_version('MSIE', '6.0') and !core_useragent::check_browser_version('MSIE', '9.0')) {
-                // See http://partners.adobe.com/public/developer/en/acrobat/PDFOpenParameters.pdf
-                $svgurl = new moodle_url('/local/reportbuilder/ajax/graph.php', array('id' => $this->_id, 'sid' => $this->_sid));
-
-                $svgurl = $svgurl . '#toolbar=0&navpanes=0&scrollbar=0&statusbar=0&viewrect=20,20,400,300';
-                $nopdf = get_string('error:nopdf', 'local_reportbuilder');
-                $attrs = array('type' => 'application/pdf', 'data' => $svgurl, 'width'=> '100%', 'height' => '400');
-                $objhtml = html_writer::tag('object', $nopdf, $attrs);
-                $tablehtml = html_writer::div($objhtml, 'rb-report-pdfgraph') . $tablehtml;
-            } else {
-                // The SVGGraph supports only one SVG per page when embedding directly,
-                // it should be fine here because there are no blocks on this page.
-                $tablehtml = html_writer::div($graphdata, 'rb-report-svggraph') . $tablehtml;
-            }
+            $tablehtml = html_writer::div($graphdata, 'rb-report-graph') . $tablehtml;
         } else {
-            // Keep the instantfilter.js happy, we use it with side filter js.
-            if (core_useragent::check_browser_version('MSIE', '6.0') and !core_useragent::check_browser_version('MSIE', '9.0')) {
-                // Support MSIE 6-7-8.
-                $tablehtml = html_writer::div('', 'rb-report-pdfgraph') . $tablehtml;
-            } else {
-                // All browsers, except MSIE 6-7-8.
-                $tablehtml = html_writer::div('', 'rb-report-svggraph') . $tablehtml;
-            }
+            $tablehtml = html_writer::div('', 'rb-report-graph') . $tablehtml;
         }
 
         $PAGE->requires->js_call_amd('local_reportbuilder/reportbuilder_expand', 'init');

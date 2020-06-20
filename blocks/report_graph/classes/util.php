@@ -36,7 +36,7 @@ class util {
      * @param \reportbuilder $report
      * @return null
      */
-    protected static function get_svg(\reportbuilder $report) {
+    protected static function get_png(\reportbuilder $report) {
         $graph = new \local_reportbuilder\local\graph($report);
         if (!$graph->is_valid()) {
             return null;
@@ -84,7 +84,7 @@ class util {
 
         if ($reportorsavedid > 0) {
             $sql = "SELECT r.id, r.fullname, r.timemodified AS rtimemodified, g.type,
-                           NULL AS savedid, NULL AS userid, 0 AS gtimemodified, r.globalrestriction, r.contentmode
+                           NULL AS savedid, NULL AS userid, 0 AS gtimemodified, r.contentmode
                      FROM {report_builder} r
                      JOIN {report_builder_graph} g ON g.reportid = r.id
                     WHERE r.id = :reportid";
@@ -92,7 +92,7 @@ class util {
 
         } else if ($reportorsavedid < 0) {
             $sql = "SELECT r.id, s.name AS fullname, r.timemodified AS rtimemodified, g.type,
-                           s.id AS savedid, s.userid, g.timemodified AS gtimemodified, r.globalrestriction, r.contentmode
+                           s.id AS savedid, s.userid, g.timemodified AS gtimemodified, r.contentmode
                       FROM {report_builder} r
                       JOIN {report_builder_graph} g ON g.reportid = r.id
                       JOIN {report_builder_saved} s ON s.reportid = r.id
@@ -115,7 +115,7 @@ class util {
      * @param \stdClass $config
      * @return string svg data, dies on error
      */
-    public static function get_svg_data($blockid, $config) {
+    public static function get_png_data($blockid, $config) {
         global $SESSION;
 
         if (!isset($config->reportfor) or empty($config->reportorsavedid)) {
@@ -155,7 +155,7 @@ class util {
             $reportfor = $config->reportfor ? $config->reportfor : null;
 
             $report = new \reportbuilder($rawreport->id, null, false, $rawreport->savedid, $reportfor, false, array());
-            $svgdata = self::get_svg($report);
+            $svgdata = self::get_png($report);
 
             if (!$svgdata) {
                 error_log($blockid . ': no graph data');
@@ -191,39 +191,9 @@ class util {
      * @param string $svgdata
      * @void does not return
      */
-    public static function send_svg($svgdata) {
-        // Try to fix RTL header as the last step because we cache the data.
-        $svgdata = \local_reportbuilder\local\graph::fix_svg_rtl($svgdata, null, null);
-
-        send_headers('image/svg+xml', false);
-        echo '<?xml version="1.0" encoding="UTF-8" standalone="no"?>' . "\n";
-        echo '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' . "\n";
+    public static function send_png($svgdata) {
+        send_headers('image/png', false);
         echo $svgdata;
-        die;
-    }
-
-    /**
-     * Send PDF data and die.
-     * @param string $svgdata
-     * @void does not return
-     */
-    public static function send_pdf($svgdata) {
-        global $CFG;
-
-        // Try to fix RTL header as the last step because we cache the data.
-        $svgdata = \local_reportbuilder\local\graph::fix_svg_rtl($svgdata, null, false);
-
-        // TODO: we could add some pdf caching here
-        require_once $CFG->libdir . '/pdflib.php';
-        $pdf = new \PDF('L', 'mm', 'B7', true, 'UTF-8');
-        $pdf->setPrintHeader(false);
-        $pdf->setPrintFooter(false);
-        $pdf->AddPage();
-        $pdf->ImageSVG('@'.$svgdata, 10, 10, 400, 400);
-        $pdfdata = $pdf->Output('graph.pdf', 'S');
-
-        send_headers('application/pdf', false);
-        echo $pdfdata;
         die;
     }
 

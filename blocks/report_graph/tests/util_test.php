@@ -110,7 +110,7 @@ class block_report_graph_util_testcase extends advanced_testcase {
         $rid = $this->create_user_report_with_graph();
         $block = $this->create_report_graph_block_instance($rid);
 
-        $svgdata = \block_report_graph\util::get_svg_data($block->instance->id, $block->config);
+        $svgdata = \block_report_graph\util::get_png_data($block->instance->id, $block->config);
         $this->assertInternalType('string', $svgdata);
         $this->assertNotEmpty($svgdata);
         $this->assertNotContains('789px', $svgdata); // This is the max-width, we don't expect to see it!

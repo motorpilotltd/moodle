@@ -105,7 +105,7 @@ class source extends rb_base_source {
                         'LEFT',
                         "{linkedinlearning_class}",
                         'primaryclassification.id = base.primaryclassification',
-                        REPORT_BUILDER_RELATION_MANY_TO_ONE
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
                 new rb_join(
                         'local_taps_course',
@@ -147,6 +147,19 @@ class source extends rb_base_source {
                     REPORT_BUILDER_RELATION_MANY_TO_ONE
             );
         }
+
+        $concatname = \local_reportbuilder\dblib\base::getbdlib()->sql_group_concat('class.id', ',');
+        $field = $DB->sql_concat("','", $concatname, "','");
+        $joinlist[] = new rb_join(
+                'crsclassconcatted',
+                'INNER',
+                "(SELECT linkedinlearningcourseid, $field as crsclassconcattedids
+                                FROM {linkedinlearning_crs_class} crsclass
+                                INNER JOIN {linkedinlearning_class} class ON crsclass.classificationid = class.id
+                                GROUP BY linkedinlearningcourseid)",
+                'crsclassconcatted.linkedinlearningcourseid = base.id',
+                REPORT_BUILDER_RELATION_ONE_TO_ONE
+        );
 
         $regions = $DB->get_records_menu('local_regions_reg', ['userselectable' => true], 'name', 'id, name');
 
@@ -496,7 +509,7 @@ class source extends rb_base_source {
                         get_string('timeincourse', 'rbsource_linkedinlearning'),
                         'progress.seconds_viewed',
                         array(
-                                'displayfunc' => 'duration',
+                                'displayfunc' => 'duration_hours_minutes',
                                 'dbdatatype' => 'integer',
                                 'joins'       => 'progress',
                         )
@@ -612,17 +625,6 @@ class source extends rb_base_source {
                         )
                 ),
                 new rb_filter_option(
-                        'linkedincourse',
-                        'classificationname',
-                        get_string('classificationname', 'rbsource_linkedinlearning'),
-                        'select',
-                        array(
-                                'selectchoices' => $DB->get_records_menu('linkedinlearning_class', [], 'name', 'id,name'),
-                        ),
-                        'class.id',
-                        'class'
-                ),
-                new rb_filter_option(
                         'linkedincourseprogress',
                         'first_viewed',
                         get_string('first_viewed', 'rbsource_linkedinlearning'),
@@ -648,6 +650,29 @@ class source extends rb_base_source {
                         )
                 );
 
+        $optionsraw = $DB->get_records_sql('select lilc.id,lilc.name,lilc.language
+                                                        from {linkedinlearning_class} lilc 
+                                                        inner join {linkedinlearning_course} crs on crs.primaryclassification  = lilc.id
+                                                        group by lilc.id,lilc.name,lilc.language
+                                                        order by lilc.name');
+
+        $options = [];
+        foreach ($optionsraw as $raw) {
+            $options[$raw->id] = get_string('classificationunambiguous', 'rbsource_linkedinlearning', $raw);
+        }
+
+        $filteroptions[] = new rb_filter_option(
+                'linkedincourse',
+                'primaryclassification',
+                get_string('primaryclassification', 'rbsource_linkedinlearning'),
+                'select',
+                array(
+                        'selectchoices' => $options,
+                        'cachingcompatible' => true
+                ),
+                'base.primaryclassification'
+        );
+
         foreach ($DB->get_records_sql('select distinct type from {linkedinlearning_class}') as $type) {
             $type = $type->type;
 
@@ -655,12 +680,12 @@ class source extends rb_base_source {
                     'linkedincourse',
                     'classificationname_' . $type,
                     $type,
-                    'select',
+                    'grpconcat_menu',
                     array(
-                            'selectchoices' => $DB->get_records_menu('linkedinlearning_class', ['type' => $type], 'name', 'id,name'),
+                            'selectchoices' => $this->get_class_options($type),
                     ),
-                    'class.id',
-                    'class'
+                    'crsclassconcattedids',
+                    'crsclassconcatted'
             );
         }
 
@@ -671,6 +696,19 @@ class source extends rb_base_source {
         $this->add_course_category_fields_to_filters($filteroptions);
 
         return $filteroptions;
+    }
+
+    private function get_class_options($type) {
+        global $DB;
+
+        $optionsraw = $DB->get_records('linkedinlearning_class', ['type' => $type], 'name');
+
+        $options = [];
+        foreach ($optionsraw as $raw) {
+            $options[$raw->id] = get_string('classificationunambiguous', 'rbsource_linkedinlearning', $raw);
+        }
+
+        return $options;
     }
 
     protected function define_contentoptions() {

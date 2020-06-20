@@ -133,8 +133,6 @@ class tabexport_source implements \Iterator {
         if (!$graph->is_valid()) {
             return null;
         }
-        // Get current language to set the font properly.
-        $graph->set_font($this->font);
 
         // Get report sort.
         $order = $this->report->get_report_sort();
@@ -148,7 +146,7 @@ class tabexport_source implements \Iterator {
         }
         $rs->close();
 
-        $svgdata = $graph->fetch_export_svg($w, $h);
+        $svgdata = $graph->fetch_export_png($w, $h);
         if (!$svgdata) {
             return null;
         }

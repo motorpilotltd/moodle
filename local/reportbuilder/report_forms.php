@@ -820,10 +820,10 @@ class report_builder_edit_graph_form extends moodleform {
             '' => get_string('none'),
             'column' => get_string('graphtypecolumn', 'local_reportbuilder'),
             'line' => get_string('graphtypeline', 'local_reportbuilder'),
+            'smoothedline' => get_string('graphtypesmoothline', 'local_reportbuilder'),
             'bar' => get_string('graphtypebar', 'local_reportbuilder'),
             'pie' => get_string('graphtypepie', 'local_reportbuilder'),
-            'scatter' => get_string('graphtypescatter', 'local_reportbuilder'),
-            'area' => get_string('graphtypearea', 'local_reportbuilder'),
+            'doughnut' => get_string('graphtypedoughnut', 'local_reportbuilder'),
         );
         $mform->addElement('select', 'type', get_string('graphtype', 'local_reportbuilder'), $types);
         $mform->addHelpButton('type', 'graphtype', 'local_reportbuilder');
@@ -871,9 +871,10 @@ class report_builder_edit_graph_form extends moodleform {
         $mform->addHelpButton('series', 'graphseries', 'local_reportbuilder');
 
         $mform->addElement('advcheckbox', 'stacked', get_string('graphstacked', 'local_reportbuilder'));
-        $mform->disabledIf('stacked', 'type', 'eq', '');
+        $mform->disabledIf('stacked', 'type', 'eq', 'line');
         $mform->disabledIf('stacked', 'type', 'eq', 'pie');
-        $mform->disabledIf('stacked', 'type', 'eq', 'scatter');
+        $mform->disabledIf('stacked', 'type', 'eq', 'doughnut');
+        $mform->disabledIf('stacked', 'type', 'eq', 'smoothedline');
 
         $mform->addElement('header', 'advancedhdr', get_string('graphadvancedoptions', 'local_reportbuilder'));
 
