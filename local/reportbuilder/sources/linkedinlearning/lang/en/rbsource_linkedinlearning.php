@@ -25,3 +25,6 @@ $string['linkedtitle'] = 'Linked course title';
 $string['shortdescription'] = 'Short Description';
 $string['linkedtitlewithexpander'] = 'Linked course title (with expander)';
 $string['primaryclassification'] = 'Primary classification';
+$string['visibleinownregion'] = 'Region visibility (own)';
+$string['visibleinownregionsreadonlyown'] = 'Region visibility (own, read only)';
+$string['visiblemax'] = 'Region visibility (all regions if admin)';
