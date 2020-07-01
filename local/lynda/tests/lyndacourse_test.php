@@ -130,7 +130,7 @@ class lyndacourse_test extends advanced_testcase {
         $this->assertEquals('External Course Online', $record1->classtype);
         $this->assertEquals('Professional Development', $record1->classcategory);
         $this->assertEquals("David Rivers has been recording elearning courses for lynda.com for over a decade. He's one of our star authors! In this interview (conducted from his home recording studio in Canada), he offers lessons from his 100-course journey with lynda.com. David shares his process for creating and recording course content, and provides inspiration for other authors who want to turn their knowledge into tutorials for the emerging elearning market.", $record1->learningdesc);
-        $this->assertEquals(180212, $record1->providerid);
+        $this->assertEquals(180212, $record1->originid);
         $this->assertEquals('padded0', $record1->staffid);
 
         $api->synccoursecompletion();
@@ -149,14 +149,14 @@ class lyndacourse_test extends advanced_testcase {
         $cpdrecords = $DB->get_records('local_learningrecordstore');
         $record1 = reset($cpdrecords);
         $this->assertEquals('', $record1->learningdesc);
-        $this->assertEquals(180212, $record1->providerid);
+        $this->assertEquals(180212, $record1->originid);
 
         $api->synccourses();
         $cpdrecords = $DB->get_records('local_learningrecordstore');
         $this->assertEquals(6, count($cpdrecords));
         $record1 = reset($cpdrecords);
         $this->assertEquals("David Rivers has been recording elearning courses for lynda.com for over a decade. He's one of our star authors! In this interview (conducted from his home recording studio in Canada), he offers lessons from his 100-course journey with lynda.com. David shares his process for creating and recording course content, and provides inspiration for other authors who want to turn their knowledge into tutorials for the emerging elearning market.", $record1->learningdesc);
-        $this->assertEquals(180212, $record1->providerid);
+        $this->assertEquals(180212, $record1->originid);
     }
 
     public function test_synccourseprogress() {

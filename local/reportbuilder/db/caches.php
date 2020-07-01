@@ -45,4 +45,11 @@ $definitions = array(
         'simpledata' => false,
         'staticacceleration' => true,
     ),
+    'rb_embedded_sources' => array(
+            'mode' => cache_store::MODE_APPLICATION,
+            'simplekeys' => true,
+            'simpledata' => false,
+            'staticacceleration' => true,
+            'staticaccelerationsize' => 2,
+    ),
 );

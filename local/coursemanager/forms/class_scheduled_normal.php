@@ -42,7 +42,6 @@ class cmform_class_scheduled_normal extends cmform_class {
         $mform->setDefault('unlimitedattendees', 1);
         $mform->disabledIf("maximumattendees", "unlimitedattendees", 'eq', 1);
 
-        $mform->addRule('classdurationunitscode', get_string('required', 'local_coursemanager'), 'required', null, 'client');
         $mform->addRule('classduration', get_string('required', 'local_coursemanager'), 'required', null, 'client');
         $mform->addRule('classstarttime', get_string('required', 'local_coursemanager'), 'required', null, 'client');
         $mform->addRule('classendtime', get_string('required', 'local_coursemanager'), 'required', null, 'client');
@@ -62,9 +61,7 @@ class cmform_class_scheduled_normal extends cmform_class {
 
     public function validation($data, $files){
         $errors = parent::validation($data, $files);
-        if ($data['classdurationunitscode'] == "0") {
-            $errors['classdurationunitscode'] = get_string('required', 'local_coursemanager');
-        }
+        
         return $errors;
     }
 }

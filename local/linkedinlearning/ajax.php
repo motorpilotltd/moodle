@@ -19,25 +19,39 @@ require_once("../../config.php");
 require_login();
 require_sesskey();
 
+$context = context_system::instance();
+
 $action = required_param('action', PARAM_ALPHA);
 
-$PAGE->set_context(context_system::instance());
+$PAGE->set_context($context);
 $PAGE->set_url('/local/linkedinlearning/ajax.php');
+
+$regionid = required_param('regionid', PARAM_INT);
+$state = required_param('state', PARAM_BOOL);
+
+$userregion = $DB->get_field('local_regions_use', 'regionid', array('userid' => $USER->id));
+if (!$userregion && !is_siteadmin()) {
+    print_error('No region assigned to current user');
+}
+$context = context_system::instance();
+
+if ($userregion == $regionid) {
+    if (!has_any_capability(['local/linkedinlearning:manageglobal', 'local/linkedinlearning:manage'], $context)) {
+        throw new required_capability_exception($context, 'local/linkedinlearning:manageglobal or local/linkedinlearning:manage', 'nopermissions');
+    }
+} else {
+    require_capability('local/linkedinlearning:manageglobal', $context);
+}
 
 switch ($action) {
     case 'setregion' :
-        $regionid = required_param('regionid', PARAM_INT);
         $courseid = required_param('courseid', PARAM_INT);
-        $state = required_param('state', PARAM_BOOL);
-
         $course = \local_linkedinlearning\course::fetch(['id' => $courseid]);
         $course->setregionstate($regionid, $state);
         exit;
         break;
     case 'setregions' :
-        $regionid = required_param('regionid', PARAM_INT);
         $courseids = required_param('courseids', PARAM_TEXT);
-        $state = required_param('state', PARAM_BOOL);
         $courseids = explode(',', $courseids);
         $courses = \local_linkedinlearning\course::fetchbyids($courseids);
         foreach ($courses as $course) {

@@ -327,5 +327,90 @@ function xmldb_arupevidence_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017051506, 'mod', 'arupevidence');
     }
 
+     // Create new table for caching duration fields 
+    if ($oldversion < 2017051507) {
+        $updatetables = [
+            [   
+                'table' => 'arupevidence', 
+                'duration_table' => 'arupevidence_duration',
+                'id_table' => 'aeid'
+            ],
+            [   
+                'table' => 'arupevidence_users', 
+                'duration_table' => 'arupevidence_users_duration',
+                'id_table' => 'aeuid'
+            ],
+        ];
+
+        foreach ($updatetables as $val) {
+            // Define table to be created
+            $table = new xmldb_table($val['duration_table']);
+
+            $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+            $table->add_field($val['id_table'], XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
+            $table->add_field('duration', XMLDB_TYPE_FLOAT, '20, 2', null, null, null, 0);
+            $table->add_field('durationunitscode', XMLDB_TYPE_TEXT, 10);
+            
+            // Adding keys to table.
+            $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $table->add_key($val['id_table'], XMLDB_KEY_UNIQUE, array($val['id_table']));
+
+            // Conditionally launch create table for aruphonestybox_duration.
+            if (!$dbman->table_exists($table)) {
+                $dbman->create_table($table);
+            }
+
+            $duration_table =  $DB->count_records($val['duration_table']);
+
+            // Copy tables' duration data to duration table
+            if ($duration_table < 1) {
+                $sql = "INSERT INTO {". $val['duration_table'] ."} (". $val['id_table'] .", duration, durationunitscode)
+                SELECT id, duration,  durationunitscode
+                FROM {". $val['table'] ."}";
+
+                $DB->execute($sql, []);
+            }
+
+            $params = [
+                'daystohour' => '7',
+                'weekstohour' => '35',
+                'hour' => 60,
+                'formatdecimal' => '0.0000',
+                'hourscode' => 'H',
+                'minscode' => 'MIN',
+                'dayscode' => 'D',
+                'weekscode' => 'W',
+            ];
+
+            /*
+            * Updating table
+            * ---------------------------------------------------------------------------------------------------------------------
+            */
+            // Update Minute(s) to Hour(s) and duration conversion for table
+            $sql = "UPDATE {". $val['table'] ."} 
+                SET duration = FORMAT((duration / :hour), :formatdecimal),
+                    durationunitscode = :hourscode
+                WHERE durationunitscode = :minscode";
+            $DB->execute($sql, $params);
+
+            // Update Day(s) to Hour(s), and duration conversion for table
+            $sql = "UPDATE {". $val['table'] ."} 
+                SET duration = FORMAT((duration * :daystohour), :formatdecimal),
+                    durationunitscode = :hourscode
+                WHERE durationunitscode = :dayscode";
+            $DB->execute($sql, $params);
+
+            // Update Weeks(s) to Hour(s), and duration conversion for table
+            $sql = "UPDATE {". $val['table'] ."} 
+                SET duration = FORMAT((duration * :weekstohour), :formatdecimal),
+                    durationunitscode = :hourscode
+                WHERE durationunitscode = :weekscode";
+            $DB->execute($sql, $params);
+        }
+        
+        // Savepoint reached.
+        upgrade_plugin_savepoint(true, 2017051507, 'mod', 'arupevidence');
+    }
+
     return true;
 }

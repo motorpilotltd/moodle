@@ -45,7 +45,7 @@ class rb_filter_grpconcat_menu extends rb_filter_select {
 
         $uniqueparam = rb_unique_param('mnfilter');
         $likesql = $DB->sql_like($field, ":{$uniqueparam}", true, true, false);
-        $likeparam["{$uniqueparam}"] = '%' . $DB->sql_like_escape($value) . '%';
+        $likeparam["{$uniqueparam}"] = '%,' . $DB->sql_like_escape($value) . ',%';
 
         return array($likesql, $likeparam);
     }

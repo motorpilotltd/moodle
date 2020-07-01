@@ -112,7 +112,7 @@ $string['duration'] = 'Duration:';
 $string['location'] = 'Location:';
 
 $string['p_learning_desc'] = 'Learning Description:';
-$string['p_learning_method'] = 'Learning Method:';
+$string['p_learning_method'] = 'Learning Method';
 
 $string['resendinvitestitle'] = 'Resend Invites';
 $string['resendinvitesbody'] = 'You have made changes to the learning event. Would you like to send amended invites out to attendees?';

@@ -25,24 +25,39 @@
 /**
  * Javascript file containing JQuery bindings for processing changes to instant filters
  */
-define(['jquery', 'core/modal_factory', 'core/templates', 'core/str', 'core/notification'],
-    function ($, ModalFactory, Templates, Str, Notification) {
+define(['jquery', 'core/modal_factory', 'core/templates', 'core/str', 'core/ajax', 'core/notification'],
+    function ($, ModalFactory, Templates, Str, Ajax, Notification) {
 
         var showhidecolumnsmodal = {
-            init: function (id, shortname, columnscontext) {
-                var addblocklink = $("div.showhidecolumns button, div.showhidecolumns input");
+            init: function (id, shortname) {
 
-                var titlePromise = Str.get_string('showhidecolumns', 'local_reportbuilder')
-                    .fail(Notification.exception);
+                var columnscontext = [];
 
-                var bodyPromise =Templates.render('local_reportbuilder/showhidecolumnsmodal', columnscontext)
+                var args =  {id: id};
+                var request = {
+                    methodname: 'local_reportbuilder_report_headers_config',
+                    args: args
+                };
+
+                var headersconfig = Ajax.call([request])[0];
+
+                headersconfig.then(function(config) {
+                    columnscontext = JSON.parse(config.config);
+
+                    var addblocklink = $("[data-action='showcolumns']");
+
+                    var titlePromise = Str.get_string('showhidecolumns', 'local_reportbuilder')
                         .fail(Notification.exception);
 
-                ModalFactory.create({
-                    title: titlePromise,
-                    body: bodyPromise,
-                    type: ModalFactory.types.DEFAULT,
-                }, addblocklink);
+                    var bodyPromise =Templates.render('local_reportbuilder/showhidecolumnsmodal', columnscontext)
+                            .fail(Notification.exception);
+
+                    ModalFactory.create({
+                        title: titlePromise,
+                        body: bodyPromise,
+                        type: ModalFactory.types.DEFAULT,
+                    }, addblocklink);
+                });
 
                 $('body').on('click', '#column-checkboxes input', function () {
                     var selheader = '#' + shortname + ' th.' + $(this).attr('name');

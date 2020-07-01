@@ -51,6 +51,7 @@ class cmform_class extends moodleform {
 
         $this->add_element("classduration", "text", PARAM_FLOAT);
         $taps = new \mod_tapsenrol\taps();
+
         $durationunits = $taps->get_durationunitscode();
         array_shift($durationunits);
         array_unshift($durationunits, get_string('form:course:getdurationunits', 'local_coursemanager'));
@@ -184,6 +185,18 @@ class cmform_class extends moodleform {
                 $errors['classendtimegroup'] =  get_string('classendtime:past', 'local_coursemanager');
             }
         }
+
+        if (!empty($data['classduration'])) {
+            $time = explode(':', $data['classduration']);
+            if (count($time) > 2) {
+                $errors['classduration'] = get_string('validation:durationformatincorrect', 'local_taps').get_string('durationcode', 'local_taps');
+            } elseif (isset($time[1]) && ($time[1] < 0 || $time[1] > 59 || !is_numeric($time[1]))) {
+                $errors['classduration'] = get_string('validation:durationinvalidminutes', 'local_taps').get_string('durationcode', 'local_taps');
+            } elseif ((isset($time[0]) && ((int)$time[0] != $time[0] || $time[0] < 0))) {
+                $errors['classduration'] = get_string('validation:durationinvalidhours', 'local_taps').get_string('durationcode', 'local_taps');
+            }
+        }
+
         return $errors;
     }
 

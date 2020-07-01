@@ -70,7 +70,33 @@ function xmldb_block_course_menu_upgrade($oldversion, $block)
             }
         }
     }
-    
+/* BEGIN CORE MOD */
+    if ($oldversion < 2017051501) {
+        foreach ($DB->get_records('block_instances', array('blockname' => 'course_menu')) as $instance) {
+            $config = unserialize(base64_decode($instance->configdata));
+            if (!isset($config->elements)) {
+                continue;
+            }
+            $continue = false;
+            foreach ($config->elements as $index => $element) {
+                if (!empty($element['id']) && $element['id'] == 'kaltura')  {
+                    $continue = true;
+                    break;
+                }
+            }
+            if ($continue) {
+                continue;
+            }
+
+            $config->elements[] = block_course_menu_create_element(
+                'kaltura', get_string('kaltura', 'block_course_menu'), '', '', 1, 1, 0
+            );
+
+            $instance->configdata = base64_encode(serialize($config));
+            $DB->update_record('block_instances', $instance);
+        }
+    }
+/* END CORE MOD */
     return true;
 }
 

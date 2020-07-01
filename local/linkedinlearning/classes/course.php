@@ -46,7 +46,7 @@ require_once $CFG->dirroot . '/completion/completion_criteria_completion.php';
 class course extends \data_object {
     public $table = 'linkedinlearning_course';
     public $required_fields = ['id', 'urn', 'title', 'primaryimageurl', 'aicclaunchurl', 'ssolaunchurl', 'publishedat', 'lastupdatedat',
-            'description', 'shortdescription', 'timetocomplete', 'available', 'language'];
+            'description', 'shortdescription', 'timetocomplete', 'available', 'language', 'primaryclassificationoverride', 'primaryclassification'];
 
     public $urn;
     public $title;
@@ -60,6 +60,8 @@ class course extends \data_object {
     public $timetocomplete;
     public $available;
     public $language;
+    public $primaryclassificationoverride;
+    public $primaryclassification;
 
     /*
      * @return self
@@ -465,6 +467,8 @@ class course extends \data_object {
             $keywords[] = $classification->name;
         }
 
+        $course->category = $this->getlinkedinlearningcategory();
+
         $course->visible = $this->available;
         $course->fullname = $this->title;
         $course->shortname = $this->create_moodle_shortname();
@@ -513,10 +517,38 @@ class course extends \data_object {
      * @throws \dml_exception
      */
     private function getlinkedinlearningcategory() {
-        global $DB;
+        global $DB, $CFG;
 
-        return $DB->get_field('course_categories', 'id', ['idnumber' => get_config('local_linkedinlearning', 'category_idnumber')],
+        require_once("$CFG->dirroot/lib/coursecatlib.php");
+
+        $parentcategoryidnumber = get_config('local_linkedinlearning', 'category_idnumber');
+        $parentcategory = $DB->get_field('course_categories', 'id', ['idnumber' => $parentcategoryidnumber],
                 MUST_EXIST);
+
+        if (empty($this->primaryclassification)) {
+            return $parentcategory;
+        }
+
+        $categoryidnumber = $parentcategoryidnumber . '_' . $this->primaryclassification;
+        $childcategory = $DB->get_field('course_categories', 'id', ['idnumber' => $categoryidnumber, 'parent' => $parentcategory]);
+
+        if ($childcategory) {
+            return $childcategory;
+        } else {
+            $classification = new classification(['id' => $this->primaryclassification]);
+
+            if (!$classification) {
+                return $parentcategory;
+            }
+
+            $newcat = new \stdClass();
+            $newcat->name = $classification->name;
+            $newcat->visible = 1;
+            $newcat->parent = $parentcategory;
+            $newcat->idnumber = $categoryidnumber;
+            $newcat = \coursecat::create($newcat);
+            return $newcat->id;
+        }
     }
 
     /**

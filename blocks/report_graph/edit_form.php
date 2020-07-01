@@ -155,6 +155,8 @@ class block_report_graph_edit_form extends block_edit_form {
         $mform->setType('config_graphimage_maxwidth', PARAM_TEXT);
         $mform->addHelpButton('config_graphimage_maxwidth', 'maxwidth', 'block_report_graph');
 
+        $mform->addElement('checkbox', 'config_hidereportlink', get_string('hidereportlink', 'block_report_graph'));
+        $mform->setType('config_hidereportlink', PARAM_TEXT);
     }
 
     function validation($data, $files) {

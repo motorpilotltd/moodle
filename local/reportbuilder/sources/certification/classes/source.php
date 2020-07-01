@@ -50,6 +50,7 @@ class source extends rb_base_source {
         $this->defaultfilters = $this->define_defaultfilters();
         $this->requiredcolumns = $this->define_requiredcolumns();
         $this->sourcetitle = get_string('sourcetitle', 'rbsource_certification');
+        list($this->sourcewhere, $this->sourceparams) = $this->define_sourcewhere();
 
         parent::__construct();
     }
@@ -60,16 +61,44 @@ class source extends rb_base_source {
         $this->add_certification_fields_to_columns($columnoptions, 'base');
         $this->add_course_category_fields_to_columns($columnoptions, 'course_category');
 
+        $columnoptions[] = new \rb_column_option(
+                'certif',
+                'cohortnames',
+                get_string('cohortnames', 'rbsource_certification'),
+                "cohorts.cohortnames",
+                array('joins' => 'cohorts')
+        );
+
         return $columnoptions;
     }
 
     protected function define_joinlist() {
+        global $DB;
+
+        $assignment_type_audience = \local_custom_certification\certification::ASSIGNMENT_TYPE_AUDIENCE;
+        $concat = \local_reportbuilder\dblib\base::getbdlib()->sql_group_concat('ca.name', ', ', 'ca.name ASC');
+
         $joinlist = array(
                 new rb_join(
                         'ctx',
                         'INNER',
                         '{context}',
                         'ctx.instanceid = base.category AND ctx.contextlevel = ' . CONTEXT_COURSECAT,
+                        REPORT_BUILDER_RELATION_ONE_TO_ONE
+                ),
+                new rb_join(
+                        'cohorts',
+                        'LEFT',
+                        "(SELECT certifid, $concat as cohortnames
+                                FROM (
+                                    select ca.certifid, c.name 
+                                    from {certif_assignments} ca 
+                                    INNER JOIN {cohort} c on ca.assignmenttypeid = c.id 
+                                    where assignmenttype = $assignment_type_audience 
+                                    group by ca.certifid, c.name 
+                                ) ca
+                                GROUP BY ca.certifid)",
+                        'cohorts.certifid = base.id',
                         REPORT_BUILDER_RELATION_ONE_TO_ONE
                 ),
         );
@@ -88,21 +117,6 @@ class source extends rb_base_source {
         $this->add_course_category_fields_to_filters($filteroptions);
 
         return $filteroptions;
-    }
-
-    protected function define_contentoptions() {
-        $contentoptions = array(
-                new rb_content_option(
-                        'prog_availability',
-                        get_string('availablecontent', 'rbsource_certification'),
-                        array(
-                                'available' => 'base.available',
-                                'availfrom' => 'base.availablefrom',
-                                'availuntil' => 'base.availableuntil',
-                        )
-                ),
-        );
-        return $contentoptions;
     }
 
     protected function define_defaultcolumns() {
@@ -164,6 +178,19 @@ class source extends rb_base_source {
         return $requiredcolumns;
     }
 
+        /**
+     * Define some extra SQL for the base to limit the data set.
+     *
+     * @return array The SQL and parmeters that defines the WHERE for the source.
+     */
+    protected function define_sourcewhere() {
+        $params = array ();
+        $sql = 'base.deleted = 0';
+
+        // Ensure SQL is wrapped in brackets, otherwise our where statements will bleed into each other.
+        return array("({$sql})", $params);
+    }
+    
     public function post_config(reportbuilder $report) {
         $reportfor = $report->reportfor; // ID of the user the report is for.
         $report->set_post_config_restrictions($report->post_config_visibility_where($this->instancetype, 'base', $reportfor));

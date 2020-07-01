@@ -35,6 +35,8 @@ require_once($CFG->dirroot . '/local/reportbuilder/lib.php');
 require_once($CFG->dirroot . '/local/reportbuilder/report_forms.php');
 
 $id = required_param('id', PARAM_INT); // Report builder id.
+$return = optional_param('return', '', PARAM_TEXT);
+
 $rawreport = $DB->get_record('report_builder', array('id' => $id), '*', MUST_EXIST);
 
 $adminpage = $rawreport->embedded ? 'rbmanageembeddedreports' : 'rbmanagereports';
@@ -42,7 +44,7 @@ admin_externalpage_setup($adminpage);
 
 $output = $PAGE->get_renderer('local_reportbuilder');
 
-$returnurl = $CFG->wwwroot . "/local/reportbuilder/general.php?id=$id";
+$returnurl = $CFG->wwwroot . "/local/reportbuilder/general.php";
 
 $report = new reportbuilder($id);
 $schedule = array();
@@ -72,7 +74,8 @@ if ($mform->is_cancelled()) {
 if ($fromform = $mform->get_data()) {
 
     if (empty($fromform->submitbutton)) {
-        notice(get_string('error:unknownbuttonclicked', 'local_reportbuilder'), $returnurl);
+        redirect(new moodle_url($returnurl,
+            ['id' => $id, 'return' => 'fail']));
     }
 
     $todb = new stdClass();
@@ -91,10 +94,18 @@ if ($fromform = $mform->get_data()) {
 
     $report = new reportbuilder($id);
     \local_reportbuilder\event\report_updated::create_from_report($report, 'general')->trigger();
-    notice(get_string('reportupdated', 'local_reportbuilder'), $returnurl, array('class' => 'notifysuccess'));
+    redirect(new moodle_url($returnurl,
+            ['id' => $id, 'return' => 'success']));
 }
 
 echo $output->header();
+
+if ($return === 'fail') {
+    echo $output->notification(get_string('error:unknownbuttonclicked', 'local_reportbuilder'), 'warning');
+}
+if ($return === 'success') {
+    echo $output->notification(get_string('reportupdated', 'local_reportbuilder'), 'success');
+}
 
 echo $output->container_start('reportbuilder-navlinks');
 echo $output->view_all_reports_link($report->embedded) . ' | ';

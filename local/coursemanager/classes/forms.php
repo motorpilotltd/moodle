@@ -83,6 +83,8 @@ class forms {
      */
     private function stored_form() {
         global $DB, $USER, $SESSION;
+        
+        $taps = new \local_taps\taps();
 
         $sform = new stdClass();
         $sform->course = '-1';
@@ -91,6 +93,7 @@ class forms {
         if ($this->coursemanager->page == 'course' && $this->coursemanager->course->id == -1) {
             //return $sform;
         }
+        $durationisinput = $this->coursemanager->editing == 1 ? true : false;
         $sform->start = $this->coursemanager->start;
         $definitionoptions = array('trusttext' => false, 'subdirs' => 0, 'maxbytes' => 0, 'maxfiles' => 99,
         'context' => $this->context);
@@ -159,8 +162,11 @@ class forms {
             if ($coursedata = $DB->get_record('local_taps_course', $params)) {
                 $coursedata->cmcourse = $coursedata->id;
                 $coursedata->start = $this->coursemanager->start;
+                $durationunits = $coursedata->durationunits;
                 $coursedata->durationunits = $coursedata->durationunitscode;
-
+                if (!empty($coursedata->duration) && $coursedata->durationunitscode == 'H') {
+                    $coursedata->duration = $taps->duration_hours_display($coursedata->duration, $durationunits, $durationisinput);
+                }
                 if ($coursedata->enddate > 0) {
                     $coursedata->enddateenabled = 1;
                 }
@@ -322,8 +328,11 @@ class forms {
                 if (!isset($data->enddateenabled)) {
                     $data->enddate = 0;
                 }
-                if ($data->durationunits !== "0") {
-                    
+
+                
+                if (!empty($data->duration)) {
+                    // Set durationunits to H as default
+                    $data->durationunits = "H";
                     $tapsdurationunits = $taps->get_durationunitscode();
                     $data->durationunitscode = $data->durationunits;
                     $data->durationunits = $tapsdurationunits[$data->durationunits];
@@ -344,7 +353,10 @@ class forms {
             if (!isset($data->classhidden)) {
                 $data->classhidden = 0;
             }
-            if ($data->classdurationunitscode !== "0") {
+            
+            if (!empty($data->classduration)) {
+                // Set classdurationunitscode to H as default
+                $data->classdurationunitscode = "H";
                 $tapsdurationunits = $taps->get_durationunitscode();
                 $data->classdurationunits = $tapsdurationunits[$data->classdurationunitscode];
             }
@@ -412,6 +424,14 @@ class forms {
                 }
                 $record->$key = $value;
             }
+            
+            // Convert duration(hh:mm) to hours
+            if ($datatype == 'course' && !empty($data->duration)) {
+                $record->duration = $taps->combine_duration_hours($record->duration);
+            } else if ($datatype == 'class' && !empty($data->classduration)) {
+                $record->classduration = $taps->combine_duration_hours($record->classduration);
+            }
+
             $record->timemodified = time();
             $DB->update_record($database, $record);
             $params = array('page' => 'course', 'cmcourse' => $record->id, 'start' => 0, 'edit' => 0);
@@ -431,12 +451,18 @@ class forms {
                 if ($data->tab == 3) {
                     $data = $this->get_session_data($data);
                 }
+                if (!empty($data->duration)) {
+                    $data->duration = $taps->combine_duration_hours($data->duration);
+                }   
             }
 
             if ($datatype == 'class') {
                 $sqlmax = "SELECT max(classid) as maxid from {local_taps_class}";
                 $max = $DB->get_record_sql($sqlmax);
                 $data->classid = $max->maxid + 1;
+                if (!empty($data->classduration)) {
+                    $data->classduration = $taps->combine_duration_hours($data->classduration);
+                }
             }
 
             $params['cmcourse'] = $data->id = $DB->insert_record($database, $data);

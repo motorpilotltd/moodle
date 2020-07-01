@@ -241,7 +241,7 @@ class source extends rb_base_source {
                         "CASE WHEN coursecompletions.timecompleted IS NULL OR coursecompletions.timecompleted = 0 THEN null
                       ELSE coursecompletions.timecompleted - coursecompletions.timestarted END",
                         array(
-                                'displayfunc' => 'duration',
+                                'displayfunc' => 'duration_hours_minutes',
                                 'dbdatatype' => 'integer',
                                 'joins' => 'coursecompletions'
                         )
@@ -253,7 +253,7 @@ class source extends rb_base_source {
                         "CASE WHEN coursecompletions.timecompleted IS NULL OR coursecompletions.timecompleted = 0 THEN null
                       ELSE coursecompletions.timecompleted - coursecompletions.timestart END",
                         array(
-                                'displayfunc' => 'duration',
+                                'displayfunc' => 'duration_hours_minutes',
                                 'dbdatatype' => 'integer',
                                 'joins' => 'coursecompletions'
                         )

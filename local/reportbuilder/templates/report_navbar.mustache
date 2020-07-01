@@ -1,0 +1,143 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+     Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+     Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+     You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_reportbuilder/report_navbar
+
+    Displays a custom report
+}}
+<nav id="report-controls" class="navbar d-flex navbar-default m-b-0" data-region="report-controls" aria-label="reportfilters">
+    {{#toolbarsearch}}
+    <form class="navbar-form" action="{{{formurl}}}" method="post" accept-charset="utf-8">
+        <div class="input-group m-r-1">
+            <input type="text" name="simplesearch" class="form-control" placeholder="{{#str}}search{{/str}}"
+            {{#simplesearch}}value="{{{ simplesearch }}}"{{/simplesearch}}
+            aria-label="{{#str}}search{{/str}}">
+            <span class="input-group-addon" data-action="submit-search">
+                <i class="fa fa-search"></i>
+            </span>
+            <span class="input-group-addon hidden" data-action="clear-search">
+                <span class="sr-only">{{#str}}clear{{/str}}</span>
+                <i class="fa fa-close text-danger"></i>
+            </span>
+        </div>
+        <div class="input-group">
+
+        </div>
+    </form>
+    {{/toolbarsearch}}
+    <div class="navbar-form flex-auto">
+        <div class="input-group">
+            {{#search}}
+            <a
+                id="advancedsearchbutton"
+                class="btn btn-default {{#initiallyhidden}}open{{/initiallyhidden}}{{^initiallyhidden}}closed{{/initiallyhidden}}"
+                data-toggle="collapse" href="#advancedsearch" aria-expanded="false" aria-controls="advancedsearch"
+            >
+                <i class="fa fa-caret-right open"></i>
+                <i class="fa fa-caret-down closed"></i>
+                {{#str}}advancedsearch, local_reportbuilder{{/str}}
+            </a>
+            {{/search}}
+            <div class="ml-auto"></div>
+            {{#search}}
+                {{{ savedsearch }}}
+            {{/search}}
+            {{{ editbutton }}}
+            <div class="dropdown"
+                title="{{#str}}exportas, local_reportbuilder{{/str}}"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                >
+                <button class="btn btn-default dropdown-toggle" 
+                    id="exportas"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                >
+                    <i class="fa fa-download"></i>
+                    <span class="sr-only">{{#str}}exportas, local_reportbuilder{{/str}}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="exportas">
+                    <li><a href="{{{formurl}}}&format=excel">{{#str}}exportxls, local_reportbuilder{{/str}}</a></li>
+                    <li><a href="{{{formurl}}}&format=csv">{{#str}}exportcsv, local_reportbuilder{{/str}}</a></li>
+                    <li><a href="{{{formurl}}}&format=ods">{{#str}}exportods, local_reportbuilder{{/str}}</a></li>
+                    <li><a href="{{{formurl}}}&format=pdflandscape">{{#str}}exportpdf_landscape, local_reportbuilder{{/str}}</a></li>
+                    <li><a href="{{{formurl}}}&format=pdfportrait">{{#str}}exportpdf_portrait, local_reportbuilder{{/str}}</a></li>
+                </ul>
+            </div>
+            <button
+                class="btn btn-default showhidecolumns"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="{{#str}}tablecolumns, local_reportbuilder{{/str}}"
+                data-action="showcolumns"
+            >
+                <i class="fa fa-columns"></i>
+                <span class="sr-only">{{#str}}tablecolumns, local_reportbuilder{{/str}}</span>
+            </button>
+            {{#sidebar}}
+            <button
+                class="btn btn-default control-filters"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title="{{#str}}filters, local_reportbuilder{{/str}}"
+                data-action="showfilters"
+            >
+                <i class="fa fa-filter"></i>
+                <span class="sr-only">{{#str}}filters, local_reportbuilder{{/str}}</span>
+            </button>
+            {{/sidebar}}
+
+            <a
+                href="#"
+                class="btn btn-default closefullscreen m-l-1"
+                data-toggle="tooltip"
+                data-action="closefullscreen"
+                data-placement="bottom"
+                title="{{#str}}closefullscreen, local_reportbuilder{{/str}}"
+            >
+                <i class="fa fa-times"></i>
+                <span class="sr-only">{{#str}}closefullscreen, local_reportbuilder{{/str}}</span>
+            </a>
+            <a
+                href="#"
+                class="btn btn-default fullscreen m-l-1"
+                data-toggle="tooltip"
+                data-action="fullscreen"
+                data-placement="bottom"
+                title="{{#str}}showfullscreen, local_reportbuilder{{/str}}"
+            >
+                <i class="fa fa-expand"></i>
+                <span class="sr-only">{{#str}}showfullscreen, local_reportbuilder{{/str}}</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+{{#js}}
+require(
+[
+    'jquery',
+],
+function(
+    $
+) {
+    $('[data-action="fullscreen"]').on('click', function () {
+        $('.reportbuilder_report').addClass('fullscreen');
+    });
+    $('[data-action="closefullscreen"]').on('click', function () {
+        $('.reportbuilder_report').removeClass('fullscreen');
+    });
+});
+{{/js}}

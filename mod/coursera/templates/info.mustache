@@ -1,0 +1,104 @@
+<div class="courseracourseinfo shadow-1">
+    <div class="row courseracourse">
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>{{title}}</h2>
+                </div>
+            </div>
+
+            <div class="row coursestatus">
+                {{#iscompleted}}
+                    <div class="col-md-6">
+                        <div>{{# str }} completed, mod_coursera {{/ str }}</div>
+                    </div>
+                {{/iscompleted}}
+                {{^iscompleted}}
+                    <div class="col-md-2">
+                        {{#overallprogress}}
+                            {{# str }} inprogress, mod_coursera {{/ str }}
+                        {{/overallprogress}}
+                        {{^overallprogress}}
+                            {{# str }} notstarted, mod_coursera {{/ str }}
+                        {{/overallprogress}}
+                    </div>
+                    <div class="col-md-6">
+                        <div class="progress m-l-10 m-r-10 m-r-10 m-t-15">
+                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{overallprogress}}" aria-valuemin="0" aria-valuemax="100"
+                                 style="width: {{overallprogress}}%">
+                            </div>
+                        </div>
+                    </div>
+                {{/iscompleted}}
+            </div>
+
+                <div class="row">
+                    <div class="col-md-5">
+                        <a {{^allowaccess}}title="{{# str }} noaccesscontactadmin, mod_coursera {{/ str}}"{{/allowaccess}} class="btn btn-primary {{^allowaccess}}disabled{{/allowaccess}}" target="_blank" href="{{config.wwwroot}}/mod/coursera/view.php?id={{cmid}}">
+                        {{#allowaccess}}{{# str }} launchincoursera, mod_coursera {{/ str}}{{/allowaccess}}
+                        {{^allowaccess}}{{# str }} accessexpired, mod_coursera {{/ str}}{{/allowaccess}}
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="duration">{{# str }} estimatedlearningtime, mod_coursera, {{estimatedlearningtime}} {{/ str }} </span>
+                    </div>
+                </div>
+            {{#showextendeligibility}}
+                <div class="row extendeligibility">
+                    <div class="col-md-5">
+                        <a class="btn btn-primary" href="{{config.wwwroot}}/mod/coursera/manageextensions.php?cminstanceid={{cminstanceid}}">
+                        {{# str }} manageextensions, rbsource_courseralearners {{/ str}}
+                        </a>
+                    </div>
+                </div>
+            {{/showextendeligibility}}
+        </div>
+        <div class="col-md-4 rightcol">
+            {{#haspartners}}
+                <h2>{{# str }} offeredby, mod_coursera {{/ str }}</h2>
+
+                {{#partners}}
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{#logourl}}
+                                <img class="partnerlogo" src="{{{logourl}}}" alt="{{{name}}}" title="{{{name}}}"/>
+                            {{/logourl}}
+                            {{^logourl}}
+                                <h4>{{{name}}}</h4>
+                            {{/logourl}}
+                        </div>
+                    </div>
+                {{/partners}}
+            {{/haspartners}}
+            <a href="#" class="details-toggle">
+                <div class="toggler collapse-icon  {{^showdetailsbydefault}}hidden{{/showdetailsbydefault}}">{{#pix}} t/expanded, core {{/pix}}<span class="togglelable">{{#str}} coursedetails, mod_coursera {{/str}}</span></div>
+                <div class="toggler expand-icon  {{#showdetailsbydefault}}hidden{{/showdetailsbydefault}}">{{#pix}} t/collapsed, core {{/pix}}<span class="togglelable">{{#str}} coursedetails, mod_coursera {{/str}}</span></div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row courseradetails {{^showdetailsbydefault}}hidden{{/showdetailsbydefault}}">
+        <div class="col-md-{{#hasinstructors}}8{{/hasinstructors}}{{^hasinstructors}}12{{/hasinstructors}}">
+            <h2>{{# str }} aboutthiscourse, mod_coursera {{/ str }}</h2>
+            {{{description}}}
+        </div>
+        {{#hasinstructors}}
+            <div class="col-md-4">
+                <h2>{{# str }} instructors, mod_coursera {{/ str }}</h2>
+
+                {{#instructors}}
+                    <div class="row instructor">
+                        <div class="col-md-3 leftcol">
+                            <img class="instructorphoto" src="{{{photourl}}}"/>
+                        </div>
+                        <div class="col-md-9 rightcol">
+                            <div class="instructorname">{{{name}}}</div>
+                            <div class="instructortitle">{{{title}}}</div>
+                            <div class="instructordepartment">{{{department}}}</div>
+                        </div>
+                    </div>
+                {{/instructors}}
+            </div>
+        {{/hasinstructors}}
+    </div>
+</div>

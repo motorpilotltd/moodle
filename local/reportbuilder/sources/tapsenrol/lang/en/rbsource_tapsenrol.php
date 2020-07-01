@@ -14,3 +14,5 @@ $string['cpd'] = 'CPD';
 $string['lms'] = 'LMS';
 $string['classprice'] = 'Class price';
 $string['classcompletiondate'] = 'Class completion date';
+$string['elearning'] = 'Elearning';
+$string['classroom'] = 'Classroom';

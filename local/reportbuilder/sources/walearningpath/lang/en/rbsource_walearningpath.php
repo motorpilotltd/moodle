@@ -11,3 +11,7 @@ $string['subscription'] = 'Subscription';
 $string['walearningpath_subscriptions'] = 'Learning path subscriptions';
 $string['titlelinkedlearningpath'] = 'Title (linked to learning path)';
 $string['subscriptiondate'] = 'Subscription date';
+$string['learningpathimage'] = 'Image';
+$string['username'] = 'Username';   
+$string['publishstatus'] = 'Publish Status';
+$string['totalsubscribed'] = 'Total Subscribed';

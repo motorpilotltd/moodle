@@ -36,6 +36,12 @@ $rb = new admin_settingpage('rbsettings',
 if ($ADMIN->fulltree) {
     $rb->add(new local_reportbuilder_admin_setting_configexportoptions());
 
+    $rb->add(new admin_setting_configexecutable('reportbuilder/pathtochrome',
+                    new lang_string('pathtochrome', 'local_reportbuilder'),
+                    new lang_string('pathtochrome_help', 'local_reportbuilder'),
+                    '')
+    );
+
     $rb->add(new admin_setting_configcheckbox('reportbuilder/exporttofilesystem', new lang_string('exporttofilesystem', 'local_reportbuilder'),
         new lang_string('reportbuilderexporttofilesystem_help', 'local_reportbuilder'), false));
 

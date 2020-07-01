@@ -33,3 +33,5 @@ $string['apierror'] = 'Unkown Linkedin Learning API error';
 $string['visibleglobal'] = 'Course has been enabled globally';
 $string['language'] = 'Language';
 $string['unavailable'] = 'Course unavailable';
+$string['linkedinlearning:manage'] = 'Manage courses within own region';
+$string['linkedinlearning:manageglobal'] = 'Manage courses globally';

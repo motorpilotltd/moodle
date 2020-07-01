@@ -41,6 +41,8 @@ class overview extends base {
         global $OUTPUT;
         $data = new stdClass();
         
+        $taps = new \local_taps\taps();
+
         $courselist = $this->coursemanager->courselist;
 
         $course = array_pop($this->coursemanager->courselist);
@@ -186,7 +188,11 @@ class overview extends base {
                     $value->value .= '<a id="course'.$course->id.'" class="cmanchor">';
                 }
                 if ($fieldname == 'duration') {
-                    $value->value .= ' ' . $course->durationunits;
+                    if (!empty($course->durationunitscode) && $course->durationunitscode == 'H') {
+                        $value->value = $taps->duration_hours_display($value->value, $course->durationunits);
+                    } else {
+                        $value->value .= ' ' . $course->durationunits;
+                    }
                 }
                 // Create link to form
                 if ($fieldname == 'idnumber') {

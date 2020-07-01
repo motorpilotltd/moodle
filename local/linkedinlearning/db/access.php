@@ -28,4 +28,9 @@ $capabilities = array(
         'captype'      => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
     ),
+    'local/linkedinlearning:manageglobal' => array(
+        'riskbitmask'  => RISK_CONFIG,
+        'captype'      => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+    ),
 );

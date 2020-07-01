@@ -36,7 +36,7 @@ $pageparams = [
     'debug' => $debug,
 ];
 
-$shortname = 'manage_embedded_reports';
+$shortname = 'local_reportbuilder\embedded\manage_embedded_reports';
 
 if (!$report = reportbuilder_get_embedded_report($shortname, $pageparams, false, $sid)) {
     print_error('error:couldnotgenerateembeddedreport', 'local_reportbuilder');

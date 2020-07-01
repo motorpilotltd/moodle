@@ -63,3 +63,13 @@ $string['department'] = 'Cost Centre Name';
 $string['city'] = 'Region (AD)';
 $string['address'] = 'Office Location';
 $string['deleterole'] = 'Are you sure you want to delete this role ?';
+
+$string['aadgroup'] = 'AAD Group';
+$string['configuration'] = 'Dynamic cohorts configuration';
+$string['configuration:headings:aad'] = 'AAD configuration';
+$string['aad_tenant_id'] = 'Tenant ID';
+$string['aad_tenant_id_desc'] = 'The directory (tenant) ID for the app in AAD.';
+$string['aad_client_id'] = 'Client ID';
+$string['aad_client_id_desc'] = 'The application (client) ID for the app in AAD.';
+$string['aad_client_secret'] = 'Client secret';
+$string['aad_client_secret_desc'] = 'The client secret generated for the app in AAD.';

@@ -802,7 +802,7 @@ abstract class rb_base_source {
             $fs = get_file_storage();
             $imagesbyfieldid[$row->fieldid] = $fs->get_area_files($context->id, 'local_coursemetadata', "icons_{$row->fieldid}");
         }
-        static $types = ['.png', '.jpg', '.jpeg', '.gif'];
+        static $types = ['.svg', '.png', '.jpg', '.jpeg', '.gif'];
 
         if ($imagesbyfieldid[$row->fieldid]) {
             $filearea = "icons_{$row->fieldid}";
@@ -1244,6 +1244,20 @@ abstract class rb_base_source {
         $attr = array('class' => totara_get_style_visibility($row, 'course_visible'));
         $url = new moodle_url('/course/view.php', array('id' => $courseid));
         return html_writer::link($url, $course, $attr);
+    }
+
+    // convert a course name into a link to that course
+    function rb_display_courseurl($course, $row, $isexport = false) {
+        if (empty($course)) {
+            return '';
+        }
+
+        $url = new moodle_url('/course/view.php', array('id' => $course));
+
+        if ($isexport) {
+            return $url->out();
+        }
+        return html_writer::link($url, $url->out());
     }
 
     // convert a course name into a link to that course and shows
@@ -2691,6 +2705,18 @@ abstract class rb_base_source {
         );
         $columnoptions[] = new rb_column_option(
             'course',
+            'courseurl',
+            get_string('courseurl', 'local_reportbuilder'),
+            "$join.id",
+            array(
+                'joins' => $join,
+                'displayfunc' => 'courseurl',
+                'dbdatatype' => 'char',
+                'outputformat' => 'text'
+            )
+        );
+        $columnoptions[] = new rb_column_option(
+            'course',
             'courseexpandlink',
             get_string('courseexpandlink', 'local_reportbuilder'),
             "$join.fullname",
@@ -3043,8 +3069,10 @@ abstract class rb_base_source {
                 get_string('activeperiod', 'local_custom_certification'),
                 "$join.activeperiodtime",
                 array('joins' => $join,
-                      'dbdatatype' => 'char',
-                      'outputformat' => 'text')
+                    'extrafields' => ['periodtimeunit' => $join . '.activeperiodtimeunit'],
+                    'displayfunc'  => 'timeperiodunit',
+                    'dbdatatype' => 'char',
+                    'outputformat' => 'text')
         );
 
         $columnoptions[] = new rb_column_option(
@@ -3053,8 +3081,10 @@ abstract class rb_base_source {
                 get_string('windowperiod', 'local_custom_certification'),
                 "$join.windowperiod",
                 array('joins' => $join,
-                      'dbdatatype' => 'char',
-                      'outputformat' => 'text')
+                    'extrafields' => ['periodtimeunit' => $join . '.windowperiodunit'],
+                    'displayfunc'  => 'timeperiodunit',
+                    'dbdatatype' => 'char',
+                    'outputformat' => 'text')
         );
         return true;
     }
@@ -4387,6 +4417,37 @@ abstract class rb_base_source {
             return get_string('notstarted', 'local_custom_certification');
         }
     }
+
+    public function rb_display_activeperiodunit($val, $row) {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/custom_certification/classes/certification.php');
+        
+        $data = '';
+        
+        if (!empty($val) && isset($row->activeperiodtimeunit)) {
+            $timeunit = \local_custom_certification\certification::get_time_period_for_interval($row->activeperiodtimeunit);
+
+            $data = $val . ' ' . $timeunit;
+        }
+        
+        return $data;
+    }
+
+    public function rb_display_timeperiodunit($val, $row) {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/custom_certification/classes/certification.php');
+        
+        $data = '';
+        
+        if (!empty($val) && isset($row->periodtimeunit)) {
+            $timeunit = \local_custom_certification\certification::get_time_period_for_interval($row->periodtimeunit);
+
+            $data = $val . ' ' . $timeunit;
+        }
+        
+        return $data;
+    }
+
     /**
      * Returns a list of tags in a collection.
      *
@@ -4547,5 +4608,13 @@ abstract class rb_base_source {
         $html .= '</div>';
 
         return $html;
+    }
+
+    public function rb_display_language($language) {
+        if (get_string_manager()->string_exists('lang_' . $language, 'local_reportbuilder')) {
+            return get_string('lang_' . $language, 'local_reportbuilder');
+        } else {
+            return $language;
+        }
     }
 }

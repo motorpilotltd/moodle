@@ -62,11 +62,6 @@ if (empty($block->configdata)) {
 
 $config = unserialize(base64_decode($block->configdata));
 
-$svgdata = \block_report_graph\util::get_svg_data($blockid, $config);
+$svgdata = \block_report_graph\util::get_png_data($blockid, $config);
 
-if ($type === 'svg') {
-    \block_report_graph\util::send_svg($svgdata);
-
-} else {
-    \block_report_graph\util::send_pdf($svgdata);
-}
+\block_report_graph\util::send_png($svgdata);

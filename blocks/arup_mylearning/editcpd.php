@@ -108,7 +108,8 @@ if ($form->is_cancelled()) {
     $cpd->staffid = $USER->idnumber; // Set staffid (Only used to add CPD).
     $cpd->description = $data->description['text'];
     $cpd->timemodified = time();
-
+    $data->durationunitscode = 'H'; // Set durationunits to Hour(s) as default
+    $data->duration = $taps->combine_duration_hours($data->duration); // converting hh:mm to hours
     switch ($action) {
         case 'add' :
             $cpd->insert();

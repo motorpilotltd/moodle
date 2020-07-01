@@ -1,0 +1,395 @@
+// stylelint-disable
+// Compile this scss to local/reportbuilder/styles.css using:
+// npx node-sass --output-style expanded --precision 6 sass/styles.scss > styles.css
+
+#rb_export_form {
+    clear: both;
+}
+#fgroup_id_exportgroup {
+    text-align: center;
+}
+#fgroup_id_exportgroup fieldset {
+    width: auto;
+    display: inline-block;
+}
+#fgroup_id_exportgroup fieldset .felement {
+    width: auto;
+    float: left;
+    margin: 0;
+}
+#fgroup_id_exportgroup fieldset legend {
+    float: left;
+    width: auto;
+    line-height: 30px;
+    margin-right: 10px;
+}
+#fgroup_id_exportgroup fieldset legend span {
+    width: auto;
+}
+.mform .fgroup .felement .rb-multicheck-control {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#fitem_id_toolbarsearchtext,
+#fitem_id_toolbarsearchbutton,
+#fitem_id_cleartoolbarsearchtext {
+    display: inline-block;
+    margin-right: 10px;
+}
+form[id^="toolbarsearch"].mform div,
+form[id^="toolbarsearch"].mform fieldset {
+    margin: 0;
+    padding: 0;
+    width: auto;
+    vertical-align: top;
+}
+form[id^="toolbarsearch"].mform .fsubmit {
+    width: auto;
+}
+
+.reportbuilder-table .user_namewithlinks a {
+    padding-left: 5px;
+    float: left;
+}
+#team_members .user_namewithlinks .name {
+    font-size: 18px;
+    font-weight: bold;
+    padding-top: 8px;
+}
+.reportbuilder-table .user_namewithlinks ul {
+    clear: both;
+    margin: 0;
+    padding-top: 2px;
+}
+.reportbuilder-table .user_namewithlinks ul li {
+    float: left;
+    list-style-type: none;
+}
+.reportbuilder-table .user_namewithlinks li a {
+    border-left: 1px solid #dddddd;
+    font-size: 12px;
+    line-height: 10px;
+    margin: 2px;
+}
+.reportbuilder-table .user_namewithlinks li:first-child a {
+    border-left: none;
+    margin-left: 0;
+}
+.reportbuilder-table .user_actions {
+    white-space: nowrap;
+}
+
+.rb-display-expand {
+    padding: 5px;
+    background-repeat: no-repeat;
+    background-position: 0 5px;
+    cursor: pointer;
+}
+.multicheck-items label > div {
+    display: inline;
+}
+.rb-search-menu {
+    /* stylelint-disable */
+    vertical-align: middle !important;
+    /* stylelint-enable */
+}
+.rb-genbutton {
+    float: right;
+}
+.rb-genicon {
+    cursor: pointer;
+}
+.rb-hidden {
+    display: none;
+}
+.rb-inline {
+    display: inline-block;
+}
+.path-admin-totara-reportbuilder-restrictions .header.lastcol {
+    min-width: 120px;
+}
+div.felement #id_all_sidebar_filters {
+    /* stylelint-disable */
+    display: none !important;
+    /* stylelint-enable */
+}
+.mform table .fitem {
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+}
+.mform td .fitem .fcheckbox {
+    margin-top: 8px;
+}
+
+
+div.reportbuilderform div.fitem div.col-md-3{
+    display: none!important;
+}
+
+fieldset#id_standardfilter div.fitem div.col-md-3{
+    display: none!important;;
+}
+
+fieldset#id_sidebarfilter div.fitem div.col-md-3{
+    display: none!important;;
+}
+
+div.rb-display-expand i.fa-info-circle {
+    padding-right: 5px;
+}
+
+#page-local-reportbuilder-report #page-footer {
+    margin: 0;
+    display: none;
+}
+
+.myreports {
+    .accordion-toggle {
+        background-image: url([[pix:theme|icon_blueminus]]) !important;
+        background-position: 0 4px;
+        background-repeat: no-repeat;
+        padding: 2px 0 2px 15px;
+    }
+    .accordion-toggle.collapsed {
+        background-image: url([[pix:theme|icon_blueplus]]) !important;
+    }
+}
+
+.newreport {
+    height: calc(100vh - 110px);
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #FFF;
+    position: relative;
+    overflow: hidden;
+
+    .d-flex-center {
+        display: flex;
+        align-items: center;
+    }
+
+    .btn.fullscreen {
+        display: inline-block;
+    }
+    .btn.closefullscreen {
+        display: none;
+    }
+    &.fullscreen {
+        height: 100%;
+        position: fixed;
+        z-index: 1030;
+        .btn.fullscreen {
+            display: none;
+        }
+        .btn.closefullscreen {
+            display: inline-block;
+        }
+    }
+    .inner {
+        height: 100%;
+        width: 100%;
+        padding: 0 5px;
+    }
+    #advancedsearch {
+        position: absolute;
+        left: 5px;
+        right: 5px;
+        max-height: calc(100% - 120px);
+        z-index: 1;
+        border: 1px solid #ccc;
+        border-top: 0;
+        @media (min-width: 600px) {
+            max-height: calc(100% - 61px);
+        }
+        overflow-y: auto;
+
+        select {
+            margin-right: 5px;
+        }
+        label {
+            margin-bottom: 0;
+        }
+    }
+    .reportcontainer {
+        overflow: scroll;
+        height: calc(100% - 120px);
+        @media (min-width: 600px) {
+            height: calc(100% - 61px);
+        }
+        th.header {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0px;
+            background-color: #FFF;
+            box-shadow: 2px 1px 0px #DDD;
+            a {
+                white-space: nowrap;
+                margin-right: 10px;
+                display: block;
+            }
+            img {
+                position: absolute;
+                top: 10px;
+                right: 0;
+                margin-right: 0;
+            }
+        }
+    }
+    .rb-display-table-container.no-overflow {
+        overflow: initial;
+    }
+
+    #reportfilters {
+        border-left: 1px solid #ccc;
+        z-index: 2;
+        height: calc(100% - 120px);
+        top: 120px;
+        @media (min-width: 600px) {
+            height: calc(100% - 61px);
+            top: 61px;
+        }
+        position: absolute;
+        right: -630px;
+        width: 600px;
+        transition: right 0.5s ease, left 0.5s ease;
+        overflow-y: scroll;
+        &.active {
+            right: 0;
+        }
+        select {
+            margin-right: 5px;
+        }
+        label {
+            margin-bottom: 0;
+        }
+        .fitem_actionbuttons {
+            margin-bottom: 0;
+        }
+    }
+
+    @media (max-width: 800px) {
+        #reportfilters {
+            right: -330px;
+            width: 300px;
+        }
+    }
+
+    .totara-toolbar-top .toolbar-left-table {
+        display: none;
+    }
+
+    #rb-search-menu {
+        margin: -1px 5px 0 0;
+        .singleselect label {
+            width: 100%;
+        }
+        .caret {
+            display:none;
+        }
+        a.active,
+        .btn.active {
+            background-color: lighten(#007FFF, 35%);
+            box-shadow: none;
+        }
+    }
+    .managesavedsearches input {
+        margin: 0;
+    }
+    fieldset.collapsible {
+        legend {
+            display: none;
+        }
+        &.collapsed .fcontainer {
+            display: block !important;
+        }
+    }
+    .mform .fitem .fitemtitle,
+    .mform .fitem .felement {
+        margin-left: 0;
+        text-align: left;
+        float: none;
+        width: 100%;
+    }
+    #advancedsearchbutton {
+        margin-right: auto;
+    }
+    #advancedsearchbutton,
+    #showquerybutton {
+        &.closed {
+            i.open {
+                display: inline-block;
+            }
+            i.closed {
+                display: none;
+            }
+        }
+        &.open {
+            i.open {
+                display: none;
+            }
+            i.closed {
+                display: inline-block;
+            }
+        }
+    }
+
+    .totara-limited-width-150 {
+        max-width: 150px;
+    }
+    .nobox > .row {
+        margin: 0;
+    }
+    .container-advancedsearch {
+        background-color: #F5F5F5;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    #id_submitgroupstandard_addfilter {
+        margin-left: 0;
+    }
+    .navbar {
+        display: flex;
+        flex-wrap: wrap;
+        .singlebutton div {
+            margin: 0;
+            input[type="submit"] {
+                margin: 0;
+            }
+        }
+    }
+    .flex-auto {
+        flex: 1 1 auto;
+    }
+    .navbar-form {
+        display: flex;
+        flex-wrap: wrap;
+        border: 0;
+        padding: 0 10px;
+        margin: 14.5px 0;
+        .input-group {
+            flex: 1 1 auto; display: flex;
+            .input-group-addon {
+                width: auto;
+                display: flex;
+                align-items: center;
+                border-radius: 0px 2px 2px 0;
+            }
+        }
+        .ml-auto {
+            margin-left: auto;
+        }
+    }
+}
+.path-local-reportbuilder {
+    .mform .fitem .felement select[disabled] {
+        color: transparent;
+    }
+    .yui3-overlay {
+        z-index: 1050;
+    }
+}
+// stylelint-enable

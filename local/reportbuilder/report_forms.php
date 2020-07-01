@@ -820,10 +820,10 @@ class report_builder_edit_graph_form extends moodleform {
             '' => get_string('none'),
             'column' => get_string('graphtypecolumn', 'local_reportbuilder'),
             'line' => get_string('graphtypeline', 'local_reportbuilder'),
+            'smoothedline' => get_string('graphtypesmoothline', 'local_reportbuilder'),
             'bar' => get_string('graphtypebar', 'local_reportbuilder'),
             'pie' => get_string('graphtypepie', 'local_reportbuilder'),
-            'scatter' => get_string('graphtypescatter', 'local_reportbuilder'),
-            'area' => get_string('graphtypearea', 'local_reportbuilder'),
+            'doughnut' => get_string('graphtypedoughnut', 'local_reportbuilder'),
         );
         $mform->addElement('select', 'type', get_string('graphtype', 'local_reportbuilder'), $types);
         $mform->addHelpButton('type', 'graphtype', 'local_reportbuilder');
@@ -871,9 +871,10 @@ class report_builder_edit_graph_form extends moodleform {
         $mform->addHelpButton('series', 'graphseries', 'local_reportbuilder');
 
         $mform->addElement('advcheckbox', 'stacked', get_string('graphstacked', 'local_reportbuilder'));
-        $mform->disabledIf('stacked', 'type', 'eq', '');
+        $mform->disabledIf('stacked', 'type', 'eq', 'line');
         $mform->disabledIf('stacked', 'type', 'eq', 'pie');
-        $mform->disabledIf('stacked', 'type', 'eq', 'scatter');
+        $mform->disabledIf('stacked', 'type', 'eq', 'doughnut');
+        $mform->disabledIf('stacked', 'type', 'eq', 'smoothedline');
 
         $mform->addElement('header', 'advancedhdr', get_string('graphadvancedoptions', 'local_reportbuilder'));
 
@@ -1247,7 +1248,7 @@ class report_builder_standard_search_form extends moodleform {
 
             $submitgroup = array();
             $submitgroup[] =& $mform->createElement('submit', 'addfilter',
-                    get_string('search', 'local_reportbuilder'));
+                    get_string('search', 'local_reportbuilder'), ['class' => 'form-submit']);
             $submitgroup[] =& $mform->createElement('submit', 'clearstandardfilters',
                     get_string('clearform', 'local_reportbuilder'));
             $mform->addGroup($submitgroup, 'submitgroupstandard', '&nbsp;', ' &nbsp; ');
@@ -1286,12 +1287,10 @@ class report_builder_sidebar_search_form extends moodleform {
                 $ft->setupForm($mform);
             }
 
-            $submitgroup = array();
-            $submitgroup[] =& $mform->createElement('submit', 'addfilter',
-                    get_string('search', 'local_reportbuilder'));
-            $submitgroup[] =& $mform->createElement('submit', 'clearsidebarfilters',
-                    get_string('clearform', 'local_reportbuilder'));
-            $mform->addGroup($submitgroup, 'submitgroupsidebar', '&nbsp;', ' &nbsp; ');
+            $clear = html_writer::link(new moodle_url($report->get_current_url(), ['clearfilters' => 1]),
+                get_string('clearform', 'local_reportbuilder'), ['class' => 'btn btn-default']);
+
+            $mform->addElement('html', $clear);
         }
 
         $mform->addElement('hidden', 'id', $id);

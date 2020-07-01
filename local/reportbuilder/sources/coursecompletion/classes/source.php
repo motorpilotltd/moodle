@@ -212,7 +212,7 @@ class source extends rb_base_source {
                         "CASE WHEN base.timecompleted IS NULL OR base.timecompleted = 0 THEN null
                       ELSE base.timecompleted - base.timestarted END",
                         array(
-                                'displayfunc' => 'duration',
+                                'displayfunc' => 'duration_hours_minutes',
                                 'dbdatatype' => 'integer'
                         )
                 ),
@@ -223,7 +223,7 @@ class source extends rb_base_source {
                         "CASE WHEN base.timecompleted IS NULL OR base.timecompleted = 0 THEN null
                       ELSE base.timecompleted - base.timeenrolled END",
                         array(
-                                'displayfunc' => 'duration',
+                                'displayfunc' => 'duration_hours_minutes',
                                 'dbdatatype' => 'integer'
                         )
                 ),

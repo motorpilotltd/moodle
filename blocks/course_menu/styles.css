@@ -102,4 +102,8 @@ a.showHide.plus {
 .block_navigation .block_tree .depth_4:before {
     margin-top: 3px;
 }
+/* BEGIN CORE MOD */
+.block_course_menu .block_navigation .block_tree p.hasicon {
+    text-indent: 0;
+}
 /* END CORE MOD */

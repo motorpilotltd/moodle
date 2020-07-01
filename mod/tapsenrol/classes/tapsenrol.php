@@ -1222,6 +1222,9 @@ EOS;
     }
 
     protected function _class_data($enrolment, $old = false) {
+
+        $taps = new \local_taps\taps();
+
         $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
 
         try {

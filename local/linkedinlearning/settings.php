@@ -24,11 +24,11 @@ defined('MOODLE_INTERNAL') || die;
 
 $context = context_system::instance();
 
-if ($hassiteconfig || has_capability('local/linkedinlearning:manage', $context)) {
+if ($hassiteconfig) {
     require_once($CFG->dirroot.'/cohort/lib.php');
     require_once($CFG->dirroot.'/local/linkedinlearning/classes/lib.php');
 
-    $ADMIN->add('localplugins', new admin_category('local_linkedinlearning', new lang_string('pluginname', 'local_linkedinlearning')));
+    $ADMIN->add('root', new admin_category('local_linkedinlearning', new lang_string('pluginname', 'local_linkedinlearning')));
 
     $settings = new admin_settingpage('local_linkedinlearning_settings', get_string('settings', 'local_linkedinlearning'));
 
@@ -64,7 +64,7 @@ if ($hassiteconfig || has_capability('local/linkedinlearning:manage', $context))
     $settings->add(new admin_setting_configtext($name, $title, '', 0));
 
     $ADMIN->add('local_linkedinlearning', new admin_externalpage('local_linkedinlearning/managecourses', get_string('managecourses', 'local_linkedinlearning'),
-            new moodle_url('/local/linkedinlearning/manage.php'), 'local/linkedinlearning:manage'));
+            new moodle_url('/local/linkedinlearning/manage.php')));
 
     $ADMIN->add('local_linkedinlearning', $settings);
 }

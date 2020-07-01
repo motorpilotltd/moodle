@@ -133,10 +133,6 @@ require('tabs.php');
 
 $config = new stdClass();
 $config->rb_reportid = $id;
-$config->rb_column_headings = $report->get_default_headings_array();
-$config->rb_grouped_columns = $grouped;
-$config->rb_allowed_advanced = $allowedadvanced;
-$config->rb_advanced_options = $advoptions;
 
 $PAGE->requires->js_call_amd('local_reportbuilder/reportbuildercolumns', 'init', array($config));
 

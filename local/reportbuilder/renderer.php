@@ -258,7 +258,7 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
      * @param integer $sid Saved search ID if a saved search is active (optional)
      * @return No return value but prints export select form
      */
-    public function export_select($report, $sid = 0) {
+    public function export_select($report, $sid = 0, $html = true) {
         global $CFG, $PAGE;
         require_once($CFG->dirroot . '/local/reportbuilder/export_form.php');
 
@@ -286,7 +286,11 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
         }
 
         $export = new report_builder_export_form($url, compact('id', 'sid', 'extparams'), 'post', '', array('id' => 'rb_export_form'));
-        $export->display();
+        if ($html) {
+            $export->display();
+        } else {
+            $export->render();
+        }
     }
 
     /**
@@ -399,8 +403,8 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
      * @param reportbuilder $report
      * @return string HTML to display the button
      */
-    public function save_button($report) {
-        global $SESSION;
+    public function save_button($report, $link = false) {
+        global $SESSION, $OUTPUT;
 
         $buttonsarray = optional_param_array('submitgroup', null, PARAM_TEXT);
         $search = (isset($SESSION->reportbuilder[$report->get_uniqueid()]) &&
@@ -411,8 +415,13 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
         if ($search || $hasrequiredurlparams) {
             $params = $report->get_current_url_params();
             $params['id'] = $report->_id;
-            return $this->output->single_button(new moodle_url('/local/reportbuilder/save.php', $params),
+            if ($link) {
+                return html_writer::link(new moodle_url('/local/reportbuilder/save.php', $params),
+                    get_string('savesearch', 'local_reportbuilder'));
+            } else {
+                return $OUTPUT->single_button(new moodle_url('/local/reportbuilder/save.php', $params),
                     get_string('savesearch', 'local_reportbuilder'), 'get');
+            }
         } else {
             return '';
         }
@@ -766,7 +775,8 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
     public function report_list_export_for_template($reports, $canedit) {
         $report_list = array();
         $systemcontext = context_system::instance();
-
+        $id = 0;
+        $strmisc = get_string('miscellaneous');
         foreach ($reports as $report) {
 
             $reportname = format_string($report->fullname, true, ['context' => $systemcontext]);
@@ -778,19 +788,36 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
             }
 
             // Escaping is done in the mustache template, so no need to do it in format string
-            $report_data = [
-                    'name' => $reportname,
-                    'href' => $report->url
-            ];
-
             if ($canedit) {
                 $report_data['edit_href'] = (string) new moodle_url('/local/reportbuilder/general.php', array('id' => $report->id));
             }
 
-            $report_list[] = $report_data;
+            $bits = explode(' - ', $reportname);
+            $prefix = (count($bits) === 2) ? format_string(ucfirst(strtolower($bits[0]))) :
+                $strmisc;
+            if (!isset($report_list[$prefix])) {
+                $report_list[$prefix] = (object)[];
+                $report_list[$prefix]->id = $id++;
+                $report_list[$prefix]->name = $prefix;
+                $report_list[$prefix]->reports = [];
+            }
+            $rname = (count($bits) === 2) ? format_string($bits[1]) : format_string($reportname);
+
+            $report_list[$prefix]->reports[] = (object)[
+                'name' => $rname,
+                'href' => $report->url
+            ];
+        }
+        ksort($report_list);
+
+        // Move the Miscellaneous key to the end.
+        if (array_key_exists($strmisc, $report_list)) {
+            $temp = $report_list[$strmisc];
+            unset($report_list[$strmisc]);
+            $report_list[$strmisc] = $temp;
         }
 
-        return $report_list;
+        return array_values($report_list);
     }
 
 
@@ -913,5 +940,15 @@ class local_reportbuilder_renderer extends plugin_renderer_base {
         $template_data->report_list = $this->report_list_export_for_template($reports, $canedit);
 
         return $this->render_from_template('local_reportbuilder/myreports', $template_data);
+    }
+
+    /**
+     * Notifications override
+     */
+    public function notification($text, $state) {
+        $context = (object)[];
+        $context->text = $text;
+        $context->state = $state;
+        return $this->render_from_template('local_reportbuilder/notification', $context);
     }
 }
