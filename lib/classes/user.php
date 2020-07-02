@@ -82,6 +82,13 @@ class core_user {
         'alternatename'
     ];
 
+    /** @var int Indicates that user profile view should be prevented */
+    const VIEWPROFILE_PREVENT = -1;
+    /** @var int Indicates that user profile view should not be prevented */
+    const VIEWPROFILE_DO_NOT_PREVENT = 0;
+    /** @var int Indicates that user profile view should be allowed even if Moodle would prevent it */
+    const VIEWPROFILE_FORCE_ALLOW = 1;
+
     /** @var stdClass keep record of noreply user */
     public static $noreplyuser = false;
 
@@ -375,7 +382,7 @@ class core_user {
     protected static function get_enrolled_sql_on_courses_with_capability($capability) {
         // Get all courses where user have the capability.
         $courses = get_user_capability_course($capability, null, true,
-                'ctxid, ctxpath, ctxdepth, ctxlevel, ctxinstance');
+                implode(',', array_values(context_helper::get_preload_record_columns('ctx'))));
         if (!$courses) {
             return [null, null];
         }
@@ -673,7 +680,7 @@ class core_user {
         $fields['lastname'] = array('type' => PARAM_NOTAGS, 'null' => NULL_NOT_ALLOWED);
         $fields['surname'] = array('type' => PARAM_NOTAGS, 'null' => NULL_NOT_ALLOWED);
         $fields['email'] = array('type' => PARAM_RAW_TRIMMED, 'null' => NULL_NOT_ALLOWED);
-        $fields['emailstop'] = array('type' => PARAM_INT, 'null' => NULL_NOT_ALLOWED);
+        $fields['emailstop'] = array('type' => PARAM_INT, 'null' => NULL_NOT_ALLOWED, 'default' => 0);
         $fields['icq'] = array('type' => PARAM_NOTAGS, 'null' => NULL_NOT_ALLOWED);
         $fields['skype'] = array('type' => PARAM_NOTAGS, 'null' => NULL_ALLOWED);
         $fields['aim'] = array('type' => PARAM_NOTAGS, 'null' => NULL_NOT_ALLOWED);
@@ -979,11 +986,18 @@ class core_user {
                 global $USER;
                 return $USER->id == $user->id && has_capability('moodle/blog:view', context_system::instance());
             });
+        $preferences['user_home_page_preference'] = array('type' => PARAM_INT, 'null' => NULL_ALLOWED, 'default' => HOMEPAGE_MY,
+            'choices' => array(HOMEPAGE_SITE, HOMEPAGE_MY),
+            'permissioncallback' => function ($user, $preferencename) {
+                global $CFG;
+                return (!empty($CFG->defaulthomepage) && ($CFG->defaulthomepage == HOMEPAGE_USER));
+            }
+        );
 
         // Core components that may want to define their preferences.
         // List of core components implementing callback is hardcoded here for performance reasons.
         // TODO MDL-58184 cache list of core components implementing a function.
-        $corecomponents = ['core_message', 'core_calendar'];
+        $corecomponents = ['core_message', 'core_calendar', 'core_contentbank'];
         foreach ($corecomponents as $component) {
             if (($pluginpreferences = component_callback($component, 'user_preferences')) && is_array($pluginpreferences)) {
                 $preferences += $pluginpreferences;

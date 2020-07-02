@@ -600,6 +600,9 @@ function get_course($courseid, $clone = true) {
  *            we are using distinct. You almost _NEVER_ need all the fields
  *            in such a large SELECT
  *
+ * Consider using core_course_category::get_courses()
+ * or core_course_category::search_courses() instead since they use caching.
+ *
  * @global object
  * @global object
  * @global object
@@ -633,107 +636,26 @@ function get_courses($categoryid="all", $sort="c.sortorder ASC", $fields="c.*") 
     $ccselect = ', ' . context_helper::get_preload_record_columns_sql('ctx');
     $ccjoin = "LEFT JOIN {context} ctx ON (ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel)";
     $params['contextlevel'] = CONTEXT_COURSE;
-
+/* BEGIN CORE MOD */
     $fields .= ",cma.methodology";
-
     $sql = "SELECT $fields $ccselect
               FROM {course} c
               INNER JOIN {coursemetadata_arup} cma ON c.id = cma.course
            $ccjoin
               $categoryselect
               $sortstatement";
-
+/* END CORE MOD */
     // pull out all course matching the cat
     if ($courses = $DB->get_records_sql($sql, $params)) {
 
         // loop throught them
         foreach ($courses as $course) {
             context_helper::preload_from_record($course);
-            if (isset($course->visible) && $course->visible <= 0) {
-                // for hidden courses, require visibility check
-                if (has_capability('moodle/course:viewhiddencourses', context_course::instance($course->id))) {
-                    $visiblecourses [$course->id] = $course;
-                }
-            } else {
+            if (core_course_category::can_view_course_info($course)) {
                 $visiblecourses [$course->id] = $course;
             }
         }
     }
-    return $visiblecourses;
-}
-
-
-/**
- * Returns list of courses, for whole site, or category
- *
- * Similar to get_courses, but allows paging
- * Important: Using c.* for fields is extremely expensive because
- *            we are using distinct. You almost _NEVER_ need all the fields
- *            in such a large SELECT
- *
- * @global object
- * @global object
- * @global object
- * @uses CONTEXT_COURSE
- * @param string|int $categoryid Either a category id or 'all' for everything
- * @param string $sort A field and direction to sort by
- * @param string $fields The additional fields to return
- * @param int $totalcount Reference for the number of courses
- * @param string $limitfrom The course to start from
- * @param string $limitnum The number of courses to limit to
- * @return array Array of courses
- */
-function get_courses_page($categoryid="all", $sort="c.sortorder ASC", $fields="c.*",
-                          &$totalcount, $limitfrom="", $limitnum="") {
-    global $USER, $CFG, $DB;
-
-    $params = array();
-
-    $categoryselect = "";
-    if ($categoryid !== "all" && is_numeric($categoryid)) {
-        $categoryselect = "WHERE c.category = :catid";
-        $params['catid'] = $categoryid;
-    } else {
-        $categoryselect = "";
-    }
-
-    $ccselect = ', ' . context_helper::get_preload_record_columns_sql('ctx');
-    $ccjoin = "LEFT JOIN {context} ctx ON (ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel)";
-    $params['contextlevel'] = CONTEXT_COURSE;
-
-    $totalcount = 0;
-    if (!$limitfrom) {
-        $limitfrom = 0;
-    }
-    $visiblecourses = array();
-
-    $sql = "SELECT $fields $ccselect
-              FROM {course} c
-              $ccjoin
-           $categoryselect
-          ORDER BY $sort";
-
-    // pull out all course matching the cat
-    $rs = $DB->get_recordset_sql($sql, $params);
-    // iteration will have to be done inside loop to keep track of the limitfrom and limitnum
-    foreach($rs as $course) {
-        context_helper::preload_from_record($course);
-        if ($course->visible <= 0) {
-            // for hidden courses, require visibility check
-            if (has_capability('moodle/course:viewhiddencourses', context_course::instance($course->id))) {
-                $totalcount++;
-                if ($totalcount > $limitfrom && (!$limitnum or count($visiblecourses) < $limitnum)) {
-                    $visiblecourses [$course->id] = $course;
-                }
-            }
-        } else {
-            $totalcount++;
-            if ($totalcount > $limitfrom && (!$limitnum or count($visiblecourses) < $limitnum)) {
-                $visiblecourses [$course->id] = $course;
-            }
-        }
-    }
-    $rs->close();
     return $visiblecourses;
 }
 
@@ -748,10 +670,12 @@ function get_courses_page($categoryid="all", $sort="c.sortorder ASC", $fields="c
  * @param int $recordsperpage The number of records per page
  * @param int $totalcount Passed in by reference.
  * @param array $requiredcapabilities Extra list of capabilities used to filter courses
- * @return object {@link $COURSE} records
+ * @param array $searchcond additional search conditions, for example ['c.enablecompletion = :p1']
+ * @param array $params named parameters for additional search conditions, for example ['p1' => 1]
+ * @return stdClass[] {@link $COURSE} records
  */
 function get_courses_search($searchterms, $sort, $page, $recordsperpage, &$totalcount,
-                            $requiredcapabilities = array()) {
+                            $requiredcapabilities = array(), $searchcond = [], $params = []) {
     global $CFG, $DB;
 
     if ($DB->sql_regex_supported()) {
@@ -759,8 +683,6 @@ function get_courses_search($searchterms, $sort, $page, $recordsperpage, &$total
         $NOTREGEXP = $DB->sql_regex(false);
     }
 
-    $searchcond = array();
-    $params     = array();
     $i = 0;
 
     // Thanks Oracle for your non-ansi concat and type limits in coalesce. MDL-29912
@@ -828,57 +750,28 @@ function get_courses_search($searchterms, $sort, $page, $recordsperpage, &$total
              WHERE $searchcond AND c.id <> ".SITEID."
           ORDER BY $sort";
 
+    $mycourses = enrol_get_my_courses();
     $rs = $DB->get_recordset_sql($sql, $params);
-/* BEGIN CORE MOD */
-    require_once($CFG->libdir . '/coursecatlib.php');
-    // Hidden categories won't be included dependent on capabilities
-    $categories = coursecat::get(0)->get_children();
-    // But want to show courses user is enrolled on
-    $enrolledcourses = enrol_get_my_courses();
     foreach($rs as $course) {
-        $visible = true;
-        $skip = array_key_exists($course->id, $enrolledcourses);
-
-        if (!$skip) {
-            // Preload contexts only for hidden courses or courses we need to return.
-            context_helper::preload_from_record($course);
-            $coursecontext = context_course::instance($course->id);
-            if (!$course->visible) {
-                // No need to check all categories.
-                $visible = false;
-            } elseif ($course->category != 0) {
-                // Check for any hidden category in the tree for this course.
-                // If catgeory not in array then it is hidden.
-                if (!isset($categories[$course->category])) {
-                    $visible = false;
-                } else {
-                    $parentcategories = explode('/', $categories[$course->category]->path);
-                    unset($parentcategories[0]);
-                    foreach ($parentcategories as $parentcategory) {
-                        if (!isset($categories[$parentcategory]) || !$categories[$parentcategory]->visible) {
-                            $visible = false;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (!empty($requiredcapabilities)) {
-                if (!has_all_capabilities($requiredcapabilities, $coursecontext)) {
-                    continue;
-                }
+        // Preload contexts only for hidden courses or courses we need to return.
+        context_helper::preload_from_record($course);
+        $coursecontext = context_course::instance($course->id);
+        if (!array_key_exists($course->id, $mycourses) && !core_course_category::can_view_course_info($course)) {
+            continue;
+        }
+        if (!empty($requiredcapabilities)) {
+            if (!has_all_capabilities($requiredcapabilities, $coursecontext)) {
+                continue;
             }
         }
-
-        if ($visible || has_capability('moodle/course:viewhiddencourses', $coursecontext)) {
-            // Don't exit this loop until the end.
-            // We need to count all the visible courses to update $totalcount.
-            if ($c >= $limitfrom && $c < $limitto) {
-                $courses[$course->id] = $course;
-            }
+        // Don't exit this loop till the end
+        // we need to count all the visible courses
+        // to update $totalcount
+        if ($c >= $limitfrom && $c < $limitto) {
+            $courses[$course->id] = $course;
         }
         $c++;
     }
-/* END CORE MOD */
     $rs->close();
 
     // our caller expects 2 bits of data - our return
@@ -1748,6 +1641,10 @@ function print_object($object) {
     if (CLI_SCRIPT) {
         fwrite(STDERR, print_r($object, true));
         fwrite(STDERR, PHP_EOL);
+    } else if (AJAX_SCRIPT) {
+        foreach (explode("\n", print_r($object, true)) as $line) {
+            error_log($line);
+        }
     } else {
         echo html_writer::tag('pre', s(print_r($object, true)), array('class' => 'notifytiny'));
     }

@@ -138,6 +138,7 @@ class mustache_template_source_loader {
      * @param bool $includecomments If the comments should be stripped from the source before returning
      * @param array $seentemplates List of templates already processed / to be skipped.
      * @param array $seenstrings List of strings already processed / to be skipped.
+     * @param string|null $lang moodle translation language, null means use current.
      * @return array
      */
     public function load_with_dependencies(
@@ -146,7 +147,8 @@ class mustache_template_source_loader {
         string $themename,
         bool $includecomments = false,
         array $seentemplates = [],
-        array $seenstrings = []
+        array $seenstrings = [],
+        string $lang = null
     ) : array {
         // Initialise the return values.
         $templates = [];
@@ -156,7 +158,7 @@ class mustache_template_source_loader {
         // Get the requested template source.
         $templatesource = $this->load($templatecomponent, $templatename, $themename, $includecomments);
         // This is a helper function to save a value in one of the result arrays (either $templates or $strings).
-        $save = function(array $results, array $seenlist, string $component, string $id, $value) {
+        $save = function(array $results, array $seenlist, string $component, string $id, $value) use ($lang) {
             if (!isset($results[$component])) {
                 // If the results list doesn't already contain this component then initialise it.
                 $results[$component] = [];
@@ -171,7 +173,7 @@ class mustache_template_source_loader {
         };
         // This is a helper function for processing a dependency. Does stuff like ignore duplicate processing,
         // common result formatting etc.
-        $handler = function(array $dependency, array $ignorelist, callable $processcallback) {
+        $handler = function(array $dependency, array $ignorelist, callable $processcallback) use ($lang) {
             foreach ($dependency as $component => $ids) {
                 foreach ($ids as $id) {
                     $dependencyid = "$component/$id";
@@ -200,8 +202,8 @@ class mustache_template_source_loader {
             $seenstrings,
             // Include $strings and $seenstrings by reference so that their values can be updated
             // outside of this anonymous function.
-            function($component, $id) use ($save, &$strings, &$seenstrings) {
-                $string = get_string($id, $component);
+            function($component, $id) use ($save, &$strings, &$seenstrings, $lang) {
+                $string = get_string_manager()->get_string($id, $component, null, $lang);
                 // Save the string in the $strings results array.
                 list($strings, $seenstrings) = $save($strings, $seenstrings, $component, $id, $string);
             }
@@ -221,7 +223,8 @@ class mustache_template_source_loader {
                 &$seenstrings,
                 &$templates,
                 &$strings,
-                $save
+                $save,
+                $lang
             ) {
                 // We haven't seen this template yet so load it and it's dependencies.
                 $subdependencies = $this->load_with_dependencies(
@@ -230,7 +233,8 @@ class mustache_template_source_loader {
                     $themename,
                     $includecomments,
                     $seentemplates,
-                    $seenstrings
+                    $seenstrings,
+                    $lang
                 );
 
                 foreach ($subdependencies['templates'] as $component => $ids) {
@@ -306,11 +310,11 @@ class mustache_template_source_loader {
             if ($name) {
                 switch ($type) {
                     case Mustache_Tokenizer::T_PARTIAL:
-                        list($component, $id) = explode('/', $name);
+                        list($component, $id) = explode('/', $name, 2);
                         $templates = $addtodependencies($templates, $component, $id);
                         break;
                     case Mustache_Tokenizer::T_PARENT:
-                        list($component, $id) = explode('/', $name);
+                        list($component, $id) = explode('/', $name, 2);
                         $templates = $addtodependencies($templates, $component, $id);
                         break;
                     case Mustache_Tokenizer::T_SECTION:

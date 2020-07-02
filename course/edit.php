@@ -109,8 +109,13 @@ if ($id) {
     $PAGE->set_context($catcontext);
 
 } else {
+    // Creating new course in default category.
+    $course = null;
     require_login();
-    print_error('needcoursecategroyid');
+    $category = core_course_category::get_default();
+    $catcontext = context_coursecat::instance($category->id);
+    require_capability('moodle/course:create', $catcontext);
+    $PAGE->set_context($catcontext);
 }
 
 // Prepare course and the editor.
@@ -199,8 +204,9 @@ if ($editform->is_cancelled()) {
                 }
             }
         }
-
+/* BEGIN CORE MOD */
         \local_admin\courseformmoddifier::post_creation($course, $data);
+/* END CORE MOD */
     } else {
         // Save any changes to the files used in the editor.
         update_course($data, $editoroptions);

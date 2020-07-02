@@ -78,7 +78,7 @@ class info_section extends info {
     public function get_section() {
         return $this->section;
     }
-
+/* BEGIN CORE MOD */
     public function is_available(&$information, $grabthelot = false, $userid = 0,
             \course_modinfo $modinfo = null) {
 
@@ -91,4 +91,5 @@ class info_section extends info {
 
         return parent::is_available($information, $grabthelot, $userid, $modinfo);
     }
+/* END CORE MOD */
 }

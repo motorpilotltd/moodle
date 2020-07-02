@@ -110,6 +110,11 @@ class behat_hooks extends behat_base {
     protected static $runningsuite = '';
 
     /**
+     * @var array Array (with tag names in keys) of all tags in current scenario.
+     */
+    protected static $scenariotags;
+
+    /**
      * Hook to capture BeforeSuite event so as to give access to moodle codebase.
      * This will try and catch any exception and exists if anything fails.
      *
@@ -302,6 +307,9 @@ class behat_hooks extends behat_base {
         $driverexceptionmsg = 'Selenium server is not running, you need to start it to run tests that involve Javascript. ' . $moreinfo;
         try {
             $session = $this->getSession();
+            if (!$session->isStarted()) {
+                $session->start();
+            }
         } catch (CurlExec $e) {
             // Exception thrown by WebDriver, so only @javascript tests will be caugth; in
             // behat_util::check_server_status() we already checked that the server is running.
@@ -340,11 +348,10 @@ class behat_hooks extends behat_base {
             $this->getSession()->getSelectorsHandler()->registerSelector('named_exact', new $namedexactclass());
 
             // Register component named selectors.
-            foreach (\core_component::get_component_list() as $subsystem => $components) {
-                foreach (array_keys($components) as $component) {
-                    $this->register_component_selectors_for_component($component);
-                }
+            foreach (\core_component::get_component_names() as $component) {
+                $this->register_component_selectors_for_component($component);
             }
+
         }
 
         // Reset mink session between the scenarios.
@@ -380,6 +387,16 @@ class behat_hooks extends behat_base {
 
         // Reset the scenariorunning variable to ensure that Step 0 occurs.
         $this->scenariorunning = false;
+
+        // Set up the tags for current scenario.
+        self::fetch_tags_for_scenario($scope);
+
+        // If scenario requires the Moodle app to be running, set this up.
+        if ($this->has_tag('app')) {
+            $this->execute('behat_app::start_scenario');
+
+            return;
+        }
 
         // Run all test with medium (1024x768) screen size, to avoid responsive problems.
         $this->resize_window('medium');
@@ -422,6 +439,27 @@ class behat_hooks extends behat_base {
             }
             $this->scenariorunning = true;
         }
+    }
+
+    /**
+     * Sets up the tags for the current scenario.
+     *
+     * @param \Behat\Behat\Hook\Scope\BeforeScenarioScope $scope Scope
+     */
+    protected static function fetch_tags_for_scenario(\Behat\Behat\Hook\Scope\BeforeScenarioScope $scope) {
+        self::$scenariotags = array_flip(array_merge(
+            $scope->getScenario()->getTags(),
+            $scope->getFeature()->getTags()
+        ));
+    }
+
+    /**
+     * Gets the tags for the current scenario
+     *
+     * @return array Array where key is tag name and value is an integer
+     */
+    public static function get_tags_for_scenario() : array {
+        return self::$scenariotags;
     }
 
     /**
@@ -687,7 +725,7 @@ class behat_hooks extends behat_base {
      *
      * @param string $component
      */
-    public function register_component_selectors_for_component(string $component) {
+    public function register_component_selectors_for_component(string $component): void {
         $context = behat_context_helper::get_component_context($component);
 
         if ($context === null) {

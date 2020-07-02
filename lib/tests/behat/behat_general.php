@@ -179,6 +179,34 @@ class behat_general extends behat_base {
     }
 
     /**
+     * Switches to the iframe containing specified class.
+     *
+     * @Given /^I switch to "(?P<iframe_name_string>(?:[^"]|\\")*)" class iframe$/
+     * @param string $classname
+     */
+    public function switch_to_class_iframe($classname) {
+        // We spin to give time to the iframe to be loaded.
+        // Using extended timeout as we don't know about which
+        // kind of iframe will be loaded.
+        $this->spin(
+            function($context, $classname) {
+                $iframe = $this->find('iframe', $classname);
+                if (!empty($iframe->getAttribute('id'))) {
+                    $iframename = $iframe->getAttribute('id');
+                } else {
+                    $iframename = $iframe->getAttribute('name');
+                }
+                $context->getSession()->switchToIFrame($iframename);
+
+                // If no exception we are done.
+                return true;
+            },
+            $classname,
+            behat_base::get_extended_timeout()
+        );
+    }
+
+    /**
      * Switches to the main Moodle frame.
      *
      * @Given /^I switch to the main frame$/
@@ -213,6 +241,30 @@ class behat_general extends behat_base {
      */
     public function switch_to_the_main_window() {
         $this->getSession()->switchToWindow(self::MAIN_WINDOW_NAME);
+    }
+
+    /**
+     * Closes all extra windows opened during the navigation.
+     *
+     * This assumes all popups are opened by the main tab and you will now get back.
+     *
+     * @Given /^I close all opened windows$/
+     * @throws DriverException If there aren't exactly 1 tabs open when finish or no javascript running
+     */
+    public function i_close_all_opened_windows() {
+        if (!$this->running_javascript()) {
+            throw new DriverException('Closing windows steps require javascript');
+        }
+        $names = $this->getSession()->getWindowNames();
+        for ($index = 1; $index < count($names); $index ++) {
+            $this->getSession()->switchToWindow($names[$index]);
+            $this->getSession()->executeScript("window.open('', '_self').close();");
+        }
+        $names = $this->getSession()->getWindowNames();
+        if (count($names) !== 1) {
+            throw new DriverException('Expected to see 1 tabs open, not ' . count($names));
+        }
+        $this->getSession()->switchToWindow($names[0]);
     }
 
     /**
@@ -776,8 +828,8 @@ class behat_general extends behat_base {
         string $preselectortype,
         string $postelement,
         string $postselectortype,
-        $containerelement = null,
-        $containerselectortype = null
+        ?string $containerelement = null,
+        ?string $containerselectortype = null
     ) {
         $msg = "'{$preelement}' '{$preselectortype}' does not appear before '{$postelement}' '{$postselectortype}'";
         $this->check_element_order(
@@ -809,8 +861,8 @@ class behat_general extends behat_base {
         string $postselectortype,
         string $preelement,
         string $preselectortype,
-        $containerelement = null,
-        $containerselectortype = null
+        ?string $containerelement = null,
+        ?string $containerselectortype = null
     ) {
         $msg = "'{$postelement}' '{$postselectortype}' does not appear after '{$preelement}' '{$preselectortype}'";
         $this->check_element_order(
@@ -836,8 +888,8 @@ class behat_general extends behat_base {
      * @param string $msg Message to output if this fails
      */
     protected function check_element_order(
-        $containerelement,
-        $containerselectortype,
+        ?string $containerelement,
+        ?string $containerselectortype,
         string $preelement,
         string $preselectortype,
         string $postelement,
@@ -1497,6 +1549,46 @@ EOF;
     }
 
     /**
+     * Checks that the image on the page is the same as one of the fixture files
+     *
+     * @Then /^the image at "(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)" should be identical to "(?P<filepath_string>(?:[^"]|\\")*)"$/
+     * @throws ExpectationException
+     * @param string $element The locator of the image
+     * @param string $selectortype The selector type
+     * @param string $filepath path to the fixture file
+     */
+    public function the_image_at_should_be_identical_to($element, $selectortype, $filepath) {
+        global $CFG;
+
+        // Get the container node (exception if it doesn't exist).
+        $containernode = $this->get_selected_node($selectortype, $element);
+        $url = $containernode->getAttribute('src');
+        if ($url == null) {
+            throw new ExpectationException('Element does not have src attribute',
+                $this->getSession());
+        }
+        $session = $this->getSession()->getCookie('MoodleSession');
+        $content = download_file_content($url, array('Cookie' => 'MoodleSession=' . $session));
+
+        // Get the content of the fixture file.
+        // Replace 'admin/' if it is in start of path with $CFG->admin .
+        if (substr($filepath, 0, 6) === 'admin/') {
+            $filepath = $CFG->admin . DIRECTORY_SEPARATOR . substr($filepath, 6);
+        }
+        $filepath = str_replace('/', DIRECTORY_SEPARATOR, $filepath);
+        $filepath = $CFG->dirroot . DIRECTORY_SEPARATOR . $filepath;
+        if (!is_readable($filepath)) {
+            throw new ExpectationException('The file to compare to does not exist.', $this->getSession());
+        }
+        $expectedcontent = file_get_contents($filepath);
+
+        if ($content !== $expectedcontent) {
+            throw new ExpectationException('Image is not identical to the fixture. Received ' .
+            strlen($content) . ' bytes and expected ' . strlen($expectedcontent) . ' bytes');
+        }
+    }
+
+    /**
      * Prepare to detect whether or not a new page has loaded (or the same page reloaded) some time in the future.
      *
      * @Given /^I start watching to see if a new page loads$/
@@ -1776,6 +1868,73 @@ EOF;
         }
 
         $value = ($shift == ' shift') ? [\WebDriver\Key::SHIFT . \WebDriver\Key::TAB] : [\WebDriver\Key::TAB];
+        $this->getSession()->getDriver()->getWebDriverSession()->activeElement()->postValue(['value' => $value]);
+    }
+
+    /**
+     * Trigger click on node via javascript instead of actually clicking on it via pointer.
+     * This function resolves the issue of nested elements.
+     *
+     * @When /^I click on "(?P<element_string>(?:[^"]|\\")*)" "(?P<selector_string>[^"]*)" skipping visibility check$/
+     * @param string $element
+     * @param string $selectortype
+     */
+    public function i_click_on_skipping_visibility_check($element, $selectortype) {
+
+        // Gets the node based on the requested selector type and locator.
+        $node = $this->get_selected_node($selectortype, $element);
+        $this->js_trigger_click($node);
+    }
+
+    /**
+     * Checks, that the specified element contains the specified text a certain amount of times.
+     * When running Javascript tests it also considers that texts may be hidden.
+     *
+     * @Then /^I should see "(?P<elementscount_number>\d+)" occurrences of "(?P<text_string>(?:[^"]|\\")*)" in the "(?P<element_string>(?:[^"]|\\")*)" "(?P<text_selector_string>[^"]*)"$/
+     * @throws ElementNotFoundException
+     * @throws ExpectationException
+     * @param int    $elementscount How many occurrences of the element we look for.
+     * @param string $text
+     * @param string $element Element we look in.
+     * @param string $selectortype The type of element where we are looking in.
+     */
+    public function i_should_see_occurrences_of_in_element($elementscount, $text, $element, $selectortype) {
+
+        // Getting the container where the text should be found.
+        $container = $this->get_selected_node($selectortype, $element);
+
+        // Looking for all the matching nodes without any other descendant matching the
+        // same xpath (we are using contains(., ....).
+        $xpathliteral = behat_context_helper::escape($text);
+        $xpath = "/descendant-or-self::*[contains(., $xpathliteral)]" .
+                "[count(descendant::*[contains(., $xpathliteral)]) = 0]";
+
+        $nodes = $this->find_all('xpath', $xpath, false, $container);
+
+        if ($this->running_javascript()) {
+            $nodes = array_filter($nodes, function($node) {
+                return $node->isVisible();
+            });
+        }
+
+        if ($elementscount != count($nodes)) {
+            throw new ExpectationException('Found '.count($nodes).' elements in column. Expected '.$elementscount,
+                    $this->getSession());
+        }
+    }
+
+    /**
+     * Manually press enter key.
+     *
+     * @When /^I press enter/
+     * @throws DriverException
+     */
+    public function i_manually_press_enter() {
+        if (!$this->running_javascript()) {
+            throw new DriverException('Enter press step is not available with Javascript disabled');
+        }
+
+        $value = [\WebDriver\Key::ENTER];
         $this->getSession()->getDriver()->getWebDriverSession()->activeElement()->postValue(['value' => $value]);
     }
 }

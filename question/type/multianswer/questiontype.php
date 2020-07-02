@@ -45,6 +45,7 @@ class qtype_multianswer extends question_type {
     public function get_question_options($question) {
         global $DB, $OUTPUT;
 
+        parent::get_question_options($question);
         // Get relevant data indexed by positionkey from the multianswers table.
         $sequence = $DB->get_field('question_multianswer', 'sequence',
                 array('question' => $question->id), MUST_EXIST);
@@ -523,7 +524,7 @@ function qtype_multianswer_extract_question($text) {
  * @param object $question  The multianswer question to validate as returned by qtype_multianswer_extract_question
  * @return array Array of error messages with questions field names as keys.
  */
-function qtype_multianswer_validate_question($question) {
+function qtype_multianswer_validate_question(stdClass $question) : array {
     $errors = array();
     if (!isset($question->options->questions)) {
         $errors['questiontext'] = get_string('questionsmissing', 'qtype_multianswer');

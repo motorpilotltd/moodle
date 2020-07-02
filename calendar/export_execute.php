@@ -76,7 +76,7 @@ if(!empty($what) && !empty($time)) {
         if ($what == 'all') {
             $users = $user->id;
             $courses[SITEID] = new stdClass;
-            $courses[SITEID]->shortname = get_string('globalevents', 'calendar');
+            $courses[SITEID]->shortname = get_string('siteevents', 'calendar');
             $paramcourses[SITEID] = $courses[SITEID];
             $paramcategory = true;
         } else if ($what == 'groups') {
@@ -188,6 +188,11 @@ if(!empty($what) && !empty($time)) {
 }
 /* BEGIN CORE MOD */
 // Reversion to old function call, update for LaL compatibility required.
+/*
+$limitnum = 0;
+$events = calendar_get_legacy_events($timestart, $timeend, $users, $groups, array_keys($paramcourses), false, true,
+        $paramcategory, $limitnum);
+*/
 $events = calendar_get_events($timestart, $timeend, $users, $groups, array_keys($paramcourses), false, true,
         $paramcategory);
 /* END CORE MOD */
@@ -220,6 +225,11 @@ foreach($events as $event) {
 
     $ev->add_property('class', 'PUBLIC'); // PUBLIC / PRIVATE / CONFIDENTIAL
     $ev->add_property('last-modified', Bennu::timestamp_to_datetime($event->timemodified));
+
+    if (!empty($event->location)) {
+        $ev->add_property('location', $event->location);
+    }
+
     $ev->add_property('dtstamp', Bennu::timestamp_to_datetime()); // now
     if ($event->timeduration > 0) {
         //dtend is better than duration, because it works in Microsoft Outlook and works better in Korganizer

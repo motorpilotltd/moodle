@@ -171,6 +171,7 @@ abstract class backup_structure_dbops extends backup_dbops {
                                                               'itemname' => $itemname . 'final',
                                                               'itemid' => $annotation->itemid))) {
 /* BEGIN CORE MOD */
+                // $DB->set_field('backup_ids_temp', 'itemname', $itemname . 'final', array('id' => $annotation->id));
                 $updatedetails = new stdClass();
                 $updatedetails->annotationid = $annotation->id;
                 $updatedetails->itemname = $itemname;

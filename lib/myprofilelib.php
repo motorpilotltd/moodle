@@ -165,6 +165,12 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
         $tree->add_node($node);
     }
 
+    if (!isset($hiddenfields['moodlenetprofile']) && $user->moodlenetprofile) {
+        $node = new core_user\output\myprofile\node('contact', 'moodlenetprofile', get_string('moodlenetprofile', 'user'), null,
+                null, $user->moodlenetprofile);
+        $tree->add_node($node);
+    }
+
 /* BEGIN CORE MOD */
     require_once($CFG->dirroot.'/local/regions/lib.php');
     $userregion = local_regions_user_profile($user);
@@ -241,7 +247,7 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
 */
 /* END CORE MOD */
 
-    if (!isset($hiddenfields['mycourses'])) {
+    if ($iscurrentuser || !isset($hiddenfields['mycourses'])) {
         $showallcourses = optional_param('showallcourses', 0, PARAM_INT);
         if ($mycourses = enrol_get_all_users_courses($user->id, true, null)) {
             $shown = 0;

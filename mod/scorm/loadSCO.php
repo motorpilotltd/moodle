@@ -96,7 +96,6 @@ $lmsapi = (scorm_version_check($scorm->version, SCORM_12) || empty($scorm->versi
 echo html_writer::start_tag('html');
 echo html_writer::start_tag('head');
 echo html_writer::tag('title', 'LoadSCO');
-
 ?>
     <script type="text/javascript">
     //<![CDATA[

@@ -45,7 +45,7 @@ $string['datarootpermission'] = 'Datu-direktorioen baimena';
 $string['dbprefix'] = 'Taulen aurrizkia';
 $string['dirroot'] = 'Moodle direktorioa';
 $string['environmenthead'] = 'Zure ingurunea egiaztatzen...';
-$string['environmentsub2'] = 'Moodleko bertsio bakoitzak PHPko gutxieneko bertsioa eta derrigorrez instalatu beharreko PHP hedapen batzuk ditu. Ingurunearen azterketa oso bat egiten da instalazioa eta eguneraketa bakoitza egin aurretik. Mesedez, jarri harremanetan zerbitzariaren kudeatzailearekin ez badakizu bertsio berria edo PHP hedapenak nola instalatu.';
+$string['environmentsub2'] = 'Moodleko bertsio bakoitzak PHPko gutxieneko bertsioa eta derrigorrez instalatu beharreko PHP hedapen batzuk ditu. Ingurunearen azterketa oso bat egiten da instalazioa eta eguneratze bakoitza egin aurretik. Mesedez, jarri harremanetan zerbitzariaren kudeatzailearekin ez badakizu bertsio berria edo PHP hedapenak nola instalatu.';
 $string['errorsinenvironment'] = 'Huts egin du ingurunearen egiaztatzeak!';
 $string['installation'] = 'Instalazioa';
 $string['langdownloaderror'] = 'Zoritxarrez "{$a}" hizkuntza ezin izan da jaitsi. Instalazio-prozesuak ingelesez jarraituko du.';
@@ -93,10 +93,7 @@ $string['welcomep20'] = 'Orri hau ikusten baduzu <strong>{$a->packname} {$a->pac
 $string['welcomep30'] = '<strong>{$a->installername}</strong>ren bertsio honek <strong>Moodle</strong>-k
 zure ordenagailuan funtzionatzeko behar diren aplikazioak dauzka, zehazki hurrengoak:';
 $string['welcomep40'] = 'Paketeak ere zera dauka: <strong>Moodle {$a->moodlerelease} ({$a->moodleversion})</strong>.';
-$string['welcomep50'] = 'Paketeko aplikazio guztien erabilpena dagozkien lizentziek
-    arautzen dute. <strong>{$a->installername}</strong> aplikazioak
-    <a href="http://www.opensource.org/docs/definition_plain.html">kode irekia</a> dauka eta
-   <a href="http://www.gnu.org/copyleft/gpl.html">GPL</a> lizentziapean banatzen da.';
+$string['welcomep50'] = 'Paketeko aplikazio guztien erabilpena dagozkien lizentziek arautzen dute. <strong>{$a->installername}</strong> aplikazioak <a href="https://www.opensource.org/docs/definition_plain.html">kode irekia</a> dauka eta <a href="https://www.gnu.org/copyleft/gpl.html">GPL</a> lizentziapean banatzen da.';
 $string['welcomep60'] = 'Datozen orriek urrats erraz batzuen bidez gidatuko zaituzte <strong>Moodle</strong> zure ordenagailuan instalatu eta konfiguratzeko. Aholkatzen diren lehenetsitako balioak mantendu edo, nahi izanez gero, alda ditzakezu zure beharrei erantzun diezaieten.';
 $string['welcomep70'] = 'Egin klik "Hurrengoa" botoian <strong>Moodle</strong>ren konfigurazioarekin jarraitzeko.';
 $string['wwwroot'] = 'Web helbidea';
