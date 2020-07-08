@@ -49,9 +49,9 @@ class block_arup_mylearning_editcpd_form extends moodleform {
 
         $mform->addElement('date_selector', 'endtime', get_string('cpd:endtime', 'block_arup_mylearning'), array('timezone' => 0, 'optional' => 1));
 
-        $mform->addElement('text', 'duration', get_string('duration', 'local_taps').get_string('durationcode', 'local_taps'), 'size="5"');
+        $mform->addElement('text', 'duration', get_string('taps:duration', 'tapsenrol').get_string('taps:durationcode', 'tapsenrol'), 'size="5"');
         $mform->setType('duration', PARAM_TEXT);
-        $mform->addHelpButton('duration', 'duration', 'local_taps');
+        $mform->addHelpButton('duration', 'duration', 'tapsenrol');
         $mform->addRule('duration', null, 'required', null, 'client');
 
         $mform->addElement('select', 'durationunits', get_string('cpd:durationunits', 'block_arup_mylearning'), $taps->get_durationunitscode());
@@ -94,15 +94,11 @@ class block_arup_mylearning_editcpd_form extends moodleform {
     }
 
     public function validation($data, $files) {
-        $errors = [];
+        $errors = parent::validation($data, $files);
         if (!empty($data['duration'])) {
-            $time = explode(':', $data['duration']);
-            if (count($time) > 2) {
-                $errors['duration'] = get_string('validation:durationformatincorrect', 'local_taps').get_string('durationcode', 'local_taps');
-            } elseif (isset($time[1]) && ($time[1] < 0 || $time[1] > 59 || !is_numeric($time[1]))) {
-                $errors['duration'] = get_string('validation:durationinvalidminutes', 'local_taps').get_string('durationcode', 'local_taps');
-            } elseif ((isset($time[0]) && ((int)$time[0] != $time[0] || $time[0] < 0))) {
-                $errors['duration'] = get_string('validation:durationinvalidhours', 'local_taps').get_string('durationcode', 'local_taps');
+            $durationerror = \mod_tapsenrol\taps::validate_duration($data['duration']);
+            if (!empty($durationerror)) {
+                $errors['duration'] = $durationerror;
             }
         }
 

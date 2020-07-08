@@ -40,8 +40,6 @@ class overview extends base {
     public function export_for_template(renderer_base $output) {
         global $OUTPUT;
         $data = new stdClass();
-        
-        $taps = new \local_taps\taps();
 
         $courselist = $this->coursemanager->courselist;
 
@@ -189,7 +187,7 @@ class overview extends base {
                 }
                 if ($fieldname == 'duration') {
                     if (!empty($course->durationunitscode) && $course->durationunitscode == 'H') {
-                        $value->value = $taps->duration_hours_display($value->value, $course->durationunits);
+                        $value->value = \mod_tapsenrol\taps::duration_hours_display($value->value, $course->durationunits);
                     } else {
                         $value->value .= ' ' . $course->durationunits;
                     }
@@ -295,7 +293,7 @@ class overview extends base {
         $pagination->prevurl = new moodle_url('/local/coursemanager/index.php', $params);
         $params['start'] = $this->coursemanager->start + 1;
         $pagination->nexturl = new moodle_url('/local/coursemanager/index.php', $params);
-        
+
         $leftalt = get_string('previous', 'local_coursemanager');
         $licon = new \pix_icon('t/left', $leftalt, '', array('title' => $leftalt));
         $pagination->leftarrow = $OUTPUT->render($licon);

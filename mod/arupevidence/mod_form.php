@@ -245,9 +245,9 @@ class mod_arupevidence_mod_form extends moodleform_mod {
         $mform->setType('provider', PARAM_TEXT);
         $mform->disabledIf('provider', 'cpdlms', 'neq', ARUPEVIDENCE_CPD);
 
-        $mform->addElement('text', 'duration', get_string('duration', 'local_taps').get_string('durationcode', 'local_taps'), 'size="5"');
+        $mform->addElement('text', 'duration', get_string('taps:duration', 'tapsenrol').get_string('taps:durationcode', 'tapsenrol'), 'size="5"');
         $mform->setType('duration', PARAM_TEXT);
-        $mform->addHelpButton('duration', 'duration', 'local_taps');
+        $mform->addHelpButton('duration', 'taps:duration', 'tapsenrol');
 
         $mform->addElement('editor', 'learningdesc', get_string('cpd:learningdesc', 'block_arup_mylearning'));
         $mform->disabledIf('learningdesc', 'cpdlms', 'neq', ARUPEVIDENCE_CPD);
@@ -260,8 +260,6 @@ class mod_arupevidence_mod_form extends moodleform_mod {
 
     public function set_data($defaultvalues) {
         global $DB;
-
-        $taps = new \local_taps\taps();
 
         if (!empty($this->cm->instance)) {
             $arupevidence = $DB->get_record('arupevidence',  array('id' => $this->cm->instance));
@@ -280,7 +278,7 @@ class mod_arupevidence_mod_form extends moodleform_mod {
                 unset($defaultvalues->{'approvalusers'});
             }
             if (!empty($defaultvalues->durationunitscode) && $defaultvalues->durationunitscode == 'H') {
-                $defaultvalues->duration = $taps->duration_hours_display($defaultvalues->duration, '', true);
+                $defaultvalues->duration = \mod_tapsenrol\taps::duration_hours_display($defaultvalues->duration, '', true);
             }
             if (!empty($this->declarations)) {
                 $defaultvalues->{'declaration'} = array_values($this->declarations_menu);
@@ -332,13 +330,9 @@ class mod_arupevidence_mod_form extends moodleform_mod {
             if (empty($data['duration'])) {
                 $errors['duration'] = get_string('error:cpdrequired', 'mod_arupevidence');
             } else {
-                $time = explode(':', $data['duration']);
-                if (count($time) > 2) {
-                    $errors['duration'] = get_string('validation:durationformatincorrect', 'local_taps').get_string('durationcode', 'local_taps');
-                } elseif (isset($time[1]) && ($time[1] < 0 || $time[1] > 59 || !is_numeric($time[1]))) {
-                    $errors['duration'] = get_string('validation:durationinvalidminutes', 'local_taps').get_string('durationcode', 'local_taps');
-                } elseif ((isset($time[0]) && ((int)$time[0] != $time[0] || $time[0] < 0))) {
-                    $errors['duration'] = get_string('validation:durationinvalidhours', 'local_taps').get_string('durationcode', 'local_taps');
+                $durationerror = \mod_tapsenrol\taps::validate_duration($data['duration']);
+                if (!empty($durationerror)) {
+                    $errors['duration'] = $durationerror;
                 }
             }
 

@@ -677,3 +677,26 @@ $string['waitinglist'] = 'Waiting List';
 $string['whenandwhere:10'] = 'When and Where';
 $string['whenandwhere:20'] = 'Enrolment Information';
 $string['whenandwhere:mixed'] = 'Enrolment Information';
+
+// Strings for duration updates migrated from local_taps.
+$string['taps:duration'] = 'Duration';
+$string['taps:durationcode'] = ' (HH:00/HH:59)';
+$string['taps:durationcodehours'] = ' (HH)';
+$string['taps:duration_help'] = '**Duration** is the total length in hours.
+For example:
+* "2 hours" is entered as **2** or **2:00**
+* "1 hour and 59 minutes" is entered as **1:59**
+* "59 minutes" is entered as **0:59**.
+
+If if occurs over two or more time periods, the duration is the combined total.';
+$string['taps:durationhours_help'] = '**Duration** is the total length in hours.
+For example:
+* "2 hours" is entered as **2**';
+$string['taps:durationhours'] = 'Duration';
+$string['taps:validation:durationformatincorrect'] = 'Incorrect duration format';
+$string['taps:validation:durationinvalidminutes'] = 'Enter 0 to 59 only for minutes';
+$string['taps:validation:durationinvalidhours'] = 'Enter valid number of (whole) hours';
+$string['taps:hr'] = 'Hr';
+$string['taps:hrs'] = 'Hrs';
+$string['taps:min'] = 'Min';
+$string['taps:mins'] = 'Mins';

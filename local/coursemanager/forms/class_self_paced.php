@@ -67,10 +67,4 @@ class cmform_class_self_paced extends cmform_class {
         $mform->getElement('classtype')->setValue('Self Paced');
         parent::definition_after_data();
     }
-
-    public function validation($data, $files){
-        $errors = parent::validation($data, $files);
-        
-        return $errors;
-    }
 }

@@ -135,7 +135,7 @@ class courseformmoddifier {
         $transaction = $DB->start_delegated_transaction();
         self::add_default_enrols($course, $enrolmentrole);
 
-        self::add_default_activities_complation($course, $internalworkflowid, $enrolmentregion);
+        self::add_default_activities_completion($course, $internalworkflowid, $enrolmentregion);
 
         $transaction->allow_commit();
     }
@@ -221,7 +221,7 @@ class courseformmoddifier {
         }
     }
 
-    private static function add_default_activities_complation($course, $internalworkflowid, $enrolmentregion) {
+    private static function add_default_activities_completion($course, $internalworkflowid, $enrolmentregion) {
         global $DB, $CFG;
 
         require_once("$CFG->dirroot/mod/tapsenrol/lib.php");

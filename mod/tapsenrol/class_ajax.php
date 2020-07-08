@@ -49,7 +49,7 @@ try {
             $a->date = str_replace('UTC', 'GMT', $a->date);
         }
         if (!empty($class->classdurationunitscode) && $class->classdurationunitscode == 'H') {
-            $a->duration = ($class->classduration) ? $taps->duration_hours_display($class->classduration, $class->classdurationunits) : get_string('tbc', 'tapsenrol');
+            $a->duration = ($class->classduration) ? \mod_tapsenrol\taps::duration_hours_display($class->classduration, $class->classdurationunits) : get_string('tbc', 'tapsenrol');
         } else {
             $a->duration = ($class->classduration) ? (float) $class->classduration . ' ' . $class->classdurationunits : get_string('tbc', 'tapsenrol');
         }

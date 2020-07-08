@@ -411,8 +411,8 @@ class taps {
 
         $activewhere = $activeonly ? ' AND lte.active = 1' : '';
         $archivedwhere = $archived ? '' : ' AND (ltc.archived = 0 OR ltc.archived IS NULL) AND (lte.archived = 0 OR lte.archived IS NULL)';
-        $sql = "SELECT lte.* 
-                FROM {tapsenrol_class_enrolments} lte 
+        $sql = "SELECT lte.*
+                FROM {tapsenrol_class_enrolments} lte
                 INNER JOIN {local_taps_class} ltc ON lte.classid = ltc.id
                 WHERE userid = :userid $courseidwhere $activewhere $archivedwhere";
         $enrolments = $DB->get_records_sql($sql, $params);
@@ -670,6 +670,93 @@ class taps {
         }
 
         return $seatsremaining;
+    }
+
+    /**
+     * Display duration for Hour(s) or input format for HH:MM
+     * @param float $duration
+     * @param string $durationunits
+     * @param bool $isinput
+     * @return string
+     */
+    public static function duration_hours_display($duration, $durationunits = '', $isinput = false) {
+        $isfloat = is_numeric($duration) && floor($duration) != $duration;
+
+        if ($isfloat) {
+            $durationstr = '';
+            $hr = floor($duration);
+            $min = $duration - $hr;
+            $min = round($min * HOURMINS);
+
+            $hrunits = get_string(
+                ($hr == 1) ? 'taps:hr' : 'taps:hrs',
+                'tapsenrol'
+            );
+            $minunits = get_string(
+                ($min == 1) ? 'taps:min' : 'taps:mins',
+                'tapsenrol'
+            );
+
+            if ($hr != 0) {
+                $durationstr = $hr . '&nbsp;' . $hrunits;
+            }
+
+            if ($min != 0) {
+                if ($hr != 0) {
+                    $durationstr .= '&nbsp;';
+                }
+                $durationstr .= $min . '&nbsp;' . $minunits;
+            }
+
+            return !$isinput ? $durationstr : $hr . ':' . str_pad($min, 2, '0', STR_PAD_LEFT);
+        }
+
+        return !$isinput ? $duration . '&nbsp;' . $durationunits : $duration;
+    }
+
+    /**
+     * Coverting  input hh:mm to hours
+     *
+     * @param $duration
+     * @return float|int
+     */
+    public static function combine_duration_hours($duration) {
+        if (!empty($duration)) {
+            $time = explode(':', $duration);
+            $mins = 0;
+            $hrs = $time[0];
+            if (isset($time[1])) {
+                $mins = $time[1] / HOURMINS;
+                $mins = number_format($mins, 4);
+            }
+            return $hrs + $mins;
+        }
+
+        return $duration;
+    }
+
+    /**
+     * Validate incoming HH:MM duration.
+     *
+     * @param $duration
+     * @return bool|string
+     */
+    public static function validate_duration($duration) {
+        $time = explode(':', $duration);
+        $errorcode = '';
+        if (count($time) > 2) {
+            $errorcode = 'durationformatincorrect';
+        } elseif (isset($time[1]) && ($time[1] < 0 || $time[1] > 59 || !is_numeric($time[1]))) {
+            $errorcode = 'durationinvalidminutes';
+        } elseif ((isset($time[0]) && ((int)$time[0] != $time[0] || $time[0] < 0))) {
+            $errorcode = 'durationinvalidhours';
+        }
+
+        if (!empty($errorcode)) {
+            return get_string("taps:validation:{$errorcode}", 'tapsenrol').get_string('durationcode', 'tapsenrol');
+        }
+
+        return false;
     }
 
     /**

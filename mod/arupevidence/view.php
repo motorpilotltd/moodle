@@ -42,7 +42,6 @@ if(!$course = $DB->get_record('course', array('id' => $cm->course))){
 $action = optional_param('action', '', PARAM_ALPHA);
 $ahbuserid = optional_param('ahbuserid', 0, PARAM_INT);
 
-
 $context = context_module::instance($cm->id);
 $contextcourse = context_course::instance($course->id);
 
@@ -75,8 +74,6 @@ $customdata = array(
     'arupevidence' => $ahb,
     'declarations' => $declarations
 );
-
-$taps = new \local_taps\taps();
 
 $mform = new mod_arupevidence_completion_form($viewurl, $customdata);
 if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevidence:approvecompletion', $context) && $USER->id != $ahbuser->userid)) {
@@ -141,7 +138,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
         if ($ahb->cpdlms == ARUPEVIDENCE_CPD) {
             $cpddetails = array(
                 'provider' => $data->provider,
-                'duration' => $taps->combine_duration_hours($data->duration),
+                'duration' => \mod_tapsenrol\taps::combine_duration_hours($data->duration),
                 'durationunitscode' => 'H',
                 'location' => $data->location,
                 'classstartdate' => $data->classstartdate,
@@ -286,7 +283,7 @@ if ($mform->is_cancelled() || (!empty($ahbuser) && !has_capability('mod/arupevid
 
         // Approved By
         $user = $DB->get_record('user', array('id' => $ahbuser->approverid), 'firstname, lastname, email');
-        
+
         $label = html_writer::label(get_string('approve:approvedby', 'mod_arupevidence'), 'approvedbylabel');
         $fullname = !empty($user) ? $user->firstname . ' ' . $user->lastname . ' (' . $user->email . ')' : '';
         $value = html_writer::div($fullname ,'approvedbylabel');

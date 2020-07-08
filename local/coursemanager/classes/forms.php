@@ -61,7 +61,7 @@ class forms {
      */
     public function get_form() {
         global $CFG, $USER;
-        
+
         if ($this->coursemanager->editing == 1) {
             $this->courseeditorfield = array('coursedescription', 'courseobjectives', 'courseaudience', 'businessneed',);
             require_once($CFG->dirroot . '/local/coursemanager/forms/'.$this->coursemanager->page.'.php');
@@ -78,13 +78,11 @@ class forms {
 
     /**
      * Get the stored form instance with data.
-     * 
+     *
      * return object $sform a new empty for or the full form data for an existing record.
      */
     private function stored_form() {
         global $DB, $USER, $SESSION;
-        
-        $taps = new \local_taps\taps();
 
         $sform = new stdClass();
         $sform->course = '-1';
@@ -104,6 +102,9 @@ class forms {
                 $classdata->cmcourse = $DB->get_field('local_taps_course', 'id', array('courseid' => $classdata->courseid));
                 $classdata->start = $this->coursemanager->start;
                 $classdata->coursename = $classdata->coursenamedisplay = $this->coursemanager->course->fullname;
+                if (!empty($classdata->classduration) && $classdata->classdurationunitscode == 'H') {
+                    $classdata->classduration = \mod_tapsenrol\taps::duration_hours_display($classdata->classduration, $classdata->classdurationunits, $durationisinput);
+                }
                 if ($this->coursemanager->editing == 1 && $classdata->classtype == 'Scheduled') {
                     // Unset for Scheduled classes as hidden fields in secondary form.
                     unset($classdata->classtype);
@@ -165,7 +166,7 @@ class forms {
                 $durationunits = $coursedata->durationunits;
                 $coursedata->durationunits = $coursedata->durationunitscode;
                 if (!empty($coursedata->duration) && $coursedata->durationunitscode == 'H') {
-                    $coursedata->duration = $taps->duration_hours_display($coursedata->duration, $durationunits, $durationisinput);
+                    $coursedata->duration = \mod_tapsenrol\taps::duration_hours_display($coursedata->duration, $durationunits, $durationisinput);
                 }
                 if ($coursedata->enddate > 0) {
                     $coursedata->enddateenabled = 1;
@@ -329,7 +330,7 @@ class forms {
                     $data->enddate = 0;
                 }
 
-                
+
                 if (!empty($data->duration)) {
                     // Set durationunits to H as default
                     $data->durationunits = "H";
@@ -353,7 +354,7 @@ class forms {
             if (!isset($data->classhidden)) {
                 $data->classhidden = 0;
             }
-            
+
             if (!empty($data->classduration)) {
                 // Set classdurationunitscode to H as default
                 $data->classdurationunitscode = "H";
@@ -424,12 +425,12 @@ class forms {
                 }
                 $record->$key = $value;
             }
-            
+
             // Convert duration(hh:mm) to hours
             if ($datatype == 'course' && !empty($data->duration)) {
-                $record->duration = $taps->combine_duration_hours($record->duration);
+                $record->duration = \mod_tapsenrol\taps::combine_duration_hours($record->duration);
             } else if ($datatype == 'class' && !empty($data->classduration)) {
-                $record->classduration = $taps->combine_duration_hours($record->classduration);
+                $record->classduration = \mod_tapsenrol\taps::combine_duration_hours($record->classduration);
             }
 
             $record->timemodified = time();
@@ -452,8 +453,8 @@ class forms {
                     $data = $this->get_session_data($data);
                 }
                 if (!empty($data->duration)) {
-                    $data->duration = $taps->combine_duration_hours($data->duration);
-                }   
+                    $data->duration = \mod_tapsenrol\taps::combine_duration_hours($data->duration);
+                }
             }
 
             if ($datatype == 'class') {
@@ -461,7 +462,7 @@ class forms {
                 $max = $DB->get_record_sql($sqlmax);
                 $data->classid = $max->maxid + 1;
                 if (!empty($data->classduration)) {
-                    $data->classduration = $taps->combine_duration_hours($data->classduration);
+                    $data->classduration = \mod_tapsenrol\taps::combine_duration_hours($data->classduration);
                 }
             }
 

@@ -69,8 +69,6 @@ $customdata = array(
     'declarations' => $declarations
 );
 
-$taps = new \local_taps\taps();
-
 $mform = new mod_arupevidence_upload_form($uploadurl, $customdata);
 if ($mform->is_cancelled()) {
    redirect($courseurl);
@@ -173,7 +171,7 @@ if ($mform->is_cancelled()) {
     if ($ahb->cpdlms == ARUPEVIDENCE_CPD) {
         $cpddetails = array(
             'provider' => $data->provider,
-            'duration' => $taps->combine_duration_hours($data->duration),
+            'duration' => \mod_tapsenrol\taps::combine_duration_hours($data->duration),
             'durationunitscode' => 'H',
             'location' => $data->location,
             'classstartdate' => $data->classstartdate,

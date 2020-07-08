@@ -71,6 +71,8 @@ if ($action == 'edit') {
         redirect($redirecturl);
         exit;
     }
+    // Format duration input
+    $cpd->duration = \mod_tapsenrol\taps::duration_hours_display($cpd->duration, '', true);
 } else {
     require_capability('block/arup_mylearning:addcpd', $context);
     $cpd = new \local_learningrecordstore\lrsentry();
@@ -109,7 +111,7 @@ if ($form->is_cancelled()) {
     $cpd->description = $data->description['text'];
     $cpd->timemodified = time();
     $data->durationunitscode = 'H'; // Set durationunits to Hour(s) as default
-    $data->duration = $taps->combine_duration_hours($data->duration); // converting hh:mm to hours
+    $data->duration = \mod_tapsenrol\taps::combine_duration_hours($data->duration); // converting hh:mm to hours
     switch ($action) {
         case 'add' :
             $cpd->insert();

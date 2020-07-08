@@ -55,8 +55,6 @@ abstract class mod_tapsenrol_manage_enrolments_step2_form extends moodleform {
             return '';
         }
 
-        $taps = new \local_taps\taps();
-
         $html = html_writer::start_tag('div', array('class' => 'tapsenrol_manage_enrolments_class mform', 'style' => 'margin-top: -10px;'));
 
         $classname = html_writer::tag('div', get_string('classname', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
@@ -100,7 +98,11 @@ abstract class mod_tapsenrol_manage_enrolments_step2_form extends moodleform {
         $html .= html_writer::tag('div', $date, array('class' => 'date fitem'));
 
         $duration = html_writer::tag('div', get_string('duration', 'tapsenrol'). ':', array('class' => 'fitemtitle'));
-        $this->_class->classduration = ($this->_class->classduration) ? (float) $this->_class->classduration . ' ' . $this->_class->classdurationunits : get_string('tbc', 'tapsenrol');
+        if (!empty($this->_class->classdurationunitscode) && $this->_class->classdurationunitscode == 'H') {
+            $this->_class->duration = ($this->_class->classduration) ? \mod_tapsenrol\taps::duration_hours_display($this->_class->classduration, $this->_class->classdurationunits) : get_string('tbc', 'tapsenrol');
+        } else {
+            $this->_class->duration = ($this->_class->classduration) ? (float) $this->_class->classduration . ' ' . $this->_class->classdurationunits : get_string('tbc', 'tapsenrol');
+        }
         $duration .= html_writer::tag('div', $this->_class->classduration, array('class' => 'felement'));
         $html .= html_writer::tag('div', $duration, array('class' => 'duration fitem'));
 

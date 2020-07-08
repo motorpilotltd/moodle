@@ -181,7 +181,7 @@ class mod_arupevidence_upload_form extends moodleform
     }
 
     private function add_taps_fields(MoodleQuickForm $mform) {
-        $taps = new \local_taps\taps();
+        $taps = new \mod_tapsenrol\taps();
 
         $defaults = $this->_arupevidence;
 
@@ -192,12 +192,12 @@ class mod_arupevidence_upload_form extends moodleform
         $mform->disabledIf('provider', 'cpdlms', 'neq', ARUPEVIDENCE_CPD);
         $mform->setDefault('provider', !empty($defaults->provider) ? $defaults->provider : '');
 
-        $mform->addElement('text', 'duration', get_string('duration', 'local_taps').get_string('durationcode', 'local_taps'), 'size="5"');
+        $mform->addElement('text', 'duration', get_string('taps:duration', 'tapsenrol').get_string('taps:durationcode', 'tapsenrol'), 'size="5"');
         $mform->setType('duration', PARAM_TEXT);
-        $mform->addHelpButton('duration', 'duration', 'local_taps');
+        $mform->addHelpButton('duration', 'taps:duration', 'tapsenrol');
         $mform->disabledIf('duration', 'cpdlms', 'neq', ARUPEVIDENCE_CPD);
         if (!empty($defaults->durationunitscode) && $defaults->durationunitscode == 'H') {
-            $defaults->duration = $taps->duration_hours_display($defaults->duration, '', true);
+            $defaults->duration = \mod_tapsenrol\taps::duration_hours_display($defaults->duration, '', true);
         }
         $mform->setDefault('duration', !empty($defaults->duration) ? $defaults->duration : '');
 
@@ -256,13 +256,9 @@ class mod_arupevidence_upload_form extends moodleform
         }
 
         if (!empty($data['duration'])) {
-            $time = explode(':', $data['duration']);
-            if (count($time) > 2) {
-                $errors['duration'] = get_string('validation:durationformatincorrect', 'local_taps').get_string('durationcode', 'local_taps');
-            } elseif (isset($time[1]) && ($time[1] < 0 || $time[1] > 59 || !is_numeric($time[1]))) {
-                $errors['duration'] = get_string('validation:durationinvalidminutes', 'local_taps').get_string('durationcode', 'local_taps');
-            } elseif ((isset($time[0]) && ((int)$time[0] != $time[0] || $time[0] < 0))) {
-                $errors['duration'] = get_string('validation:durationinvalidhours', 'local_taps').get_string('durationcode', 'local_taps');
+            $durationerror = \mod_tapsenrol\taps::validate_duration($data['duration']);
+            if (!empty($durationerror)) {
+                $errors['duration'] = $durationerror;
             }
         }
 

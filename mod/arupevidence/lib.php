@@ -65,13 +65,11 @@ function arupevidence_supports($feature) {
 function arupevidence_add_instance(stdClass $arupevidence, mod_arupevidence_mod_form $mform = null) {
     global $DB;
 
-    $taps = new \local_taps\taps();
-
     $arupevidence->learningdesc = $arupevidence->learningdesc['text'];
     $arupevidence->timecreated = time();
 
     $arupevidence->durationunitscode = 'H'; // Set durationunits to Hour(s) as default
-    $arupevidence->duration = $taps->combine_duration_hours($arupevidence->duration); // converting hh:mm to hours
+    $arupevidence->duration = \mod_tapsenrol\taps::combine_duration_hours($arupevidence->duration); // converting hh:mm to hours
 
     $insertid = $DB->insert_record('arupevidence', $arupevidence);
     $arupevidence->id = $insertid;
@@ -90,15 +88,13 @@ function arupevidence_add_instance(stdClass $arupevidence, mod_arupevidence_mod_
 function arupevidence_update_instance(stdClass $arupevidence, mod_arupevidence_mod_form $mform = null) {
     global $DB;
 
-    $taps = new \local_taps\taps();
-
     $arupevidence->learningdesc = $arupevidence->learningdesc['text'];
     $arupevidence->timemodified = time();
     $arupevidence->id = $arupevidence->instance;
     arupevidence_add_declarations($arupevidence);
 
     $arupevidence->durationunitscode = 'H'; // Set durationunits to Hour(s) as default
-    $arupevidence->duration = $taps->combine_duration_hours($arupevidence->duration); // converting hh:mm to hours
+    $arupevidence->duration = \mod_tapsenrol\taps::combine_duration_hours($arupevidence->duration); // converting hh:mm to hours
 
     return $DB->update_record('arupevidence', $arupevidence);
 }

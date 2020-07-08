@@ -58,10 +58,4 @@ class cmform_class_scheduled_normal extends cmform_class {
         $mform->getElement('classstatus')->setValue('Normal');
         parent::definition_after_data();
     }
-
-    public function validation($data, $files){
-        $errors = parent::validation($data, $files);
-        
-        return $errors;
-    }
 }

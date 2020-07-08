@@ -1223,8 +1223,6 @@ EOS;
 
     protected function _class_data($enrolment, $old = false) {
 
-        $taps = new \local_taps\taps();
-
         $class = \mod_tapsenrol\enrolclass::fetch(['id' => $enrolment->classid]);
 
         try {
@@ -1287,7 +1285,11 @@ EOS;
         }
 
         if (!empty($class->classduration)) {
-            $classarray['classduration'] = (float) $class->classduration . ' ' . $class->classdurationunits;
+            if (!empty($class->durationunitscode) && $class->durationunitscode == 'H') {
+                $classarray['classduration'] = \mod_tapsenrol\taps::duration_hours_display($class->duration, $class->durationunits);
+            } else {
+                $classarray['classduration'] = (float) $class->duration . ' ' . $class->durationunits;
+            }
         } else {
             $classarray['classduration'] = '-';
         }

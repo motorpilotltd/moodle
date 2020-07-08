@@ -52,7 +52,6 @@ class mod_tapsenrol_manage_enrolments_form extends moodleform {
 
         $hide = ' hide';
 
-
         $class = false;
         if (!empty($classid)) {
             $class = \mod_tapsenrol\enrolclass::fetch(['id' => $classid]);
@@ -74,7 +73,11 @@ class mod_tapsenrol_manage_enrolments_form extends moodleform {
                 // Show UTC as GMT for clarity.
                 $class->date = str_replace('UTC', 'GMT', $class->date);
             }
-            $class->classduration = ($class->classduration) ? (float) $class->classduration . ' ' . $class->classdurationunits : get_string('tbc', 'tapsenrol');
+            if (!empty($class->classdurationunitscode) && $class->classdurationunitscode == 'H') {
+                $class->duration = ($class->classduration) ? \mod_tapsenrol\taps::duration_hours_display($class->classduration, $class->classdurationunits) : get_string('tbc', 'tapsenrol');
+            } else {
+                $class->duration = ($class->classduration) ? (float) $class->classduration . ' ' . $class->classdurationunits : get_string('tbc', 'tapsenrol');
+            }
             $class->cost = $class->price ? $class->price.' '.$class->currencycode : '-';
             $tempseatsremaining = $taps->get_seats_remaining($classid);
             $class->seatsremaining = ($tempseatsremaining === -1 ? get_string('unlimited', 'tapsenrol') : $tempseatsremaining);

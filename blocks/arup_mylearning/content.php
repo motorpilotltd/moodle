@@ -368,8 +368,6 @@ class block_arup_mylearning_content {
             $hascapability = has_capability('block/arup_mylearning:' . $capability, $this->_block->context);
         }
 
-        $taps = new \local_taps\taps();
-
         $content = '';
 
         $content .= html_writer::tag('p', get_string('myhistory:intro', 'block_arup_mylearning'));

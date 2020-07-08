@@ -274,8 +274,8 @@ class course extends \data_object {
                 'keywordsformat'      => FORMAT_HTML,
                 'display'             => true,
                 'methodology'         => \coursemetadatafield_arup\arupmetadata::METHODOLOGY_LINKEDINLEARNING,
-                'duration'            => round($this->timetocomplete / MINSECS),//check
-                'durationunits'       => 'minutes',//check
+                'duration'            => round($this->timetocomplete / HOURSECS, 4),
+                'durationunits'       => 'hours',
                 'thirdpartyreference' => $this->urn,
         ];
         $arupmetadata = new \coursemetadatafield_arup\arupmetadata();

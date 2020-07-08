@@ -189,7 +189,12 @@ class arupmetadata extends \data_object implements \renderable, \templatable {
         if (empty($this->duration)) {
             return '';
         }
-        return $data = (float) $this->duration . ' ' . $this->durationunits;
+
+        if ($this->durationunits === 'hours') {
+            return \mod_tapsenrol\taps::duration_hours_display($this->duration, $this->durationunits);
+        }
+
+        return (float) $this->duration . ' ' . $this->durationunits;
     }
 
     private $courseobject = null;

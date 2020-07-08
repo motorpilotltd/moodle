@@ -89,7 +89,15 @@ class lrsentry extends \data_object implements \templatable {
         if (empty($this->duration)) {
             return '';
         }
-        return $data = (float) $this->duration . ' ' . \mod_tapsenrol\taps::resolvedurationunit($this->durationunits);
+
+        $units = \mod_tapsenrol\taps::resolvedurationunit($this->durationunits);
+
+        if ($this->durationunits === 'H') {
+            // Deals with hours/minutes combo.
+            return \mod_tapsenrol\taps::duration_hours_display($this->duration, $units);
+        }
+
+        return (float) $this->duration . ' ' . $units;
     }
 
     public function export_for_template(renderer_base $output) {
