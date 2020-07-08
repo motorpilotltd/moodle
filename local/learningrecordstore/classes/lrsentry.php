@@ -17,17 +17,15 @@ class lrsentry extends \data_object implements \templatable {
 
     public $required_fields = ['id'];
     public $optional_fields = [
-            'provider' => null,
+            'provider' => null, // Old TAPS field, could be name of external supplier, etc.
             'healthandsafetycategory' => null,
             'location' => null,
-            'providerid' => null,
             'staffid' => null,
             'duration' => null,
             'durationunits' => null,
             'completiontime' => null,
             'description' => null,
             'certificateno' => null,
-            'providername' => null,
             'classcategory' => null,
             'classcost' => null,
             'classcostcurrency' => null,
@@ -37,19 +35,20 @@ class lrsentry extends \data_object implements \templatable {
             'starttime' => null,
             'endtime' => null,
             'locked' => null,
+            'origin' => null,
+            'originid' => null,
+            'originname' => null,
     ];
 
     public $provider;
     public $healthandsafetycategory;
     public $location;
-    public $providerid; //(could be a classid, moodle courseid, lynda video id etc.
     public $staffid; // generally a user idnumber
     public $duration;
     public $durationunits;
     public $completiontime;
     public $description;
     public $certificateno;
-    public $providername;
     public $classcategory;
     public $classcost;
     public $classcostcurrency;
@@ -59,21 +58,19 @@ class lrsentry extends \data_object implements \templatable {
     public $starttime;
     public $endtime;
     public $locked;
-
-    private $knownproviders = ['moodle', 'Lynda.com'];
-
-    public function usereditable() {
-        return !in_array($this->provider, $this->knownproviders);
-    }
+    public $origin; // What created the record (Moodle course, 3rd party activity, specific activity, etc).
+    public $originid; // The id relating to the origin.
+    public $originname;
 
     public function generateurl() {
-        switch ($this->provider) {
+        switch ($this->origin) {
             case "moodle":
-                return new \moodle_url('/course/view.php', array('id' => $this->providerid));
+                return new \moodle_url('/course/view.php', array('id' => $this->originid));
                 break;
             case "Lynda.com":
-                return new \moodle_url('local/lynda/launch.php', array('lyndacourseid' => $this->providerid));
+                return new \moodle_url('local/lynda/launch.php', array('lyndacourseid' => $this->originid));
                 break;
+            // @TODO: Add further cases here, e.g. LaL, perhaps honestybox (link to moodle course though?).
             default:
                 return false;
                 break;
@@ -98,7 +95,7 @@ class lrsentry extends \data_object implements \templatable {
     public function export_for_template(renderer_base $output) {
         $obj = new \stdClass();
         $obj->duration = $this->formatduration();
-        $obj->coursename = format_string($this->providername);
+        $obj->coursename = format_string($this->originname);
         $obj->classtype = format_string($this->classtype);
         $obj->classcategory = format_string($this->classcategory);
         $obj->completiontime = $this->completiontime;
@@ -145,11 +142,11 @@ class lrsentry extends \data_object implements \templatable {
         }
     }
 
-    public static function fetchbyproviderid($provider, $providerid, $staffid = null) {
+    public static function fetchbyoriginid($origin, $originid, $staffid = null) {
         global $DB;
 
-        $providercompare = $DB->sql_compare_text('provider');
-        $params = ['providerid' => $providerid, 'providername' => $provider];
+        $origincompare = $DB->sql_compare_text('origin');
+        $params = ['originid' => $originid, 'originname' => $origin];
 
         $stafffrag = '';
 
@@ -159,16 +156,16 @@ class lrsentry extends \data_object implements \templatable {
         }
 
         $sql =
-                "SELECT * FROM {local_learningrecordstore} WHERE providerid = :providerid AND $providercompare = :providername $stafffrag";
+                "SELECT * FROM {local_learningrecordstore} WHERE originid = :originid AND $origincompare = :originname $stafffrag";
 
         return $DB->get_record_sql($sql, $params);
     }
 
-    public static function bulkupdatedescription($provider, $providerid, $description) {
+    public static function bulkupdatedescription($origin, $originid, $description) {
         global $DB;
         $sql =
-                "UPDATE {local_learningrecordstore} SET learningdesc = :coursedescription WHERE provider = :provider AND providerid = :providerid";
-        $DB->execute($sql, ['provider' => $provider, 'coursedescription' => $description, 'providerid' => $providerid]);
+                "UPDATE {local_learningrecordstore} SET learningdesc = :coursedescription WHERE origin = :origin AND originid = :originid";
+        $DB->execute($sql, ['origin' => $origin, 'coursedescription' => $description, 'originid' => $originid]);
     }
 
     /**

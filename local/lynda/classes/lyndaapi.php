@@ -277,7 +277,7 @@ class lyndaapi {
                 $datetime = \DateTime::createFromFormat('m/d/Y H:i:s', $raw->CompleteDate, $tz);
                 $timestamp = $datetime->getTimestamp();
 
-                $lrsentry = lrsentry::fetchbyproviderid('Lynda.com', $raw->CourseID, $user->idnumber);
+                $lrsentry = lrsentry::fetchbyoriginid('Lynda.com', $raw->CourseID, $user->idnumber);
 
                 if ($lrsentry) {
                     continue;
@@ -286,14 +286,17 @@ class lyndaapi {
 
                 $lrsentry = new lrsentry();
                 $lrsentry->staffid = $user->idnumber;
-                $lrsentry->providerid = $raw->CourseID;
                 $lrsentry->provider = 'Lynda.com';
+                $lrsentry->origin = 'Lynda.com';
+                $lrsentry->originid = $raw->CourseID;
+                $lrsentry->originname = $raw->CourseName;
                 $lrsentry->completiontime = $timestamp;
                 $lrsentry->duration = $raw->CourseDuration;
                 $lrsentry->durationunits = 'MIN';
                 $lrsentry->description = isset($lyndacourse) ? $lyndacourse->description : '';
                 $lrsentry->classtype = 'ECO';
                 $lrsentry->classcategory = 'PD';
+                $lrsentry->locked = true;
                 $lrsentry->insert();
 
                 mtrace('Created CPD record for ' . $raw->Username);

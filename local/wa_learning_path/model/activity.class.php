@@ -307,7 +307,9 @@ class activity {
                     $lrsrecord = new \local_learningrecordstore\lrsentry();
 
                     $lrsrecord->staffid = $DB->get_field('user', 'idnumber', array('id' => $userid));
-                    $lrsrecord->providername = $activity->title;
+                    $lrsrecord->origin = 'wa_learning_path_activity';
+                    $lrsrecord->originid = $activity->id;
+                    $lrsrecord->originname = $activity->title;
                     $lrsrecord->provider = $activity->provider;
                     $lrsrecord->completiontime = $datecompleted;
                     $lrsrecord->duration = $activity->duration;
@@ -316,6 +318,7 @@ class activity {
                     $lrsrecord->classcategory = $activity->subject;
                     $lrsrecord->classtype = $activity->learningmethod;
                     $lrsrecord->description = $activitynotes;
+                    $lrsrecord->locked = true;
 
                     $lrsrecord->insert();
                 }

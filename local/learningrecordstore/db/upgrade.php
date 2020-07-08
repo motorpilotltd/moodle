@@ -42,8 +42,9 @@ function xmldb_local_learningrecordstore_upgrade($oldversion) {
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('provider', XMLDB_TYPE_TEXT);
         $table->add_field('healthandsafetycategory', XMLDB_TYPE_TEXT);
-        $table->add_field('providerid', XMLDB_TYPE_INTEGER, '10');
-        $table->add_field('providername', XMLDB_TYPE_TEXT);
+        $table->add_field('origin', XMLDB_TYPE_TEXT);
+        $table->add_field('originid', XMLDB_TYPE_INTEGER, '10');
+        $table->add_field('originname', XMLDB_TYPE_TEXT);
         $table->add_field('staffid', XMLDB_TYPE_INTEGER, '10');
         $table->add_field('duration', XMLDB_TYPE_FLOAT, '10,5');
         $table->add_field('durationunits', XMLDB_TYPE_TEXT);

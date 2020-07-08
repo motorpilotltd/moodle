@@ -67,8 +67,9 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
     }
 
     public function add_taps_fields(MoodleQuickForm $mform) {
-        $taps = new \mod_tapsenrol\taps();
+        global $COURSE;
 
+        $taps = new \mod_tapsenrol\taps();
 
         $mform->addElement('header', 'tapstemplate', get_string('cpdformheader', 'mod_aruphonestybox'));
 
@@ -138,8 +139,6 @@ class mod_aruphonestybox_mod_form extends moodleform_mod {
     }
 
     public function set_data($defaultvalues) {
-        global $DB;
-
         $taps = new \local_taps\taps();
 
         if (!empty($defaultvalues->durationunitscode) && $defaultvalues->durationunitscode == 'H') {

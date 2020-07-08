@@ -6,14 +6,15 @@ map enrolmentid to tapsenrol_class_enrolments.id
 New local_learningrecordstore table:
 provider
 healthandsafetycategory
-providerid (could be a classid, moodle courseid, lynda video id etc.)
+origin (where it originated from -> could be 3rd party or a specific activity (for cpd))
+originid (could be a classid, moodle courseid, lynda video id etc.)
 staffid
 duration
 durationunits
 completiontime (consolidation of classcompletiontime as classcompletiondate, needs turning into timestamp)
 description (currently learningdesc)
 certificateno
-providername (coursename)
+originname (coursename)
 starttime take from classstarttime in tapsenrol
 endtime take from classendtime in tapsenrol
 classcategory

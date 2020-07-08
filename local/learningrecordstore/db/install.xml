@@ -9,8 +9,9 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="provider" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="healthandsafetycategory" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="providerid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="providername" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="origin" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="originid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="originname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="staffid" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="duration" TYPE="float" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="durationunits" TYPE="text" NOTNULL="false" SEQUENCE="false"/>

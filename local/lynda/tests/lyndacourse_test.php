@@ -122,8 +122,9 @@ class lyndacourse_test extends advanced_testcase {
         $this->assertEquals(6, count($cpdrecords));
 
         $record1 = reset($cpdrecords);
-        $this->assertEquals('Navisworks Essential Training', $record1->classname);
+        $this->assertEquals('Navisworks Essential Training', $record1->originname);
         $this->assertEquals('Lynda.com', $record1->provider);
+        $this->assertEquals('Lynda.com', $record1->origin);
         $this->assertEquals('1466600604', $record1->completiontime);
         $this->assertEquals('172.62', $record1->duration);
         $this->assertEquals('Minute(s)', $record1->durationunits);
@@ -132,6 +133,7 @@ class lyndacourse_test extends advanced_testcase {
         $this->assertEquals("David Rivers has been recording elearning courses for lynda.com for over a decade. He's one of our star authors! In this interview (conducted from his home recording studio in Canada), he offers lessons from his 100-course journey with lynda.com. David shares his process for creating and recording course content, and provides inspiration for other authors who want to turn their knowledge into tutorials for the emerging elearning market.", $record1->learningdesc);
         $this->assertEquals(180212, $record1->originid);
         $this->assertEquals('padded0', $record1->staffid);
+        $this->assertEquals(true, $record1->locked);
 
         $api->synccoursecompletion();
         $cpdrecords = $DB->get_records('local_learningrecordstore');

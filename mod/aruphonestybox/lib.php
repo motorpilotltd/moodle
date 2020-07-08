@@ -198,8 +198,10 @@ function aruphonestybox_sendtotaps($id, $user, &$debug=array()) {
     $lrsrecord = new \local_learningrecordstore\lrsentry();
 
     $lrsrecord->staffid = $user->idnumber; // Set staffid (Only used to add CPD).
-    $lrsrecord->providername = $data->classname;
     $lrsrecord->provider = $data->provider;
+    $lrsrecord->origin = 'mod_arupevidence';
+    $lrsrecord->originid = $data->id;
+    $lrsrecord->originname = $data->classname;
     $lrsrecord->starttime = $lrsrecord->completiontime = usergetmidnight(time(), new DateTimeZone('UTC'));
     $lrsrecord->duration = $data->duration;
     $lrsrecord->durationunits = $data->durationunitscode;
@@ -210,6 +212,7 @@ function aruphonestybox_sendtotaps($id, $user, &$debug=array()) {
     $lrsrecord->expirydate = empty($data->expirydate) ? null : $data->expirydate;
     $lrsrecord->description = $data->learningdesc;
     $lrsrecord->healthandsafetycategory = $data->healthandsafetycategory;
+    $lrsrecord->locked = true;
 
     $lrsrecord->insert();
 

@@ -359,17 +359,20 @@ EOS;
         $lrsrecord = new \local_learningrecordstore\lrsentry();
 
         $lrsrecord->staffid = $user->idnumber; // Set staffid (Only used to add CPD).
-        $lrsrecord->providername = $session->get_name();
+        $lrsrecord->origin = 'local_lunchandlearn';
+        $lrsrecord->originid = $session->id;
+        $lrsrecord->originname = $session->get_name();
         $lrsrecord->provider = $session->get_supplier();
         $lrsrecord->completiontime = $session->scheduler->get_date();
         $lrsrecord->duration = $session->scheduler->get_duration();
         $lrsrecord->durationunits = 'MIN';
         $lrsrecord->location = $session->scheduler->get_office();
-        $lrsrecord->classtype = isset($extra->p_learning_method) ? $extra->p_learning_method : 'LUNCH_AND_LEARN';
+        $lrsrecord->classtype = isset($extra->p_learning_method) ? $extra->p_learning_method : 'LE';
         $lrsrecord->classcategory = 'PD';
         $lrsrecord->starttime = $session->scheduler->get_date();
         $lrsrecord->description =
                 !empty($extra->p_learning_desc['text']) ? $extra->p_learning_desc['text'] : $session->get_summary();
+        $lrsrecord->locked = true;
 
         $lrsrecord->insert();
 

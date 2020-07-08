@@ -167,7 +167,7 @@ class csvimport {
             $lrsrecord = new \local_learningrecordstore\lrsentry();
 
             $lrsrecord->staffid = $data['staffid']; // Set staffid (Only used to add CPD).
-            $lrsrecord->providername = $data['classname'];
+            $lrsrecord->originname = $data['classname'];
             $lrsrecord->provider = $data['provider'];
             $lrsrecord->completiontime = $data['completiontime'];
             $lrsrecord->duration = $data['duration'];
@@ -439,5 +439,3 @@ class csvimport {
         }
     }
 }
-
-

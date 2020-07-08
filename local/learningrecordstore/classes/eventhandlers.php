@@ -34,11 +34,12 @@ class eventhandlers {
 
         $ccompletion = new \completion_completion(['course' => $event->courseid, 'userid' => $event->relateduserid]);
 
-        $lrsentry->provider = 'moodle';
-        $lrsentry->providerid = $event->courseid;
+        $lrsentry->origin = 'moodle';
+        $lrsentry->originid = $event->courseid;
         $lrsentry->completiontime = $ccompletion->timecompleted;
         $lrsentry->classcategory = $category->name;
-        $lrsentry->providername = $course->fullname;
+        $lrsentry->originname = $course->fullname;
+        $lrsentry->locked = 1;
         $lrsentry->timemodified = time();
         $lrsentry->staffid = $user->idnumber;
 

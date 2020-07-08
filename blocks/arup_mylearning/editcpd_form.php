@@ -27,9 +27,9 @@ class block_arup_mylearning_editcpd_form extends moodleform {
 
         $mform->addElement('header', 'cpdheader', get_string('cpd:header', 'block_arup_mylearning'));
 
-        $mform->addElement('text', 'providername', get_string('cpd:providername', 'block_arup_mylearning'));
-        $mform->setType('providername', PARAM_TEXT);
-        $mform->addRule('providername', null, 'required', null, 'client');
+        $mform->addElement('text', 'originname', get_string('cpd:originname', 'block_arup_mylearning'));
+        $mform->setType('originname', PARAM_TEXT);
+        $mform->addRule('originname', null, 'required', null, 'client');
 
         $classtypes = $taps->get_classtypes('cpd');
         // Unset unwanted values.

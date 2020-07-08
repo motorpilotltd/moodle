@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$string['pluginname'] = 'Lunch & Learn';
+$string['pluginname'] = 'Learning Event';
 $string['pluginnameplural'] = 'Learning Events';
 $string['pluginversiontoolow'] = 'Plugin "{$a->name}" could not be upgraded to version {$a->version}.'
         . ' Upgrading requires at least version {$a->requiredversion} to be installed (Current version: {$a->currentversion}).';

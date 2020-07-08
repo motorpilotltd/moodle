@@ -417,9 +417,9 @@ class block_arup_mylearning_content {
 
             $courseurl = $th->generateurl();
             if ($courseurl) {
-                $cell->text = html_writer::link($courseurl, format_string($th->providername));
+                $cell->text = html_writer::link($courseurl, format_string($th->originname));
             } else {
-                $cell->text = format_string($th->providername);
+                $cell->text = format_string($th->originname);
             }
 
             $cells[] = clone($cell);
@@ -447,7 +447,7 @@ class block_arup_mylearning_content {
                     array(
                             'data-toggle' => 'modal',
                             'data-target' => '#info-modal',
-                            'data-label'  => $th->providername,
+                            'data-label'  => $th->originname,
                             'data-url'    => $modalurl->out(false),
                     )
             );
@@ -561,7 +561,7 @@ class block_arup_mylearning_content {
             foreach ($fields as $field => $fieldname) {
                 switch ($field) {
                     case 'coursename' :
-                        $data = $th->providername;
+                        $data = $th->originname;
                         break;
                     case 'classcategory' :
                         $data = format_string($th->classcategory);

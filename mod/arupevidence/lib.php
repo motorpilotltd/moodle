@@ -69,7 +69,7 @@ function arupevidence_add_instance(stdClass $arupevidence, mod_arupevidence_mod_
 
     $arupevidence->learningdesc = $arupevidence->learningdesc['text'];
     $arupevidence->timecreated = time();
-    
+
     $arupevidence->durationunitscode = 'H'; // Set durationunits to Hour(s) as default
     $arupevidence->duration = $taps->combine_duration_hours($arupevidence->duration); // converting hh:mm to hours
 
@@ -383,7 +383,9 @@ function arupevidence_sendtotaps($id, $user, &$debug=array()) {
     $lrsrecord = new \local_learningrecordstore\lrsentry();
 
     $lrsrecord->staffid = $user->idnumber; // Set staffid (Only used to add CPD).
-    $lrsrecord->providername = $data->classname;
+    $lrsrecord->origin = 'mod_arupevidence';
+    $lrsrecord->originid = $data->id;
+    $lrsrecord->originname = $data->classname;
     $lrsrecord->provider = $data->provider;
     $lrsrecord->starttime = $lrsrecord->completiontime = usergetmidnight(time(), new DateTimeZone('UTC'));
     $lrsrecord->duration = $data->duration;
@@ -394,6 +396,7 @@ function arupevidence_sendtotaps($id, $user, &$debug=array()) {
     $lrsrecord->certificateno = $arupevidence_user->certificateno;
     $lrsrecord->expirydate = $arupevidence_user->expirydate;
     $lrsrecord->description = $data->learningdesc;
+    $lrsrecord->locked = true;
 
     $lrsrecord->insert();
 

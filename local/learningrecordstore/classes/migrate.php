@@ -15,14 +15,15 @@ class migrate {
 insert into {local_learningrecordstore} (provider,
                                            healthandsafetycategory,
                                            location,
-                                           providerid,
+                                           origin,
+                                           originid,
                                            staffid,
                                            duration,
                                            durationunits,
                                            completiontime,
                                            description,
                                            certificateno,
-                                           providername,
+                                           originname,
                                            classcategory,
                                            classcost,
                                            classcostcurrency,
@@ -32,13 +33,14 @@ insert into {local_learningrecordstore} (provider,
                                            starttime,
                                            endtime,
        locked)
-       SELECT (CASE WHEN mc.id IS NOT NULL
-      THEN 'moodle'
-      ELSE mlte.provider
- END),
+       provider,
        healthandsafetycategory,
        location,
-       coalesce (providerid, courseid),
+       SELECT (CASE WHEN mc.id IS NOT NULL
+               THEN 'moodle'
+               ELSE mlte.origin
+               END),
+       coalesce (originid, courseid),
        staffid,
        coalesce(mlte.duration, mca.duration),
        coalesce(mlte.durationunits, mca.durationunits),

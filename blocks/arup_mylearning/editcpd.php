@@ -63,8 +63,8 @@ if ($action == 'edit') {
         $SESSION->block_arup_mylearning->alert->type = 'alert-danger';
         redirect($redirecturl);
         exit;
-    } else if (!$cpd->usereditable()) {
-        // Can only edit own CPD.
+    } else if ($cpd->locked) {
+        // Can only edit unlocked CPD.
         $SESSION->block_arup_mylearning->alert = new stdClass();
         $SESSION->block_arup_mylearning->alert->message = get_string('alert:edit:noteditable', 'block_arup_mylearning');
         $SESSION->block_arup_mylearning->alert->type = 'alert-danger';
