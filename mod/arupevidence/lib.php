@@ -469,28 +469,6 @@ function arupevidence_isapprover($ahb, $user) {
     return false;
 }
 
-function arupevidence_process_result($result, $debug=array()) {
-    $return = new stdClass;
-    $return->success = false;
-
-    if ($result === false) {
-        $return->error = get_string('alert:error:failedtoconnect', 'block_arup_mylearning');
-    } else if (!empty($result['errorid']) && $result['errorid'] < 0) {
-        if (get_string_manager()->string_exists($result['errormessage'], 'local_taps')) {
-            $a = get_string($result['errormessage'], 'local_taps');
-        } else {
-            $a = $result['errormessage'];
-        }
-        $return->error = $a;
-    } else {
-        $return->success = true;
-    }
-    if (!empty($debug)) {
-        $return->debug = $debug;
-    }
-    return $return;
-}
-
 /**
  * Send email notification
  *

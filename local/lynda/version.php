@@ -27,6 +27,4 @@ $plugin->component = 'local_lynda';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release   = "3.3.6 (Build: {$plugin->version})";
 
-$plugin->dependencies = array(
-    'local_taps' => 2017051500,
-);
+$plugin->dependencies = [];

@@ -56,6 +56,4 @@ $plugin->release = 'v0.10.2';
 // Allows to declare explicit dependency on other plugin(s) for this plugin to work.
 // Moodle core checks these declared dependencies and will not allow the plugin
 // installation and/or upgrade until all dependencies are satisfied.
-$plugin->dependencies = array(
-    'local_taps' => 2017051500,
-);
+$plugin->dependencies = [];

@@ -32,5 +32,4 @@ $plugin->release      = "3.3.4 (Build: {$plugin->version})";
 
 $plugin->dependencies = array(
     'block_arup_mylearning' => 2015111601,
-    'local_taps' => 2017051500,
 );
