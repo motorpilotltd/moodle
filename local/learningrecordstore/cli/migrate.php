@@ -60,4 +60,9 @@ if (!$options['domigration']) {
     exit(0);
 }
 
+if (!get_config('local_learningrecordstore', 'version') >= 2015111617) {
+    echo 'local_learningrecordstore _MUST_ be version 2015111617 or greater before migrrating data in.';
+    die;
+}
+
 \local_learningrecordstore\migrate::migrate_lrs_data();

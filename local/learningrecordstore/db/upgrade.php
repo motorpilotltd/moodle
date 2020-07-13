@@ -42,9 +42,8 @@ function xmldb_local_learningrecordstore_upgrade($oldversion) {
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('provider', XMLDB_TYPE_TEXT);
         $table->add_field('healthandsafetycategory', XMLDB_TYPE_TEXT);
-        $table->add_field('origin', XMLDB_TYPE_TEXT);
-        $table->add_field('originid', XMLDB_TYPE_INTEGER, '10');
-        $table->add_field('originname', XMLDB_TYPE_TEXT);
+        $table->add_field('providerid', XMLDB_TYPE_INTEGER, '10');
+        $table->add_field('providername', XMLDB_TYPE_TEXT);
         $table->add_field('staffid', XMLDB_TYPE_INTEGER, '10');
         $table->add_field('duration', XMLDB_TYPE_FLOAT, '10,5');
         $table->add_field('durationunits', XMLDB_TYPE_TEXT);
@@ -128,6 +127,29 @@ function xmldb_local_learningrecordstore_upgrade($oldversion) {
         $DB->execute("UPDATE {local_learningrecordstore} SET staffid = REPLACE(LTRIM(REPLACE(staffid, '0', ' ')), ' ', '0')");
 
         upgrade_plugin_savepoint(true, 2015111616, 'local', 'learningrecordstore');
+    }
+
+    if ($oldversion < 2015111617) {
+        // Update to align with CPD changes.
+        // MUST happen before data migration into LRS.
+        $table = new xmldb_table('local_learningrecordstore');
+
+        $addfield = new xmldb_field('origin', XMLDB_TYPE_TEXT);
+        if (!$dbman->field_exists($table, $addfield)) {
+            $dbman->add_field($table, $addfield);
+        }
+
+        $renamefields = [
+            new xmldb_field('providerid', XMLDB_TYPE_INTEGER, '10'),
+            new xmldb_field('providername', XMLDB_TYPE_TEXT),
+        ];
+        foreach ($renamefields as $newname => $field) {
+            if ($dbman->field_exists($table, $field)) {
+                $dbman->rename_field($table, $field, $newname);
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2015111617, 'local', 'learningrecordstore');
     }
 
     return true;
