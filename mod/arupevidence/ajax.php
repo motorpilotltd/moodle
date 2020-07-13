@@ -138,9 +138,8 @@ if (!empty($action)) {
 
                     $user = core_user::get_user($ae_user->userid, '*', MUST_EXIST);
                     $cpd = arupevidence_sendtotaps($cm->instance, $user, $debug);
-                    $return = arupevidence_process_result($cpd, $debug);
 
-                    if ($return->success == true) {
+                    if ($cpd) {
                         $ae_user->taps = 1 ;
                         $ae_user->itemid = $cpd;
                         $params = array(

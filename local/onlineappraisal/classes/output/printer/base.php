@@ -99,9 +99,8 @@ abstract class base implements renderable, templatable {
         $staffid = $this->appraisal->appraisee->idnumber;
 
         $mylearninginstalled = get_config('block_arup_mylearning', 'version');
-        $tapsinstalled = get_config('local_taps', 'version');
 
-        if (empty($staffid) || !$mylearninginstalled || !$tapsinstalled) {
+        if (empty($staffid) || !$mylearninginstalled) {
             return;
         }
 
