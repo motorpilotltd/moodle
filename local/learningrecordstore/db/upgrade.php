@@ -129,7 +129,7 @@ function xmldb_local_learningrecordstore_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2015111616, 'local', 'learningrecordstore');
     }
 
-    if ($oldversion < 2015111617) {
+    if ($oldversion < 2015111618) {
         // Update to align with CPD changes.
         // MUST happen before data migration into LRS.
         $table = new xmldb_table('local_learningrecordstore');
@@ -140,8 +140,8 @@ function xmldb_local_learningrecordstore_upgrade($oldversion) {
         }
 
         $renamefields = [
-            new xmldb_field('providerid', XMLDB_TYPE_INTEGER, '10'),
-            new xmldb_field('providername', XMLDB_TYPE_TEXT),
+            'originid' => new xmldb_field('providerid', XMLDB_TYPE_INTEGER, '10'),
+            'originname' => new xmldb_field('providername', XMLDB_TYPE_TEXT),
         ];
         foreach ($renamefields as $newname => $field) {
             if ($dbman->field_exists($table, $field)) {
@@ -149,7 +149,7 @@ function xmldb_local_learningrecordstore_upgrade($oldversion) {
             }
         }
 
-        upgrade_plugin_savepoint(true, 2015111617, 'local', 'learningrecordstore');
+        upgrade_plugin_savepoint(true, 2015111618, 'local', 'learningrecordstore');
     }
 
     return true;

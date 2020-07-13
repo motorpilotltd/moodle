@@ -397,7 +397,7 @@ function book_get_toc($chapters, $chapter, $book, $cm, $edit) {
                 $cssclass = ($ch->hidden && $viewhidden) ? 'dimmed_text' : '';
 
                 if ($ch->id == $chapter->id) {
-/* BEGIN CORE MOD */{
+/* BEGIN CORE MOD */
                     $toc .= html_writer::tag('span', $title, array('class' => "current-chapter {$cssclass}"));
 /* END CORE MOD */
                 } else {
