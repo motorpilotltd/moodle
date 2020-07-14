@@ -32,14 +32,14 @@ insert into {local_learningrecordstore} (provider,
                                            classtype,
                                            starttime,
                                            endtime,
-       locked)
-       provider,
+                                           locked)
+       SELECT provider,
        healthandsafetycategory,
        location,
-       SELECT (CASE WHEN mc.id IS NOT NULL
-               THEN 'moodle'
-               ELSE mlte.origin
-               END),
+       (CASE WHEN mc.id IS NOT NULL
+            THEN 'moodle'
+            ELSE mlte.origin
+            END),
        coalesce (originid, courseid),
        staffid,
        coalesce(mlte.duration, mca.duration),
