@@ -7339,6 +7339,6 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
      * @return bool
      */
     protected static function sort_contacts($a, $b) {
-        return $a->userid > $b->userid;
+        return $a->userid <=> $b->userid;
     }
 }
