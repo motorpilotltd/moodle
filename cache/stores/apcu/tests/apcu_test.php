@@ -45,7 +45,7 @@ class cachestore_apcu_test extends cachestore_tests {
         return 'cachestore_apcu';
     }
 
-    public function setUp() {
+    public function setUp(): void {
         if (!cachestore_apcu::are_requirements_met()) {
             $this->markTestSkipped('Could not test cachestore_apcu. Requirements are not met.');
         }

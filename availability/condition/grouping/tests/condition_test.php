@@ -1,3 +1,4 @@
+
 <?php
 // This file is part of Moodle - http://moodle.org/
 //
@@ -37,7 +38,7 @@ class availability_grouping_condition_testcase extends advanced_testcase {
     /**
      * Load required classes.
      */
-    public function setUp() {
+    public function setUp(): void {
         // Load the mock info class so that it can be used.
         global $CFG;
         require_once($CFG->dirroot . '/availability/tests/fixtures/mock_info.php');
@@ -132,7 +133,7 @@ class availability_grouping_condition_testcase extends advanced_testcase {
             $cond = new condition($structure);
             $this->fail();
         } catch (coding_exception $e) {
-            $this->assertContains('Missing ->id / ->activity', $e->getMessage());
+            $this->assertStringContainsString('Missing ->id / ->activity', $e->getMessage());
         }
 
         // Invalid id (not int).
@@ -141,7 +142,7 @@ class availability_grouping_condition_testcase extends advanced_testcase {
             $cond = new condition($structure);
             $this->fail();
         } catch (coding_exception $e) {
-            $this->assertContains('Invalid ->id', $e->getMessage());
+            $this->assertStringContainsString('Invalid ->id', $e->getMessage());
         }
 
         // Invalid activity option (not bool).
@@ -151,7 +152,7 @@ class availability_grouping_condition_testcase extends advanced_testcase {
             $cond = new condition($structure);
             $this->fail();
         } catch (coding_exception $e) {
-            $this->assertContains('Invalid ->activity', $e->getMessage());
+            $this->assertStringContainsString('Invalid ->activity', $e->getMessage());
         }
 
         // Invalid activity option (false).
@@ -160,7 +161,7 @@ class availability_grouping_condition_testcase extends advanced_testcase {
             $cond = new condition($structure);
             $this->fail();
         } catch (coding_exception $e) {
-            $this->assertContains('Invalid ->activity', $e->getMessage());
+            $this->assertStringContainsString('Invalid ->activity', $e->getMessage());
         }
 
         // Valid with id.

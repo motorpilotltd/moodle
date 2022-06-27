@@ -37,7 +37,7 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
     /**
      * Tests set up
      */
-    protected function setUp() {
+    protected function setUp(): void {
         global $CFG;
 
         require_once($CFG->dirroot . '/message/lib.php');
@@ -1453,7 +1453,6 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
 
     /**
      * Test search_contacts.
-     * @expectedException moodle_exception
      */
     public function test_search_contacts() {
         global $DB;
@@ -1515,6 +1514,7 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $this->assertEquals($user5->id, $result['id']);
 
         // Empty query, will throw an exception.
+        $this->expectException(moodle_exception::class);
         $results = core_message_external::search_contacts('');
     }
 
@@ -3859,22 +3859,22 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $this->assertEquals($user1->id, $message1['useridfrom']);
         $this->assertEquals($user2->id, $message1['useridto']);
         $this->assertTrue($message1['displayblocktime']);
-        $this->assertContains('Yo!', $message1['text']);
+        $this->assertStringContainsString('Yo!', $message1['text']);
 
         $this->assertEquals($user2->id, $message2['useridfrom']);
         $this->assertEquals($user1->id, $message2['useridto']);
         $this->assertFalse($message2['displayblocktime']);
-        $this->assertContains('Sup mang?', $message2['text']);
+        $this->assertStringContainsString('Sup mang?', $message2['text']);
 
         $this->assertEquals($user1->id, $message3['useridfrom']);
         $this->assertEquals($user2->id, $message3['useridto']);
         $this->assertFalse($message3['displayblocktime']);
-        $this->assertContains('Writing PHPUnit tests!', $message3['text']);
+        $this->assertStringContainsString('Writing PHPUnit tests!', $message3['text']);
 
         $this->assertEquals($user2->id, $message4['useridfrom']);
         $this->assertEquals($user1->id, $message4['useridto']);
         $this->assertFalse($message4['displayblocktime']);
-        $this->assertContains('Word.', $message4['text']);
+        $this->assertStringContainsString('Word.', $message4['text']);
     }
 
     /**
@@ -3912,9 +3912,9 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $message2 = $messages[1];
         $message3 = $messages[2];
 
-        $this->assertContains('Message 2', $message1['text']);
-        $this->assertContains('Message 3', $message2['text']);
-        $this->assertContains('Message 4', $message3['text']);
+        $this->assertStringContainsString('Message 2', $message1['text']);
+        $this->assertStringContainsString('Message 3', $message2['text']);
+        $this->assertStringContainsString('Message 4', $message3['text']);
     }
 
     /**
@@ -3963,22 +3963,22 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $this->assertEquals($user1->id, $message1['useridfrom']);
         $this->assertEquals($user2->id, $message1['useridto']);
         $this->assertTrue($message1['displayblocktime']);
-        $this->assertContains('Yo!', $message1['text']);
+        $this->assertStringContainsString('Yo!', $message1['text']);
 
         $this->assertEquals($user2->id, $message2['useridfrom']);
         $this->assertEquals($user1->id, $message2['useridto']);
         $this->assertFalse($message2['displayblocktime']);
-        $this->assertContains('Sup mang?', $message2['text']);
+        $this->assertStringContainsString('Sup mang?', $message2['text']);
 
         $this->assertEquals($user1->id, $message3['useridfrom']);
         $this->assertEquals($user2->id, $message3['useridto']);
         $this->assertFalse($message3['displayblocktime']);
-        $this->assertContains('Writing PHPUnit tests!', $message3['text']);
+        $this->assertStringContainsString('Writing PHPUnit tests!', $message3['text']);
 
         $this->assertEquals($user2->id, $message4['useridfrom']);
         $this->assertEquals($user1->id, $message4['useridto']);
         $this->assertFalse($message4['displayblocktime']);
-        $this->assertContains('Word.', $message4['text']);
+        $this->assertStringContainsString('Word.', $message4['text']);
     }
 
     /**

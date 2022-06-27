@@ -62,8 +62,7 @@ class tool_dataprivacy_manager_observer_testcase extends data_privacy_testcase {
         $messageusers = array_map(function($message) {
             return $message->useridto;
         }, $messages);
-
-        $this->assertEquals(array_keys($dpos), $messageusers, '', 0.0, 0, true);
+        $this->assertEqualsCanonicalizing(array_keys($dpos), $messageusers);
     }
 
     /**

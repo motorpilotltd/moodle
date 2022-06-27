@@ -39,7 +39,7 @@ class lock_testcase extends advanced_testcase {
     /**
      * Some lock types will store data in the database.
      */
-    protected function setUp() {
+    protected function setUp(): void {
         $this->resetAfterTest(true);
     }
 
@@ -140,4 +140,3 @@ class lock_testcase extends advanced_testcase {
     }
 
 }
-

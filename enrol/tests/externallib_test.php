@@ -351,7 +351,7 @@ class core_enrol_externallib_testcase extends externallib_advanced_testcase {
                 $viewed[] = $createdusers[$enrolleduser['id']];
             }
             // Verify viewed matches canview expectation (using canonicalize to ignore ordering).
-            $this->assertEquals($canview, $viewed, "Problem checking visible users for '{$createdusers[$USER->id]}'", 0, 1, true);
+            $this->assertEqualsCanonicalizing($canview, $viewed, "Problem checking visible users for '{$createdusers[$USER->id]}'");
         }
     }
 
@@ -842,8 +842,6 @@ class core_enrol_externallib_testcase extends externallib_advanced_testcase {
     /**
      * Test get_enrolled_users from core_enrol_external with capability to
      * viewparticipants removed.
-     *
-     * @expectedException moodle_exception
      */
     public function test_get_enrolled_users_without_capability() {
         $capability = 'moodle/course:viewparticipants';
@@ -851,6 +849,7 @@ class core_enrol_externallib_testcase extends externallib_advanced_testcase {
 
         // Call without required capability.
         $this->unassignUserCapability($capability, $data->context->id, $data->roleid);
+        $this->expectException(moodle_exception::class);
         $categories = core_enrol_external::get_enrolled_users($data->course->id);
     }
 
@@ -1225,12 +1224,9 @@ class core_enrol_externallib_testcase extends externallib_advanced_testcase {
                 core_enrol_external::submit_user_enrolment_form_returns(),
                 core_enrol_external::submit_user_enrolment_form($querystring)
         );
-
-        $this->assertEquals(
+        $this->assertEqualsCanonicalizing(
                 ['result' => $expectedresult, 'validationerror' => $validationerror],
-                $result,
-                '', 0.0, 10, true);
-
+                $result);
         if ($result['result']) {
             $ue = $DB->get_record('user_enrolments', ['id' => $ueid], '*', MUST_EXIST);
             $this->assertEquals($formdata['status'], $ue->status);

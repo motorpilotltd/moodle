@@ -2519,22 +2519,22 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $this->assertEquals($user1->id, $message1->useridfrom);
         $this->assertEquals($user2->id, $message1->useridto);
         $this->assertTrue($message1->displayblocktime);
-        $this->assertContains('Yo!', $message1->text);
+        $this->assertStringContainsString('Yo!', $message1->text);
 
         $this->assertEquals($user2->id, $message2->useridfrom);
         $this->assertEquals($user1->id, $message2->useridto);
         $this->assertFalse($message2->displayblocktime);
-        $this->assertContains('Sup mang?', $message2->text);
+        $this->assertStringContainsString('Sup mang?', $message2->text);
 
         $this->assertEquals($user1->id, $message3->useridfrom);
         $this->assertEquals($user2->id, $message3->useridto);
         $this->assertFalse($message3->displayblocktime);
-        $this->assertContains('Writing PHPUnit tests!', $message3->text);
+        $this->assertStringContainsString('Writing PHPUnit tests!', $message3->text);
 
         $this->assertEquals($user2->id, $message4->useridfrom);
         $this->assertEquals($user1->id, $message4->useridto);
         $this->assertFalse($message4->displayblocktime);
-        $this->assertContains('Word.', $message4->text);
+        $this->assertStringContainsString('Word.', $message4->text);
     }
 
     /**
@@ -2576,16 +2576,16 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $message4 = $messages[3];
 
         $this->assertEquals($user1->id, $message1->useridfrom);
-        $this->assertContains('Yo!', $message1->text);
+        $this->assertStringContainsString('Yo!', $message1->text);
 
         $this->assertEquals($user2->id, $message2->useridfrom);
-        $this->assertContains('Sup mang?', $message2->text);
+        $this->assertStringContainsString('Sup mang?', $message2->text);
 
         $this->assertEquals($user1->id, $message3->useridfrom);
-        $this->assertContains('Writing PHPUnit tests!', $message3->text);
+        $this->assertStringContainsString('Writing PHPUnit tests!', $message3->text);
 
         $this->assertEquals($user1->id, $message4->useridfrom);
-        $this->assertContains('Word.', $message4->text);
+        $this->assertStringContainsString('Word.', $message4->text);
 
         // Confirm the members data is correct.
         $members = $convmessages['members'];
@@ -2636,19 +2636,19 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $message5 = $messages[4];
 
         $this->assertEquals($user1->id, $message1->useridfrom);
-        $this->assertContains('Yo!', $message1->text);
+        $this->assertStringContainsString('Yo!', $message1->text);
 
         $this->assertEquals($user2->id, $message2->useridfrom);
-        $this->assertContains('Sup mang?', $message2->text);
+        $this->assertStringContainsString('Sup mang?', $message2->text);
 
         $this->assertEquals($user3->id, $message3->useridfrom);
-        $this->assertContains('Writing PHPUnit tests!', $message3->text);
+        $this->assertStringContainsString('Writing PHPUnit tests!', $message3->text);
 
         $this->assertEquals($user1->id, $message4->useridfrom);
-        $this->assertContains('Word.', $message4->text);
+        $this->assertStringContainsString('Word.', $message4->text);
 
         $this->assertEquals($user2->id, $message5->useridfrom);
-        $this->assertContains('Yeah!', $message5->text);
+        $this->assertStringContainsString('Yeah!', $message5->text);
 
         // Confirm the members data is correct.
         $members = $convmessages['members'];
@@ -2763,10 +2763,10 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $message3 = $messages[2];
         $message4 = $messages[3];
 
-        $this->assertContains('Message 1', $message1->text);
-        $this->assertContains('Message 2', $message2->text);
-        $this->assertContains('Message 3', $message3->text);
-        $this->assertContains('Message 4', $message4->text);
+        $this->assertStringContainsString('Message 1', $message1->text);
+        $this->assertStringContainsString('Message 2', $message2->text);
+        $this->assertStringContainsString('Message 3', $message3->text);
+        $this->assertStringContainsString('Message 4', $message4->text);
 
         // Confirm the members data is correct.
         $members = $convmessages['members'];
@@ -2786,8 +2786,8 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $message1 = $messages[0];
         $message2 = $messages[1];
 
-        $this->assertContains('Message 3', $message1->text);
-        $this->assertContains('Message 4', $message2->text);
+        $this->assertStringContainsString('Message 3', $message1->text);
+        $this->assertStringContainsString('Message 4', $message2->text);
 
         // Confirm the members data is correct.
         $members = $convmessages['members'];
@@ -2836,10 +2836,10 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $message3 = $messages[2];
         $message4 = $messages[3];
 
-        $this->assertContains('Message 1', $message1->text);
-        $this->assertContains('Message 2', $message2->text);
-        $this->assertContains('Message 3', $message3->text);
-        $this->assertContains('Message 4', $message4->text);
+        $this->assertStringContainsString('Message 1', $message1->text);
+        $this->assertStringContainsString('Message 2', $message2->text);
+        $this->assertStringContainsString('Message 3', $message3->text);
+        $this->assertStringContainsString('Message 4', $message4->text);
 
         // Confirm the members data is correct.
         $members = $convmessages['members'];
@@ -2859,8 +2859,8 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $message1 = $messages[0];
         $message2 = $messages[1];
 
-        $this->assertContains('Message 1', $message1->text);
-        $this->assertContains('Message 2', $message2->text);
+        $this->assertStringContainsString('Message 1', $message1->text);
+        $this->assertStringContainsString('Message 2', $message2->text);
 
         // Confirm the members data is correct.
         $members = $convmessages['members'];
@@ -2907,8 +2907,8 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $message1 = $messages[0];
         $message2 = $messages[1];
 
-        $this->assertContains('Message 2', $message1->text);
-        $this->assertContains('Message 3', $message2->text);
+        $this->assertStringContainsString('Message 2', $message1->text);
+        $this->assertStringContainsString('Message 3', $message2->text);
 
         // Confirm the members data is correct.
         $members = $convmessages['members'];
@@ -2955,8 +2955,8 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $message1 = $messages[0];
         $message2 = $messages[1];
 
-        $this->assertContains('Message 3', $message1->text);
-        $this->assertContains('Message 4', $message2->text);
+        $this->assertStringContainsString('Message 3', $message1->text);
+        $this->assertStringContainsString('Message 4', $message2->text);
 
         // Confirm the members data is correct.
         $members = $convmessages['members'];
@@ -3001,8 +3001,7 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $this->assertEquals(1, count($messages));
 
         $message1 = $messages[0];
-
-        $this->assertContains('Message 3', $message1->text);
+        $this->assertStringContainsString('Message 3', $message1->text);
 
         // Confirm the members data is correct.
         $members = $convmessages['members'];
@@ -3033,7 +3032,7 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         // Check the results are correct.
         $this->assertEquals($user2->id, $message->useridfrom);
         $this->assertEquals($user1->id, $message->useridto);
-        $this->assertContains('Word.', $message->text);
+        $this->assertStringContainsString('Word.', $message->text);
     }
 
     /**
@@ -3066,7 +3065,7 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
 
         // Check the results are correct.
         $this->assertEquals($user2->id, $message->useridfrom);
-        $this->assertContains('Word.', $message->text);
+        $this->assertStringContainsString('Word.', $message->text);
     }
 
     /**
@@ -4368,10 +4367,10 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $message3 = $messages[2];
         $message4 = $messages[3];
 
-        $this->assertContains('Message 1', $message1->text);
-        $this->assertContains('Message 2', $message2->text);
-        $this->assertContains('Message 3', $message3->text);
-        $this->assertContains('Message 4', $message4->text);
+        $this->assertStringContainsString('Message 1', $message1->text);
+        $this->assertStringContainsString('Message 2', $message2->text);
+        $this->assertStringContainsString('Message 3', $message3->text);
+        $this->assertStringContainsString('Message 4', $message4->text);
 
         // Retrieve the messages from $time + 3, which should only be the 2 last messages.
         $messages = \core_message\api::get_messages($user1->id, $user2->id, 0, 0, 'timecreated ASC', $time + 3);
@@ -4382,8 +4381,8 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $message1 = $messages[0];
         $message2 = $messages[1];
 
-        $this->assertContains('Message 3', $message1->text);
-        $this->assertContains('Message 4', $message2->text);
+        $this->assertStringContainsString('Message 3', $message1->text);
+        $this->assertStringContainsString('Message 4', $message2->text);
     }
 
     /**
@@ -4415,10 +4414,10 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $message3 = $messages[2];
         $message4 = $messages[3];
 
-        $this->assertContains('Message 1', $message1->text);
-        $this->assertContains('Message 2', $message2->text);
-        $this->assertContains('Message 3', $message3->text);
-        $this->assertContains('Message 4', $message4->text);
+        $this->assertStringContainsString('Message 1', $message1->text);
+        $this->assertStringContainsString('Message 2', $message2->text);
+        $this->assertStringContainsString('Message 3', $message3->text);
+        $this->assertStringContainsString('Message 4', $message4->text);
 
         // Retrieve the messages up until $time + 2, which should be the first two.
         $messages = \core_message\api::get_messages($user1->id, $user2->id, 0, 0, 'timecreated ASC', 0, $time + 2);
@@ -4429,8 +4428,8 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $message1 = $messages[0];
         $message2 = $messages[1];
 
-        $this->assertContains('Message 1', $message1->text);
-        $this->assertContains('Message 2', $message2->text);
+        $this->assertStringContainsString('Message 1', $message1->text);
+        $this->assertStringContainsString('Message 2', $message2->text);
     }
 
     /**
@@ -4460,8 +4459,8 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         $message1 = $messages[0];
         $message2 = $messages[1];
 
-        $this->assertContains('Message 2', $message1->text);
-        $this->assertContains('Message 3', $message2->text);
+        $this->assertStringContainsString('Message 2', $message1->text);
+        $this->assertStringContainsString('Message 3', $message2->text);
     }
 
     /**
@@ -6232,8 +6231,8 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         // Verify the message returned.
         $this->assertInstanceOf(\stdClass::class, $message1);
         $this->assertObjectHasAttribute('id', $message1);
-        $this->assertAttributeEquals($user1->id, 'useridfrom', $message1);
-        $this->assertAttributeEquals('this is a message', 'text', $message1);
+        $this->assertEquals($user1->id, $message1->useridfrom);
+        $this->assertEquals('this is a message', $message1->text);
         $this->assertObjectHasAttribute('timecreated', $message1);
 
         // Verify events. Note: the event is a message read event because of an if (PHPUNIT) conditional within message_send(),
@@ -6274,8 +6273,8 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         // Verify the message returned.
         $this->assertInstanceOf(\stdClass::class, $message1);
         $this->assertObjectHasAttribute('id', $message1);
-        $this->assertAttributeEquals($user1->id, 'useridfrom', $message1);
-        $this->assertAttributeEquals('message to the group', 'text', $message1);
+        $this->assertEquals($user1->id, $message1->useridfrom);
+        $this->assertEquals('message to the group', $message1->text);
         $this->assertObjectHasAttribute('timecreated', $message1);
         // Test customdata.
         $customdata = json_decode($messages[0]->customdata);
@@ -6343,8 +6342,8 @@ class core_message_api_testcase extends core_message_messagelib_testcase {
         // Verify the message returned.
         $this->assertInstanceOf(\stdClass::class, $message1);
         $this->assertObjectHasAttribute('id', $message1);
-        $this->assertAttributeEquals($user1->id, 'useridfrom', $message1);
-        $this->assertAttributeEquals('message to the group', 'text', $message1);
+        $this->assertEquals($user1->id, $message1->useridfrom);
+        $this->assertEquals('message to the group', $message1->text);
         $this->assertObjectHasAttribute('timecreated', $message1);
         // Test customdata.
         $customdata = json_decode($messages[0]->customdata);

@@ -49,7 +49,7 @@ abstract class grade_base_testcase extends advanced_testcase {
     protected $courseid;
     protected $userid;
 
-    protected function setUp() {
+    protected function setUp(): void {
         global $CFG;
         parent::setup();
 
@@ -980,4 +980,3 @@ class test_grade_grade_flatten_dependencies_array extends grade_grade {
         return self::flatten_dependencies_array($a, $b);
     }
 }
-

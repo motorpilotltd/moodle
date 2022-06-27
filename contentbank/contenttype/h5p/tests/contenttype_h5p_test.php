@@ -135,7 +135,7 @@ class contenttype_h5p_contenttype_plugin_testcase extends advanced_testcase {
         // Because we don't know specific H5P content type yet.
         $defaulticon = $contenttype->get_icon($filltheblanks);
         $this->assertEquals($defaulticon, $contenttype->get_icon($findethewords));
-        $this->assertContains('h5p', $defaulticon);
+        $this->assertStringContainsString('h5p', $defaulticon);
 
         // Deploy one of the contents though the player to create the H5P DB entries and know specific content type.
         $h5pplayer = new \core_h5p\player($findethewords->get_file_url(), new \stdClass(), true);
@@ -145,6 +145,6 @@ class contenttype_h5p_contenttype_plugin_testcase extends advanced_testcase {
         // Once the H5P has been deployed, we know the specific H5P content type, so the icon returned is not default one.
         $findicon = $contenttype->get_icon($findethewords);
         $this->assertNotEquals($defaulticon, $findicon);
-        $this->assertContains('find', $findicon, '', true);
+        $this->assertStringContainsStringIgnoringCase('find', $findicon, '', true);
     }
 }

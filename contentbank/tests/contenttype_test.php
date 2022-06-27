@@ -112,7 +112,7 @@ class core_contenttype_contenttype_testcase extends \advanced_testcase {
         $record->name = 'New content';
         $content = $testable->create_content($record);
         $icon = $testable->get_icon($content);
-        $this->assertContains('archive', $icon);
+        $this->assertStringContainsString('archive', $icon);
     }
 
     /**

@@ -33,7 +33,7 @@ namespace core_search;
  */
 class external_testcase extends \advanced_testcase {
 
-    public function setUp() {
+    public function setUp(): void {
         $this->resetAfterTest();
     }
 
