@@ -92,7 +92,7 @@ class core_files_converter_testcase extends advanced_testcase {
      *                  If no methods are specified, only abstract functions are mocked.
      * @return  stored_file
      */
-    protected function get_stored_file($filecontent = 'content', $filename = null, $filerecord = [], $mockedmethods = null) {
+    protected function get_stored_file($filecontent = 'content', $filename = null, $filerecord = [], $mockedmethods = []) {
         global $CFG;
 
         $contenthash = sha1($filecontent);

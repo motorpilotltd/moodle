@@ -3225,70 +3225,13 @@ function message_get_contact($contactid) {
 }
 
 /**
- * Returns list of courses, for whole site, or category
- *
- * Similar to get_courses, but allows paging
- * Important: Using c.* for fields is extremely expensive because
- *            we are using distinct. You almost _NEVER_ need all the fields
- *            in such a large SELECT
- *
  * @deprecated since Moodle 3.7
- * @todo The final deprecation of this function will take place in Moodle 41 - see MDL-65319.
- *
- * @param string|int $categoryid Either a category id or 'all' for everything
- * @param string $sort A field and direction to sort by
- * @param string $fields The additional fields to return
- * @param int $totalcount Reference for the number of courses
- * @param string $limitfrom The course to start from
- * @param string $limitnum The number of courses to limit to
- * @return array Array of courses
  */
-function get_courses_page($categoryid="all", $sort="c.sortorder ASC", $fields="c.*",
-                          &$totalcount, $limitfrom="", $limitnum="") {
-    debugging('Function get_courses_page() is deprecated. Please use core_course_category::get_courses() ' .
-        'or core_course_category::search_courses()', DEBUG_DEVELOPER);
-    global $USER, $CFG, $DB;
-
-    $params = array();
-
-    $categoryselect = "";
-    if ($categoryid !== "all" && is_numeric($categoryid)) {
-        $categoryselect = "WHERE c.category = :catid";
-        $params['catid'] = $categoryid;
-    } else {
-        $categoryselect = "";
-    }
-
-    $ccselect = ', ' . context_helper::get_preload_record_columns_sql('ctx');
-    $ccjoin = "LEFT JOIN {context} ctx ON (ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel)";
-    $params['contextlevel'] = CONTEXT_COURSE;
-
-    $totalcount = 0;
-    if (!$limitfrom) {
-        $limitfrom = 0;
-    }
-    $visiblecourses = array();
-
-    $sql = "SELECT $fields $ccselect
-              FROM {course} c
-              $ccjoin
-           $categoryselect
-          ORDER BY $sort";
-
-    // Pull out all course matching the cat.
-    $rs = $DB->get_recordset_sql($sql, $params);
-    // Iteration will have to be done inside loop to keep track of the limitfrom and limitnum.
-    foreach ($rs as $course) {
-        context_helper::preload_from_record($course);
-        if (core_course_category::can_view_course_info($course)) {
-            $totalcount++;
-            if ($totalcount > $limitfrom && (!$limitnum or count($visiblecourses) < $limitnum)) {
-                $visiblecourses [$course->id] = $course;
-            }
-        }
-    }
-    $rs->close();
-    return $visiblecourses;
+function get_courses_page() {
+    throw new coding_exception(
+        'Function get_courses_page() has been removed. Please use core_course_category::get_courses() ' .
+        'or core_course_category::search_courses()'
+    );
 }
 
 /**
@@ -3700,9 +3643,10 @@ function user_get_participants_sql($courseid, $groupid = 0, $accesssince = 0, $r
             }
             $conditions[] = $idnumber;
 
-            if (!empty($CFG->showuseridentity)) {
+            // TODO Does not support custom user profile fields (MDL-70456).
+            $extrasearchfields = \core_user\fields::get_identity_fields($context, false);
+            if (!empty($extrasearchfields)) {
                 // Search all user identify fields.
-                $extrasearchfields = explode(',', $CFG->showuseridentity);
                 foreach ($extrasearchfields as $extrasearchfield) {
                     if (in_array($extrasearchfield, ['email', 'idnumber', 'country'])) {
                         // Already covered above. Search by country not supported.
@@ -3810,7 +3754,7 @@ function user_get_total_participants($courseid, $groupid = 0, $accesssince = 0, 
  * @param int $limitnum return a subset comprising this many records (optional, required if $limitfrom is set).
  * @return moodle_recordset
  */
-function user_get_participants($courseid, $groupid = 0, $accesssince, $roleid, $enrolid = 0, $statusid, $search,
+function user_get_participants($courseid, $groupid, $accesssince, $roleid, $enrolid, $statusid, $search,
                                $additionalwhere = '', $additionalparams = array(), $sort = '', $limitfrom = 0, $limitnum = 0) {
     global $DB;
 

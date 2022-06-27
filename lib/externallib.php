@@ -1232,8 +1232,8 @@ class external_settings {
     /**
      * Clone - private - can not be cloned
      */
-    private final function __clone() {
-    }
+    // private final function __clone() {
+    // }
 
     /**
      * Return only one instance

@@ -66,7 +66,7 @@ class mod_assign_locallib_testcase extends advanced_testcase {
         $installedplugins = array_keys(core_component::get_plugin_list('assignfeedback'));
 
         foreach ($assign->get_feedback_plugins() as $plugin) {
-            $this->assertStringContainsString($plugin->get_type(), $installedplugins, 'Feedback plugin not in list of installed plugins');
+            $this->assertContains($plugin->get_type(), $installedplugins, 'Feedback plugin not in list of installed plugins');
         }
     }
 
@@ -80,7 +80,7 @@ class mod_assign_locallib_testcase extends advanced_testcase {
         $installedplugins = array_keys(core_component::get_plugin_list('assignsubmission'));
 
         foreach ($assign->get_submission_plugins() as $plugin) {
-            $this->assertStringContainsString($plugin->get_type(), $installedplugins, 'Submission plugin not in list of installed plugins');
+            $this->assertContains($plugin->get_type(), $installedplugins, 'Submission plugin not in list of installed plugins');
         }
     }
 
@@ -4257,18 +4257,18 @@ Anchor link 2:<a title=\"bananas\" href=\"../logo-240x60.gif\">Link text</a>
         $this->setUser($student2);
         $summary = $assign->get_assign_grading_summary_renderable($group1->id);
         $output1 .= $assign->get_renderer()->render($summary);
-        $this->assertStringContainsString('Tuesday, 28 May 2019, 7:31 AM', $output1, '', true);
+        $this->assertStringContainsStringIgnoringCase('Tuesday, 28 May 2019, 7:31 AM', $output1, '', true);
 
         $output2 = '';
         // Teacher should be able to see all group override duedate.
         $this->setUser($teacher);
         $summary = $assign->get_assign_grading_summary_renderable($group1->id);
         $output2 .= $assign->get_renderer()->render($summary);
-        $this->assertStringContainsString('Friday, 20 September 2019, 10:37 PM', $output2, '', true);
+        $this->assertStringContainsStringIgnoringCase('Friday, 20 September 2019, 10:37 PM', $output2, '', true);
         $summary = $assign->get_assign_grading_summary_renderable($group2->id);
         $output3 = '';
         $output3 .= $assign->get_renderer()->render($summary);
-        $this->assertStringContainsString('Friday, 7 June 2019, 5:37 PM', $output3, '', true);
+        $this->assertStringContainsStringIgnoringCase('Friday, 7 June 2019, 5:37 PM', $output3, '', true);
     }
 
     /**

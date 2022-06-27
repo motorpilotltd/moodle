@@ -132,8 +132,7 @@ class core_completionlib_testcase extends advanced_testcase {
         $mockbuilder->onlyMethods(array('is_enabled', 'get_data', 'internal_get_state', 'internal_set_data',
                                        'user_can_override_completion'));
         $mockbuilder->setConstructorArgs(array((object)array('id' => 42)));
-        // $c = $mockbuilder->getMock();
-        $cm = (object)array('id'=>13, 'course'=>42);
+        $cm = (object)array('id' => 13, 'course' => 42);
 
         // Not enabled, should do nothing.
         $c = $mockbuilder->getMock();
@@ -144,6 +143,7 @@ class core_completionlib_testcase extends advanced_testcase {
         $c->update_state($cm);
 
         // Enabled, but current state is same as possible result, do nothing.
+        $cm->completion = COMPLETION_TRACKING_AUTOMATIC;
         $c = $mockbuilder->getMock();
         $current = (object)array('completionstate' => COMPLETION_COMPLETE, 'overrideby' => null);
         $c->expects($this->once())
@@ -152,12 +152,12 @@ class core_completionlib_testcase extends advanced_testcase {
             ->will($this->returnValue(true));
         $c->expects($this->once())
             ->method('get_data')
-            ->with($cm, false, 0)
             ->will($this->returnValue($current));
         $c->update_state($cm, COMPLETION_COMPLETE);
 
         // Enabled, but current state is a specific one and new state is just
         // complete, so do nothing.
+        $c = $mockbuilder->getMock();
         $current->completionstate = COMPLETION_COMPLETE_PASS;
         $c->expects($this->once())
             ->method('is_enabled')
@@ -165,20 +165,19 @@ class core_completionlib_testcase extends advanced_testcase {
             ->will($this->returnValue(true));
         $c->expects($this->once())
             ->method('get_data')
-            ->with($cm, false, 0)
             ->will($this->returnValue($current));
         $c->update_state($cm, COMPLETION_COMPLETE);
 
         // Manual, change state (no change).
-        $cm = (object)array('id'=>13, 'course'=>42, 'completion'=>COMPLETION_TRACKING_MANUAL);
-        $current->completionstate=COMPLETION_COMPLETE;
+        $c = $mockbuilder->getMock();
+        $cm = (object)array('id' => 13, 'course' => 42, 'completion' => COMPLETION_TRACKING_MANUAL);
+        $current->completionstate = COMPLETION_COMPLETE;
         $c->expects($this->once())
             ->method('is_enabled')
             ->with($cm)
             ->will($this->returnValue(true));
         $c->expects($this->once())
             ->method('get_data')
-            ->with($cm, false, 0)
             ->will($this->returnValue($current));
         $c->update_state($cm, COMPLETION_COMPLETE);
 
@@ -190,7 +189,6 @@ class core_completionlib_testcase extends advanced_testcase {
             ->will($this->returnValue(true));
         $c->expects($this->once())
             ->method('get_data')
-            ->with($cm, false, 0)
             ->will($this->returnValue($current));
         $changed = clone($current);
         $changed->timemodified = time();
@@ -204,7 +202,7 @@ class core_completionlib_testcase extends advanced_testcase {
 
         // Auto, change state.
         $c = $mockbuilder->getMock();
-        $cm = (object)array('id'=>13, 'course'=>42, 'completion'=>COMPLETION_TRACKING_AUTOMATIC);
+        $cm = (object)array('id' => 13, 'course' => 42, 'completion' => COMPLETION_TRACKING_AUTOMATIC);
         $current = (object)array('completionstate' => COMPLETION_COMPLETE, 'overrideby' => null);
         $c->expects($this->once())
             ->method('is_enabled')
@@ -212,7 +210,6 @@ class core_completionlib_testcase extends advanced_testcase {
             ->will($this->returnValue(true));
         $c->expects($this->once())
             ->method('get_data')
-            ->with($cm, false, 0)
             ->will($this->returnValue($current));
         $c->expects($this->once())
             ->method('internal_get_state')
@@ -257,7 +254,10 @@ class core_completionlib_testcase extends advanced_testcase {
         $comparewith2->add_exception('timemodified', 'assertGreaterThanOrEqual');
         $c->expects($this->exactly(2))
             ->method('internal_set_data')
-            ->with($cm, $comparewith);
+            ->withConsecutive(
+                array($cm, $comparewith1),
+                array($cm, $comparewith2)
+            );
         $c->update_state($cm, COMPLETION_COMPLETE, 100, true);
         // And confirm that the status can be changed back to incomplete without an override.
         $c->update_state($cm, COMPLETION_INCOMPLETE, 100);
@@ -285,10 +285,7 @@ class core_completionlib_testcase extends advanced_testcase {
         $comparewith->add_exception('timemodified', 'assertGreaterThanOrEqual');
         $c->expects($this->once())
             ->method('internal_set_data')
-            ->withConsecutive(
-                array($cm, $comparewith1),
-                array($cm, $comparewith2)
-            );
+            ->with($cm, $comparewith);
         $c->update_state($cm, COMPLETION_COMPLETE, 100, true);
 
         // Now confirm the status can be changed back from complete to incomplete using an override.
@@ -300,7 +297,7 @@ class core_completionlib_testcase extends advanced_testcase {
             ->with($cm)
             ->will($this->returnValue(true));
         $c->expects($this->once()) // Pretend the user has the required capability for overriding completion statuses.
-        ->method('user_can_override_completion')
+            ->method('user_can_override_completion')
             ->will($this->returnValue(true));
         $c->expects($this->once())
             ->method('get_data')
@@ -325,7 +322,7 @@ class core_completionlib_testcase extends advanced_testcase {
         $mockbuilder = $this->getMockBuilder('completion_info');
         $mockbuilder->onlyMethods(array('internal_get_grade_state'));
         $mockbuilder->setConstructorArgs(array((object)array('id' => 42)));
-
+        $c = $mockbuilder->getMock();
         $cm = (object)array('id'=>13, 'course'=>42, 'completiongradeitemnumber'=>null);
 
         // If view is required, but they haven't viewed it yet.
@@ -361,8 +358,7 @@ class core_completionlib_testcase extends advanced_testcase {
         $mockbuilder = $this->getMockBuilder('completion_info');
         $mockbuilder->onlyMethods(array('is_enabled', 'get_data', 'internal_set_data', 'update_state'));
         $mockbuilder->setConstructorArgs(array((object)array('id' => 42)));
-        $c = $mockbuilder->getMock();
-        $cm = (object)array('id'=>13, 'course'=>42);
+        $cm = (object)array('id' => 13, 'course' => 42);
 
         // Not tracking completion, should do nothing.
         $c = $mockbuilder->getMock();
@@ -380,6 +376,7 @@ class core_completionlib_testcase extends advanced_testcase {
 
         // Now it's enabled, we expect it to get data. If data already has
         // viewed, still do nothing.
+        $c = $mockbuilder->getMock();
         $c->expects($this->once())
             ->method('is_enabled')
             ->with($cm)
@@ -387,7 +384,7 @@ class core_completionlib_testcase extends advanced_testcase {
         $c->expects($this->once())
             ->method('get_data')
             ->with($cm, 0)
-            ->will($this->returnValue((object)array('viewed'=>COMPLETION_VIEWED)));
+            ->will($this->returnValue((object)array('viewed' => COMPLETION_VIEWED)));
         $c->set_module_viewed($cm);
 
         // OK finally one that hasn't been viewed, now it should set it viewed
@@ -400,10 +397,10 @@ class core_completionlib_testcase extends advanced_testcase {
         $c->expects($this->once())
             ->method('get_data')
             ->with($cm, false, 1337)
-            ->will($this->returnValue((object)array('viewed'=>COMPLETION_NOT_VIEWED)));
+            ->will($this->returnValue((object)array('viewed' => COMPLETION_NOT_VIEWED)));
         $c->expects($this->once())
             ->method('internal_set_data')
-            ->with($cm, (object)array('viewed'=>COMPLETION_VIEWED));
+            ->with($cm, (object)array('viewed' => COMPLETION_VIEWED));
         $c->expects($this->once())
             ->method('update_state')
             ->with($cm, COMPLETION_COMPLETE, 1337);
@@ -770,6 +767,7 @@ class core_completionlib_testcase extends advanced_testcase {
         $c->inform_grade_changed($cm, $item, $grade, false);
 
         // Enabled but still no grade completion required,  should still do nothing.
+        $c = $mockbuilder->getMock();
         $c->expects($this->once())
             ->method('is_enabled')
             ->with($cm)

@@ -1105,7 +1105,7 @@ class t3lib_cs {
 				break;
 
 			case 'ascii':
-				if (is_array($this->toASCII['utf-8'])) {
+				if (isset($this->toASCII['utf-8']) && is_array($this->toASCII['utf-8'])) {
 					return 1;
 				}
 

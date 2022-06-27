@@ -99,7 +99,7 @@ class core_files_file_system_filedir_testcase extends advanced_testcase {
      *                  If no methods are specified, only abstract functions are mocked.
      * @return stored_file
      */
-    protected function get_stored_file($filecontent, $filename = null, $mockedmethods = null) {
+    protected function get_stored_file($filecontent, $filename = null, $mockedmethods = []) {
         $contenthash = file_storage::hash_from_string($filecontent);
         if (empty($filename)) {
             $filename = $contenthash;
