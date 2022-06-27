@@ -4066,14 +4066,14 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $members = $result['members'];
         $this->assertCount(3, $members);
         $membersid = [$members[0]['id'], $members[1]['id'], $members[2]['id']];
-        $this->assertContains($user1->id, $membersid);
-        $this->assertContains($user2->id, $membersid);
-        $this->assertContains($user3->id, $membersid);
+        $this->assertContainsEquals($user1->id, $membersid);
+        $this->assertContainsEquals($user2->id, $membersid);
+        $this->assertContainsEquals($user3->id, $membersid);
 
         $membersfullnames = [$members[0]['fullname'], $members[1]['fullname'], $members[2]['fullname']];
-        $this->assertContains(fullname($user1), $membersfullnames);
-        $this->assertContains(fullname($user2), $membersfullnames);
-        $this->assertContains(fullname($user3), $membersfullnames);
+        $this->assertContainsEquals(fullname($user1), $membersfullnames);
+        $this->assertContainsEquals(fullname($user2), $membersfullnames);
+        $this->assertContainsEquals(fullname($user3), $membersfullnames);
 
         // Confirm the messages data is correct.
         $messages = $result['messages'];
@@ -4085,16 +4085,16 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $message4 = $messages[3];
 
         $this->assertEquals($user1->id, $message1['useridfrom']);
-        $this->assertContains('Yo!', $message1['text']);
+        $this->assertStringContainsString('Yo!', $message1['text']);
 
         $this->assertEquals($user3->id, $message2['useridfrom']);
-        $this->assertContains('Sup mang?', $message2['text']);
+        $this->assertStringContainsString('Sup mang?', $message2['text']);
 
         $this->assertEquals($user2->id, $message3['useridfrom']);
-        $this->assertContains('Writing PHPUnit tests!', $message3['text']);
+        $this->assertStringContainsString('Writing PHPUnit tests!', $message3['text']);
 
         $this->assertEquals($user1->id, $message4['useridfrom']);
-        $this->assertContains('Word.', $message4['text']);
+        $this->assertStringContainsString('Word.', $message4['text']);
     }
 
     /**
@@ -4143,9 +4143,9 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $message2 = $messages[1];
         $message3 = $messages[2];
 
-        $this->assertContains('Message 2', $message1['text']);
-        $this->assertContains('Message 3', $message2['text']);
-        $this->assertContains('Message 4', $message3['text']);
+        $this->assertStringContainsString('Message 2', $message1['text']);
+        $this->assertStringContainsString('Message 3', $message2['text']);
+        $this->assertStringContainsString('Message 4', $message3['text']);
 
         // Confirm the members data is correct.
         $members = $result['members'];
@@ -4195,9 +4195,9 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $members = $result['members'];
         $this->assertCount(3, $members);
         $membersid = [$members[0]['id'], $members[1]['id'], $members[2]['id']];
-        $this->assertContains($user1->id, $membersid);
-        $this->assertContains($user2->id, $membersid);
-        $this->assertContains($user3->id, $membersid);
+        $this->assertContainsEquals($user1->id, $membersid);
+        $this->assertContainsEquals($user2->id, $membersid);
+        $this->assertContainsEquals($user3->id, $membersid);
 
         // Confirm the message data is correct.
         $messages = $result['messages'];
@@ -4209,16 +4209,16 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         $message4 = $messages[3];
 
         $this->assertEquals($user1->id, $message1['useridfrom']);
-        $this->assertContains('Yo!', $message1['text']);
+        $this->assertStringContainsString('Yo!', $message1['text']);
 
         $this->assertEquals($user3->id, $message2['useridfrom']);
-        $this->assertContains('Sup mang?', $message2['text']);
+        $this->assertStringContainsString('Sup mang?', $message2['text']);
 
         $this->assertEquals($user2->id, $message3['useridfrom']);
-        $this->assertContains('Writing PHPUnit tests!', $message3['text']);
+        $this->assertStringContainsString('Writing PHPUnit tests!', $message3['text']);
 
         $this->assertEquals($user1->id, $message4['useridfrom']);
-        $this->assertContains('Word.', $message4['text']);
+        $this->assertStringContainsString('Word.', $message4['text']);
     }
 
     /**
@@ -4331,7 +4331,7 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         // Check the results are correct.
         $this->assertEquals($user2->id, $result['useridfrom']);
         $this->assertEquals($user1->id, $result['useridto']);
-        $this->assertContains('Word.', $result['text']);
+        $this->assertStringContainsString('Word.', $result['text']);
     }
 
     /**
@@ -4364,7 +4364,7 @@ class core_message_externallib_testcase extends externallib_advanced_testcase {
         // Check the results are correct.
         $this->assertEquals($user2->id, $result['useridfrom']);
         $this->assertEquals($user1->id, $result['useridto']);
-        $this->assertContains('Word.', $result['text']);
+        $this->assertStringContainsString('Word.', $result['text']);
     }
 
     /**

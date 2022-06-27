@@ -4178,7 +4178,7 @@ class core_accesslib_testcase extends advanced_testcase {
     public function test_is_parent_of(string $contextpath, string $testpath, bool $testself, bool $expected): void {
         $context = $this->getMockBuilder(\context::class)
             ->disableOriginalConstructor()
-            ->setMethods([
+            ->onlyMethods([
                 'get_url',
                 'get_capabilities',
             ])
@@ -4190,7 +4190,7 @@ class core_accesslib_testcase extends advanced_testcase {
 
         $comparisoncontext = $this->getMockBuilder(\context::class)
             ->disableOriginalConstructor()
-            ->setMethods([
+            ->onlyMethods([
                 'get_url',
                 'get_capabilities',
             ])
@@ -4280,7 +4280,7 @@ class core_accesslib_testcase extends advanced_testcase {
     public function test_is_child_of(string $contextpath, string $testpath, bool $testself, bool $expected): void {
         $context = $this->getMockBuilder(\context::class)
             ->disableOriginalConstructor()
-            ->setMethods([
+            ->onlyMethods([
                 'get_url',
                 'get_capabilities',
             ])
@@ -4292,7 +4292,7 @@ class core_accesslib_testcase extends advanced_testcase {
 
         $comparisoncontext = $this->getMockBuilder(\context::class)
             ->disableOriginalConstructor()
-            ->setMethods([
+            ->onlyMethods([
                 'get_url',
                 'get_capabilities',
             ])

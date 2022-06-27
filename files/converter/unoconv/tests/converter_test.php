@@ -54,7 +54,7 @@ class fileconverter_unoconv_converter_testcase extends advanced_testcase {
      */
     protected function get_testable_mock($mockedmethods = null) {
         $converter = $this->getMockBuilder(\fileconverter_unoconv\converter::class)
-            ->setMethods($mockedmethods)
+            ->onlyMethods($mockedmethods)
             ->getMock();
 
         return $converter;

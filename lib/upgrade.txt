@@ -2,39 +2,67 @@ This files describes API changes in core libraries and APIs,
 information provided here is intended especially for developers.
 
 ===3.9.12===
-* PHPUnit has been upgraded to 8.5. That comes with a few changes:
-  - Breaking change: All the "template methods" (setUp(), tearDown()...) now require to return void. This implies
-      that the minimum version of PHP able to run tests will be PHP 7.1
-    - A good number of assertions have been deprecated with this version
-      and will be removed in a future one. In core all cases have been removed
-      (so it's deprecation-warnings free). It's recommended to perform the
-      switch to their new counterparts ASAP:
-        - assertInternalType() has been deprecated. Use the assertIsXXX() methods instead.
-        - assertArraySubset() has been deprecated. Use looping + assertArrayHasKey() or similar.
-        - @expectedExceptionXXX annotations have been deprecated. Use the expectExceptionXXX()
-          methods instead (and put them exactly before the line that is expected to throw the exception).
-        - assertAttributeXXX() have been deprecated. If testing public attributes use normal assertions. If
-          testing non-public attributes... you're doing something wrong :-)
-        - assertContains() to find substrings on strings has been deprecated. Use assertStringContainsString() instead.
-          (note that there are "IgnoringCase()" variants to perform case-insensitive matching.
-        - assertEquals() extra params have been deprecated and new assertions for them created:
-          - delta => use assertEqualsWithDelta()
-          - canonicalize => use assertEqualsCanonicalizing()
-          - ignoreCase => use assertEqualsIgnoringCase()
-          - maxDepth => removed without replacement.
-  - The custom printer that was used to show how to rerun a failure has been removed, it was old and "hacky"
-    solution, for more information about how to run tests, see the docs, there are plenty of options.
-  - phpunit/dbunit is not available any more and it has been replaced by a lightweight phpunit_dataset class, able to
-    load XML/CSV and PHP arrays, send the to database and return rows to calling code (in tests). That implies the
-    follwoing changes in the advanced_testcase class:
-      - createFlatXMLDataSet() has been removed. No uses in core, uses can switch to createXMLDataSet() (read below).
-      - createXMLDataSet() has been deprecated. Use dataset_from_files() instead.
-      - createCsvDataSet() has been deprecated. Use dataset_from_files() instead.
-      - createArrayDataSet() has been deprecated. This method was using the phpunit_ArrayDataSet class
-        that has been also removed from core. Use dataset_from_array() instead.
-      - loadDataSet() has been deprecated. Use phpunit_dataset->to_database() instead.
-      - All the previous uses of phpunit/dbunit methods like Dataset:getRows(), Dataset::getRowCount()
-        must be replaced by the new phpunit_dataset->get_rows() method.
+* PHPUnit has been upgraded to 9.5 (see MDL-71036 for details).
+  That comes with a few changes:
+  - Breaking: All the changes that were deprecated with PHPUnit 8.5
+    are now removed (see the 3.10 section below).
+  - Breaking: assertContains() now performs stricter comparison (like assertSame()
+    does). New assertContainsEquals() has been created to provide the old
+    behavior.
+  - Deprecation: A number of file-related assertions have been deprecated, will
+    be removed with PHPUnit 10. Alternatives for all them have been created:
+      - assertNotIsReadable()         -> assertIsNotReadable()
+      - assertNotIsWritable()         -> assertIsNotWritable()
+      - assertDirectoryNotExists()    -> assertDirectoryDoesNotExist()
+      - assertDirectoryNotIsReadable()-> assertDirectoryIsNotReadable()
+      - assertDirectoryNotIsWritable()-> assertDirectoryIsNotWritable()
+      - assertFileNotExists()         -> assertFileDoesNotExist()
+      - assertFileNotIsReadable()     -> assertFileIsNotReadable()
+      - assertFileNotIsWritable()     -> assertFileIsNotWritable()
+  - Deprecation: Regexp-related assertions have been deprecated, will be
+    removed with PHPUnit 10. Alternatives for all them have been created:
+      - assertRegExp()     -> assertMatchesRegularExpression()
+      - assertNotRegExp()  -> assertDoesNotMatchRegularExpression()
+  - Deprecation: The expectException() for Notice, Warning, Deprecation and
+    Error is deprecated, will be removed with PHPUnit 10. New expectations
+    have been created to better define the expectation:
+      - expectDeprecation() for E_DEPRECATED and E_USER_DEPRECATED.
+      - expectNotice() for E_NOTICE, E_USER_NOTICE, and E_STRICT.
+      - expectWarning() for E_WARNING and E_USER_WARNING.
+      - expectError() for everything else.
+  - Deprecation: The Mock->at() matcher has been deprecated and will be
+    removed with PHPUnit 10. Switch to better, more deterministic and clearer
+    matchers is recommended (->once(), ->exactly(), ->never()...).
+  - Deprecation: The Mock->setMethods() method has been *silently* deprecated
+    and will be removed in the future. Change uses to the new Mock->onlyMethods()
+    alternative. Also, it doesn't accept "null" anymore, new default must
+    be [] (empty array).
+  - Mostly internal: With the raise to PHP 7.3 as lower version supported,
+    various internal bits perform now stricter type checking in params and
+    return values. If your tests have own-created comparators, assertions...
+    they may need to be adjusted.
+  - Mostly internal: The phpunit.xml schema has changed, basically removing
+    the old <filter> section and replacing it with a new, less confusing
+    <coverage> section. Also the elements within them have been changed:
+      - <whitelist> has been replaced by <include>.
+      - <exclude> is not a child of <whitelist> anymore, but of <coverage>.
+    Note that this only will affect if you've custom phpunit.xml files
+    instead of using the automatically generated ones by Moodle.
+  - Deprecation: Related to the previous point, the $whitelistxxx properties
+    used by the coverage.php files have been deprecated (will continue
+    working until Moodle 4.3) to follow the same pattern:
+      - whitelistfolders -> includelistfolders
+      - whitelistfiles   -> includelistfiles
+  - Internal: Custom autoloaders are deprecated and will be removed with
+    PHPUnit 10. Hence we have removed our one already.
+    Note that it was not useful since PHPUnit 8.5, where the ability
+    to run tests by class name was removed.
+  - Warning: Because of some new restrictions about how test files and
+    test classes must be named (that Moodle haven't followed ever) it's not
+    possible to run individual test files any more. Use any of the alternative
+    execution methods (filter, suite, config) to specify which tests
+    you want to run. This will be hopefully fixed in MDL-71049
+    once it has been agreed which the best way to proceed is.
 * Two new helper functions have been added to lib/datalib.php, for safely preparing SQL ORDER BY statements where user
   interactions define sort parameters (see the respective docblocks for full details and examples):
   -get_safe_orderby() - where a single sort parameter is required.
