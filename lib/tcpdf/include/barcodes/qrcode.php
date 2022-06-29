@@ -1334,6 +1334,7 @@ class QRcode {
 			}
 		}
 		$this->items = $this->appendNewInputItem($this->items, QR_MODE_NM, $run, str_split($this->dataStr));
+		$run = $p;
 		return $run;
 	}
 
@@ -1455,7 +1456,7 @@ class QRcode {
 					break;
 				}
 				case QR_MODE_KJ: {
-					if ($hint == QR_MODE_KJ) {
+					if ($this->hint == QR_MODE_KJ) {
 						$length = $this->eatKanji();
 					} else {
 						$length = $this->eat8();

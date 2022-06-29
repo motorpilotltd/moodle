@@ -557,6 +557,7 @@ class TCPDF_FONTS {
 			$numGlyphs = TCPDF_STATIC::_getUSHORT($font, $offset);
 			// ---------- get CIDToGIDMap ----------
 			$ctg = array();
+			$c = 0;
 			foreach ($encodingTables as $enctable) {
 				// get only specified Platform ID and Encoding ID
 				if (($enctable['platformID'] == $platid) AND ($enctable['encodingID'] == $encid)) {
@@ -1883,7 +1884,7 @@ class TCPDF_FONTS {
 	 * Converts UTF-8 character to integer value.<br>
 	 * Uses the getUniord() method if the value is not cached.
 	 * @param $uch (string) character string to process.
-	 * @return integer Unicode value
+	 * @return int Unicode value
 	 * @public static
 	 */
 	public static function uniord($uch) {
@@ -1922,7 +1923,7 @@ class TCPDF_FONTS {
 	 *   ---------------------------------------------------------------------
 	 * </pre>
 	 * @param $uch (string) character string to process.
-	 * @return integer Unicode value
+	 * @return int Unicode value
 	 * @author Nicola Asuni
 	 * @public static
 	 */
