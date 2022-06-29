@@ -34,20 +34,6 @@ defined('MOODLE_INTERNAL') || die();
  */
 abstract class file_system {
 
-    // /**
-    //  * Private clone method to prevent cloning of the instance.
-    //  */
-    // final protected function __clone() {
-    //     return;
-    // }
-
-    // /**
-    //  * Private wakeup method to prevent unserialising of the instance.
-    //  */
-    // final protected function __wakeup() {
-    //     return;
-    // }
-
     /**
      * Output the content of the specified stored file.
      *
