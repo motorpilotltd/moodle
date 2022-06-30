@@ -4,3 +4,5 @@ several changes to the code (including bug fixes). As the library is no longer s
 In future releases we should look into using a supported library.
 
 2021-01-05 - Removed get_magic_quotes_gpc() use, was returning false since ages ago.
+2022-01-05 - MDL-73502 - Removed get_magic_quotes_gpc() use, was returning false since ages ago.
+2022-01-20 - MDL-73523 - Conditional openssl_free_key() use, deprecated by PHP 8.0
