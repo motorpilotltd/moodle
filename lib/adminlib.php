@@ -3819,7 +3819,9 @@ class admin_setting_configduration extends admin_setting {
             return '';
         }
 
-        $seconds = (int)($data['v']*$data['u']);
+        $unit = (int)$data['u'];
+        $value = (int)$data['v'];
+        $seconds = $value * $unit;
         if ($seconds < 0) {
             return get_string('errorsetting', 'admin');
         }
