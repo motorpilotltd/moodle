@@ -530,7 +530,7 @@ function mnet_keyswap($function, $params) {
 
     if (!empty($CFG->mnet_register_allhosts)) {
         $mnet_peer = new mnet_peer();
-        @list($wwwroot, $pubkey, $application) = each($params);
+        list($wwwroot, $pubkey, $application) = $params;
         $keyok = $mnet_peer->bootstrap($wwwroot, $pubkey, $application);
         if ($keyok) {
             $mnet_peer->commit();
@@ -677,4 +677,3 @@ class mnet_server_exception extends moodle_exception {
 
     }
 }
-
