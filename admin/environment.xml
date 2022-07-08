@@ -2996,7 +2996,8 @@
       <VENDOR name="mssql" version="11.0" />
       <VENDOR name="oracle" version="11.2" />
     </DATABASE>
-    <PHP version="7.3.0" level="required">
+    <PHP version="8.0.2" level="required">
+      <RESTRICT function="restrict_php_version_81" message="unsupportedphpversion81" />
     </PHP>
     <PCREUNICODE level="optional">
       <FEEDBACK>

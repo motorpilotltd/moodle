@@ -1352,6 +1352,7 @@ $string['unsupportedphpversion72'] = 'PHP version 7.2 is not supported.';
 $string['unsupportedphpversion73'] = 'PHP version 7.3 is not supported.';
 $string['unsupportedphpversion74'] = 'PHP version 7.4 is not supported.';
 $string['unsupportedphpversion80'] = 'PHP version 8.0 is not supported.';
+$string['unsupportedphpversion81'] = 'PHP version 8.1 is not supported.';
 $string['unsuspenduser'] = 'Activate user account';
 $string['updateaccounts'] = 'Update existing accounts';
 $string['updatecomponent'] = 'Update component';
