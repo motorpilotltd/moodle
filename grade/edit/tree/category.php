@@ -132,7 +132,7 @@ $mform = new edit_category_form(null, array('current'=>$category, 'gpr'=>$gpr));
 if ($mform->is_cancelled()) {
     redirect($returnurl);
 
-} else if ($data = $mform->get_data(false)) {
+} else if ($data = $mform->get_data()) {
     // If no fullname is entered for a course category, put ? in the DB
     if (!isset($data->fullname) || $data->fullname == '') {
         $data->fullname = '?';
