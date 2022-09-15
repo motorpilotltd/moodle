@@ -1054,7 +1054,6 @@ abstract class moodleform_mod extends moodleform {
             $mform->addElement('float', $gradepassfieldname, get_string($gradepassfieldname, 'grades'));
             $mform->addHelpButton($gradepassfieldname, $gradepassfieldname, 'grades');
             $mform->setDefault($gradepassfieldname, '');
-            $mform->setType($gradepassfieldname, PARAM_RAW);
             $mform->hideIf($gradepassfieldname, "{$gradefieldname}[modgrade_type]", 'eq', 'none');
         }
     }

@@ -72,9 +72,9 @@ Feature: Set a quiz to be marked complete when the student passes
       | aaa       | 1              | .      | must enter a number   | method: Highest  | number-err     |
       | 200       | 0              | .      | can not be greater    | method: Highest  | grade-big-err  |
       | 200       | 1              | .      | can not be greater    | method: Highest  | grade-big-err  |
-      | 5.55      | 0              | .      | 5.55 out of 100       | Save and display | ok             |
-      | 5.55      | 1              | .      | 5.55 out of 100       | Save and display | ok             |
+      | 5.55      | 0              | .      | method: Highest       | Save and display | ok             |
+      | 5.55      | 1              | .      | method: Highest       | Save and display | ok             |
       | 5#55      | 0              | .      | must enter a number   | method: Highest  | number-err     |
       | 5#55      | 1              | .      | must enter a number   | method: Highest  | number-err     |
-      | 5#55      | 0              | #      | 5#55 out of 100       | Save and display | ok             |
-      | 5#55      | 1              | #      | 5#55 out of 100       | Save and display | ok             |
+      | 5#55      | 0              | #      | method: Highest       | Save and display | ok             |
+      | 5#55      | 1              | #      | method: Highest       | Save and display | ok             |
