@@ -30,7 +30,7 @@ Feature: Test editing a drag and drop onto image questions
     Then I should see "Edited question name"
 
   Scenario: Edit a drag and drop onto image question and verify penalty works as expected
-    When I choose "Edit question" action for "Drag onto image" in the question bank
+    When I am on the "Drag onto image" "core_question > edit" page logged in as teacher
     Then the following fields match these values:
       | Question name                       | Drag onto image |
       | Penalty for each incorrect try      | 33.33333%       |
@@ -40,7 +40,7 @@ Feature: Test editing a drag and drop onto image questions
     When the following "language customisations" exist:
       | component       | stringid | value |
       | core_langconfig | decsep   | #     |
-    And I choose "Edit question" action for "Drag onto image" in the question bank
+    When I am on the "Drag onto image" "core_question > edit" page logged in as teacher
     Then the following fields match these values:
       | Question name                       | Drag onto image |
       | Penalty for each incorrect try      | 33#33333%       |
